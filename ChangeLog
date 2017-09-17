@@ -1,3 +1,44 @@
+* 16/9/2017 IntMUD 1.11 MUD baseado na revisão 474
+
+   No MUD:
+  1. Corrigido bug: Equip estava mostrando sempre todas as posições
+  2. Corrigido bug: os comandos Csoc, Chab, Cmag, Cef, Cmod, Ctipo,
+     Csom, Carea e Cperm não estavam verificando corretamente alguns
+     nomes
+  3. Corrigido bug: Comando aprender não estava funcionando quando uma
+     habilidade ou magia pode ser aprendida por mais de uma raça/classe
+  4. Criados líquidos e os comandos Lliq, Cliq, Eliq e Aliq
+  5. Eventos cmd_beber e cmd_bebeu agora possuem mais um argumento: o
+     líquido
+  6. Criados comandos Encher e Esvaziar
+  7. Opção no comando Eperso, em Quando morre / Corpo: 4 Deixa itens e
+     moedas na sala, não deixa corpo
+  8. Criada função $mens.mp, documentada em doc/03-mensagens.txt
+  9. Criado evento cmd_reset, quando ocorre reset de área, documentado
+     em doc/13-evento.txt
+ 10. Comando Efeito seguido do nome de um efeito que está afetando seu
+     personagem agora mostra informações dos atributos do efeito
+ 11. Comando Nível agora aparece na lista de comandos (ao teclar AJUDA
+     INFO)
+ 12. Criada opção "Pontos de aula" nas habilidades e magias e no menu
+     Herda do comando Econfig
+ 13. Mensagem de sala perigosa por perto agora vem antes do título da
+     sala
+ 14. Criada magia Flechas Enfurecidas; usa 3 flechas (são itens que
+     agrupam) e é ensinado na sala teste150
+ 15. Criada aljava (bolsa de flechas): ao comprar, na sala teste31, vem
+     com 30 flechas dentro; há uma explicação na sala teste170
+ 16. Opções "Começa a amanhecer", "Amanheceu", etc. do menu Mensagens do
+     comando Econfig agora foram para o menu "Mensagens hora"
+ 17. Criadas opções "Você/Tu" e "Você/Ti" no menu Mensagens do comando
+     Econfig
+ 18. Criadas sequências de caracteres $P1, $Q1, $A1, $B1, $O1 e $N1 para
+     mensagens
+ 19. Adicionado argumento nos eventos em cmd_atacar e cmd_atacou: tipo
+     de alvo: 0=principal, 1=segundário (em ataques de área)
+ 20. Mensagens em alguns comandos agora são enviadas $mens.mp() ao invés
+     de arg0.msg()
+
 * 1/7/2017 IntMUD 1.11 MUD baseado na revisão 461
 
    No IntMUD:
