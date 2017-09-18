@@ -66,6 +66,7 @@ enum TSocketProto ///< Valores de TSocket::proto
     spPapovox,   ///< Papovox
     spWebSockM0, ///< WebSock enviando mensagens sem o campo máscara
     spWebSockM1, ///< WebSock enviando mensagens com o campo máscara
+    spHexa       ///< Bytes no formato hexadecimal
 };
 
 //------------------------------------------------------------------------------
@@ -425,6 +426,7 @@ bool TSocket::Conectado()
     case spPapovox:
     case spWebSockM0:
     case spWebSockM1:
+    case spHexa:
         return true;
     }
     return false;
@@ -449,6 +451,7 @@ int TSocket::Variavel(char num, int valor)
             case spPapovox:
             case spWebSockM0:
             case spWebSockM1:
+            case spHexa:
                 switch (valor)
                 {
                 case 2:
@@ -475,6 +478,10 @@ int TSocket::Variavel(char num, int valor)
                     mudar = (proto!=spWebSockM0 && proto!=spWebSockM1);
                     proto = spWebSockM1;
                     break;
+                case 8:
+                    mudar = (proto!=spHexa);
+                    proto = spHexa;
+                    break;
                 }
                 if (mudar)
                     pontRec=0, pontESC=0, pontTelnet=0;
@@ -488,6 +495,7 @@ int TSocket::Variavel(char num, int valor)
         case spPapovox:     return 5;
         case spWebSockM0:   return 6;
         case spWebSockM1:   return 7;
+        case spHexa:        return 8;
         }
         return 1;
     case 2: // cores
@@ -720,6 +728,35 @@ bool TSocket::EnvMens(const char * mensagem, int codigo)
         putchar('\n'); fflush(stdout);
 #endif
         return EnvMensBytes(ini, destino - ini);
+    }
+
+// Hexadecimal
+    if (proto==spHexa)
+    {
+        char mens[SOCKET_ENV];
+        char * destino = mens;
+        int valor = 1;
+        while (*mensagem)
+        {
+            unsigned char ch = *mensagem++;
+            if (ch >= '0' && ch <= '9')
+                valor = valor * 16 + ch - '0';
+            else if (ch >= 'A' && ch <= 'F')
+                valor = valor * 16 + ch - 'A' + 10;
+            else if (ch >= 'a' && ch <= 'f')
+                valor = valor * 16 + ch - 'a' + 10;
+            else
+                continue;
+            if (valor >= 0x100)
+            {
+                if (destino >= mens + sizeof(mens))
+                    return false;
+                *destino++ = valor, valor=1;
+            }
+        }
+        if (destino != mens)
+            eventoenv = true;
+        return EnvMensBytes(mens, destino - mens);
     }
 
 // Sem cores
@@ -1414,10 +1451,12 @@ int TSocket::Processa(const char * buffer, int tamanho)
     }
     putchar('\n'); fflush(stdout);
 #endif
+
 // Ignora CR/LF, quando estiver mudando de protocolo
     if ((*buffer==10 && dadoRecebido==13) ||
         (*buffer==13 && dadoRecebido==10))
         buffer++, tamanho--, dadoRecebido=0;
+
 // Protocolo Telnet
     if (proto==spTelnet1 || proto==spTelnet2)
     {
@@ -1949,6 +1988,27 @@ telnet_cor:
         return tamanho;
     }
 
+// Protocolo Hexadecimal
+    if (proto==spHexa)
+    {
+        dadoRecebido=0;
+        pontRec = 0;
+        char mens[SOCKET_REC * 2 + 1];
+        int total = (tamanho <= SOCKET_REC ? tamanho : SOCKET_REC);
+        for (int cont=0; cont<total; cont++)
+        {
+            char ch = ((buffer[cont] >> 4) & 15);
+            mens[cont*2] = (ch < 10 ? ch+'0' : ch+'a'-10);
+            ch = (buffer[cont] & 15);
+            mens[cont*2+1] = (ch < 10 ? ch+'0' : ch+'a'-10);
+        }
+        mens[total*2] = 0;
+    // Envia mensagem
+        FuncEvento("msg", mens, true, 1);
+        EventoMens(true);
+        return tamanho - total;
+    }
+
 // Protocolo desconhecido
     assert(0);
 }
@@ -1957,7 +2017,7 @@ telnet_cor:
 void TSocket::EventoMens(bool completo)
 {
 // Prepara mensagem
-    char texto[2048];
+    char texto[SOCKET_REC*4];
     char * dest = texto;
     char * fim = texto + sizeof(texto) - 9;
     int codigo = 1;

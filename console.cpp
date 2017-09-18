@@ -803,7 +803,7 @@ void TConsole::CorTxt(unsigned int novacor)
     *destino = 0;
     if (!fcntl_block)
         { fcntl(STDIN_FILENO, F_SETFL, 0); fcntl_block=true; }
-    printf(mens);
+    printf("%s", mens);
 #endif
 }
 

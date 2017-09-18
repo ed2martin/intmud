@@ -865,7 +865,7 @@ bool TVarTelaTxt::Func(TVariavel * v, const char * nome)
     if (comparaZ(nome, "proto")==0)
     {
         Instr::ApagarVar(v);
-        return Instr::CriarVarInt(Console ? 6 : 0);
+        return Instr::CriarVarInt(Console ? 1 : 0);
     }
 // Limpa a tela
     if (comparaZ(nome, "limpa")==0)

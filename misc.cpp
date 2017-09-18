@@ -10,6 +10,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdarg.h>
+#include <unistd.h>
 #include <string.h>
 #include <errno.h>
 #include <math.h>
@@ -168,6 +169,28 @@ void tabASCinic(void)
     for (int x=0; x<0x100; x++) // Outros
         if (tabTXTSEPARA[x] == 0)
             tabTXTSEPARA[x] = 0x20;
+}
+
+//------------------------------------------------------------------------------
+int safe_read(int filedes, void *buffer, int size)
+{
+    while (true)
+    {
+        int valor = read(filedes, buffer, size);
+        if (valor >= 0 || errno != EINTR)
+            return valor;
+    }
+}
+
+//------------------------------------------------------------------------------
+int safe_write(int filedes, const void *buffer, int size)
+{
+    while (true)
+    {
+        int valor = write(filedes, buffer, size);
+        if (valor >= 0 || errno != EINTR)
+            return valor;
+    }
 }
 
 //------------------------------------------------------------------------------

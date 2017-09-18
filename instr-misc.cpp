@@ -287,7 +287,7 @@ bool Instr::CriarVarInt(int valor)
  *  @param mens A mensagem que será retornada;
  *               Se for 0, apenas aloca memória para o texto
  *  @param tammens Tamanho da mensagem sem o 0 final;
- *                 Se for <0, assume o valor de strlen(mens)
+ *                 Se for < 0, assume o valor de strlen(mens)
  *  @return true se conseguiu criar, false se memória insuficiente
  *  @note Pode copiar apenas parte do texto se a memória for insuficiente */
 bool Instr::CriarVarTexto(const char * mens, int tammens)

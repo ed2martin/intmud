@@ -44,6 +44,9 @@ extern char * tab7B;       ///< txtremove com filtro de letras acentuadas
 extern char * tabTXTSEPARA;///< Usado em txtsepara
 extern char * tabNOMEOBJ;  ///< Usado para converter nomes em nomeobj
 
+int safe_read(int filedes, void *buffer, int size);
+int safe_write(int filedes, const void *buffer, int size);
+
 /** Monta string.
  *  Semelhante a sprintf(), exceto que:
  *  - Só processa caracteres %%, \%c, \%d, \%u e \%s

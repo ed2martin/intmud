@@ -202,7 +202,7 @@ bool TVarDebug::Func(TVariavel * v, const char * nome)
         TClasse::AcertaComandos(mens.Buf);
     // Anota instruções em DadosPilha
         ApagarVar(v);
-        if (CriarVarTexto(mens.Buf + TotalFunc, mens.Total - TotalFunc) < 0)
+        if (!CriarVarTexto(mens.Buf + TotalFunc, mens.Total - TotalFunc))
             return CriarVarTexto(
                     "Quantidade de instruções muito grande");
     // Para mostrar o que codificou

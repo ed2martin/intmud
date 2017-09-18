@@ -21,6 +21,7 @@
  #include <sys/wait.h>
 #endif
 #include "exec.h"
+#include "misc.h"
 
 TExec * TExec::Inicio = 0;
 
@@ -335,10 +336,10 @@ const char * TExec::Abrir(const char * nomeprog)
         close(descrpipe[1]);
         close(descrpipe[2]);    // Saída
         pipe_out = descrpipe[3];
-        read(pipe_in, &ch, 1); // Sincroniza com processo filho
+        safe_read(pipe_in, &ch, 1); // Sincroniza com processo filho
         fcntl(pipe_in, F_SETFL, O_NONBLOCK);
         fcntl(pipe_out, F_SETFL, O_NONBLOCK);
-        write(pipe_out, "a", 1);
+        safe_write(pipe_out, "a", 1);
         Rodando = true;
         return 0;
     }
@@ -351,8 +352,8 @@ const char * TExec::Abrir(const char * nomeprog)
     close(descrpipe[3]);
     signal(SIGPIPE,SIG_DFL);    // Acerta sinais
     signal(SIGCHLD,SIG_DFL);
-    write(STDOUT_FILENO, "a", 1); // Sincroniza com processo pai
-    read(STDIN_FILENO, &ch, 1);   // Lê um dado
+    safe_write(STDOUT_FILENO, "a", 1); // Sincroniza com processo pai
+    safe_read(STDIN_FILENO, &ch, 1);   // Lê um dado
 
 // Executa programa
     execv(nomearq, argv);

@@ -65,7 +65,7 @@ int TVarLog::TempoEspera(int tempodecorrido)
         for (TVarLog * obj = Inicio; obj; obj=obj->Depois)
             if (obj->pontlog)
             {
-                write(obj->arq, obj->buflog, obj->pontlog);
+                safe_write(obj->arq, obj->buflog, obj->pontlog);
                 obj->pontlog = 0;
             }
         Tempo=20;
@@ -85,7 +85,7 @@ void TVarLog::Fechar()
     if (arq<0)
         return;
     if (pontlog)
-        write(arq, buflog, pontlog);
+        safe_write(arq, buflog, pontlog);
     close(arq);
     arq=-1;
     (Antes ? Antes->Depois : Inicio) = Depois;
@@ -112,7 +112,7 @@ bool TVarLog::Func(TVariavel * v, const char * nome)
                     break;
                 if (pontlog>=(int)sizeof(buflog)-500)
                 {
-                    write(arq, buflog, pontlog);
+                    safe_write(arq, buflog, pontlog);
                     pontlog=0;
                 }
                 for (int x=0; x<490 && *txt && *txt!=Instr::ex_barra_n; x++)

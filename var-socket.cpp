@@ -770,7 +770,7 @@ TDNSSocket::TDNSSocket(TVarSocket * var, const char * ender)
         char mens[1024];
         char * p = mprintf(mens, sizeof(mens), "%s%c%s",
                 hnome==NULL ? "" : hnome->h_name, 0, ip);
-        write(descrpipe[1], mens, p-mens+1);
+        safe_write(descrpipe[1], mens, p-mens+1);
         _exit(EXIT_SUCCESS);
     }
     close(descrpipe[1]);
