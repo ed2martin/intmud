@@ -5,11 +5,12 @@ Sintaxe: APRENDER <nome ou número do curso>\n\
 Aprende um pouco sobre uma habilidade ou idioma.\n\
 Para saber o que é ensinado em algum lugar, tecle AULAS."
 #
+const m_sem_args = "Aprender o quê?"
 const m_pontos1 = "Você precisa de um ponto de aula"
 const m_pontos2 = "Você precisa de $m pontos de aula"
 
 func escr
-  ret !arg1, arg0.msg("Aprender o quê?")
+  ret !arg1, $mensjog.msg(m_sem_args, arg0)
   uint32 aulas # Quantas aulas ensina
   uint32 valor # Preço da aula
   int32 linha

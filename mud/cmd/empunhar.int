@@ -5,6 +5,7 @@ Sintaxe: EMPUNHAR <objeto>\n\
 Seu personagem empunha uma arma que está carregando."
 const posic = 5
 #
+const m_sem_args = "Empunhar o quê?"
 const m_nao_arma = "$O não é arma."
 const m_nao_consegue = "Você não consegue empunhar $o."
 const m_conhecimento = "Você não conhece $m."
@@ -16,7 +17,7 @@ const m_empunha1 = "Você empunha $o."
 const m_empunha2 = "$P empunha $o."
 
 func escr
-  ret !arg1, arg0.msg("Empunhar o que?")
+  ret !arg1, $mensjog.msg(m_sem_args, arg0)
   refvar perm_msg = $perm_[arg0.jogperm].vestir
   ret perm_msg, $mensjog.msg(perm_msg, arg0)
   refvar alvo = ref(arg0.persoesc)

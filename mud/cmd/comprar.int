@@ -6,7 +6,7 @@ Sintaxe: COMPRAR <nome ou número do objeto>\n\
 Compra objetos de um vendedor.\n\
 Para saber o que é vendido em algum lugar, tecle LISTA."
 #
-const m_vazio = "Comprar o quê?"
+const m_sem_args = "Comprar o quê?"
 const m_nao_vende = "Ninguém vende $m aqui."
 const m_muita_coisa = "Você não consegue carregar tanta coisa."
 const m_muito_peso = "Você não consegue carregar tanto peso."
@@ -27,7 +27,7 @@ const m_fechadura1 = "$A manda alguém para trocar a fechadura da sua casa."
 const m_fechadura2 = "$A manda alguém para trocar a fechadura da casa $d $p."
 
 func escr
-  ret !arg1, $mens.mp(m_vazio, arg0)
+  ret !arg1, $mens.mp(m_sem_args, arg0)
   txt200 lin # Texto da linha atual
   int32 linha # Qual linha está verificando
   txt100 nomeitem # O nome do item que está procurando

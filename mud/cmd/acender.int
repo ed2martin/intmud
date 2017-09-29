@@ -4,12 +4,14 @@ const txtajuda = "\b\c3Acender\b\n\
 Sintaxe: ACENDER <objeto>\n\
 Acende um objeto (um fósforo, uma lamparina, etc)."
 const posic = 5
+#
+const m_sem_args = "Acender o quê?"
 
 func escr
   listaobj l
   nomeobj n # Para reconhecer os itens
   textotxt nomes # Nomes dos itens pegos
-  ret !arg1, arg0.msg("Acender o quê?")
+  ret !arg1, $mensjog.msg(m_sem_args, arg0)
   n.ini(arg1, 1)
   epara l.addfim(arg0.dentro1, arg0.dono.dentro1), l, l.ini.remove
     continuar !l.objini.visivel(arg0) || !n.nome(l.objini.ident, l.objini.objtot)

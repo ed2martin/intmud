@@ -4,6 +4,8 @@ const txtajuda = "\b\c3Abrir\b\n\
 Sintaxe: ABRIR <objeto ou direção>\n\
 Abre um objeto ou uma porta."
 const posic = 5
+#
+const m_sem_args = "Abrir o quê?"
 
 func escr
   refvar perm_msg = $perm_[arg0.jogperm].abrir
@@ -18,7 +20,7 @@ func escrobj # Abrir um item
   listaitem i # Para procurar o item
   nomeobj n # Para reconhecer os itens
 # Procura o item
-  ret !arg1, arg0.msg("Abrir o quê?")
+  ret !arg1, $mensjog.msg(m_sem_args, arg0)
   n.ini(arg1, 1)
   epara i = arg0.dono.dentro1.ini, i, i.depois
     sair i.obj.visivel(arg0) && n.nome(i.obj.ident, i.obj.objtot)

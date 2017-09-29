@@ -5,6 +5,8 @@ Sintaxe: ENCHER <objeto1> [objeto2]\n\
 Tenta encher o objeto1 com o líquido do objeto2. Digitando apenas o nome\n\
 do objeto1, enche com o líquido da fonte (caso exista uma por perto)."
 const posic = 5
+#
+const m_sem_args = "Encher o quê?"
 
 func escr
   listaobj l
@@ -12,7 +14,7 @@ func escr
   ref r2 # Segundo objeto
   ref liq
 # Obtém o primeiro objeto
-  ret !arg1, arg0.msg("Encher o quê?")
+  ret !arg1, $mensjog.msg(m_sem_args, arg0)
   r1 = misc:itemdentro(arg0, txt1(arg1))
   se !r1
     $mens.mens = txt1(arg1)
