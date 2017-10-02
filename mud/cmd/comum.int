@@ -1,7 +1,6 @@
 classe comando_comum
 # Comandos para os jogadores
 #
-const iniclasse = !$[arg0] && criar(arg0)
 const posic = 8 # Posição mínima para usar o comando
 #
 const objcmd = este # Objeto que processa o comando, ou nulo se não existe
@@ -16,6 +15,20 @@ func escr # Processa o comando
 # arg0 = objeto do personagem
 # arg1 = texto digitado após o nome do comando
 # arg2 = objeto perm com as permissões do personagem: $perm_[arg0.jogperm]
+
+func iniclasse
+  ret txt(arg0, 0, 2) != "h_", !$[arg0] && criar(arg0)
+  prog p
+  ret p.existe(txt(arg0, 2)), nulo
+  p.criar(txt(arg0, 2) + "\nconfig/cmd\nherda " + arg0)
+  misccriar:add(txt(arg0, 2))
+
+
+classe comando_menu_cmd
+herda comando_menu
+const titulo = txtcopiamai(txt(este, 6), "A")
+const menufim = "menu_econfig_cmd"
+const colunas = 28
 
 
 classe cmd_lancar

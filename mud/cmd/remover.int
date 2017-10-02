@@ -30,10 +30,9 @@ func escr
     total++
     refvar valor = vest & txt(config:vestir[r.vestpos - 1])
     se txttroca(valor, "0", "")
-      listaitem item
       epara item = alvo.dentro2.ini, item, item.depois
         continuar !item.obj.vestpos
-        sair valor & intbith(item.obj.vestpos - 1)
+        sair txttroca(intbith(item.obj.vestpos - 1) & valor, "0", "")
       efim
       $mens.mp("Antes precisa parar de usar $o.", arg0, nulo, item.obj)
       continuar

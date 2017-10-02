@@ -141,9 +141,10 @@ func objvestir # Quer vestir um item
       txt12 pos = vest & txt(config:vestir[txt1(lin)])
       listaitem item
       epara item = arg0.dentro2.ini, item, item.depois
-        sair item.obj.vestpos && intbith(item.obj.vestpos - 1) & pos
+        continuar !item.obj.vestpos
+        sair txttroca(intbith(item.obj.vestpos - 1) & pos, "0", "")
       efim
-      ret "Antes precisa parar de usar " + item.obj.descnome + "."
+      ret $mens.mp("Antes precisa parar de usar $o.", arg0, nulo, item.obj)
     fimse
 # Checa se o item deixa vestir
     txt100 txtvestir = arg1.cmd_podevestir(arg0)

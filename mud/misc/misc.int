@@ -3,7 +3,7 @@ classe misc
 # Deve ser usado como misc:variável ao invés de $misc.variável
 #
 # Versão do MUD, aparece no comando Serv
-const versao = "28/9/2017"
+const versao = "1/10/2017"
 #
 # Objetos obtidos por em misc:separa
 comum txt100 sep1 # Objeto procurado
@@ -414,3 +414,24 @@ func ini
   epara nulo, ind <= 45, ind++
     t.[ind] = 1
   efim
+
+
+classe misccriar
+# Cria um objeto de uma classe se não existir nenhum
+# Modo de usar: misccriar:add(<nome da classe>)
+comum intexec criar
+comum textotxt lista
+
+func add
+  misccriar:criar = 1
+  misccriar:lista.addfim(arg0)
+  textotxt lista
+
+func criar_exec
+  enquanto misccriar:lista.linhas
+    refvar lin = misccriar:lista.remove
+    continuar $[lin]
+    misccriar:criar = 1
+    ret criar(lin)
+  efim
+  config:salvar

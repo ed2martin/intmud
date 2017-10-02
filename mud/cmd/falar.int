@@ -1,19 +1,69 @@
-classe cmd_falar
+classe m_cmd_falar
+herda comando_menu_cmd
+#
+const nome1 = "Ajuda"
+const tipo1 = "opc_texto"
+const clas1 = "cmd_falar"
+const vari1 = "m_ajuda"
+#
+const nome2 = "Sem argumentos"
+const tipo2 = "opc_linha"
+const clas2 = "cmd_falar"
+const vari2 = "m_sem_args"
+#
+const nome3 = "Falar"
+const info3 = "Ao teclar falar e uma mensagem qualquer"
+const tipo3 = "opc_linha"
+const clas3 = "cmd_falar"
+const vari3 = "m_falar"
+#
+const nome4 = "Perguntar"
+const info4 = "Ao teclar falar e uma mensagem terminada com interrogação"
+const tipo4 = "opc_linha"
+const clas4 = "cmd_falar"
+const vari4 = "m_perguntar"
+#
+const nome5 = "Exclamar"
+const info5 = "Ao teclar falar e uma mensagem terminada com exclamação"
+const tipo5 = "opc_linha"
+const clas5 = "cmd_falar"
+const vari5 = "m_exclamar"
+#
+const nome6 = "Ponderar"
+const info6 = "Ao teclar falar e uma mensagem terminada com reticências"
+const tipo6 = "opc_linha"
+const clas6 = "cmd_falar"
+const vari6 = "m_ponderar"
+#
+const nome7 = "Continuar"
+const info7 = "Ao teclar falar e uma mensagem começada com reticências"
+const tipo7 = "opc_linha"
+const clas7 = "cmd_falar"
+const vari7 = "m_continuar"
+
+
+classe h_cmd_falar
 herda comando_comum
 const posic = 5
-const txtajuda = "\b\c3Falar\b\n\
-Sintaxe: FALAR <mensagem>\n\
-         '<mensagem>\n\
-Envia mensagem para todos os personagens que estiverem na mesma sala.\n\
+const txtajuda = "\b\c3Falar\b\nSintaxe: FALAR <mensagem>\n         '<mensagem>\n" + m_ajuda
+#
+const m_ajuda = "Envia mensagem para todos os personagens que estiverem na mesma sala.\n\
 A mensagem pode aparecer diferente se for iniciada com reticências ou\n\
 terminada com reticências, interrogação ou exclamação."
+const m_sem_args = "Tecle a mensagem após FALAR."
+const m_falar = "$P falou '$m'"
+const m_perguntar = "$P perguntou '$m'"
+const m_exclamar = "$P exclamou '$m'"
+const m_ponderar = "$P ponderou '$m'"
+const m_continuar = "$P continuou '$m'"
+const admordem = "m_ajuda m_sem_args m_falar m_perguntar m_exclamar m_ponderar m_continuar"
 
 func escr
   refvar perm_msg = $perm_[arg0.jogperm].c_falar
   se perm_msg
     ret $mensjog.msg(perm_msg, arg0)
   senao !arg1
-    ret arg0.msg("Tecle a mensagem após FALAR.")
+    ret $mensjog.msg(m_sem_args, arg0)
   senao
     refvar f = txt(arg0.dono.s_falar(arg0))
     ret f, arg0.msg(f)
@@ -22,15 +72,15 @@ func escr
   $mens.p(arg0)
   $mens.mens = $miscbebida.msgperso(arg1, arg0.p_bebida)
   se txt(arg1, 0, 3) == "..."
-    $mens.mtodos1(config:continuarmsg)
+    $mens.mtodos1(m_continuar)
   senao txtfim(arg1, 1) == "?"
-    $mens.mtodos1(config:perguntarmsg)
+    $mens.mtodos1(m_perguntar)
   senao txtfim(arg1, 1) == "!"
-    $mens.mtodos1(config:exclamarmsg)
+    $mens.mtodos1(m_exclamar)
   senao txtfim(arg1, 3) == "..."
-    $mens.mtodos1(config:ponderarmsg)
+    $mens.mtodos1(m_ponderar)
   senao
-    $mens.mtodos1(config:falarmsg)
+    $mens.mtodos1(m_falar)
   fimse
 # Executa eventos
   listaobj l

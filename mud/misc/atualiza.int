@@ -1,4 +1,4 @@
-classe atualiza_471
+classe atualiza_477
 # Atualiza arquivos mud/config/* e mud/areas/* de acordo com novas mudanças
 prog p
 debug dbg
@@ -28,18 +28,19 @@ func criafunc # Cria função ou constante se não existir
   refvar nome = txtsub(txttroca(txttroca(arg1, "=", " ="), "#", " #"), 1, 1)
   p.existe(arg0, nome) != 1 && p.criar(arg0, arg1)
 
-func nomefunc # Muda o nome de uma função, constante ou variável
-# arg0 = nome da classe
-# arg1 = nome da função
-# arg2 = novo nome da função
+func movefunc # Move uma uma função, constante ou variável
+# arg0 = nome da classe origem
+# arg1 = nome da função na classe origem
+# arg2 = nome da classe destino
+# arg3 = novo nome da função (na classe destino)
   prog p
   textotxt t
-  ret !p.inilinha(arg0, arg1), nulo
-  t.addfim(txt1(p.texto) + " " + arg2 + " " + txtsub(p.texto, 2))
+  ret !p.existe(arg2) || !p.inilinha(arg0, arg1), nulo
+  t.addfim(txt1(p.texto) + " " + arg3 + " " + txtsub(p.texto, 2))
   epara p.depois, p.lin, p.depois
     t.addfim(p.texto)
   efim
-  p.apagar(arg0, arg1), p.criar(arg0, t.remove(10000))
+  p.apagar(arg0, arg1), p.criar(arg2, t.remove(10000))
 
 const iniclasse = !$[arg0] && criar(arg0)
 
@@ -492,13 +493,13 @@ casa está atrasada.\"")
 # Correção de recalc_auto para recalc1_auto e recalc2_auto
   se versao < 374
     epara p.iniclasse("p_"), p.lin, p.depois
-      dbg.ini, nomefunc(p.texto, "recalc_auto", "recalc1_auto")
+      dbg.ini, movefunc(p.texto, "recalc_auto", p.texto, "recalc1_auto")
     efim
     epara p.iniclasse("i_"), p.lin, p.depois
-      dbg.ini, nomefunc(p.texto, "recalc_auto", "recalc2_auto")
+      dbg.ini, movefunc(p.texto, "recalc_auto", p.texto, "recalc2_auto")
     efim
     epara p.iniclasse("e_"), p.lin, p.depois
-      dbg.ini, nomefunc(p.texto, "recalc_auto", "recalc2_auto")
+      dbg.ini, movefunc(p.texto, "recalc_auto", p.texto, "recalc2_auto")
     efim
   fimse
 # Permissões
@@ -638,7 +639,7 @@ func ini3_exec
 # Espera em ataques manuais, mensagens dos ataques
   se versao < 434
     criafunc("config", "const atkespera = 8")
-    nomefunc("config", "itens", "p_objlimite")
+    movefunc("config", "itens", "config", "p_objlimite")
     int8 y
     epara p.iniherdainv("comando_ataque"), p.lin, p.depois
       dbg.ini
@@ -727,8 +728,8 @@ func ini3_exec
 func ini4_exec
   apagar(este)
 # Checa e muda a versão
-  ret (versao = config:versao) >= 471, nulo
-  p.criar("config", "const versao = 471 # Para atualizar diretórios areas e config")
+  ret (versao = config:versao) >= 477, nulo
+  p.criar("config", "const versao = 477 # Para atualizar diretórios areas e config")
   config:salvar
 # Comando Fim e Dicas aleatórias
   se versao < 457
@@ -748,6 +749,16 @@ func ini4_exec
 # Você/Tu/Ti
   criafunc("config", "const mens_tu = \"você\"")
   criafunc("config", "const mens_ti = \"você\"")
+# Opções dos menus
+  se versao < 477
+    dbg.ini
+    movefunc("config", "falarmsg", "cmd_falar", "m_falar")
+    movefunc("config", "perguntarmsg", "cmd_falar", "m_perguntar")
+    movefunc("config", "exclamarmsg", "cmd_falar", "m_exclamar")
+    movefunc("config", "ponderarmsg", "cmd_falar", "m_ponderar")
+    movefunc("config", "continuarmsg", "cmd_falar", "m_continuar")
+    movefunc("config", "fimmsg", "cmd_fim", "m_fim")
+  fimse
 # Avisa que atualizou arquivos
   tela.msg("Diretórios areas e config atualizados\n")
 

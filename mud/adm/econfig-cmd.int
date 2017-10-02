@@ -1,50 +1,50 @@
-classe menu_econfig_cmd
+classe menu_econfig_adm
 herda comando_menu
 const titulo = "Comandos"
 const menufim = "menu_econfig"
 const colunas = 35
 #
 const nome1 = "Echo"
-const tipo1 = "menu_econfig_cmd_echo--"
+const tipo1 = "menu_econfig_adm_echo--"
 #
 const nome2 = "Rezar, Rezou"
-const tipo2 = "menu_econfig_cmd_rezar--"
+const tipo2 = "menu_econfig_adm_rezar--"
 #
 const nome3 = "Bug"
-const tipo3 = "menu_econfig_cmd_bug--"
+const tipo3 = "menu_econfig_adm_bug--"
 #
 const nome4 = "Ideia"
-const tipo4 = "menu_econfig_cmd_ideia--"
+const tipo4 = "menu_econfig_adm_ideia--"
 #
 const nome5 = "Canais"
-const tipo5 = "menu_econfig_cmd_canais--"
+const tipo5 = "menu_econfig_adm_canais--"
 #
 const nome6 = "Falar, Gritar"
-const tipo6 = "menu_econfig_cmd_falar--"
+const tipo6 = "menu_econfig_adm_falar--"
 #
 const nome7 = "Sussurrar"
-const tipo7 = "menu_econfig_cmd_sussurrar--"
+const tipo7 = "menu_econfig_adm_sussurrar--"
 #
 const nome8 = "Telepatia"
-const tipo8 = "menu_econfig_cmd_telepatia--"
+const tipo8 = "menu_econfig_adm_telepatia--"
 #
 const nome9 = "Emoção"
-const tipo9 = "menu_econfig_cmd_emocao--"
+const tipo9 = "menu_econfig_adm_emocao--"
 #
 const nome10 = "Olhar"
-const tipo10 = "menu_econfig_cmd_olhar--"
+const tipo10 = "menu_econfig_adm_olhar--"
 #
 const nome11 = "PTitulo, PDesc"
-const tipo11 = "menu_econfig_cmd_ptitulo--"
+const tipo11 = "menu_econfig_adm_ptitulo--"
 #
 const nome12 = "Animais, Capturar"
-const tipo12 = "menu_econfig_cmd_animais--"
+const tipo12 = "menu_econfig_adm_animais--"
 #
 const nome13 = "Renascer"
-const tipo13 = "menu_econfig_cmd_renascer--"
+const tipo13 = "menu_econfig_adm_renascer--"
 #
 const nome14 = "Config Dicas"
-const tipo14 = "menu_econfig_cmd_config--"
+const tipo14 = "menu_econfig_adm_config--"
 #
 const nome15 = "Matar"
 const tipo15 = "opc_opcao--"
@@ -62,17 +62,12 @@ const info17 = "Quantidade máxima de atalhos (comando Atalho)"
 const tipo17 = "opc_numero--"
 const clas17 = "config"
 const vari17 = "atalhos"
-#
-const nome18 = "Fim (mensagem)"
-const tipo18 = "opc_texto--"
-const clas18 = "config"
-const vari18 = "fimmsg"
 
 
-classe menu_econfig_cmd_echo
+classe menu_econfig_adm_echo
 herda comando_menu
 const titulo = "Echo"
-const menufim = "menu_econfig_cmd"
+const menufim = "menu_econfig_adm"
 const colunas = 35
 #
 const nome1 = "Comando Echo"
@@ -96,10 +91,10 @@ const clas4 = "config"
 const vari4 = "jecho2msg"
 
 
-classe menu_econfig_cmd_rezar
+classe menu_econfig_adm_rezar
 herda comando_menu
 const titulo = "Rezar"
-const menufim = "menu_econfig_cmd"
+const menufim = "menu_econfig_adm"
 const colunas = 35
 #
 const nome1 = "Comando Rezar"
@@ -134,10 +129,10 @@ const clas6 = "config"
 const vari6 = "rezou2msg"
 
 
-classe menu_econfig_cmd_bug
+classe menu_econfig_adm_bug
 herda comando_menu
 const titulo = "Bug"
-const menufim = "menu_econfig_cmd"
+const menufim = "menu_econfig_adm"
 const colunas = 35
 #
 const nome1 = "Comando Bug"
@@ -162,10 +157,10 @@ const clas4 = "config"
 const vari4 = "bug2msg"
 
 
-classe menu_econfig_cmd_ideia
+classe menu_econfig_adm_ideia
 herda comando_menu
 const titulo = "Ideia"
-const menufim = "menu_econfig_cmd"
+const menufim = "menu_econfig_adm"
 const colunas = 35
 #
 const nome1 = "Comando Ideia"
@@ -190,10 +185,10 @@ const clas4 = "config"
 const vari4 = "ideia2msg"
 
 
-classe menu_econfig_cmd_canais
+classe menu_econfig_adm_canais
 herda comando_menu
 const titulo = "Canais"
-const menufim = "menu_econfig_cmd"
+const menufim = "menu_econfig_adm"
 const colunas = 35
 #
 const nome1 = "Chat"
@@ -252,10 +247,10 @@ const clas10 = "config"
 const vari10 = "novatosmsg"
 
 
-classe menu_econfig_cmd_falar
+classe menu_econfig_adm_falar
 herda comando_menu
 const titulo = "Falar, Gritar"
-const menufim = "menu_econfig_cmd"
+const menufim = "menu_econfig_adm"
 const colunas = 35
 #
 const nome1 = "Comando Gritar"
@@ -275,36 +270,6 @@ const tipo3 = "opc_numero--"
 const clas3 = "config"
 const vari3 = "gritarmove"
 #
-const nome4 = "Falar"
-const info4 = "Ao teclar falar e uma mensagem qualquer"
-const tipo4 = "opc_linha--"
-const clas4 = "config"
-const vari4 = "falarmsg"
-#
-const nome5 = "Perguntar"
-const info5 = "Ao teclar falar e uma mensagem terminada com interrogação"
-const tipo5 = "opc_linha--"
-const clas5 = "config"
-const vari5 = "perguntarmsg"
-#
-const nome6 = "Exclamar"
-const info6 = "Ao teclar falar e uma mensagem terminada com exclamação"
-const tipo6 = "opc_linha--"
-const clas6 = "config"
-const vari6 = "exclamarmsg"
-#
-const nome7 = "Ponderar"
-const info7 = "Ao teclar falar e uma mensagem terminada com reticências"
-const tipo7 = "opc_linha--"
-const clas7 = "config"
-const vari7 = "ponderarmsg"
-#
-const nome8 = "Continuar"
-const info8 = "Ao teclar falar e uma mensagem começada com reticências"
-const tipo8 = "opc_linha--"
-const clas8 = "config"
-const vari8 = "continuarmsg"
-#
 const nome9 = "Gritar"
 const info9 = "Ao teclar gritar e uma mensagem"
 const tipo9 = "opc_linha--"
@@ -312,10 +277,10 @@ const clas9 = "config"
 const vari9 = "gritarmsg"
 
 
-classe menu_econfig_cmd_sussurrar
+classe menu_econfig_adm_sussurrar
 herda comando_menu
 const titulo = "Sussurrar"
-const menufim = "menu_econfig_cmd"
+const menufim = "menu_econfig_adm"
 const colunas = 35
 #
 const nome1 = "Sussurrou para si mesmo"
@@ -337,10 +302,10 @@ const clas3 = "config"
 const vari3 = "sussurrar3msg"
 
 
-classe menu_econfig_cmd_telepatia
+classe menu_econfig_adm_telepatia
 herda comando_menu
 const titulo = "Telepatia"
-const menufim = "menu_econfig_cmd"
+const menufim = "menu_econfig_adm"
 const colunas = 35
 #
 const nome1 = "Enviou mensagem telepática"
@@ -354,10 +319,10 @@ const clas2 = "config"
 const vari2 = "telepatia2"
 
 
-classe menu_econfig_cmd_emocao
+classe menu_econfig_adm_emocao
 herda comando_menu
 const titulo = "Emoção"
-const menufim = "menu_econfig_cmd"
+const menufim = "menu_econfig_adm"
 const colunas = 35
 #
 const nome1 = "Emoção"
@@ -372,10 +337,10 @@ const clas2 = "config"
 const vari2 = "emocaonivel"
 
 
-classe menu_econfig_cmd_olhar
+classe menu_econfig_adm_olhar
 herda comando_menu
 const titulo = "Olhar"
-const menufim = "menu_econfig_cmd"
+const menufim = "menu_econfig_adm"
 const colunas = 35
 #
 const nome1 = "Mostra nível"
@@ -396,10 +361,10 @@ const clas3 = "config"
 const vari3 = "olharvolume"
 
 
-classe menu_econfig_cmd_ptitulo
+classe menu_econfig_adm_ptitulo
 herda comando_menu
 const titulo = "PTitulo, PDesc"
-const menufim = "menu_econfig_cmd"
+const menufim = "menu_econfig_adm"
 const colunas = 35
 #
 const nome1 = "PTitulo a partir do nível"
@@ -433,10 +398,10 @@ const clas5 = "config"
 const vari5 = "pdesclinhas"
 
 
-classe menu_econfig_cmd_animais
+classe menu_econfig_adm_animais
 herda comando_menu
 const titulo = "Animais"
-const menufim = "menu_econfig_cmd"
+const menufim = "menu_econfig_adm"
 const colunas = 35
 #
 const nome1 = "Animais para batalhar"
@@ -492,10 +457,10 @@ const clas8 = "config"
 const vari8 = "capturar_outros"
 
 
-classe menu_econfig_cmd_renascer
+classe menu_econfig_adm_renascer
 herda comando_menu
 const titulo = "Renascer"
-const menufim = "menu_econfig_cmd"
+const menufim = "menu_econfig_adm"
 const colunas = 35
 #
 const nome1 = "Renascer"
@@ -540,10 +505,10 @@ const clas5 = "config"
 const vari5 = "sala_renascer"
 
 
-classe menu_econfig_cmd_config
+classe menu_econfig_adm_config
 herda comando_menu
 const titulo = "Config"
-const menufim = "menu_econfig_cmd"
+const menufim = "menu_econfig_adm"
 const colunas = 35
 #
 const nome1 = "Dicas"

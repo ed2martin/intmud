@@ -122,6 +122,75 @@ func menu3 # Usado em m_menu para obter o nome da variável
   ret lin + ": " + clas[arg0] + ":" + vari[arg0]
 
 
+classe comando_classemenu
+herda comando_adm
+const menu = "<menu>"
+ref sock # Objeto jogsock do jogador
+const var = sock.var
+# Nas classes que herdadem essa:
+# const titulo = "Título do menu"
+# const menufim = "classe do menu anterior, se houver"
+# const classe = "m_cmd_" # Classes que estão nesse menu
+
+func passo
+  sock = arg0
+  casovar txtmin(arg1)
+  casose ""
+  casose "\b"
+    arg0.var.opcnome = "", arg0.var.opcclasse = "", arg0.var.opcvar = ""
+    arg0.var.opcpasso = "", arg0.var.opcextra = "", arg0.var.opcexec = ""
+    arg0.passo = este
+    arg0.msg(titulo + ", tecle O para saber as opções")
+    ret 1
+  casose "o"
+    refvar txtmais = arg0.txtmais
+    txtmais.limpar
+    refvar inicio = inttotal(classe)
+    se inicio
+      prog p
+      epara p.iniclasse(classe), p.lin, p.depois
+        txtmais.addfim(txtcopiamai(txt(p.texto, inicio), "A") + ",")
+      efim
+      textopos pos
+      pos = txtmais.fim, pos.antes
+      pos.mudar("", inttotal(pos.texto) - 1, 1)
+      txtmais.juntar
+      txtmais.dividelin(50, 70)
+      txtmais.addini("\b" + titulo)
+    fimse
+    txtmais.addfim("Z Sair, M seguido de um texto executa comando do MUD")
+    arg0.txtmostra
+    ret 1
+  casose "z"
+    ret $[menufim], $[menufim].passo(arg0, "\b")
+    arg0.msg("Retornando ao jogo")
+    arg0.passo = ""
+    ret 1
+  casofim
+  se txt(arg1, 0, 1) == "m" # Executa comando do MUD
+    arg0.perso.teclou(txtremove(txt(arg1, 1), "E"))
+    ret 1
+  fimse
+  prog p
+  refvar inicio = inttotal(classe)
+  se !inicio
+    arg0.msg("Opção inválida: " + arg1)
+    ret 1
+  senao p.existe(classe + arg1)
+    $[classe + arg1].passo(arg0, "\b")
+    ret 1
+  fimse
+  nomeobj n
+  n.ini(arg1, 1)
+  epara p.iniclasse(classe), p.lin, p.depois
+    continuar !n.nome(txt(p.texto, inicio), 1)
+    $[p.texto].passo(arg0, "\b")
+    ret 1
+  efim
+  arg0.msg("Opção inválida: " + arg1)
+  ret 1
+
+
 classe opc_linha
 herda comando_adm
 # Texto de uma linha, do tipo "const x = \"abc\""

@@ -3,6 +3,7 @@
 2. Funções para obter personagem e item
 3. Criando menus de edição (administração)
 4. Funcionamento interno das opções dos menus
+5. Criação de menus de comandos
 
 
 1. Comandos
@@ -284,3 +285,19 @@ uma mensagem para os jogadores que estão com o canal admlog habilitado.
 São linhas como essas:
 config:salvar
 admlog(arg0, "mudou " + arg0.var.opcclasse + ":" + arg0.var.opcvar + " " + arg0.var.opcnome)
+
+
+5. Criação de menus de comandos
+
+clase menu_econfig_cmd
+herda comando_classemenu
+
+# Título é o nome do menu (aparece antes da lista de opções)
+const titulo = "Comandos dos jogadores"
+
+# Os submenus serão todas as classes que começam com o nome especificado:
+const classe = "h_cmd_"
+
+# Nome da classe que contém o menu anterior, ou "" se não houver menu anterior
+# Quando o usuário escolhe sair do menu (teclando Z), vai para esse menu
+const menufim = ""
