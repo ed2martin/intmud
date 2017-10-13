@@ -2,10 +2,12 @@ classe cmd_telepatia
 herda comando_comum
 const posic = 0
 const objnivel = 4
-const txtajuda = "\b\c3Telepatia\b\n\
+const txtajuda = txtajuda1 + m_ajuda
+const txtajuda1 = "\b\c3Telepatia\b\n\
 Sintaxe: TELEPATIA <personagem> <mensagem>\n\
-         =<personagem> <mensagem>\n\
-Envia uma mensagem telepática (privativa) a outro jogador, independente\n\
+         =<personagem> <mensagem>\n"
+#
+const m_ajuda = "Envia uma mensagem telepática (privativa) a outro jogador, independente\n\
 da sala em que ele estiver.\n\
 Veja também os comandos RESPONDER, CONFIG e IGNORAR."
 
@@ -49,9 +51,10 @@ classe cmd_responder
 herda comando_comum
 const posic = 0
 const objnivel = 4
-const txtajuda = "\b\c3Responder\b\n\
-Sintaxe: RESPONDER [mensagem]\n\
-Mesmo que Telepatia, porém responde para alguém que escreveu para você.\n\
+const txtajuda = txtajuda1 + m_ajuda
+const txtajuda1 = "\b\c3Responder\b\n\
+Sintaxe: RESPONDER [mensagem]\n"
+const m_ajuda = "Mesmo que Telepatia, porém responde para alguém que escreveu para você.\n\
 Primeiro tecle apenas responder, para travar o comando Responder no último\n\
 jogador que escreveu telepaticamente para você. Depois tecle responder\n\
 e a mensagem para enviar mensagens para esse jogador. Se quiser responder\n\

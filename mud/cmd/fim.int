@@ -1,22 +1,3 @@
-classe m_cmd_fim
-herda comando_menu_cmd
-#
-const nome1 = "Ajuda"
-const tipo1 = "opc_texto"
-const clas1 = "cmd_fim"
-const vari1 = "m_ajuda"
-#
-const nome2 = "Ocupado"
-const tipo2 = "opc_linha"
-const clas2 = "cmd_fim"
-const vari2 = "m_ocupado"
-#
-const nome3 = "Mensagem ao sair"
-const tipo3 = "opc_texto"
-const clas3 = "cmd_fim"
-const vari3 = "m_fim"
-
-
 classe h_cmd_fim
 herda comando_comum
 const posic = 0
@@ -31,6 +12,7 @@ Mas isso não significa que ele está totalmente indefeso. Se atacado,\n\
 lutará como qualquer personagem não jogador."
 const m_ocupado = "Você está ocupad$s demais para isso."
 const m_fim = "Até mais. Aguardamos o seu retorno."
+const admordem = "m_ajuda m_ocupado m_fim"
 
 func escr
   se arg0.atkenv && arg0.senha
@@ -48,3 +30,22 @@ func escr
 classe cmd_quit
 herda comando_comum
 const objcmd = $cmd_fim.objcmd(arg0)
+
+
+classe m_cmd_fim
+herda comando_menu_cmd
+#
+const nome1 = "Ajuda"
+const tipo1 = "opc_texto"
+const clas1 = "cmd_fim"
+const vari1 = "m_ajuda"
+#
+const nome2 = "Ocupado"
+const tipo2 = "opc_linha"
+const clas2 = "cmd_fim"
+const vari2 = "m_ocupado"
+#
+const nome3 = "Mensagem ao sair"
+const tipo3 = "opc_texto"
+const clas3 = "cmd_fim"
+const vari3 = "m_fim"

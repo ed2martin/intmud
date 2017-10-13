@@ -1,4 +1,4 @@
-classe atualiza_477
+classe atualiza_478
 # Atualiza arquivos mud/config/* e mud/areas/* de acordo com novas mudanças
 prog p
 debug dbg
@@ -728,8 +728,8 @@ func ini3_exec
 func ini4_exec
   apagar(este)
 # Checa e muda a versão
-  ret (versao = config:versao) >= 477, nulo
-  p.criar("config", "const versao = 477 # Para atualizar diretórios areas e config")
+  ret (versao = config:versao) >= 478, nulo
+  p.criar("config", "const versao = 478 # Para atualizar diretórios areas e config")
   config:salvar
 # Comando Fim e Dicas aleatórias
   se versao < 457
@@ -750,14 +750,22 @@ func ini4_exec
   criafunc("config", "const mens_tu = \"você\"")
   criafunc("config", "const mens_ti = \"você\"")
 # Opções dos menus
-  se versao < 477
+  se versao < 478
     dbg.ini
-    movefunc("config", "falarmsg", "cmd_falar", "m_falar")
-    movefunc("config", "perguntarmsg", "cmd_falar", "m_perguntar")
-    movefunc("config", "exclamarmsg", "cmd_falar", "m_exclamar")
-    movefunc("config", "ponderarmsg", "cmd_falar", "m_ponderar")
-    movefunc("config", "continuarmsg", "cmd_falar", "m_continuar")
+    movefunc("config", "falarmsg", "cmd_falar", "m_falar2")
+    movefunc("config", "perguntarmsg", "cmd_falar", "m_perguntar2")
+    movefunc("config", "exclamarmsg", "cmd_falar", "m_exclamar2")
+    movefunc("config", "ponderarmsg", "cmd_falar", "m_ponderar2")
+    movefunc("config", "continuarmsg", "cmd_falar", "m_continuar2")
     movefunc("config", "fimmsg", "cmd_fim", "m_fim")
+    movefunc("config", "atalhos", "cmd_atalho", "v_maximo")
+    movefunc("config", "gritarnivel", "cmd_gritar", "v_nivel")
+    movefunc("config", "gritarmove", "cmd_gritar", "v_move")
+    movefunc("config", "gritarmsg", "cmd_gritar", "m_gritar2")
+    movefunc("config", "gritartipo", "cmd_gritar", "v_tipo")
+    movefunc("config", "sussurrar1msg", "cmd_sussurrar", "m_msg1")
+    movefunc("config", "sussurrar2msg", "cmd_sussurrar", "m_msg2")
+    movefunc("config", "sussurrar3msg", "cmd_sussurrar", "m_msg3")
   fimse
 # Avisa que atualizou arquivos
   tela.msg("Diretórios areas e config atualizados\n")

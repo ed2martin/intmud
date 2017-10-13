@@ -1,47 +1,3 @@
-classe m_cmd_falar
-herda comando_menu_cmd
-#
-const nome1 = "Ajuda"
-const tipo1 = "opc_texto"
-const clas1 = "cmd_falar"
-const vari1 = "m_ajuda"
-#
-const nome2 = "Sem argumentos"
-const tipo2 = "opc_linha"
-const clas2 = "cmd_falar"
-const vari2 = "m_sem_args"
-#
-const nome3 = "Falar"
-const info3 = "Ao teclar falar e uma mensagem qualquer"
-const tipo3 = "opc_linha"
-const clas3 = "cmd_falar"
-const vari3 = "m_falar"
-#
-const nome4 = "Perguntar"
-const info4 = "Ao teclar falar e uma mensagem terminada com interrogação"
-const tipo4 = "opc_linha"
-const clas4 = "cmd_falar"
-const vari4 = "m_perguntar"
-#
-const nome5 = "Exclamar"
-const info5 = "Ao teclar falar e uma mensagem terminada com exclamação"
-const tipo5 = "opc_linha"
-const clas5 = "cmd_falar"
-const vari5 = "m_exclamar"
-#
-const nome6 = "Ponderar"
-const info6 = "Ao teclar falar e uma mensagem terminada com reticências"
-const tipo6 = "opc_linha"
-const clas6 = "cmd_falar"
-const vari6 = "m_ponderar"
-#
-const nome7 = "Continuar"
-const info7 = "Ao teclar falar e uma mensagem começada com reticências"
-const tipo7 = "opc_linha"
-const clas7 = "cmd_falar"
-const vari7 = "m_continuar"
-
-
 classe h_cmd_falar
 herda comando_comum
 const posic = 5
@@ -51,12 +7,18 @@ const m_ajuda = "Envia mensagem para todos os personagens que estiverem na mesma
 A mensagem pode aparecer diferente se for iniciada com reticências ou\n\
 terminada com reticências, interrogação ou exclamação."
 const m_sem_args = "Tecle a mensagem após FALAR."
-const m_falar = "$P falou '$m'"
-const m_perguntar = "$P perguntou '$m'"
-const m_exclamar = "$P exclamou '$m'"
-const m_ponderar = "$P ponderou '$m'"
-const m_continuar = "$P continuou '$m'"
-const admordem = "m_ajuda m_sem_args m_falar m_perguntar m_exclamar m_ponderar m_continuar"
+const m_falar1 = "Você falou '$m'"
+const m_falar2 = "$P falou '$m'"
+const m_perguntar1 = "Você perguntou '$m'"
+const m_perguntar2 = "$P perguntou '$m'"
+const m_exclamar1 = "Você exclamou '$m'"
+const m_exclamar2 = "$P exclamou '$m'"
+const m_ponderar1 = "Você ponderou '$m'"
+const m_ponderar2 = "$P ponderou '$m'"
+const m_continuar1 = "Você continuou '$m'"
+const m_continuar2 = "$P continuou '$m'"
+const admordem = "m_ajuda m_sem_args m_falar1 m_falar2 m_perguntar1 m_perguntar2\n\
+m_exclamar1 m_exclamar2 m_ponderar1 m_ponderar2 m_continuar1 m_continuar2"
 
 func escr
   refvar perm_msg = $perm_[arg0.jogperm].c_falar
@@ -72,15 +34,15 @@ func escr
   $mens.p(arg0)
   $mens.mens = $miscbebida.msgperso(arg1, arg0.p_bebida)
   se txt(arg1, 0, 3) == "..."
-    $mens.mtodos1(m_continuar)
+    $mens.mtodos2(m_continuar1, m_continuar2)
   senao txtfim(arg1, 1) == "?"
-    $mens.mtodos1(m_perguntar)
+    $mens.mtodos2(m_perguntar1, m_perguntar2)
   senao txtfim(arg1, 1) == "!"
-    $mens.mtodos1(m_exclamar)
+    $mens.mtodos2(m_exclamar1, m_exclamar2)
   senao txtfim(arg1, 3) == "..."
-    $mens.mtodos1(m_ponderar)
+    $mens.mtodos2(m_ponderar1, m_ponderar2)
   senao
-    $mens.mtodos1(m_falar)
+    $mens.mtodos2(m_falar1, m_falar2)
   fimse
 # Executa eventos
   listaobj l
@@ -89,108 +51,75 @@ func escr
   efim
 
 
-classe cmd_gritar
-herda comando_comum
-const posic = 5
-const objcmd = config:gritartipo ? este
-const txtajuda = config:gritartipo ? txtajuda1
-const txtajuda1 = "\b\c3Gritar\b\n\
-Sintaxe: GRITAR <mensagem>\n\
-Envia mensagem para todos os personagens que estiverem na mesma área."
-
-func escr
-  ref r
-  txt100 area
-  refvar perm_msg = $perm_[arg0.jogperm].c_gritar
-  se perm_msg
-    ret $mensjog.msg(perm_msg, arg0)
-  senao arg0.pnivel < config:gritarnivel
-    ret arg0.msg("Para gritar você precisa estar no nível " + config:gritarnivel + ".")
-  senao !arg1
-    ret arg0.msg("Tecle a mensagem após GRITAR.")
-  senao arg0.pmove < config:gritarmove
-    ret arg0.msg("Você está cansad" + (arg0.msexo ? "o" : "a") + " demais.")
-  fimse
-  epara r = arg0.dono, r, r = r.dono
-    area = r.s_area
-    refvar g = txt(r.s_gritar(arg0))
-    ret g, arg0.msg(g)
-  efim
-  arg0.pmove -= config:gritarmove
-  $misclog.falar("gritar " + arg0.nome + ": " + arg1)
-  $mens.p(arg0)
-  $mens.mens = $miscbebida.msgperso(arg1, arg0.p_bebida)
-  indiceitem item
-  epara item.ini("un "), txt1(item.txt) == "un", item.depois
-    r = item.obj.perso
-    continuar !r || r.var.u_[arg0.nome]
-    epara r = r.dono, r.dono, r = r.dono
-      r.s_gritar(arg0) && (r = nulo)
-    efim
-    r.s_gritar(arg0) && (r = nulo)
-    r.s_area == area && $mens.msg(config:gritarmsg, item.obj.perso)
-  efim
-# Executa eventos
-  listaobj l
-  epara l.addfim(arg0.evento), l, l.ini.remove
-    l.objini.cmd_gritou(arg0, arg1)
-  efim
-
-
-classe cmd_sussurrar
-herda comando_comum
-const posic = 5
-const txtajuda = "\b\c3Sussurrar\b\n\
-Sintaxe: SUSSURRAR <personagem> <mensagem>\n\
-Sussurra uma mensagem para um personagem que está na mesma sala.\n\
-A mensagem é enviada reservadamente para o personagem escolhido.\n\
-Os outros apenas ficam sabendo que você sussurrou alguma coisa."
-
-func escr
-  refvar perm_msg = $perm_[arg0.jogperm].c_falar
-  se perm_msg
-    ret $mensjog.msg(perm_msg, arg0)
-  senao !arg1
-    ret arg0.msg("Sussurrar para quem?")
-  senao !txt2(arg1)
-    ret arg0.msg("Sussurrar o que?")
-  senao
-    refvar f = txt(arg0.dono.s_falar(arg0))
-    ret f, arg0.msg(f)
-  fimse
-  $mens.mens = ""
-  $mens.p(arg0)
-  nomeobj n
-  listaobj l
-  n.ini(txt1(arg1), 1)
-  l.addfim(arg0.dono.dentro2)
-  epara nulo, l, l.ini.remove
-    continuar !l.objini.visivel(arg0) || !n.nome(l.objini.ident, l.objini.objtot)
-    se l.objini.var.u_[arg0.nome]
-      arg0.msg(l.objini.nome + " ignora suas palavras.")
-    senao arg0.var.u_[l.objini.nome]
-      arg0.msg("Você está ignorando " + l.objini.nome)
-    senao arg0 == l.objini
-      $misclog.telepatia("suss " + arg0.nome + " para " + l.objini.nome + ": " + txt2(arg1))
-      $mens.p(arg0, l.objini)
-      $mens.mtodos1(config:sussurrar1msg)
-    senao
-      $misclog.telepatia("suss " + arg0.nome + " para " + l.objini.nome + ": " + txt2(arg1))
-      $mens.p(arg0, l.objini)
-      $mens.mens = $miscbebida.msgperso(txt2(arg1), arg0.p_bebida)
-      $mens.mtodos3(config:sussurrar2msg, config:sussurrar2msg, config:sussurrar3msg)
-    fimse
-    sair
-  efim
-# Executa eventos
-  ref r
-  r = l.objini
-  l.remove
-  epara l.addfim(arg0.evento), l, l.ini.remove
-    l.objini.cmd_sussurrou(arg0, r, arg1, arg0)
-  efim
-  epara l.addfim(r.evento), l, l.ini.remove
-    l.objini.cmd_sussurrou(arg0, r, arg1, r)
-  efim
-# Mensagem se não encontrou o personagem
-  !r && arg0.msg("Você não vê " + txt1(arg1) + ".")
+classe m_cmd_falar
+herda comando_menu_cmd
+#
+const nome1 = "Ajuda"
+const tipo1 = "opc_texto"
+const clas1 = "cmd_falar"
+const vari1 = "m_ajuda"
+#
+const nome2 = "Sem argumentos"
+const tipo2 = "opc_linha"
+const clas2 = "cmd_falar"
+const vari2 = "m_sem_args"
+#
+const nome3 = "Falar: perso"
+const info3 = "Ao teclar falar e uma mensagem qualquer"
+const tipo3 = "opc_linha"
+const clas3 = "cmd_falar1"
+const vari3 = "m_falar"
+#
+const nome4 = "Falar: outros"
+const info4 = "Ao teclar falar e uma mensagem qualquer"
+const tipo4 = "opc_linha"
+const clas4 = "cmd_falar2"
+const vari4 = "m_falar"
+#
+const nome5 = "Perguntar: perso"
+const info5 = "Ao teclar falar e uma mensagem terminada com interrogação"
+const tipo5 = "opc_linha"
+const clas5 = "cmd_falar"
+const vari5 = "m_perguntar1"
+#
+const nome6 = "Perguntar: outros"
+const info6 = "Ao teclar falar e uma mensagem terminada com interrogação"
+const tipo6 = "opc_linha"
+const clas6 = "cmd_falar"
+const vari6 = "m_perguntar2"
+#
+const nome7 = "Exclamar: perso"
+const info7 = "Ao teclar falar e uma mensagem terminada com exclamação"
+const tipo7 = "opc_linha"
+const clas7 = "cmd_falar"
+const vari7 = "m_exclamar1"
+#
+const nome8 = "Exclamar: outros"
+const info8 = "Ao teclar falar e uma mensagem terminada com exclamação"
+const tipo8 = "opc_linha"
+const clas8 = "cmd_falar"
+const vari8 = "m_exclamar2"
+#
+const nome9 = "Ponderar: perso"
+const info9 = "Ao teclar falar e uma mensagem terminada com reticências"
+const tipo9 = "opc_linha"
+const clas9 = "cmd_falar"
+const vari9 = "m_ponderar1"
+#
+const nome10 = "Ponderar: outros"
+const info10 = "Ao teclar falar e uma mensagem terminada com reticências"
+const tipo10 = "opc_linha"
+const clas10 = "cmd_falar"
+const vari10 = "m_ponderar2"
+#
+const nome11 = "Continuar: perso"
+const info11 = "Ao teclar falar e uma mensagem começada com reticências"
+const tipo11 = "opc_linha"
+const clas11 = "cmd_falar"
+const vari11 = "m_continuar1"
+#
+const nome12 = "Continuar: outros"
+const info12 = "Ao teclar falar e uma mensagem começada com reticências"
+const tipo12 = "opc_linha"
+const clas12 = "cmd_falar"
+const vari12 = "m_continuar2"

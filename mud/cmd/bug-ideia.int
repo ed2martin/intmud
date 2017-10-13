@@ -2,15 +2,14 @@ classe cmd_bug
 herda comando_comum
 const objcmd = config:bugtipo ? este
 const objnivel = 4
-const txtajuda = config:bugtipo ? txtajuda1
-const txtajuda1 = "\b\c3Bug\b\n\
-Sintaxe: BUG <mensagem>\n\
-Envia mensagem para os administradores para relatar bugs (erros no jogo,\n\
-geralmente erros de programação)"
+const txtajuda = config:bugtipo ? txtajuda1 + m_ajuda
+const txtajuda1 = "\b\c3Bug\b\n\Sintaxe: BUG <mensagem>\n"
 const posic = 0
 #
+const m_ajuda = "Envia mensagem para os administradores para relatar bugs (erros no jogo,\n\
+geralmente erros de programação)"
+const m_sem_args = "Tecle a mensagem após BUG."
 const m_nivel = "Para usar o comando BUG você precisa estar no nível $m."
-const m_msg = "Tecle a mensagem após BUG."
 
 func escr
   refvar perm_msg = $perm_[arg0.jogperm].c_bug
@@ -20,7 +19,7 @@ func escr
     $mens.mens = config:bugnivel
     $mens.mp(m_nivel, arg0)
   senao !arg1
-    $mens.mp(m_msg, arg0)
+    $mens.mp(m_sem_args, arg0)
   senao
     $misclog.bug("bug " + arg0.nome + ": " + arg1)
     $mens.mens = arg1
@@ -37,14 +36,14 @@ classe cmd_ideia
 herda comando_comum
 const objcmd = config:ideiatipo ? este
 const objnivel = 4
-const txtajuda = config:ideiatipo ? txtajuda1
+const txtajuda = config:ideiatipo ? txtajuda1 + m_ajuda
 const txtajuda1 = "\b\c3Ideia\b\n\
-Sintaxe: IDEIA <mensagem>\n\
-Envia mensagem para os administradores sobre ideias para o jogo."
+Sintaxe: IDEIA <mensagem>\n"
 const posic = 0
 #
+const m_ajuda = "Envia mensagem para os administradores sobre ideias para o jogo."
+const m_sem_args = "Tecle a mensagem após IDEIA."
 const m_nivel = "Para usar o comando IDEIA você precisa estar no nível $m."
-const m_msg = "Tecle a mensagem após IDEIA."
 
 func escr
   refvar perm_msg = $perm_[arg0.jogperm].c_ideia
@@ -54,7 +53,7 @@ func escr
     $mens.mens = config:ideianivel
     $mens.mp(m_nivel, arg0)
   senao !arg1
-    $mens.mp(m_msg, arg0)
+    $mens.mp(m_sem_args, arg0)
   senao
     $misclog.ideia("ideia " + arg0.nome + ": " + arg1)
     $mens.p(arg0)
