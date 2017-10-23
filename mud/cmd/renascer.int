@@ -1,48 +1,80 @@
-classe cmd_renascer
+classe h_cmd_renascer
 herda comando_comum
 const posic = 5
 const objcmd = config:renascer ? este
+const txtajuda1 = "\b\c3Renascer\b\nSintaxe: RENASCER\n"
+#
+const m_ajudaI = "Assim que o seu personagem atingir o nível máximo, você poderá usar\n\
+esse comando para renascer em outra raça e/ou classe.\n\
+O nível máximo depende muito da raça e da classe."
+const m_ajuda2 = "Você perde todas as habilidades e magias, mas poderá escolher qual\n\
+não perderá nas próximas vezes que renascer."
+const m_ajuda3 = "Você perde todas as habilidades e magias, mas poderá escolher duas que\n\
+não perderá nas próximas vezes que renascer. Pode repetir."
+const m_ajuda4 = "Você perde todas as habilidades e magias, mas poderá escolher 3 que\n\
+não perderá nas próximas vezes que renascer. Pode repetir."
+const m_ajuda5 = "Você perde todas as habilidades e magias, mas poderá escolher 4 que\n\
+não perderá nas próximas vezes que renascer. Pode repetir."
+const m_ajuda6 = "Você perde todas as habilidades e magias, mas poderá escolher 5 que\n\
+não perderá nas próximas vezes que renascer. Pode repetir."
+const m_ajudaR = "Nos comandos hab e magia, aparecerá R1, para indicar que foi escolhida\n\
+uma vez, e renascer fará voltar ao nível iniciante. Na segunda vez, R2,\n\
+e voltará para muito básico, e na terceira em diante, nível básico."
+const m_ajudaM1 = "E também, cada vez que é escolhida, o nível para aprender diminui em $m."
+const m_ajudaM2 = "E também, cada vez que é escolhida, o nível para aprender aumenta em $m."
+#
+const m_sem = "Na raça e classe que você escolheu não tem como renascer."
+const m_nivel = "Você precisa chegar no nível $m para renascer."
+const m_escolha1 = "Escolha uma raça ou tecle Z para desistir"
+const m_escolha2 = "Escolha uma classe ou tecle Z para desistir"
+const m_escolha3 = "Escolha uma subclasse ou tecle Z para desistir"
+const m_confirma1 = "Você quer a raça $m? (tecle S ou N)"
+const m_confirma2 = "Você quer a classe $m? (tecle S ou N)"
+const m_confirma3 = "Você quer a subclasse $m? (tecle S ou N)"
+const m_invalido1 = "Raça inválida; escolha uma:"
+const m_invalido2 = "Classe inválida; escolha uma:"
+const m_invalido3 = "Subclasse inválida; escolha uma:"
+const m_habmag1 = "Qual a habilidade ou magia você deseja manter após renascer? Z desiste"
+const m_habmag2 = "Qual a segunda habilidade ou magia? Z desiste"
+const m_habmag3 = "Qual a terceira habilidade ou magia? Z desiste"
+const m_habmag4 = "Qual a quarta habilidade ou magia? Z desiste"
+const m_habmag5 = "Qual a quinta habilidade ou magia? Z desiste"
+const m_hab = "Você quer a habilidade $m? (Tecle S ou N)"
+const m_magia = "Você quer a magia $m? (Tecle S ou N)"
+const m_nao_possui = "Você não possui $m, escolha outra."
+const m_renasceu = "Você renasceu no nível $m."
+const m_cancelar = "Desistiu."
+#
+const admordem = "m_ajudaI m_ajuda2 m_ajuda3 m_ajuda4 m_ajuda5 m_ajuda6\n\
+m_ajudaR m_ajudaM1 m_ajudaM2\n\
+m_sem m_nivel m_escolha1 m_escolha2 m_escolha3\n\
+m_confirma1 m_confirma2 m_confirma3\n\
+m_invalido1 m_invalido2 m_invalido3\n\
+m_habmag1 m_habmag2 m_habmag3 m_habmag4 m_habmag5\n\
+m_hab m_magia m_nao_possui m_renasceu m_cancelar"
 
 func txtajuda
   ret !config:renascer, nulo
-  se config:renascer < 2
-    ret ajini
-  senao config:nrenascer > 0
-    ret ajini + aj[config:renascer] + aj_c + ajmenos + config:nrenascer + "."
+  ret config:renascer < 2, txtajuda1 + m_ajudaI
+  textotxt t
+  t.addfiM(txtajuda1 + m_ajudaI)
+  m_ajuda[config:renascer] && t.addfim(m_ajuda[config:renascer])
+  m_ajudaR && t.addfim(m_ajudaR)
+  se config:nrenascer > 0
+    $mensjog.mens = config:nrenascer
+    m_ajudaM1 && t.addfim($mensjog.txt(m_ajudaM1, arg0))
   senao config:nrenascer < 0
-    ret ajini + aj[config:renascer] + aj_c + ajmais + -config:nrenascer + "."
-  senao
-    ret ajini + aj[config:renascer] + aj_c
+    $mensjog.mens = -config:nrenascer
+    m_ajudaM2 && t.addfim($mensjog.txt(m_ajudaM2, arg0))
   fimse
-
-const ajini = "\b\c3Renascer\b\n\
-Sintaxe: RENASCER\n\
-Assim que o seu personagem atingir o nível máximo, você poderá usar\n\
-usar esse comando para renascer em outra raça e/ou classe.\n\
-O nível máximo depende muito da raça e da classe."
-const aj2 = "\n\
-Você perde todas as habilidades e magias, mas poderá escolher qual\n\
-não perderá nas próximas vezes que renascer."
-const aj3 = aj_a + "duas" + aj_b
-const aj4 = aj_a + "três" + aj_b
-const aj5 = aj_a + "quatro" + aj_b
-const aj6 = aj_a + "cinco" + aj_b
-const aj_a = "\nVocê perde todas as habilidades e magias, mas poderá escolher "
-const aj_b = " que\nnão perderá nas próximas vezes que renascer. Pode repetir."
-const aj_c = "\n\
-Nos comandos hab e magia, aparecerá R1, para indicar que foi escolhida\n\
-uma vez, e renascer fará voltar ao nível iniciante. Na segunda vez, R2,\n\
-e voltará para muito básico, e na terceira em diante, nível básico."
-const ajmenos = "\n\
-E também, cada vez que é escolhida, o nível para aprender diminui em "
-const ajmais = "\nE também, cada vez que é escolhida, o nível para aprender aumenta em "
+  ret t.remove(1000)
 
 func escr
   refvar nmax = arg0.pnivelmax
   se nmax <= 0
-    ret arg0.msg("Na raça e classe que você escolheu não tem como renascer.")
+    ret $mens.mp(m_sem, arg0)
   senao arg0.pnivel < nmax
-    ret arg0.msg("Você precisa chegar no nível " + nmax + " para renascer.")
+    ret $mens.mp(m_nivel, arg0)
   senao
     adiciona(arg0.var.z_tipo1, arg0.tipo1)
     adiciona(arg0.var.z_tipo2, arg0.tipo2)
@@ -63,7 +95,7 @@ func passo
   se arg1 == "Z"
     arg0.passo = ""
     arg0.var.limpar("j_")
-    arg0.msg("Desistiu")
+    $mens.mp(m_cancelar, arg0.perso)
     ret 1
   fimse
 # Chama passo1
@@ -90,8 +122,9 @@ func passo1 # Escolha da raça, classe e subclasse
       tpasso = txt1(tpasso)
       ret 1
     senao
-      lin = int(tpasso) == 1 ? "raça" : int(tpasso) == 2 ? "classe" : "subclasse"
-      arg0.msg("Você quer essa " + lin + "? (tecle S ou N)")
+      lin = int(tpasso) == 1 ? "1" : int(tpasso) == 2 ? "2" : "3"
+      $mens.mens = $[txt2(tpasso)].nome
+      $mens.mp(m_confirma[lin], arg0.perso)
       ret 0
     fimse
   fimse
@@ -134,11 +167,13 @@ func passo1 # Escolha da raça, classe e subclasse
     ret escolheu(arg0)
 # Mais de uma raça: apresenta o menu
   senao
-    lin = int(tpasso) == 1 ? "raça" : int(tpasso) == 2 ? "classe" : "subclasse"
-    se arg1
-      arg0.txtmais.addini(txtmaimin(lin) + " inválida; escolha uma:")
-    senao
-      arg0.txtmais.addini("Escolha uma " + lin + " ou tecle Z para desistir")
+    $mensjog.mens = arg1
+    se int(tpasso) == 1 # Raça
+      arg0.txtmais.addini($mensjog.txt(arg1 ? m_invalido1 : m_escolha1, arg0.perso))
+    senao int(tpasso) == 2 # Classe
+      arg0.txtmais.addini($mensjog.txt(arg1 ? m_invalido2 : m_escolha2, arg0.perso))
+    senao # Subclasse
+      arg0.txtmais.addini($mensjog.txt(arg1 ? m_invalido3 : m_escolha3, arg0.perso))
     fimse
     arg0.txtmostra
     ret 0
@@ -165,27 +200,29 @@ func passo4 # Escolha de uma habilidade ou magia
     se arg1 == ""
       casovar txt1(tpasso)
       casose
-        arg0.msg("Qual a habilidade ou magia você deseja manter após renascer? Z desiste")
+        $mens.mp(m_habmag1, arg0.perso)
         ret 0
       casose "5"
-        arg0.msg("Qual a segunda habilidade ou magia? Z desiste")
+        $mens.mp(m_habmag2, arg0.perso)
         ret 0
       casose "6"
-        arg0.msg("Qual a terceira habilidade ou magia? Z desiste")
+        $mens.mp(m_habmag3, arg0.perso)
         ret 0
       casose "7"
-        arg0.msg("Qual a quarta habilidade ou magia? Z desiste")
+        $mens.mp(m_habmag4, arg0.perso)
         ret 0
       casose "8"
-        arg0.msg("Qual a quinta habilidade ou magia? Z desiste")
+        $mens.mp(m_habmag5, arg0.perso)
         ret 0
       casofim
     senao var.h_[arg1]
       tpasso += " " + var.nomevar("h_" + arg1)
-      arg0.msg("Você quer a habilidade " + txte(txt(tpasso, 4)) + "? (Tecle S ou N)")
+      $mens.mens = txte(txt(tpasso, 4))
+      $mens.mp(m_hab, arg0.perso)
     senao var.m_[arg1]
       tpasso += " " + var.nomevar("m_" + arg1)
-      arg0.msg("Você quer a magia " + txte(txt(tpasso, 4)) + "? (Tecle S ou N)")
+      $mens.mens = txte(txt(tpasso, 4))
+      $mens.mp(m_magia, arg0.perso)
     senao
       txt100 t1
       nomeobj n
@@ -193,16 +230,19 @@ func passo4 # Escolha de uma habilidade ou magia
       epara t1 = var.ini("h_"), t1, t1 = var.depois(t1, "h_")
         continuar !n.nome(txt(t1, 2))
         tpasso += " " + t1
-        arg0.msg("Você quer a habilidade " + txt2(txte(t1)) + "? (Tecle S ou N)")
+        $mens.mens = txt2(txte(t1))
+        $mens.mp(m_hab, arg0.perso)
         ret 0
       efim
       epara t1 = var.ini("m_"), t1, t1 = var.depois(t1, "m_")
         continuar !n.nome(txt(t1, 2))
         tpasso += " " + t1
-        arg0.msg("Você quer a magia " + txt2(txte(t1)) + "? (Tecle S ou N)")
+        $mens.mens = txt2(txte(t1))
+        $mens.mp(m_magia, arg0.perso)
         ret 0
       efim
-      arg0.msg("Você não possui " + arg1 + ", escolha outra")
+      $mens.mens = arg1
+      $mens.mp(m_nao_possui, arg0.perso)
     fimse
     ret 0
 # Confirma
@@ -233,10 +273,12 @@ func passo4 # Escolha de uma habilidade ou magia
   senao arg1 == "N"
     tpasso = txt1(tpasso)
     ret 1
-  senao txt(tpasso, 2, 1) == "h"
-    arg0.msg("Você quer a habilidade " + txt(tpasso, 4) + "? (Tecle S ou N)")
+  senao txt(tpasso, 2, 1) == "h" # Quer a habilidade ... ?
+    $mens.mens = txt(tpasso, 4)
+    $mens.mp(m_hab, arg0.perso)
   senao
-    arg0.msg("Você quer a magia " + txt(tpasso, 4) + "? (Tecle S ou N)")
+    $mens.mens = txt(tpasso, 4) # Quer a magia ... ?
+    $mens.mp(m_magia, arg0.perso)
   fimse
   ret 0
 
@@ -252,7 +294,8 @@ tipo3]:nmin)
   arg0.perso.recalc = 1
   arg0.perso.prenascer++
   arg0.var.limpar("j_")
-  arg0.msg("Você renasceu no nível " + arg0.perso.pnivel + ".")
+  $mens.mens = arg0.perso.pnivel
+  $mens.mp(m_renasceu, arg0.perso)
   listaobj l
   epara l.addfim(arg0.perso.dentro2), l, l.ini.remove
     l.objini.item && l.objini.pnivel > arg0.perso.pnivel && l.objini.vestir(0)
@@ -265,3 +308,205 @@ tipo3]:nmin)
   ref sala = config:sala_renascer
   sala && arg0.perso.mudadono(sala)
   ret 0
+
+
+classe m_cmd_renascer
+herda comando_menu_cmd
+#
+const nome1 = "Renascer"
+const info1 = "Nota: Renascer não funciona se não houver nível máximo nas raças ou classes\n\
+Nota: A explicação de AJUDA RENASCER muda conforme essa opção e a próxima"
+const tipo1 = "opc_opcao--"
+const clas1 = "config"
+const vari1 = "renascer"
+const extr1 = "Desabilitado\n\
+Não perde as hab/magias\n\
+Escolhe uma hab/magia\n\
+Escolhe duas habs/magias\n\
+Escolhe três habs/magias\n\
+Escolhe quatro habs/magias\n\
+Escolhe cinco habs/magias"
+#
+const nome2 = "Nível aula"
+const info2 = "Cada vez que o jogador escolhe uma habilidade ou magia no comando renascer,\n\
+poderá aprendê-la em um nível menor. Essa opção é quantos níveis reduzir."
+const tipo2 = "opc_numero--"
+const clas2 = "config"
+const vari2 = "nrenascer"
+#
+const nome3 = "Nível máximo"
+const info3 = "Após renascer, o nível para renascer novamente aumenta conforme essa opção"
+const tipo3 = "opc_numero--"
+const clas3 = "config"
+const vari3 = "nivel_renascer"
+#
+const nome4 = "Experiência máxima"
+const info4 = "Em porcentagem. Ao renascer, a experiência necessária para subir de nível\n\
+é multiplicada por esse número."
+const tipo4 = "opc_numero--"
+const clas4 = "config"
+const vari4 = "exp_renascer"
+const extr4 = "1 1000"
+#
+const nome5 = "Sala renascer"
+const info5 = "Para que sala vai após renascer; se ausente continua na mesma sala"
+const tipo5 = "opc_sala"
+const clas5 = "config"
+const vari5 = "sala_renascer"
+#
+const nome6 = "Ajuda Início"
+const info6 = "Início do texto de ajuda, ao teclar Ajuda Renascer"
+const tipo6 = "opc_texto"
+const clas6 = "cmd_renascer"
+const vari6 = "m_ajudaI"
+#
+const nome7 = "Ajuda 1 hab/mag"
+const info7 = "Quando pode escolher uma habilidade/magia"
+const tipo7 = "opc_texto"
+const clas7 = "cmd_renascer"
+const vari7 = "m_ajuda2"
+#
+const nome8 = "Ajuda 2 hab/mag"
+const info8 = "Quando pode escolher duas habilidades/magias"
+const tipo8 = "opc_texto"
+const clas8 = "cmd_renascer"
+const vari8 = "m_ajuda3"
+#
+const nome9 = "Ajuda 3 hab/mag"
+const info9 = "Quando pode escolher três habilidades/magias"
+const tipo9 = "opc_texto"
+const clas9 = "cmd_renascer"
+const vari9 = "m_ajuda4"
+#
+const nome10 = "Ajuda 4 hab/mag"
+const info10 = "Quando pode escolher quatro habilidades/magias"
+const tipo10 = "opc_texto"
+const clas10 = "cmd_renascer"
+const vari10 = "m_ajuda5"
+#
+const nome11 = "Ajuda 5 hab/mag"
+const info11 = "Quando pode escolher cinco habilidades/magias"
+const tipo11 = "opc_texto"
+const clas11 = "cmd_renascer"
+const vari11 = "m_ajuda6"
+#
+const nome12 = "Ajuda R"
+const info12 = "R nas habilidades e magias para indicar Renasceu"
+const tipo12 = "opc_texto"
+const clas12 = "cmd_renascer"
+const vari12 = "m_ajuda6"
+#
+const nome13 = "Ajuda Nível Menos"
+const tipo13 = "opc_texto"
+const clas13 = "cmd_renascer"
+const vari13 = "m_ajudaM1"
+#
+const nome14 = "Ajuda Nível Mais"
+const tipo14 = "opc_texto"
+const clas14 = "cmd_renascer"
+const vari14 = "m_ajudaM2"
+#
+const nome15 = "Sem renascer"
+const tipo15 = "opc_linha"
+const clas15 = "cmd_renascer"
+const vari15 = "m_sem"
+#
+const nome16 = "Nível"
+const tipo16 = "opc_linha"
+const clas16 = "cmd_renascer"
+const vari16 = "m_nivel"
+#
+const nome17 = "Escolha raça"
+const tipo17 = "opc_linha"
+const clas17 = "cmd_renascer"
+const vari17 = "m_escolha1"
+#
+const nome18 = "Escolha classe"
+const tipo18 = "opc_linha"
+const clas18 = "cmd_renascer"
+const vari18 = "m_escolha2"
+#
+const nome19 = "Escolha subclasse"
+const tipo19 = "opc_linha"
+const clas19 = "cmd_renascer"
+const vari19 = "m_escolha3"
+#
+const nome20 = "Confirma raça"
+const tipo20 = "opc_linha"
+const clas20 = "cmd_renascer"
+const vari20 = "m_confirma1"
+#
+const nome21 = "Confirma classe"
+const tipo21 = "opc_linha"
+const clas21 = "cmd_renascer"
+const vari21 = "m_confirma2"
+#
+const nome22 = "Confirma subclasse"
+const tipo22 = "opc_linha"
+const clas22 = "cmd_renascer"
+const vari22 = "m_confirma3"
+#
+const nome23 = "Raça inválida"
+const tipo23 = "opc_linha"
+const clas23 = "cmd_renascer"
+const vari23 = "m_invalido1"
+#
+const nome24 = "Classe inválida"
+const tipo24 = "opc_linha"
+const clas24 = "cmd_renascer"
+const vari24 = "m_invalido2"
+#
+const nome25 = "Subclasse inválida"
+const tipo25 = "opc_linha"
+const clas25 = "cmd_renascer"
+const vari25 = "m_invalido3"
+#
+const nome26 = "Primeira hab/mag"
+const tipo26 = "opc_linha"
+const clas26 = "cmd_renascer"
+const vari26 = "m_habmag1"
+#
+const nome27 = "Segunda hab/mag"
+const tipo27 = "opc_linha"
+const clas27 = "cmd_renascer"
+const vari27 = "m_habmag2"
+#
+const nome28 = "Terceira hab/mag"
+const tipo28 = "opc_linha"
+const clas28 = "cmd_renascer"
+const vari28 = "m_habmag3"
+#
+const nome29 = "Quarta hab/mag"
+const tipo29 = "opc_linha"
+const clas29 = "cmd_renascer"
+const vari29 = "m_habmag4"
+#
+const nome30 = "Quinta hab/mag"
+const tipo30 = "opc_linha"
+const clas30 = "cmd_renascer"
+const vari30 = "m_habmag5"
+#
+const nome31 = "Confirma hab"
+const tipo31 = "opc_linha"
+const clas31 = "cmd_renascer"
+const vari31 = "m_hab"
+#
+const nome32 = "Confirma magia"
+const tipo32 = "opc_linha"
+const clas32 = "cmd_renascer"
+const vari32 = "m_magia"
+#
+const nome33 = "Não possui hab/magia"
+const tipo33 = "opc_linha"
+const clas33 = "cmd_renascer"
+const vari33 = "m_nao_possui"
+#
+const nome34 = "Renasceu"
+const tipo34 = "opc_linha"
+const clas34 = "cmd_renascer"
+const vari34 = "m_renasceu"
+#
+const nome35 = "Cancelou"
+const tipo35 = "opc_linha"
+const clas35 = "cmd_renascer"
+const vari35 = "m_cancelar"

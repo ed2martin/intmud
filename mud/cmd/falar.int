@@ -23,9 +23,9 @@ m_exclamar1 m_exclamar2 m_ponderar1 m_ponderar2 m_continuar1 m_continuar2"
 func escr
   refvar perm_msg = $perm_[arg0.jogperm].c_falar
   se perm_msg
-    ret $mensjog.msg(perm_msg, arg0)
+    ret $mens.mp(perm_msg, arg0)
   senao !arg1
-    ret $mensjog.msg(m_sem_args, arg0)
+    ret $mens.mp(m_sem_args, arg0)
   senao
     refvar f = txt(arg0.dono.s_falar(arg0))
     ret f, arg0.msg(f)

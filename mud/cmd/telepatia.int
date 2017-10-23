@@ -1,49 +1,75 @@
-classe cmd_telepatia
+classe h_cmd_telepatia
 herda comando_comum
 const posic = 0
 const objnivel = 4
-const txtajuda = txtajuda1 + m_ajuda
+const txtajuda = txtajuda1 + m_ajuda_tele
 const txtajuda1 = "\b\c3Telepatia\b\n\
 Sintaxe: TELEPATIA <personagem> <mensagem>\n\
          =<personagem> <mensagem>\n"
 #
-const m_ajuda = "Envia uma mensagem telepática (privativa) a outro jogador, independente\n\
+const m_ajuda_tele = "Envia uma mensagem telepática (privativa) a outro jogador, independente\n\
 da sala em que ele estiver.\n\
 Veja também os comandos RESPONDER, CONFIG e IGNORAR."
+#
+const m_ajuda_res = "Mesmo que Telepatia, porém responde para alguém que escreveu para você.\n\
+Primeiro tecle apenas responder, para travar o comando Responder no último\n\
+jogador que escreveu telepaticamente para você. Depois tecle responder\n\
+e a mensagem para enviar mensagens para esse jogador. Se quiser responder\n\
+para outra pessoa, tecle novamente Responder, sem nenhuma mensagem.\n\
+Veja também os comandos TELEPATIA, CONFIG e IGNORAR."
+#
+const m_canal = "Canal Telepatia está desabilitado; para habilitar tecle CONFIG +TELEPATIA"
+const m_sem_args = "Escrever para quem?"
+const m_jogador = "Jogador inexistente ou ausente: $m"
+const m_auto = "Escrever para você mesm$s?"
+const m_ignorar = "Você está ignorando %c."
+const m_ignorado = "$C está ignorando você."
+const m_desabilitou = "$C desabilitou o canal Telepatia."
+const m_invisivel = "Você está invisível para $C."
+const m_sem_msg = "Escrever o quê?"
+const m_responder_nao = "Você ainda não recebeu uma mensagem telepática."
+const m_responder_vis = "Responderá para: $C"
+const m_responder_inv = "Responderá para alguém."
+const m_enviou = "(+telepatia) $C '$m'"
+const m_recebeu = "(telepatia) $R '$m'"
+const admordem = "m_ajuda_tele m_ajuda_res m_canal m_sem_args m_jogador\n\
+m_auto m_ignorar m_ignorado m_desabilitou m_invisivel m_sem_msg\n\
+m_responder_nao m_responder_vis m_responder_inv m_enviou m_recebeu"
 
 func escr
   refvar perm = $perm_[arg0.jogperm]
   se perm.c_telepatia
-    ret $mensjog.msg(perm.c_telepatia, arg0)
+    ret $mens.mp(perm.c_telepatia, arg0)
   senao !arg0.jogconfig.8
-    ret arg0.msg("Canal Telepatia está desabilitado; para habilitar tecle CONFIG +TELEPATIA")
+    ret $mens.mp(m_canal, arg0)
   senao !arg1
-    ret arg0.msg("Escrever para quem?")
+    ret $mens.mp(m_sem_args, arg0)
   fimse
   indiceitem item
   item.ini("un " + txts(txtnome(txt1(arg1))))
-  $mens.p(arg0, item.obj)
-  $mens.mens = txt2(arg1)
   refvar perso = item.obj.perso
   se !perso || perso.jogconfig.17 && !(perm.c_config & 4)
-    $mens.msg("Jogador inexistente ou ausente: " + txt1(arg1), arg0)
+    $mens.mens = txt1(arg1)
+    $mens.mp(m_jogador, arg0)
   senao perso == arg0
-    $mens.msg("Escrever para você mesm$s?", arg0)
+    $mens.mp(m_auto, arg0)
   senao perso.var.u_[arg0.nome]
-    $mens.msg("$C está ignorando você.", arg0)
+    $mens.mp(m_ignorado, arg0)
   senao arg0.var.u_[perso.nome]
-    $mens.msg("Você está ignorando $C.", arg0)
+    $mens.mp(m_ignorar, arg0)
   senao !perso.jogconfig.8
-    $mens.msg("$C desabilitou o canal Telepatia.", arg0)
+    $mens.mp(m_desabilitou, arg0)
   senao arg0.jogconfig.17 && !($perm_[perso.jogperm].c_config & 4)
-    $mens.msg("Você está invisível para $C.", arg0)
+    $mens.mp(m_invisivel, arg0)
   senao !txt2(arg1)
-    $mens.msg("Escrever o quê?", arg0)
+    $mens.mp(m_sem_msg, arg0)
   senao
     perso.sock.var.z_telepatia = arg0.nome
     $misclog.telepatia("tele " + arg0.nome + " para " + item.obj.nome + ": " + txt2(arg1))
-    $mens.msg(config:telepatia2, perso)
-    $mens.msg(config:telepatia1, arg0)
+    $mens.p(arg0, item.obj)
+    $mens.mens = txt2(arg1)
+    $mens.msg(m_recebeu, perso)
+    $mens.msg(m_enviou, arg0)
   fimse
 
 
@@ -51,51 +77,128 @@ classe cmd_responder
 herda comando_comum
 const posic = 0
 const objnivel = 4
-const txtajuda = txtajuda1 + m_ajuda
-const txtajuda1 = "\b\c3Responder\b\n\
-Sintaxe: RESPONDER [mensagem]\n"
-const m_ajuda = "Mesmo que Telepatia, porém responde para alguém que escreveu para você.\n\
-Primeiro tecle apenas responder, para travar o comando Responder no último\n\
-jogador que escreveu telepaticamente para você. Depois tecle responder\n\
-e a mensagem para enviar mensagens para esse jogador. Se quiser responder\n\
-para outra pessoa, tecle novamente Responder, sem nenhuma mensagem.\n\
-Veja também os comandos TELEPATIA, CONFIG e IGNORAR."
+const txtajuda = txtajuda1 + $cmd_telepatia.m_ajuda_res
+const txtajuda1 = "\b\c3Responder\b\nSintaxe: RESPONDER [mensagem]\n"
 
 func escr
   refvar perm = $perm_[arg0.jogperm]
   se perm.c_telepatia
-    ret $mensjog.msg(perm.c_telepatia, arg0)
+    ret $mens.mp(perm.c_telepatia, arg0)
   senao !arg0.jogconfig.8
-    ret arg0.msg("Canal Telepatia está desabilitado; para habilitar tecle CONFIG +TELEPATIA")
+    ret $mens.mp(cmd_telepatia:m_canal, arg0)
   senao !arg1
     se !arg0.sock.var.z_telepatia
-      ret arg0.msg("Você ainda não recebeu uma mensagem telepática.")
+      ret $mens.mp(cmd_telepatia:m_responder_nao, arg0)
     fimse
     arg0.sock.var.z_responder = arg0.sock.var.z_telepatia
   fimse
   indiceitem item
   item.ini("un " + txts(txtnome(arg0.sock.var.z_responder)))
-  $mens.p(arg0, item.obj)
-  $mens.mens = arg1
   refvar perso = item.obj.perso
   se !perso || perso.jogconfig.17 && !(perm.c_config & 4)
-    arg1 && $mens.msg("Jogador não existe ou está ausente.", arg0)
-    !arg1 && $mens.msg("Responderá para alguém.", arg0)
+    arg1 && $mens.mp(cmd_telepatia:m_jogador, arg0)
+    !arg1 && $mens.mp(cmd_telepatia:m_responder_inv, arg0)
   senao !arg1
-    $mens.msg("Responderá para: $C", arg0)
+    $mens.mp(cmd_telepatia:m_responder_vis, arg0)
   senao perso == arg0
-    $mens.msg("Escrever para você mesm$s?", arg0)
+    $mens.mp(cmd_telepatia:m_auto, arg0)
   senao perso.var.u_[arg0.nome]
-    $mens.msg("$C está ignorando você.", arg0)
+    $mens.mp(cmd_telepatia:m_ignorado, arg0)
   senao arg0.var.u_[perso.nome]
-    $mens.msg("Você está ignorando $C.", arg0)
+    $mens.mp(cmd_telepatia:m_ignorar, arg0)
   senao !perso.jogconfig.8
-    $mens.msg("$C desabilitou o canal Telepatia.", arg0)
+    $mens.mp(cmd_telepatia:m_desabilitou, arg0)
   senao arg0.jogconfig.17 && !($perm_[perso.jogperm].c_config & 4)
-    $mens.msg("Você está invisível para $C.", arg0)
+    $mens.mp(cmd_telepatia:m_invisivel, arg0)
   senao
     perso.sock.var.z_telepatia = arg0.nome
     $misclog.telepatia("tele " + arg0.nome + " para " + item.obj.nome + ": " + arg1)
-    $mens.msg(config:telepatia2, perso)
-    $mens.msg(config:telepatia1, arg0)
+    $mens.p(arg0, item.obj)
+    $mens.mens = arg1
+    $mens.msg(cmd_telepatia:m_recebeu, perso)
+    $mens.msg(cmd_telepatia:m_enviou, arg0)
   fimse
+
+
+classe m_cmd_telepatia
+herda comando_menu_cmd
+#
+const nome1 = "Ajuda Telepatia"
+const tipo1 = "opc_texto"
+const clas1 = "cmd_telepatia"
+const vari1 = "m_ajuda_tele"
+#
+const nome2 = "Ajuda Responder"
+const tipo2 = "opc_texto"
+const clas2 = "cmd_telepatia"
+const vari2 = "m_ajuda_res"
+#
+const nome3 = "Canal desabilitado"
+const tipo3 = "opc_linha"
+const clas3 = "cmd_telepatia"
+const vari3 = "m_canal"
+#
+const nome4 = "Alvo desabilitou"
+const tipo4 = "opc_linha"
+const clas4 = "cmd_telepatia"
+const vari4 = "m_desabilitou"
+#
+const nome5 = "Sem alvo"
+const tipo5 = "opc_linha"
+const clas5 = "cmd_telepatia"
+const vari5 = "m_sem_args"
+#
+const nome6 = "Alvo não existe"
+const tipo6 = "opc_linha"
+const clas6 = "cmd_telepatia"
+const vari6 = "m_jogador"
+#
+const nome7 = "Para si mesmo"
+const tipo7 = "opc_linha"
+const clas7 = "cmd_telepatia"
+const vari7 = "m_auto"
+#
+const nome8 = "Ignorando"
+const tipo8 = "opc_linha"
+const clas8 = "cmd_telepatia"
+const vari8 = "m_ignorar"
+#
+const nome9 = "Ignorado"
+const tipo9 = "opc_linha"
+const clas9 = "cmd_telepatia"
+const vari9 = "m_ignorado"
+#
+const nome10 = "Invisível"
+const tipo10 = "opc_linha"
+const clas10 = "cmd_telepatia"
+const vari10 = "m_invisivel"
+#
+const nome11 = "Tele. Sem mensagem"
+const tipo11 = "opc_linha"
+const clas11 = "cmd_telepatia"
+const vari11 = "m_sem_msg"
+#
+const nome12 = "Resp. Sem mensagem"
+const tipo12 = "opc_linha"
+const clas12 = "cmd_telepatia"
+const vari12 = "m_responder_nao"
+#
+const nome13 = "Resp. Alvo visível"
+const tipo13 = "opc_linha"
+const clas13 = "cmd_telepatia"
+const vari13 = "m_responder_vis"
+#
+const nome14 = "Resp. Alvo invisível"
+const tipo14 = "opc_linha"
+const clas14 = "cmd_telepatia"
+const vari14 = "m_responder_inv"
+#
+const nome15 = "Enviou mensagem"
+const tipo15 = "opc_linha"
+const clas15 = "cmd_telepatia"
+const vari15 = "m_enviou"
+#
+const nome16 = "Recebeu mensagem"
+const tipo16 = "opc_linha"
+const clas16 = "cmd_telepatia"
+const vari16 = "m_recebeu"

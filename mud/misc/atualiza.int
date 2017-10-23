@@ -1,4 +1,4 @@
-classe atualiza_478
+classe atualiza_479
 # Atualiza arquivos mud/config/* e mud/areas/* de acordo com novas mudanças
 prog p
 debug dbg
@@ -728,8 +728,8 @@ func ini3_exec
 func ini4_exec
   apagar(este)
 # Checa e muda a versão
-  ret (versao = config:versao) >= 478, nulo
-  p.criar("config", "const versao = 478 # Para atualizar diretórios areas e config")
+  ret (versao = config:versao) >= 479, nulo
+  p.criar("config", "const versao = 479 # Para atualizar diretórios areas e config")
   config:salvar
 # Comando Fim e Dicas aleatórias
   se versao < 457
@@ -750,7 +750,7 @@ func ini4_exec
   criafunc("config", "const mens_tu = \"você\"")
   criafunc("config", "const mens_ti = \"você\"")
 # Opções dos menus
-  se versao < 478
+  se versao < 479
     dbg.ini
     movefunc("config", "falarmsg", "cmd_falar", "m_falar2")
     movefunc("config", "perguntarmsg", "cmd_falar", "m_perguntar2")
@@ -763,9 +763,28 @@ func ini4_exec
     movefunc("config", "gritarmove", "cmd_gritar", "v_move")
     movefunc("config", "gritarmsg", "cmd_gritar", "m_gritar2")
     movefunc("config", "gritartipo", "cmd_gritar", "v_tipo")
+    dbg.ini
     movefunc("config", "sussurrar1msg", "cmd_sussurrar", "m_msg1")
     movefunc("config", "sussurrar2msg", "cmd_sussurrar", "m_msg2")
     movefunc("config", "sussurrar3msg", "cmd_sussurrar", "m_msg3")
+    movefunc("config", "telepatia1", "cmd_telepatia", "m_enviou")
+    movefunc("config", "telepatia2", "cmd_telepatia", "m_recebeu")
+    movefunc("config", "bugtipo", "cmd_bug", "v_tipo")
+    movefunc("config", "bugnivel", "cmd_bug", "v_nivel")
+    movefunc("config", "bug1msg", "cmd_bug", "m_canal")
+    movefunc("config", "bug2msg", "cmd_bug", "m_enviou")
+    movefunc("config", "ideiatipo", "cmd_ideia", "v_tipo")
+    movefunc("config", "ideianivel", "cmd_ideia", "v_nivel")
+    movefunc("config", "ideia1msg", "cmd_ideia", "m_canal")
+    movefunc("config", "ideia2msg", "cmd_ideia", "m_enviou")
+    dbg.ini
+    movefunc("config", "emocaotipo", "cmd_emocao", "v_tipo")
+    movefunc("config", "emocaonivel", "cmd_emocao", "v_nivel")
+    movefunc("config", "ptitulonivel", "cmd_ptitulo", "v_nivel")
+    movefunc("config", "ptitulomax", "cmd_ptitulo", "v_tamanho")
+    p.apagar("config", "pdescnivel")
+    p.apagar("config", "pdesclinhas")
+    p.apagar("config", "pdescmax")
   fimse
 # Avisa que atualizou arquivos
   tela.msg("Diretórios areas e config atualizados\n")

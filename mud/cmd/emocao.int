@@ -1,28 +1,33 @@
-classe cmd_emocao
+classe h_cmd_emocao
 herda comando_comum
 const posic = 5
-const objcmd = config:emocaotipo ? este
-const txtajuda = config:emocaotipo ? txtajuda1
-const txtajuda1 = "\b\c3Emoção\b\n\
-Sintaxe: EMOÇÃO <mensagem>\n\
-Mostra para os jogadores na mesma sala o que você está sentindo.\n\
+const objcmd = v_tipo ? este
+const txtajuda = v_tipo ? txtajuda1 + m_ajuda
+const txtajuda1 = "\b\c3Emoção\b\nSintaxe: EMOÇÃO <mensagem>\n"
+#
+const m_ajuda = "Mostra para os jogadores na mesma sala o que você está sentindo.\n\
 Esse comando mostra o nome do seu personagem seguido da mensagem.\n\
 Por exemplo, se seu personagem se chamar Joaquim e você teclar:\n\
 emoção está contente hoje.\n\
 Os outros jogadores receberão a mensagem:\n\
 Joaquim está contente hoje.\n\
 Veja também o comando CONFIG"
+const v_tipo = 0 # Comando EMOÇÃO: 0=não existe, 1=existe
+const v_nivel = 0
+const m_nivel = "Para usar o comando EMOÇÃO você precisa chegar no nível $m."
+const m_sem_args = "Tecle a mensagem após EMOÇÃO."
+const admordem = "m_ajuda v_tipo m_sem_args m_nivel v_nivel"
 
 func escr
   ret !arg0.contr.dono.socktot, nulo
   refvar perm_msg = $perm_[arg0.jogperm].c_social
   se perm_msg
-    $mensjog.msg(perm_msg, arg0)
-  senao arg0.pnivel < config:emocaonivel
-    arg0.msg("Para usar o comando EMOÇÃO você precisa estar no nível " + config:emocaonivel + \
-".")
+    $mens.mp(perm_msg, arg0)
+  senao arg0.pnivel < v_nivel
+    $mens.mens = v_nivel
+    $mens.mp(m_nivel, arg0)
   senao !arg1
-    arg0.msg("Tecle a mensagem após EMOÇÃO.")
+    $mens.mp(m_sem_args, arg0)
   senao
     refvar lin = "$P " + txttroca(arg1, "$", "$$")
     $mens.p(arg0)
@@ -31,3 +36,33 @@ func escr
       $mens.msginv(l0.objini.jogconfig.9 ? "(e) " + lin : lin, l0.objini)
     efim
   fimse
+
+
+classe m_cmd_emocao
+herda comando_menu_cmd
+#
+const nome1 = "Comando Emoção"
+const tipo1 = "opc_opcao"
+const clas1 = "cmd_emocao"
+const vari1 = "v_tipo"
+const extr1 = "Desabilitado\nHabilitado"
+#
+const nome2 = "Ajuda"
+const tipo2 = "opc_texto"
+const clas2 = "cmd_emocao"
+const vari2 = "m_ajuda"
+#
+const nome3 = "Sem argumentos"
+const tipo3 = "opc_linha"
+const clas3 = "cmd_emocao"
+const vari3 = "m_sem_args"
+#
+const nome4 = "Nível mínimo"
+const tipo4 = "opc_numero"
+const clas4 = "cmd_emocao"
+const vari4 = "v_nivel"
+#
+const nome5 = "Nível insuficiente"
+const tipo5 = "opc_linha"
+const clas5 = "cmd_emocao"
+const vari5 = "m_nivel"

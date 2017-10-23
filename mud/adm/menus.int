@@ -158,7 +158,7 @@ func passo
       txtmais.dividelin(50, 70)
       txtmais.addini("\b" + titulo)
     fimse
-    txtmais.addfim("Z Sair, M seguido de um texto executa comando do MUD")
+    txtmais.addfim("Z Sair")
     arg0.txtmostra
     ret 1
   casose "z"
@@ -167,10 +167,6 @@ func passo
     arg0.passo = ""
     ret 1
   casofim
-  se txt(arg1, 0, 1) == "m" # Executa comando do MUD
-    arg0.perso.teclou(txtremove(txt(arg1, 1), "E"))
-    ret 1
-  fimse
   prog p
   refvar inicio = inttotal(classe)
   se !inicio

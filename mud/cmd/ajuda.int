@@ -66,31 +66,39 @@ classe cmd_comunica
 const iniclasse = !$[arg0] && criar(arg0)
 
 func txtajuda
-  ret tit + (config:novatostipo ? nov) + (config:chattipo ? cha) + gch + pvt + (config:gritartipo\
- ? gri) + fal + sus + soc + (config:emocaotipo ? emo) + ign + (config:rezartipo ? rez) + \
-(config:bugtipo ? bug) + (config:ideiatipo ? ide)
+  textotxt t
+  t.addfim(tit)
+  config:novatostipo && t.addfim(nov)
+  config:chattipo && t.addfim(cha)
+  t.addfim(gch)
+  t.addfim(pvt)
+  $cmd_gritar.v_nivel && t.addfim(gri)
+  t.addfim(fal)
+  t.addfim(sus)
+  t.addfim(soc)
+  $cmd_emocao.v_nivel && t.addfim(emo)
+  t.addfim(ign)
+  config:rezartipo && t.addfim(rez)
+  $cmd_bug.v_nivel && t.addfim(bug)
+  $cmd_ideia.v_nivel && t.addfim(ideia)
+  ret t.remove(1000)
 
 const tit = "\b\c3Comunicação\b"
-const nov = "\n\
-  \c2NOVATOS\b   Envia mensagem para os jogadores com o canal NOVATOS habilitado"
-const cha = "\n\
-  \c2CHAT\b      Envia mensagem para os jogadores com o canal CHAT habilitado\n\
+const nov = "  \c2NOVATOS\b   Envia mensagem para os jogadores com o canal NOVATOS habilitado"
+const cha = "  \c2CHAT\b      Envia mensagem para os jogadores com o canal CHAT habilitado\n\
   \c2SCHAT\b     Comandos \"sociais\" no canal CHAT"
-const gch = "\n  \c2GCHAT\b     Envia uma mensagem para os jogadores do seu grupo"
-const pvt = "\n\
-  \c2TELEPATIA\b Envia mensagem privativa para um jogador\n\
+const gch = "  \c2GCHAT\b     Envia uma mensagem para os jogadores do seu grupo"
+const pvt = "  \c2TELEPATIA\b Envia mensagem privativa para um jogador\n\
   \c2RESPONDER\b Responde mensagem privativa de um jogador"
-const gri = "\n  \c2GRITAR\b    Envia mensagem para os personagens na mesma área"
-const fal = "\n  \c2FALAR\b     Envia mensagem para os personagens na mesma sala"
-const sus = "\n  \c2SUSSURRAR\b Sussurra uma mensagem para um personagem na mesma sala"
-const soc = "\n\
-  \c2SOCIAL\b    Comandos \"sociais\" - para interpretação entre personagens"
-const emo = "\n  \c2EMOÇÃO\b    Demonstra emoções do seu personagem"
-const ign = "\n  \c2IGNORAR\b   Ignora um jogador"
-const rez = "\n\
-  \c2REZAR\b     Envia mensagem para os administradores que estiverem no jogo"
-const bug = "\n  \c2BUG\b       Envia mensagem para informar sobre bugs (erros) no jogo"
-const ide = "\n  \c2IDEIA\b     Envia mensagem sobre ideias para o jogo"
+const gri = "  \c2GRITAR\b    Envia mensagem para os personagens na mesma área"
+const fal = "  \c2FALAR\b     Envia mensagem para os personagens na mesma sala"
+const sus = "  \c2SUSSURRAR\b Sussurra uma mensagem para um personagem na mesma sala"
+const soc = "  \c2SOCIAL\b    Comandos \"sociais\" - para interpretação entre personagens"
+const emo = "  \c2EMOÇÃO\b    Demonstra emoções do seu personagem"
+const ign = "  \c2IGNORAR\b   Ignora um jogador"
+const rez = "  \c2REZAR\b     Envia mensagem para os administradores que estiverem no jogo"
+const bug = "  \c2BUG\b       Envia mensagem para informar sobre bugs (erros) no jogo"
+const ide = "  \c2IDEIA\b     Envia mensagem sobre ideias para o jogo"
 
 
 classe cmd_info

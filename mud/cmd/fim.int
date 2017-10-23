@@ -16,9 +16,9 @@ const admordem = "m_ajuda m_ocupado m_fim"
 
 func escr
   se arg0.atkenv && arg0.senha
-    $mensjog.msg(m_ocupado, arg0)
+    $mens.mp(m_ocupado, arg0)
   senao arg0.jog
-    arg0.msg(m_fim)
+    $mens.mp(m_fim, arg0)
     apagar(arg0)
   senao
     indiceitem ind

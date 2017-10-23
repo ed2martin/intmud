@@ -1,20 +1,31 @@
-classe cmd_ptitulo
+classe h_cmd_ptitulo
 herda comando_comum
-const txtajuda = "\b\c3PTitulo\b\n\
-Sintaxe: PTITULO  [novo título]\n\
-Muda o título do seu personagem. O título aparece no comando QUEM."
+const txtajuda = "\b\c3PTitulo\b\nSintaxe: PTITULO  [novo título]\n" + m_ajuda
 const posic = 5
+#
+const m_ajuda = "Muda o título do seu personagem. O título aparece no comando QUEM."
+const m_nivel = "Você precisa chegar no nível $m para usar esse comando."
+const v_nivel = 10
+const m_tamanho = "O título do personagem não pode passar de $m caracteres."
+const v_tamanho = 30
+const m_invalido = "O título contém caracteres não permitidos."
+const m_mudou = "Título do personagem alterado."
+const m_apagou = "Título do personagem apagado."
+const admordem = "m_ajuda m_nivel v_nivel m_tamanho v_tamanho m_invalido\n\
+m_mudou m_apagou"
 
 func escr
-  se arg0.pnivel < config:ptitulonivel
-    arg0.msg("Você precisa chegar no nível " + config:ptitulonivel + " para usar esse comando")
-  senao inttotal(arg1) > config:ptitulomax
-    arg0.msg("O título do personagem não pode passar de " + config:ptitulomax + " caracteres.")
+  se arg0.pnivel < v_nivel
+    $mens.mens = v_nivel
+    $mens.mp(m_nivel, arg0)
+  senao inttotal(arg1) > v_tamanho
+    $mens.mens = v_tamanho
+    $mens.mp(m_tamanho, arg0)
   senao vartroca(txtcod(arg1), "", "t_") != txtcod(arg1)
-    arg0.msg("O título contém caracteres não permitidos.")
+    $mens.mp(m_invalido, arg0)
   senao
     arg0.var.z_titulo = arg1
-    arg0.msg(arg1 ? "Título do personagem alterado." : "Título do personagem apagado.")
+    $mens.mp(arg1 ? m_mudou : m_apagou, arg0)
   fimse
 
 const t_@v = "" # menor que
@@ -25,22 +36,100 @@ const t_@4 = "" # abre chaves
 const t_@6 = "" # fecha chaves
 
 
-classe cmd_stitulo
+classe h_cmd_stitulo
 herda comando_comum
-const txtajuda = "\b\c3STitulo\b\n\
-Sintaxe: STITULO  [novo título]\n\
-Muda o título da sala em que você está, desde que esteja na sua casa.\n\
+const txtajuda = "\b\c3STitulo\b\nSintaxe: STITULO  [novo título]\n" + m_ajuda
+const posic = 5
+#
+const m_ajuda = "Muda o título da sala em que você está, desde que esteja na sua casa.\n\
 Se não for especificado nenhum título, voltará ao texto original da sala.\n\
 Nota: Somente o dono da casa pode mudar os títulos das salas."
-const posic = 5
+const m_fora = "Você não está dentro da sua casa."
+const m_tamanho = "O título da sala não pode passar de 60 caracteres."
+const m_mudou = "Título da sala alterado."
+const m_apagou = "Título da sala apagado."
+const admordem = "m_ajuda m_fora m_tamanho m_mudou m_apagou"
 
 func escr
   se !arg0.dentrocasa && !arg0.j_imortal
-    arg0.msg("Você não está dentro da sua casa.")
+    $mens.mp(m_fora, arg0)
   senao inttotal(arg1) > 60
-    arg0.msg("O título da sala não pode passar de 60 caracteres.")
+    $mens.mp(m_tamanho, arg0)
   senao
     arg0.dono.var.z_titulo = arg1
     arg0.dono.objmudou = 1
-    arg0.msg(arg1 ? "Título da sala alterado." : "Título da sala apagado.")
+    $mens.mp(arg1 ? m_mudou : m_apagou, arg0)
   fimse
+
+
+classe m_cmd_ptitulo
+herda comando_menu_cmd
+#
+const nome1 = "Ajuda"
+const tipo1 = "opc_texto"
+const clas1 = "cmd_ptitulo"
+const vari1 = "m_ajuda"
+#
+const nome2 = "Nível mínimo"
+const tipo2 = "opc_numero"
+const clas2 = "cmd_ptitulo"
+const vari2 = "v_nivel"
+#
+const nome3 = "Nível insuficiente"
+const tipo3 = "opc_linha"
+const clas3 = "cmd_ptitulo"
+const vari3 = "m_nivel"
+#
+const nome4 = "Caracteres máximo"
+const tipo4 = "opc_numero"
+const clas4 = "cmd_ptitulo"
+const vari4 = "v_tamanho"
+#
+const nome5 = "Mensagem caracteres"
+const tipo5 = "opc_linha"
+const clas5 = "cmd_ptitulo"
+const vari5 = "m_tamanho"
+#
+const nome6 = "Título inválido"
+const tipo6 = "opc_linha"
+const clas6 = "cmd_ptitulo"
+const vari6 = "m_invalido"
+#
+const nome7 = "Mudou"
+const tipo7 = "opc_linha"
+const clas7 = "cmd_ptitulo"
+const vari7 = "m_mudou"
+#
+const nome8 = "Apagou"
+const tipo8 = "opc_linha"
+const clas8 = "cmd_ptitulo"
+const vari8 = "m_apagou"
+
+
+classe m_cmd_stitulo
+herda comando_menu_cmd
+#
+const nome1 = "Ajuda"
+const tipo1 = "opc_texto"
+const clas1 = "cmd_stitulo"
+const vari1 = "m_ajuda"
+#
+const nome2 = "Fora da casa"
+const tipo2 = "opc_texto"
+const clas2 = "cmd_stitulo"
+const vari2 = "m_fora"
+#
+const nome3 = "Caracteres"
+const tipo3 = "opc_linha"
+const clas3 = "cmd_stitulo"
+const vari3 = "m_tamanho"
+#
+const nome4 = "Mudou"
+const tipo4 = "opc_linha"
+const clas4 = "cmd_stitulo"
+const vari4 = "m_mudou"
+#
+const nome5 = "Apagou"
+const tipo5 = "opc_linha"
+const clas5 = "cmd_stitulo"
+const vari5 = "m_apagou"

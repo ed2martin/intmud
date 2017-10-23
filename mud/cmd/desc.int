@@ -1,16 +1,29 @@
-classe cmd_pdesc
+classe h_cmd_pdesc
 herda comando_comum, comando_editor
-const txtajuda = "\b\c3PDesc\b\n\
-Sintaxe: PDESC\n\
-Muda a descrição do seu personagem. Essa descrição aparece quando alguém\n\
-olha para você com o comando OLHAR."
+const txtajuda = "\b\c3PDesc\b\nSintaxe: PDESC\n" + m_ajuda
 const posic = 5
 const vardesc = "z_desc"
 const msgini = "Editando descrição do personagem, O opções, X salvar, Z sair"
+#
+const m_ajuda = "Muda a descrição do seu personagem. Essa descrição aparece quando alguém\n\
+olha para você com o comando OLHAR."
+const m_nivel = "Você precisa chegar no nível $m para usar esse comando."
+const v_nivel = 5
+const m_linha1 = "Máximo permitido uma linha."
+const m_linha2 = "Máximo permitido duas linhas."
+const m_linha3 = "Máximo permitido $m linhas."
+const v_linhas = 8
+const v_maximo = 1000
+const m_mudou = "Descrição do personagem alterada."
+const m_apagou = "Descrição do personagem apagada."
+const m_cancelar = "Fechando editor"
+const admordem = "m_ajuda m_nivel v_nivel m_linha1 m_linha2 m_linha3 m_linhas\n\
+m_mudou m_apagou m_cancelar"
 
 func escr
-  se arg0.pnivel < config:pdescnivel
-    arg0.msg("Você precisa chegar no nível " + config:pdescnivel + " para usar esse comando")
+  se arg0.pnivel < v_nivel
+    $mens.mens = v_nivel
+    $mens.mp(m_nivel, arg0)
   senao
     passo(arg0.sock, "\b")
   fimse
@@ -30,55 +43,62 @@ func passo # Alterando descrição do personagem
     arg0.msg(msgini)
     ret 1
   casose "z" # Sair do editor
-    arg0.msg("Fechando editor")
     arg0.passo = ""
+    $mens.mp(m_cancelar, arg0.perso)
     ret 1
   casose "x" # Salvar o texto
-    se arg0.teditor.linhas > config:pdesclinhas
-      se config:pdesclinhas == 1
-        arg0.msg("Máximo permitido uma linha.")
-      senao config:pdesclinhas == 2
-        arg0.msg("Máximo permitido duas linhas.")
+    se arg0.teditor.linhas > v_linhas
+      $mens.mens = v_linhas
+      se v_linhas == 1
+        $mens.mp(m_linha1, arg0.perso)
+      senao v_linhas == 2
+        $mens.mp(m_linha2, arg0.perso)
       senao
-        arg0.msg("Máximo permitido " + config:pdesclinhas + " linhas.")
+        $mens.mp(m_linha3, arg0.perso)
       fimse
     senao !arg0.teditor.linhas
       arg0.perso.var.[vardesc] = ""
-      arg0.msg("Descrição do personagem apagada.")
+      $mens.mp(m_apagou, arg0.perso)
     senao
       arg0.perso.var.[vardesc] = arg0.teditor.ini.textolin(100)
-      arg0.msg("Descrição do personagem alterada.")
+      $mens.mp(m_mudou, arg0.perso)
     fimse
     ret 1
   casofim
-  ret passoeditor(arg0, arg1, config:pdescmax, "descrição do personagem")
+  ret passoeditor(arg0, arg1, v_maximo, "descrição do personagem")
 
 
-classe cmd_mdesc
-herda cmd_pdesc
-const txtajuda = "\b\c3MDesc\b\n\
-Sintaxe: MDESC\n\
-Muda a descrição do seu personagem para mulheres. Essa descrição aparece\n\
-quando alguém do sexo feminino olha para você com o comando OLHAR.\n\
-Se estiver ausente, será mostrada a descrição do comando PDesc para\n\
-ambos os sexos."
+classe h_cmd_mdesc
+herda h_cmd_pdesc
+const txtajuda = "\b\c3MDesc\b\nSintaxe: MDESC\n" + m_ajuda
 const posic = 5
 const vardesc = "z_mdesc"
 const msgini = "Editando descrição para mulheres, O opções, X salvar, Z sair"
+#
+const m_ajuda = "Muda a descrição do seu personagem para mulheres. Essa descrição aparece\n\
+quando alguém do sexo feminino olha para você com o comando OLHAR.\n\
+Se estiver ausente, será mostrada a descrição do comando PDesc para\n\
+ambos os sexos."
 
 
-classe cmd_sdesc
+classe h_cmd_sdesc
 herda comando_comum, comando_editor
-const txtajuda = "\b\c3SDesc\b\n\
-Sintaxe: SDESC\n\
-Muda a descrição da sala em que você está, desde que esteja na sua casa.\n\
+const txtajuda = "\b\c3SDesc\b\nSintaxe: SDESC\n" + m_ajuda
+const posic = 5
+#
+const m_ajuda = "Muda a descrição da sala em que você está, desde que esteja na sua casa.\n\
 Se a descrição estiver vazia, voltará ao texto original da sala.\n\
 Nota: Somente o dono da casa pode mudar as descrições das salas."
-const posic = 5
+const m_fora = "Você não está dentro da sua casa."
+const m_linhas = "Máximo permitido 8 linhas."
+const m_mudou = "Descrição da sala alterada."
+const m_apagou = "Descrição da sala apagada."
+const m_cancelar = "Fechando editor"
+const admordem = "m_ajuda m_fora m_linhas m_mudou m_apagou m_cancelar"
 
 func escr
   se !arg0.dentrocasa && !arg0.j_imortal
-    arg0.msg("Você não está dentro da sua casa.")
+    $mens.mp(m_fora, arg0)
   senao
     passo(arg0.sock, "\b")
   fimse
@@ -98,23 +118,122 @@ func passo # Alterando descrição da sala
     arg0.msg("Editando descrição da sala, O opções, X salvar, Z sair")
     ret 1
   casose "z" # Sair do editor
-    arg0.msg("Fechando editor")
     arg0.passo = ""
+    $mens.mp(m_cancelar, arg0.perso)
     ret 1
   casose "x" # Salvar o texto
     se !arg0.perso.dentrocasa && !arg0.perso.j_imortal
-      arg0.msg("Você não está dentro da sua casa.")
+      $mens.mp(m_fora, arg0.perso)
     senao arg0.teditor.linhas > 8
-      arg0.msg("Máximo permitido 8 linhas.")
+      $mens.mp(m_linhas, arg0.perso)
     senao !arg0.teditor.linhas
       arg0.perso.dono.var.z_desc = ""
       arg0.perso.dono.objmudou = 1
-      arg0.msg("Descrição da sala apagada.")
+      $mens.mp(m_apagou, arg0.perso)
     senao
       arg0.perso.dono.var.z_desc = arg0.teditor.ini.textolin(100)
       arg0.perso.dono.objmudou = 1
-      arg0.msg("Descrição da sala alterada.")
+      $mens.mp(m_mudou, arg0.perso)
     fimse
     ret 1
   casofim
   ret passoeditor(arg0, arg1, 1000, "descrição da sala")
+
+
+classe m_cmd_pdesc
+herda comando_menu_cmd
+const classe_cmd = "cmd_pdesc"
+#
+const nome1 = "Ajuda"
+const tipo1 = "opc_texto"
+const clas1 = classe_cmd
+const vari1 = "m_ajuda"
+#
+const nome2 = "Nível mínimo"
+const tipo2 = "opc_numero"
+const clas2 = classe_cmd
+const vari2 = "v_nivel"
+#
+const nome3 = "Nível insuficiente"
+const tipo3 = "opc_linha"
+const clas3 = classe_cmd
+const vari3 = "m_nivel"
+#
+const nome4 = "Uma linha"
+const tipo4 = "opc_linha"
+const clas4 = classe_cmd
+const vari4 = "m_linha1"
+#
+const nome5 = "Duas linhas"
+const tipo5 = "opc_linha"
+const clas5 = classe_cmd
+const vari5 = "m_linha2"
+#
+const nome6 = "Três ou mais linhas"
+const tipo6 = "opc_linha"
+const clas6 = classe_cmd
+const vari6 = "m_linha3"
+#
+const nome7 = "Número de linhas"
+const tipo7 = "opc_numero"
+const clas7 = classe_cmd
+const vari7 = "v_linhas"
+#
+const nome8 = "Número de caracteres"
+const tipo8 = "opc_numero"
+const clas8 = classe_cmd
+const vari8 = "v_maximo"
+#
+const nome9 = "Mudou"
+const tipo9 = "opc_linha"
+const clas9 = classe_cmd
+const vari9 = "m_mudou"
+#
+const nome10 = "Apagou"
+const tipo10 = "opc_linha"
+const clas10 = classe_cmd
+const vari10 = "m_apagou"
+#
+const nome11 = "Cancelou"
+const tipo11 = "opc_linha"
+const clas11 = classe_cmd
+const vari11 = "m_cancelar"
+
+
+classe m_cmd_mdesc
+herda m_cmd_pdesc
+const classe_cmd = "cmd_mdesc"
+
+
+classe m_cmd_sdesc
+herda comando_menu_cmd
+#
+const nome1 = "Ajuda"
+const tipo1 = "opc_texto"
+const clas1 = "cmd_sdesc"
+const vari1 = "m_ajuda"
+#
+const nome2 = "Fora da casa"
+const tipo2 = "opc_texto"
+const clas2 = "cmd_sdesc"
+const vari2 = "m_fora"
+#
+const nome3 = "Linhas"
+const tipo3 = "opc_texto"
+const clas3 = "cmd_sdesc"
+const vari3 = "m_linhas"
+#
+const nome4 = "Mudou"
+const tipo4 = "opc_linha"
+const clas4 = "cmd_sdesc"
+const vari4 = "m_mudou"
+#
+const nome5 = "Apagou"
+const tipo5 = "opc_linha"
+const clas5 = "cmd_sdesc"
+const vari5 = "m_apagou"
+#
+const nome6 = "Cancelou"
+const tipo6 = "opc_linha"
+const clas6 = "cmd_sdesc"
+const vari6 = "m_cancelar"

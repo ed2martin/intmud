@@ -23,11 +23,11 @@ m_perso1 m_perso2 m_msg1 m_msg2 m_msg3"
 func escr
   refvar perm_msg = $perm_[arg0.jogperm].c_falar
   se perm_msg
-    ret $mensjog.msg(perm_msg, arg0)
+    ret $mens.mp(perm_msg, arg0)
   senao !arg1
-    ret $mensjog.msg(m_sem_args, arg0)
+    ret $mens.mp(m_sem_args, arg0)
   senao !txt2(arg1)
-    ret $mensjog.msg(m_sem_msg, arg0)
+    ret $mens.mp(m_sem_msg, arg0)
   senao
     refvar f = txt(arg0.dono.s_falar(arg0))
     ret f, arg0.msg(f)
@@ -41,9 +41,9 @@ func escr
   epara nulo, l, l.ini.remove
     continuar !l.objini.visivel(arg0) || !n.nome(l.objini.ident, l.objini.objtot)
     se l.objini.var.u_[arg0.nome]
-      ret $mensjog.msg(m_ignorou, arg0, l.objini)
+      ret $mens.mp(m_ignorou, arg0, l.objini)
     senao arg0.var.u_[l.objini.nome]
-      ret $mensjog.msg(m_ignorar, arg0, l.objini)
+      ret $mens.mp(m_ignorar, arg0, l.objini)
     senao arg0 == l.objini
       $misclog.telepatia("suss " + arg0.nome + " para " + l.objini.nome + ": " + txt2(arg1))
       $mens.p(arg0, arg0)

@@ -10,46 +10,28 @@ const tipo1 = "menu_econfig_adm_echo--"
 const nome2 = "Rezar, Rezou"
 const tipo2 = "menu_econfig_adm_rezar--"
 #
-const nome3 = "Bug"
-const tipo3 = "menu_econfig_adm_bug--"
+const nome3 = "Canais"
+const tipo3 = "menu_econfig_adm_canais--"
 #
-const nome4 = "Ideia"
-const tipo4 = "menu_econfig_adm_ideia--"
+const nome4 = "Olhar"
+const tipo4 = "menu_econfig_adm_olhar--"
 #
-const nome5 = "Canais"
-const tipo5 = "menu_econfig_adm_canais--"
+const nome5 = "Animais, Capturar"
+const tipo5 = "menu_econfig_adm_animais--"
 #
-const nome8 = "Telepatia"
-const tipo8 = "menu_econfig_adm_telepatia--"
+const nome6 = "Config Dicas"
+const tipo6 = "menu_econfig_adm_config--"
 #
-const nome9 = "Emoção"
-const tipo9 = "menu_econfig_adm_emocao--"
+const nome7 = "Matar"
+const tipo7 = "opc_opcao--"
+const clas7 = "config"
+const vari7 = "matartipo"
+const extr7 = "Desabilitado\nHabilitado"
 #
-const nome10 = "Olhar"
-const tipo10 = "menu_econfig_adm_olhar--"
-#
-const nome11 = "PTitulo, PDesc"
-const tipo11 = "menu_econfig_adm_ptitulo--"
-#
-const nome12 = "Animais, Capturar"
-const tipo12 = "menu_econfig_adm_animais--"
-#
-const nome13 = "Renascer"
-const tipo13 = "menu_econfig_adm_renascer--"
-#
-const nome14 = "Config Dicas"
-const tipo14 = "menu_econfig_adm_config--"
-#
-const nome15 = "Matar"
-const tipo15 = "opc_opcao--"
-const clas15 = "config"
-const vari15 = "matartipo"
-const extr15 = "Desabilitado\nHabilitado"
-#
-const nome16 = "Grupo diferença de nível"
-const tipo16 = "opc_numero--"
-const clas16 = "config"
-const vari16 = "gruponivel"
+const nome8 = "Grupo diferença de nível"
+const tipo8 = "opc_numero--"
+const clas8 = "config"
+const vari8 = "gruponivel"
 
 
 classe menu_econfig_adm_echo
@@ -117,62 +99,6 @@ const clas6 = "config"
 const vari6 = "rezou2msg"
 
 
-classe menu_econfig_adm_bug
-herda comando_menu
-const titulo = "Bug"
-const menufim = "menu_econfig_adm"
-const colunas = 35
-#
-const nome1 = "Comando Bug"
-const tipo1 = "opc_opcao--"
-const clas1 = "config"
-const vari1 = "bugtipo"
-const extr1 = "Desabilitado\nHabilitado"
-#
-const nome2 = "Bug a partir do nível"
-const tipo2 = "opc_numero--"
-const clas2 = "config"
-const vari2 = "bugnivel"
-#
-const nome3 = "Canal Bug"
-const tipo3 = "opc_linha--"
-const clas3 = "config"
-const vari3 = "bug1msg"
-#
-const nome4 = "Comando Bug"
-const tipo4 = "opc_linha--"
-const clas4 = "config"
-const vari4 = "bug2msg"
-
-
-classe menu_econfig_adm_ideia
-herda comando_menu
-const titulo = "Ideia"
-const menufim = "menu_econfig_adm"
-const colunas = 35
-#
-const nome1 = "Comando Ideia"
-const tipo1 = "opc_opcao--"
-const clas1 = "config"
-const vari1 = "ideiatipo"
-const extr1 = "Desabilitado\nHabilitado"
-#
-const nome2 = "Ideia a partir do nível"
-const tipo2 = "opc_numero--"
-const clas2 = "config"
-const vari2 = "ideianivel"
-#
-const nome3 = "Canal Ideia"
-const tipo3 = "opc_linha--"
-const clas3 = "config"
-const vari3 = "ideia1msg"
-#
-const nome4 = "Comando Ideia"
-const tipo4 = "opc_linha--"
-const clas4 = "config"
-const vari4 = "ideia2msg"
-
-
 classe menu_econfig_adm_canais
 herda comando_menu
 const titulo = "Canais"
@@ -235,41 +161,6 @@ const clas10 = "config"
 const vari10 = "novatosmsg"
 
 
-classe menu_econfig_adm_telepatia
-herda comando_menu
-const titulo = "Telepatia"
-const menufim = "menu_econfig_adm"
-const colunas = 35
-#
-const nome1 = "Enviou mensagem telepática"
-const tipo1 = "opc_linha--"
-const clas1 = "config"
-const vari1 = "telepatia1"
-#
-const nome2 = "Recebeu mensagem telepática"
-const tipo2 = "opc_linha--"
-const clas2 = "config"
-const vari2 = "telepatia2"
-
-
-classe menu_econfig_adm_emocao
-herda comando_menu
-const titulo = "Emoção"
-const menufim = "menu_econfig_adm"
-const colunas = 35
-#
-const nome1 = "Emoção"
-const tipo1 = "opc_opcao--"
-const clas1 = "config"
-const vari1 = "emocaotipo"
-const extr1 = "Desabilitado\nHabilitado"
-#
-const nome2 = "Emoção a partir do nível"
-const tipo2 = "opc_numero--"
-const clas2 = "config"
-const vari2 = "emocaonivel"
-
-
 classe menu_econfig_adm_olhar
 herda comando_menu
 const titulo = "Olhar"
@@ -292,43 +183,6 @@ const nome3 = "Mostra volume"
 const tipo3 = "opc_simnao--"
 const clas3 = "config"
 const vari3 = "olharvolume"
-
-
-classe menu_econfig_adm_ptitulo
-herda comando_menu
-const titulo = "PTitulo, PDesc"
-const menufim = "menu_econfig_adm"
-const colunas = 35
-#
-const nome1 = "PTitulo a partir do nível"
-const tipo1 = "opc_numero--"
-const clas1 = "config"
-const vari1 = "ptitulonivel"
-#
-const nome2 = "Caracteres PTitulo"
-const info2 = "Quantos caracteres para os títulos dos jogadores"
-const tipo2 = "opc_numero--"
-const clas2 = "config"
-const vari2 = "ptitulomax"
-const extr2 = "5 100"
-#
-const nome3 = "PDesc a partir do nível"
-const tipo3 = "opc_numero--"
-const clas3 = "config"
-const vari3 = "pdescnivel"
-#
-const nome4 = "Caracteres PDesc"
-const info4 = "Quantos caracteres para as descrições dos jogadores"
-const tipo4 = "opc_numero--"
-const clas4 = "config"
-const vari4 = "pdescmax"
-const extr4 = "5 5000"
-#
-const nome5 = "Linhas PDesc"
-const info5 = "Quantas linhas para as descrições dos jogadores"
-const tipo5 = "opc_numero--"
-const clas5 = "config"
-const vari5 = "pdesclinhas"
 
 
 classe menu_econfig_adm_animais
@@ -388,54 +242,6 @@ const info8 = "Mensagem para os outros, quando animal vai para alguém"
 const tipo8 = "opc_linha--"
 const clas8 = "config"
 const vari8 = "capturar_outros"
-
-
-classe menu_econfig_adm_renascer
-herda comando_menu
-const titulo = "Renascer"
-const menufim = "menu_econfig_adm"
-const colunas = 35
-#
-const nome1 = "Renascer"
-const info1 = "Nota: Renascer não funciona se não houver nível máximo nas raças ou classes\n\
-Nota: A explicação de AJUDA RENASCER muda conforme essa opção e a próxima"
-const tipo1 = "opc_opcao--"
-const clas1 = "config"
-const vari1 = "renascer"
-const extr1 = "Desabilitado\n\
-Não perde as hab/magias\n\
-Escolhe uma hab/magia\n\
-Escolhe duas habs/magias\n\
-Escolhe três habs/magias\n\
-Escolhe quatro habs/magias\n\
-Escolhe cinco habs/magias"
-#
-const nome2 = "Nível aula"
-const info2 = "Cada vez que o jogador escolhe uma habilidade ou magia no comando renascer,\n\
-poderá aprendê-la em um nível menor. Essa opção é quantos níveis reduzir."
-const tipo2 = "opc_numero--"
-const clas2 = "config"
-const vari2 = "nrenascer"
-#
-const nome3 = "Nível máximo"
-const info3 = "Após renascer, o nível para renascer novamente aumenta conforme essa opção"
-const tipo3 = "opc_numero--"
-const clas3 = "config"
-const vari3 = "nivel_renascer"
-#
-const nome4 = "Experiência máxima"
-const info4 = "Em porcentagem. Ao renascer, a experiência necessária para subir de nível\n\
-é multiplicada por esse número."
-const tipo4 = "opc_numero--"
-const clas4 = "config"
-const vari4 = "exp_renascer"
-const extr4 = "1 1000"
-#
-const nome5 = "Sala renascer"
-const info5 = "Para que sala vai após renascer; se ausente continua na mesma sala"
-const tipo5 = "opc_sala"
-const clas5 = "config"
-const vari5 = "sala_renascer"
 
 
 classe menu_econfig_adm_config
