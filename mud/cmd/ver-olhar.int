@@ -1,12 +1,48 @@
-classe cmd_ver
-herda comando_comum
-const txtajuda = "\b\c3Ver\b\n\
+classe h_cmd_ver
+herda h_cmd_olhar
+const completo = 0
+const txtajuda1 = "\b\c3Ver\b\n\
 Sintaxe: VER\n\
-         VER <personagem ou objeto>\n\
-Olha de relance para o lugar aonde você está ou para um personagem ou\n\
+         VER <personagem ou objeto>\n"
+#
+const m_ajuda = "Olha de relance para o lugar aonde você está ou para um personagem ou\n\
 objeto. É semelhante ao comando olhar, mas dá menos informações."
+const m_naover = "Você não vê $m."
+const m_olhar_auto = ""
+const m_olhar_perso2 = ""
+const m_olhar_perso3 = ""
+const m_olhar_item = ""
+const m_fechado = "Está fechad$u."
+const m_vazio = "Está vazi$u."
+
+
+classe h_cmd_olhar
+herda comando_comum
+const completo = 1
+const txtajuda = txtajuda1 + m_ajuda
+const txtajuda1 = "\b\c3Olhar\b\n\
+Sintaxe: OLHAR\n\
+         OLHAR <personagem ou objeto>\n"
 const posic = 5
-const completo = 0 # No comando olhar, essa variável é 1
+#
+const m_ajuda = "Mostra a descrição completa do lugar aonde você está ou informações\n\
+sobre um personagem ou um objeto."
+const m_naover = "Você não vê $m."
+const m_olhar_auto = ""
+const m_olhar_perso2 = "$P olha para você."
+const m_olhar_perso3 = "$P olha para $a."
+const m_olhar_item = "$P olha para $o."
+const m_fechado = "Está fechad$u."
+const m_vazio = "Está vazi$u."
+const m_usando = "$A está usando:"
+const m_dentro = "Dentro você vê:"
+const m_descextra = "Você não vê nada de especial."
+const v_olharnivel = 1
+const v_olhartipo = 0
+const v_olharvolume = 1
+const admordem = "m_ajuda m_naover m_olhar_auto m_olhar_perso2 m_olhar_perso3\n\
+m_olhar_item m_fechado m_vazio m_usando m_dentro m_descextra v_olharnivel\n\
+v_olhartipo v_olharvolume"
 
 func escr
   nomeobj n
@@ -44,145 +80,149 @@ func escr
       casofim
     efim
   fimse
-# Descrições de itens e personagens
+# Obtém o item ou personagem
   textotxt t
   listaobj l
   l.addfim(r1.dentro1, r1.dentro2, arg0.dentro1)
   epara nulo, l, l.ini.remove
-    continuar !l.objini.visivel(arg0) || !n.nome(l.objini.ident, l.objini.objtot)
-# ret arg0 == l.objini, arg0.msg("Olhar para você mesm" + (arg0.msexo ? "o?" : "a?"))
-    r1 = l.objini
+    sair l.objini.visivel(arg0) && n.nome(l.objini.ident, l.objini.objtot)
+  efim
+  r1 = l.objini
+  se !r1
+    $mensjog.mens = txt1(arg1)
+    $mensjog.msg(m_naover, arg0)
+    ret
+  fimse
+  ret arg0 == r1 && m_olhar_auto, $mensjog.msg(m_olhar_auto, arg0)
 # Gera eventos
-    l.limpar
-    se completo
-      epara l.addfim(arg0.evento), l, l.ini.remove
-        ret l.objini.cmd_olhar(arg0, r1, arg0), nulo
-      efim
-      epara l.addfim(r1.evento), l, l.ini.remove
-        ret l.objini.cmd_olhar(arg0, r1, r1), nulo
-      efim
-    senao
-      epara l.addfim(arg0.evento), l, l.ini.remove
-        ret l.objini.cmd_ver(arg0, r1, arg0), nulo
-      efim
-      epara l.addfim(r1.evento), l, l.ini.remove
-        ret l.objini.cmd_ver(arg0, r1, r1), nulo
-      efim
-    fimse
+  l.limpar
+  se completo
+    epara l.addfim(arg0.evento), l, l.ini.remove
+      ret l.objini.cmd_olhar(arg0, r1, arg0), nulo
+    efim
+    epara l.addfim(r1.evento), l, l.ini.remove
+      ret l.objini.cmd_olhar(arg0, r1, r1), nulo
+    efim
+  senao
+    epara l.addfim(arg0.evento), l, l.ini.remove
+      ret l.objini.cmd_ver(arg0, r1, arg0), nulo
+    efim
+    epara l.addfim(r1.evento), l, l.ini.remove
+      ret l.objini.cmd_ver(arg0, r1, r1), nulo
+    efim
+  fimse
 # Sala definida ao ver/olhar o item
-    ref r2 = r1.i_salaver
-    se r2
-      r2.s_reset1
-      refvar cfg = (completo ? 7 : 6) + (arg0.jogconfig.16 ? 8)
-      arg0.msg2(r2.descsala(arg0, cfg))
-      se completo && r1.dono != arg0
-        $mens.p(arg0, nulo, r1)
-        $mens.mvis2("", "$P olha para $o.")
-      fimse
-      ret
-    fimse
-# Sala para pegar e soltar itens
-    r2 = r1.item ? r1.i_salapegar
-    !r2 && (r2 = r1)
-# O que o personagem está vestindo
-    se r1.perso
-      se completo
-        int1 vest.32 # Aonde está vestindo
-        ref pos.55
-        listaitem item
-        epara item = r1.dentro2.ini, item, item.depois
-          vest.[item.obj.vestpos - 1] = 1, pos.[item.obj.vestpos] = item.obj
-        efim
-        txt512 lin
-        txt100 nomepos
-        epara lin = config:equip_ordem, lin, lin = txt2(lin)
-          refvar obj = pos.[1 + txt1(lin)]
-          continuar !obj.vestpos || !obj.visivel(arg0)
-# continuar vest.bits & config:vestir[obj.vestpos - 1]
-          nomepos = "\c2(" + misc:equip(obj.vestpos) + ")\b "
-          nomepos += txtesp(20 - inttotal(nomepos))
-          t.addfim(nomepos + txtcopiamai(obj.descnome, "A"))
-        efim
-        t.linhas && t.addini(txtcopiamai(r1.descnome, "A") + " está usando:")
-      fimse
-# O que o container possui
-    senao r1.i_aberto == 5 # Indefinido
-    senao r1.i_aberto >= 3 && !arg0.j_imortal # Fechado ou trancado
-      t.addini(r1.msexo ? "Está fechado." : "Está fechada.")
-    senao r1.i_aberto || r1 != r2 # Aberto
-      refvar liq = $liq_[txt2(r2.var.z_liquido)]
-      se liq
-        refvar ml = 10 * int(10 * txt1(r2.var.z_liquido) / r2.f_totalml)
-        t.addfim("1 " + ml + "% com " + liq.nome)
-      fimse
-      se !r2.var.z_moedas
-      senao r2.dono != arg0 || r2.var.z_moedas_ <= 10
-        t.addfim("1 " + txtcopiamai(misc:txtmoedas(r2.var.z_moedas), "A"))
-      senao
-        t.addfim("1 " + txtnum(r2.var.z_moedas_, ".") + " moedas")
-      fimse
-      listaitem item
-      epara item = r2.dentro1.ini, item, item.depois
-        continuar !item.obj.visivel(arg0)
-        t.addfim(txt(item.obj.objtot) + " " + txtcopiamai(item.obj.descnome, "A"))
-      efim
-      se !t.linhas
-        t.addfim(r1.msexo ? "Está vazio." : "Está vazia.")
-      senao completo
-        t.juntalin("(", "x)")
-        t.addini("Dentro você vê:")
-      senao
-        t.limpar
-      fimse
-    fimse
-# Nome, nível, situação atual e animal que escolheu
-    txt200 t2
-    se r1.perso
-      t2 += niveltipo(r1, " é", ",") + " " + r1.estadopos
-      se r1.persobat && r1.persobat != r1
-        t2 += ".\b\nEscolheu " + txtcopiamai(r1.persobat.nome, "A")
-        t2 += niveltipo(r1.persobat) + ", " + r1.persobat.estadopos
-      fimse
-    senao r1.pnivel || r1.renascer
-      t2 += " é um objeto do nível " + r1.pnivel
-      r1.renascer && (t2 += ", R" + r1.renascer)
-    fimse
-# Luz
-    se int(r1.luztempo.abs) >= 25
-      refvar tempo = int(r1.luztempo.abs / 50)
-      r1.luztempo > 0 && (t2 += r1.msexo ? ", aceso" : ", acesa")
-      t2 += ", produz luz por " + tempo + (tempo == 1 ? " minuto" : " minutos")
-# t2 += r1.luztempo
-    fimse
-# Descrição ao olhar
-    se !completo
-      ret arg0.msg("\b" + txtcopiamai(r1.descnome, "A") + t2 + ".\b " + t.remove(1000))
-    senao
-      refvar m1 = !arg0.psexo && r1.var.z_mdesc ? r1.var.z_mdesc : r1.var.z_desc
-      refvar m2 = r1.descver(arg0)
-      se m1 || m2 # Com descrição extra
-        t2 && t.addini(txtcopiamai(r1.descnome, "A") + t2 + ".")
-        m1 && t.addini(m1)
-        m2 && t.addini(m2)
-        t.addini("\b\c6" + nomevolume(r1, r2) + "\b")
-        arg0.msg2(t.remove(1000))
-      senao # Sem descrição extra
-        !t.linhas && t.addfim("Você não vê nada de especial.")
-        arg0.msg2("\b\c6" + nomevolume(r1, r2) + t2 + ".\b\n" + t.remove(1000))
-      fimse
-    fimse
-# Envia mensagem
-    se r1 == arg0
-    senao r1.perso
-      $mens.p(arg0, r1)
-      $mens.mvis2("", "$P olha para $a.")
-    senao r1.dono != arg0
+  ref r2 = r1.i_salaver
+  se r2
+    r2.s_reset1
+    refvar cfg = (completo ? 7 : 6) + (arg0.jogconfig.16 ? 8)
+    arg0.msg2(r2.descsala(arg0, cfg))
+    se m_olhar_item && r1.dono != arg0
       $mens.p(arg0, nulo, r1)
-      $mens.mvis2("", "$P olha para $o.")
+      $mens.mvis2("", m_olhar_item)
     fimse
     ret
-  efim
-  arg0.msg("Você não vê isso.")
+  fimse
+# Sala para pegar e soltar itens
+  r2 = r1.item ? r1.i_salapegar
+  !r2 && (r2 = r1)
+# O que o personagem está vestindo
+  $mens.p(arg0, r1, r1)
+  se r1.perso
+    se completo
+      int1 vest.32 # Aonde está vestindo
+      ref pos.55
+      listaitem item
+      epara item = r1.dentro2.ini, item, item.depois
+        vest.[item.obj.vestpos - 1] = 1, pos.[item.obj.vestpos] = item.obj
+      efim
+      txt512 lin
+      txt100 nomepos
+      epara lin = config:equip_ordem, lin, lin = txt2(lin)
+        refvar obj = pos.[1 + txt1(lin)]
+        continuar !obj.vestpos || !obj.visivel(arg0)
+# continuar vest.bits & config:vestir[obj.vestpos - 1]
+        nomepos = "\c2(" + misc:equip(obj.vestpos) + ")\b "
+        nomepos += txtesp(20 - inttotal(nomepos))
+        t.addfim(nomepos + txtcopiamai(obj.descnome, "A"))
+      efim
+      t.linhas && m_usando && t.addini($mens.txt(m_usando, arg0))
+    fimse
+# O que o container possui
+  senao r1.i_aberto == 5 # Indefinido
+  senao r1.i_aberto >= 3 && !arg0.j_imortal # Fechado ou trancado
+    t.addini($mens.txt(m_fechado, arg0))
+  senao r1.i_aberto || r1 != r2 # Aberto
+    refvar liq = $liq_[txt2(r2.var.z_liquido)]
+    se liq
+      refvar ml = 10 * int(10 * txt1(r2.var.z_liquido) / r2.f_totalml)
+      t.addfim("1 " + ml + "% com " + liq.nome)
+    fimse
+    se !r2.var.z_moedas
+    senao r2.dono != arg0 || r2.var.z_moedas_ <= 10
+      t.addfim("1 " + txtcopiamai(misc:txtmoedas(r2.var.z_moedas), "A"))
+    senao
+      t.addfim("1 " + txtnum(r2.var.z_moedas_, ".") + " moedas")
+    fimse
+    listaitem item
+    epara item = r2.dentro1.ini, item, item.depois
+      continuar !item.obj.visivel(arg0)
+      t.addfim(txt(item.obj.objtot) + " " + txtcopiamai(item.obj.descnome, "A"))
+    efim
+    se !t.linhas
+      t.addini($mens.txt(m_vazio, arg0))
+    senao completo
+      t.juntalin("(", "x)")
+      t.addini($mens.txt(m_dentro, arg0))
+    senao
+      t.limpar
+    fimse
+  fimse
+# Nome, nível, situação atual e animal que escolheu
+  txt200 t2
+  se r1.perso
+    t2 += niveltipo(r1, " é", ",") + " " + r1.estadopos
+    se r1.persobat && r1.persobat != r1
+      t2 += ".\b\nEscolheu " + txtcopiamai(r1.persobat.nome, "A")
+      t2 += niveltipo(r1.persobat) + ", " + r1.persobat.estadopos
+    fimse
+  senao r1.pnivel || r1.renascer
+    t2 += " é um objeto do nível " + r1.pnivel
+    r1.renascer && (t2 += ", R" + r1.renascer)
+  fimse
+# Luz
+  se int(r1.luztempo.abs) >= 25
+    refvar tempo = int(r1.luztempo.abs / 50)
+    r1.luztempo > 0 && (t2 += r1.msexo ? ", aceso" : ", acesa")
+    t2 += ", produz luz por " + tempo + (tempo == 1 ? " minuto" : " minutos")
+# t2 += r1.luztempo
+  fimse
+# Descrição ao olhar
+  se !completo
+    ret arg0.msg("\b" + txtcopiamai(r1.descnome, "A") + t2 + ".\b " + t.remove(1000))
+  senao
+    refvar m1 = !arg0.psexo && r1.var.z_mdesc ? r1.var.z_mdesc : r1.var.z_desc
+    refvar m2 = r1.descver(arg0)
+    se m1 || m2 # Com descrição extra
+      t2 && t.addini(txtcopiamai(r1.descnome, "A") + t2 + ".")
+      m1 && t.addini(m1)
+      m2 && t.addini(m2)
+      t.addini("\b\c6" + nomevolume(r1, r2) + "\b")
+      arg0.msg2(t.remove(1000))
+    senao # Sem descrição extra
+      !t.linhas && m_descextra && t.addfim($mens.txt(m_descextra, arg0))
+      arg0.msg2("\b\c6" + nomevolume(r1, r2) + t2 + ".\b\n" + t.remove(1000))
+    fimse
+  fimse
+# Envia mensagem
+  se r1 == arg0
+  senao r1.perso
+    $mens.p(arg0, r1)
+    $mens.mvis3("", m_olhar_perso2, m_olhar_perso3)
+  senao r1.dono != arg0
+    $mens.p(arg0, nulo, r1)
+    $mens.mvis2("", m_olhar_item)
+  fimse
 
 func niveltipo # Usado para informar nível, raça e classe do personagem
 # arg0 = personagem
@@ -190,12 +230,12 @@ func niveltipo # Usado para informar nível, raça e classe do personagem
 # arg2 = texto que deve ser colocado no final da mensagem, se não for vazia
   txt100 t
   arg0.jog ? (t = " jogador")
-  se config:olhartipo
+  se olhartipo
     arg0.tipo1 && (t += " " + txtcopiamai(txte(arg0.tipo1), "A"))
     arg0.tipo2 && (t += " " + txtcopiamai(txte(arg0.tipo2), "A"))
     arg0.tipo3 && (t += " " + txtcopiamai(txte(arg0.tipo3), "A"))
   fimse
-  se config:olharnivel && (arg0.pnivel || arg0.prenascer)
+  se v_olharnivel && (arg0.pnivel || arg0.prenascer)
     t += " nível " + arg0.pnivel
     arg0.prenascer && (t += " R" + arg0.prenascer)
   fimse
@@ -204,7 +244,7 @@ func niveltipo # Usado para informar nível, raça e classe do personagem
 func nomevolume # Nome do item ou personagem e volume
 # arg0 = item ou personagem
 # arg1 = objeto que representa o conteúdo interno do item ou personagem
-  ret !config:olharvolume, txtcopiamai(arg0.descnome, "A")
+  ret !olharvolume, txtcopiamai(arg0.descnome, "A")
   txt100 nome
   nome = txtcopiamai(arg0.descnome, "A") + " (volume " + arg0.voltot / arg0.objtot
   se arg0.item && (arg0.i_aberto == 1 || arg0.i_aberto == 2) || arg1.s_sala
@@ -213,11 +253,143 @@ func nomevolume # Nome do item ou personagem e volume
   ret nome + ")"
 
 
-classe cmd_olhar
-herda cmd_ver
-const completo = 1
-const txtajuda = "\b\c3Olhar\b\n\
-Sintaxe: OLHAR\n\
-         OLHAR <personagem ou objeto>\n\
-Mostra a descrição completa do lugar aonde você está ou informações\n\
-sobre um personagem ou um objeto."
+classe m_cmd_ver
+herda comando_menu_cmd
+#
+const nome1 = "Ajuda"
+const tipo1 = "opc_texto"
+const clas1 = "cmd_ver"
+const vari1 = "m_ajuda"
+#
+const nome2 = "Sem alvo"
+const tipo2 = "opc_linha"
+const clas2 = "cmd_ver"
+const vari2 = "m_naover"
+#
+const nome2 = "Ver a si mesmo"
+const info2 = "Mensagem quando tenta ver o próprio personagem, ou texto vazio consegue ver"
+const tipo2 = "opc_linha"
+const clas2 = "cmd_ver"
+const vari2 = "m_olhar_auto"
+#
+const nome3 = "Ver perso: alvo"
+const info3 = "Mensagem para o personagem que está sendo visto"
+const tipo3 = "opc_linha"
+const clas3 = "cmd_ver"
+const vari3 = "m_olhar_perso2"
+#
+const nome4 = "Ver perso: outros"
+const info4 = "Mensagem para os outros ao ver um personagem"
+const tipo4 = "opc_linha"
+const clas4 = "cmd_ver"
+const vari4 = "m_olhar_perso3"
+#
+const nome5 = "Ver item"
+const tipo5 = "opc_linha"
+const clas5 = "cmd_ver"
+const vari5 = "m_olhar_item"
+#
+const nome6 = "Fechado"
+const tipo6 = "opc_linha"
+const clas6 = "cmd_ver"
+const vari6 = "m_fechado"
+#
+const nome7 = "Vazio"
+const tipo7 = "opc_linha"
+const clas7 = "cmd_ver"
+const vari7 = "m_vazio"
+#
+const nome8 = "Mostra nível"
+const info8 = "Se deve mostrar o nível do personagem"
+const tipo8 = "opc_simnao"
+const clas8 = "cmd_olhar"
+const vari8 = "v_olharnivel"
+#
+const nome9 = "Mostra raça e classe"
+const tipo9 = "opc_simnao"
+const clas9 = "cmd_olhar"
+const vari9 = "v_olhartipo"
+#
+const nome10 = "Mostra volume"
+const tipo10 = "opc_simnao"
+const clas10 = "cmd_olhar"
+const vari10 = "v_olharvolume"
+
+
+classe m_cmd_olhar
+herda comando_menu_cmd
+#
+const nome1 = "Ajuda"
+const tipo1 = "opc_texto"
+const clas1 = "cmd_olhar"
+const vari1 = "m_ajuda"
+#
+const nome2 = "Sem alvo"
+const tipo2 = "opc_linha"
+const clas2 = "cmd_olhar"
+const vari2 = "m_naover"
+#
+const nome2 = "Olhar a si mesmo"
+const info2 = "Mensagem quando tenta ver o próprio personagem, ou texto vazio consegue ver"
+const tipo2 = "opc_linha"
+const clas2 = "cmd_olhar"
+const vari2 = "m_olhar_auto"
+#
+const nome3 = "Olhar perso: alvo"
+const info3 = "Mensagem para o personagem que está sendo visto"
+const tipo3 = "opc_linha"
+const clas3 = "cmd_olhar"
+const vari3 = "m_olhar_perso2"
+#
+const nome4 = "Olhar perso: outros"
+const info4 = "Mensagem para os outros ao ver um personagem"
+const tipo4 = "opc_linha"
+const clas4 = "cmd_olhar"
+const vari4 = "m_olhar_perso3"
+#
+const nome5 = "Olhar item"
+const tipo5 = "opc_linha"
+const clas5 = "cmd_olhar"
+const vari5 = "m_olhar_item"
+#
+const nome6 = "Fechado"
+const tipo6 = "opc_linha"
+const clas6 = "cmd_olhar"
+const vari6 = "m_fechado"
+#
+const nome7 = "Vazio"
+const tipo7 = "opc_linha"
+const clas7 = "cmd_olhar"
+const vari7 = "m_vazio"
+#
+const nome8 = "Está usando"
+const tipo8 = "opc_linha"
+const clas8 = "cmd_olhar"
+const vari8 = "m_usando"
+#
+const nome9 = "Dentro"
+const tipo9 = "opc_linha"
+const clas9 = "cmd_olhar"
+const vari9 = "m_dentro"
+#
+const nome10 = "Sem descrição"
+const info10 = "Quando o item ou personagem não possui descrição extra"
+const tipo10 = "opc_linha"
+const clas10 = "cmd_olhar"
+const vari10 = "m_descextra"
+#
+const nome11 = "Mostra nível"
+const info11 = "Se deve mostrar o nível do personagem"
+const tipo11 = "opc_simnao"
+const clas11 = "cmd_olhar"
+const vari11 = "v_olharnivel"
+#
+const nome12 = "Mostra raça e classe"
+const tipo12 = "opc_simnao"
+const clas12 = "cmd_olhar"
+const vari12 = "v_olhartipo"
+#
+const nome13 = "Mostra volume"
+const tipo13 = "opc_simnao"
+const clas13 = "cmd_olhar"
+const vari13 = "v_olharvolume"

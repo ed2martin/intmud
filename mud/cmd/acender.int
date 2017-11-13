@@ -1,10 +1,10 @@
 classe cmd_acender
 herda comando_comum
-const txtajuda = "\b\c3Acender\b\n\
-Sintaxe: ACENDER <objeto>\n\
-Acende um objeto (um fósforo, uma lamparina, etc)."
 const posic = 5
+const txtajuda = txtajuda1 + m_ajuda
+const txtajuda1 = "\b\c3Acender\b\nSintaxe: ACENDER <objeto>\n"
 #
+const m_ajuda = "Acende um objeto (um fósforo, uma lamparina, etc)."
 const m_sem_args = "Acender o quê?"
 
 func escr
@@ -59,10 +59,11 @@ func escr
 
 classe cmd_apagar
 herda comando_comum
-const txtajuda = "\b\c3Apagar\b\n\
-Sintaxe: APAGAR <objeto>\n\
-Apaga um objeto (um fósforo, uma lamparina, etc)."
 const posic = 5
+const txtajuda = txtajuda1 + m_ajuda
+const txtajuda1 = "\b\c3Apagar\b\nSintaxe: APAGAR <objeto>\n"
+#
+const m_ajuda = "Apaga um objeto (um fósforo, uma lamparina, etc)."
 
 func escr
   listaobj l

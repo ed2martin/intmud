@@ -1,4 +1,4 @@
-classe atualiza_479
+classe atualiza_480
 # Atualiza arquivos mud/config/* e mud/areas/* de acordo com novas mudanças
 prog p
 debug dbg
@@ -33,6 +33,7 @@ func movefunc # Move uma uma função, constante ou variável
 # arg1 = nome da função na classe origem
 # arg2 = nome da classe destino
 # arg3 = novo nome da função (na classe destino)
+# arg4 = se verdadeiro, não apaga função na classe origem
   prog p
   textotxt t
   ret !p.existe(arg2) || !p.inilinha(arg0, arg1), nulo
@@ -40,7 +41,7 @@ func movefunc # Move uma uma função, constante ou variável
   epara p.depois, p.lin, p.depois
     t.addfim(p.texto)
   efim
-  p.apagar(arg0, arg1), p.criar(arg2, t.remove(10000))
+  !arg4 && p.apagar(arg0, arg1), p.criar(arg2, t.remove(10000))
 
 const iniclasse = !$[arg0] && criar(arg0)
 
@@ -728,8 +729,8 @@ func ini3_exec
 func ini4_exec
   apagar(este)
 # Checa e muda a versão
-  ret (versao = config:versao) >= 479, nulo
-  p.criar("config", "const versao = 479 # Para atualizar diretórios areas e config")
+  ret (versao = config:versao) >= 480, nulo
+  p.criar("config", "const versao = 480 # Para atualizar diretórios areas e config")
   config:salvar
 # Comando Fim e Dicas aleatórias
   se versao < 457
@@ -750,7 +751,7 @@ func ini4_exec
   criafunc("config", "const mens_tu = \"você\"")
   criafunc("config", "const mens_ti = \"você\"")
 # Opções dos menus
-  se versao < 479
+  se versao < 480
     dbg.ini
     movefunc("config", "falarmsg", "cmd_falar", "m_falar2")
     movefunc("config", "perguntarmsg", "cmd_falar", "m_perguntar2")
@@ -785,6 +786,21 @@ func ini4_exec
     p.apagar("config", "pdescnivel")
     p.apagar("config", "pdesclinhas")
     p.apagar("config", "pdescmax")
+    movefunc("config", "olharnivel", "cmd_olhar", "v_olharnivel", 1)
+    movefunc("config", "olhartipo", "cmd_olhar", "v_olhartipo", 1)
+    movefunc("config", "olharvolume", "cmd_olhar", "v_olharvolume", 1)
+    movefunc("config", "olharnivel", "cmd_ver", "v_olharnivel")
+    movefunc("config", "olhartipo", "cmd_ver", "v_olhartipo")
+    movefunc("config", "olharvolume", "cmd_ver", "v_olharvolume")
+    dbg.ini
+    movefunc("config", "chattipo", "cmd_schat", "v_tipo", 1)
+    movefunc("config", "chatnivel", "cmd_schat", "v_nivel", 1)
+    movefunc("config", "novatostipo", "cmd_novatos", "v_tipo")
+    movefunc("config", "novatosnivel", "cmd_novatos", "v_nivel")
+    movefunc("config", "novatosmsg", "cmd_novatos", "m_msg")
+    movefunc("config", "chattipo", "cmd_chat", "v_tipo")
+    movefunc("config", "chatnivel", "cmd_chat", "v_nivel")
+    movefunc("config", "chatmsg", "cmd_chat", "m_msg")
   fimse
 # Avisa que atualizou arquivos
   tela.msg("Diretórios areas e config atualizados\n")

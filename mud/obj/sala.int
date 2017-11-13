@@ -322,6 +322,7 @@ func mudaporta # Muda estado de uma saída; variável porta_[arg0]
 # arg1 = novo valor
 # arg2 = mensagem enviada para a própria sala, da mesma forma que $mens.mtodos1
 # arg3 = mensagem enviada para a sala vizinha, da mesma forma que $mens.mtodos1
+# arg4 = mensagem para o personagem $mens.perso, se nulo ou vazio assume arg2
 # Nas mensagens: $m=nome da porta, $1=abriu ou abriram, $2=fechou ou fecharam
 # Retorna: 0=saída inexistente, 1=saída foi alterada
   ref r = dir_[arg0]
@@ -357,8 +358,9 @@ func mudaporta # Muda estado de uma saída; variável porta_[arg0]
       $mens.o_1 = "abriu", $mens.o_2 = "fechou"
     fimse
     listaobj l
+    refvar perso = arg4 ? $mens.perso
     epara l.addfim(dentro2), l, l.ini.remove
-      $mens.msgsominv(arg2, som, l.objini)
+      $mens.msgsominv(l.objini == perso ? arg4 : arg2, som, l.objini)
     efim
   fimse
   ret 1

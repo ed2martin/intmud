@@ -1,11 +1,25 @@
-classe cmd_abrir
+classe h_cmd_abrir
 herda comando_comum
-const txtajuda = "\b\c3Abrir\b\n\
-Sintaxe: ABRIR <objeto ou direção>\n\
-Abre um objeto ou uma porta."
 const posic = 5
+const txtajuda = txtajuda1 + m_ajuda
+const txtajuda1 = "\b\c3Abrir\b\nSintaxe: ABRIR <objeto ou direção>\n"
 #
+const m_ajuda = "Abre um objeto ou uma porta."
 const m_sem_args = "Abrir o quê?"
+const m_naover = "Você não vê $m."
+const m_item_aberto = "$O já está abert$u."
+const m_item_trancado = "$O está trancad$u."
+const m_item_nao = "Não foi possível abrir $o."
+const m_item_abriu1 = "Você abriu $a."
+const m_item_abriu2 = "$P abriu $a."
+const m_porta_sem = "Não há porta nessa direção."
+const m_porta_aberta = "$P já est$o abert$a." # Conforme mens_porta:info
+const m_porta_trancada = "$P est$o trancad$a." # Conforme mens_porta:info
+const m_porta_abriu1 = "Você abriu $m."
+const m_porta_abriu2 = "$P abriu $m."
+const admordem = "m_ajuda m_sem_args m_naover m_item_aberto m_item_trancado\n\
+m_item_nao m_item_abriu1 m_item_abriu2 m_porta_sem m_porta_aberta m_porta_trancada\n\
+m_porta_abriu1 m_porta_abriu2"
 
 func escr
   refvar perm_msg = $perm_[arg0.jogperm].abrir
@@ -30,18 +44,18 @@ func escrobj # Abrir um item
       sair i.obj.visivel(arg0) && n.nome(i.obj.ident, i.obj.objtot)
     efim
     $mens.mens = arg1
-    ret !i, $mens.mp("Você não vê $m.", arg0)
+    ret !i, $mens.mp(m_naover, arg0)
   fimse
 # Checa se está aberto
   ref r
   r = i.obj
   casovar r.i_aberto
   casose "2"
-    ret $mens.mp("$O já está abert$u.", arg0, nulo, r)
+    ret $mens.mp(m_item_aberto, arg0, nulo, r)
   casose "4"
-    ret $mens.mp("$O está trancad$u.", arg0, nulo, r)
+    ret $mens.mp(m_item_trancado, arg0, nulo, r)
   casose
-    ret $mens.mp("Não foi possível abrir $o.", arg0, nulo, r)
+    ret $mens.mp(m_item_nao, arg0, nulo, r)
   casose "3"
   casose "5"
   casofim
@@ -56,7 +70,7 @@ func escrobj # Abrir um item
 # Abre o item
   r.i_aberto = 2
   $mens.p(arg0, r)
-  $mens.mtodos1("$P abriu $a.")
+  $mens.mtodos2(m_item_abriu1, m_item_abriu2)
   epara l.addfim(arg0.evento), l, l.ini.remove
     l.objini.cmd_abriuobj(arg0, r, arg0)
   efim
@@ -68,15 +82,15 @@ func escrdir # Abrir uma porta
 # arg0 = personagem
 # arg1 = nome da direção
 # Checa se porta existe
-  ret !arg0.dono.dir_[arg1](arg0), arg0.msg("Não há porta nessa direção.")
+  ret !arg0.dono.dir_[arg1](arg0), $mensjog.msg(m_porta_sem, arg0)
 # Checa se está aberto
   casovar 3 & arg0.dono.porta_[arg1]
   casose
-    ret arg0.msg("Não há porta nessa direção.")
+    ret $mensjog.msg(m_porta_sem, arg0)
   casose "1"
-    ret arg0.msg($mens_porta.mens("$P já est$o abert$a.", arg0.dono, arg1))
+    ret arg0.msg($mens_porta.mens(m_porta_aberta, arg0.dono, arg1))
   casose "3"
-    ret arg0.msg($mens_porta.mens("$P est$o trancad$a.", arg0.dono, arg1))
+    ret arg0.msg($mens_porta.mens(m_porta_trancada, arg0.dono, arg1))
   casose "2"
   casofim
 # Gera eventos
@@ -86,7 +100,7 @@ func escrdir # Abrir uma porta
   efim
 # Abre a porta
   $mens.p(arg0)
-  arg0.dono.mudaporta(arg1, 1, "$P abriu $m.", "$M se $1.") # Abre a porta
+  arg0.dono.mudaporta(arg1, 1, m_porta_abriu2, "$M se $1.", m_porta_abriu1) # Abre a porta
   epara l.addfim(arg0.evento), l, l.ini.remove
     l.objini.cmd_abriudir(arg0, arg0.dono, arg1, arg0)
   efim
@@ -95,12 +109,26 @@ func escrdir # Abrir uma porta
   efim
 
 
-classe cmd_fechar
+classe h_cmd_fechar
 herda comando_comum
-const txtajuda = "\b\c3Fechar\b\n\
-Sintaxe: FECHAR <objeto ou direção>\n\
-Fecha um objeto ou uma porta."
 const posic = 5
+const txtajuda = txtajuda1 + m_ajuda
+const txtajuda1 = "\b\c3Fechar\b\nSintaxe: FECHAR <objeto ou direção>\n"
+#
+const m_ajuda = "Fecha um objeto ou uma porta."
+const m_sem_args = "fechar o quê?"
+const m_naover = "Você não vê $m."
+const m_item_fechado = "$O já está fechad$u."
+const m_item_nao = "Não foi possível fechar $o."
+const m_item_fechou1 = "Você fechou $a."
+const m_item_fechou2 = "$P fechou $a."
+const m_porta_sem = "Não há porta nessa direção."
+const m_porta_fechada = "$P já est$o fechad$a." # Conforme mens_porta:info
+const m_porta_fechou1 = "Você fechou $m."
+const m_porta_fechou2 = "$P fechou $m."
+const admordem = "m_ajuda m_sem_args m_naover m_item_fechado m_item_nao\n\
+m_item_fechou1 m_item_fechou2 m_porta_sem m_porta_fechada m_porta_fechou1\n\
+m_porta_fechou2"
 
 func escr
   refvar perm_msg = $perm_[arg0.jogperm].abrir
@@ -115,7 +143,7 @@ func escrobj # Fechar um item
   listaitem i # Para procurar o item
   nomeobj n # Para reconhecer os itens
 # Procura o item
-  ret !arg1, arg0.msg("Fechar o quê?")
+  ret !arg1, $mensjog.msg(m_sem_args, arg0)
   n.ini(arg1, 1)
   epara i = arg0.dono.dentro1.ini, i, i.depois
     sair i.obj.visivel(arg0) && n.nome(i.obj.ident, i.obj.objtot)
@@ -125,7 +153,7 @@ func escrobj # Fechar um item
       sair i.obj.visivel(arg0) && n.nome(i.obj.ident, i.obj.objtot)
     efim
     $mens.mens = arg1
-    ret !i, $mens.mp("Você não vê $m.", arg0)
+    ret !i, $mens.mp(m_naover, arg0)
   fimse
 # Checa se está fechado
   ref r
@@ -133,9 +161,9 @@ func escrobj # Fechar um item
   casovar r.i_aberto
   casose "3"
   casose "4"
-    ret $mens.mp("$O já está fechad$u.", arg0, nulo, r)
+    ret $mens.mp(m_item_fechado, arg0, nulo, r)
   casose
-    ret $mens.mp("Não foi possível fechar $o.", arg0, nulo, r)
+    ret $mens.mp(m_item_nao, arg0, nulo, r)
   casose "2"
   casose "5"
   casofim
@@ -150,7 +178,7 @@ func escrobj # Fechar um item
 # Fecha o item
   r.i_aberto = r.i_tranc == 2 ? 4 : 3
   $mens.p(arg0, r)
-  $mens.mtodos1("$P fechou $a.")
+  $mens.mtodos2(m_item_fechou1, m_item_fechou2)
   epara l.addfim(arg0.evento), l, l.ini.remove
     l.objini.cmd_fechouobj(arg0, r, arg0)
   efim
@@ -162,14 +190,14 @@ func escrdir # Fechar uma porta
 # arg0 = personagem
 # arg1 = nome da direção
 # Checa se porta existe
-  ret !arg0.dono.dir_[arg1](arg0), arg0.msg("Não há porta nessa direção.")
+  ret !arg0.dono.dir_[arg1](arg0), $mensjog.msg(m_porta_sem, arg0)
 # Checa se está fechado
   casovar 3 & arg0.dono.porta_[arg1]
   casose
-    ret arg0.msg("Não há porta nessa direção.")
+    ret $mensjog.msg(m_porta_sem, arg0)
   casose "2"
   casose "3"
-    ret arg0.msg($mens_porta.mens("$P já est$o fechad$a.", arg0.dono, arg1))
+    ret arg0.msg($mens_porta.mens(m_porta_fechada, arg0.dono, arg1))
   casose "1"
   casofim
 # Gera eventos
@@ -180,13 +208,13 @@ func escrdir # Fechar uma porta
   epara l.addfim(arg0.dono.evento), l, l.ini.remove
     ret l.objini.cmd_fechardir(arg0, arg0.dono, arg1, arg0.dono), nulo
   efim
-  ret !arg0.dono.dir_[arg1](arg0), arg0.msg("Não há porta nessa direção.")
+  ret !arg0.dono.dir_[arg1](arg0), $mensjog.msg(m_porta_sem, arg0)
 # Fecha a porta
   $mens.p(arg0)
   se arg0.dono.tranc_[arg1](arg0) == 2
-    arg0.dono.mudaporta(arg1, 3, "$P fechou $m.", "$M se $2.") # Tranca a porta
+    arg0.dono.mudaporta(arg1, 3, m_porta_fechou2, "$M se $2.", m_porta_fechou1) # Tranca
   senao
-    arg0.dono.mudaporta(arg1, 2, "$P fechou $m.", "$M se $2.") # Fecha a porta
+    arg0.dono.mudaporta(arg1, 2, m_porta_fechou2, "$M se $2.", m_porta_fechou1) # Fecha
   fimse
   epara l.addfim(arg0.evento), l, l.ini.remove
     l.objini.cmd_fechoudir(arg0, arg0.dono, arg1, arg0)
@@ -194,3 +222,134 @@ func escrdir # Fechar uma porta
   epara l.addfim(arg0.dono.evento), l, l.ini.remove
     l.objini.cmd_fechoudir(arg0, arg0.dono, arg1, arg0.dono)
   efim
+
+
+classe m_cmd_abrir
+herda comando_menu_cmd
+#
+const nome1 = "Ajuda"
+const tipo1 = "opc_texto"
+const clas1 = "cmd_abrir"
+const vari1 = "m_ajuda"
+#
+const nome2 = "Sem argumentos"
+const tipo2 = "opc_linha"
+const clas2 = "cmd_abrir"
+const vari2 = "m_sem_args"
+#
+const nome3 = "Sem alvo"
+const tipo3 = "opc_linha"
+const clas3 = "cmd_abrir"
+const vari3 = "m_naover"
+#
+const nome4 = "Item aberto"
+const tipo4 = "opc_linha"
+const clas4 = "cmd_abrir"
+const vari4 = "m_item_aberto"
+#
+const nome5 = "Item trancado"
+const tipo5 = "opc_linha"
+const clas5 = "cmd_abrir"
+const vari5 = "m_item_trancado"
+#
+const nome6 = "Não é possível"
+const tipo6 = "opc_linha"
+const clas6 = "cmd_abrir"
+const vari6 = "m_item_nao"
+#
+const nome7 = "Abriu item perso"
+const tipo7 = "opc_linha"
+const clas7 = "cmd_abrir"
+const vari7 = "m_item_abriu1"
+#
+const nome8 = "Abriu item outros"
+const tipo8 = "opc_linha"
+const clas8 = "cmd_abrir"
+const vari8 = "m_item_abriu2"
+#
+const nome9 = "Sem porta"
+const tipo9 = "opc_linha"
+const clas9 = "cmd_abrir"
+const vari9 = "m_porta_sem"
+#
+const nome10 = "Porta aberta"
+const info10 = mens_porta:info
+const tipo10 = "opc_linha"
+const clas10 = "cmd_abrir"
+const vari10 = "m_porta_aberta"
+#
+const nome11 = "Porta trancada"
+const info11 = mens_porta:info
+const tipo11 = "opc_linha"
+const clas11 = "cmd_abrir"
+const vari11 = "m_porta_trancada"
+#
+const nome12 = "Abriu porta perso"
+const tipo12 = "opc_linha"
+const clas12 = "cmd_abrir"
+const vari12 = "m_porta_abriu1"
+#
+const nome13 = "Abriu porta outros"
+const tipo13 = "opc_linha"
+const clas13 = "cmd_abrir"
+const vari13 = "m_porta_abriu2"
+
+
+classe m_cmd_fechar
+herda comando_menu_cmd
+#
+const nome1 = "Ajuda"
+const tipo1 = "opc_texto"
+const clas1 = "cmd_fechar"
+const vari1 = "m_ajuda"
+#
+const nome2 = "Sem argumentos"
+const tipo2 = "opc_linha"
+const clas2 = "cmd_fechar"
+const vari2 = "m_sem_args"
+#
+const nome3 = "Sem alvo"
+const tipo3 = "opc_linha"
+const clas3 = "cmd_fechar"
+const vari3 = "m_naover"
+#
+const nome4 = "Item fechado"
+const tipo4 = "opc_linha"
+const clas4 = "cmd_fechar"
+const vari4 = "m_item_fechado"
+#
+const nome5 = "Não é possível"
+const tipo5 = "opc_linha"
+const clas5 = "cmd_fechar"
+const vari5 = "m_item_nao"
+#
+const nome6 = "Fechou item perso"
+const tipo6 = "opc_linha"
+const clas6 = "cmd_fechar"
+const vari6 = "m_item_fechou1"
+#
+const nome7 = "Fechou item outros"
+const tipo7 = "opc_linha"
+const clas7 = "cmd_fechar"
+const vari7 = "m_item_fechou2"
+#
+const nome8 = "Sem porta"
+const tipo8 = "opc_linha"
+const clas8 = "cmd_fechar"
+const vari8 = "m_porta_sem"
+#
+const nome9 = "Porta fechada"
+const info9 = mens_porta:info
+const tipo9 = "opc_linha"
+const clas9 = "cmd_fechar"
+const vari9 = "m_porta_fechada"
+#
+const nome10 = "Fechou porta perso"
+const tipo10 = "opc_linha"
+const clas10 = "cmd_fechar"
+const vari10 = "m_porta_fechou1"
+#
+const nome11 = "Fechou porta outros"
+const tipo11 = "opc_linha"
+const clas11 = "cmd_fechar"
+const vari11 = "m_porta_fechou2"

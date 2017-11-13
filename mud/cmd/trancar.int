@@ -1,10 +1,31 @@
-classe cmd_trancar
+classe h_cmd_trancar
 herda comando_comum
-const txtajuda = "\b\c3Trancar\b\n\
-Sintaxe: TRANCAR <objeto ou direção>\n\
-Tranca um objeto ou uma porta.\n\
-Nota: pode ser necessário possuir uma chave para trancar."
 const posic = 5
+const txtajuda = txtajuda1 + m_ajuda
+const txtajuda1 = "\b\c3Trancar\b\nSintaxe: TRANCAR <objeto ou direção>\n"
+#
+const m_ajuda = "Tranca um objeto ou uma porta.\n\
+Nota: pode ser necessário possuir uma chave para trancar."
+const m_sem_args = "Trancar o quê?"
+const m_naover = "Você não vê $m."
+const m_item_aberto = "$O está abert$u."
+const m_item_trancado = "$O já está trancad$u."
+const m_item_naotranca = "$O não pode ser trancad$u."
+const m_item_nao = "Não foi possível trancar $o."
+const m_item_chave = "Você não possui a chave para trancar $o."
+const m_item_trancou1 = "Você trancou $a."
+const m_item_trancou2 = "$P trancou $a."
+const m_porta_sem = "Não há porta nessa direção."
+const m_porta_aberta = "$P est$o abert$a." # Conforme mens_porta:info
+const m_porta_trancada = "$P já est$o trancad$a." # Conforme mens_porta:info
+const m_porta_naotranca = "$P não pode$m ser trancad$a." # Conforme mens_porta:info
+const m_porta_chave = "Você não possui a chave para trancar $m."
+const m_porta_trancou1 = "Você trancou $m."
+const m_porta_trancou2 = "$P trancou $m."
+const admordem = "m_ajuda m_sem_args m_naover m_item_aberto m_item_trancado\n\
+m_item_naotranca m_item_nao m_item_chave m_item_trancou1 m_item_trancou2\n\
+m_porta_sem m_porta_aberta m_porta_trancada m_porta_naotranca m_porta_chave\n\
+m_porta_trancou1 m_porta_trancou2"
 
 func escr
   refvar perm_msg = $perm_[arg0.jogperm].abrir
@@ -19,7 +40,7 @@ func escrobj # Trancar um item
   listaitem i # Para procurar o item
   nomeobj n # Para reconhecer os itens
 # Procura o item
-  ret !arg1, arg0.msg("Trancar o quê?")
+  ret !arg1, $mensjog.msg(m_sem_args, arg0)
   n.ini(arg1, 1)
   epara i = arg0.dono.dentro1.ini, i, i.depois
     sair i.obj.visivel(arg0) && n.nome(i.obj.ident, i.obj.objtot)
@@ -29,29 +50,29 @@ func escrobj # Trancar um item
       sair i.obj.visivel(arg0) && n.nome(i.obj.ident, i.obj.objtot)
     efim
     $mens.mens = arg1
-    ret !i, $mens.mp("Você não vê $m.", arg0)
+    ret !i, $mens.mp(m_naover, arg0)
   fimse
 # Checa se está destrancado
   ref r
   r = i.obj
   casovar r.i_aberto
   casose "2"
-    ret $mens.mp("$O está abert$u.", arg0, nulo, r)
+    ret $mens.mp(m_item_aberto, arg0, nulo, r)
   casose "4"
-    ret $mens.mp("$O já está trancad$u.", arg0, nulo, r)
+    ret $mens.mp(m_item_trancado, arg0, nulo, r)
   casose
-    ret $mens.mp("Não foi possível trancar $o.", arg0, nulo, r)
+    ret $mens.mp(m_item_nao, arg0, nulo, r)
   casose "3"
   casose "5"
   casofim
-  ret !r.i_tranc, $mens.mp("$O não pode ser trancad$u.", arg0, nulo, r)
+  ret !r.i_tranc, $mens.mp(m_item_naotranca, arg0, nulo, r)
 # Procura a chave
   ref chave
   se r.i_fechadura && !arg0.j_imortal
     epara i = arg0.dentro1.ini, i, i.depois
       sair r.i_fechadura == i.obj.i_chave && i.obj.visivel(arg0)
     efim
-    ret !i, $mens.mp("Você não possui a chave para trancar $o.", arg0, nulo, r)
+    ret !i, $mens.mp(m_item_chave, arg0, nulo, r)
     chave = i.obj
   fimse
 # Gera eventos
@@ -65,7 +86,7 @@ func escrobj # Trancar um item
 # Tranca o item
   r.i_aberto = 4
   $mens.p(arg0, r)
-  $mens.mtodos1("$P trancou $a.")
+  $mens.mtodos2(m_item_trancou1, m_item_trancou2)
   epara l.addfim(arg0.evento), l, l.ini.remove
     l.objini.cmd_trancouobj(arg0, r, chave, arg0)
   efim
@@ -77,19 +98,19 @@ func escrdir # Trancar uma porta
 # arg0 = personagem
 # arg1 = nome da direção
 # Checa se porta existe
-  ret !arg0.dono.dir_[arg1](arg0), arg0.msg("Não há porta nessa direção.")
+  ret !arg0.dono.dir_[arg1](arg0), $mensjog.msg(m_porta_sem, arg0)
 # Checa se está trancado
   casovar 3 & arg0.dono.porta_[arg1]
   casose
-    ret arg0.msg("Não há porta nessa direção.")
+    ret $mensjog.msg(m_porta_sem, arg0)
   casose "1"
-    ret arg0.msg($mens_porta.mens("$P est$o abert$a.", arg0.dono, arg1))
+    ret arg0.msg($mens_porta.mens(m_porta_aberta, arg0.dono, arg1))
   casose "3"
-    ret arg0.msg($mens_porta.mens("$P já est$o trancad$a.", arg0.dono, arg1))
+    ret arg0.msg($mens_porta.mens(m_porta_trancada, arg0.dono, arg1))
   casose "2"
   casofim
   se !arg0.dono.tranc_[arg1](arg0)
-    ret arg0.msg($mens_porta.mens("$P não pode$m ser trancad$a.", arg0.dono, arg1))
+    ret arg0.msg($mens_porta.mens(m_porta_naotranca, arg0.dono, arg1))
   fimse
 # Procura a chave
   txt100 mporta # Nome da porta
@@ -105,7 +126,7 @@ func escrdir # Trancar uma porta
       sair cod == i.obj.i_chave && i.obj.visivel(arg0)
     efim
     $mens.mens = mporta
-    ret !i, $mens.mp("Você não possui a chave para trancar $m.", arg0)
+    ret !i, $mens.mp(m_porta_chave, arg0)
     chave = i.obj
   fimse
 # Gera eventos
@@ -123,7 +144,8 @@ func escrdir # Trancar uma porta
     $mens.p(arg0)
     $mens.mens = mporta
     epara l.addfim(arg0.dono.dentro2), l, l.ini.remove
-      $mens.msgsominv("$P trancou $m.", som, l.objini)
+      refvar msg1 = arg0 == l.objini ? m_porta_trancou1 : m_porta_trancou2
+      $mens.msgsominv(msg1, som, l.objini)
     efim
   fimse
   epara l.addfim(arg0.evento), l, l.ini.remove
@@ -134,13 +156,34 @@ func escrdir # Trancar uma porta
   efim
 
 
-classe cmd_destrancar
+classe h_cmd_destrancar
 herda comando_comum
-const txtajuda = "\b\c3Destrancar\b\n\
-Sintaxe: DESTRANCAR <objeto ou direção>\n\
-Destranca um objeto ou uma porta.\n\
-Nota: pode ser necessário possuir uma chave para destrancar."
 const posic = 5
+const txtajuda = txtajuda1 + m_ajuda
+const txtajuda1 = "\b\c3Destrancar\b\nSintaxe: DESTRANCAR <objeto ou direção>\n"
+#
+const m_ajuda = "Destranca um objeto ou uma porta.\n\
+Nota: pode ser necessário possuir uma chave para destrancar."
+const m_sem_args = "Desctrancar o quê?"
+const m_naover = "Você não vê $m."
+const m_item_aberto = "$O está abert$u."
+const m_item_fechado = "$O não está trancad$u."
+const m_item_naotranca = "$O não pode ser trancad$u."
+const m_item_nao = "Não foi possível destrancar $o."
+const m_item_chave = "Você não possui a chave para destrancar $o."
+const m_item_destrancou1 = "Você destrancou $a."
+const m_item_destrancou2 = "$P destrancou $a."
+const m_porta_sem = "Não há porta nessa direção."
+const m_porta_aberta = "$P já est$o abert$a." # Conforme mens_porta:info
+const m_porta_fechada = "$P não est$o trancad$a." # Conforme mens_porta:info
+const m_porta_naotranca = "$P não pode$m ser trancad$a." # Conforme mens_porta:info
+const m_porta_chave = "Você não possui a chave para destrancar $m."
+const m_porta_destrancou1 = "Você destrancou $m."
+const m_porta_destrancou2 = "$P destrancou $m."
+const admordem = "m_ajuda m_sem_args m_naover m_item_aberto m_item_fechado\n\
+m_item_naotranca m_item_nao m_item_chave m_item_destrancou1 m_item_destrancou2\n\
+m_porta_sem m_porta_aberta m_porta_fechada m_porta_naotranca m_porta_chave\n\
+m_porta_destrancou1 m_porta_destrancou2"
 
 func escr
   refvar perm_msg = $perm_[arg0.jogperm].abrir
@@ -155,7 +198,7 @@ func escrobj # Destrancar um item
   listaitem i # Para procurar o item
   nomeobj n # Para reconhecer os itens
 # Procura o item
-  ret !arg1, arg0.msg("Destrancar o quê?")
+  ret !arg1, $mensjog.msg(m_sem_args, arg0)
   n.ini(arg1, 1)
   epara i = arg0.dono.dentro1.ini, i, i.depois
     sair i.obj.visivel(arg0) && n.nome(i.obj.ident, i.obj.objtot)
@@ -165,19 +208,18 @@ func escrobj # Destrancar um item
       sair i.obj.visivel(arg0) && n.nome(i.obj.ident, i.obj.objtot)
     efim
     $mens.mens = arg1
-    ret !i, $mens.mp("Você não vê $m.", arg0)
+    ret !i, $mens.mp(m_naover, arg0)
   fimse
 # Checa se está trancado
   ref r
   r = i.obj
   casovar r.i_aberto
   casose "2"
-    ret $mens.mp("$O está abert$u.", arg0, nulo, r)
+    ret $mens.mp(m_item_aberto, arg0, nulo, r)
   casose "3"
-    ret !r.i_tranc, $mens.mp("$O não pode ser trancad$u.", arg0, nulo, r)
-    ret $mens.mp("$O não está trancad$u.", arg0, nulo, r)
+    ret $mens.mp(r.i_tranc ? m_item_fechado : m_item_naotranca, arg0, nulo, r)
   casose
-    ret $mens.mp("Não foi possível destrancar $o.", arg0, nulo, r)
+    ret $mens.mp(m_item_nao, arg0, nulo, r)
   casose "4"
   casose "5"
   casofim
@@ -187,7 +229,7 @@ func escrobj # Destrancar um item
     epara i = arg0.dentro1.ini, i, i.depois
       sair r.i_fechadura == i.obj.i_chave && i.obj.visivel(arg0)
     efim
-    ret !i, $mens.mp("Você não possui a chave para destrancar $o.", arg0, nulo, r)
+    ret !i, $mens.mp(m_item_chave, arg0, nulo, r)
     chave = i.obj
   fimse
 # Gera eventos
@@ -202,7 +244,7 @@ func escrobj # Destrancar um item
   r.i_comechave && chave.apagar(1)
   r.i_aberto = 3
   $mens.p(arg0, r)
-  $mens.mtodos1("$P destrancou $a.")
+  $mens.mtodos2(m_item_destrancou1, m_item_destrancou2)
   epara l.addfim(arg0.evento), l, l.ini.remove
     l.objini.cmd_destrancouobj(arg0, r, chave, arg0)
   efim
@@ -214,18 +256,18 @@ func escrdir # Destrancar uma porta
 # arg0 = personagem
 # arg1 = nome da direção
 # Checa se porta existe
-  ret !arg0.dono.dir_[arg1](arg0), arg0.msg("Não há porta nessa direção.")
+  ret !arg0.dono.dir_[arg1](arg0), $mensjog.msg(m_porta_sem, arg0)
 # Checa se está trancado
   casovar 3 & arg0.dono.porta_[arg1]
   casose
-    ret arg0.msg("Não há porta nessa direção.")
+    ret $mensjog.msg(m_porta_sem, arg0)
   casose "1"
-    ret arg0.msg($mens_porta.mens("$P est$o abert$a.", arg0.dono, arg1))
+    ret arg0.msg($mens_porta.mens(m_porta_aberta, arg0.dono, arg1))
   casose "2"
     se arg0.dono.tranc_[arg1](arg0)
-      ret arg0.msg($mens_porta.mens("$P não est$o trancad$a.", arg0.dono, arg1))
+      ret arg0.msg($mens_porta.mens(m_porta_fechada, arg0.dono, arg1))
     senao
-      ret arg0.msg($mens_porta.mens("$P não pode$m ser trancad$a.", arg0.dono, arg1))
+      ret arg0.msg($mens_porta.mens(m_porta_naotranca, arg0.dono, arg1))
     fimse
   casose "3"
   casofim
@@ -243,7 +285,7 @@ func escrdir # Destrancar uma porta
       sair cod == i.obj.i_chave && i.obj.visivel(arg0)
     efim
     $mens.mens = mporta
-    ret !i, $mens.mp("Você não possui a chave para destrancar $m.", arg0)
+    ret !i, $mens.mp(m_porta_chave, arg0)
     chave = i.obj
     casovar $c_[arg0.dono.fechadura_[arg1](arg0)].infotaxa
     casose "2" # Casa bloqueada por falta de pagamento
@@ -271,7 +313,8 @@ func escrdir # Destrancar uma porta
     $mens.p(arg0)
     $mens.mens = mporta
     epara l.addfim(arg0.dono.dentro2), l, l.ini.remove
-      $mens.msgsominv("$P destrancou $m.", som, l.objini)
+      refvar msg1 = arg0 == l.objini ? m_porta_destrancou1 : m_porta_destrancou2
+      $mens.msgsominv(msg1, som, l.objini)
     efim
   fimse
   epara l.addfim(arg0.evento), l, l.ini.remove
@@ -280,3 +323,189 @@ func escrdir # Destrancar uma porta
   epara l.addfim(arg0.dono.evento), l, l.ini.remove
     l.objini.cmd_destrancoudir(arg0, arg0.dono, arg1, chave, arg0.dono)
   efim
+
+
+classe m_cmd_trancar
+herda comando_menu_cmd
+#
+const nome1 = "Ajuda"
+const tipo1 = "opc_texto"
+const clas1 = "cmd_trancar"
+const vari1 = "m_ajuda"
+#
+const nome2 = "Sem argumentos"
+const tipo2 = "opc_linha"
+const clas2 = "cmd_trancar"
+const vari2 = "m_sem_args"
+#
+const nome3 = "Sem alvo"
+const tipo3 = "opc_linha"
+const clas3 = "cmd_trancar"
+const vari3 = "m_naover"
+#
+const nome4 = "Item aberto"
+const tipo4 = "opc_linha"
+const clas4 = "cmd_trancar"
+const vari4 = "m_item_aberto"
+#
+const nome5 = "Item trancado"
+const tipo5 = "opc_linha"
+const clas5 = "cmd_trancar"
+const vari5 = "m_item_trancado"
+#
+const nome6 = "Item sem tranca"
+const tipo6 = "opc_linha"
+const clas6 = "cmd_trancar"
+const vari6 = "m_item_naotranca"
+#
+const nome7 = "Não é possível"
+const tipo7 = "opc_linha"
+const clas7 = "cmd_trancar"
+const vari7 = "m_item_nao"
+#
+const nome8 = "Item requer chave"
+const tipo8 = "opc_linha"
+const clas8 = "cmd_trancar"
+const vari8 = "m_item_chave"
+#
+const nome9 = "Trancou item perso"
+const tipo9 = "opc_linha"
+const clas9 = "cmd_trancar"
+const vari9 = "m_item_trancou1"
+#
+const nome10 = "Trancou item outros"
+const tipo10 = "opc_linha"
+const clas10 = "cmd_trancar"
+const vari10 = "m_item_trancou2"
+#
+const nome11 = "Sem porta"
+const tipo11 = "opc_linha"
+const clas11 = "cmd_trancar"
+const vari11 = "m_porta_sem"
+#
+const nome12 = "Porta aberta"
+const info12 = mens_porta:info
+const tipo12 = "opc_linha"
+const clas12 = "cmd_trancar"
+const vari12 = "m_porta_aberta"
+#
+const nome13 = "Porta trancada"
+const info13 = mens_porta:info
+const tipo13 = "opc_linha"
+const clas13 = "cmd_trancar"
+const vari13 = "m_porta_trancada"
+#
+const nome14 = "Porta sem tranca"
+const info14 = mens_porta:info
+const tipo14 = "opc_linha"
+const clas14 = "cmd_trancar"
+const vari14 = "m_porta_naotranca"
+#
+const nome15 = "Porta requer chave"
+const tipo15 = "opc_linha"
+const clas15 = "cmd_trancar"
+const vari15 = "m_porta_chave"
+#
+const nome16 = "Trancou porta perso"
+const tipo16 = "opc_linha"
+const clas16 = "cmd_trancar"
+const vari16 = "m_porta_trancou1"
+#
+const nome17 = "Trancou porta outros"
+const tipo17 = "opc_linha"
+const clas17 = "cmd_trancar"
+const vari17 = "m_porta_trancou2"
+
+
+
+
+classe m_cmd_destrancar
+herda comando_menu_cmd
+#
+const nome1 = "Ajuda"
+const tipo1 = "opc_texto"
+const clas1 = "cmd_destrancar"
+const vari1 = "m_ajuda"
+#
+const nome2 = "Sem argumentos"
+const tipo2 = "opc_linha"
+const clas2 = "cmd_destrancar"
+const vari2 = "m_sem_args"
+#
+const nome3 = "Sem alvo"
+const tipo3 = "opc_linha"
+const clas3 = "cmd_destrancar"
+const vari3 = "m_naover"
+#
+const nome4 = "Item aberto"
+const tipo4 = "opc_linha"
+const clas4 = "cmd_destrancar"
+const vari4 = "m_item_aberto"
+#
+const nome5 = "Item não trancado"
+const tipo5 = "opc_linha"
+const clas5 = "cmd_destrancar"
+const vari5 = "m_item_fechado"
+#
+const nome6 = "Item sem tranca"
+const tipo6 = "opc_linha"
+const clas6 = "cmd_destrancar"
+const vari6 = "m_item_naotranca"
+#
+const nome7 = "Não é possível"
+const tipo7 = "opc_linha"
+const clas7 = "cmd_destrancar"
+const vari7 = "m_item_nao"
+#
+const nome8 = "Item requer chave"
+const tipo8 = "opc_linha"
+const clas8 = "cmd_destrancar"
+const vari8 = "m_item_chave"
+#
+const nome9 = "Destr. item perso"
+const tipo9 = "opc_linha"
+const clas9 = "cmd_destrancar"
+const vari9 = "m_item_destrancou1"
+#
+const nome10 = "Destr. item outros"
+const tipo10 = "opc_linha"
+const clas10 = "cmd_destrancar"
+const vari10 = "m_item_destrancou2"
+#
+const nome11 = "Sem porta"
+const tipo11 = "opc_linha"
+const clas11 = "cmd_destrancar"
+const vari11 = "m_porta_sem"
+#
+const nome12 = "Porta aberta"
+const info12 = mens_porta:info
+const tipo12 = "opc_linha"
+const clas12 = "cmd_destrancar"
+const vari12 = "m_porta_aberta"
+#
+const nome13 = "Porta não trancada"
+const info13 = mens_porta:info
+const tipo13 = "opc_linha"
+const clas13 = "cmd_destrancar"
+const vari13 = "m_porta_fechada"
+#
+const nome14 = "Porta sem tranca"
+const info14 = mens_porta:info
+const tipo14 = "opc_linha"
+const clas14 = "cmd_destrancar"
+const vari14 = "m_porta_naotranca"
+#
+const nome15 = "Porta requer chave"
+const tipo15 = "opc_linha"
+const clas15 = "cmd_destrancar"
+const vari15 = "m_porta_chave"
+#
+const nome16 = "Destr. porta perso"
+const tipo16 = "opc_linha"
+const clas16 = "cmd_destrancar"
+const vari16 = "m_porta_destrancou1"
+#
+const nome17 = "Destr, porta outros"
+const tipo17 = "opc_linha"
+const clas17 = "cmd_destrancar"
+const vari17 = "m_porta_destrancou2"

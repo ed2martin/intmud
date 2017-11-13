@@ -797,16 +797,16 @@ classe mens_porta
 # Monta mensagem para avisar sobre portas abertas e fechadas
 #
 # Chamar com:
-# $mens_porta.mens(mensagem, sala, direção, mensagem)
+# $mens_porta.mens(mensagem, sala, direção)
 #
 # Exemplo:
 # $mens_porta.mens("$P est$o fechad$a.", dono, "s")
 #
 # Caracteres usados na mensagem:
-# $A = a,o,as,os, conforme a porta
-# $M = um texto vazio (no singular) ou "m" (no plural)
-# $O = "á" (no singular) ou "ão" (no plural)
-# $P = nome da porta
+const info = "$A = a,o,as,os, conforme a porta\n\
+$M = um texto vazio (no singular) ou \"m\" (no plural)\n\
+$O = \"á\" (no singular) ou \"ão\" (no plural)\n\
+$P = nome da porta"
 #
 txt100 n # Nome da porta
 txt2 tsexo # Pode ser a,as,o,os

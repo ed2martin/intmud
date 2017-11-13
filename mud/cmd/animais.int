@@ -94,12 +94,13 @@ func escr # Chamado pela função "teclou" do personagem ao escolher um animal
 classe cmd_reserva
 herda comando_comum
 const objcmd = config:animal1 && config:animal2 ? este
-const txtajuda = config:animal1 && config:animal2 ? txtajuda1
+const txtajuda = config:animal1 && config:animal2 ? txtajuda1 + m_ajuda
 const txtajuda1 = "\b\c3Reserva\b\n\
 Sintaxe: RESERVA\n\
          RESERVA <número do animal>\n\
-         RESERVA <nome do animal>\n\
-Sem argumentos mostra os seus animais reserva.\n\
+         RESERVA <nome do animal>\n"
+#
+const m_ajuda = "Sem argumentos mostra os seus animais reserva.\n\
 Com um número guarda seu animal para a lista de animais reserva.\n\
 Com um nome pega um animal reserva."
 

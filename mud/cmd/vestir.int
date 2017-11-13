@@ -110,7 +110,6 @@ func escr
     $mens.mp("Você não vê $m.", arg0)
   fimse
 
-
 func objvestir # Quer vestir um item
 # arg0 = personagem, arg1 = objeto, arg2 = quantidade
 # Retorna mensagem de erro ou "" se conseguiu vestir
@@ -127,7 +126,7 @@ func objvestir # Quer vestir um item
     se lugar2 == "0"
       listaitem item
       epara item = arg0.dentro2.ini, item, item.depois
-        sair item.obj.vestpos && intbith(item.obj.vestpos - 1) & (lugar1 & vest)
+        sair item.obj.vestpos && (intbith(item.obj.vestpos - 1) & (lugar1 & vest)) != "0"
       efim
       ret "Já está usando " + item.obj.descnome + " nessa posição."
     fimse

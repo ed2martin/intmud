@@ -68,8 +68,9 @@ const iniclasse = !$[arg0] && criar(arg0)
 func txtajuda
   textotxt t
   t.addfim(tit)
-  config:novatostipo && t.addfim(nov)
-  config:chattipo && t.addfim(cha)
+  $cmd_novatos.v_tipo && t.addfim(nov)
+  $cmd_chat.v_tipo && t.addfim(cha)
+  $cmd_schat.v_tipo && t.addfim(sch)
   t.addfim(gch)
   t.addfim(pvt)
   $cmd_gritar.v_nivel && t.addfim(gri)
@@ -85,8 +86,8 @@ func txtajuda
 
 const tit = "\b\c3Comunicação\b"
 const nov = "  \c2NOVATOS\b   Envia mensagem para os jogadores com o canal NOVATOS habilitado"
-const cha = "  \c2CHAT\b      Envia mensagem para os jogadores com o canal CHAT habilitado\n\
-  \c2SCHAT\b     Comandos \"sociais\" no canal CHAT"
+const cha = "  \c2CHAT\b      Envia mensagem para os jogadores com o canal CHAT habilitado"
+const sch = "  \c2SCHAT\b     Comandos \"sociais\" no canal CHAT"
 const gch = "  \c2GCHAT\b     Envia uma mensagem para os jogadores do seu grupo"
 const pvt = "  \c2TELEPATIA\b Envia mensagem privativa para um jogador\n\
   \c2RESPONDER\b Responde mensagem privativa de um jogador"
