@@ -22,10 +22,10 @@ const m_canal = "Canal Telepatia está desabilitado; para habilitar tecle CONFIG 
 const m_sem_args = "Escrever para quem?"
 const m_jogador = "Jogador inexistente ou ausente: $m"
 const m_auto = "Escrever para você mesm$s?"
-const m_ignorar = "Você está ignorando %c."
+const m_ignorar = "Você está ignorando $c."
 const m_ignorado = "$C está ignorando você."
 const m_desabilitou = "$C desabilitou o canal Telepatia."
-const m_invisivel = "Você está invisível para $C."
+const m_invisivel = "Você está invisível para $c."
 const m_sem_msg = "Escrever o quê?"
 const m_responder_nao = "Você ainda não recebeu uma mensagem telepática."
 const m_responder_vis = "Responderá para: $C"
@@ -54,13 +54,13 @@ func escr
   senao perso == arg0
     $mens.mp(m_auto, arg0)
   senao perso.var.u_[arg0.nome]
-    $mens.mp(m_ignorado, arg0)
+    $mens.mp(m_ignorado, arg0, perso)
   senao arg0.var.u_[perso.nome]
-    $mens.mp(m_ignorar, arg0)
+    $mens.mp(m_ignorar, arg0, perso)
   senao !perso.jogconfig.8
-    $mens.mp(m_desabilitou, arg0)
+    $mens.mp(m_desabilitou, arg0, perso)
   senao arg0.jogconfig.17 && !($perm_[perso.jogperm].c_config & 4)
-    $mens.mp(m_invisivel, arg0)
+    $mens.mp(m_invisivel, arg0, perso)
   senao !txt2(arg1)
     $mens.mp(m_sem_msg, arg0)
   senao

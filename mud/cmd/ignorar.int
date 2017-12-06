@@ -1,13 +1,13 @@
-classe cmd_ignorar
+classe h_cmd_ignorar
 herda comando_comum
 const objnivel = 4
 const posic = 0
-const txtajuda = "\b\c3Ignorar\b\n\
-Sintaxe: IGNORAR [personagem]\n\
-Permite ignorar todas as mensagens do personagem de outro jogador.\n\
+const txtajuda = txtajuda1 + m_ajuda
+const txtajuda1 = "\b\c3Ignorar\b\nSintaxe: IGNORAR [personagem]\n"
+#
+const m_ajuda = "Permite ignorar todas as mensagens do personagem de outro jogador.\n\
 Se o jogador já estiver sendo ignorado, esse comando deixa de ignorar.\n\
 Digitanto apenas ignorar, sem nenhum nome, mostra quem você está ignorando."
-#
 const m_lista = "Está ignorando: $m"
 const m_ninguem = "Não está ignorando ninguém."
 const m_ignorar = "Você ignora $m."
@@ -33,3 +33,37 @@ func escr
     $mens.mens = arg1
     $mens.mp(m_ignorar, arg0)
   fimse
+
+
+classe m_cmd_ignorar
+herda comando_menu_cmd
+#
+const nome1 = "Ajuda"
+const tipo1 = "opc_texto"
+const clas1 = "cmd_ignorar"
+const vari1 = "m_ajuda"
+#
+const nome2 = "Lista de usuários"
+const tipo2 = "opc_linha"
+const clas2 = "cmd_ignorar"
+const vari2 = "m_lista"
+#
+const nome3 = "Lista vazia"
+const tipo3 = "opc_linha"
+const clas3 = "cmd_ignorar"
+const vari3 = "m_ninguem"
+#
+const nome4 = "Ignora"
+const tipo4 = "opc_linha"
+const clas4 = "cmd_ignorar"
+const vari4 = "m_ignorar"
+#
+const nome5 = "Deixa de ignorar"
+const tipo5 = "opc_linha"
+const clas5 = "cmd_ignorar"
+const vari5 = "m_naoignorar"
+#
+const nome6 = "Lista cheia"
+const tipo6 = "opc_linha"
+const clas6 = "cmd_ignorar"
+const vari6 = "m_limite"

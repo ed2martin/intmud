@@ -797,10 +797,16 @@ func ini4_exec
     movefunc("config", "chatnivel", "cmd_schat", "v_nivel", 1)
     movefunc("config", "novatostipo", "cmd_novatos", "v_tipo")
     movefunc("config", "novatosnivel", "cmd_novatos", "v_nivel")
-    movefunc("config", "novatosmsg", "cmd_novatos", "m_msg")
+    movefunc("config", "novatosmsg", "cmd_novatos", "m_msg1", 1)
+    movefunc("config", "novatosmsg", "cmd_novatos", "m_msg2")
     movefunc("config", "chattipo", "cmd_chat", "v_tipo")
     movefunc("config", "chatnivel", "cmd_chat", "v_nivel")
-    movefunc("config", "chatmsg", "cmd_chat", "m_msg")
+    movefunc("config", "chatmsg", "cmd_chat", "m_msg1", 1)
+    movefunc("config", "chatmsg", "cmd_chat", "m_msg2")
+    p.apagar("config", "schattipo")
+    movefunc("config", "schatmsg", "cmd_schat", m_msg1, 1)
+    movefunc("config", "schatmsg", "cmd_schat", m_msg2, 1)
+    movefunc("config", "schatmsg", "cmd_schat", m_msg3)
   fimse
 # Avisa que atualizou arquivos
   tela.msg("Diretórios areas e config atualizados\n")

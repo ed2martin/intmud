@@ -307,7 +307,7 @@ func mudadono # Item muda de dono (arg0 = novo dono, arg1 = quantidade)
   ret este
 
 func recalc_exec # Acerta variáveis
-  bitver = 17, bitinv = luztempo ? 1 : 3
+  bitver = 17, bitinv = intpos(luztempo) ? 1 : 3
   var.z_armafalha_ = armafalha
   var.z_armaaddprecisao_ = armaaddprecisao
   var.z_armamin_ = armamin
