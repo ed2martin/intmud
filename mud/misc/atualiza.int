@@ -1,4 +1,4 @@
-classe atualiza_480
+classe atualiza_482
 # Atualiza arquivos mud/config/* e mud/areas/* de acordo com novas mudanças
 prog p
 debug dbg
@@ -729,8 +729,8 @@ func ini3_exec
 func ini4_exec
   apagar(este)
 # Checa e muda a versão
-  ret (versao = config:versao) >= 480, nulo
-  p.criar("config", "const versao = 480 # Para atualizar diretórios areas e config")
+  ret (versao = config:versao) >= 482, nulo
+  p.criar("config", "const versao = 482 # Para atualizar diretórios areas e config")
   config:salvar
 # Comando Fim e Dicas aleatórias
   se versao < 457
@@ -751,7 +751,7 @@ func ini4_exec
   criafunc("config", "const mens_tu = \"você\"")
   criafunc("config", "const mens_ti = \"você\"")
 # Opções dos menus
-  se versao < 480
+  se versao < 482
     dbg.ini
     movefunc("config", "falarmsg", "cmd_falar", "m_falar2")
     movefunc("config", "perguntarmsg", "cmd_falar", "m_perguntar2")
@@ -807,6 +807,16 @@ func ini4_exec
     movefunc("config", "schatmsg", "cmd_schat", m_msg1, 1)
     movefunc("config", "schatmsg", "cmd_schat", m_msg2, 1)
     movefunc("config", "schatmsg", "cmd_schat", m_msg3)
+    dbg.ini
+    movefunc("config", "capturar", "cmd_capturar", "v_reserva")
+    movefunc("config", "capturar_nao", "cmd_capturar", "capturar_nao1", 1)
+    movefunc("config", "capturar_nao", "cmd_capturar", "capturar_nao2")
+    movefunc("config", "capturar_sim", "cmd_capturar", "capturar_sim1", 1)
+    movefunc("config", "capturar_sim", "cmd_capturar", "capturar_sim2")
+    movefunc("config", "capturar_equipe", "cmd_capturar", "capturar_equipe1")
+    movefunc("config", "capturar_reserva", "cmd_capturar", "capturar_reserva1")
+    movefunc("config", "capturar_outros", "cmd_capturar", "capturar_equipe2", 1)
+    movefunc("config", "capturar_outros", "cmd_capturar", "capturar_reserva2")
   fimse
 # Avisa que atualizou arquivos
   tela.msg("Diretórios areas e config atualizados\n")

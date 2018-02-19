@@ -1,0 +1,235 @@
+classe h_cmd_capturar
+herda comando_comum
+const objcmd = config:animal1 ? este
+const txtajuda = config:animal1 ? txtajuda1 + m_ajuda
+const txtajuda1 = "\b\c3Capturar\b\n\
+Sintaxe: CAPTURAR\n\
+         CAPTURAR <objeto>\n"
+const posic = 5
+#
+const v_reserva = 1 # Se animais capturados podem ir para a lista de reservas 0=não 1=sim
+const m_ajuda = "Usa um objeto para tentar capturar o animal que está lutando com você.\n\
+Se o nome do objeto for omitido, usa o último que você escolheu.\n\
+Nota: a captura pode falhar se o animal achar que não vale a pena entrar\n\
+para a sua equipe. Por isso, é sempre bom enfraquecê-lo antes."
+const m_sem_item = "Capturar com o quê?"
+const m_nao_serve = "$O não serve para capturar animais."
+const m_naover_item = "Você não vê $m."
+const m_escolhe = "Você escolhe $m ($o) para capturar animais."
+const m_sem_animal = "Não está lutando com nenhum animal."
+const m_nao_captura = "Não é possível capturar $a."
+const m_sem_espaco = "Sem espaço para guardar $a."
+const capturar_nao1 = "Você joga $o para $a, mas $a recusa."
+const capturar_nao2 = "$P joga $o para $a, mas $a recusa."
+const capturar_sim1 = "Você joga $o para $a."
+const capturar_sim2 = "$P joga $o para $a."
+const capturar_equipe1 = "$B entrou para a sua equipe."
+const capturar_equipe2 = "$B entrou para a equipe de $P."
+const capturar_reserva1 = "$B entrou para a sua equipe como reserva."
+const capturar_reserva2 = "$B entrou para a equipe de $P."
+const admordem = "m_ajuda m_sem_item m_nao_serve m_naover_item\n\
+m_escolhe m_sem_animal m_nao_captura m_sem_espaco\n\
+capturar_nao1 capturar_nao2 capturar_sim1 capturar_sim2\n\
+capturar_equipe1 capturar_equipe2 capturar_reserva1 capturar_reserva2"
+
+func escr
+  refvar perm_msg = $perm_[arg0.jogperm].item
+  ret perm_msg, $mensjog.msg(perm_msg, arg0)
+  ref r
+  ref item # Item usado para capturar
+# Checa se sabe o nome do item
+  ret !arg1 && !arg0.var.z_captura, $mens.mp(m_sem_item, arg0)
+# Obtém o item
+  nomeobj n # Para reconhecer os itens
+  n.ini(arg1 ? arg1 : arg0.var.z_captura, misc:objmax)
+  listaobj l
+  epara l.addfim(arg0.dentro1), l, l.ini.remove
+    r = l.objini
+    continuar !r.visivel(arg0) || !n.nome(r.ident, r.objtot)
+    ret !r.i_captura, $mens.mp(m_nao_serve, arg0, nulo, r)
+    item = r
+    sair
+  efim
+# Checa se pode capturar
+  se !item
+    $mens.mens = txt1(arg1)
+    $mens.mp(arg1 ? m_naover_item : m_sem_item, arg0)
+    ret
+  fimse
+  arg1 && (arg0.var.z_captura = arg1)
+  r = arg0.atkenv.objlista # Alvo do personagem
+  se !r
+    se arg1
+      $mens.mens = arg1
+      $mens.mp(m_escolhe, arg0, nulo, item)
+    senao
+      $mens.mp(m_sem_animal, arg0)
+    fimse
+    ret
+  senao !r.p_captura || r.perso != 2 || arg0.perso != 3
+    $mens.mp(m_nao_captura, arg0, r)
+    ret
+  senao arg0.animalmais # Se tem espaço suficiente
+  senao !v_reserva || arg0.dentro3.total >= config:animal2
+    $mens.mp(m_sem_espaco, arg0, r)
+    ret
+  fimse
+# Decide se consegue capturar
+  real2 valor
+  valor = r.pvida * 100 / r.pvidamax
+  se valor < 10 # 0% a 10% de vida: valor=10
+    valor = 10
+  senao valor < 46 # 10% a 46% de vida: valor= 10 a 1
+    valor = (50 - valor) / 4
+  senao
+    valor = 1
+  fimse
+  casovar r.p_captura
+  casose "1" # Muito fácil
+    valor *= 2
+    sair
+  casose "2" # Fácil
+    valor *= 1.5
+    sair
+  casose "3" # Normal
+    sair
+  casose "4" # Difícil
+    valor /= 1.5
+    sair
+  casose "5" # Muito difícil
+    valor /= 2
+    sair
+  casofim
+  $mens.p(arg0, r, item)
+  se valor * item.i_captura(r) < r.pnivel * rand(5, 20)
+    $mens.mvis2(capturar_nao1, capturar_nao2)
+    item.apagar(1)
+    ret
+  fimse
+  $mens.mvis2(capturar_sim1, capturar_sim2)
+  item.apagar(1)
+  pegar(arg0, arg0.dono, r)
+
+func pegar # Pega o animal
+# arg0=quem está pegando, arg1=sala origem, arg2=animal
+  listaobj e
+  epara e.addfim(arg0.evento), e, e.ini.remove
+    ret e.objini.cmd_pegaranim(arg0, arg1, arg2, arg0), nulo
+  efim
+  epara e.addfim(arg1.evento), e, e.ini.remove
+    ret e.objini.cmd_pegaranim(arg0, arg1, arg2, arg1), nulo
+  efim
+  epara e.addfim(arg2.evento), e, e.ini.remove
+    ret e.objini.cmd_pegaranim(arg0, arg1, arg2, arg2), nulo
+  efim
+  refvar estacheio = !arg0.animalmais
+  arg2.mudadono(arg0) # Muda de dono
+  arg2.objsolto.remove(arg2) # Não conta mais na lista de personagens soltos
+  arg0.recalc = 1
+  arg2.ajustapeso # Para o peso do personagem ir para 0 (não conta no jogador)
+  $mens.p(arg0, arg2)
+  se estacheio
+    arg2.idono.remove, arg2.idono = arg2.dono.dentro3.addfim(arg2)
+    $mens.mvis2(capturar_reserva1, capturar_reserva2)
+  senao
+    $mens.mvis2(capturar_equipe1, capturar_equipe2)
+  fimse
+  epara e.addfim(arg0.evento), e, e.ini.remove
+    sair e.objini.cmd_pegouanim(arg0, arg1, arg2, arg0)
+  efim
+  epara e.addfim(arg1.evento), e, e.ini.remove
+    sair e.objini.cmd_pegouanim(arg0, arg1, arg2, arg1)
+  efim
+  epara e.addfim(arg2.evento), e, e.ini.remove
+    sair e.objini.cmd_pegouanim(arg0, arg1, arg2, arg2)
+  efim
+
+
+classe m_cmd_capturar
+herda comando_menu_cmd
+#
+const nome1 = "Animais reserva"
+const info1 = "Se animais capturados podem ir para a lista de reservas"
+const tipo1 = "opc_simnao"
+const clas1 = "cmd_capturar"
+const vari1 = "v_reserva"
+#
+const nome2 = "Ajuda"
+const tipo2 = "opc_texto"
+const clas2 = "cmd_capturar"
+const vari2 = "m_ajuda"
+#
+const nome3 = "Sem item"
+const tipo3 = "opc_linha"
+const clas3 = "cmd_capturar"
+const vari3 = "m_sem_item"
+#
+const nome4 = "Item não serve"
+const tipo4 = "opc_linha"
+const clas4 = "cmd_capturar"
+const vari4 = "m_nao_serve"
+#
+const nome5 = "Não vê item"
+const tipo5 = "opc_linha"
+const clas5 = "cmd_capturar"
+const vari5 = "m_naover_item"
+#
+const nome6 = "Escolhe item"
+const tipo6 = "opc_linha"
+const clas6 = "cmd_capturar"
+const vari6 = "m_escolhe"
+#
+const nome7 = "Sem animal"
+const tipo7 = "opc_linha"
+const clas7 = "cmd_capturar"
+const vari7 = "m_sem_animal"
+#
+const nome8 = "Impossível capturar"
+const tipo8 = "opc_linha"
+const clas8 = "cmd_capturar"
+const vari8 = "m_nao_captura"
+#
+const nome9 = "Sem espaço"
+const tipo9 = "opc_linha"
+const clas9 = "cmd_capturar"
+const vari9 = "m_sem_espaco"
+#
+const nome10 = "Não capturou: perso"
+const tipo10 = "opc_linha"
+const clas10 = "cmd_capturar"
+const vari10 = "capturar_nao1"
+#
+const nome11 = "Não capturou: outros"
+const tipo11 = "opc_linha"
+const clas11 = "cmd_capturar"
+const vari11 = "capturar_nao2"
+#
+const nome12 = "Capturou: perso"
+const tipo12 = "opc_linha"
+const clas12 = "cmd_capturar"
+const vari12 = "capturar_sim1"
+#
+const nome13 = "Capturou: outros"
+const tipo13 = "opc_linha"
+const clas13 = "cmd_capturar"
+const vari13 = "capturar_sim2"
+#
+const nome14 = "Animal equipe: perso"
+const tipo14 = "opc_linha"
+const clas14 = "cmd_capturar"
+const vari14 = "capturar_equipe1"
+#
+const nome15 = "Animal equipe: outros"
+const tipo15 = "opc_linha"
+const clas15 = "cmd_capturar"
+const vari15 = "capturar_equipe2"
+#
+const nome16 = "Animal reserva: perso"
+const tipo16 = "opc_linha"
+const clas16 = "cmd_capturar"
+const vari16 = "capturar_reserva1"
+#
+const nome17 = "Animal reserva: outros"
+const tipo17 = "opc_linha"
+const clas17 = "cmd_capturar"
+const vari17 = "capturar_reserva2"

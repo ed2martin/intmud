@@ -1,0 +1,196 @@
+classe h_cmd_animal
+herda comando_comum
+const objcmd = config:animal1 ? este
+const posic = 0
+#
+const m_ajudaI = "  \c2CAPTURAR\b  Pega o animal que está lutando com você.\n\
+  \c2SOLTAR\b    Solta um animal (você se desfaz dele)\n\
+  \c2DAR\b       Dá animal a outro personagem\n\
+  \c2ANIMAL\b    Mostra animais que você possui\n\
+  \c20\b         Não escolhe nenhum animal para batalha\n\
+  \c21\b a \c2$m\b     Escolhe um animal seu, de 1 a $m\n\
+  \c2TROCAR\b    Dá itens para um animal e troca animais de lugar"
+const m_ajudaR = "  \c2RESERVA\b   Manuseio de animais reserva"
+const m_ajuda1 = "Nota: Seus animais acima do seu nível não lutam"
+const m_ajuda2 = "Nota: Seus animais $m níveis acima do seu nível não lutam"
+const m_ajuda3 = "Nota: Você precisa estar 1 nível acima do seu animal para ele lutar"
+const m_ajuda4 = "Nota: Você precisa estar $m níveis acima do seu animal para ele lutar"
+const m_sem_animais = "Não possui nenhum animal."
+const m_voce = "Você"
+const m_animais = "Animais"
+const admordem = "m_ajudaI m_ajudaR m_ajuda1 m_ajuda2 m_ajuda3 m_ajuda4\n\
+m_sem_animais m_voce m_animais"
+
+func txtajuda
+  ret !config:animal1, nulo
+  $mens.p(arg0)
+  $mens.mens = config:animal1
+  refvar ini = "\b\c3Animais\b\n" + $mens.txt(m_ajudaI, arg0)
+  $mens.mens = int(config:animal_n)
+  se !config:animal2
+    ret ini
+  senao !config:animal_n
+    ret ini + "\n" + $mens.txt(m_ajudaR + "\n" + m_ajuda1, arg0)
+  senao config:animal_n > 0
+    ret ini + "\n" + $mens.txt(m_ajudaR + "\n" + m_ajuda2, arg0)
+  senao config:animal_n == -1
+    ret ini + "\n" + $mens.txt(m_ajudaR + "\n" + m_ajuda3, arg0)
+  senao
+    ret ini + "\n" + $mens.txt(m_ajudaR + "\n" + m_ajuda4, arg0)
+  fimse
+
+func escr
+  textotxt t
+  txt100 lin
+  uint8 num
+  listaitem i
+  t.addfim((arg0.persobat == arg0 ? "0* " : "0  ") + m_voce + "  N" + arg0.pnivel)
+  epara i = arg0.dentro2.ini, i, i.depois
+    continuar !i.obj.perso
+    lin = txt(++num) + (arg0.persobat == i.obj ? "*" : " ")
+    se i.obj.pvida
+      lin += " " + txtcopiamai(i.obj.nome, "A") + "  N" + i.obj.pnivel
+    senao
+      lin += " (" + txtcopiamai(i.obj.nome, "A") + ")  N" + i.obj.pnivel
+    fimse
+    t.addfim(lin)
+  efim
+  se t.linhas == 1
+    $mens.mp(m_sem_animais, arg0)
+  senao
+    arg0.msg2("\b\c6" + m_animais + ":\b\n" + t.remove(1000))
+  fimse
+
+
+classe h_comando_escolhe_animal
+herda comando_comum
+const posic = 5
+int8 num # Número do animal; preenchido pela função "teclou" do personagem
+#
+const m_ausente = "Você não possui $m."
+const m_escolheu = "Você já escolheu $m."
+const m_ninguem1 = "Você não escolhe ninguém."
+const m_ninguem2 = "$P não escolhe ninguém."
+const m_escolhe1 = "Você escolhe $b."
+const m_escolhe2 = "$P escolhe $b."
+
+func escr # Chamado pela função "teclou" do personagem ao escolher um animal
+  refvar r = arg0.animalnum(num)
+  se !r
+    $mens.mens = num
+    $mens.mp(m_ausente, arg0)
+  senao arg0.persoesc == r
+    $mens.mens = num
+    $mens.mp(m_escolheu, arg0)
+  senao r == arg0
+    se arg0.persoesc.pvidaok && arg0.atkenv # Animal está bom e está lutando
+      arg0.p_espera = 40 # Espera 4 segundos
+    fimse
+    arg0.persoesc = arg0
+    $mens.p(arg0)
+    $mens.mvis2(m_ninguem1, m_ninguem2)
+    arg0.escolhebat # Atualiza persobat
+  senao
+    se arg0.persoesc.pvidaok && arg0.atkenv # Animal está bom e está lutando
+      arg0.p_espera = 40 # Espera 4 segundos
+    fimse
+    arg0.persoesc = r
+    arg0.escolhebat # Atualiza persobat
+    $mens.p(arg0, r)
+    $mens.mvis2(m_escolhe1, m_escolhe2)
+  fimse
+
+
+classe m_cmd_animal
+herda comando_menu_cmd
+#
+const nome1 = "Animais para batalhar"
+const info1 = "Quantos animais pode usar em batalha, de 0 a 8\n\
+Se 0, os comandos para animais deixam de existir"
+const tipo1 = "opc_numero--"
+const clas1 = "config"
+const vari1 = "animal1"
+const extr1 = "0 8"
+#
+const titu2 = " * Não consegue escolher"
+#
+const nome2 = "Não possui animal"
+const tipo2 = "opc_linha"
+const clas2 = "comando_escolhe_animal"
+const vari2 = "m_ausente"
+#
+const nome3 = "Já escolheu animal"
+const tipo3 = "opc_linha"
+const clas3 = "comando_escolhe_animal"
+const vari3 = "m_escolheu"
+#
+const titu4 = " * Escolhe o personagem"
+#
+const nome4 = "Perso"
+const tipo4 = "opc_linha"
+const clas4 = "comando_escolhe_animal"
+const vari4 = "m_ninguem1"
+#
+const nome5 = "Outros"
+const tipo5 = "opc_linha"
+const clas5 = "comando_escolhe_animal"
+const vari5 = "m_ninguem2"
+#
+const titu6 = " * Escolhe um animal"
+#
+const nome6 = "Perso"
+const tipo6 = "opc_linha"
+const clas6 = "comando_escolhe_animal"
+const vari6 = "m_escolhe1"
+#
+const nome7 = "Outros"
+const tipo7 = "opc_linha"
+const clas7 = "comando_escolhe_animal"
+const vari7 = "m_escolhe2"
+#
+const titu8 = " * Ajuda Animal"
+#
+const nome8 = "Ajuda"
+const tipo8 = "opc_texto"
+const clas8 = "cmd_animal"
+const vari8 = "m_ajudaI"
+#
+const nome9 = "Ajuda Reserva"
+const tipo9 = "opc_linha"
+const clas9 = "cmd_animal"
+const vari9 = "m_ajudaR"
+#
+const nome10 = "Animais acima"
+const tipo10 = "opc_linha"
+const clas10 = "cmd_animal"
+const vari10 = "m_ajuda1"
+#
+const nome11 = "Animais níveis acima"
+const tipo11 = "opc_linha"
+const clas11 = "cmd_animal"
+const vari11 = "m_ajuda2"
+#
+const nome12 = "Você acima"
+const tipo12 = "opc_linha"
+const clas12 = "cmd_animal"
+const vari12 = "m_ajuda3"
+#
+const nome13 = "Você níveis acima"
+const tipo13 = "opc_linha"
+const clas13 = "cmd_animal"
+const vari13 = "m_ajuda4"
+#
+const nome14 = "Sem animais"
+const tipo14 = "opc_linha"
+const clas14 = "cmd_animal"
+const vari14 = "m_sem_animais"
+#
+const nome15 = "Você"
+const tipo15 = "opc_linha"
+const clas15 = "cmd_animal"
+const vari15 = "m_voce"
+#
+const nome16 = "Animais"
+const tipo16 = "opc_linha"
+const clas16 = "cmd_animal"
+const vari16 = "m_animais"
