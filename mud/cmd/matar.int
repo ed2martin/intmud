@@ -1,0 +1,55 @@
+classe h_cmd_matar
+herda comando_ataque
+const objcmd = v_tipo ? este
+const txtajuda = v_tipo ? txtajuda1 + m_ajuda
+const txtajuda1 = "\b\c3Matar\b\n\
+Sintaxe: MATAR <personagem>\n"
+const cmdmenu = ""
+#
+const v_tipo = 1
+const m_ajuda = "Começa um combate com um personagem."
+const m_auto = "Em você mesm$s?"
+const m_batalha = "Você já está lutando."
+const m_sem_ataque = "Você não sabe como atacar $a."
+const admordem = "v_tipo m_ajuda m_auto m_batalha m_sem_ataque"
+
+func exechab # Chamado quando personagem (arg0) quer atacar alguém (arg1)
+  se arg0 == arg1
+    $mens.mp(m_auto, arg0)
+  senao arg0.atkenv
+    $mens.mp(m_batalha, arg0)
+  senao !arg0.persobat.atkauto(arg1, 8) # Realiza um ataque automático
+    $mens.mp(m_sem_ataque, arg0, arg1)
+  senao arg0.atkenv # Se está lutando
+    arg0.p_espera = intmax(arg0.p_espera, config:atktempo)
+  fimse
+
+
+classe m_cmd_matar
+herda comando_menu_cmd
+#
+const nome1 = "Comando Matar"
+const tipo1 = "opc_opcao"
+const clas1 = "cmd_matar"
+const vari1 = "v_tipo"
+const extr1 = "Desabilitado\nHabilitado"
+#
+const nome2 = "Ajuda"
+const tipo2 = "opc_texto"
+const clas2 = "cmd_matar"
+const vari2 = "m_ajuda"
+#
+const nome3 = "Atacar a si mesmo"
+const tipo3 = "opc_linha"
+const clas3 = "cmd_matar"
+const vari3 = "m_auto"
+#
+const nome4 = "Já está lutando"
+const tipo4 = "opc_linha"
+const clas4 = "cmd_matar"
+const vari4 = "m_batalha"
+#
+const nome5 = "Sem ataque automático"
+const tipo5 = "opc_linha"
+const clas5 = "cmd_matar"
+const vari5 = "m_sem_ataque"

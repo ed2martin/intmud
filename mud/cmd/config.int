@@ -1,10 +1,10 @@
-classe cmd_config
+classe h_cmd_config
 herda comando_comum
 const posic = 0
-const ajudaini = "\b\c3Config\b\n\
+const txtajuda1 = "\b\c3Config\b\n\
 Sintaxe: CONFIG +<opção>\n\
-         CONFIG -<opção>\n\
-Altera algumas preferências do seu personagem. Um sinal de + ou de -\n\
+         CONFIG -<opção>"
+const ajudaini = "Altera algumas preferências do seu personagem. Um sinal de + ou de -\n\
 seguido de uma opção ativa ou desativa a opção. Para saber as atuais\n\
 preferências, tecle apenas CONFIG, sem parâmetros.\n\n\
 As opções são:"
@@ -23,23 +23,27 @@ const m_prompt = "Ativa o prompt normal"
 const m_bprompt = "Ativa o prompt de batalha"
 const m_som1 = "Ativa efeitos sonoros via MSP com volume baixo"
 const m_som2 = "Ativa efeitos sonoros via MSP com volume médio\n\
-            Nota 1: Para volume máximo, usar CONFIG +SOM1 +SOM2\n\
-            Nota 2: é necessário usar um cliente de MUD com suporte a MSP\n\
-            (MUD Sound Protocol) e baixar e instalar os sons do MUD"
+Nota 1: Para volume máximo, usar CONFIG +SOM1 +SOM2\n\
+Nota 2: É necessário usar um cliente de MUD com suporte a MSP\n\
+(MUD Sound Protocol) e baixar e instalar os sons do MUD"
 const m_dicas = "Mostra dicas aleatórias de tempos em tempos"
 const m_imortal = "Não morre em batalha, sempre consegue fugir, enxerga tudo exceto\n\
-            cego e no escuro, tranca e destranca tudo, atravessa coisas\n\
-            fechadas, anda sem gastar movimento,\n\
-            não sai do jogo após algum tempo sem digitar nada"
+cego e no escuro, tranca e destranca tudo, atravessa coisas\n\
+fechadas, anda sem gastar movimento,\n\
+não sai do jogo após algum tempo sem digitar nada"
 const m_sala = "Mostra o nome da sala cadastrada antes do título"
 const m_invquem = "Ocultar a presença no comando quem"
 const m_invsala = "Invisível a não administradores"
 const m_ac = "Participa do canal de comunicação AC (administração)"
 const m_admlog = "Canal ADMLOG - é informado sobre mudanças online no MUD"
 const m_cmdlog = "Canal CMDLOG - é informado quando alguém usar Cmd, Cmdp,\n\
-            Cmdj, ApagarSav, MudaNome, Ban ou teleportar outro jogador"
+Cmdj, ApagarSav, MudaNome, Ban ou teleportar outro jogador"
 const m_execlog = "Canal EXECLOG - só tem utilidade para programadores\n\
-            informa quando a variável exec chegar a 0 (bug no programa)"
+informa quando a variável exec chegar a 0 (bug no programa)"
+#
+const m_config_invalida = "Opção inexistente: $m"
+const m_config_mudou = "Configuração alterada: $m"
+const m_parar_seguir = "Você pára de seguir $a."
 #
 # As próximas constantes são as opções do comando CONFIG
 # Cada constante contém o índice da variável de jogconfig
@@ -71,17 +75,22 @@ const opc_cmdlog = arg0 & 0x40 ? 22
 # Ordem das opções em AJUDA CONFIG
 const opcoes = "desc saidas cores acento telepatia chat novatos emocao seguir moedas prompt \
 bprompt som1 som2 dicas imortal sala invquem invsala ac admlog cmdlog execlog"
+#
+const admordem = "ajudaini m_desc m_saidas m_cores m_acento m_telepatia m_chat m_novatos\n\
+m_emocao m_seguir m_moedas m_prompt m_bprompt m_som1 m_som2 m_dicas m_imortal\n\
+m_sala m_invquem m_invsala m_ac m_admlog m_cmdlog m_execlog m_config_mudou"
 
 func txtajuda
   refvar perm = $perm_[arg0.jogperm].c_config
   txt512 lin
   textotxt t
+  t.addfim(txtajuda1)
   t.addfim(ajudaini)
   epara lin = opcoes, lin, lin = txt2(lin)
     refvar nome = txt1(lin)
     continuar !txt(opc_[nome](perm))
     refvar l = "  \c2" + txtmai(nome) + "\b "
-    t.addfim(l + txtesp(15 - inttotal(l)) + m_[nome])
+    t.addfim(l + txtesp(15 - inttotal(l)) + txttroca(m_[nome], "\n", "\n            "))
   efim
   ret t.remove(1000)
 
@@ -93,7 +102,7 @@ func escr
   int1 opc.32
   opc.bits = arg0.jogconfig.bits
   se !arg1
-    epara p.inifunc(este, "opc_"), p.lin, p.depois
+    epara p.inifunctudo(este, "opc_"), p.lin, p.depois
       refvar atual = [p.texto](perm)
       se !txt(atual)
       senao opc.[atual]
@@ -110,7 +119,7 @@ func escr
   x = txtremove(x, "EMD")
   txt512 mudou
   enquanto x
-    epara p.inifunc(este, "opc_" + txt(txt1(x), 1)), p.lin, p.depois
+    epara p.inifunctudo(este, "opc_" + txt(txt1(x), 1)), p.lin, p.depois
       refvar atual = [p.texto](perm)
       continuar !txt(atual)
       se txt(x, 0, 1) == "+"
@@ -127,7 +136,11 @@ func escr
     !p.lin && (y += " " + txt1(x))
     x = txt2(x)
   efim
-  ret y, arg0.msg("Opção inexistente:" + y)
+  se y
+    $mens.mens = txt(y, 1)
+    $mens.mp(m_config_invalida, arg0)
+    ret
+  fimse
 # Checa a propriedade SOM
   se arg0.jogconfig.13 != opc.13 || arg0.jogconfig.14 != opc.14 && arg0.sock.msgsom_t
     se !opc.13 && !opc.14
@@ -155,7 +168,7 @@ func escr
     i = arg0.lseguir.ini
     enquanto i
       se i.obj.tseguir == 0 || i.obj.tseguir == 2
-        i.obj.msg("Você pára de seguir " + arg0.descnome + ".")
+        $mens.mp(m_parar_seguir, i.obj, arg0)
         i.removedepois
       senao
         i.depois
@@ -165,4 +178,158 @@ func escr
 # Atualiza a configuração
   arg0.jogconfig.bits = opc.bits
   arg0.sock.jogconfig.bits = opc.bits
-  arg0.msg("\bConfiguração alterada:" + mudou)
+  $mens.mens = txt(mudou, 1)
+  $mens.mp(m_config_mudou, arg0)
+
+
+classe m_cmd_config
+herda comando_menu_cmd
+#
+const nome1 = "Ajuda"
+const tipo1 = "opc_texto"
+const clas1 = "cmd_config"
+const vari1 = "ajudaini"
+#
+const nome2 = "Config Desc"
+const tipo2 = "opc_texto"
+const clas2 = "cmd_config"
+const vari2 = "m_desc"
+#
+const nome3 = "Config Saídas"
+const tipo3 = "opc_texto"
+const clas3 = "cmd_config"
+const vari3 = "m_saidas"
+#
+const nome4 = "Config Cores"
+const tipo4 = "opc_texto"
+const clas4 = "cmd_config"
+const vari4 = "m_cores"
+#
+const nome5 = "Config Acento"
+const tipo5 = "opc_texto"
+const clas5 = "cmd_config"
+const vari5 = "m_acento"
+#
+const nome6 = "Config Telepatia"
+const tipo6 = "opc_texto"
+const clas6 = "cmd_config"
+const vari6 = "m_telepatia"
+#
+const nome7 = "Config Chat"
+const tipo7 = "opc_texto"
+const clas7 = "cmd_config"
+const vari7 = "m_chat"
+#
+const nome8 = "Config Novatos"
+const tipo8 = "opc_texto"
+const clas8 = "cmd_config"
+const vari8 = "m_novatos"
+#
+const nome9 = "Config Emoção"
+const tipo9 = "opc_texto"
+const clas9 = "cmd_config"
+const vari9 = "m_emocao"
+#
+const nome10 = "Config Seguir"
+const tipo10 = "opc_texto"
+const clas10 = "cmd_config"
+const vari10 = "m_seguir"
+#
+const nome11 = "Config Moedas"
+const tipo11 = "opc_texto"
+const clas11 = "cmd_config"
+const vari11 = "m_moedas"
+#
+const nome12 = "Config Prompt"
+const tipo12 = "opc_texto"
+const clas12 = "cmd_config"
+const vari12 = "m_prompt"
+#
+const nome13 = "Config Bprompt"
+const tipo13 = "opc_texto"
+const clas13 = "cmd_config"
+const vari13 = "m_bprompt"
+#
+const nome14 = "Config Som1"
+const tipo14 = "opc_texto"
+const clas14 = "cmd_config"
+const vari14 = "m_som1"
+#
+const nome15 = "Config Som2"
+const tipo15 = "opc_texto"
+const clas15 = "cmd_config"
+const vari15 = "m_som2"
+#
+const nome16 = "Config Dicas"
+const tipo16 = "opc_texto"
+const clas16 = "cmd_config"
+const vari16 = "m_dicas"
+#
+const nome17 = "Config Imortal"
+const tipo17 = "opc_texto"
+const clas17 = "cmd_config"
+const vari17 = "m_imortal"
+#
+const nome18 = "Sala"
+const tipo18 = "opc_texto"
+const clas18 = "cmd_config"
+const vari18 = "m_sala"
+#
+const nome19 = "Config Invquem"
+const tipo19 = "opc_texto"
+const clas19 = "cmd_config"
+const vari19 = "m_invquem"
+#
+const nome20 = "Config Invsala"
+const tipo20 = "opc_texto"
+const clas20 = "cmd_config"
+const vari20 = "m_invsala"
+#
+const nome21 = "Config AC"
+const tipo21 = "opc_texto"
+const clas21 = "cmd_config"
+const vari21 = "m_ac"
+#
+const nome22 = "Config Admlog"
+const tipo22 = "opc_texto"
+const clas22 = "cmd_config"
+const vari22 = "m_admlog"
+#
+const nome23 = "Config Cmdlog"
+const tipo23 = "opc_texto"
+const clas23 = "cmd_config"
+const vari23 = "m_cmdlog"
+#
+const nome24 = "Config Execlog"
+const tipo24 = "opc_texto"
+const clas24 = "cmd_config"
+const vari24 = "m_execlog"
+#
+const nome25 = "Opção inexistente"
+const tipo25 = "opc_linha"
+const clas25 = "cmd_config"
+const vari25 = "m_config_invalida"
+#
+const nome26 = "Mudou config"
+const tipo26 = "opc_linha"
+const clas26 = "cmd_config"
+const vari26 = "m_config_mudou"
+#
+const nome27 = "Pára de seguir"
+const tipo27 = "opc_linha"
+const clas27 = "cmd_config"
+const vari27 = "m_parar_seguir"
+#
+const nome28 = "Dicas"
+const info28 = "Uma dica por linha"
+const tipo28 = "opc_texto--"
+const clas28 = "config_dicas"
+const vari28 = "texto"
+const exec28 = "miscdicas:atualiza"
+#
+const nome29 = "Tempo entre dicas"
+const info29 = "Em segundos, ou 0 para desativar as dicas"
+const tipo29 = "opc_numero--"
+const clas29 = "config_dicas"
+const vari29 = "tempo"
+const exec29 = "miscdicas:atualiza"

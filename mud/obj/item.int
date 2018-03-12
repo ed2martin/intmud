@@ -60,7 +60,7 @@ i_comechave\n\
 luzfim\n\
 luzitem\n\
 luzini\n\
-luzliga\n\
+luzliga1 luzliga2\n\
 luztxt\n\
 mantersala\n\
 objmax\n\
@@ -297,7 +297,6 @@ sav inttempo luztempo # Quanto tempo produz luz, <0 se estiver apagado
 # const luzini = 1000 # Duração da luz
 # const luztxt = "" # Mensagem quando a luz acaba
 # const luzfim = 0 # Se item some quando a luz acaba
-const luzliga = "$P acende $o."
 
 func fim # Objeto foi apagado
   persolugar.limpar, comum_obj:fim
@@ -317,8 +316,6 @@ func recalc_exec # Acerta variáveis
   se int(luzitem) != 7 # Se não acende ao vestir
   senao vestpos && luztempo < 0 # Vestiu: acende
     luztempo.pos, ajustapeso
-# $mens.p(arg0, nulo, r)
-# $mens.mvis1(r.luzliga ? r.luzliga : "$P acende $o.")
     refvar d = dono
     listaobj l
     epara l.addfim(d.evento), l, l.ini.remove

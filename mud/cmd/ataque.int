@@ -905,24 +905,3 @@ func menssub # Usado em mensgolpe
   arg0.1 = [lin]2 ?? arg0.0
   arg0.2 = [lin]3 ?? arg0.0
   ret 1
-
-
-classe cmd_matar
-herda comando_ataque
-const objcmd = config:matartipo ? este
-const txtajuda = config:matartipo ? txtajuda1
-const txtajuda1 = "\b\c3Matar\b\n\
-Sintaxe: MATAR <personagem>\n\
-Começa um combate com um personagem."
-const cmdmenu = ""
-
-func exechab # Chamado quando personagem (arg0) quer atacar alguém (arg1)
-  se arg0 == arg1
-    arg0.contr.msg("Em você mesm" + (arg0.msexo ? "o?" : "a?"))
-  senao arg0.atkenv
-    arg0.msg("Você já está lutando.")
-  senao !arg0.persobat.atkauto(arg1, 8) # Realiza um ataque automático
-    arg0.msg("Você não sabe como atacar " + arg1.descnome + ".")
-  senao arg0.atkenv # Se está lutando
-    arg0.p_espera = intmax(arg0.p_espera, config:atktempo)
-  fimse

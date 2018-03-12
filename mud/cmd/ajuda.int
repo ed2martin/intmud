@@ -198,7 +198,7 @@ o comando (ou teclar um sinal de exclamação) até pegar todos."
 
 classe cmd_combate
 const iniclasse = !$[arg0] && criar(arg0)
-const txtajuda = aj1 + (config:matartipo ? aj2 : aj3) + aj4
+const txtajuda = aj1 + ($cmd_matar.objcmd(arg0) ? aj2 : aj3) + aj4
 const aj1 = "\b\c3Combate\b\n"
 const aj2 = "Para começar uma luta basta teclar MATAR ou um comando agressivo,\n\
 seguido do personagem que você quiser atacar.\n"

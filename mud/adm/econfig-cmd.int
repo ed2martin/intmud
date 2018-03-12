@@ -12,20 +12,6 @@ const tipo2 = "menu_econfig_adm_rezar--"
 #
 const nome3 = "Canais"
 const tipo3 = "menu_econfig_adm_canais--"
-#
-const nome4 = "Config Dicas"
-const tipo4 = "menu_econfig_adm_config--"
-#
-const nome5 = "Matar"
-const tipo5 = "opc_opcao--"
-const clas5 = "config"
-const vari5 = "matartipo"
-const extr5 = "Desabilitado\nHabilitado"
-#
-const nome6 = "Grupo diferença de nível"
-const tipo6 = "opc_numero--"
-const clas6 = "config"
-const vari6 = "gruponivel"
 
 
 classe menu_econfig_adm_echo
@@ -103,29 +89,3 @@ const nome1 = "AC"
 const tipo1 = "opc_linha--"
 const clas1 = "config"
 const vari1 = "acmsg"
-#
-const nome2 = "GChat"
-const tipo2 = "opc_linha--"
-const clas2 = "config"
-const vari2 = "gchatmsg"
-
-
-classe menu_econfig_adm_config
-herda comando_menu
-const titulo = "Config"
-const menufim = "menu_econfig_adm"
-const colunas = 35
-#
-const nome1 = "Dicas"
-const info1 = "Uma dica por linha (vide também comando CONFIG +DICAS)"
-const tipo1 = "opc_texto--"
-const clas1 = "config_dicas"
-const vari1 = "texto"
-const exec1 = "miscdicas:atualiza"
-#
-const nome2 = "Tempo entre dicas"
-const info2 = "Em segundos, ou 0 para desativar as dicas"
-const tipo2 = "opc_numero--"
-const clas2 = "config_dicas"
-const vari2 = "tempo"
-const exec2 = "miscdicas:atualiza"

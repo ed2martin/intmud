@@ -1,4 +1,4 @@
-classe atualiza_482
+classe atualiza_483
 # Atualiza arquivos mud/config/* e mud/areas/* de acordo com novas mudanças
 prog p
 debug dbg
@@ -729,8 +729,8 @@ func ini3_exec
 func ini4_exec
   apagar(este)
 # Checa e muda a versão
-  ret (versao = config:versao) >= 482, nulo
-  p.criar("config", "const versao = 482 # Para atualizar diretórios areas e config")
+  ret (versao = config:versao) >= 483, nulo
+  p.criar("config", "const versao = 483 # Para atualizar diretórios areas e config")
   config:salvar
 # Comando Fim e Dicas aleatórias
   se versao < 457
@@ -817,6 +817,19 @@ func ini4_exec
     movefunc("config", "capturar_reserva", "cmd_capturar", "capturar_reserva1")
     movefunc("config", "capturar_outros", "cmd_capturar", "capturar_equipe2", 1)
     movefunc("config", "capturar_outros", "cmd_capturar", "capturar_reserva2")
+  fimse
+  se versao < 483
+    dbg.ini
+    movefunc("config", "gruponivel", "cmd_grupo", "v_nivel")
+    movefunc("config", "matartipo", "cmd_matar", "v_tipo")
+    movefunc("config", "gchatmsg", "cmd_gchat", "m_enviou1", 1)
+    movefunc("config", "gchatmsg", "cmd_gchat", "m_enviou2")
+    epara p.iniherdainv("comum_item"), p.lin, p.depois
+      dbg.ini
+      continuar p.existe(p.texto, "luzliga") != 1
+      movefunc(p.texto, "lugzliga", p.texto, "luzliga1", 1)
+      movefunc(p.texto, "lugzliga", p.texto, "luzliga2")
+    efim
   fimse
 # Avisa que atualizou arquivos
   tela.msg("Diretórios areas e config atualizados\n")
