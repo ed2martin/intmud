@@ -75,8 +75,7 @@ func escr
     ret
   fimse
 # Decide se consegue capturar
-  real2 valor
-  valor = r.pvida * 100 / r.pvidamax
+  real2 valor = r.pvida * 100 / r.pvidamax
   se valor < 10 # 0% a 10% de vida: valor=10
     valor = 10
   senao valor < 46 # 10% a 46% de vida: valor= 10 a 1

@@ -11,6 +11,7 @@ const msgantes2 = "$P some em um redemoinho de fumaça."
 const msgdepois2 = "$P aparece de um redemoinho de fumaça."
 const msgerrou1 = "Por algum motivo a magia falhou."
 const msgnulo1 = "Por algum motivo a magia não teve efeito."
+const msgretorno = "Você não possui ponto de retorno."
 #
 # Ordem que deve organizar as constantes:
 const admordem = "nomevar nivel sala\n\
@@ -20,13 +21,13 @@ c_mana1 c_mana2\n\
 c_move1 c_move2\n\
 aulaini aulafim aulapontos\n\
 depende\n\
-falha\n\
+falha1 falha2\n\
 tipoarma\n\
 tipoperso\n\
 valor\n\
 msgextra msgini1 msgini2\n\
 msgantes1 msgantes2 msgdepois1 msgdepois2\n\
-msgerrou1 msgerrou2 msgnulo1 msgnulo2"
+msgerrou1 msgerrou2 msgnulo1 msgnulo2 msgretorno"
 #
 const escr = escrhab(arg0, arg1)
 const aulapontos = config:a_a_aulapontos
@@ -42,7 +43,7 @@ func escrhab # Personagem retorna
     ret !checahab1(arg0.persobat, arg2), nulo
     ret !r || r == arg0.dono, $mens.p(arg0) + $mens.mvis2(msgerrou1, msgerrou2)
   senao
-    ret !r, arg0.msg("Você não possui ponto de retorno.")
+    ret !r, $mens.mp(msgretorno, arg0)
     ret !checahab1(arg0.persobat, arg2), nulo
     ret r == arg0.dono, $mens.p(arg0) + $mens.mvis2(msgerrou1, msgerrou2)
     custohab1(arg0.persobat)
@@ -53,7 +54,7 @@ func escrhab # Personagem retorna
     ret $mens.p(arg0) + $mens.mvis2(msgnulo1, msgnulo2)
   senao arg0.dono.s_retornar(arg0) == 1
     ret $mens.p(arg0) + $mens.mvis2(msgnulo1, msgnulo2)
-  senao rand(100) < falha || arg0.atkenv # Checa a precisão e se está batalhando
+  senao rand(100) < falha1 + (falha2 - falha1) * intpos(arg0.var.[nomevar]_ - 1) / 7
     ret $mens.p(arg0) + $mens.mvis2(msgerrou1, msgerrou2)
   fimse
   $mens.p(arg0)

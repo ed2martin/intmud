@@ -1,22 +1,25 @@
-classe cmd_fugir
+classe h_cmd_fugir
 herda comando_comum
 const posic = 7
-const txtajuda = "\b\c3Fugir\b\n\
-Sintaxe: FUGIR [número]\n\
-Tenta fugir de uma batalha.\n\
+const txtajuda = txtajuda1 + m_ajuda
+const txtajuda1 = "\b\c3Fugir\b\n\
+Sintaxe: FUGIR [número]\n"
+#
+const m_ajuda = "Tenta fugir de uma batalha.\n\
 Seguido de um número, muda os pontos para a fuga. Quando os pontos\n\
 de vida do seu personagem estiverem abaixo desse número, ele tentará\n\
 fugir automaticamente.\n\
 Para saber quantos pontos foram definidos, tecle fugir fora da batalha."
-#
 const m_pontos_invalidos = "Pontos de vida inválidos: $m"
 const m_pontos_mudar = "Pontos de vida para fugir mudaram para: $m"
 const m_pontos_ver = "Pontos de vida para fugir: $m"
 const m_folego = "Você está sem fôlego."
-const m_falha1 = "$P tenta fugir, mas não consegue."
-const m_falha2 = m_falha1
-const m_sem_saida1 = "$P tenta fugir mas não vê para onde."
-const m_sem_saida2 = m_sem_saida1
+const m_falha1 = "Você tenta fugir, mas não consegue."
+const m_falha2 = "$P tenta fugir, mas não consegue."
+const m_sem_saida1 = "Você tenta fugir mas não vê para onde."
+const m_sem_saida2 = "$P tenta fugir mas não vê para onde."
+const admordem = "m_ajuda m_pontos_invalidos m_pontos_mudar m_pontos_ver\n\
+m_folego m_falha1 m_falha2 m_sem_saida1 m_sem_saida2"
 
 func escr
 # Checa posição
@@ -67,7 +70,57 @@ func fugir # Tenta fugir da luta
   arg0.pmove -= 5
   arg0.batalhafim
   $mens.p(arg0)
-  $mens.mtodos1($cmd_[dir].m_fugir)
+  $mens.mtodos1($cmd_[dir].m_fugir1, $cmd_[dir].m_fugir2)
   arg0.mudadono(r)
   $mens.mens = ""
   !(arg0.bitver & 256) && $mens.mvis2("", $cmd_[dir].m_entra1)
+
+
+classe m_cmd_fugir
+herda comando_menu_cmd
+#
+const nome1 = "Ajuda"
+const tipo1 = "opc_texto"
+const clas1 = "cmd_fugir"
+const vari1 = "m_ajuda"
+#
+const nome2 = "Erro pontos de vida"
+const info2 = "Ao digitar fugir e alguma coisa que não é um número"
+const tipo2 = "opc_linha"
+const clas2 = "cmd_fugir"
+const vari2 = "m_pontos_invalidos"
+#
+const nome3 = "Mudou pontos de vida"
+const tipo3 = "opc_linha"
+const clas3 = "cmd_fugir"
+const vari3 = "m_pontos_mudar"
+#
+const nome4 = "Ver pontos de vida"
+const tipo4 = "opc_linha"
+const clas4 = "cmd_fugir"
+const vari4 = "m_pontos_ver"
+#
+const nome5 = "Sem fôlego"
+const tipo5 = "opc_linha"
+const clas5 = "cmd_fugir"
+const vari5 = "m_folego"
+#
+const nome6 = "Falha perso"
+const tipo6 = "opc_linha"
+const clas6 = "cmd_fugir"
+const vari6 = "m_falha1"
+#
+const nome7 = "Falha outros"
+const tipo7 = "opc_linha"
+const clas7 = "cmd_fugir"
+const vari7 = "m_falha2"
+#
+const nome8 = "Sem saída perso"
+const tipo8 = "opc_linha"
+const clas8 = "cmd_fugir"
+const vari8 = "m_sem_saida1"
+#
+const nome9 = "Sem saída outros"
+const tipo9 = "opc_linha"
+const clas9 = "cmd_fugir"
+const vari9 = "m_sem_saida2"

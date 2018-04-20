@@ -1,4 +1,4 @@
-classe atualiza_483
+classe atualiza_484
 # Atualiza arquivos mud/config/* e mud/areas/* de acordo com novas mudanças
 prog p
 debug dbg
@@ -729,8 +729,8 @@ func ini3_exec
 func ini4_exec
   apagar(este)
 # Checa e muda a versão
-  ret (versao = config:versao) >= 483, nulo
-  p.criar("config", "const versao = 483 # Para atualizar diretórios areas e config")
+  ret (versao = config:versao) >= 484, nulo
+  p.criar("config", "const versao = 484 # Para atualizar diretórios areas e config")
   config:salvar
 # Comando Fim e Dicas aleatórias
   se versao < 457
@@ -818,7 +818,7 @@ func ini4_exec
     movefunc("config", "capturar_outros", "cmd_capturar", "capturar_equipe2", 1)
     movefunc("config", "capturar_outros", "cmd_capturar", "capturar_reserva2")
   fimse
-  se versao < 483
+  se versao < 484
     dbg.ini
     movefunc("config", "gruponivel", "cmd_grupo", "v_nivel")
     movefunc("config", "matartipo", "cmd_matar", "v_tipo")
@@ -829,6 +829,18 @@ func ini4_exec
       continuar p.existe(p.texto, "luzliga") != 1
       movefunc(p.texto, "lugzliga", p.texto, "luzliga1", 1)
       movefunc(p.texto, "lugzliga", p.texto, "luzliga2")
+    efim
+    epara p.iniherdainv("comando_ataque"), p.lin, p.depois
+      dbg.ini
+      continuar p.existe(p.texto, "falha") != 1
+      int16 valor = [p.texto]:falha
+      p.apagar(p.texto, "falha")
+      se valor < 0
+        p.criar(p.texto, "const atkfalha = 0")
+      senao valor > 0
+        p.criar(p.texto, "const falha1 = " + valor)
+        p.criar(p.texto, "const falha2 = " + valor)
+      fimse
     efim
   fimse
 # Avisa que atualizou arquivos

@@ -15,7 +15,7 @@ c_mana1 c_mana2\n\
 c_move1 c_move2\n\
 aulaini aulafim aulapontos\n\
 depende\n\
-falha\n\
+falha1 falha2\n\
 tipoarma\n\
 tipoperso\n\
 valor\n\
@@ -56,7 +56,9 @@ func escrhab
     arg0.acertapos(1) # Porque os pontos de vida podem ter mudado
     se arg0.dono.s_semmagia && txt(nomevar, 0, 1) == "m"
       ret $mens.p(arg0) + $mens.mvis2(msgnulo1, msgnulo2)
-    senao rand(100) < falha || arg0.atkenv # Checa a precisão e se está batalhando
+    senao arg0.atkenv # Checa se está batalhando
+      ret $mens.p(arg0) + $mens.mvis2(msgerrou1, msgerrou2)
+    senao rand(100) < falha1 + (falha2 - falha1) * intpos(arg0.var.[nomevar]_ - 1) / 7
       ret $mens.p(arg0) + $mens.mvis2(msgerrou1, msgerrou2)
     fimse
     se r.perso

@@ -253,58 +253,60 @@ func danosg_precisao # Retorna a taxa de acerto (em porcentagem, de 0 a 100)
   int8 num
   real2 pr_acerto # taxa de acerto
   real2 pr_indef # taxa indefinida
-  se falha < 0
-    arg2.addfim(txt(++num) + ". Falha do golpe: \bNão falha")
-    pr_acerto = 100
+  real2 valor
+  txt100 lin
+  refvar falha = falha1 + (falha2 - falha1) * intpos(arg0.var.[nomevar]_ - 1) / 7
+  se falha >= 100
+    arg2.addfim(txt(++num) + ". Falha do golpe: \bSempre falha")
+    ret 0
   senao
-    txt100 lin
-    real2 valor
     pr_indef = 100
     lin = danosg_erro(pr_acerto, pr_indef, falha)
     arg2.addfim(txt(++num) + ". Falha do golpe: \b" + lin)
+  fimse
+  ret !atkfalha, int(pr_acerto * 100) / 100
+  se arma1
+    lin = danosg_erro(pr_acerto, pr_indef, arma1.var.z_armafalha_)
+    arg2.addfim(txt(++num) + ". Falha arma: \b" + lin)
+  fimse
+  se arma2
+    lin = danosg_erro(pr_acerto, pr_indef, arma2.var.z_armafalha_)
+    arg2.addfim(txt(++num) + ". Falha munição: \b" + lin)
+  fimse
+  se arg1.posicao == 4
+    arg2.addfim(txt(++num) + ". Alvo está dormindo:\n100% de acerto")
+    pr_acerto += pr_indef
+  senao
+    valor = pr_indef
+    lin = danosg_erro(pr_acerto, pr_indef, 5)
+    arg2.addfim(txt(++num) + ". Dado de 20 faces 1: \b" + lin)
+    pr_indef = valor
+    lin = danosg_acerto(pr_acerto, pr_indef, 5)
+    arg2.addfim(txt(++num) + ". Dado de 20 faces 20: \b" + lin)
+    pr_indef = valor - valor / 10
+    refvar bmin = $miscfome.bebeatk
+    refvar bmax = $miscfome.cheio
+    valor = danosg_rand(bmin, bmax, arg0.jog ? arg0.p_bebida : 0)
+    lin = danosg_erro(pr_acerto, pr_indef, valor)
+    arg2.addfim(txt(++num) + ". Embriaguez perso: \b" + lin)
+    valor = danosg_rand(bmin, bmax, arg1.jog ? arg1.p_bebida : 0)
+    lin = danosg_acerto(pr_acerto, pr_indef, valor)
+    arg2.addfim(txt(++num) + ". Embriaguez alvo: \b" + lin)
+    valor = 2 + arg0.precisao + addprecisao + arma1.var.z_armaaddprecisao_ - arg1.evasao
+    arg2.addfim(txt(++num) + ". Dado de 20 faces: \b2 a 19")
+    arg2.addfim(txt(++num) + ". Precisão perso: \bsoma " + arg0.precisao)
+    arg2.addfim(txt(++num) + ". Precisão golpe: \bsoma " + 1 * arg0.addprecisao)
     se arma1
-      lin = danosg_erro(pr_acerto, pr_indef, arma1.var.z_armafalha_)
-      arg2.addfim(txt(++num) + ". Falha arma: \b" + lin)
+      arg2.addfim(txt(++num) + ". Precisão arma: \bsoma " + arma1.var.z_armaaddprecisao_)
     fimse
-    se arma2
-      lin = danosg_erro(pr_acerto, pr_indef, arma2.var.z_armafalha_)
-      arg2.addfim(txt(++num) + ". Falha munição: \b" + lin)
+    se !arg1.visivel(arg0)
+      arg2.addfim(txt(++num) + ". Alvo invisível: \bsubtrai 5")
+      valor -= 5
     fimse
-    se arg1.posicao == 4
-      arg2.addfim(txt(++num) + ". Alvo está dormindo:\n100% de acerto")
-      pr_acerto += pr_indef
-    senao
-      valor = pr_indef
-      lin = danosg_erro(pr_acerto, pr_indef, 5)
-      arg2.addfim(txt(++num) + ". Dado de 20 faces 1: \b" + lin)
-      pr_indef = valor
-      lin = danosg_acerto(pr_acerto, pr_indef, 5)
-      arg2.addfim(txt(++num) + ". Dado de 20 faces 20: \b" + lin)
-      pr_indef = valor - valor / 10
-      refvar bmin = $miscfome.bebeatk
-      refvar bmax = $miscfome.cheio
-      valor = danosg_rand(bmin, bmax, arg0.jog ? arg0.p_bebida : 0)
-      lin = danosg_erro(pr_acerto, pr_indef, valor)
-      arg2.addfim(txt(++num) + ". Embriaguez perso: \b" + lin)
-      valor = danosg_rand(bmin, bmax, arg1.jog ? arg1.p_bebida : 0)
-      lin = danosg_acerto(pr_acerto, pr_indef, valor)
-      arg2.addfim(txt(++num) + ". Embriaguez alvo: \b" + lin)
-      valor = 2 + arg0.precisao + addprecisao + arma1.var.z_armaaddprecisao_ - arg1.evasao
-      arg2.addfim(txt(++num) + ". Dado de 20 faces: \b2 a 19")
-      arg2.addfim(txt(++num) + ". Precisão perso: \bsoma " + arg0.precisao)
-      arg2.addfim(txt(++num) + ". Precisão golpe: \bsoma " + 1 * arg0.addprecisao)
-      se arma1
-        arg2.addfim(txt(++num) + ". Precisão arma: \bsoma " + arma1.var.z_armaaddprecisao_)
-      fimse
-      se !arg1.visivel(arg0)
-        arg2.addfim(txt(++num) + ". Alvo invisível: \bsubtrai 5")
-        valor -= 5
-      fimse
-      arg2.addfim(txt(++num) + ". Evasão alvo: \bsubtrai " + arg1.evasao)
-      lin = ". Acerta se " + valor + " a " + (valor + 17) + " >= 0: \b"
-      valor = int(10000 + 10000 * valor / 18) / 100
-      arg2.addfim(txt(++num) + lin + danosg_acerto(pr_acerto, pr_indef, valor))
-    fimse
+    arg2.addfim(txt(++num) + ". Evasão alvo: \bsubtrai " + arg1.evasao)
+    lin = ". Acerta se " + valor + " a " + (valor + 17) + " >= 0: \b"
+    valor = int(10000 + 10000 * valor / 18) / 100
+    arg2.addfim(txt(++num) + lin + danosg_acerto(pr_acerto, pr_indef, valor))
   fimse
   pr_acerto = int(pr_acerto * 100) / 100
   arg2.addfim(txt(++num) + ". Resultado:\b" + pr_acerto + "% de acerto")

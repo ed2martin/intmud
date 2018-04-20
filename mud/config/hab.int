@@ -234,18 +234,17 @@ herda comando_ataque
 const nomevar = "h_Explodir"
 const ataquemin = 100
 const ataquemax = 300
-const falha = -1
+const atkfalha = 0 # Pode falhar: Não
 const vel = 100
 const msgextra = "Extremamente forte, mas quem aplica esse golpe desmaia."
-
-func cmd_atacou # Desmaia após o ataque
-  arg0.pvida = 0
-
 const atk1_auto1 = "$P explodiu na direção de $a, $m"
 const atk1_perso1 = "$P explodiu na direção de $a, $m"
 const atk1_matou1 = "$P explodiu na direção de $a, $m"
 const atk1_errou1 = "$P explodiu mas $a desviou em tempo., errou"
 const atk1_nulo1 = "$P explodiu, nada acontece com $a, nada acontece"
+
+func cmd_atacou # Desmaia após o ataque
+  arg0.pvida = 0
 
 
 classe cmd_furtividade
@@ -358,7 +357,8 @@ const nomevar = "h_Multissoco"
 const tipoalvo = 3 # Alvo: 3 Outros dividindo o ataque
 const ataquemin = 35
 const ataquemax = 105
-const falha = 30
+const falha1 = 30
+const falha2 = 30
 const tipoatk = 1 # Tipo: 1 Luta
 const atk1_auto1 = "$P acerta um belo soco em si mesm$s, $m"
 const atk1_perso1 = "$P dá um soco múltiplo em $a, $m"
@@ -420,7 +420,7 @@ const c_move1 = 10
 const c_move2 = 4
 const ataquemin = 35
 const ataquemax = 105
-const falha = -1
+const atkfalha = 0 # Pode falhar: Não
 const tipoatk = 9 # Tipo: 9 Aéreo/vento
 const msgextra = "Só pode ser usado enquanto estiver dormindo."
 const atk1_auto1 = "$P ronca alto e se machuca, $m"
@@ -599,7 +599,6 @@ const nomevar = "m_Criar fonte"
 const tipoalvo = 7 # Alvo: 7 O personagem; não é ataque
 const c_mana1 = 15
 const c_mana2 = 5
-const falha = -1
 const atk1_auto1 = "$P faz um gesto circular com as mãos."
 const atk1_perso1 = "$P faz um gesto circular com as mãos."
 
@@ -610,6 +609,8 @@ func cmd_alvofim
     $mens.p(arg0)
     $mens.mtodos1("Aos poucos, uma fonte brota do chão.")
   fimse
+
+const atkfalha = 0
 
 
 classe magia_curar

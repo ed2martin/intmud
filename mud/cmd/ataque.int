@@ -3,7 +3,8 @@ herda comando_comum
 const objcmd = arg0.persobat.var.[nomevar] ? este
 const objnivel = !tipoarma || tipoarma & intbit(int(arg0.iempu.obj.armatipo)) ? 0 : 2
 const posic = 7
-const falha = 0
+const falha1 = 0
+const falha2 = 0
 const tipoalvo = 6
 
 func habajuda # Retorna um texto que contém informações
@@ -46,7 +47,18 @@ func habajuda # Retorna um texto que contém informações
   senao
     lin += "\nPode aprender em qualquer nível"
   fimse
-  lin += !falha ? "" : falha > 0 ? ", Falha " + falha + "%" : ", Não falha"
+  refvar f1 = falha1 < 0 ? 0 : falha1 > 100 ? 100 : falha1
+  refvar f2 = falha2 < 0 ? 0 : falha2 > 100 ? 100 : falha2
+  se f1 != f2
+    lin += ", Falha " + f1 + "% iniciante a " + f2 + "% perito"
+  senao f1 >= 100
+    lin += ", Sempre falha"
+  senao f1 > 0
+    lin += ", Falha " + f1 + "%"
+  fimse
+  se !atkfalha
+    lin += ", Não falha por embriaguez/precisão/evasão"
+  fimse
   t.addini(lin)
   msgextra && t.addfim(msgextra)
   se c_vida1 || c_vida2
@@ -207,6 +219,7 @@ const ataque1arma = 1
 const ataque1municao = 1
 const ataque2 = 0
 const atknivel = config:atknivel
+const atkfalha = 1
 const vel = config:a_vel # Velocidade do golpe, 100 significa 100%
 const a_prob1 = 100
 const a_prob2 = 100
@@ -244,7 +257,7 @@ ataque1 ataque1perso ataque1arma ataque1municao\n\
 ataque2 atknivel\n\
 aulaini aulafim aulapontos\n\
 depende\n\
-falha\n\
+atkfalha falha1 falha2\n\
 addprecisao\n\
 armamove\n\
 tipoarma\n\
@@ -428,7 +441,7 @@ func exechab # Chamado quando personagem usa habilidade ou magia
     mudavida = 0
     se contr0.dono.s_semmagia && txt(nomevar, 0, 1) == "m"
       result = 1 # Sem efeito
-    senao rand(100) < falha
+    senao rand(100) < falha1 + arg2 * (falha2 - falha1)
       result = 2 # Errou o alvo
     senao
       result = 0 # Acertou o alvo
@@ -735,10 +748,10 @@ func execgolpe # Realiza um ataque e coloca resultado em result e mudavida
   fimse
 # Checa se acertou o alvo
   result = rand(1, 20)
-  se falha < 0
-  senao rand(100) < falha
+  se rand(100) < falha1 + arg2 * (falha2 - falha1)
     result = 2
     ret
+  senao !atkfalha
   senao arma1 && rand(100) < arma1.var.z_armafalha_
     result = 2
     ret
