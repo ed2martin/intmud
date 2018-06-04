@@ -144,6 +144,11 @@ arg0 = personagem
 Chamado pela função recalc_exec, para ajustar as variáveis do personagem
 (pontos de vida, mana, etc.)
 
+func cmd_nivel1
+arg0 = personagem e origem do evento
+arg1 = quantos níveis subiu ou 0 se renasceu
+Chamado pela função recalc_exec, quando o personagem subir de nível.
+
 func cmd_pnj_proc
 Chamado cada vez que o personagem não jogador decidir fazer alguma coisa.
 Não é chamado se estiver sendo controlado por um jogador ou pertencer
@@ -210,6 +215,11 @@ arg0 = personagem
 Chamado para os objetos em arg0.evento (os objetos que recebem os eventos
 do personagem), pela função recalc_exec, para ajustar as variáveis
 (pontos de vida, mana, etc.)
+
+func cmd_nivel2
+arg0 = personagem e origem do evento
+arg1 = quantos níveis subiu ou 0 se renasceu
+Chamado pela função recalc_exec, quando o personagem subir de nível.
 
 func cmd_moveu
 arg0 = personagem que andou em uma direção (comandos n, s, l, o, c, b, ne, etc.)

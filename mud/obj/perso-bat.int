@@ -144,6 +144,11 @@ func recalc_exec # Ajusta variáveis, principalmente batalha
       $mens.p(este)
       $mens.mtodos2(config:nivelmsg1, config:nivelmsg2)
       pnivel >= nmax && config:nmaxmsg && $mens.msginv(config:nmaxmsg, este)
+      cmd_nivel1(este, num)
+      listaobj l
+      epara l.addfim(evento), l, l.ini.remove
+        l.objini.cmd_nivel2(este, num)
+      efim
     fimse
   fimse
 # Acerta atributos básicos

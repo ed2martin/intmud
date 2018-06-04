@@ -1,18 +1,24 @@
-classe cmd_seguir
+classe h_cmd_seguir
 herda comando_comum
-const txtajuda = "\b\c3Seguir\b\n\
-Sintaxe: SEGUIR [personagem]\n\
-Segue um personagem.\n\
+const posic = 5
+const txtajuda = txtajuda1 + m_ajuda
+const txtajuda1 = "\b\c3Seguir\b\nSintaxe: SEGUIR [personagem]\n"
+#
+const m_ajuda = "Segue um personagem.\n\
 Se o personagem for omitido ou for você mesmo, você passa a não seguir\n\
 ninguém. Para outros personagens não seguirem você, veja a opção SEGUIR\n\
 do comando CONFIG."
-const posic = 5
+const m_naover = "Você não vê $m."
+const m_ninguem = "Você não segue ninguém."
+const m_seguir = "Você segue $a."
+const m_naoseguir = "Você não consegue seguir $a."
+const admordem = "m_ajuda m_naover m_ninguem m_seguir m_naoseguir"
 
 func escr
 # Sem argumentos: deixa de seguir
   se !arg1
     arg0.iseguir.remove
-    arg0.msg("Você não segue ninguém.")
+    $mensjog.msg(m_ninguem, arg0)
     ret
   fimse
 # Procura o personagem
@@ -22,14 +28,44 @@ func escr
   epara i = arg0.dono.dentro2.ini, i, i.depois
     sair i.obj.visivel(arg0) && n.nome(i.obj.ident, i.obj.objtot)
   efim
-  ret !i, arg0.msg("Você não vê " + arg1 + ".")
+  $mens.mens = arg1
+  ret !i, $mens.mp(m_naover, arg0)
 # Segue o personagem
   se i.obj == arg0
     arg0.iseguir.remove
-    arg0.msg("Você não segue ninguém.")
+    $mensjog.msg(m_ninguem, arg0)
   senao i.obj.p_naoseguir(arg0)
-    arg0.msg("Você não consegue seguir " + i.obj.descnome + ".")
+    $mens.mp(m_naoseguir, arg0, i.obj.descnome)
   senao
     arg0.seguir(i.obj)
-    arg0.msg("Você segue " + i.obj.descnome + ".")
+    $mens.mp(m_seguir, arg0, i.obj.descnome)
   fimse
+
+
+classe m_cmd_seguir
+herda comando_menu_cmd
+#
+const nome1 = "Ajuda"
+const tipo1 = "opc_texto"
+const clas1 = "cmd_abrir"
+const vari1 = "m_ajuda"
+#
+const nome2 = "Sem alvo"
+const tipo2 = "opc_linha"
+const clas2 = "cmd_seguir"
+const vari2 = "m_naover"
+#
+const nome3 = "Não segue ninguém"
+const tipo3 = "opc_linha"
+const clas3 = "cmd_seguir"
+const vari3 = "m_ninguem"
+#
+const nome4 = "Segue alguém"
+const tipo4 = "opc_linha"
+const clas4 = "cmd_seguir"
+const vari4 = "m_seguir"
+#
+const nome5 = "Não consegue seguir"
+const tipo5 = "opc_linha"
+const clas5 = "cmd_seguir"
+const vari5 = "m_naoseguir"

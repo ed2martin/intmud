@@ -1,9 +1,9 @@
-classe cmd_descarregar
+classe h_cmd_descarregar
 herda comando_comum
-const txtajuda = "\b\c3Descarregar\b\n\
-Sintaxe: DESCARREGAR\n\
-Descarrega a arma que você estiver empunhando."
 const posic = 5
+const txtajuda = txtajuda1 + m_ajuda
+const txtajuda1 = "\b\c3Descarregar\b\nSintaxe: DESCARREGAR\n"
+const m_ajuda = "Descarrega a arma que você estiver empunhando."
 #
 const m_sem_arma = "Você não está empunhando nenhuma arma."
 const m_sem_municao = "$O não usa munição"
@@ -13,6 +13,8 @@ const m_conhecimento = "Não possui conhecimento suficiente em $m."
 const m_nao_pode = "$O não pode ser descarregad$u."
 const m_descarrega1 = "Você descarrega $o."
 const m_descarrega2 = "$P descarrega $o."
+const admordem = "m_ajuda m_sem_arma m_sem_municao m_muita_coisa\n\
+m_descarregado m_conhecimento m_nao_pode m_descarrega1 m_descarrega2"
 
 func escr
   refvar perm_msg = $perm_[arg0.jogperm].item
@@ -72,3 +74,52 @@ func descarregar # Descarrega arma, tirando um item
   efim
   arg0.p_espera += 2
   ret 1
+
+
+classe m_cmd_descarregar
+herda comando_menu_cmd
+#
+const nome1 = "Ajuda"
+const tipo1 = "opc_texto"
+const clas1 = "cmd_descarregar"
+const vari1 = "m_ajuda"
+#
+const nome2 = "Sem arma"
+const tipo2 = "opc_linha"
+const clas2 = "cmd_descarregar"
+const vari2 = "m_sem_arma"
+#
+const nome3 = "Sem munição"
+const tipo3 = "opc_linha"
+const clas3 = "cmd_descarregar"
+const vari3 = "m_sem_municao"
+#
+const nome4 = "Muita coisa"
+const tipo4 = "opc_linha"
+const clas4 = "cmd_descarregar"
+const vari4 = "m_muita_coisa"
+#
+const nome5 = "Está descarregado"
+const tipo5 = "opc_linha"
+const clas5 = "cmd_descarregar"
+const vari5 = "m_descarregado"
+#
+const nome6 = "Sem conhecimento"
+const tipo6 = "opc_linha"
+const clas6 = "cmd_descarregar"
+const vari6 = "m_conhecimento"
+#
+const nome7 = "Não pode descarregar"
+const tipo7 = "opc_linha"
+const clas7 = "cmd_descarregar"
+const vari7 = "m_nao_pode"
+#
+const nome8 = "Descarrega perso"
+const tipo8 = "opc_linha"
+const clas8 = "cmd_descarregar"
+const vari8 = "m_descarrega1"
+#
+const nome9 = "Descarrega outros"
+const tipo9 = "opc_linha"
+const clas9 = "cmd_descarregar"
+const vari9 = "m_descarrega1"

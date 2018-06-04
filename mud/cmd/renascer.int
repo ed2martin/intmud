@@ -284,29 +284,35 @@ func passo4 # Escolha de uma habilidade ou magia
 
 func renascer
 # arg0 = objeto jogsock
+  refvar perso = arg0.perso
+  refvar var = arg0.var
   arg0.passo = ""
-  arg0.perso.tipo1 = arg0.var.j_tipo1
-  arg0.perso.tipo2 = arg0.var.j_tipo2
-  arg0.perso.tipo3 = arg0.var.j_tipo3
-  arg0.perso.pnivel = intmax(t_[arg0.var.j_tipo1]:nmin, t_[arg0.var.j_tipo2]:nmin, t_[arg0.var.j_\
-tipo3]:nmin)
-  arg0.perso.expatual = 0
-  arg0.perso.recalc = 1
-  arg0.perso.prenascer++
-  arg0.var.limpar("j_")
-  $mens.mens = arg0.perso.pnivel
-  $mens.mp(m_renasceu, arg0.perso)
+  perso.tipo1 = var.j_tipo1
+  perso.tipo2 = var.j_tipo2
+  perso.tipo3 = var.j_tipo3
+  perso.pnivel = intmax(t_[var.j_tipo1]:nmin, t_[var.j_tipo2]:nmin, t_[var.j_tipo3]:nmin)
+  perso.expatual = 0
+  perso.recalc = 1
+  perso.prenascer++
+  var.limpar("j_")
+  $mens.mens = perso.pnivel
+  $mens.mp(m_renasceu, perso)
   listaobj l
-  epara l.addfim(arg0.perso.dentro2), l, l.ini.remove
-    l.objini.item && l.objini.pnivel > arg0.perso.pnivel && l.objini.vestir(0)
+  epara l.addfim(perso.dentro2), l, l.ini.remove
+    l.objini.item && l.objini.pnivel > perso.pnivel && l.objini.vestir(0)
   efim
-  arg0.perso.recalc_exec
-  arg0.perso.recalc = 0
-  arg0.perso.pvida = arg0.perso.pvidamax
-  arg0.perso.pmana = arg0.perso.pmanamax
-  arg0.perso.pmove = arg0.perso.pmovemax
+  perso.cmd_nivel1(perso, 0)
+  listaobj l
+  epara l.addfim(perso.evento), l, l.ini.remove
+    l.objini.cmd_nivel2(perso, 0)
+  efim
+  perso.recalc_exec
+  perso.recalc = 0
+  perso.pvida = perso.pvidamax
+  perso.pmana = perso.pmanamax
+  perso.pmove = perso.pmovemax
   ref sala = config:sala_renascer
-  sala && arg0.perso.mudadono(sala)
+  sala && perso.mudadono(sala)
   ret 0
 
 
