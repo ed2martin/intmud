@@ -1,9 +1,7 @@
 classe h_cmd_ver
 herda h_cmd_olhar
 const completo = 0
-const txtajuda1 = "\b\c3Ver\b\n\
-Sintaxe: VER\n\
-         VER <personagem ou objeto>\n"
+const txtajuda1 = "\b\c3Ver\b\nSintaxe: VER\n         VER <personagem ou objeto>\n"
 #
 const m_ajuda = "Olha de relance para o lugar aonde você está ou para um personagem ou\n\
 objeto. É semelhante ao comando olhar, mas dá menos informações."
@@ -228,12 +226,16 @@ func niveltipo # Usado para informar nível, raça e classe do personagem
 # arg0 = personagem
 # arg1 = texto que deve ser colocado no começo da mensagem, se não for vazia
 # arg2 = texto que deve ser colocado no final da mensagem, se não for vazia
-  txt100 t
-  arg0.jog ? (t = " jogador")
-  se olhartipo
-    arg0.tipo1 && (t += " " + txtcopiamai(txte(arg0.tipo1), "A"))
-    arg0.tipo2 && (t += " " + txtcopiamai(txte(arg0.tipo2), "A"))
-    arg0.tipo3 && (t += " " + txtcopiamai(txte(arg0.tipo3), "A"))
+  txt200 t
+  arg0.jog ? (t = arg0.msexo ? " jogador" : " jogadora")
+  se v_olhartipo
+    txt100 nome
+    nome = !arg0.msexo ? $t_[arg0.tipo1].nome2 ?? $t_[arg0.tipo1].nome ?? arg0.tipo1
+    nome && (t += " " + nome)
+    nome = !arg0.msexo ? $t_[arg0.tipo2].nome2 ?? $t_[arg0.tipo2].nome ?? arg0.tipo2
+    nome && (t += " " + nome)
+    nome = !arg0.msexo ? $t_[arg0.tipo3].nome2 ?? $t_[arg0.tipo3].nome ?? arg0.tipo3
+    nome && (t += " " + nome)
   fimse
   se v_olharnivel && (arg0.pnivel || arg0.prenascer)
     t += " nível " + arg0.pnivel
@@ -244,7 +246,7 @@ func niveltipo # Usado para informar nível, raça e classe do personagem
 func nomevolume # Nome do item ou personagem e volume
 # arg0 = item ou personagem
 # arg1 = objeto que representa o conteúdo interno do item ou personagem
-  ret !olharvolume, txtcopiamai(arg0.descnome, "A")
+  ret !v_olharvolume, txtcopiamai(arg0.descnome, "A")
   txt100 nome
   nome = txtcopiamai(arg0.descnome, "A") + " (volume " + arg0.voltot / arg0.objtot
   se arg0.item && (arg0.i_aberto == 1 || arg0.i_aberto == 2) || arg1.s_sala

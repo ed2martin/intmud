@@ -1,3 +1,33 @@
+* 17/6/2018 IntMUD 1.12 MUD baseado na revisão 486
+
+   No IntMUD:
+  1. Criado novo protocolo em Socket: proto=8 significa modo binário;
+     dados são enviados e recebidos em hexadecimal
+  2. Telatxt.proto agora pode ser 0 ou 1 (antes era 0 ou 6)
+  3. Versão do IntMUD mudou para 1.12
+
+   No MUD:
+  1. Volta a ser permitido caracteres especiais (como $P, $S, etc) nas
+     descrições das salas
+  2. Corrigido bug: não estava removendo um item que depende da posição
+     1 (rosto) quando o personagem estava com algum efeito
+  3. Corrigido bug: classe admordena estava chamando config:salvar ao
+     rodar o MUD
+  4. Corrigido bug: itens que podem produzir luz estavam aparecendo como
+     (Brilhando) mesmo estando apagados
+  5. Criado menu no comando Econfig: Comandos Jogadores
+  6. Vários comandos no padrão dos novos menus (opção 18 do comando
+     Econfig)
+  7. Opção "Taxa de falha" dos comandos ehab e emag foi substitída por
+     "Falha iniciante", "Falha perito" e no menu "Ataque", a opção "Pode
+     falhar"
+  8. Opções $K, $L, $K1 e $L1 nas mensagens (primeiro e segundo objetos
+     citando o dono)
+  9. Eventos cmd_nivel1 e cmd_nivel2, acontecem quando o personagem sobe
+     de nível (vide mud/doc/13-eventos.txt)
+ 10. Opções nome e descrição do comando Etipo quando o personagem for
+     feminino
+
 * 16/9/2017 IntMUD 1.11 MUD baseado na revisão 474
 
    No MUD:

@@ -611,12 +611,13 @@ func passo1
     senao txtproclin(r.classes, arg0.var.j_tipo2) < 0
       continuar
     fimse
-    arg0.txtmais.addfim(txt(arg0.txtmais.linhas + 1) + ". " + r.nome)
+    refvar nome = (arg0.var.j_sexo == "0" ? r.nome2) ?? r.nome
+    arg0.txtmais.addfim(txt(arg0.txtmais.linhas + 1) + ". " + nome)
     lin = p.texto
     continuar txt(arg1) != txt(arg0.txtmais.linhas)
     arg0.txtmais.limpar
     tpasso += " " + p.texto
-    arg0.msg2(r.desc ? r.desc : r.nome)
+    arg0.msg2((arg0.var.j_sexo == "0" ? r.desc2) ?? r.desc ?? nome)
     ret 1
   efim
 # Uma ou nenhuma: escolhe automaticamente

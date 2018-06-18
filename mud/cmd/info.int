@@ -21,9 +21,9 @@ func escr
   epara item.ini("pn "), txt1(item.txt) == "pn", item.depois
     continuar item.obj.jogconfig.17 && !ver
     refvar obj = item.obj
-    refvar v1 = $t_[obj.tipo1].nomequem
-    refvar v2 = $t_[obj.tipo2].nomequem
-    refvar v3 = $t_[obj.tipo3].nomequem
+    refvar v1 = (!obj.msexo ? $t_[obj.tipo1].nomequem2) ?? $t_[obj.tipo1].nomequem
+    refvar v2 = (!obj.msexo ? $t_[obj.tipo2].nomequem2) ?? $t_[obj.tipo2].nomequem
+    refvar v3 = (!obj.msexo ? $t_[obj.tipo3].nomequem2) ?? $t_[obj.tipo3].nomequem
     total.[obj.jogconfig.20]++
     t1 = txt(obj.pnivel) + (obj.prenascer ? " R" + obj.prenascer)
     t1 += txtesp(7 - inttotal(t1)) + " " + obj.nome

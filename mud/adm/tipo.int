@@ -148,182 +148,201 @@ const tipo1 = "opc_linha"
 const clas1 = var.classe1
 const vari1 = "nome"
 #
-const nome2 = "Texto comando Quem"
+const nome2 = "Texto menu feminino"
+const info2 = "Se ausente, assume Texto do menu"
 const tipo2 = "opc_linha"
 const clas2 = var.classe1
-const vari2 = "nomequem"
+const vari2 = "nome2"
 #
-const nome3 = "Descrição"
-const info3 = "Aparece quando o jogador escolhe raça ou classe"
-const tipo3 = "opc_texto"
+const nome3 = "Texto comando Quem"
+const tipo3 = "opc_linha"
 const clas3 = var.classe1
-const vari3 = "desc"
+const vari3 = "nomequem"
 #
-const nome4 = "Está no menu"
-const tipo4 = "opc_opcao"
+const nome4 = "Texto Quem feminino"
+const info4 = "Se ausente, assume Texto comando Quem"
+const tipo4 = "opc_linha"
 const clas4 = var.classe1
-const vari4 = "menu"
-const extr4 = "Nenhum menu\nRaças\nClasses\nSubclasses"
+const vari4 = "nomequem2"
 #
-const nome5 = "Somente sexo"
-const tipo5 = "opc_opcao"
+const nome5 = "Descrição"
+const info5 = "Aparece quando o jogador escolhe raça ou classe"
+const tipo5 = "opc_texto"
 const clas5 = var.classe1
-const vari5 = "sexo"
-const extr5 = "Todos\nFeminino\nMasculino"
+const vari5 = "desc"
 #
-const nome6 = "Somente raças"
-const info6 = "Se esse tipo for uma classe ou subclasse que não existe em todas as raças,\n\
-escreva aqui em quais raças existe"
-const tipo6 = "opc_tipos"
+const nome6 = "Descrição feminino"
+const info6 = "Se ausente, assume Descrição"
+const info6 = "Aparece quando o jogador escolhe raça ou classe"
+const tipo6 = "opc_texto"
 const clas6 = var.classe1
-const vari6 = "racas"
+const vari6 = "desc2"
 #
-const nome7 = "Somente classes"
-const info7 = "Se esse tipo for uma subclasse que não existe em todas as classes,\n\
-escreva aqui em quais classes existe"
-const tipo7 = "opc_tipos"
+const nome7 = "Está no menu"
+const tipo7 = "opc_opcao"
 const clas7 = var.classe1
-const vari7 = "classes"
+const vari7 = "menu"
+const extr7 = "Nenhum menu\nRaças\nClasses\nSubclasses"
 #
-const nome8 = "Atributos números"
-const tipo8 = "opc_atribnum"
+const nome8 = "Somente sexo"
+const tipo8 = "opc_opcao"
 const clas8 = var.classe1
-const vari8 = "recalc_auto"
-const exec8 = "recalc_ajusta"
+const vari8 = "sexo"
+const extr8 = "Todos\nFeminino\nMasculino"
 #
-const nome9 = "Atributos sim/não"
-const tipo9 = "opc_atribbit"
+const nome9 = "Somente raças"
+const info9 = "Se esse tipo for uma classe ou subclasse que não existe em todas as raças,\n\
+escreva aqui em quais raças existe"
+const tipo9 = "opc_tipos"
 const clas9 = var.classe1
-const vari9 = "recalc_auto"
-const exec9 = "recalc_ajusta"
+const vari9 = "racas"
 #
-const nome10 = "Atributos ataque"
-const info10 = "Afetam os danos quando o personagem ataca alguém"
-const tipo10 = "opc_atribatk"
+const nome10 = "Somente classes"
+const info10 = "Se esse tipo for uma subclasse que não existe em todas as classes,\n\
+escreva aqui em quais classes existe"
+const tipo10 = "opc_tipos"
 const clas10 = var.classe1
-const vari10 = "recalc_auto"
-const exec10 = "recalc_ajusta"
+const vari10 = "classes"
 #
-const nome11 = "Atributos defesa"
-const info11 = "Afetam os danos quando alguém ataca o personagem"
-const tipo11 = "opc_atribdef"
+const nome11 = "Atributos números"
+const tipo11 = "opc_atribnum"
 const clas11 = var.classe1
 const vari11 = "recalc_auto"
 const exec11 = "recalc_ajusta"
 #
-const nome12 = "Equip posições"
-const info12 = "Se não for <nulo>, são as posições aonde pode usar equipamentos"
-const tipo12 = "opc_vetorhex"
+const nome12 = "Atributos sim/não"
+const tipo12 = "opc_atribbit"
 const clas12 = var.classe1
-const vari12 = "equip1"
-const extr12 = config:equip_txt
+const vari12 = "recalc_auto"
+const exec12 = "recalc_ajusta"
 #
-const nome13 = "Equip adicionar"
-const info13 = "Adicionar essas posições no personagem"
-const tipo13 = "opc_vetorhex"
+const nome13 = "Atributos ataque"
+const info13 = "Afetam os danos quando o personagem ataca alguém"
+const tipo13 = "opc_atribatk"
 const clas13 = var.classe1
-const vari13 = "equip2"
-const extr13 = config:equip_txt
+const vari13 = "recalc_auto"
+const exec13 = "recalc_ajusta"
 #
-const nome14 = "Equip remover"
-const info14 = "Remover essas posições do personagem"
-const tipo14 = "opc_vetorhex"
+const nome14 = "Atributos defesa"
+const info14 = "Afetam os danos quando alguém ataca o personagem"
+const tipo14 = "opc_atribdef"
 const clas14 = var.classe1
-const vari14 = "equip3"
-const extr14 = config:equip_txt
+const vari14 = "recalc_auto"
+const exec14 = "recalc_ajusta"
 #
-const nome15 = "Exp máx fator 0"
-const info15 = "A experiência para subir um nível é o resultado de:\n\
-fator0 + fator1 * nível + fator2 * nível ao quadrado"
-const tipo15 = "opc_numreal--"
+const nome15 = "Equip posições"
+const info15 = "Se não for <nulo>, são as posições aonde pode usar equipamentos"
+const tipo15 = "opc_vetorhex"
 const clas15 = var.classe1
-const vari15 = "expmax0"
+const vari15 = "equip1"
+const extr15 = config:equip_txt
 #
-const nome16 = "Exp máx fator 1"
-const info16 = "A experiência para subir um nível é o resultado de:\n\
-fator0 + fator1 * nível + fator2 * nível ao quadrado"
-const tipo16 = "opc_numreal--"
+const nome16 = "Equip adicionar"
+const info16 = "Adicionar essas posições no personagem"
+const tipo16 = "opc_vetorhex"
 const clas16 = var.classe1
-const vari16 = "expmax1"
+const vari16 = "equip2"
+const extr16 = config:equip_txt
 #
-const nome17 = "Exp máx fator 2"
-const info17 = "A experiência para subir um nível é o resultado de:\n\
-fator0 + fator1 * nível + fator2 * nível ao quadrado"
-const tipo17 = "opc_numreal--"
+const nome17 = "Equip remover"
+const info17 = "Remover essas posições do personagem"
+const tipo17 = "opc_vetorhex"
 const clas17 = var.classe1
-const vari17 = "expmax2"
+const vari17 = "equip3"
+const extr17 = config:equip_txt
 #
-const nome18 = "Exp máx cada nível"
-const info18 = "Permite definir a experiência para subir um nível em níveis específicos"
-const tipo18 = "opc_nivel--"
+const nome18 = "Exp máx fator 0"
+const info18 = "A experiência para subir um nível é o resultado de:\n\
+fator0 + fator1 * nível + fator2 * nível ao quadrado"
+const tipo18 = "opc_numreal--"
 const clas18 = var.classe1
-const vari18 = "expmax_"
+const vari18 = "expmax0"
 #
-const titu19 = "* Somente jogadores"
+const nome19 = "Exp máx fator 1"
+const info19 = "A experiência para subir um nível é o resultado de:\n\
+fator0 + fator1 * nível + fator2 * nível ao quadrado"
+const tipo19 = "opc_numreal--"
+const clas19 = var.classe1
+const vari19 = "expmax1"
 #
-const nome19 = "Nível mínimo"
-const info19 = "Quando o personagem é criado ou renasce, ele vai para esse nível.\n\
+const nome20 = "Exp máx fator 2"
+const info20 = "A experiência para subir um nível é o resultado de:\n\
+fator0 + fator1 * nível + fator2 * nível ao quadrado"
+const tipo20 = "opc_numreal--"
+const clas20 = var.classe1
+const vari20 = "expmax2"
+#
+const nome21 = "Exp máx cada nível"
+const info21 = "Permite definir a experiência para subir um nível em níveis específicos"
+const tipo21 = "opc_nivel--"
+const clas21 = var.classe1
+const vari21 = "expmax_"
+#
+const titu22 = "* Somente jogadores"
+#
+const nome22 = "Nível mínimo"
+const info22 = "Quando o personagem é criado ou renasce, ele vai para esse nível.\n\
 Se houverem níveis diferentes na raça, classe e subclasse, é considerado\n\
 somente o maior."
-const tipo19 = "opc_numero"
-const clas19 = var.classe1
-const vari19 = "nmin"
-const extr19 = "0 65535"
+const tipo22 = "opc_numero"
+const clas22 = var.classe1
+const vari22 = "nmin"
+const extr22 = "0 65535"
 #
-const nome20 = "Nível máximo"
-const info20 = "Quando o personagem chega no nível máximo, não sobe mais de nível, mas pode\n\
+const nome23 = "Nível máximo"
+const info23 = "Quando o personagem chega no nível máximo, não sobe mais de nível, mas pode\n\
 renascer. Se houverem níveis diferentes na raça, classe e subclasse,\n\
 é considerado somente o maior. Se os três forem 0, não renasce."
-const tipo20 = "opc_numero"
-const clas20 = var.classe1
-const vari20 = "nmax"
-const extr20 = "0 65535"
-#
-const nome21 = "Evolui para"
-const tipo21 = "opc_tipos"
-const info21 = "Os novos tipos que o personagem pode escolher no comando renascer"
-const clas21 = var.classe1
-const vari21 = "evoluir"
-#
-const nome22 = "Fome e sede"
-const info22 = "Somente raças; se pode sentir fome e sede (se não for imortal)"
-const tipo22 = "opc_simnao"
-const clas22 = var.classe1
-const vari22 = "fome"
-#
-const nome23 = "Ataque automático"
-const info23 = "Habilidade usada em ataques automáticos sem arma"
-const tipo23 = "opc_linha"
+const tipo23 = "opc_numero"
 const clas23 = var.classe1
-const vari23 = "atipo"
+const vari23 = "nmax"
+const extr23 = "0 65535"
 #
-const nome24 = "Volume mínimo"
-const info24 = "Somente raças; o volume é escolhido aleatoriamente"
-const tipo24 = "opc_numero"
+const nome24 = "Evolui para"
+const tipo24 = "opc_tipos"
+const info24 = "Os novos tipos que o personagem pode escolher no comando renascer"
 const clas24 = var.classe1
-const vari24 = "volmin"
-const exec24 = "jogador:ajustajog"
+const vari24 = "evoluir"
 #
-const nome25 = "Volume máximo"
-const info25 = "Somente raças; o volume é escolhido aleatoriamente"
-const tipo25 = "opc_numero"
+const nome25 = "Fome e sede"
+const info25 = "Somente raças; se pode sentir fome e sede (se não for imortal)"
+const tipo25 = "opc_simnao"
 const clas25 = var.classe1
-const vari25 = "volmax"
-const exec25 = "jogador:ajustajog"
+const vari25 = "fome"
 #
-const nome26 = "Peso mínimo"
-const info26 = "Somente raças; o peso é escolhido aleatoriamente"
-const tipo26 = "opc_numero"
+const nome26 = "Ataque automático"
+const info26 = "Habilidade usada em ataques automáticos sem arma"
+const tipo26 = "opc_linha"
 const clas26 = var.classe1
-const vari26 = "pesomin"
-const exec26 = "jogador:ajustajog"
+const vari26 = "atipo"
 #
-const nome27 = "Peso máximo"
-const info27 = "Somente raças; o peso é escolhido aleatoriamente"
+const nome27 = "Volume mínimo"
+const info27 = "Somente raças; o volume é escolhido aleatoriamente"
 const tipo27 = "opc_numero"
 const clas27 = var.classe1
-const vari27 = "pesomax"
+const vari27 = "volmin"
 const exec27 = "jogador:ajustajog"
+#
+const nome28 = "Volume máximo"
+const info28 = "Somente raças; o volume é escolhido aleatoriamente"
+const tipo28 = "opc_numero"
+const clas28 = var.classe1
+const vari28 = "volmax"
+const exec28 = "jogador:ajustajog"
+#
+const nome29 = "Peso mínimo"
+const info29 = "Somente raças; o peso é escolhido aleatoriamente"
+const tipo29 = "opc_numero"
+const clas29 = var.classe1
+const vari29 = "pesomin"
+const exec29 = "jogador:ajustajog"
+#
+const nome30 = "Peso máximo"
+const info30 = "Somente raças; o peso é escolhido aleatoriamente"
+const tipo30 = "opc_numero"
+const clas30 = var.classe1
+const vari30 = "pesomax"
+const exec30 = "jogador:ajustajog"
 #
 const nome50 = "Variáveis"
 const tipo50 = "opc_linha"
@@ -334,7 +353,7 @@ const vari50 = "inivar"
 classe comum_tipo
 #
 # Ordem que deve organizar as constantes:
-const admordem = "nome nomequem menu desc sexo racas classes\n\
+const admordem = "nome nome2 nomequem nomequem2 menu desc desc2 sexo racas classes\n\
 equip1 equip2 equip3 nmin nmax evoluir fome atipo\n\
 volmin volmax pesomin pesomax inivar"
 const iniclasse = !$[arg0] && criar(arg0)

@@ -184,7 +184,6 @@ func passo # Mudar o estado atual
   casose "1"
   casose "2"
   casose "3"
-    arg0.msg(">" + arg1)
     se $[arg0.var.classe1].mudaporta(arg0.var.saida1, arg1)
       textotxt t
       t.addfim(adm_sala:txt_porta), t.remove(arg1)
@@ -195,7 +194,8 @@ func passo # Mudar o estado atual
     sair
   casose
     arg0.passo = este
-    ret arg0.msg("Escolha: 0 Sem porta, 1 Aberto, 2 Fechado, 3 Trancado, Z Cancela")
+    arg0.msg("Escolha: 0 Sem porta, 1 Aberto, 2 Fechado, 3 Trancado, Z Cancela")
+    ret 1
   casofim
   ret passosair(arg0)
 

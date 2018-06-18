@@ -92,9 +92,13 @@ func txtident # Adiciona informações de item ou personagem em um textotxt
     fimse
     lin += ", nível " + arg1.pnivel
     arg1.prenascer && (lin += ", R" + arg1.prenascer)
-    arg1.tipo1 && (lin += ", " + txtcopiamai(arg1.tipo1, "A"))
-    arg1.tipo2 && (lin += ", " + txtcopiamai(arg1.tipo2, "A"))
-    arg1.tipo3 && (lin += ", " + txtcopiamai(arg1.tipo3, "A"))
+    txt100 nome
+    nome = (!arg1.msexo ? $t_[arg1.tipo1].nome2) ?? $t_[arg1.tipo1].nome ?? arg1.tipo1
+    nome && (lin += ", " + nome)
+    nome = (!arg1.msexo ? $t_[arg1.tipo2].nome2) ?? $t_[arg1.tipo2].nome ?? arg1.tipo2
+    nome && (lin += ", " + nome)
+    nome = (!arg1.msexo ? $t_[arg1.tipo3].nome2) ?? $t_[arg1.tipo3].nome ?? arg1.tipo3
+    nome && (lin += ", " + nome)
     arg2.addfim(lin)
     refvar m = txt(arg1.descident(arg0))
     m && arg2.addfim(m)
