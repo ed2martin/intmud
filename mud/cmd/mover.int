@@ -5,7 +5,7 @@ const m_portafechada = "$P est$o fechad$a."
 const m_itemfechado = "$O está fechad$u."
 const m_espaco = "Não tem espaço para seguir nessa direção."
 const m_flutuando = "Você não consegue porque não está flutuando."
-const m_cansado = "Você está cansad%s demais."
+const m_cansado = "Você está cansad$s demais."
 const m_seguir = "Você segue $a."
 const admordem = "m_impossivel m_portafechada m_itemfechado m_espaco m_flutuando\n\
 m_cansado m_seguir"
@@ -13,6 +13,7 @@ m_cansado m_seguir"
 
 classe comando_mover
 herda comando_comum
+const posic = 6 # Posição mínima para usar o comando
 const m_entra1 = "$P chegou."
 const m_entra2 = m_entra1
 const m_entra3 = m_entra1
@@ -29,7 +30,6 @@ txt300 abriu2
 const admordem = "m_entra1 m_entra2 m_entra3 m_entra4 m_sai1 m_sai2 m_sai3 m_sai4\n\
 m_fugir1 m_fugir2"
 
-
 func escr # Executa o comando
 # arg0 = personagem
 # arg1 = o que digitou após a direção
@@ -38,19 +38,25 @@ func escr # Executa o comando
   ref sala = arg0.dono
 # Anda
   txt100 dir1
+  ref obj = arg0 # Personagem ou item que vai mover em uma direção
+  ret arg0.posicao == 7, arg0.msg(arg0.erropos) # Lutando
+  se arg0.posicao == 6 # Sentado
+    obj = arg0.poslugar.objlista
+    ret !obj.i_mover, arg0.msg(arg0.erropos)
+  fimse
   se !arg0.jog || rand($miscfome.bebedir, $miscfome.cheio) > arg0.p_bebida
     dir1 = dir
-    refvar saladest = arg0.dono.dirsala(dir1, arg0)
-    ret !mover(arg0, saladest, nulo, arg0.dono.diritem(dir1, arg0)), nulo
+    refvar saladest = obj.dono.dirsala(dir1, obj)
+    ret !mover(obj, saladest, nulo, obj.dono.diritem(dir1, obj)), nulo
   senao # Bêbado andando em uma direção aleatória
-    dir1 = txt(fugirdir(arg0)) ?? dir
-    refvar saladest = arg0.dono.dirsala(dir1, arg0)
-    ret !$cmd_[dir1].mover(arg0, saladest), nulo
+    dir1 = txt(fugirdir(obj)) ?? dir
+    refvar saladest = obj.dono.dirsala(dir1, obj)
+    ret !$cmd_[dir1].mover(obj, saladest), nulo
   fimse
 # Fecha a porta
   se sala.fecha_[dir1] && sala.porta_[dir1] < 2 && $comando_mover.andou
     refvar m = sala.porta_[dir1] < 2 ? "$M se $2."
-    sala.mudaporta(dir1, sala.tranc_[dir1](arg0) == 2 ? 3 : 2, m, m)
+    sala.mudaporta(dir1, sala.tranc_[dir1](obj) == 2 ? 3 : 2, m, m)
   fimse
 # Próximo comando
   arg1 && arg0.sock.comandos.addini(arg1)
@@ -217,9 +223,18 @@ func mover2 # Chamado por mover, para mudar de sala enviando mensagem
   abriu1 && $mens.msgvis(abriu1, arg0)
   refvar ssai = arg0.bitinv & 0x30 ? arg0.p_som_voasai : arg0.p_som_sai
   refvar sent = arg0.bitinv & 0x30 ? arg0.p_som_voaentra : arg0.p_som_entra
+  txt100 carga
+  se arg0.persolugar
+    l.addfim(arg0.persolugar)
+    carga += " carregando " + l.objini.nome
+    epara l.ini.remove, l, l.ini.remove
+      carga += (l.total > 1 ? ", " : " e ") + l.objini.nome
+    efim
+  fimse
   se arg0.bitver & 256 # Anda em silêncio
-    refvar msai = txttroca(arg4, "$m", arg2 ? " $e $o em silêncio" : " em silêncio")
-    refvar ment = arg3 ? "$P saiu $d $o em silêncio." : txttroca(arg5, "$m", " em silêncio")
+    carga = " em silêncio" + carga
+    refvar msai = txttroca(arg4, "$m", arg2 ? " $e $o" + carga : carga)
+    refvar ment = txttroca(arg3 ? "$P saiu $d $o$m." : arg5, "$m", carga)
     l.addfim(arg0.dono.dentro2)
     epara l.remove(arg0), l, l.ini.remove
       l.objini.bitver & 0x1000 && $mens.msgsomvis(msai, ssai, l.objini)
@@ -227,16 +242,19 @@ func mover2 # Chamado por mover, para mudar de sala enviando mensagem
     arg0.mudadono(arg1)
     $mens.p(arg0, nulo, arg3)
     l.addfim(arg0.dono.dentro2)
-    epara l.remove(arg0), l, l.ini.remove
+    epara l.remove(arg0, arg0.persolugar), l, l.ini.remove
       l.objini.bitver & 0x1000 && $mens.msgsomvis(ment, sent, l.objini)
     efim
   senao
-    refvar msai = txttroca(arg4, "$m", arg2 ? " $e $o" : "")
-    refvar ment = arg3 ? "$P saiu $d $o." : txttroca(arg5, "$m", "")
+    refvar msai = txttroca(arg4, "$m", arg2 ? " $e $o" + carga : carga)
+    refvar ment = txttroca(arg3 ? "$P saiu $d $o$m." : arg5, "$m", carga)
     $mens.mvis2som(msai, ssai)
     arg0.mudadono(arg1)
     $mens.p(arg0, nulo, arg3)
-    $mens.mvis2som(ment, sent)
+    l.addfim(arg0.dono.dentro2)
+    epara l.remove(arg0, arg0.persolugar), l, l.ini.remove
+      $mens.msgsomvis(ment, sent, l.objini)
+    efim
   fimse
 
 func fugirdir # Obtém direção para onde pode fugir

@@ -1,7 +1,14 @@
-classe cmd_levantar
+classe h_cmd_levantar
 herda comando_comum
 const posic = 5
-const txtajuda = "\b\c3Levantar\b\nSintaxe: LEVANTAR\nFica em pé."
+const txtajuda = txtajuda1 + m_ajuda
+const txtajuda1 = "\b\c3Levantar\b\nSintaxe: LEVANTAR\n"
+#
+const m_ajuda = "Fica em pé."
+const m_em_pe ="\c9Você já está em pé.\b"
+const m_levantou1 = "Você levantou-se."
+const m_levantou2 = "$P levantou-se."
+const admordem = "m_ajuda m_em_pe m_levantou1 m_levantou2"
 
 func escr
 # Checa posição
@@ -10,7 +17,7 @@ func escr
   casose "6" # Sentado
     sair
   casose "8" # Em pé
-    ret $mens.mp("\c9Você já está em pé.\b", arg0)
+    ret $mens.mp(m_em_pe, arg0)
   casose # Outras posições
     ret arg0.msg(arg0.erropos)
   casofim
@@ -22,18 +29,30 @@ func escr
   arg0.poslugar.remove
   arg0.posicao = 8
   $mens.p(arg0)
-  $mens.mtodos1("$P levantou-se.")
+  $mens.mtodos2(m_levantou1, m_levantou2)
   epara l.addfim(arg0.evento), l, l.ini.remove
     l.objini.cmd_levantou(arg0)
   efim
 
 
-classe cmd_sentar
+classe h_cmd_sentar
 herda comando_comum
 const posic = 5
-const txtajuda = "\b\c3Sentar\b\n\
-Sintaxe: SENTAR [objeto]\n\
-Senta-se no chão. Com o nome de um objeto, tenta sentar no objeto."
+const txtajuda = txtajuda1 + m_ajuda
+const txtajuda1 = "\b\c3Sentar\b\nSintaxe: SENTAR [objeto]\n"
+#
+const m_ajuda = "Senta-se no chão. Com o nome de um objeto, tenta sentar no objeto."
+const m_sentado = "\c9Você já está sentad$s.\b"
+const m_levantar = "\c9Talvez você deva se levantar primeiro.\b"
+const m_item_nao = "Não é possível sentar $e $o."
+const m_item_cheio = "Não cabe mais ninguém $e $o."
+const m_naover = "Você não vê $m."
+const m_sentou_item1 = "Você sentou-se $e $o."
+const m_sentou_item2 = "$P sentou-se $e $o."
+const m_sentou_chao1 = "Você sentou-se."
+const m_sentou_chao2 = "$P sentou-se."
+const admordem = "m_ajuda m_sentado m_levantar m_item_nao m_item_cheio m_naover\n\
+m_sentou_item1 m_sentou_item2 m_sentou_chao1 m_sentou_chao2"
 
 func escr
   ref r
@@ -43,7 +62,7 @@ func escr
     r = arg0.poslugar.objlista
     sair
   casose "6" # Sentado
-    ret $mens.mp("\c9Você já está sentad$s.\b", arg0)
+    ret $mens.mp(m_sentado, arg0)
   casose "8" # Em pé
     sair
   casose # Outras posições
@@ -57,16 +76,16 @@ func escr
     epara i = arg0.dono.dentro1.ini, i, i.depois
       sair i.obj.visivel(arg0) && n.nome(i.obj.ident, i.obj.objtot)
     efim
-    ret r && r != i.obj, $mens.mp("\c9Talvez você deva se levantar primeiro.\b", arg0)
+    ret r && r != i.obj, $mens.mp(m_levantar, arg0)
     r = i.obj
   fimse
   listaobj l
 # Sentar em algum objeto
   se r
     se !r.i_movel(arg0)
-      ret $mens.mp("Não é possível descansar $e $o.", arg0, nulo, r)
+      ret $mens.mp(m_item_nao, arg0, nulo, r)
     senao r != arg0.poslugar.objlista && r.i_lugar <= r.persolugar.total
-      ret $mens.mp("Não cabe mais ninguém $e $o.", arg0, nulo, r)
+      ret $mens.mp(m_item_cheio, arg0, nulo, r)
     fimse
     epara l.addfim(arg0.evento), l, l.ini.remove
       ret l.objini.cmd_sentarobj(arg0, r, arg0), nulo
@@ -78,7 +97,7 @@ func escr
     arg0.poslugar = r.persolugar.addfim(arg0)
     arg0.posicao = 6
     $mens.p(arg0, nulo, r)
-    $mens.mtodos1("$P sentou-se $e $o.")
+    $mens.mtodos2(m_sentou_item1, m_sentou_item1)
     epara l.addfim(arg0.evento), l, l.ini.remove
       l.objini.cmd_sentouobj(arg0, r, arg0)
     efim
@@ -88,7 +107,7 @@ func escr
 # Sentar-se num objeto que não existe
   senao arg1
     $mens.mens = arg1
-    $mens.mp("Você não vê $m.", arg0)
+    $mens.mp(m_naover, arg0)
 # Sentar-se no chão
   senao
     epara l.addfim(arg0.evento), l, l.ini.remove
@@ -97,26 +116,38 @@ func escr
     arg0.poslugar.remove
     arg0.posicao = 6
     $mens.p(arg0)
-    $mens.mtodos1("$P sentou-se.")
+    $mens.mtodos2(m_sentou_chao1, m_sentou_chao2)
     epara l.addfim(arg0.evento), l, l.ini.remove
       l.objini.cmd_sentouchao(arg0)
     efim
   fimse
 
 
-classe cmd_descansar
+classe h_cmd_descansar
 herda comando_comum
 const posic = 5
-const txtajuda = "\b\c3Descansar\b\n\
-Sintaxe: DESCANSAR [objeto]\n\
-Descansa no chão. Com o nome de um objeto, tenta descansar no objeto."
+const txtajuda = txtajuda1 + m_ajuda
+const txtajuda1 = "\b\c3Descansar\b\nSintaxe: DESCANSAR [objeto]\n"
+#
+const m_ajuda = "Descansa no chão. Com o nome de um objeto, tenta descansar no objeto."
+const m_descansando = "\c9Você já está descansando.\b"
+const m_levantar = "\c9Talvez você deva se levantar primeiro.\b"
+const m_item_nao = "Não é possível descansar $e $o."
+const m_item_cheio = "Não cabe mais ninguém $e $o."
+const m_naover = "Você não vê $m."
+const m_descansou_item1 = "Você descansa $e $o."
+const m_descansou_item2 = "$P descansa $e $o."
+const m_descansou_chao1 = "Você descansa."
+const m_descansou_chao2 = "$P descansa."
+const admordem = "m_ajuda m_descansando m_levantar m_item_nao m_item_cheio m_naover\n\
+m_descansou_item1 m_descansou_item2 m_descansou_chao1 m_descansou_chao2"
 
 func escr
   ref r
 # Checa posição
   casovar arg0.posicao
   casose "5" # Descansando
-    ret $mens.mp("\c9Você já está descansando.\b", arg0)
+    ret $mens.mp(m_descansando, arg0)
   casose "6" # Sentado
     r = arg0.poslugar.objlista
     sair
@@ -133,16 +164,16 @@ func escr
     epara i = arg0.dono.dentro1.ini, i, i.depois
       sair i.obj.visivel(arg0) && n.nome(i.obj.ident, i.obj.objtot)
     efim
-    ret r && r != i.obj, $mens.mp("\c9Talvez você deva se levantar primeiro.\b", arg0)
+    ret r && r != i.obj, $mens.mp(m_levantar, arg0)
     r = i.obj
   fimse
   listaobj l
 # Descansar em algum objeto
   se r
     se !r.i_movel(arg0)
-      ret $mens.mp("Não é possível descansar $e $o.", arg0, nulo, r)
+      ret $mens.mp(m_item_nao, arg0, nulo, r)
     senao r != arg0.poslugar.objlista && r.i_lugar <= r.persolugar.total
-      ret $mens.mp("Não cabe mais ninguém $e $o.", arg0, nulo, r)
+      ret $mens.mp(m_item_cheio, arg0, nulo, r)
     fimse
     epara l.addfim(arg0.evento), l, l.ini.remove
       ret l.objini.cmd_descansarobj(arg0, r, arg0), nulo
@@ -154,7 +185,7 @@ func escr
     arg0.poslugar = r.persolugar.addfim(arg0)
     arg0.posicao = 5
     $mens.p(arg0, nulo, r)
-    $mens.mtodos1("$P descansa $e $o.")
+    $mens.mtodos2(m_descansou_item1, m_descansou_item2)
     epara l.addfim(arg0.evento), l, l.ini.remove
       l.objini.cmd_descansouobj(arg0, r, arg0)
     efim
@@ -164,7 +195,7 @@ func escr
 # Descansar num objeto que não existe
   senao arg1
     $mens.mens = arg1
-    $mens.mp("Você não vê $m.", arg0)
+    $mens.mp(m_naover, arg0)
 # Descansar no chão
   senao
     epara l.addfim(arg0.evento), l, l.ini.remove
@@ -173,8 +204,140 @@ func escr
     arg0.poslugar.remove
     arg0.posicao = 5
     $mens.p(arg0)
-    $mens.mtodos1("$P descansa.")
+    $mens.mtodos2(m_descansou_chao1, m_descansou_chao2)
     epara l.addfim(arg0.evento), l, l.ini.remove
       l.objini.cmd_descansouchao(arg0)
     efim
   fimse
+
+
+classe m_cmd_levantar
+herda comando_menu_cmd
+#
+const nome1 = "Ajuda"
+const tipo1 = "opc_texto"
+const clas1 = "cmd_levantar"
+const vari1 = "m_ajuda"
+#
+const nome2 = "Está em pé"
+const tipo2 = "opc_linha"
+const clas2 = "cmd_levantar"
+const vari2 = "m_em_pe"
+#
+const nome3 = "Levantou perso"
+const tipo3 = "opc_linha"
+const clas3 = "cmd_levantar"
+const vari3 = "m_levantou1"
+#
+const nome4 = "Levantou outros"
+const tipo4 = "opc_linha"
+const clas4 = "cmd_levantar"
+const vari4 = "m_levantou2"
+
+
+classe m_cmd_sentar
+herda comando_menu_cmd
+#
+const nome1 = "Ajuda"
+const tipo1 = "opc_texto"
+const clas1 = "cmd_sentar"
+const vari1 = "m_ajuda"
+#
+const nome2 = "Sem alvo"
+const tipo2 = "opc_linha"
+const clas2 = "cmd_sentar"
+const vari2 = "m_naover"
+#
+const nome3 = "Sentado"
+const tipo3 = "opc_linha"
+const clas3 = "cmd_sentar"
+const vari3 = "m_sentado"
+#
+const nome4 = "Levantar"
+const tipo4 = "opc_linha"
+const clas4 = "cmd_sentar"
+const vari4 = "m_levantar"
+#
+const nome5 = "Não é possível"
+const tipo5 = "opc_linha"
+const clas5 = "cmd_sentar"
+const vari5 = "m_item_nao"
+#
+const nome6 = "Item cheio"
+const tipo6 = "opc_linha"
+const clas6 = "cmd_sentar"
+const vari6 = "m_item_cheio"
+#
+const nome7 = "Sentou chão perso"
+const tipo7 = "opc_linha"
+const clas7 = "cmd_sentar"
+const vari7 = "m_sentou_chao1"
+#
+const nome8 = "Sentou chão outros"
+const tipo8 = "opc_linha"
+const clas8 = "cmd_sentar"
+const vari8 = "m_sentou_chao2"
+#
+const nome9 = "Sentou item perso"
+const tipo9 = "opc_linha"
+const clas9 = "cmd_sentar"
+const vari9 = "m_sentou_item1"
+#
+const nome10 = "Sentou item outros"
+const tipo10 = "opc_linha"
+const clas10 = "cmd_sentar"
+const vari10 = "m_sentou_item2"
+
+
+classe m_cmd_descansar
+herda comando_menu_cmd
+#
+const nome1 = "Ajuda"
+const tipo1 = "opc_texto"
+const clas1 = "cmd_descansar"
+const vari1 = "m_ajuda"
+#
+const nome2 = "Sem alvo"
+const tipo2 = "opc_linha"
+const clas2 = "cmd_descansar"
+const vari2 = "m_naover"
+#
+const nome3 = "Descansando"
+const tipo3 = "opc_linha"
+const clas3 = "cmd_descansar"
+const vari3 = "m_descansando"
+#
+const nome4 = "Levantar"
+const tipo4 = "opc_linha"
+const clas4 = "cmd_descansar"
+const vari4 = "m_levantar"
+#
+const nome5 = "Não é possível"
+const tipo5 = "opc_linha"
+const clas5 = "cmd_descansar"
+const vari5 = "m_item_nao"
+#
+const nome6 = "Item cheio"
+const tipo6 = "opc_linha"
+const clas6 = "cmd_descansar"
+const vari6 = "m_item_cheio"
+#
+const nome7 = "Descansou chão perso"
+const tipo7 = "opc_linha"
+const clas7 = "cmd_descansar"
+const vari7 = "m_descansou_chao1"
+#
+const nome8 = "Descansou chão outros"
+const tipo8 = "opc_linha"
+const clas8 = "cmd_descansar"
+const vari8 = "m_descansou_chao2"
+#
+const nome9 = "Descansou item perso"
+const tipo9 = "opc_linha"
+const clas9 = "cmd_descansar"
+const vari9 = "m_descansou_item1"
+#
+const nome10 = "Descansou item outros"
+const tipo10 = "opc_linha"
+const clas10 = "cmd_descansar"
+const vari10 = "m_descansou_item2"

@@ -32,6 +32,7 @@ inttempo p_espera # Tempo de espera para o próximo comando
 sav uint8 posicao # Posição do personagem
 const pospadr = 8 # Posição padrão do personagem
 listaitem poslugar # Em qual móvel está sentado ou deitado
+listaobj persolugar # Quem está montado
 sav listaitem iempu # Arma que que está empunhando
 inttempo p_proc # Para processar comportamento do personagem
 const p_corpo = config:p_corpo
@@ -135,14 +136,15 @@ func fim # Objeto foi apagado
     refvar obj = ind.obj("pn " + txt2(sock.cnome))
     obj ? sock.mudaperso(obj) : sock.reinicia
   fimse
-  batalhafim, comum_obj:fim
+  persolugar.limpar, batalhafim, comum_obj:fim
 
 func mudadono # Coloca personagem em outra sala
 # arg0 = nova sala
 # arg1 = quantidade (é ignorado por essa função)
   listaobj l
 # Muda de sala
-  atkrec.limpar, poslugar.remove, mdono(arg0), cmd_mudadono
+  poslugar && poslugar.objlista.dono != arg0 && poslugar.remove
+  atkrec.limpar, mdono(arg0), cmd_mudadono
 # Eventos cmd_saiu e variável donoantes.s_item
   se donoantes && !donoantes.perso
     refvar salasaiu = ref(donoantes)
@@ -161,9 +163,11 @@ func mudadono # Coloca personagem em outra sala
   fimse
 # Checa se novo dono é personagem
   se dono.perso
+    persolugar.limpar
     p_proc = 1
     ret este
   senao !dono
+    persolugar.limpar
     ret este
   fimse
 # Eventos cmd_chegou
@@ -206,6 +210,10 @@ func mudadono # Coloca personagem em outra sala
     refvar cfg = (jogconfig.bits & 3 | (dono.s_morre ? 5 : 4)) | (jogconfig.16 ? 8)
     msg2(dono.descsala(este, cfg))
   fimse
+# Move quem está montado
+  epara l.addfim(persolugar), l, l.ini.remove
+    l.objini.mudadono(dono, 1)
+  efim
   ret este
 
 func cabedentro # Retorna 1 se personagem cabe em uma sala ou 0 se não cabe

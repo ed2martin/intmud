@@ -50,8 +50,7 @@ i_chave\n\
 i_itens\n\
 i_pegar\n\
 i_salapegar i_salaver i_salaentrar i_salas\n\
-i_movel\n\
-i_lugar\n\
+i_movel i_lugar i_mover\n\
 i_abertoini\n\
 i_municao\n\
 i_tranc\n\
@@ -178,6 +177,75 @@ func tipoitem2
   f_tipo == 4 && (tipo |= config:item_pergaminho)
   ret tipo
 
+func teclou # Processa comando
+# arg0=comando
+  teclouperm(arg0, $perm_[jogperm])
+
+func teclouperm # Processa comando com permissões específicas
+# arg0 = comando
+# arg1 = objeto perm que contém as permissões
+  ref obj # Objeto que vai processar o comando
+  prog p # Para procurar o objeto
+  ret !arg0, nulo
+# Obtém o comando
+  enquanto 1
+    sair obj = $cmd_[txt1(arg0)].objcmd(este, arg1) # Checa comando exato
+    uint8 nivel1 = 255
+    ref obj1
+    nomeobj n
+    n.ini("1000 cmd_" + txt1(arg0), 1000)
+    epara p.iniclasse("cmd_" + txt1(txte(arg0))), p.lin, p.depois
+      continuar !(obj1 = $[p.texto].objcmd(este, arg1)) || !n.nome(obj1)
+      continuar nivel1 <= obj1.objnivel(este, arg1)
+      obj = obj1, nivel1 = obj1.objnivel(este, arg1)
+      sair !nivel1
+    efim
+    sair
+  efim
+# Checa se é magia
+  se obj.lancamagia
+    txt200 lin
+    lin = txtremove(txt2(arg0), "EMDSA")
+    obj = ref($magia_[txt1(lin)].objcmd(este))
+    se !obj && lin
+      uint8 nivel1 = 255
+      ref obj1
+      nomeobj n
+      n.ini("1000 magia_" + txt1(lin), 1000)
+      epara p.iniclasse("magia_" + txt1(txte(lin))), p.lin, p.depois
+        continuar !(obj1 = $[p.texto].objcmd(este, arg1)) || !n.nome(obj1)
+        continuar nivel1 <= obj1.objnivel(este, arg1)
+        obj = obj1, nivel1 = obj1.objnivel(este, arg1)
+        sair !nivel1
+      efim
+    fimse
+# Magia: Gera eventos
+    listaobj l
+    epara l.addfim(este.evento), l, l.ini.remove
+      ret l.objini.cmd_escr(este, arg0, obj), nulo
+    efim
+# Magia: Executa comando
+    se !lin
+      msg("Lançar que magia?")
+    senao !obj
+      msg("Você não possui a magia " + lin)
+    senao posicao < obj.posic
+      msg(erropos)
+    senao
+      obj.escr(este, txt2(lin), arg1)
+    fimse
+    ret
+  fimse
+# Gera eventos
+  listaobj l
+  epara l.addfim(este.evento), l, l.ini.remove
+    ret l.objini.cmd_escr(este, arg0, obj), nulo
+  efim
+# Executa comando
+  ret !obj, msg("O quê?")
+  ret posicao < obj.posic, msg(erropos)
+  ret obj.escr(este, txt2(arg0), arg1)
+
 
 classe comum_itemgrupo
 herda comum_item
@@ -302,7 +370,11 @@ func fim # Objeto foi apagado
   persolugar.limpar, comum_obj:fim
 
 func mudadono # Item muda de dono (arg0 = novo dono, arg1 = quantidade)
-  persolugar.limpar, mdono(arg0), cmd_mudadono
+  mdono(arg0), cmd_mudadono
+  listaobj l
+  epara l.addfim(persolugar), l, l.ini.remove
+    l.objini.mudadono(dono, 1)
+  efim
   ret este
 
 func recalc_exec # Acerta variáveis
