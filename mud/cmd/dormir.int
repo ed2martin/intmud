@@ -21,14 +21,9 @@ func escr
   casofim
 # Obtém aonde quer dormir
   se arg1
-    listaitem i # Para procurar o item
-    nomeobj n # Para reconhecer os itens
-    n.ini(arg1, 1)
-    epara i = arg0.dono.dentro1.ini, i, i.depois
-      sair i.obj.visivel(arg0) && n.nome(i.obj.ident, i.obj.objtot)
-    efim
-    ret r && r != i.obj, $mens.mp("\c9Talvez você deva se levantar primeiro.\b", arg0)
-    r = i.obj
+    refvar obj = misc:itemdono(arg0, arg1)
+    ret r && r != obj, $mens.mp("\c9Talvez você deva se levantar primeiro.\b", arg0)
+    r = obj
   fimse
   listaobj l
 # Dormir em algum objeto
@@ -88,14 +83,7 @@ func escr
 # Acordar outro personagem
   se arg1
     ret arg0.posicao == 4, arg0.msg(arg0.erropos)
-    listaitem i # Para procurar o item
-    nomeobj n # Para reconhecer os itens
-    n.ini(arg1, 1)
-    epara i = arg0.dono.dentro2.ini, i, i.depois
-      sair i.obj.visivel(arg0) && n.nome(i.obj.ident, i.obj.objtot)
-    efim
-    ref r
-    r = i.obj
+    ref r = misc:persodono(arg0, arg1)
     se !r
       $mens.mens = arg1
       $mens.mp("Você não vê $m.", arg0)

@@ -284,12 +284,15 @@ func salvar # Salva o jogo, desde que a senha não seja nula
   debug dbg
   dbg.exec = 50000
   lista.addfim(este, dentro1, dentro2, dentro3)
+  epara item = lseguir.ini, item, item.depois
+    item.obj.tseguir == 3 && lista.addfim(item.obj)
+  efim
   item = lista.ini, item.depois
   enquanto item
     se !item.obj.objsav
       item.removedepois
     senao lista.total < 2000
-      lista.addfim(item.obj.dentro1, item.obj.dentro2, item.obj.dentro3), item.depois
+      lista.addfim(item.obj.dentro1, item.obj.dentro2), item.depois
     senao
       item.depois
     fimse

@@ -1248,6 +1248,58 @@ const clas14 = var.classe1
 const vari14 = "p_atk_individual"
 
 
+classe menu_pdomar
+herda comando_menu
+const titulo = "Domar e montar"
+const menufim = var.menufim
+const colunas = 25
+#
+const nome1 = "Lugar após domar"
+const tipo1 = "opc_opcao"
+const clas1 = var.classe1
+const vari1 = "p_animal"
+const extr1 = "No comando Animal\nNa sala\nNo comando Animal ou na sala"
+#
+const nome2 = "Domar"
+const info2 = "Se pode ser domado"
+const tipo2 = "opc_opcao"
+const clas2 = var.classe1
+const vari2 = "p_captura"
+const extr2 = "Não\nMuito fácil\nFácil\nNormal\nDifícil\nMuito difícil"
+#
+const nome3 = "Habilidade domar"
+const info3 = "Nome da habilidade necessária para domar"
+const tipo3 = "opc_linha"
+const clas3 = var.classe1
+const vari3 = "p_domar_hab"
+#
+const nome4 = "Aulas domar"
+const info4 = "Quando precisa conhecer para domar"
+const tipo4 = "opc_opcao"
+const clas4 = var.classe1
+const vari4 = "p_domar_aulas"
+const extr4 = "Nenhum\n" + txtsub(misc:aulas, 1)
+#
+const nome5 = "Habilidade montar"
+const info5 = "Nome da habilidade necessária para montar"
+const tipo5 = "opc_linha"
+const clas5 = var.classe1
+const vari5 = "p_montar_hab"
+#
+const nome6 = "Aulas montar"
+const info6 = "Quando precisa conhecer para montar"
+const tipo6 = "opc_opcao"
+const clas6 = var.classe1
+const vari6 = "p_montar_aulas"
+const extr6 = "Nenhum\n" + txtsub(misc:aulas, 1)
+#
+const nome7 = "Lugares montaria"
+const info7 = "Se 0, não é possível montar"
+const tipo7 = "opc_numero"
+const clas7 = var.classe1
+const vari7 = "p_lugar"
+
+
 classe menu_perso1
 herda menu_pcomum1
 const titulo = "Perso simples " + txt(var.classe1, 2)
@@ -1268,12 +1320,8 @@ const colunas = 25
 const nome27 = "Atributos"
 const tipo27 = "menu_patribs2--"
 #
-const nome31 = "Capturar"
-const info31 = "Se pode ser capturado"
-const tipo31 = "opc_opcao"
-const clas31 = var.classe1
-const vari31 = "p_captura"
-const extr31 = "Não\nMuito fácil\nFácil\nNormal\nDifícil\nMuito difícil"
+const nome31 = "Domar e montar"
+const tipo31 = "menu_pdomar--"
 #
 const nome32 = "Dar e soltar"
 const info32 = "Se esse personagem pode ser dado ou solto"

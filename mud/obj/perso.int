@@ -357,73 +357,74 @@ func erropos # Retorna uma mensagem conforme a posição
   casofim
 
 func descpos
-  se posicao == pospadr
+  se posicao == pospadr && !(iseguir && tseguir == 3)
     refvar m = txt(descpadr(arg0))
     ret m, m
   fimse
-  refvar i = j_imortal ? " diante de você." : "."
+  txt100 desc1 = txtcopiamai(descnome, "A")
+  iseguir && tseguir == 3 && (desc1 += " de " + iseguir.objlista.descnome)
+  refvar imortal = j_imortal ? " diante de você." : "."
   casovar posicao
   casose "0"
-    ret txtcopiamai(descnome, "A") + " jaz aqui" + i
+    ret desc1 + " jaz aqui" + imortal
   casose "1"
-    ret txtcopiamai(descnome, "A") + " está aqui mortalmente ferid" + (msexo ? "o" : "a") + \
-i
+    ret desc1 + " está aqui mortalmente ferid" + (msexo ? "o" : "a") + imortal
   casose "2"
-    ret txtcopiamai(descnome, "A") + " está aqui incapacitad" + (msexo ? "o." : "a") + i
+    ret desc1 + " está aqui incapacitad" + (msexo ? "o." : "a") + imortal
   casose "3"
-    ret txtcopiamai(descnome, "A") + " está aqui, muito frac" + (msexo ? "o." : "a") + i
+    ret desc1 + " está aqui, muito frac" + (msexo ? "o." : "a") + imortal
   casose "4"
-    ret !poslugar, txtcopiamai(nome, "A") + " dorme aqui" + i
+    ret !poslugar, txtcopiamai(nome, "A") + " dorme aqui" + imortal
     refvar mens = poslugar.objlista.descnome
     casovar txt1(mens)
     casose "a"
     casose "A"
-      ret txtcopiamai(descnome, "A") + " dorme na " + txt2(mens) + i
+      ret desc1 + " dorme na " + txt2(mens) + imortal
     casose "o"
     casose "O"
-      ret txtcopiamai(descnome, "A") + " dorme no " + txt2(mens) + i
+      ret desc1 + " dorme no " + txt2(mens) + imortal
     casofim
-    ret txtcopiamai(descnome, "A") + " dorme em " + mens + i
+    ret desc1 + " dorme em " + mens + imortal
   casose "5"
-    ret !poslugar, txtcopiamai(descnome, "A") + " descansa aqui" + i
+    ret !poslugar, desc1 + " descansa aqui" + imortal
     refvar mens = poslugar.objlista.descnome
     casovar txt1(mens)
     casose "a"
     casose "A"
-      ret txtcopiamai(descnome, "A") + " descansa na " + txt2(mens) + i
+      ret desc1 + " descansa na " + txt2(mens) + imortal
     casose "o"
     casose "O"
-      ret txtcopiamai(descnome, "A") + " descansa no " + txt2(mens) + i
+      ret desc1 + " descansa no " + txt2(mens) + imortal
     casofim
-    ret txtcopiamai(descnome, "A") + " descansa em " + mens + i
+    ret desc1 + " descansa em " + mens + imortal
   casose "6"
-    refvar lin = txtcopiamai(descnome, "A") + " está sentad" + (msexo ? "o" : "a")
-    ret !poslugar, lin + " aqui" + i
+    refvar lin = desc1 + " está sentad" + (msexo ? "o" : "a")
+    ret !poslugar, lin + " aqui" + imortal
     refvar mens = poslugar.objlista.descnome
     casovar txt1(mens)
     casose "a"
     casose "A"
-      ret lin + " na " + txt2(mens) + i
+      ret lin + " na " + txt2(mens) + imortal
     casose "o"
     casose "O"
-      ret lin + " no " + txt2(mens) + i
+      ret lin + " no " + txt2(mens) + imortal
     casofim
-    ret lin + " em " + mens + i
+    ret lin + " em " + mens + imortal
   casose "7"
     refvar alvo = atkenv.objlista
     se !alvo
-      ret txtcopiamai(descnome, "A") + " está lutando" + i
+      ret desc1 + " está lutando" + imortal
     senao alvo == arg0
-      ret txtcopiamai(descnome, "A") + " está lutando com você!"
+      ret desc1 + " está lutando com você!"
     senao alvo.visivel(arg0)
-      ret txtcopiamai(descnome, "A") + " está lutando com " + alvo.descnome + i
+      ret desc1 + " está lutando com " + alvo.descnome + imortal
     senao
-      ret txtcopiamai(descnome, "A") + " está lutando com alguém" + i
+      ret desc1 + " está lutando com alguém" + imortal
     fimse
   casose "8"
-    ret txtcopiamai(descnome, "A") + " está em pé aqui" + i
+    ret desc1 + " está em pé aqui" + imortal
   casofim
-  ret txtcopiamai(descnome, "A") + " está aqui" + i
+  ret desc1 + " está aqui" + imortal
 
 func equippos # Retorna as posições aonde pode usar equipamentos
   txt100 lin
@@ -479,7 +480,7 @@ func morreu # Procedimentos quando morre
   efim
 
 func p_proc_exec # Processar comportamento do personagem
-  ret este != contr, nulo # Retorna se pertence a outro personagem
+  ret este != contr || tseguir == 3, nulo # Retorna se pertence a outro personagem
   ret sock, nulo # Retorna se está sendo controlado por jogador
   ret p_espera, p_proc = p_espera + 1 # Checa tempo para agir
 # Evento do personagem

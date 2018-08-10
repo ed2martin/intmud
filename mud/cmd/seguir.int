@@ -22,23 +22,18 @@ func escr
     ret
   fimse
 # Procura o personagem
-  nomeobj n # Para reconhecer os personagens
-  listaitem i
-  n.ini(arg1, 1)
-  epara i = arg0.dono.dentro2.ini, i, i.depois
-    sair i.obj.visivel(arg0) && n.nome(i.obj.ident, i.obj.objtot)
-  efim
   $mens.mens = arg1
-  ret !i, $mens.mp(m_naover, arg0)
+  refvar r = misc:persodono(arg0, arg1)
+  ret !r, $mens.mp(m_naover, arg0)
 # Segue o personagem
-  se i.obj == arg0
+  se r == arg0
     arg0.iseguir.remove
     $mensjog.msg(m_ninguem, arg0)
-  senao i.obj.p_naoseguir(arg0)
-    $mens.mp(m_naoseguir, arg0, i.obj)
+  senao r.p_naoseguir(arg0)
+    $mens.mp(m_naoseguir, arg0, r)
   senao
-    arg0.seguir(i.obj)
-    $mens.mp(m_seguir, arg0, i.obj)
+    arg0.seguir(r)
+    $mens.mp(m_seguir, arg0, r)
   fimse
 
 

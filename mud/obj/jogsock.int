@@ -777,7 +777,6 @@ func passo
     epara item = l1.fim, item, item.antes
       d.ini
       ref obj = item.obj
-      !obj.dono && !obj.jog && apagar(obj)
       obj.jog && obj.ajustajog
       obj.var.limpar("d_", "j_")
       obj.ajustapeso, obj.acertapos, obj.recalc = 1
@@ -914,7 +913,7 @@ func ini
 # telatxt t
 # t.msg("Perso " + arg0 + " sala " + arg1 + "\n")
 
-func ex1_exec
+func ex1_exec # Coloca o jogador em uma sala
   ex2 = 1
   refvar s = ref(sala.s_voltar(perso)) ?? sala ?? config:salasav
   perso.mudadono(perso.cabedentro(s) ? s : config:salasav)
@@ -922,14 +921,15 @@ func ex1_exec
   $mens.p(perso)
   $mens.mvis2("", "$P chegou.")
 
-func ex2_exec
+func ex2_exec # Coloca na sala se necesário e chama evento cmd_sav dos objetos
   ex2 = 1
-  enquanto 1
-    ret !l.objfim, apagar(este)
-    sala = l.objfim, l.fim.remove, sala.cmd_sav(perso)
-    debug d
-    d.ini
+  ref r
+  debug d
+  enquanto l.objfim
+    r = l.objfim, l.fim.remove, !r.dono && r.mudadono(perso.dono)
+    r.cmd_sav(perso), d.ini
   efim
+  apagar(este)
 
 
 classe cmdatalho

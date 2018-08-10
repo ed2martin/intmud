@@ -1,10 +1,7 @@
 classe h_cmd_capturar
 herda comando_comum
-const objcmd = config:animal1 ? este
-const txtajuda = config:animal1 ? txtajuda1 + m_ajuda
-const txtajuda1 = "\b\c3Capturar\b\n\
-Sintaxe: CAPTURAR\n\
-         CAPTURAR <objeto>\n"
+const txtajuda = txtajuda1 + m_ajuda
+const txtajuda1 = "\b\c3Capturar\b\nSintaxe: CAPTURAR\n         CAPTURAR <objeto>\n"
 const posic = 5
 #
 const v_reserva = 1 # Se animais capturados podem ir para a lista de reservas 0=não 1=sim
@@ -18,6 +15,7 @@ const m_naover_item = "Você não vê $m."
 const m_escolhe = "Você escolhe $m ($o) para capturar animais."
 const m_sem_animal = "Não está lutando com nenhum animal."
 const m_nao_captura = "Não é possível capturar $a."
+const m_tem_animal = "Precisa guardar $o antes de pegar $a."
 const m_sem_espaco = "Sem espaço para guardar $a."
 const capturar_nao1 = "Você joga $o para $a, mas $a recusa."
 const capturar_nao2 = "$P joga $o para $a, mas $a recusa."
@@ -59,20 +57,28 @@ func escr
   arg1 && (arg0.var.z_captura = arg1)
   r = arg0.atkenv.objlista # Alvo do personagem
   se !r
-    se arg1
-      $mens.mens = arg1
-      $mens.mp(m_escolhe, arg0, nulo, item)
-    senao
-      $mens.mp(m_sem_animal, arg0)
-    fimse
+    $mens.mens = arg1
+    $mens.mp(arg1 ? m_escolhe : m_sem_animal, arg0, nulo, item)
     ret
   senao !r.p_captura || r.perso != 2 || arg0.perso != 3
     $mens.mp(m_nao_captura, arg0, r)
     ret
-  senao arg0.animalmais # Se tem espaço suficiente
-  senao !v_reserva || arg0.dentro3.total >= config:animal2
-    $mens.mp(m_sem_espaco, arg0, r)
-    ret
+  fimse
+  int8 lugares # 1=guarda no comando Animal, 2=fica na sala
+  se r.p_animal != 1 && arg0.animalmais # Pode ir para comando Animal
+    lugares = 1
+  senao r.p_animal != 0 # Pode ficar na sala
+    listaitem li
+    epara li = lseguir.ini, li && li.obj.tseguir != 3, li.depois
+    efim
+    !li && (lugares = 2)
+  fimse
+  se !lugares && r.p_animal != 1 && v_reserva && arg0.dentro3.total < config:animal2
+    lugares = 1
+  fimse
+  se !lugares
+    refvar tem_animal = r.p_animal == 1 || !config:animal1
+    ret $mens.mp(tem_animal ? m_tem_animal : m_sem_espaco, arg0, r, li.obj)
   fimse
 # Decide se consegue capturar
   real2 valor = r.pvida * 100 / r.pvidamax
@@ -107,9 +113,9 @@ func escr
   fimse
   $mens.mvis2(capturar_sim1, capturar_sim2)
   item.apagar(1)
-  pegar(arg0, arg0.dono, r)
+  lugares == 2 ? domar(arg0, arg0.dono, r) : pegar(arg0, arg0.dono, r)
 
-func pegar # Pega o animal
+func pegar # Pega o animal; vai para o comando Animal
 # arg0=quem está pegando, arg1=sala origem, arg2=animal
   listaobj e
   epara e.addfim(arg0.evento), e, e.ini.remove
@@ -122,6 +128,7 @@ func pegar # Pega o animal
     ret e.objini.cmd_pegaranim(arg0, arg1, arg2, arg2), nulo
   efim
   refvar estacheio = !arg0.animalmais
+  arg2.batalhafim
   arg2.mudadono(arg0) # Muda de dono
   arg2.objsolto.remove(arg2) # Não conta mais na lista de personagens soltos
   arg0.recalc = 1
@@ -141,6 +148,35 @@ func pegar # Pega o animal
   efim
   epara e.addfim(arg2.evento), e, e.ini.remove
     sair e.objini.cmd_pegouanim(arg0, arg1, arg2, arg2)
+  efim
+
+func domar # Pega o animal; passa a ser do personagem mas fica na sala
+# arg0=quem está pegando, arg1=sala origem, arg2=animal
+  listaobj e
+  epara e.addfim(arg0.evento), e, e.ini.remove
+    ret e.objini.cmd_domaranim(arg0, arg1, arg2, arg0), nulo
+  efim
+  epara e.addfim(arg1.evento), e, e.ini.remove
+    ret e.objini.cmd_domaranim(arg0, arg1, arg2, arg1), nulo
+  efim
+  epara e.addfim(arg2.evento), e, e.ini.remove
+    ret e.objini.cmd_domaranim(arg0, arg1, arg2, arg2), nulo
+  efim
+  arg2.batalhafim
+  arg2.objsolto.remove(arg2) # Não conta mais na lista de personagens soltos
+  arg2.tseguir = 3
+  arg2.iseguir.remove
+  arg2.iseguir = arg0.lseguir.addfim(arg2)
+  $mens.p(arg0, arg2)
+  $mens.mvis2(capturar_equipe1, capturar_equipe2)
+  epara e.addfim(arg0.evento), e, e.ini.remove
+    sair e.objini.cmd_domouanim(arg0, arg1, arg2, arg0)
+  efim
+  epara e.addfim(arg1.evento), e, e.ini.remove
+    sair e.objini.cmd_domouanim(arg0, arg1, arg2, arg1)
+  efim
+  epara e.addfim(arg2.evento), e, e.ini.remove
+    sair e.objini.cmd_domouanim(arg0, arg1, arg2, arg2)
   efim
 
 

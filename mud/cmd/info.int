@@ -619,7 +619,7 @@ func escr
   r.tipo1 && h.addfim(txtcopiamai(txte(r.tipo1), "A"))
   r.tipo2 && h.addfim(txtcopiamai(txte(r.tipo2), "A"))
   r.tipo3 && h.addfim(txtcopiamai(txte(r.tipo3), "A"))
-  h.linhas && t.addfim("Tipo/raça/classe: " + txttroca(h.remove(10), "\n", ", "))
+  h.linhas && t.addfim("Tipo,raça,classe: " + txttroca(h.remove(10), "\n", ", "))
   t.addfim("Sexo:             " + (r.psexo ? "Masculino" : "Feminino"))
 # Quem pegou
   se r != r.contr && r.var.z_dono
@@ -639,21 +639,13 @@ func escr
     t.addfim("Experiência:      " + r.expatual + t1)
   fimse
 # Batalha
-  t1 = "Ataque/defesa:    " + int(r.atknorm * r.atktipo.0) + "/"
-  se !r.deftipo.0
-    t.addfim(t1 + "Imune")
-  senao
-    t.addfim(t1 + int(r.defnorm / r.deftipo.0))
-  fimse
-# t.addfim("Ataque/defesa:    " + r.atknorm + "/" + r.defnorm)
-  t1 = "Atq/def especial: " + int(r.atkesp * r.atktipo.1) + "/"
-  se !r.deftipo.1
-    t.addfim(t1 + "Imune")
-  senao
-    t.addfim(t1 + int(r.defesp / r.deftipo.1))
-  fimse
-# t.addfim("Atq/def especial: " + r.atkesp + "/" + r.defesp)
-  t.addfim("Precisão/evasão:  " + r.precisao + "/" + r.evasao)
+  t1 = "Ataque:           Normal " + int(r.atknorm * r.atktipo.0)
+  t.addfim(t1 + " Especial " + int(r.atkesp * r.atktipo.1))
+  t1 = "Normal " + (r.deftipo.0 ? int(r.defnorm / r.deftipo.0) : "Imune")
+  t1 += " Especial " + (r.deftipo.1 ? int(r.defesp / r.deftipo.1) : "Imune")
+  t.addfim("Defesa:           " + t1)
+  t.addfim("Precisão:         " + r.precisao)
+  t.addfim("Evasão:           " + r.evasao)
   t.addfim("Velocidade:       " + r.pveloc)
 # Mortes
   se r == r.contr

@@ -5,16 +5,18 @@ const txtajuda = txtajuda1 + m_ajuda
 const txtajuda1 = "\b\c3Levantar\b\nSintaxe: LEVANTAR\n"
 #
 const m_ajuda = "Fica em pé."
-const m_em_pe ="\c9Você já está em pé.\b"
+const m_em_pe = "\c9Você já está em pé.\b"
+const m_montado = "\c9Você já está montad$s $e $a.\b"
 const m_levantou1 = "Você levantou-se."
 const m_levantou2 = "$P levantou-se."
-const admordem = "m_ajuda m_em_pe m_levantou1 m_levantou2"
+const admordem = "m_ajuda m_em_pe m_montado m_levantou1 m_levantou2"
 
 func escr
 # Checa posição
   casovar arg0.posicao
   casose "5" # Descansando
   casose "6" # Sentado
+    ret arg0.poslugar.obj.perso, $mens.mp(m_montado, arg0, arg0.poslugar.obj)
     sair
   casose "8" # Em pé
     ret $mens.mp(m_em_pe, arg0)
@@ -70,14 +72,9 @@ func escr
   casofim
 # Obtém aonde quer se sentar
   se arg1
-    listaitem i # Para procurar o item
-    nomeobj n # Para reconhecer os itens
-    n.ini(arg1, 1)
-    epara i = arg0.dono.dentro1.ini, i, i.depois
-      sair i.obj.visivel(arg0) && n.nome(i.obj.ident, i.obj.objtot)
-    efim
-    ret r && r != i.obj, $mens.mp(m_levantar, arg0)
-    r = i.obj
+    refvar obj = misc:itemdono(arg0, arg1)
+    ret r && r != obj, $mens.mp(m_levantar, arg0)
+    r = obj
   fimse
   listaobj l
 # Sentar em algum objeto
@@ -224,15 +221,20 @@ const tipo2 = "opc_linha"
 const clas2 = "cmd_levantar"
 const vari2 = "m_em_pe"
 #
-const nome3 = "Levantou perso"
+const nome3 = "Montado"
 const tipo3 = "opc_linha"
 const clas3 = "cmd_levantar"
-const vari3 = "m_levantou1"
+const vari3 = "m_montado"
 #
-const nome4 = "Levantou outros"
+const nome4 = "Levantou perso"
 const tipo4 = "opc_linha"
 const clas4 = "cmd_levantar"
-const vari4 = "m_levantou2"
+const vari4 = "m_levantou1"
+#
+const nome5 = "Levantou outros"
+const tipo5 = "opc_linha"
+const clas5 = "cmd_levantar"
+const vari5 = "m_levantou2"
 
 
 classe m_cmd_sentar

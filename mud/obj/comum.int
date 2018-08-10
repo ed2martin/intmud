@@ -55,8 +55,10 @@ func fim # Objeto vai sair do jogo
     l.objini.cmd_fim(este), l.ini.remove
   efim
   cmd_objfim, idono && mdono(nulo)
-  epara nulo, lseguir, lseguir.ini.remove
-    lseguir.objini.msg("Você pára de seguir " + nome + ".")
+  refvar msgfim = "Você pára de seguir " + nome + "."
+  listaitem i = lseguir.ini
+  enquanto i
+    i.obj.tseguir == 3 ? i.depois : i.obj.msg(msgfim) + i.removedepois
   efim
 
 func ajustapeso # Acerta peso e volume (pesoden, pesotot, volden, voltot)
@@ -200,9 +202,9 @@ int16 bitver # O que o personagem/item pode ver
 int16 bitinv # Grau de invisibilidade do personagem/item
 intexec recalc # Se deve recalcular variáveis do personagem/item
 textotxt atribs # Atributos do item ou personagem, um atributo por linha
-listaitem iseguir # Quem o personagem ou item está seguindo
-listaobj lseguir # Quem está seguindo o personagem ou item
-uint8 tseguir # 0=seguir sem compromisso, 1=membro de grupo, 2=líder de grupo
+sav listaitem iseguir # Quem o personagem ou item está seguindo
+sav listaobj lseguir # Quem está seguindo o personagem ou item
+sav uint8 tseguir # 0=apenas seguir, 1=membro de grupo, 2=líder de grupo, 3=animal(pet)
 
 func visivel # Informa se esse objeto está visível (arg0=quem quer ver)
   ret arg0.dono.luzden, !(~(arg0.bitver | 2) & bitinv)
@@ -267,14 +269,17 @@ func recalc_dono # Chama a função recalc_exec do dono se o dono for personagem
 
 func seguir # Segue um item ou personagem
 # arg0 = item ou personagem; se nulo, deixa de seguir
+  ret tseguir == 3 && iseguir, nulo
   tseguir != 2 && (tseguir = 0)
   iseguir.remove
   arg0 != este && (iseguir = arg0.lseguir.addfim(este))
 
 func mesmogrupo # Retorna 1 se arg0 está no mesmo grupo ou 0 se não está (vide comando grupo)
-  ret tseguir == 2, arg0.tseguir == 1 && arg0.iseguir.objlista == este
-  ret arg0.tseguir == 2, tseguir == 1 && iseguir.objlista == arg0
-  ret tseguir == 1 && arg0.tseguir == 1 && iseguir.objlista == arg0.iseguir.objlista
+  ref p1 = (tseguir == 3 ? iseguir.obj) ?? este
+  ref p2 = (arg0.tseguir == 3 ? arg0.iseguir.obj) ?? arg0
+  ret p1.tseguir == 2, p2.tseguir == 1 && p2.iseguir.objlista == p1
+  ret p2.tseguir == 2, p1.tseguir == 1 && p1.iseguir.objlista == p2
+  ret p1.tseguir == 1 && p2.tseguir == 1 && p1.iseguir.objlista == p2.iseguir.objlista
 
 func rastrearsala # Obtém o caminho para chegar até uma sala
 # arg0 = sala para onde quer ir

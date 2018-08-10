@@ -38,14 +38,18 @@ const m_nao_adicionar = "$A não pode ser adicionad$t."
 const m_adicionado = "Adicionado no grupo: $m"
 const m_removido = "Removido do grupo: $m"
 const m_ninguem_adicionado = "Nenhum personagem adicionado no grupo."
+const m_animal = "Este personagem pertence a um jogador"
 const admordem = "m_ajuda v_nivel m_naover m_encerrado m_nenhum_grupo m_nao_lider\n\
 m_batalha m_nivel_baixo m_nivel_alto m_nome_grupo m_nao_adicionar m_adicionado\n\
-m_removido m_ninguem_adicionado"
+m_removido m_ninguem_adicionado m_animal"
 
 func escr
   listaobj l
+# Animal do jogador
+  se arg0.tseguir == 3
+    $mens.msg(m_animal, l.objini)
 # Encerrar o grupo
-  se arg1 == "-"
+  senao arg1 == "-"
     se arg0.tseguir == 2
       $mens.p(arg0)
       epara l.addfim(arg0.lseguir), l, l.ini.remove
@@ -64,7 +68,7 @@ func escr
     fimse
 # Adicionar quem está seguindo no grupo
   senao arg1 == "+"
-    se arg0.iseguir && arg0.tseguir == 1
+    se arg0.iseguir && arg0.tseguir != 0 && arg0.tseguir != 2
       ret $mens.mp(m_nao_lider, arg0)
     senao arg0.atkenv
       ret $mens.mp(m_batalha, arg0)
@@ -281,6 +285,11 @@ const nome14 = "Ninguém adicionado"
 const tipo14 = "opc_linha"
 const clas14 = "cmd_grupo"
 const vari14 = "m_ninguem_adicionado"
+#
+const nome15 = "Animal"
+const tipo15 = "opc_linha"
+const clas15 = "cmd_grupo"
+const vari15 = "m_animal"
 
 
 classe m_cmd_gchat

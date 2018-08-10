@@ -463,27 +463,32 @@ func exechab # Chamado quando personagem usa habilidade ou magia
   casose "3"
   casose "5"
     sair arg0 != arg1
-    ret contr0.msg("Em você mesm" + (arg0.msexo ? "o?" : "a?"))
+    ret $mens.mp("Em você mesm$s?", contr0)
   casofim
 # Checa o alvo
   se contr0.mesmogrupo(contr1)
-    ret contr0.msg("Atacar outro integrante do grupo?")
+    ret $mens.mp("Atacar outro integrante do grupo?", contr0, contr1)
   senao !contr0.dono.s_luta
-    ret contr0.msg(arg4.item ? "A magia falhou." : "Aqui é um lugar pacífico.")
+    refvar msg1 = arg4.item ? "A magia falhou." : "Aqui é um lugar pacífico."
+    ret $mens.mp(msg1, contr0, contr1)
   senao !contr1.dono.s_luta
-    ret contr0.msg(arg4.item ? "A magia falhou." : "O alvo está em um lugar pacífico.")
+    refvar msg1 = "A magia falhou." : "O alvo está em um lugar pacífico."
+    ret $mens.mp(msg1, contr0, contr1)
   senao !contr1.p_agressivo(arg0)
-    ret contr0.msg(txtcopiamai(contr1.descnome, "A") + " não quer brigar.")
+    ret $mens.mp("$A não quer brigar.", contr0, contr1)
   senao !contr0.p_agressivo(arg1)
-    ret contr0.msg("Você não quer brigar com " + contr1.descnome + ".")
-  senao contr0.jog && contr1.jog && (contr0.dono.s_luta == 1 || contr1.dono.s_luta == 1)
-    se arg0 != arg1
-      ret contr0.msg("Você não quer brigar com " + contr1.descnome + " aqui.")
+    ret $mens.mp("Você não quer brigar com $a.", contr0, contr1)
+  senao
+    ref p0 = (contr0.tseguir == 3 ? contr0.iseguir.obj) ?? contr0
+    ref p1 = (contr1.tseguir == 3 ? contr1.iseguir.obj) ?? contr1
+    se p0.jog && p1.jog && (contr0.dono.s_luta == 1 || contr1.dono.s_luta == 1)
+      ret arg0 != arg1, $mens.mp("Você não quer brigar com $a aqui.", contr0, contr1)
     fimse
-  senao (contr0.p_atk_individual || contr1.p_atk_individual) && (contr0.atkenv || contr1.atkenv)
-    se !contr0.atkrec.possui(contr1) || !contr1.atkrec.possui(contr0)
-      refvar lin = "Você não quer brigar com " + contr1.descnome + " agora."
-      ret contr0.msg(contr1.p_atk_individual ?? lin)
+    se (contr0.p_atk_individual || contr1.p_atk_individual) && (contr0.atkenv || contr1.atkenv)
+      se !contr0.atkrec.possui(contr1) || !contr1.atkrec.possui(contr0)
+        refvar msg1 = "Você não quer brigar com $a agora."
+        ret $mens.mp(contr1.p_atk_individual ?? msg1, contr0, contr1)
+      fimse
     fimse
   fimse
 # Dispara eventos do primeiro alvo

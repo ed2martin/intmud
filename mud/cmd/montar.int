@@ -1,0 +1,188 @@
+classe h_cmd_montar
+herda comando_comum
+const posic = 5
+const txtajuda = txtajuda1 + m_ajuda
+const txtajuda1 = "\b\c3Montar\b\nSintaxe: MONTAR <personagem>\n"
+#
+const m_ajuda = "Monta em um personagem."
+const m_montado = "\c9Você já está montad$s.\b"
+const m_carregando = "\c9Você está carregando alguém.\b"
+const m_sem_perso = "Montar em quem?"
+const m_naover = "Você não vê $m"
+const m_auto = "Montar em você mesm$s?"
+const m_perso_dono = "Você não é $s don$s $d $a."
+const m_perso_nao = "Não é possível sentar $e $a."
+const m_perso_cheio = "Não cabe mais ninguém $e $a."
+const m_montou1 = "Você montou $e $a."
+const m_montou2 = "$P montou em você."
+const m_montou3 = "$P montou $e $a."
+const admordem = "m_ajuda m_montado m_carregando m_sem_perso m_naover m_auto\n\
+m_perso_dono m_perso_nao m_perso_cheio m_montou1 m_montou2 m_montou3"
+
+func escr
+# Verifica se pode montar
+  ret arg0.poslugar.obj.perso, $mens.mp(m_montado, arg0) # Já está montado
+  ret arg0.posicao != 8, arg0.msg(arg0.erropos) # Não está em pé
+  ret arg0.persolugar.total, $mens.mp(m_carregando, arg0)
+  ret !arg1, $mens.mp(m_sem_perso, arg0)
+  ref r = misc:persodono(arg0, arg1)
+  se !r
+    $mens.mens = arg1
+    ret $mens.mp(m_naover, arg0)
+  senao r = arg1
+    ret $mens.mp(m_auto, arg0)
+  senao r.tseguir != 3 || r.obj.iseguir.obj != arg0
+    ret $mens.mp(m_perso_dono, arg0)
+  fimse
+  refvar lugares = r.p_montar(arg0)
+  se !lugares
+    ret $mens.mp(m_perso_nao, arg0, r)
+  senao r != arg0.poslugar.objlista && lugares <= r.persolugar.total
+    ret $mens.mp(m_perso_cheio, arg0, r)
+  fimse
+# Monta
+  listaobj l
+  epara l.addfim(arg0.evento), l, l.ini.remove
+    ret l.objini.cmd_montar(arg0, r, arg0), nulo
+  efim
+  epara l.addfim(r.evento), l, l.ini.remove
+    ret l.objini.cmd_montar(arg0, r, r), nulo
+  efim
+  arg0.poslugar.remove
+  arg0.poslugar = r.persolugar.addfim(arg0)
+  arg0.posicao = 6
+  $mens.p(arg0, r)
+  $mens.mtodos3(m_montou1, m_montou2, m_montou3)
+  epara l.addfim(arg0.evento), l, l.ini.remove
+    l.objini.cmd_montou(arg0, r, arg0)
+  efim
+  epara l.addfim(r.evento), l, l.ini.remove
+    l.objini.cmd_montou(arg0, r, r)
+  efim
+
+
+classe h_cmd_desmontar
+herda comando_comum
+const posic = 5
+const txtajuda = txtajuda1 + m_ajuda
+const txtajuda1 = "\b\c3Desontar\b\nSintaxe: DESMONTAR\n"
+#
+const m_ajuda = "Desmonta em um personagem."
+const m_desmontado = "Você não está montad$s."
+const m_desmontou1 = "Você desmontou $d $a."
+const m_desmontou2 = "$P desmontou em você."
+const m_desmontou3 = "$P desmontou $d $a."
+
+func escr
+  refvar r = arg0.poslugar.obj
+  ret !r.perso, $mens.mp(m_desmontado, arg0)
+  listaobj l
+  epara l.addfim(arg0.evento), l, l.ini.remove
+    ret l.objini.cmd_desmontar(arg0, r, arg0), nulo
+  efim
+  epara l.addfim(r.evento), l, l.ini.remove
+    ret l.objini.cmd_desmontar(arg0, r, r), nulo
+  efim
+  arg0.poslugar.remove
+  arg0.posicao = 8
+  $mens.p(arg0, r)
+  $mens.mtodos3(m_desmontou1, m_desmontou2, m_desmontou3)
+  epara l.addfim(arg0.evento), l, l.ini.remove
+    l.objini.cmd_desmontou(arg0, r, arg0)
+  efim
+  epara l.addfim(r.evento), l, l.ini.remove
+    l.objini.cmd_desmontou(arg0, r, r)
+  efim
+
+
+classe m_cmd_montar
+herda comando_menu_cmd
+#
+const nome1 = "Ajuda"
+const tipo1 = "opc_texto"
+const clas1 = "cmd_montar"
+const vari1 = "m_ajuda"
+#
+const nome2 = "Está montado"
+const tipo2 = "opc_linha"
+const clas2 = "cmd_montar"
+const vari2 = "m_montado"
+#
+const nome3 = "Carregando alguém"
+const tipo3 = "opc_linha"
+const clas3 = "cmd_montar"
+const vari3 = "m_carregando"
+#
+const nome4 = "Sem alvo"
+const tipo4 = "opc_linha"
+const clas4 = "cmd_montar"
+const vari4 = "m_sem_perso"
+#
+const nome5 = "Alvo não existe"
+const tipo5 = "opc_linha"
+const clas5 = "cmd_montar"
+const vari5 = "m_naover"
+#
+const nome6 = "Para si mesmo"
+const tipo6 = "opc_linha"
+const clas6 = "cmd_montar"
+const vari6 = "m_auto"
+#
+const nome7 = "Não é o dono"
+const tipo7 = "opc_linha"
+const clas7 = "cmd_montar"
+const vari7 = "m_perso_dono"
+#
+const nome8 = "Não é possível"
+const tipo8 = "opc_linha"
+const clas8 = "cmd_montar"
+const vari8 = "m_perso_nao"
+#
+const nome9 = "Item cheio"
+const tipo9 = "opc_linha"
+const clas9 = "cmd_montar"
+const vari9 = "m_perso_nao"
+#
+const nome10 = "Montou perso"
+const tipo10 = "opc_linha"
+const clas10 = "cmd_montar"
+const vari10 = "m_montou1"
+#
+const nome11 = "Montou alvo"
+const tipo11 = "opc_linha"
+const clas11 = "cmd_montar"
+const vari11 = "m_montou2"
+#
+const nome12 = "Montou outros"
+const tipo12 = "opc_linha"
+const clas12 = "cmd_montar"
+const vari12 = "m_montou3"
+
+
+classe m_cmd_desmontar
+herda comando_menu_cmd
+#
+const nome1 = "Ajuda"
+const tipo1 = "opc_texto"
+const clas1 = "cmd_desmontar"
+const vari1 = "m_ajuda"
+#
+const nome2 = "Está desmontado"
+const tipo2 = "opc_linha"
+const clas2 = "cmd_desmontar"
+const vari2 = "m_desmontado"
+#
+const nome3 = "Desmontou perso"
+const tipo3 = "opc_linha"
+const clas3 = "cmd_desmontar"
+const vari3 = "m_desmontou1"
+#
+const nome4 = "Desmontou alvo"
+const tipo4 = "opc_linha"
+const clas4 = "cmd_desmontar"
+const vari4 = "m_desmontou2"
+#
+const nome5 = "Desmontou outros"
+const tipo5 = "opc_linha"
+const clas5 = "cmd_desmontar"
+const vari5 = "m_desmontou3"

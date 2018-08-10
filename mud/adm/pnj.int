@@ -24,6 +24,7 @@ func escr
     refvar r = misc:persodono(arg0, arg1)
     ret !r, arg0.msg("Não há nenhum personagem chamado " + arg1)
     ret r.jog, arg0.msg("Personagem é jogador")
+    ret r.tseguir == 3, arg0.msg("Personagem pertence a jogador")
     ret r.sock, arg0.msg("Personagem já está sendo controlado por jogador")
     arg0.sock.mudaperso(r)
   senao arg0.jog

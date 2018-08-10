@@ -42,7 +42,7 @@ func escr # Executa o comando
   ret arg0.posicao == 7, arg0.msg(arg0.erropos) # Lutando
   se arg0.posicao == 6 # Sentado
     obj = arg0.poslugar.objlista
-    ret !obj.i_mover, arg0.msg(arg0.erropos)
+    ret obj.perso ? obj.iseguir.obj != arg0 : !obj.i_mover, arg0.msg(arg0.erropos)
   fimse
   se !arg0.jog || rand($miscfome.bebedir, $miscfome.cheio) > arg0.p_bebida
     dir1 = dir

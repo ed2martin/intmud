@@ -230,7 +230,7 @@ func bat_ini_int # Chamado internamente por batalhaini
   ref r
   se p_atk_individual || arg0.p_atk_individual
     ret
-  senao arg0.tseguir == 2
+  senao arg0.tseguir == 2 || arg0.tseguir == 3
     r = arg0
   senao arg0.iseguir && arg0.tseguir == 1
     r = arg0.iseguir.objlista
@@ -595,6 +595,8 @@ func pegamoedas # Pega todas as moedas do personagem arg0
 
 func p_proc_exec # Processar comportamento do personagem
   ret este != contr, nulo # Retorna se pertence a outro personagem
+  atkenv && atkenv.objlista.dono != dono && batalhafim # Encerrar batalha
+  ret tseguir == 3, nulo # Retorna se é animal de outro personagem
   ret atkenv && pvida < p_fugir, $cmd_fugir.fugir(este) # Tenta fugir da luta
   ret sock, nulo # Retorna se está sendo controlado por jogador
   ret p_espera, p_proc = p_espera + 1 # Checa tempo para agir
@@ -602,7 +604,6 @@ func p_proc_exec # Processar comportamento do personagem
 # Evento do personagem
   ret cmd_pnj_proc, nulo
 # Ações do personagem
-  atkenv && atkenv.objlista.dono != dono && batalhafim
   ret p_proc_animal, nulo # Escolhe animal em condições de batalhar
   se atkenv # Se está lutando
     p_proc = 10
