@@ -604,6 +604,7 @@ func p_proc_exec # Processar comportamento do personagem
 # Evento do personagem
   ret cmd_pnj_proc, nulo
 # Ações do personagem
+  ret posicao <= 4, nulo # Não faz nada se está dormindo
   ret p_proc_animal, nulo # Escolhe animal em condições de batalhar
   se atkenv # Se está lutando
     p_proc = 10

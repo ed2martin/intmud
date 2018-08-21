@@ -6,7 +6,7 @@ const txtajuda1 = "\b\c3Levantar\b\nSintaxe: LEVANTAR\n"
 #
 const m_ajuda = "Fica em pé."
 const m_em_pe = "\c9Você já está em pé.\b"
-const m_montado = "\c9Você já está montad$s $e $a.\b"
+const m_montado = "\c9Você está montad$s $e $a.\b"
 const m_levantou1 = "Você levantou-se."
 const m_levantou2 = "$P levantou-se."
 const admordem = "m_ajuda m_em_pe m_montado m_levantou1 m_levantou2"
@@ -16,8 +16,9 @@ func escr
   casovar arg0.posicao
   casose "5" # Descansando
   casose "6" # Sentado
-    ret arg0.poslugar.obj.perso, $mens.mp(m_montado, arg0, arg0.poslugar.obj)
-    sair
+    ref r = arg0.poslugar.objlista
+    sair !r.perso
+    ret $mens.mp(m_montado, arg0, r)
   casose "8" # Em pé
     ret $mens.mp(m_em_pe, arg0)
   casose # Outras posições

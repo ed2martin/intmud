@@ -11,6 +11,15 @@ const ta3 = "Solta um objeto no chão ou em um container (uma bolsa, uma estante,
 Para soltar tudo (até 10 objetos) tecle TUDO ao invés do objeto."
 const ta4 = "\nPermite também soltar algum animal (se desfazer) que você possuir."
 const posic = 5
+const m_naover = "Você não vê $m"
+const m_nao_possui = "Você não possui $m."
+const m_soltaranim1 = "Você solta $a."
+const m_soltaranim2 = "$P solta $a."
+const m_animal_solto = "Já possui um animal solto."
+const m_naosolta = "Você não consegue soltar itens aqui."
+const m_semperm_soltar = "Melhor não soltar nada aqui."
+const m_nao_container = "$O não é container."
+const m_fechado = "$O está fechad$u."
 #
 const cmdsg = 0 # 0=comando soltar, 1=comando guardar
 uint32 total # Quantidade de itens do mesmo tipo
@@ -32,9 +41,13 @@ func escr
   arg0.p_espera < 3 && (arg0.p_espera = 3)
 # Checa soltar animal
   se !cmdsg && arg1 == intpos(arg1) && int(arg1) && config:animal1 >= arg1
+    $mens.mens = arg1
     refvar r = arg0.animalnum(arg1)
-    ret !r, arg0.msg("Você não possui " + arg1 + ".")
-    ret r.p_soltar == 2, arg0.msg("Não é possível soltar esse animal.")
+    ret !r, $mens.mp(m_nao_possui, arg0)
+    listaitem i
+    epara i = arg0.lseguir.ini, i && i.obj.tseguir != 3, i.depois
+    efim
+    ret i, $mens.mp(m_animal_solto, arg0)
     ret soltaranimal(arg0, arg0.dono, r)
   fimse
 # Obtém o objeto de onde soltar
@@ -45,23 +58,23 @@ func escr
     soltar = sala.s_soltar(arg0)
     mens = ""
     se soltar == 1
-      ret arg0.msg("Você não consegue soltar itens aqui.")
+      ret $mens.mp(m_naosolta, arg0, nulo, item)
     senao sala.var.ini("u_") && !sala.var.u_[arg0.nome]_
-      ret arg0.msg("Melhor não soltar nada aqui.")
+      ret $mens.mp(m_semperm_soltar, arg0, nulo, item)
     fimse
   senao
     soltar = 0
     item = misc:itemtudo(arg0, misc:sep2) # Procura o alvo para o personagem arg0
     sala = item.item ? item.i_salapegar
     se !item
-      ret arg0.msg("Você não vê " + misc:sep2 + ".")
+      $mens.mens = misc:sep2
+      ret $mens.mp(m_naover, arg0)
     senao item.dono.s_sala && item.dono.var.ini("u_") && !item.dono.var.u_[arg0.nome]_
-      ret arg0.msg("Melhor não soltar nada aqui.")
+      ret $mens.mp(m_semperm_soltar, arg0, nulo, item)
     senao !item.i_aberto && !sala
-      ret arg0.msg(txtcopiamai(item.descnome, "A") + " não é container.")
+      ret $mens.mp(m_nao_container, arg0, nulo, item)
     senao item.i_aberto > 2 && !arg0.j_imortal
-      ret arg0.msg(txtcopiamai(item.descnome, "A") + " está fechad" + (item.msexo ? "o." : \
-"a."))
+      ret $mens.mp(m_fechado, arg0, nulo, item)
     fimse
     !sala && (sala = item)
     mens = " $e $a"
@@ -88,8 +101,9 @@ func escr
 
 func soltaranimal
 # arg0 = quem está soltando
-# arg1 = destino
+# arg1 = sala destino
 # arg2 = animal
+  ret arg2.p_animal != 2, $mens.mp(m_chama_solta, arg0, r)
   listaobj e
   epara e.addfim(arg0.evento), e, e.ini.remove
     ret e.objini.cmd_soltaranim(arg0, arg1, arg2, arg0), nulo
@@ -100,15 +114,12 @@ func soltaranimal
   epara e.addfim(arg2.evento), e, e.ini.remove
     ret e.objini.cmd_soltaranim(arg0, arg1, arg2, arg2), nulo
   efim
-  ret arg2.dono != arg0, nulo # Retorna se não possui mais o animal
+  arg2.tseguir = 3
+  arg2.iseguir.remove
+  arg2.iseguir = arg0.lseguir.addfim(arg2)
+  arg2.mudadono(arg1)
   $mens.p(arg0, arg2)
-  $mens.mvis1("$P se despede $d $a e $b vai embora.")
-  apagar(arg2) # Apaga animal
-  arg2.mdono(nulo) # Indica que não tem o animal
-  arg0.recalc = 1 # Acerta personagem
-  arg0.persobat == arg2 && (arg0.persobat = arg0)
-  arg0.persoesc == arg2 && (arg0.persoesc = arg0)
-  arg0.escolhebat # Escolhe um animal em condições de batalhar
+  $mens.mvis2(m_soltaranim1, m_soltaranim2)
   epara e.addfim(arg0.evento), e, e.ini.remove
     e.objini.cmd_soltouanim(arg0, arg1, arg2, arg0)
   efim

@@ -1,0 +1,129 @@
+classe h_cmd_despedir
+herda comando_comum
+const objcmd = config:animal1 ? este
+const txtajuda = config:animal1 ? txtajuda1 + m_ajuda
+const txtajuda1 = "\b\c3Despedir\b\nSintaxe: DESPEDIR <animal>\n\
+         DESPEDIR <número>\n"
+const posic = 5
+#
+const m_ajuda = "Se despede (se desfaz) de um animal que você possui."
+const m_sem_args = "Despedir de quem?"
+const m_naover = "Você não vê $m"
+const m_nao_possui = "Você não possui $m."
+const m_nao_despedir = "Não é possível se desfazer de $a."
+const m_perso_dono = "Você não é $s don$s $d $a."
+const m_montado = "Alguém está montado em $a."
+const m_despedir1 = "Você se despede $d $a e $b vai embora."
+const m_despedir2 = "$P se despede $d $a e $b vai embora."
+const admordem = "m_ajuda m_sem_args m_naover m_nao_possui m_nao_despedir\n\
+m_perso_dono m_despedir1 m_despedir2"
+
+func escr
+  ret !arg1, $mens.mp(m_sem_args, arg0)
+  $mens.mens = arg1
+  ref r
+# Checa animal do comando Animal
+  se arg1 == intpos(arg1) && int(arg1) && config:animal1 >= arg1
+    r = arg0.animalnum(arg1)
+    ret !r, $mens.mp(m_nao_possui, arg0)
+    ret r.p_soltar == 2, $mens.mp(m_nao_despedir, arg0, r)
+    despedir(arg0, nulo, r)
+# Se despedir de um animal na sala
+  senao
+    r = misc:persodono(arg0, arg1)
+    se !r
+      ret $mens.mp(m_naover, arg0)
+    senao r.tseguir != 3 || r.iseguir.objlista != arg0
+      ret $mens.mp(m_perso_dono, arg0, r)
+    senao r.persolugar.total
+      ret $mens.mp(m_montado, arg0, r)
+    fimse
+    despedir(arg0, arg0.dono, r)
+  fimse
+
+func despedir
+# arg0 = quem está soltando
+# arg1 = destino (se nulo, animal sai do jogo)
+# arg2 = animal
+  listaobj e
+  epara e.addfim(arg0.evento), e, e.ini.remove
+    ret e.objini.cmd_despediranim(arg0, arg1, arg2, arg0), nulo
+  efim
+  epara e.addfim(arg1.evento), e, e.ini.remove
+    ret e.objini.cmd_despediranim(arg0, arg1, arg2, arg1), nulo
+  efim
+  epara e.addfim(arg2.evento), e, e.ini.remove
+    ret e.objini.cmd_despediranim(arg0, arg1, arg2, arg2), nulo
+  efim
+  $mens.p(arg0, arg2)
+  $mens.mvis1("$P se despede $d $a e $b vai embora.")
+  se arg1 == nulo
+    apagar(arg2) # Apaga animal
+    arg2.mdono(nulo) # Indica que não tem o animal
+  senao
+    arg2.tseguir = 0
+    arg2.iseguir.remove
+    arg2.mudadono(arg0.dono)
+  fimse
+  arg0.recalc = 1 # Acerta personagem
+  arg0.persobat == arg2 && (arg0.persobat = arg0)
+  arg0.persoesc == arg2 && (arg0.persoesc = arg0)
+  arg0.escolhebat # Escolhe um animal em condições de batalhar
+  epara e.addfim(arg0.evento), e, e.ini.remove
+    e.objini.cmd_despediuanim(arg0, arg1, arg2, arg0)
+  efim
+  epara e.addfim(arg1.evento), e, e.ini.remove
+    e.objini.cmd_despediuanim(arg0, arg1, arg2, arg1)
+  efim
+  epara e.addfim(arg2.evento), e, e.ini.remove
+    e.objini.cmd_despediuanim(arg0, arg1, arg2, arg2)
+  efim
+
+
+classe m_cmd_despedir
+herda comando_menu_cmd
+#
+const nome1 = "Ajuda"
+const tipo1 = "opc_texto"
+const clas1 = "cmd_despedir"
+const vari1 = "m_ajuda"
+#
+const nome2 = "Sem argumentos"
+const tipo2 = "opc_linha"
+const clas2 = "cmd_despedir"
+const vari2 = "m_sem_args"
+#
+const nome3 = "Sem alvo"
+const tipo3 = "opc_linha"
+const clas3 = "cmd_despedir"
+const vari3 = "m_naover"
+#
+const nome4 = "Não possui"
+const tipo4 = "opc_linha"
+const clas4 = "cmd_despedir"
+const vari4 = "m_nao_possui"
+#
+const nome5 = "Não despede"
+const tipo5 = "opc_linha"
+const clas5 = "cmd_despedir"
+const vari5 = "m_nao_despedir"
+#
+const nome6 = "Não é o dono"
+const tipo6 = "opc_linha"
+const clas6 = "cmd_despedir"
+const vari6 = "m_perso_dono"
+#
+const nome7 = "Alguém montado"
+const tipo7 = "opc_linha"
+const clas7 = "cmd_despedir"
+const vari7 = "m_montado"
+#
+const nome8 = "Despediu perso"
+const tipo8 = "opc_linha"
+const clas8 = "cmd_despedir"
+const vari8 = "m_despedir1"
+#
+const nome9 = "Despediu outros"
+const tipo9 = "opc_linha"
+const clas9 = "cmd_despedir"
+const vari9 = "m_despedir2"

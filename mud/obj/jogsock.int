@@ -915,8 +915,14 @@ func ini
 
 func ex1_exec # Coloca o jogador em uma sala
   ex2 = 1
-  refvar s = ref(sala.s_voltar(perso)) ?? sala ?? config:salasav
-  perso.mudadono(perso.cabedentro(s) ? s : config:salasav)
+  ref s = ref(sala.s_voltar(perso)) ?? sala ?? config:salasav
+  s = perso.cabedentro(s) ? s : config:salasav
+  listaitem item
+  debug d
+  epara item = l.fim, item, item.antes
+    d.ini, !item.obj.dono && item.obj.mudadono(s)
+  efim
+  !perso.dono && perso.mudadono(s)
   temposair # Acerta tempo para sair do MUD
   $mens.p(perso)
   $mens.mvis2("", "$P chegou.")
@@ -926,8 +932,7 @@ func ex2_exec # Coloca na sala se necesário e chama evento cmd_sav dos objetos
   ref r
   debug d
   enquanto l.objfim
-    r = l.objfim, l.fim.remove, !r.dono && r.mudadono(perso.dono)
-    r.cmd_sav(perso), d.ini
+    r = l.objfim, l.fim.remove, r.cmd_sav(perso), d.ini
   efim
   apagar(este)
 

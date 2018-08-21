@@ -39,11 +39,11 @@ func escr # Executa o comando
 # Anda
   txt100 dir1
   ref obj = arg0 # Personagem ou item que vai mover em uma direção
-  ret arg0.posicao == 7, arg0.msg(arg0.erropos) # Lutando
   se arg0.posicao == 6 # Sentado
     obj = arg0.poslugar.objlista
-    ret obj.perso ? obj.iseguir.obj != arg0 : !obj.i_mover, arg0.msg(arg0.erropos)
+    ret obj.perso ? obj.iseguir.objlista != arg0 : !obj.i_mover, arg0.msg(arg0.erropos)
   fimse
+  ret obj.posicao < 8, arg0.msg(arg0.erropos)
   se !arg0.jog || rand($miscfome.bebedir, $miscfome.cheio) > arg0.p_bebida
     dir1 = dir
     refvar saladest = obj.dono.dirsala(dir1, obj)
@@ -202,11 +202,14 @@ func mover # Personagem anda em uma direção
   casofim
 # Seguir
   epara l.addfim(arg0.lseguir), l, l.ini.remove
-    continuar l.objini.posicao < 8 || l.objini.dono != s1
-    continuar $comando_mover.lseg.possui(l.objini)
-    continuar !arg0.visivel(l.objini) || !s1.visivel(l.objini)
-    $mens.mp(comando_mover_cfg:m_seguir, l.objini, arg0)
-    mover(l.objini, arg1, arg2, arg3)
+    se l.objini.posicao < 8 || l.objini.dono != s1
+    senao $comando_mover.lseg.possui(l.objini)
+    senao l.objini.tseguir == 3
+      mover(l.objini, arg1, arg2, arg3)
+    senao arg0.visivel(l.objini) && s1.visivel(l.objini)
+      $mens.mp(comando_mover_cfg:m_seguir, l.objini, arg0)
+      mover(l.objini, arg1, arg2, arg3)
+    fimse
   efim
   ret 1
 

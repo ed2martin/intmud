@@ -300,12 +300,12 @@ arg2 = item, ou a munição
 arg3 = quantidade do item (um número)
 arg4 = origem do evento: arg0, arg1 ou arg2
 
-func cmd_pegouanim
-func cmd_domouanim
-func cmd_soltouanim
-func cmd_deuanim
-arg0 = personagem pegou (ir para comando Animal),
-       domou (continua na sala), soltou ou deu algum animal
+func cmd_pegouanim # Pegou/domou animal (passa a ser do jogador)
+func cmd_despediuanim # Despediu do animal (passa a não ser do jogador)
+func cmd_soltouanim # Soltou animal (vai do comando Animal para a sala)
+func cmd_chamouanim # Chamou animal (vai da sala para o comando Animal)
+func cmd_deuanim # Deu animal para outro personagem
+arg0 = personagem fez a ação
 arg1 = sala
 arg2 = animal
 arg3 = origem do evento: arg0, arg1 ou arg2
@@ -505,12 +505,12 @@ arg2 = item, ou a munição
 arg3 = quantidade (um número)
 arg4 = origem do evento: arg0, arg1 ou arg2
 
-func cmd_pegaranim
-func cmd_domaranim
-func cmd_soltaranim
-func cmd_daranim
-arg0 = personagem que quer pegar (ir para comando Animal),
-       domar (continua na sala), soltar ou dar algum animal
+func cmd_pegaranim # Pegar/domar animal (passa a ser do jogador)
+func cmd_despediranim # Despedir do animal (passa a não ser do jogador)
+func cmd_soltaranim # Soltar animal (vai do comando Animal para a sala)
+func cmd_chamaranim # Chamar animal (vai da sala para o comando Animal)
+func cmd_daranim # Dar animal para outro personagem
+arg0 = personagem quer fazer a ação
 arg1 = sala
 arg2 = animal
 arg3 = origem do evento: arg0, arg1 ou arg2
