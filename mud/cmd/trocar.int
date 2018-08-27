@@ -62,31 +62,25 @@ func escr_dar # Dar item para o animal
 # arg0 = personagem
 # arg1 = nome do item
   ret arg0.persoesc == arg0, $mens.mp(m_animal_escolha, arg0)
-  listaobj l
-  nomeobj n # Para reconhecer os itens
-  n.ini(arg1, 1)
-  epara l.addfim(arg0.dentro1), l, l.ini.remove
-    continuar !l.objini.visivel(arg0) || !n.nome(l.objini.ident, l.objini.objtot)
-    refvar env = ref(l.objini)
-    refvar rec = ref(arg0.persoesc.dentro1.ini.obj)
-    se env.objnum >> 1 > 1 # Animal não carrega objetos com coisas dentro
-      $mens.mp(m_animal_cheio, arg0, arg0.persoesc, env)
-    senao !rec # Se animal não está carregando nada
-      env.mudadono(arg0.persoesc, 1)
-      $mens.p(arg0, arg0.persoesc, env)
-      $mens.mvis2(m_dar1, m_dar2)
-    senao !rec.cabedentro(env)
-      $mens.mp(m_animal_cheio, arg0, arg0.persoesc, env)
-    senao
-      env.mudadono(arg0.persoesc, 1)
-      rec.mudadono(arg0, 1)
-      $mens.p(arg0, arg0.persoesc, env, rec)
-      $mens.mvis2(m_pegar_dar1, m_pegar_dar2)
-    fimse
-    ret
-  efim
-  $mens.mens = arg1
-  $mens.mp(m_naover, arg0)
+  ref env = misc:itemdentro(arg0, arg1)
+  ref rec = arg0.persoesc.dentro1.ini.obj
+  se !env
+    $mens.mens = arg1
+    $mens.mp(m_naover, arg0)
+  senao env.objnum >> 1 > 1 # Animal não carrega objetos com coisas dentro
+    $mens.mp(m_animal_cheio, arg0, arg0.persoesc, env)
+  senao !rec # Se animal não está carregando nada
+    env.mudadono(arg0.persoesc, 1)
+    $mens.p(arg0, arg0.persoesc, env)
+    $mens.mvis2(m_dar1, m_dar2)
+  senao !rec.cabedentro(env)
+    $mens.mp(m_animal_cheio, arg0, arg0.persoesc, env)
+  senao
+    env.mudadono(arg0.persoesc, 1)
+    rec.mudadono(arg0, 1)
+    $mens.p(arg0, arg0.persoesc, env, rec)
+    $mens.mvis2(m_pegar_dar1, m_pegar_dar2)
+  fimse
 
 func escr_trocar # Trocar dois animais de lugar
 # arg0 = personagem

@@ -9,18 +9,10 @@ Sem argumentos, mostra informações sobre a sala aonde você está."
 func escr
   ret !arg1, info(arg0.dono, arg0.sock.txtmais) + arg0.sock.txtmostra
   listaobj l
-  ref r
-  nomeobj n # Para reconhecer os itens
-  n.ini(arg1, 1000000)
-  r = arg0
-  l.addfim(r.dono.dentro1, r.dono.dentro2, r.dentro1)
-  enquanto l
-    r = l.objini, l.ini.remove
-    continuar !r.visivel(arg0) || !n.nome(r.ident, r.objtot)
-    info(r, arg0.sock.txtmais), arg0.sock.txtmostra
-    ret
-  efim
-  arg0.msg("\bNão há nenhum item ou personagem chamado " + arg1)
+  l.addfim(arg0.dono.dentro1, arg0.dono.dentro2, arg0.dentro1)
+  ref r = misc:itemlista(arg0, arg1, l)
+  ret !r, arg0.msg("\bNão há nenhum item ou personagem chamado " + arg1)
+  info(r, arg0.sock.txtmais), arg0.sock.txtmostra
 
 func cabe # Cabeçalho: o nome do item/personagem/sala a partir da classe
 # arg0 = nome ou objeto da classe

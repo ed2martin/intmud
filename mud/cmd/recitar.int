@@ -10,18 +10,12 @@ const posic = 5
 
 func escr
   listaobj l
-  nomeobj n # Para reconhecer os itens
 # Obtém o objeto
   misc:separa(arg1) # Separa nome do objeto do nome do alvo
-  n.ini(misc:sep1, 1)
   txt100 nome
   nome = misc:sep2
   ret !arg1, arg0.msg("Recitar o quê?")
-  epara l.addfim(arg0.dentro1), l, l.ini.remove
-    sair l.objini.visivel(arg0) && n.nome(l.objini.ident, l.objini.objtot)
-  efim
-  ref r
-  r = l.objini
+  ref r = misc:itemdentro(arg0, misc:sep1)
 # Checa se consegue recitar
   se !r
     ret arg0.msg("Você não vê isso.")
@@ -37,7 +31,6 @@ func escr
     ret f, arg0.msg(f)
   fimse
 # Eventos
-  l.limpar
   epara l.addfim(arg0.evento), l, l.ini.remove
     ret l.objini.cmd_recitar(arg0, r, arg0), nulo
   efim

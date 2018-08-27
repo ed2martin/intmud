@@ -7,8 +7,9 @@ const m_espaco = "Não tem espaço para seguir nessa direção."
 const m_flutuando = "Você não consegue porque não está flutuando."
 const m_cansado = "Você está cansad$s demais."
 const m_seguir = "Você segue $a."
+const m_ignorar = "$A não quer obedecer."
 const admordem = "m_impossivel m_portafechada m_itemfechado m_espaco m_flutuando\n\
-m_cansado m_seguir"
+m_cansado m_seguir m_ignorar"
 
 
 classe comando_mover
@@ -41,7 +42,13 @@ func escr # Executa o comando
   ref obj = arg0 # Personagem ou item que vai mover em uma direção
   se arg0.posicao == 6 # Sentado
     obj = arg0.poslugar.objlista
-    ret obj.perso ? obj.iseguir.objlista != arg0 : !obj.i_mover, arg0.msg(arg0.erropos)
+    se !obj.perso # Não é personagem
+      ret !obj.i_mover, arg0.msg(arg0.erropos)
+    senao obj.tseguir == 3 # Animal tem dono
+      ret obj.iseguir.objlista != arg0, $mens.mp(comando_mover_cfg:m_ignorar, arg0, obj)
+    senao int(obj.p_montar_tipo) < 3 # Animal não tem dono e não obedece
+      ret $mens.mp(comando_mover_cfg:m_ignorar, arg0, obj)
+    fimse
   fimse
   ret obj.posicao < 8, arg0.msg(arg0.erropos)
   se !arg0.jog || rand($miscfome.bebedir, $miscfome.cheio) > arg0.p_bebida
@@ -657,6 +664,12 @@ const nome7 = "Seguir"
 const tipo7 = "opc_linha"
 const clas7 = "comando_mover_cfg"
 const vari7 = "m_seguir"
+#
+const nome8 = "Animal não obede"
+const info8 = "Quando está montado em um animal"
+const tipo8 = "opc_linha"
+const clas8 = "comando_mover_cfg"
+const vari8 = "m_ignorar"
 
 
 classe menu_mover_comum

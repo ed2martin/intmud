@@ -35,20 +35,10 @@ func escrobj # Abrir um item
   nomeobj n # Para reconhecer os itens
 # Procura o item
   ret !arg1, $mensjog.msg(m_sem_args, arg0)
-  n.ini(arg1, 1)
-  epara i = arg0.dono.dentro1.ini, i, i.depois
-    sair i.obj.visivel(arg0) && n.nome(i.obj.ident, i.obj.objtot)
-  efim
-  se !i
-    epara i = arg0.dentro1.ini, i, i.depois
-      sair i.obj.visivel(arg0) && n.nome(i.obj.ident, i.obj.objtot)
-    efim
-    $mens.mens = arg1
-    ret !i, $mens.mp(m_naover, arg0)
-  fimse
+  ref r = misc:itemdono(arg0, arg1) ?? misc:itemdentro(arg0, arg1)
+  $mens.mens = arg1
+  ret !r, $mens.mp(m_naover, arg0)
 # Checa se está aberto
-  ref r
-  r = i.obj
   casovar r.i_aberto
   casose "2"
     ret $mens.mp(m_item_aberto, arg0, nulo, r)

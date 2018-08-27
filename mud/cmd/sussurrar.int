@@ -14,7 +14,7 @@ const m_ignorou = "$A ignora suas palavras."
 const m_naover = "Você não vê $m."
 const m_perso1 = "Você sussurrou algumas palavras."
 const m_perso2 = "$P sussurrou algumas palavras."
-const m_msg1 = "Você sussurrou algumas palavras."
+const m_msg1 = "Você sussurrou para $a '$m'"
 const m_msg2 = "$P sussurrou para $a '$m'"
 const m_msg3 = "$P sussurrou algumas palavras para você."
 const admordem = "m_ajuda m_sem_args m_sem_msg m_ignorar m_ignorou m_naover\n\
@@ -32,46 +32,31 @@ func escr
     refvar f = txt(arg0.dono.s_falar(arg0))
     ret f, arg0.msg(f)
   fimse
-  $mens.mens = ""
-  $mens.p(arg0)
-  nomeobj n
-  listaobj l
-  n.ini(txt1(arg1), 1)
-  l.addfim(arg0.dono.dentro2)
-  epara nulo, l, l.ini.remove
-    continuar !l.objini.visivel(arg0) || !n.nome(l.objini.ident, l.objini.objtot)
-    se l.objini.var.u_[arg0.nome]
-      ret $mens.mp(m_ignorou, arg0, l.objini)
-    senao arg0.var.u_[l.objini.nome]
-      ret $mens.mp(m_ignorar, arg0, l.objini)
-    senao arg0 == l.objini
-      $misclog.telepatia("suss " + arg0.nome + " para " + l.objini.nome + ": " + txt2(arg1))
-      $mens.p(arg0, arg0)
-      $mens.mens = txt2(arg1)
-      $mens.mtodos2(m_perso1, m_perso2)
-    senao
-      $misclog.telepatia("suss " + arg0.nome + " para " + l.objini.nome + ": " + txt2(arg1))
-      $mens.p(arg0, l.objini)
-      $mens.mens = $miscbebida.msgperso(txt2(arg1), arg0.p_bebida)
-      $mens.mtodos3(m_msg1, m_msg2, m_msg3)
-    fimse
-    sair
-  efim
+  $mens.mens = txt1(arg1)
+  ref r = misc:persodono(arg0, txt1(arg1))
+  ret !r, $mens.mp(m_naover, arg0)
+  se r.var.u_[arg0.nome]
+    ret $mens.mp(m_ignorou, arg0, r)
+  senao arg0.var.u_[r.nome]
+    ret $mens.mp(m_ignorar, arg0, r)
+  senao arg0 == r
+    $misclog.telepatia("suss " + arg0.nome + " para " + r.nome + ": " + txt2(arg1))
+    $mens.p(arg0, arg0)
+    $mens.mens = txt2(arg1)
+    $mens.mtodos2(m_perso1, m_perso2)
+  senao
+    $misclog.telepatia("suss " + arg0.nome + " para " + r.nome + ": " + txt2(arg1))
+    $mens.p(arg0, r)
+    $mens.mens = $miscbebida.msgperso(txt2(arg1), arg0.p_bebida)
+    $mens.mtodos3(m_msg1, m_msg2, m_msg3)
+  fimse
 # Executa eventos
-  ref r
-  r = l.objini
-  l.remove
   epara l.addfim(arg0.evento), l, l.ini.remove
     l.objini.cmd_sussurrou(arg0, r, arg1, arg0)
   efim
   epara l.addfim(r.evento), l, l.ini.remove
     l.objini.cmd_sussurrou(arg0, r, arg1, r)
   efim
-# Mensagem se não encontrou o personagem
-  se !r
-    $mensjog.mens = txt1(arg1)
-    $mensjog.msg(m_naover, arg0)
-  fimse
 
 
 classe m_cmd_sussurrar

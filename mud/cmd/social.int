@@ -1,27 +1,40 @@
-classe cmd_social
+classe h_cmd_social
 herda comando_comum
 const objnivel = 6
-const txtajuda = "\b\c3Social\b\n\
-Sintaxe: SOCIAL  [nome do comando]\n\
-Sem argumentos, mostra a lista de comandos sociais disponíveis.\n\
-Seguido do nome do social mostra as mensagens que o social emitirá.\n\n\
-Os comandos sociais são usados para interpretação entre personagens.\n\
-São comandos que enviam uma mensagem para os personagens na mesma sala,\n\
-mas não causam nenhum dano nos personagens e/ou itens envolvidos."
+const txtajuda = txtajuda1 + m_ajuda
+const txtajuda1 = "\b\c3Social\b\nSintaxe: SOCIAL  [nome do comando]\n"
 const posic = 0
 const o1 = $cmd2_socialX
 const o2 = $cmd2_socialY
 const o3 = $cmd2_socialZ
+#
+const m_ajuda = "Sem argumentos, mostra a lista de comandos sociais disponíveis.\n\
+Seguido do nome do social mostra as mensagens que o social emitirá.\n\n\
+Os comandos sociais são usados para interpretação entre personagens.\n\
+São comandos que enviam uma mensagem para os personagens na mesma sala,\n\
+mas não causam nenhum dano nos personagens e/ou itens envolvidos."
+const m_lista_vazia = "Nenhum comando social disponível."
+const m_lista_soc = "Comandos sociais disponíveis:"
+const m_naoexiste = "Comando social não existe: $m"
+#
+const m_sem_args = "Digite alguma coisa após $m"
+const m_ignorar = "Você está ignorando %c."
+const m_ignorado = "$C ignora suas palavras."
+const m_condicoes1 = "Você não está em condições."
+const m_condicoes2 = "$A não está em condições."
+const admordem = "m_ajuda m_lista_soc m_naoexiste\n\
+m_sem_args m_ignorar m_ignorado m_condicoes1 m_condicoes2"
 
 func escr
   ret arg1, escr_arg(arg0, arg1)
+  $mens.mens = arg1
   textotxt t
   prog p
   epara p.iniclasse("soc_"), p.lin, p.depois
     arg0.pnivel >= $[p.texto].nivel && t.addfim(txt2(txte(p.texto)))
   efim
-  ret t.linhas == 0, arg0.msg("Nenhum comando social disponível.")
-  t.addfim("Comandos sociais disponíveis:\n" + txttroca(t.remove(1000), "\n", ", "))
+  ret t.linhas == 0, $mens.mp(m_lista_vazia, arg0)
+  t.addfim(m_lista_soc + "\n" + txttroca(t.remove(1000), "\n", ", "))
   t.dividelin(50, 75)
   arg0.msg2(t.remove(1000))
 
@@ -32,7 +45,7 @@ func escr_arg # Com algum argumento
   epara p.iniclasse("soc_" + arg1), p.lin, p.depois
     sair arg0.pnivel >= $[p.texto].nivel
   efim
-  ret !p.lin, arg0.msg("Comando social não existe: " + arg1)
+  ret !p.lin, $mens.mp(m_naoexiste, arg0)
   r = $[p.texto]
   refvar nome = txt2(txte(r)) # Nome do comando
   refvar msgini = "\nSe " + o1.descnome + " digitar " + nome
@@ -113,13 +126,18 @@ const invalido = "Você não vê $m."
 # const perso2 = perso1
 # const perso3 = perso1
 # const item2 = item1
+const admordem = "nivel posic alvopos mvis invalido sem1 sem2 auto1 auto2\n\
+perso1 perso2 perso3 item1 item2"
 
 func escr
   $mens.mens = arg1
   listaobj l
   ret arg2.c_social, $mensjog.msg(arg2.c_social, arg0)
   se !arg1 # Sem argumentos
-    ret !sem1, arg0.msg("Digite alguma coisa após " + txt(este, 4))
+    se !sem1
+      $mens.mens = txt(este, 4)
+      $mens.mp(h_cmd_social:m_sem_args, arg0)
+    fimse
     $mens.p(arg0)
     mvis ? $mens.mtodos2(sem1, sem2) : $mens.mvis2(sem1, sem2)
     epara l.addfim(arg0.evento, este), l, l.ini.remove
@@ -127,39 +145,83 @@ func escr
     efim
     ret
   fimse
-  nomeobj n
-  ref r
-  n.ini(arg1, 1)
   perso1 && l.addfim(arg0.dono.dentro2)
   item1 && l.addfim(arg0.dono.dentro1, arg0.dentro1)
-  epara nulo, l, l.ini.remove
-    r = l.objini
-    continuar !r.visivel(arg0) || !n.nome(r.ident)
-    se r.var.u_[arg0.nome]
-      ret arg0.msg(r.nome + " ignora suas palavras.")
-    senao arg0.var.u_[r.nome]
-      ret arg0.msg("Você está ignorando " + r.nome + ".")
-    senao r == arg0 && auto1
-      ret r.posic < alvopos, arg0.msg("Você não está em condições.")
-      $mens.p(arg0)
-      mvis ? $mens.mtodos2(auto1, auto2) : $mens.mvis2(auto1, auto2)
-    senao r.perso
-      $mens.p(arg0, r)
-      ret r.posic < alvopos, $mens.msg("$A não está em condições.", arg0)
-      mvis ? $mens.mtodos3(perso1, perso2, perso3) : $mens.mvis3(perso1, perso2, perso3)
-    senao
-      $mens.p(arg0, nulo, r)
-      mvis ? $mens.mtodos2(item1, item2) : $mens.mvis2(item1, item2)
-    fimse
-    l.limpar
-    cmd_social(arg0, r, este)
-    epara l.addfim(arg0.evento), l, l.ini.remove
-      l.objini.cmd_social(arg0, r, este, arg0)
-    efim
-    epara l.addfim(r.evento), l, l.ini.remove
-      l.objini.cmd_social(arg0, r, este, r)
-    efim
-    ret
+  ref r = misc:itemlista(arg0, arg1, l)
+  ret !r, $mens.mp(invalido, arg0)
+  l.limpar
+  se r.var.u_[arg0.nome]
+    $mens.mp(h_cmd_social:m_ignorado, arg0, r)
+  senao arg0.var.u_[r.nome]
+    ret $mens.mp(h_cmd_social:m_ignorar, arg0, r)
+  senao r == arg0 && auto1
+    ret r.posic < alvopos, $mens.mp(h_cmd_social:m_condicoes1, arg0, r)
+    $mens.p(arg0)
+    mvis ? $mens.mtodos2(auto1, auto2) : $mens.mvis2(auto1, auto2)
+  senao r.perso
+    ret r.posic < alvopos, $mens.mp(h_cmd_social:m_condicoes2, arg0, r)
+    $mens.p(arg0, r)
+    mvis ? $mens.mtodos3(perso1, perso2, perso3) : $mens.mvis3(perso1, perso2, perso3)
+  senao
+    $mens.p(arg0, nulo, r)
+    mvis ? $mens.mtodos2(item1, item2) : $mens.mvis2(item1, item2)
+  fimse
+  cmd_social(arg0, r, este)
+  epara l.addfim(arg0.evento), l, l.ini.remove
+    l.objini.cmd_social(arg0, r, este, arg0)
   efim
-  $mens.p(arg0)
-  $mens.msg(invalido, arg0)
+  epara l.addfim(r.evento), l, l.ini.remove
+    l.objini.cmd_social(arg0, r, este, r)
+  efim
+  ret
+
+
+classe m_cmd_social
+herda comando_menu_cmd
+#
+const nome1 = "Ajuda"
+const tipo1 = "opc_texto"
+const clas1 = "cmd_social"
+const vari1 = "m_ajuda"
+#
+const nome2 = "Nenhum comando"
+const tipo2 = "opc_linha"
+const clas2 = "cmd_social"
+const vari2 = "m_lista_vazia"
+#
+const nome3 = "Comandos sociais"
+const tipo3 = "opc_linha"
+const clas3 = "cmd_social"
+const vari3 = "m_lista_soc"
+#
+const nome4 = "Comando não existe"
+const tipo4 = "opc_linha"
+const clas4 = "cmd_social"
+const vari4 = "m_naoexiste"
+#
+const titu5 = "Nos comandos sociais"
+#
+const nome5 = "Sem argumentos"
+const tipo5 = "opc_linha"
+const clas5 = "cmd_social"
+const vari5 = "m_sem_args"
+#
+const nome6 = "Ignorando"
+const tipo6 = "opc_linha"
+const clas6 = "cmd_social"
+const vari6 = "m_ignorar"
+#
+const nome7 = "Ignorado"
+const tipo7 = "opc_linha"
+const clas7 = "cmd_social"
+const vari7 = "m_ignorado"
+#
+const nome8 = "Perso sem condições"
+const tipo8 = "opc_linha"
+const clas8 = "cmd_social"
+const vari8 = "m_condicoes1"
+#
+const nome9 = "Alvo sem condições"
+const tipo9 = "opc_linha"
+const clas9 = "cmd_social"
+const vari9 = "m_condicoes2"

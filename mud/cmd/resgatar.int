@@ -5,41 +5,36 @@ const txtajuda = "\b\c3Resgatar\b\n\
 Sintaxe: RESGATAR <personagem>\n\
 Resgata um jogador em uma batalha. É como se você se colocasse entre\n\
 o jogador e quem está atacando ele."
+const m_naover = "Você não vê $m."
 
 func escr
   ret arg0.dono.s_naoresg, arg0.msg("Aqui não é possível resgatar.")
   ret !arg1, arg0.msg("Resgatar quem?")
-  nomeobj n
   listaitem i
-  n.ini(arg1, 1)
-  epara i = arg0.dono.dentro2.ini, i, i.depois
-    continuar !i.obj.visivel(arg0) || !n.nome(i.obj.ident)
-    ref r = i.obj
-# Checa se é possível resgatar
-    ret arg0 == r, $mens.mp("Resgatar você mesm$s?", arg0)
-    ret !r.jog, $mens.mp("$A não é jogador.", arg0, r)
-    ret !r.atkrec.objini, $mens.mp("$A não está lutando.", arg0, r)
-    ret r.atkenv.objlista == arg0, $mens.mp("$A está lutando com você.", arg0, r)
-# Checa se personagens permitem resgate
-    epara i = r.atkrec.ini, i, i.depois
-      continuar !i.obj.p_naoresg
-      ret $mens.mp("Não é possível resgatar $a de $o.", arg0, r, i.obj)
-    efim
-# Eventos
-    listaobj l
-    epara l.addfim(arg0.evento), l, l.ini.remove
-      ret l.objini.cmd_resgatar(arg0, r, arg0), nulo
-    efim
-    epara l.addfim(r.evento), l, l.ini.remove
-      ret l.objini.cmd_resgatar(arg0, r, r), nulo
-    efim
-# Resgata
-    enquanto r.atkrec.objini
-      r.atkrec.objini.batalhaini(arg0)
-    efim
-    $mens.p(arg0, r)
-    $mens.mvis1("$P resgata $a.")
-    ret
-  efim
   $mens.mens = arg1
-  $mens.mp("Você não vê $m.", arg0)
+  ref r = misc:persodono(arg0, arg1)
+  ret !r, $mens.mp(m_naover, arg0)
+# Checa se é possível resgatar
+  ret arg0 == r, $mens.mp("Resgatar você mesm$s?", arg0)
+  ret !r.jog, $mens.mp("$A não é jogador.", arg0, r)
+  ret !r.atkrec.objini, $mens.mp("$A não está lutando.", arg0, r)
+  ret r.atkenv.objlista == arg0, $mens.mp("$A está lutando com você.", arg0, r)
+# Checa se personagens permitem resgate
+  epara i = r.atkrec.ini, i, i.depois
+    continuar !i.obj.p_naoresg
+    ret $mens.mp("Não é possível resgatar $a de $o.", arg0, r, i.obj)
+  efim
+# Eventos
+  listaobj l
+  epara l.addfim(arg0.evento), l, l.ini.remove
+    ret l.objini.cmd_resgatar(arg0, r, arg0), nulo
+  efim
+  epara l.addfim(r.evento), l, l.ini.remove
+    ret l.objini.cmd_resgatar(arg0, r, r), nulo
+  efim
+# Resgata
+  enquanto r.atkrec.objini
+    r.atkrec.objini.batalhaini(arg0)
+  efim
+  $mens.p(arg0, r)
+  $mens.mvis1("$P resgata $a.")

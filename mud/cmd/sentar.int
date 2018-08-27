@@ -156,14 +156,9 @@ func escr
   casofim
 # Obtém aonde quer descansar
   se arg1
-    listaitem i # Para procurar o item
-    nomeobj n # Para reconhecer os itens
-    n.ini(arg1, 1)
-    epara i = arg0.dono.dentro1.ini, i, i.depois
-      sair i.obj.visivel(arg0) && n.nome(i.obj.ident, i.obj.objtot)
-    efim
-    ret r && r != i.obj, $mens.mp(m_levantar, arg0)
-    r = i.obj
+    ref i = misc:itemdono(arg0, arg1)
+    ret r && r != i, $mens.mp(m_levantar, arg0)
+    r = i
   fimse
   listaobj l
 # Descansar em algum objeto

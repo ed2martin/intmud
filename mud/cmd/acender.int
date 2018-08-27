@@ -19,52 +19,43 @@ m_acendefogo m_acendeusar m_acende1 m_acende2"
 
 func escr
   listaobj l
-  nomeobj n # Para reconhecer os itens
   textotxt nomes # Nomes dos itens pegos
   ret !arg1, $mensjog.msg(m_sem_args, arg0)
-  n.ini(arg1, 1)
-  epara l.addfim(arg0.dentro1, arg0.dono.dentro1), l, l.ini.remove
-    continuar !l.objini.visivel(arg0) || !n.nome(l.objini.ident, l.objini.objtot)
-    ref r
-    r = l.objini
-# Checa se pode acender
-    se !r.luzitem || r.luzitem == 3
-      ret $mens.mp(m_naoconsegue, arg0, nulo, r)
-    senao !r.luztempo
-      ret $mens.mp(m_naoacende, arg0, nulo, r)
-    senao r.luztempo > 0
-      ret $mens.mp(m_estaaceso, arg0, nulo, r)
-    senao r.luzitem == 6 # Se requer fogo para acender
-      l.limpar
-      epara l.addfim(arg0.dentro1, arg0.dono.dentro1), l, l.ini.remove
-        sair int(l.objini.luzitem) >= 3 && int(l.objini.luztempo) > 0
-      efim
-      ret !l.objini, $mens.mp(m_acendefogo, arg0, nulo, r)
-    senao r.luzitem == 7 # Se acende ao vestir
-      ret $mens.mp(m_acendeusar, arg0, nulo, r)
-    fimse
-# Eventos
-    l.limpar
-    epara l.addfim(arg0.evento), l, l.ini.remove
-      ret l.objini.cmd_acender(arg0, r, arg0), nulo
-    efim
-    epara l.addfim(r.evento), l, l.ini.remove
-      ret l.objini.cmd_acender(arg0, r, r), nulo
-    efim
-# Acende
-    r.luztempo.pos, r.recalc = 1, r.ajustapeso
-    $mens.p(arg0, nulo, r)
-    $mens.mvis2(r.luzliga1 ?? m_acende1, r.luzliga2 ?? m_acende2)
-    epara l.addfim(arg0.evento), l, l.ini.remove
-      l.objini.cmd_acendeu(arg0, r, arg0)
-    efim
-    epara l.addfim(r.evento), l, l.ini.remove
-      l.objini.cmd_acendeu(arg0, r, r)
-    efim
-    ret
-  efim
   $mens.mens = arg1
-  $mens.mp(m_naover, arg0)
+  ref r = misc:itemtudo(arg0, arg1)
+  ret !r, $mens.mp(m_naover, arg0)
+# Checa se pode acender
+  se !r.luzitem || r.luzitem == 3
+    ret $mens.mp(m_naoconsegue, arg0, nulo, r)
+  senao !r.luztempo
+    ret $mens.mp(m_naoacende, arg0, nulo, r)
+  senao r.luztempo > 0
+    ret $mens.mp(m_estaaceso, arg0, nulo, r)
+  senao r.luzitem == 6 # Se requer fogo para acender
+    epara l.addfim(arg0.dentro1, arg0.dono.dentro1), l, l.ini.remove
+      sair int(l.objini.luzitem) >= 3 && int(l.objini.luztempo) > 0
+    efim
+    ret !l.objini, $mens.mp(m_acendefogo, arg0, nulo, r)
+  senao r.luzitem == 7 # Se acende ao vestir
+    ret $mens.mp(m_acendeusar, arg0, nulo, r)
+  fimse
+# Eventos
+  epara l.addfim(arg0.evento), l, l.ini.remove
+    ret l.objini.cmd_acender(arg0, r, arg0), nulo
+  efim
+  epara l.addfim(r.evento), l, l.ini.remove
+    ret l.objini.cmd_acender(arg0, r, r), nulo
+  efim
+# Acende
+  r.luztempo.pos, r.recalc = 1, r.ajustapeso
+  $mens.p(arg0, nulo, r)
+  $mens.mvis2(r.luzliga1 ?? m_acende1, r.luzliga2 ?? m_acende2)
+  epara l.addfim(arg0.evento), l, l.ini.remove
+    l.objini.cmd_acendeu(arg0, r, arg0)
+  efim
+  epara l.addfim(r.evento), l, l.ini.remove
+    l.objini.cmd_acendeu(arg0, r, r)
+  efim
 
 
 classe h_cmd_apagar
@@ -84,42 +75,34 @@ const admordem = "m_ajuda m_sem_args m_naover m_naoconsegue m_apagado m_apaga1 m
 
 func escr
   listaobj l
-  nomeobj n # Para reconhecer os itens
   textotxt nomes # Nomes dos itens pegos
   ret !arg1, $mensjog.msg(m_sem_args, arg0)
-  n.ini(arg1, 1)
-  epara l.addfim(arg0.dentro1, arg0.dono.dentro1), l, l.ini.remove
-    continuar !l.objini.visivel(arg0) || !n.nome(l.objini.ident, l.objini.objtot)
-    ref r
-    r = l.objini
-# Checa se pode apagar
-    se !r.luzitem || r.luzitem == 3
-      ret $mens.mp(m_naoconsegue, arg0, nulo, r)
-    senao !r.luztempo || r.luztempo < 0
-      ret $mens.mp(m_apagado, arg0, nulo, r)
-    fimse
-# Eventos
-    l.limpar
-    epara l.addfim(arg0.evento), l, l.ini.remove
-      ret l.objini.cmd_apagar(arg0, r, arg0), nulo
-    efim
-    epara l.addfim(r.evento), l, l.ini.remove
-      ret l.objini.cmd_apagar(arg0, r, r), nulo
-    efim
-# Apaga
-    r.luztipo == 5 ? (r.luztempo = 0) : r.luztempo.neg, r.recalc = 1, r.ajustapeso
-    $mens.p(arg0, nulo, r)
-    $mens.mvis2(m_apaga1, m_apaga2)
-    epara l.addfim(arg0.evento), l, l.ini.remove
-      l.objini.cmd_apagou(arg0, r, arg0)
-    efim
-    epara l.addfim(r.evento), l, l.ini.remove
-      l.objini.cmd_apagou(arg0, r, r)
-    efim
-    ret
-  efim
   $mens.mens = arg1
-  $mens.mp(m_naover, arg0)
+  ref r = misc:itemtudo(arg0, arg1)
+  ret !r, $mens.mp(m_naover, arg0)
+# Checa se pode apagar
+  se !r.luzitem || r.luzitem == 3
+    ret $mens.mp(m_naoconsegue, arg0, nulo, r)
+  senao !r.luztempo || r.luztempo < 0
+    ret $mens.mp(m_apagado, arg0, nulo, r)
+  fimse
+# Eventos
+  epara l.addfim(arg0.evento), l, l.ini.remove
+    ret l.objini.cmd_apagar(arg0, r, arg0), nulo
+  efim
+  epara l.addfim(r.evento), l, l.ini.remove
+    ret l.objini.cmd_apagar(arg0, r, r), nulo
+  efim
+# Apaga
+  r.luztipo == 5 ? (r.luztempo = 0) : r.luztempo.neg, r.recalc = 1, r.ajustapeso
+  $mens.p(arg0, nulo, r)
+  $mens.mvis2(m_apaga1, m_apaga2)
+  epara l.addfim(arg0.evento), l, l.ini.remove
+    l.objini.cmd_apagou(arg0, r, arg0)
+  efim
+  epara l.addfim(r.evento), l, l.ini.remove
+    l.objini.cmd_apagou(arg0, r, r)
+  efim
 
 
 

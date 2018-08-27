@@ -13,11 +13,12 @@ const m_auto = "Montar em você mesm$s?"
 const m_perso_dono = "Você não é $s don$s $d $a."
 const m_perso_nao = "Não é possível montar $e $a."
 const m_perso_cheio = "Não cabe mais ninguém $e $a."
+const m_hab = "Precisa aprender mais $m para montar $e $a."
 const m_montou1 = "Você montou $e $a."
 const m_montou2 = "$P montou em você."
 const m_montou3 = "$P montou $e $a."
 const admordem = "m_ajuda m_montado m_carregando m_sem_perso m_naover m_auto\n\
-m_perso_dono m_perso_nao m_perso_cheio m_montou1 m_montou2 m_montou3"
+m_perso_dono m_perso_nao m_perso_cheio m_hab m_montou1 m_montou2 m_montou3"
 
 func escr
 # Verifica se pode montar
@@ -26,18 +27,30 @@ func escr
   ret arg0.persolugar.total, $mens.mp(m_carregando, arg0)
   ret !arg1, $mens.mp(m_sem_perso, arg0)
   ref r = misc:persodono(arg0, arg1)
+  refvar lugares = r.p_lugar(arg0)
   se !r
     $mens.mens = arg1
     ret $mens.mp(m_naover, arg0)
   senao r == arg0
     ret $mens.mp(m_auto, arg0, r)
-  senao r.tseguir != 3 || r.iseguir.objlista != arg0
-    ret $mens.mp(m_perso_dono, arg0, r)
-  fimse
-  refvar lugares = r.p_lugar(arg0)
-  se !lugares
+  senao !r.p_montar_tipo || !lugares # Verifica é montaria
     ret $mens.mp(m_perso_nao, arg0, r)
-  senao r != arg0.poslugar.objlista && lugares <= r.persolugar.total
+  senao r.tseguir == 3 # Tem dono
+    se r.iseguir.objlista != arg0
+      ret $mens.mp(m_perso_dono, arg0, r)
+    senao r.p_montar_aulas1 && arg0.var.h_[r.p_montar_hab]_ < r.p_montar_aulas1
+      $mens.mens = r.p_montar_hab
+      ret $mens.mp(m_hab, arg0, r)
+    fimse
+  senao # Não tem dono
+    se r.p_montar_tipo < 2
+      ret $mens.mp(m_perso_dono, arg0, r)
+    senao r.p_montar_aulas2 && arg0.var.h_[r.p_montar_hab]_ < r.p_montar_aulas2
+      $mens.mens = r.p_montar_hab
+      ret $mens.mp(m_hab, arg0, r)
+    fimse
+  fimse
+  se r != arg0.poslugar.objlista && lugares <= r.persolugar.total
     ret $mens.mp(m_perso_cheio, arg0, r)
   fimse
 # Monta
@@ -138,25 +151,30 @@ const tipo8 = "opc_linha"
 const clas8 = "cmd_montar"
 const vari8 = "m_perso_nao"
 #
-const nome9 = "Item cheio"
+const nome9 = "Sem lugar"
 const tipo9 = "opc_linha"
 const clas9 = "cmd_montar"
-const vari9 = "m_perso_nao"
+const vari9 = "m_perso_cheio"
 #
-const nome10 = "Montou perso"
+const nome10 = "Sem conhecimento"
 const tipo10 = "opc_linha"
 const clas10 = "cmd_montar"
-const vari10 = "m_montou1"
+const vari10 = "m_hab"
 #
-const nome11 = "Montou alvo"
+const nome11 = "Montou perso"
 const tipo11 = "opc_linha"
 const clas11 = "cmd_montar"
-const vari11 = "m_montou2"
+const vari11 = "m_montou1"
 #
-const nome12 = "Montou outros"
+const nome12 = "Montou alvo"
 const tipo12 = "opc_linha"
 const clas12 = "cmd_montar"
-const vari12 = "m_montou3"
+const vari12 = "m_montou2"
+#
+const nome13 = "Montou outros"
+const tipo13 = "opc_linha"
+const clas13 = "cmd_montar"
+const vari13 = "m_montou3"
 
 
 classe m_cmd_desmontar
