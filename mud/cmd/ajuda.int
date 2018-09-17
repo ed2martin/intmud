@@ -7,18 +7,18 @@ Os tópicos são:\n\
   \c2MOVER\b     Como movimentar-se no jogo\n\
   \c2COMUNICA\b  Comunicação com outros jogadores\n\
   \c2INFO\b      Informações sobre o seu personagem\n\
-  \c2OBJETO\b    Manuseio de objetos\n"
-const ta2 = "  \c2ANIMAL\b    Manuseio de animais\n"
-const ta3 = "  \c2COMBATE\b   Lutas com outros personagens\n\
+  \c2OBJETO\b    Manuseio de objetos\n\
+  \c2ANIMAL\b    Manuseio de animais\n\
+  \c2COMBATE\b   Lutas com outros personagens\n\
   \c2GRUPO\b     Jogando em grupo\n\
   \c2LOJAS\b     Lojas e professores\n\
   \c2NOMES\b     Digitando nomes de objetos e personagens\n\
   \c2JOG\b       Outros comandos para jogadores\n\
   \c2DIVERSOS\b  Diversos comandos"
-const ta4 = "\nPara ler as páginas de administração tecle \c2ADM\b"
+const ta2 = "\nPara ler as páginas de administração tecle \c2ADM\b"
 
 func txtajuda
-  ret ta1 + (config:animal1 ? ta2) + ta3 + ($perm_[arg0.jogperm].c_adm ? ta4)
+  ret ta1 + ($perm_[arg0.jogperm].c_adm ? ta2)
 
 func escr
   listaobj l

@@ -7,7 +7,7 @@ const posic = 5
 #
 const m_ajuda = "Chama de volta para o comando Animal um animal seu que está solto."
 const m_sem_animal = "Não possui nenhum animal solto."
-const m_montado = "Alguém está montado em $a."
+const m_montado = "$O está montad$u em $a."
 const m_nao_tem = "Você não tem $m."
 const m_chama_solta = "Não é possível chamar $a."
 const m_entra1 = "Você tráz $a de volta."
@@ -21,7 +21,7 @@ func escr
   efim
   ret !i, $mens.mp(m_sem_animal, arg0)
   ref r = i.obj
-  ret r.persolugar, $mens.mp(m_montado, arg0, r)
+  ret r.persolugar, $mens.mp(m_montado, arg0, r, r.persolugar.objini)
   ret r.p_animal != 2, $mens.mp(m_chama_solta, arg0, r)
   chamar(arg0, arg0.dono, r)
 

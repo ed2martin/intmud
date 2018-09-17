@@ -4,14 +4,13 @@ const objcmd = config:animal1 ? este
 const posic = 0
 #
 const m_ajudaI = "  \c2CAPTURAR\b  Pega o animal que está lutando com você.\n\
-  \c2SOLTAR\b    Solta um animal (você se desfaz dele)\n\
-  \c2DAR\b       Dá animal a outro personagem\n\
-  \c2ANIMAL\b    Mostra animais que você possui\n\
-  \c2CHAMAR\b    Traz animal seu da sala para o comando Animal\n\
-  \c2SOLTAR\b    Traz animal seu do comando Animal para a sala\n\
   \c2DESPEDIR\b  Se despede (desfaz) de um animal seu\n\
   \c2MONTAR\b    Monta em um personagem\n\
-  \c2DESMONTAR\b Desmonta de um personagem\n\
+  \c2DESMONTAR\b Desmonta de um personagem"
+const m_ajudaA = "  \c2ANIMAL\b    Mostra animais que você possui\n\
+  \c2DAR\b       Dá animal a outro personagem\n\
+  \c2CHAMAR\b    Traz animal seu da sala para o comando Animal\n\
+  \c2SOLTAR\b    Traz animal seu do comando Animal para a sala\n\
   \c20\b         Não escolhe nenhum animal para batalha\n\
   \c21\b a \c2$m\b     Escolhe um animal seu, de 1 a $m\n\
   \c2TROCAR\b    Dá itens para um animal e troca animais de lugar"
@@ -27,21 +26,22 @@ const admordem = "m_ajudaI m_ajudaR m_ajuda1 m_ajuda2 m_ajuda3 m_ajuda4\n\
 m_sem_animais m_voce m_animais"
 
 func txtajuda
-  ret !config:animal1, nulo
   $mens.p(arg0)
   $mens.mens = config:animal1
   refvar ini = "\b\c3Animais\b\n" + $mens.txt(m_ajudaI, arg0)
   $mens.mens = int(config:animal_n)
+  ret !config:animal1, ini
+  refvar anim = ini + "\n" + $mens.txt(m_ajudaA, arg0)
   se !config:animal2
-    ret ini
+    ret anim
   senao !config:animal_n
-    ret ini + "\n" + $mens.txt(m_ajudaR + "\n" + m_ajuda1, arg0)
+    ret anim + "\n" + $mens.txt(m_ajudaR + "\n" + m_ajuda1, arg0)
   senao config:animal_n > 0
-    ret ini + "\n" + $mens.txt(m_ajudaR + "\n" + m_ajuda2, arg0)
+    ret anim + "\n" + $mens.txt(m_ajudaR + "\n" + m_ajuda2, arg0)
   senao config:animal_n == -1
-    ret ini + "\n" + $mens.txt(m_ajudaR + "\n" + m_ajuda3, arg0)
+    ret anim + "\n" + $mens.txt(m_ajudaR + "\n" + m_ajuda3, arg0)
   senao
-    ret ini + "\n" + $mens.txt(m_ajudaR + "\n" + m_ajuda4, arg0)
+    ret anim + "\n" + $mens.txt(m_ajudaR + "\n" + m_ajuda4, arg0)
   fimse
 
 func escr

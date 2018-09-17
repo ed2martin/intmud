@@ -4,36 +4,57 @@ const posic = 5
 const txtajuda = txtajuda1 + m_ajuda
 const txtajuda1 = "\b\c3Montar\b\nSintaxe: MONTAR <personagem>\n"
 #
-const m_ajuda = "Monta em um personagem."
-const m_montado = "\c9Você já está montad$s.\b"
-const m_carregando = "\c9Você está carregando alguém.\b"
+const m_ajuda = "Monta no personagem especificado. Se você estiver montado em um animal\n\
+seu, esse comando coloca outros personagens na montaria. Nesse caso,\n\
+o personagem especificado deve estar seguindo você."
 const m_sem_perso = "Montar em quem?"
 const m_naover = "Você não vê $m"
-const m_auto = "Montar em você mesm$s?"
+const m_montado = "$A já está montad$t."
+const m_carregando = "Você está carregando alguém."
+const m_perso_car = "$A está carregando alguém."
 const m_perso_dono = "Você não é $s don$s $d $a."
 const m_perso_nao = "Não é possível montar $e $a."
 const m_perso_cheio = "Não cabe mais ninguém $e $a."
+const m_nao_seguir = "$A não está seguindo você."
 const m_hab = "Precisa aprender mais $m para montar $e $a."
 const m_montou1 = "Você montou $e $a."
 const m_montou2 = "$P montou em você."
 const m_montou3 = "$P montou $e $a."
-const admordem = "m_ajuda m_montado m_carregando m_sem_perso m_naover m_auto\n\
-m_perso_dono m_perso_nao m_perso_cheio m_hab m_montou1 m_montou2 m_montou3"
+const m_trouxe1 = "$O montou você $e $a."
+const m_trouxe2 = "$O montou $a em você."
+const m_trouxe3 = "$O montou $p $e $a."
+const admordem = "m_ajuda m_sem_perso m_naover m_montado m_carregando\n\
+m_perso_car m_perso_dono m_perso_nao m_perso_cheio m_nao_seguir\n\
+m_hab m_montou1 m_montou2 m_montou3 m_trouxe1 m_trouxe2 m_trouxe3"
 
 func escr
-# Verifica se pode montar
-  ret arg0.poslugar.obj.perso, $mens.mp(m_montado, arg0) # Já está montado
-  ret arg0.posicao != 8, arg0.msg(arg0.erropos) # Não está em pé
-  ret arg0.persolugar.total, $mens.mp(m_carregando, arg0)
   ret !arg1, $mens.mp(m_sem_perso, arg0)
-  ref r = misc:persodono(arg0, arg1)
-  refvar lugares = r.p_lugar(arg0)
+  ref r = misc:persooutro(arg0, arg1)
   se !r
     $mens.mens = arg1
     ret $mens.mp(m_naover, arg0)
-  senao r == arg0
-    ret $mens.mp(m_auto, arg0, r)
-  senao !r.p_montar_tipo || !lugares # Verifica é montaria
+  senao arg0.poslugar.objlista.perso # Já está montado
+    ref anim = arg0.poslugar.objlista
+    se anim.tseguir != 3 || anim.iseguir.objlista != arg0
+      $mens.mp(m_perso_dono, arg0, anim)
+    senao r.persolugar.total
+      $mens.mp(m_perso_car, arg0, r)
+    senao r.poslugar.obj
+      $mens.mp(m_montado, arg0, r)
+    senao r.iseguir.objlista != arg0
+      $mens.mp(m_nao_seguir, arg0, r)
+    senao anim.p_lugar(r) <= anim.persolugar.total
+      $mens.mp(m_perso_cheio, arg0, anim)
+    senao
+      montar(r, anim, arg0)
+    fimse
+    ret
+  fimse
+# Verifica se pode montar
+  ret arg0.posicao != 8, arg0.msg(arg0.erropos) # Não está em pé
+  ret arg0.persolugar.total, $mens.mp(m_carregando, arg0)
+  refvar lugares = r.p_lugar(arg0)
+  se !r.p_montar_tipo || !lugares # Verifica é montaria
     ret $mens.mp(m_perso_nao, arg0, r)
   senao r.tseguir == 3 # Tem dono
     se r.iseguir.objlista != arg0
@@ -53,24 +74,32 @@ func escr
   se r != arg0.poslugar.objlista && lugares <= r.persolugar.total
     ret $mens.mp(m_perso_cheio, arg0, r)
   fimse
-# Monta
+  montar(arg0, r)
+
+func montar
+# arg0 monta em arg1
+# arg2 = quem fez a montaria ou nulo se arg0 montou sozinho
   listaobj l
   epara l.addfim(arg0.evento), l, l.ini.remove
-    ret l.objini.cmd_montar(arg0, r, arg0), nulo
+    ret l.objini.cmd_montar(arg0, arg1, arg0), nulo
   efim
-  epara l.addfim(r.evento), l, l.ini.remove
-    ret l.objini.cmd_montar(arg0, r, r), nulo
+  epara l.addfim(arg1.evento), l, l.ini.remove
+    ret l.objini.cmd_montar(arg0, arg1, arg1), nulo
   efim
   arg0.poslugar.remove
-  arg0.poslugar = r.persolugar.addfim(arg0)
+  arg0.poslugar = arg1.persolugar.addfim(arg0)
   arg0.posicao = 6
-  $mens.p(arg0, r)
-  $mens.mtodos3(m_montou1, m_montou2, m_montou3)
+  $mens.p(arg0, arg1, arg2)
+  se arg2 && arg2 != arg0
+    $mens.mtodos3(m_trouxe1, m_trouxe2, m_trouxe3)
+  senao
+    $mens.mtodos3(m_montou1, m_montou2, m_montou3)
+  fimse
   epara l.addfim(arg0.evento), l, l.ini.remove
-    l.objini.cmd_montou(arg0, r, arg0)
+    l.objini.cmd_montou(arg0, arg1, arg0)
   efim
-  epara l.addfim(r.evento), l, l.ini.remove
-    l.objini.cmd_montou(arg0, r, r)
+  epara l.addfim(arg1.evento), l, l.ini.remove
+    l.objini.cmd_montou(arg0, arg1, arg1)
   efim
 
 
@@ -82,13 +111,39 @@ const txtajuda1 = "\b\c3Desontar\b\nSintaxe: DESMONTAR\n"
 #
 const m_ajuda = "Desmonta em um personagem."
 const m_desmontado = "Você não está montad$s."
+const m_perso_desm = "$A não está montad$t."
+const m_perso_dono = "Você não é $s don$s $d $a."
 const m_desmontou1 = "Você desmontou $d $a."
 const m_desmontou2 = "$P desmontou $d você."
 const m_desmontou3 = "$P desmontou $d $a."
+const m_tirou1 = "$O desmontou você $d $a."
+const m_tirou2 = "$O desmontou $a de você."
+const m_tirou3 = "$O desmontou $p $d $a."
 
 func escr
-  refvar r = arg0.poslugar.objlista
-  ret !r.perso, $mens.mp(m_desmontado, arg0)
+  refvar montado = arg0.poslugar.objlista.perso
+  se !arg1
+    montado ? desmontar(arg0) : $mens.mp(m_desmontado, arg0)
+    ret
+  fimse
+  ref r = misc:persooutro(arg0, arg1)
+  ref anim = r.poslugar.objlista
+  se !r
+    $mens.mens = arg1
+    $mens.mp(m_naover, arg0)
+  senao !anim.perso
+    $mens.mp(m_perso_desm, arg0, r)
+  senao anim.tseguir != 3 || anim.iseguir.objlista != arg0
+    $mens.mp(m_perso_dono, arg0, anim)
+  senao
+    desmontar(r, arg0)
+  fimse
+
+func desmontar
+# arg0 desmonta
+# arg1 = quem tirou da montaria ou nulo se arg0 desmontou sozinho
+  ref r = arg0.poslugar.objlista
+  ret !r, nulo
   listaobj l
   epara l.addfim(arg0.evento), l, l.ini.remove
     ret l.objini.cmd_desmontar(arg0, r, arg0), nulo
@@ -98,8 +153,12 @@ func escr
   efim
   arg0.poslugar.remove
   arg0.posicao = 8
-  $mens.p(arg0, r)
-  $mens.mtodos3(m_desmontou1, m_desmontou2, m_desmontou3)
+  $mens.p(arg0, r, arg1)
+  se arg1 && arg1 != arg0
+    $mens.mtodos3(m_tirou1, m_tirou2, m_tirou3)
+  senao
+    $mens.mtodos3(m_desmontou1, m_desmontou2, m_desmontou3)
+  fimse
   epara l.addfim(arg0.evento), l, l.ini.remove
     l.objini.cmd_desmontou(arg0, r, arg0)
   efim
@@ -116,30 +175,30 @@ const tipo1 = "opc_texto"
 const clas1 = "cmd_montar"
 const vari1 = "m_ajuda"
 #
-const nome2 = "Está montado"
+const nome2 = "Sem alvo"
 const tipo2 = "opc_linha"
 const clas2 = "cmd_montar"
-const vari2 = "m_montado"
+const vari2 = "m_sem_perso"
 #
-const nome3 = "Carregando alguém"
+const nome3 = "Alvo não existe"
 const tipo3 = "opc_linha"
 const clas3 = "cmd_montar"
-const vari3 = "m_carregando"
+const vari3 = "m_naover"
 #
-const nome4 = "Sem alvo"
+const nome4 = "Está montado"
 const tipo4 = "opc_linha"
 const clas4 = "cmd_montar"
-const vari4 = "m_sem_perso"
+const vari4 = "m_montado"
 #
-const nome5 = "Alvo não existe"
+const nome5 = "Você carregando"
 const tipo5 = "opc_linha"
 const clas5 = "cmd_montar"
-const vari5 = "m_naover"
+const vari5 = "m_carregando"
 #
-const nome6 = "Para si mesmo"
+const nome6 = "Alguém carregando"
 const tipo6 = "opc_linha"
 const clas6 = "cmd_montar"
-const vari6 = "m_auto"
+const vari6 = "m_perso_car"
 #
 const nome7 = "Não é o dono"
 const tipo7 = "opc_linha"
@@ -156,25 +215,45 @@ const tipo9 = "opc_linha"
 const clas9 = "cmd_montar"
 const vari9 = "m_perso_cheio"
 #
-const nome10 = "Sem conhecimento"
+const nome10 = "Não está seguindo"
 const tipo10 = "opc_linha"
 const clas10 = "cmd_montar"
-const vari10 = "m_hab"
+const vari10 = "m_nao_seguir"
 #
-const nome11 = "Montou perso"
+const nome11 = "Sem conhecimento"
 const tipo11 = "opc_linha"
 const clas11 = "cmd_montar"
-const vari11 = "m_montou1"
+const vari11 = "m_hab"
 #
-const nome12 = "Montou alvo"
+const nome12 = "Montou perso"
 const tipo12 = "opc_linha"
 const clas12 = "cmd_montar"
-const vari12 = "m_montou2"
+const vari12 = "m_montou1"
 #
-const nome13 = "Montou outros"
+const nome13 = "Montou alvo"
 const tipo13 = "opc_linha"
 const clas13 = "cmd_montar"
-const vari13 = "m_montou3"
+const vari13 = "m_montou2"
+#
+const nome14 = "Montou outros"
+const tipo14 = "opc_linha"
+const clas14 = "cmd_montar"
+const vari14 = "m_montou3"
+#
+const nome15 = "Trouxe perso"
+const tipo15 = "opc_linha"
+const clas15 = "cmd_montar"
+const vari15 = "m_trouxe1"
+#
+const nome16 = "Trouxe alvo"
+const tipo16 = "opc_linha"
+const clas16 = "cmd_montar"
+const vari16 = "m_trouxe2"
+#
+const nome17 = "Trouxe outros"
+const tipo17 = "opc_linha"
+const clas17 = "cmd_montar"
+const vari17 = "m_trouxe3"
 
 
 classe m_cmd_desmontar
@@ -185,22 +264,47 @@ const tipo1 = "opc_texto"
 const clas1 = "cmd_desmontar"
 const vari1 = "m_ajuda"
 #
-const nome2 = "Está desmontado"
+const nome2 = "Você desmontado"
 const tipo2 = "opc_linha"
 const clas2 = "cmd_desmontar"
 const vari2 = "m_desmontado"
 #
-const nome3 = "Desmontou perso"
+const nome3 = "Alvo desmontado"
 const tipo3 = "opc_linha"
 const clas3 = "cmd_desmontar"
-const vari3 = "m_desmontou1"
+const vari3 = "m_perso_desm"
 #
-const nome4 = "Desmontou alvo"
+const nome4 = "Não é o dono"
 const tipo4 = "opc_linha"
 const clas4 = "cmd_desmontar"
-const vari4 = "m_desmontou2"
+const vari4 = "m_perso_dono"
 #
-const nome5 = "Desmontou outros"
+const nome5 = "Desmontou perso"
 const tipo5 = "opc_linha"
 const clas5 = "cmd_desmontar"
-const vari5 = "m_desmontou3"
+const vari5 = "m_desmontou1"
+#
+const nome6 = "Desmontou alvo"
+const tipo6 = "opc_linha"
+const clas6 = "cmd_desmontar"
+const vari6 = "m_desmontou2"
+#
+const nome7 = "Desmontou outros"
+const tipo7 = "opc_linha"
+const clas7 = "cmd_desmontar"
+const vari7 = "m_desmontou3"
+#
+const nome8 = "Tirou perso"
+const tipo8 = "opc_linha"
+const clas8 = "cmd_desmontar"
+const vari8 = "m_tirou1"
+#
+const nome9 = "Tirou alvo"
+const tipo9 = "opc_linha"
+const clas9 = "cmd_desmontar"
+const vari9 = "m_tirou2"
+#
+const nome10 = "Tirou outros"
+const tipo10 = "opc_linha"
+const clas10 = "cmd_desmontar"
+const vari10 = "m_tirou3"

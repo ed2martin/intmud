@@ -102,7 +102,7 @@ func acertapos # Acerta posição
     senao atkenv
       poslugar.remove, posicao = 7 # lutando
     senao posicao < 4 || posicao == 7
-      poslugar.remove, posicao = pospadr # posição padrão
+      poslugar.remove, posicao = (poslugar ? 6 : pospadr) # posição padrão
     fimse
   casofim
 
@@ -333,8 +333,7 @@ func batalhaexp # Dá experiência a quem estiver atacando o personagem
   fimse
 # Ganha experiência
   ret !v1, nulo
-  refvar exp1 = arg0 * (config:atkexp0 + pnivel * config:atkexp1) * misc:mudaexp / (2000 * \
-v1)
+  refvar exp1 = arg0 * (config:atkexp0 + pnivel * config:atkexp1) * misc:mudaexp / (2000 * v1)
   epara i = l.ini, i, i.depois
     r = i.obj
     v1 = pnivel - r.pnivel
@@ -512,16 +511,19 @@ func morreu # Procedimentos quando morre
     salvar # Salva o jogo
     indiceitem ind
     !ind.obj("un " + txt2(cnome)) && apagar(este) # Sai se o jogador já saiu
-# Animal do jogador: não dá experiência
-  senao dono.jog
-    pvida = 0
-    p_morreu2 && $mens.p(este) + $mens.mtodos1(p_morreu2)
-    dono.escolhebat # Atualiza persobat
-# Outro personagem: dá experiência
+# Está no comando animal: desmaiou
   senao dono.perso
-    pvida = 0, batalhaexp(1.5)
+    pvida = 0
+    !dono.jog && batalhaexp(1.5) # Dá experiência se não for personagem de jogador
     p_morreu2 && $mens.p(este) + $mens.mtodos1(p_morreu2)
     dono.escolhebat # Atualiza persobat
+# Pertence a outro personagem: desmaiou, move para o comando Animal
+  senao p_animal != 1 && tseguir == 3 && iseguir.objlista
+    p_morreu2 && $mens.p(este) + $mens.mtodos1(p_morreu2)
+    ref r = iseguir.objlista
+    pvida = 0, !r.jog && batalhaexp(1.5), batalhafim
+    tseguir = 0, iseguir.remove, mudadono(r)
+# Morre
   senao
     pvida = 0, batalhaexp(1), batalhafim
     p_morreu1 && $mens.p(este) + $mens.mtodos1(p_morreu1)
@@ -627,7 +629,7 @@ func p_proc_exec # Processar comportamento do personagem
       p_proc_atacar(atkenv.objlista)
       ret
     casofim
-  senao tseguir == 3 || (p_montar_tipo == 4 && poslugar) # Se tem alguém controlando
+  senao tseguir == 3 || p_montar_tipo == 4 && poslugar # Se tem alguém controlando
     p_atacou_nome = ""
     ret
   senao !(p_atacou_nome || p_atacou_dir) # Se não foi atacado

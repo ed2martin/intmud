@@ -49,6 +49,8 @@ func escr
     ret $mens.mp(arg1 ? m_escolhe : m_sem_animal, arg0, nulo, item)
   senao !r.p_captura || r.perso != 2 || arg0.perso != 3
     ret $mens.mp(m_nao_captura, arg0, r)
+  senao r.tseguir == 3 || r.persolugar.total
+    ret $mens.mp(m_nao_captura, arg0, r)
   senao r.p_domar_aulas && arg0.var.h_[r.p_domar_hab]_ < r.p_domar_aulas
     $mens.mens = r.p_domar_hab
     ret $mens.mp(m_hab, arg0, r)
