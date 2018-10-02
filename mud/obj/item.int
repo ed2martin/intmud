@@ -230,7 +230,7 @@ func teclouperm # Processa comando com permissões específicas
     senao !obj
       msg("Você não possui a magia " + lin)
     senao posicao < obj.posic
-      msg(erropos)
+      msgposicao
     senao
       obj.escr(este, txt2(lin), arg1)
     fimse
@@ -243,7 +243,7 @@ func teclouperm # Processa comando com permissões específicas
   efim
 # Executa comando
   ret !obj, msg("O quê?")
-  ret posicao < obj.posic, msg(erropos)
+  ret posicao < obj.posic, msgposicao
   ret obj.escr(este, txt2(arg0), arg1)
 
 

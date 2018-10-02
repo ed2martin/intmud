@@ -1,0 +1,577 @@
+classe adm_hab
+const iniclasse = !$[arg0] && criar(arg0)
+const txtajuda = "\b\c3Habilidades e magias\b\n\
+  \c2LHAB\b      Lista habilidades existentes\n\
+  \c2LMAG\b      Lista magias existentes\n\
+  \c2CHAB\b      Cria uma habilidade\n\
+  \c2CMAG\b      Cria uma magia\n\
+  \c2EHAB\b      Edita uma habilidade\n\
+  \c2EMAG\b      Edita uma magia\n\
+  \c2AHAB\b      Apaga uma ou mais habilidades\n\
+  \c2AMAG\b      Apaga uma ou mais magias\n\
+  \c2DHAB\b      Calcula danos causados por uma habilidade\n\
+  \c2DMAG\b      Calcula danos causados por uma magia"
+
+
+classe adm_lhab
+herda comando_adm
+const txtajuda = "\b\c3Lhab\b\n\
+Sintaxe: LHAB [nome]\n\
+Lista as habilidades que começam com o nome especificado.\n\
+Se o nome for omitido, lista todas as habilidades."
+
+func escr
+  prog p
+  se !p.iniclasse("cmd_" + arg1)
+    ret arg0.msg("\bNenhuma habilidade encontrada.")
+  fimse
+  textotxt t
+  txt100 lin
+  epara nulo, p.lin && t.linhas < 499, p.depois
+    continuar !$[p.texto].cmdmenu # Continua se não é uma habilidade
+    lin = txtcopiamai(txt2(txte(p.texto)), "A") + ", "
+    se $[p.texto].tipoalvo < 6
+      lin += txtsublin(config:atknomes, $[p.texto].tipoatk, 1)
+    fimse
+    casovar $[p.texto].tipoalvo
+    casose "1"
+      lin += ", Outros"
+      sair
+    casose "2"
+      lin += ", Todos dividindo ataque"
+      sair
+    casose "3"
+      lin += ", Outros dividindo ataque"
+      sair
+    casose "4"
+      lin += ", Todos sem dividir ataque"
+      sair
+    casose "5"
+      lin += ", Outros sem dividir ataque"
+      sair
+    casose "6"
+      lin += "Não agressivo"
+      sair
+    casose "7"
+      lin += "Não agressivo, O próprio"
+      sair
+    casose "8"
+      lin += "Automático"
+      sair
+    casose "9"
+      lin += "Nenhum"
+      sair
+    casofim
+    t.addfim(lin)
+  efim
+  se t.linhas
+    arg0.msg2("\b\c6Habilidade, Tipo, Alvo\b\n" + t.remove(500))
+  senao
+    arg0.msg("\bNenhuma habilidade encontrada.")
+  fimse
+
+
+classe adm_lmag
+herda comando_adm
+const txtajuda = "\b\c3Lmag\b\n\
+Sintaxe: LMAG [nome]\n\
+Lista as magias que começam com o nome especificado.\n\
+Se o nome for omitido, lista todas as magias."
+
+func escr
+  prog p
+  se !p.iniclasse("magia_" + arg1)
+    ret arg0.msg("\bNenhuma magia encontrada.")
+  fimse
+  textotxt t
+  txt100 lin
+  epara nulo, p.lin && t.linhas < 499, p.depois
+    continuar !$[p.texto].cmdmenu # Continua se não é uma magia editável
+    lin = txtcopiamai(txt2(txte(p.texto)), "A") + ", "
+    se $[p.texto].tipoalvo < 6
+      lin += txtsublin(config:atknomes, $[p.texto].tipoatk, 1)
+    fimse
+    casovar $[p.texto].tipoalvo
+    casose "1"
+      lin += ", Outros"
+      sair
+    casose "2"
+      lin += ", Todos dividindo ataque"
+      sair
+    casose "3"
+      lin += ", Outros dividindo ataque"
+      sair
+    casose "4"
+      lin += ", Todos sem dividir ataque"
+      sair
+    casose "5"
+      lin += ", Outros sem dividir ataque"
+      sair
+    casose "6"
+      lin += "Não agressivo"
+      sair
+    casose "7"
+      lin += "Não agressivo, O próprio"
+      sair
+    casose "8"
+      lin += "Automático"
+      sair
+    casose "9"
+      lin += "Nenhum"
+      sair
+    casofim
+    t.addfim(lin)
+  efim
+  se t.linhas
+    arg0.msg2("\b\c6Magia, Tipo, Alvo\b\n" + t.remove(500))
+  senao
+    arg0.msg("\bNenuma magia encontrada.")
+  fimse
+
+
+classe adm_chab
+herda comando_adm
+const txtajuda = "\b\c3Chab\b\n\
+Sintaxe: CHAB <nome>\n\
+Cria uma habilidade com o nome especificado.\n\
+O nome deve ser composto de letras, mas pode ter espaços no meio."
+const tipo = "habilidade"
+
+func escr
+  prog p
+# Checa se digitou nome do ataque
+  se arg1 == ""
+    ret arg0.msg("Tecle o nome da habilidade após CHAB")
+  fimse
+# Checa se nome válido
+  txt80 nome = txte(txtremove(arg1, "EMDSA"))
+  se txtproc(txtsepara(txttroca(nome, " ", ""), "O+DOL,DOL+O"), " ") >= 0
+    ret arg0.msg("Nome inválido para habilidade: " + nome)
+  senao inttotal(nome) > 40
+    ret arg0.msg("Nome deve ter até 40 caracteres: " + nome)
+  senao p.existe("cmd_" + nome)
+    ret arg0.msg("Já existe o comando: " + nome)
+  senao p.existe("soc_" + nome)
+    ret arg0.msg("Já existe o comando social: " + nome)
+  fimse
+# Pergunta que tipo de habilidade criar
+  arg0.sock.var.opcclasse = "cmd_" + txts(txtmin(nome))
+  arg0.sock.var.opcvar = "h_" + txtcopiamai(txte(nome), "A")
+  passo(arg0.sock, "")
+
+func passo # Escolher o tipo de habilidade ou magia
+  txt40 deriv
+  casovar txtmin(arg1)
+  casose
+    arg0.msg("Opção inválida")
+  casose "\b"
+  casose ""
+    arg0.passo = este
+    arg0.msg("Entre com o tipo de " + tipo + ", O mostra as opções, Z cancela")
+    ret 1
+  casose "z"
+    arg0.msg("Retornando ao jogo")
+    arg0.passo = ""
+    arg0.var.opcclasse = ""
+    arg0.var.opcnome = ""
+    ret 1
+  casose "o"
+    arg0.txtmais.limpar
+    arg0.txtmais.addfim("C Habilidade ou magia comum")
+    arg0.txtmais.addfim("I Identificar")
+    arg0.txtmais.addfim("R Retornar")
+    arg0.txtmostra
+    ret 1
+  casose "c"
+    deriv = "comando_ataque"
+    sair
+  casose "i"
+    deriv = "comando_identificar"
+    sair
+  casose "r"
+    deriv = "comando_retornar"
+    sair
+  casofim
+# Cria habilidade ou magia
+  txt512 lin
+  lin = arg0.var.opcclasse + "\nconfig/hab\nherda " + deriv
+  lin += "\nconst nomevar = \"" + arg0.var.opcvar + "\""
+  prog p
+  p.criar(lin)
+  criar("admordena", "config/hab")
+# config:salvar
+  arg0.msg("\bCriou " + tipo + ": " + txt(arg0.var.opcvar, 2))
+  admlog(arg0, "criou " + tipo + " " + txt(arg0.var.opcvar, 2))
+  arg0.passo = ""
+  arg0.var.opcclasse = ""
+  arg0.var.opcnome = ""
+  ret 1
+
+
+classe adm_cmag
+herda adm_chab
+const txtajuda = "\b\c3Cmag\b\n\
+Sintaxe: CMAG <nome>\n\
+Cria uma magia com o nome especificado.\n\
+O nome deve ser composto de letras, mas pode ter espaços no meio."
+const tipo = "magia"
+
+func escr
+  prog p
+# Checa se digitou nome do ataque
+  se arg1 == ""
+    ret arg0.msg("Tecle o nome da magia após CMAG")
+  fimse
+# Checa se nome válido
+  txt80 nome = txte(txtremove(arg1, "EMDSA"))
+  se txtproc(txtsepara(txttroca(nome, " ", ""), "O+DOL,DOL+O"), " ") >= 0
+    ret arg0.msg("Nome inválido para magia: " + nome)
+  senao inttotal(nome) > 40
+    ret arg0.msg("Nome deve ter até 40 caracteres: " + nome)
+  senao p.existe("magia_" + nome)
+    ret arg0.msg("Já existe a magia: " + nome)
+  fimse
+# Pergunta que tipo de magia criar
+  arg0.sock.var.opcclasse = "magia_" + txts(txtmin(nome))
+  arg0.sock.var.opcvar = "m_" + txtcopiamai(txte(nome), "A")
+  passo(arg0.sock, "")
+
+
+classe adm_ahab
+herda comando_adm
+const txtajuda = "\b\c3Ahab\b\n\
+Sintaxe: AHAB <nomes das habilidades>\n\
+Apaga uma ou mais habilidades, com os nomes especificados.\n\
+Para apagar uma habilidade cujo nome contém espaços no meio, use\n\
+sublinhado no lugar dos espaços. Exemplo, se o nome da magia for\n\
+Chute Forte, você deve teclar: ahab Chute_Forte"
+
+func escr
+  prog p
+  se arg1 == ""
+    ret arg0.msg("Tecle um ou mais nomes de habilidades após AHAB")
+  fimse
+  uint16 x
+  enquanto txtsub(arg1, x, 1)
+    se !p.existe("cmd_" + txtsub(arg1, x, 1))
+      ret arg0.msg("Habilidade não existe: " + txtsub(arg1, x, 1))
+    senao !$cmd_[txtsub(arg1, x, 1)].cmdmenu
+      ret arg0.msg("Comando não é uma habilidade: " + txtsub(arg1, x, 1))
+    fimse
+    x++
+  efim
+  arg0.sock.tpasso = arg1
+  passo(arg0.sock, "")
+
+func passo # Confirmar que quer apagar habilidade
+  arg0.passo = ""
+  se arg1 == "n"
+    arg0.msg("Cancelado")
+  senao arg1 == "s"
+    prog p
+    uint16 x
+    enquanto txtsub(arg0.tpasso, x, 1)
+      p.apagar("cmd_" + txtsub(arg0.tpasso, x, 1))
+      x++
+    efim
+    config:salvar
+    se x < 2
+      arg0.msg("Habilidade apagada: " + arg0.tpasso)
+      admlog(arg0, "apagou habilidade " + arg0.tpasso)
+    senao
+      arg0.msg("Habilidades apagadas: " + arg0.tpasso)
+      admlog(arg0, "apagou habilidades " + arg0.tpasso)
+    fimse
+  senao
+    arg0.passo = este
+    refvar m1 = txt2(arg0.tpasso) ? "habilidades" : "habilidade"
+    arg0.msg("Apagar " + m1 + " " + arg0.tpasso + "? Tecle S ou N")
+  fimse
+  ret 1
+
+
+classe adm_amag
+herda comando_adm
+const txtajuda = "\b\c3Amag\b\n\
+Sintaxe: AMAG <nomes das magias>\n\
+Apaga uma ou mais magias, com os nomes especificados.\n\
+Para apagar uma magia cujo nome contém espaços no meio, use sublinhado\n\
+no lugar dos espaços. Exemplo, se o nome da magia for Curar Cegueira,\n\
+você deve teclar: amag Curar_Cegueira"
+
+func escr
+  prog p
+  se arg1 == ""
+    ret arg0.msg("Tecle um ou mais nomes de magias após AMAG")
+  fimse
+  uint16 x
+  enquanto txtsub(arg1, x, 1)
+    se !p.existe("magia_" + txtsub(arg1, x, 1))
+      ret arg0.msg("Magia não existe: " + txtsub(arg1, x, 1))
+    senao !$magia_[txtsub(arg1, x, 1)].cmdmenu
+      ret arg0.msg("Magia não pode ser apagada: " + txtsub(arg1, x, 1))
+    fimse
+    x++
+  efim
+  arg0.sock.tpasso = arg1
+  passo(arg0.sock, "")
+
+func passo # Confirmar que quer apagar magia
+  arg0.passo = ""
+  se arg1 == "n"
+    arg0.msg("Cancelado")
+  senao arg1 == "s"
+    prog p
+    uint16 x
+    enquanto txtsub(arg0.tpasso, x, 1)
+      p.apagar("magia_" + txtsub(arg0.tpasso, x, 1))
+      x++
+    efim
+    config:salvar
+    se x < 2
+      arg0.msg("Magia apagada: " + arg0.tpasso)
+      admlog(arg0, "apagou magia " + arg0.tpasso)
+    senao
+      arg0.msg("Magias apagadas: " + arg0.tpasso)
+      admlog(arg0, "apagou magias " + arg0.tpasso)
+    fimse
+  senao
+    arg0.passo = este
+    refvar m1 = txt2(arg0.tpasso) ? "magias" : "magia"
+    arg0.msg("Apagar " + m1 + " " + arg0.tpasso + "? Tecle S ou N")
+  fimse
+  ret 1
+
+
+classe adm_ehab
+herda comando_adm
+const txtajuda = "\b\c3Ehab\b\n\
+Sintaxe: EHAB <nome>\n\
+Edita a habilidade com o nome especificado."
+
+func escr
+  prog p
+  se arg1 == ""
+    arg0.msg("Tecle o nome da habilidade após EHAB")
+  senao !p.existe("cmd_" + arg1)
+    arg0.msg("Habilidade não existe: " + arg1)
+  senao !$cmd_[arg1].cmdmenu
+    arg0.msg("Comando não é uma habilidade: " + arg1)
+  senao
+    arg0.sock.var.classe1 = "cmd_" + txts(txtmin(arg1))
+    arg0.sock.var.menufim = "menu_hab_" + $cmd_[arg1].cmdmenu
+    arg0.sock.m_menu(arg0.sock.var.menufim)
+  fimse
+
+
+classe adm_emag
+herda comando_adm
+const txtajuda = "\b\c3Emag\b\n\
+Sintaxe: EMAG <nome>\n\
+Edita a magia com o nome especificado."
+
+func escr
+  prog p
+  se arg1 == ""
+    arg0.msg("Tecle o nome da magia após EMAG")
+  senao !p.existe("magia_" + arg1)
+    arg0.msg("Magia não existe: " + arg1)
+  senao !$magia_[arg1].cmdmenu
+    arg0.msg("Comando não é uma magia editável: " + arg1)
+  senao
+    arg0.sock.var.classe1 = "magia_" + txts(txtmin(arg1))
+    arg0.sock.var.menufim = "menu_magia_" + $magia_[arg1].cmdmenu
+    arg0.sock.m_menu(arg0.sock.var.menufim)
+  fimse
+
+
+classe adm_dhab
+herda comando_adm
+const txtajuda = "\b\c3Dhab\b\n\
+Sintaxe: DHAB <habilidade> <alvo>\n\
+         DHAB <personagem> <habilidade> <alvo>\n\
+Calcula os danos que uma habilidade faria no personagem alvo.\n\
+Se for fornecido apenas a habalidade e o alvo, calcula os danos que\n\
+o seu personagem faria."
+const prefixo = "cmd_"
+const naoencontrado = "Habilidade não encontrada: "
+const naoataque = "Habilidade não é ataque: "
+
+func escr
+  txt100 nome
+  ref perso
+  ref alvo
+  ref obj
+  se intsub(arg1) < 2
+    ret arg0.msg(txtmaimin(txt(este, 4)) + " requer 2 ou 3 argumentos")
+  senao intsub(arg1) >= 3
+    perso = misc:persodono(arg0, txt1(arg1))
+    nome = txtsub(arg1, 1, 1)
+    alvo = misc:persodono(arg0, txtsub(arg1, 2))
+    ret !perso, arg0.msg("Personagem não existe: " + txt1(arg1))
+    ret !alvo, arg0.msg("Alvo não existe: " + txtsub(arg1, 2))
+  senao
+    perso = arg0
+    nome = txt1(arg1)
+    alvo = misc:persodono(arg0, txt2(arg1))
+    ret !alvo, arg0.msg("Alvo não existe: " + txt2(arg1))
+  fimse
+  enquanto 1
+    refvar perm = $perm_[jogperm]
+    obj = $[prefixo + nome] # Checa comando exato
+    sair obj.cmdmenu
+    refvar tam = inttotal(prefixo)
+    prog p
+    nomeobj n
+    n.ini(txt1(arg0))
+    epara p.iniclasse(prefixo + txt1(txte(nome))), p.lin, p.depois
+      obj = $[p.texto]
+      sair obj.cmdmenu && !n.nome(txt(obj, tam))
+    efim
+    sair p.lin
+    ret arg0.msg(naoencontrado + nome)
+  efim
+  ret obj.cmdmenu != "ataque", arg0.msg(naoataque + txt(obj.nomevar, 2))
+  ret obj.tipoalvo > 5 && obj.tipoalvo < 8, arg0.msg(naoataque + txt(obj.nomevar, 2))
+  textotxt t
+  obj.danosgolpe(perso, alvo, t)
+  arg0.msg2(t.remove(1000))
+
+
+classe adm_dmag
+herda adm_dhab
+const txtajuda = "\b\c3Dmag\b\n\
+Sintaxe: DMAG <magia> <alvo>\n\
+         DMAG <personagem> <magia> <alvo>\n\
+Calcula os danos que uma magia faria no personagem alvo.\n\
+Se for fornecido apenas a magia e o alvo, calcula os danos que\n\
+o seu personagem faria."
+const prefixo = "magia_"
+const naoencontrado = "Magia não encontrada: "
+const naoataque = "Magia não é ataque: "
+
+
+classe menu_hab_comum
+herda comando_menu
+#
+const nome2 = "Condição batalha"
+const tipo2 = "opc_opcao"
+const clas2 = var.classe1
+const vari2 = "a_batalha"
+const extr2 = "Nenhuma\nDurante a batalha\nFora da batalha"
+#
+const nome3 = "Condição montaria"
+const tipo3 = "opc_opcao"
+const clas3 = var.classe1
+const vari3 = "a_montado"
+const extr3 = "Nenhuma\nDesmontado\nMontado"
+#
+const nome4 = "Falha iniciante"
+const info4 = "Taxa de falha em porcentagem, de 0 a 100 (100 sempre falha)"
+const tipo4 = "opc_numero"
+const clas4 = var.classe1
+const vari4 = "falha1"
+const extr4 = "-1 100"
+#
+const nome5 = "Falha perito"
+const info5 = "Taxa de falha em porcentagem, de 0 a 100 (100 sempre falha)"
+const tipo5 = "opc_numero"
+const clas5 = var.classe1
+const vari5 = "falha2"
+const extr5 = "-1 100"
+#
+const nome6 = "Requer arma"
+const info6 = "Se vazio, a arma é ignorada: ataca sem arma mesmo se estiver empunhando uma"
+const tipo6 = "opc_vetor"
+const clas6 = var.classe1
+const vari6 = "tipoarma"
+const extr6 = config:arma_txt
+#
+const nome7 = "Consome"
+const tipo7 = "menu_hab_custo--"
+#
+const nome8 = "Preço da aula"
+const info8 = "Quantas moedas os personagens cobram para ensinar"
+const tipo8 = "opc_numero"
+const clas8 = var.classe1
+const vari8 = "valor"
+#
+const nome9 = "Pontos de aula"
+const info9 = "Quantos pontos de aula consome por aula"
+const tipo9 = "opc_numero"
+const clas9 = var.classe1
+const vari9 = "aulapontos"
+#
+const nome10 = "Depende de"
+const info10 = "Habilidades, magias e idiomas necessários para aprender esse ataque"
+const tipo10 = "opc_tipodep"
+const clas10 = var.classe1
+const vari10 = "depende"
+#
+const nome11 = "Iniciante nível"
+const info11 = "A partir de que nível pode ter a primeira aula"
+const tipo11 = "opc_numero"
+const clas11 = var.classe1
+const vari11 = "aulaini"
+#
+const nome12 = "Perito nível"
+const info12 = "A partir de que nível pode ter todas as aulas"
+const tipo12 = "opc_numero"
+const clas12 = var.classe1
+const vari12 = "aulafim"
+#
+const nome13 = "Somente tipos"
+const info13 = "Se estiver vazio, todas as classes e raças podem aprender"
+const tipo13 = "opc_tipos"
+const clas13 = var.classe1
+const vari13 = "tipoperso"
+
+
+classe menu_hab_custo
+herda comando_menu
+const titulo = "Consome"
+const menufim = var.menufim
+const colunas = 25
+#
+const nome1 = "Tempo de espera"
+const info1 = "Tempo mínimo que deve esperar, em décimos de segundo"
+const tipo1 = "opc_numero"
+const clas1 = var.classe1
+const vari1 = "c_espera"
+const extr1 = "5 150"
+#
+const nome2 = "Vida iniciante"
+const info2 = "Quantos pontos de vida consome no nível iniciante"
+const tipo2 = "opc_numero"
+const clas2 = var.classe1
+const vari2 = "c_vida1"
+#
+const nome3 = "Vida perito"
+const info3 = "Quantos pontos de vida consome no nível perito"
+const tipo3 = "opc_numero"
+const clas3 = var.classe1
+const vari3 = "c_vida2"
+#
+const nome4 = "Mana iniciante"
+const info4 = "Quantos pontos de mana consome no nível iniciante"
+const tipo4 = "opc_numero"
+const clas4 = var.classe1
+const vari4 = "c_mana1"
+#
+const nome5 = "Mana perito"
+const info5 = "Quantos pontos de mana consome no nível perito"
+const tipo5 = "opc_numero"
+const clas5 = var.classe1
+const vari5 = "c_mana2"
+#
+const nome6 = "Vigor iniciante"
+const info6 = "Quantos pontos de vigor consome no nível iniciante"
+const tipo6 = "opc_numero"
+const clas6 = var.classe1
+const vari6 = "c_move1"
+#
+const nome7 = "Vigor perito"
+const info7 = "Quantos pontos de vigor consome no nível perito"
+const tipo7 = "opc_numero"
+const clas7 = var.classe1
+const vari7 = "c_move2"

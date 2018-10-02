@@ -34,6 +34,7 @@ func escr
     $mens.mens = arg1
     ret $mens.mp(m_naover, arg0)
   senao arg0.poslugar.objlista.perso # Já está montado
+    ret arg0.posicao == 7, arg0.msgposicao # Está lutando
     ref anim = arg0.poslugar.objlista
     se anim.tseguir != 3 || anim.iseguir.objlista != arg0
       $mens.mp(m_perso_dono, arg0, anim)
@@ -51,7 +52,7 @@ func escr
     ret
   fimse
 # Verifica se pode montar
-  ret arg0.posicao != 8, arg0.msg(arg0.erropos) # Não está em pé
+  ret arg0.posicao != 8, arg0.msgposicao # Não está em pé
   ret arg0.persolugar.total, $mens.mp(m_carregando, arg0)
   refvar lugares = r.p_lugar(arg0)
   se !r.p_montar_tipo || !lugares # Verifica é montaria
@@ -86,9 +87,7 @@ func montar
   epara l.addfim(arg1.evento), l, l.ini.remove
     ret l.objini.cmd_montar(arg0, arg1, arg1), nulo
   efim
-  arg0.poslugar.remove
-  arg0.poslugar = arg1.persolugar.addfim(arg0)
-  arg0.posicao = 6
+  arg0.montar(arg1) # arg0 monta em arg1
   $mens.p(arg0, arg1, arg2)
   se arg2 && arg2 != arg0
     $mens.mtodos3(m_trouxe1, m_trouxe2, m_trouxe3)
@@ -151,8 +150,7 @@ func desmontar
   epara l.addfim(r.evento), l, l.ini.remove
     ret l.objini.cmd_desmontar(arg0, r, r), nulo
   efim
-  arg0.poslugar.remove
-  arg0.posicao = 8
+  arg0.montar # arg0 desmonta
   $mens.p(arg0, r, arg1)
   se arg1 && arg1 != arg0
     $mens.mtodos3(m_tirou1, m_tirou2, m_tirou3)

@@ -29,7 +29,7 @@ Tenta comer alguma coisa, geralmente um alimento."
 const posic = 5
 
 func escr
-  ret arg0.posicao == 7, arg0.msg(arg0.erropos(7)) # Não come durante a luta
+  ret arg0.posicao == 7, msgposicao # Não come durante a luta
   ret !arg1, arg0.msg("Comer o quê?")
   refvar r = misc:itemdentro(arg0, arg1)
   se !r

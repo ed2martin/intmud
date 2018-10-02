@@ -15,6 +15,10 @@ const perso = 1
 2 = personagem que batalha (classe comum_persobat)
 3 = personagem que batalha e carrega animais (classe comum_persoanimal)
 
+func montar( personagem )
+Monta em um personagem ou desmonta se o argumento não for personagem
+ou estiver ausente.
+
 func cabedentro( sala )
 Retorna 1 se o personagem cabe na sala especificada ou 0 se não cabe.
 Essa função checa o volume e a quantidade de personagens na sala.
@@ -143,8 +147,8 @@ Pega o próximo comando da lista.
 func teclouproc( texto do comando )
 Processa comando, sem espera.
 
-func erropos
-Retorna uma mensagem conforme a posição atual, para indicar que o que
+func msgposicao
+Envia uma mensagem conforme a posição atual, para indicar que o que
 o personagem digitou não pode ser feito.
 
 func acertapos

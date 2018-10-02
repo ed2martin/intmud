@@ -40,17 +40,17 @@ func escr # Executa o comando
 # Anda
   txt100 dir1
   ref obj = arg0 # Personagem ou item que vai mover em uma direção
-  se arg0.posicao == 6 # Sentado
+  se arg0.poslugar # Montado
     obj = arg0.poslugar.objlista
     se !obj.perso # Não é personagem
-      ret !obj.i_mover, arg0.msg(arg0.erropos)
+      ret !obj.i_mover, arg0.msgposicao
     senao obj.tseguir == 3 # Animal tem dono
       ret obj.iseguir.objlista != arg0, $mens.mp(comando_mover_cfg:m_ignorar, arg0, obj)
     senao int(obj.p_montar_tipo) < 3 # Animal não tem dono e não obedece
       ret $mens.mp(comando_mover_cfg:m_ignorar, arg0, obj)
     fimse
   fimse
-  ret obj.posicao < 8, arg0.msg(arg0.erropos)
+  ret obj.posicao < 8, arg0.msgposicao
   se !arg0.jog || rand($miscfome.bebedir, $miscfome.cheio) > arg0.p_bebida
     dir1 = dir
     refvar saladest = obj.dono.dirsala(dir1, obj)

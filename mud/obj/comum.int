@@ -157,6 +157,7 @@ func mdono # Objeto muda de dono (arg0 = novo dono)
   fimse
   (r.perso ? evperso : r.item ? evitem : evsala) && (evrec.2 = r.evento.addfim(este))
 # Se não está voando: acrescenta o peso total
+  pesotot = pesoadd ? (pesoobj + pesovar) * objtot # Acerta o peso
   se pesotot
     r.pesoden += pesotot # Nota: r já é dono
     enquanto r.pesoadd

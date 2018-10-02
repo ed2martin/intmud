@@ -22,7 +22,7 @@ func escr
   casose "8" # Em pé
     ret $mens.mp(m_em_pe, arg0)
   casose # Outras posições
-    ret arg0.msg(arg0.erropos)
+    ret arg0.msgposicao
   casofim
 # Ficar em pé
   listaobj l
@@ -69,7 +69,7 @@ func escr
   casose "8" # Em pé
     sair
   casose # Outras posições
-    ret arg0.msg(arg0.erropos)
+    ret arg0.msgposicao
   casofim
 # Obtém aonde quer se sentar
   se arg1
@@ -152,7 +152,7 @@ func escr
   casose "8" # Em pé
     sair
   casose # Outras posições
-    ret arg0.msg(arg0.erropos)
+    ret arg0.msgposicao
   casofim
 # Obtém aonde quer descansar
   se arg1

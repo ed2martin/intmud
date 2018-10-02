@@ -1,0 +1,316 @@
+classe h_comando_hab_cfg
+herda comando_comum
+const m_desmaiado0 = "Você está desmaiad$s."
+const m_desmaiado1 = "$A está desmaiad$t."
+const m_nao_lutando = "Você não está lutando com ninguém."
+const m_lutando = "Você está lutando pela sua vida."
+const m_montado = "Você já está montad$s."
+const m_desmontado = "Você não está montad$s."
+const m_nao_obedece = "$A não quer obedecer você."
+const m_sem_arma = "Não possui a arma necessária."
+const m_com_arma = "Empunhando uma arma?"
+const m_arma_errada = "Com essa arma?"
+const m_sem_efeito = "A magia não teve efeito."
+const m_vida = "Pontos de vida insuficientes."
+const m_mana = "Mana insuficiente."
+const m_move = "Vigor insuficiente."
+const admordem = "m_desmaiado0 m_desmaiado1 m_nao_lutando m_lutando\n\
+m_montado m_desmontado m_nao_obedece m_sem_arma m_com_arma m_arma_errada\n\
+m_sem_efeito m_vida m_mana m_move"
+
+
+classe comando_hab
+herda comando_comum
+const objcmd = arg0.persobat.var.[nomevar] ? este
+const objnivel = !tipoarma || tipoarma & intbit(int(arg0.iempu.obj.armatipo)) ? 0 : 2
+const posic = 6
+const falha1 = 0
+const falha2 = 0
+const tipoalvo = 6
+
+func habajuda # Retorna um texto que contém informações
+# arg0 = objeto do personagem
+  textotxt t
+  se depende
+    t.addfim(depende)
+    textopos pos
+    epara pos = t.ini, pos, pos.depois
+      pos.mudar(misc:nomevar(pos.texto))
+    efim
+    t.addfim("Requer conhecimentos de: " + txttroca(t.remove(1000), "\n", ", "))
+    t.juntar, t.dividelin(40, 75)
+  fimse
+  txt512 lin
+  refvar sintaxe = (txt(nomevar, 0, 1) == "m" ? "Lançar " : "") + txts(txt(nomevar, 2))
+  lin = "\c3" + misc:nomevar(nomevar) + "\b\n"
+  se tipoalvo >= 8
+  senao tipoalvo == 7
+    lin += "Sintaxe: " + sintaxe
+  senao armamove
+    lin += "Sintaxe: " + sintaxe + " [personagem]\n"
+    lin += "         " + sintaxe + " <direção> [personagem]"
+  senao
+    lin += "Sintaxe: " + sintaxe + " [personagem]"
+  fimse
+  se tipoalvo < 6
+    lin += "\nAtaque do tipo " + txtsublin(config:atknomes, tipoatk, 1)
+    lin += ", Força " + ataquemin + (ataquemin != ataquemax ? " a " + ataquemax)
+    lin += ", Velocidade " + vel
+  fimse
+  se int(aulaini) != int(aulafim)
+    lin += "\nPrimeira aula a partir do nível "
+    lin += intpos(int(aulaini) - config:nrenascer * txt2(arg0.var.[nomevar]))
+    lin += ", perito nível "
+    lin += intpos(int(aulafim) - config:nrenascer * txt2(arg0.var.[nomevar]))
+  senao aulaini
+    lin += "\nPode aprender a partir do nível "
+    lin += intpos(int(aulaini) - config:nrenascer * txt2(arg0.var.[nomevar]))
+  senao
+    lin += "\nPode aprender em qualquer nível"
+  fimse
+  refvar f1 = falha1 < 0 ? 0 : falha1 > 100 ? 100 : falha1
+  refvar f2 = falha2 < 0 ? 0 : falha2 > 100 ? 100 : falha2
+  se f1 != f2
+    lin += ", Falha " + f1 + "% iniciante a " + f2 + "% perito"
+  senao f1 >= 100
+    lin += ", Sempre falha"
+  senao f1 > 0
+    lin += ", Falha " + f1 + "%"
+  fimse
+  se !atkfalha
+    lin += ", Não falha por embriaguez/precisão/evasão"
+  fimse
+  t.addini(lin)
+  msgextra && t.addfim(msgextra)
+  se c_vida1 || c_vida2
+    refvar min = int(c_vida2)
+    refvar max = int(c_vida1)
+    se min != max
+      t.addfim("Consome de " + min + " a " + max + " pontos de vida.")
+    senao min == 1
+      t.addfim("Consome 1 ponto de vida.")
+    senao
+      t.addfim("Consome " + min + " pontos de vida.")
+    fimse
+  fimse
+  se c_mana1 || c_mana2
+    refvar min = int(c_mana2)
+    refvar max = int(c_mana1)
+    se min != max
+      t.addfim("Consome de " + min + " a " + max + " pontos de mana.")
+    senao min == 1
+      t.addfim("Consome 1 ponto de mana.")
+    senao
+      t.addfim("Consome " + min + " pontos de mana.")
+    fimse
+  fimse
+  se c_move1 || c_move2
+    refvar min = int(c_move2)
+    refvar max = int(c_move1)
+    se min != max
+      t.addfim("Consome de " + min + " a " + max + " pontos de movimento.")
+    senao min == 1
+      t.addfim("Consome 1 ponto de movimento.")
+    senao
+      t.addfim("Consome " + min + " pontos de movimento.")
+    fimse
+  fimse
+  se tipoperso
+    t.addfim("Somente classes/raças: " + txttroca(tipoperso, "\n", ", "))
+  fimse
+  ret t.remove(1000)
+
+func checahab1 # Checa se personagem pode usar habilidade/magia e avisa o personagem
+# arg0 = personagem
+# arg1 = item usado, ou nulo se não usou nenhum item
+  ret checahab2(arg0, (arg0.var.[nomevar] - 1) / 7, arg1)
+
+func checahab2 # Checa se personagem pode usar habilidade/magia e avisa o personagem
+# arg0 = personagem
+# arg1 = quanto sabe da habilidade ou magia (0=iniciante até 1=perito)
+# arg2 = item usado, ou nulo se não usou nenhum item
+# Retorna verdadeiro se pode usar
+  refvar contr0 = arg0.contr
+  se contr0.posicao < 7 && !contr0.poslugar
+    contr0.msgposicao
+  senao !arg0.pvidaok
+    $mens.mp(comando_hab_cfg:m_desmaiado[arg0 == contr0], contr0, arg0)
+    ret
+  senao a_batalha == 1 && !contr0.atkenv
+    $mens.mp(comando_hab_cfg:m_nao_lutando, contr0, arg0)
+    ret
+  senao a_batalha == 2 && contr0.atkenv
+    $mens.mp(comando_hab_cfg:m_lutando, contr0, arg0)
+    ret
+  senao a_montado == 1 && contr0.poslugar
+    $mens.mp(comando_hab_cfg:m_montado, contr0, arg0)
+    ret
+  senao a_montado > 1 && !contr0.poslugar
+    $mens.mp(comando_hab_cfg:m_desmontado, contr0, arg0)
+    ret
+  senao arg2.item # Usou algum objeto: não checa a posição e a arma usada
+  senao contr0.pnivel + config:animal_n < arg0.pnivel
+    $mens.mp(comando_hab_cfg:m_nao_obedece, contr0, arg0)
+    ret
+  senao arg0.posicao < posic # Checa a posição necessária
+    refvar lin = arg0 == contr0 ? "Você" : txtcopiamai(arg0.nome, "A")
+    casovar arg0.posicao
+    casose "0"
+      contr0.msg(lin + " desmaiou.")
+      ret
+    casose "1"
+    casose "2"
+    casose "3"
+      contr0.msg(lin + " está frac" + (arg0.msexo ? "o" : "a") + " demais.")
+      ret
+    casose "4"
+      contr0.msg(lin + " está dormindo.")
+      ret
+    casose "5"
+      contr0.msg(lin + " está descansando.")
+      ret
+    casose "6"
+      contr0.msg(lin + " está sentad" + (arg0.msexo ? "o" : "a") + ".")
+      ret
+    casose "7"
+      contr0.msg(lin + " está lutando.")
+      ret
+    casofim
+    contr0.msg(lin + " não consegue fazer isso.")
+    ret
+  senao !tipoarma # Nenhum tipo de arma definido: aceita qualquer arma
+  senao tipoarma & intbit(int(arg0.iempu.obj.armatipo)) # Usando a arma certa
+  senao !arg0.iempu # Não está usando uma arma
+    $mens.mp(comando_hab_cfg:m_sem_arma, contr0, arg0)
+    ret
+  senao tipoarma == 1
+    $mens.mp(comando_hab_cfg:m_com_arma, contr0, arg0)
+    ret
+  senao
+    $mens.mp(comando_hab_cfg:m_arma_errada, contr0, arg0)
+    ret
+  fimse
+  se arg0.dono.s_semmagia && txt(nomevar, 0, 1) == "m"
+    $mens.mp(comando_hab_cfg:m_sem_efeito, contr0, arg0)
+    ret
+  senao arg2.item # Usou algum objeto: não tem custo
+  senao arg0.pvida <= arg1 * (c_vida2 - c_vida1) + c_vida1
+    $mens.mp(comando_hab_cfg:m_vida, contr0, arg0)
+    ret
+  senao arg0.pmana < arg1 * (c_mana2 - c_mana1) + c_mana1
+    $mens.mp(comando_hab_cfg:m_mana, contr0, arg0)
+    ret
+  senao arg0.pmove < arg1 * (c_move2 - c_move1) + c_move1
+    $mens.mp(comando_hab_cfg:m_move, contr0, arg0)
+    ret
+  fimse
+  ret 1
+
+func autohab1 # Checa se personagem pode usar habilidade/magia em ataque automático
+# arg0 = personagem
+  ret autohab2(arg0, (arg0.var.[nomevar] - 1) / 7)
+
+func autohab2 # Checa se personagem pode usar habilidade/magia em ataque automático
+# arg0 = personagem
+# arg1 = quanto sabe da habilidade ou magia (0=iniciante até 1=perito)
+# Retorna verdadeiro se pode usar
+  refvar contr0 = arg0.contr
+  ret !arg0.pvidaok || arg0.posicao < posic, nulo
+  ret contr0.posicao < 7 && !contr0.poslugar, nulo
+  ret a_batalha == (contr0.atkenv ? 2 : 1), nulo
+  ret a_montado == 1 && contr0.poslugar, nulo
+  ret a_montado > 1 && !contr0.poslugar, nulo
+  ret contr0.pnivel + config:animal_n < arg0.pnivel, nulo
+  ret contr0.dono.s_semmagia && txt(nomevar, 0, 1) == "m", nulo
+  ret arg0.pvida <= arg1 * (c_vida2 - c_vida1) + c_vida1, nulo
+  ret arg0.pmana < arg1 * (c_mana2 - c_mana1) + c_mana1, nulo
+  ret arg0.pmove < arg1 * (c_move2 - c_move1) + c_move1, nulo
+  ret !contr0.dono.s_luta && tipoalvo != 6 && tipoalvo != 7, nulo
+  ret 1
+
+func custohab1 # Aplica os custos da habilidade/magia
+# arg0 = personagem
+  ret custohab2(arg0, (arg0.var.[nomevar] - 1) / 7)
+
+func custohab2 # Aplica os custos da habilidade/magia
+# arg0 = personagem
+# arg1 = quanto sabe da habilidade ou magia (0=iniciante até 1=perito)
+  arg0.pvida -= arg1 * (c_vida2 - c_vida1) + c_vida1
+  arg0.pmana -= arg1 * (c_mana2 - c_mana1) + c_mana1
+  arg0.pmove -= arg1 * (c_move2 - c_move1) + c_move1
+  arg0.contr.p_espera < c_espera && (arg0.contr.p_espera = c_espera)
+
+
+classe m_cmd_habcomum
+herda comando_menu_cmd
+const titulo = "Todas as habilidades e magias"
+#
+const nome1 = "Perso desmaiado"
+const tipo1 = "opc_linha"
+const clas1 = "comando_hab_cfg"
+const vari1 = "m_desmaiado0"
+#
+const nome2 = "Animal desmaiado"
+const tipo2 = "opc_linha"
+const clas2 = "comando_hab_cfg"
+const vari2 = "m_desmaiado1"
+#
+const nome3 = "Não está lutando"
+const tipo3 = "opc_linha"
+const clas3 = "comando_hab_cfg"
+const vari3 = "m_nao_lutando"
+#
+const nome4 = "Está lutando"
+const tipo4 = "opc_linha"
+const clas4 = "comando_hab_cfg"
+const vari4 = "m_lutando"
+#
+const nome5 = "Montado"
+const tipo5 = "opc_linha"
+const clas5 = "comando_hab_cfg"
+const vari5 = "m_montado"
+#
+const nome6 = "Desmontado"
+const tipo6 = "opc_linha"
+const clas6 = "comando_hab_cfg"
+const vari6 = "m_desmontado"
+#
+const nome7 = "Animal não obedece"
+const tipo7 = "opc_linha"
+const clas7 = "comando_hab_cfg"
+const vari7 = "m_nao_obedece"
+#
+const nome8 = "Sem arma"
+const tipo8 = "opc_linha"
+const clas8 = "comando_hab_cfg"
+const vari8 = "m_sem_arma"
+#
+const nome9 = "Com arma"
+const tipo9 = "opc_linha"
+const clas9 = "comando_hab_cfg"
+const vari9 = "m_com_arma"
+#
+const nome10 = "Arma errada"
+const tipo10 = "opc_linha"
+const clas10 = "comando_hab_cfg"
+const vari10 = "m_arma_errada"
+#
+const nome11 = "Não teve efeito"
+const tipo11 = "opc_linha"
+const clas11 = "comando_hab_cfg"
+const vari11 = "m_sem_efeito"
+#
+const nome12 = "Vida insuficiente"
+const tipo12 = "opc_linha"
+const clas12 = "comando_hab_cfg"
+const vari12 = "m_vida"
+#
+const nome13 = "Mana insuficiente"
+const tipo13 = "opc_linha"
+const clas13 = "comando_hab_cfg"
+const vari13 = "m_mana"
+#
+const nome14 = "Vigor insuficiente"
+const tipo14 = "opc_linha"
+const clas14 = "comando_hab_cfg"
+const vari14 = "m_move"

@@ -1,12 +1,23 @@
-classe cmd_doar
+classe h_cmd_doar
 herda comando_comum
-const txtajuda = "\b\c3Doar\b\n\
-Sintaxe: DOAR <objeto>\n\
-         DOAR <quantidade> <objeto>\n\
-Doa um objeto que você está carregando."
 const posic = 5
+const txtajuda = txtajuda1 + m_ajuda
+const txtajuda1 = "\b\c3Doar\b\n\
+Sintaxe: DOAR <objeto>\n\
+         DOAR <quantidade> <objeto>\n"
 int8 achou # Quantos itens achou
 txt100 erro # Mensagem de erro
+#
+const m_ajuda = "Doa um objeto que você está carregando."
+const m_naover = "Você não vê $m"
+const m_nao_doar = "Não é possível doar $o"
+const m_nao_vazio = "$O não está vazi$u."
+const m_doar_um1 = "Você doa $j $o."
+const m_doar_um2 = "$p doa $o."
+const m_doar_mais1 = "Você doa $mx $o."
+const m_doar_mais2 = "Você doa $mx $o."
+const admordem = "m_ajuda m_naover m_nao_doar m_nao_vazio\n\
+m_doar_um1 m_doar_um2 m_doar_mais1 m_doar_mais2"
 
 func escr
   refvar perm_msg = $perm_[arg0.jogperm].item
@@ -21,7 +32,9 @@ func escr
   nomeobj n # Para reconhecer os itens
   n.ini(arg1, misc:objmax)
 # Doa os itens
-  achou = 0, erro = "Você não vê isso."
+  achou = 0
+  $mens.mens = arg1
+  erro = $mens.txt(m_naover, arg0)
   epara l.addfim(arg0.dentro1), l, l.ini.remove
     continuar !l.objini.visivel(arg0) || !n.nome(l.objini.ident, l.objini.objtot)
     doarobj(arg0, l.objini, int(n))
@@ -50,15 +63,16 @@ func doarobj
   efim
 # Obtém a salas de doação
   se !t.linhas
-    erro = "Não é possível doar " + arg1.descnome + "."
+    $mens.p(arg0, nulo, arg1)
+    erro = $mens.txt(m_nao_doar, arg0)
     ret
   fimse
   t.remove(rand(t.linhas))
   refvar s = $s_[t.remove]
 # Checa se o item está vazio
   se arg1.dentro1.total
-    refvar nome = txtcopiamai(arg1.descnome, "A")
-    erro = nome + " não está vazi" + (arg1.arg1.msexo ? "o." : "a.")
+    $mens.p(arg0, nulo, arg1)
+    erro = $mens.txt(m_nao_vazio, arg0)
     ret
   fimse
 # Apaga itens antigos para abrir espaço se necessário
@@ -79,7 +93,12 @@ func doarobj
   efim
 # Mensagens
   $mens.p(arg0, nulo, arg1)
-  $mens.mvis1("$P doa " + (arg2 <= 1 ? "$o." : txt(arg2) + "x $o."))
+  $mens.mens = arg2
+  se arg2 <= 1
+    $mens.mvis2(m_doar_um1, m_doar_um2)
+  senao
+    $mens.mvis2(m_doar_mais1, m_doar_mais2)
+  fimse
 # Doa item
   arg0.p_espera += 2
   ref r = arg1.mudadono(s, arg2)
@@ -93,3 +112,47 @@ func doarobj
   epara e.addfim(r.evento), e, e.ini.remove
     e.objini.cmd_doouobj(arg0, s, r, arg2, r)
   efim
+
+
+classe m_cmd_doar
+herda comando_menu_cmd
+#
+const nome1 = "Ajuda"
+const tipo1 = "opc_texto"
+const clas1 = "cmd_doar"
+const vari1 = "m_ajuda"
+#
+const nome2 = "Alvo não existe"
+const tipo2 = "opc_linha"
+const clas2 = "cmd_doar"
+const vari2 = "m_naover"
+#
+const nome3 = "Não pode"
+const tipo3 = "opc_linha"
+const clas3 = "cmd_doar"
+const vari3 = "m_nao_doar"
+#
+const nome4 = "Não vazio"
+const tipo4 = "opc_linha"
+const clas4 = "cmd_doar"
+const vari4 = "m_nao_vazio"
+#
+const nome5 = "Doa um perso"
+const tipo5 = "opc_linha"
+const clas5 = "cmd_doar"
+const vari5 = "m_doar_um1"
+#
+const nome6 = "Doa um outros"
+const tipo6 = "opc_linha"
+const clas6 = "cmd_doar"
+const vari6 = "m_doar_um2"
+#
+const nome7 = "Doa vários perso"
+const tipo7 = "opc_linha"
+const clas7 = "cmd_doar"
+const vari7 = "m_doar_mais1"
+#
+const nome8 = "Doa vários outros"
+const tipo8 = "opc_linha"
+const clas8 = "cmd_doar"
+const vari8 = "m_doar_mais2"

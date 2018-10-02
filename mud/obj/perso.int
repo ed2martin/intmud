@@ -97,7 +97,7 @@ p_som_entra p_som_voaentra p_som_sai p_som_voasai\n\
 inivar evhora eveste evperso evitem evsala"
 
 func ini # Coloca o objeto dentro de outro
-  posicao = pospadr, p_proc = 1, p_tmove = 80, pnivel = arg1 ? arg1 : nivel
+  posicao = pospadr, p_proc = 1, p_tmove = 80, pnivel = arg1 ?? nivel
   psexo = sexoini == 2 ? rand(2) : sexoini
   se arg2 || inivar
     textotxt t
@@ -216,6 +216,20 @@ func mudadono # Coloca personagem em outra sala
   efim
   ret este
 
+func montar # Monta em arg0 (ou desmonta, se arg0 for nulo)
+  ref alvo = arg0
+  poslugar.remove
+  se alvo.perso
+    enquanto persolugar.total
+      persolugar.objini.posicao = persolugar.objini.pospadr
+      persolugar.ini.remove
+    efim
+    poslugar = alvo.persolugar.addfim(este)
+    posicao = 6
+  senao
+    posicao = 8
+  fimse
+
 func cabedentro # Retorna 1 se personagem cabe em uma sala ou 0 se não cabe
 # arg0 = sala
   ret !arg0.s_sala || arg0.volden + voltot > arg0.volmax, 0
@@ -316,7 +330,7 @@ func teclouperm # Processa comando com permissões específicas
     senao !obj
       msg("Você não possui a magia " + lin)
     senao posicao < obj.posic
-      msg(erropos)
+      msgposicao
     senao
       obj.escr(este, txt2(lin), arg1)
     fimse
@@ -329,31 +343,31 @@ func teclouperm # Processa comando com permissões específicas
   efim
 # Executa comando
   ret !obj, msg("O quê?")
-  ret posicao < obj.posic, msg(erropos)
+  ret posicao < obj.posic, msgposicao
   ret obj.escr(este, txt2(arg0), arg1)
 
 func p_espera_exec # Pega o próximo comando
   sock ? sock.espera_exec : p_proc_exec
 
-func erropos # Retorna uma mensagem conforme a posição
+func msgposicao # Envia uma mensagem conforme a posição
   casovar posicao
   casose "0"
-    ret "\c9Você está mort" + (msexo ? "o" : "a") + "!!!\b"
+    ret msg("\c9Você está mort" + (msexo ? "o" : "a") + "!!!\b")
   casose "1" # Mortalmente ferido
   casose "2" # Incapacitado
-    ret "\c9Você está muito mal, incapaz de fazer qualquer coisa.\b"
+    ret msg("\c9Você está muito mal, incapaz de fazer qualquer coisa.\b")
   casose "3" # Fraco
-    ret "\c9A única coisa que você pode fazer agora é pensar nas estrelas.\b"
+    ret msg("\c9A única coisa que você pode fazer agora é pensar nas estrelas.\b")
   casose "4" # Dormindo
-    ret "\c9Nos seus sonhos...\b"
+    ret msg("\c9Nos seus sonhos...\b")
   casose "5" # Descansando
-    ret "\c9Você se sente relaxad" + (msexo ? "o" : "a") + " demais para fazer isso.\b"
+    ret msg("\c9Você se sente relaxad" + (msexo ? "o" : "a") + " demais para fazer isso.\b")
   casose "6" # Sentado
-    ret "\c9Talvez você deva ficar em pé primeiro.\b"
+    ret msg("\c9Talvez você deva ficar em pé primeiro.\b")
   casose "7" # Lutando
-    ret "\c9Sem chance! Você está lutando pela sua vida.\b"
+    ret msg("\c9Sem chance! Você está lutando pela sua vida.\b")
   casose
-    ret "\c9Você tenta, mas não consegue.\b"
+    ret msg("\c9Você tenta, mas não consegue.\b")
   casofim
 
 func descpos

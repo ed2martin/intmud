@@ -1,14 +1,26 @@
-classe cmd_dormir
+classe h_cmd_dormir
 herda comando_comum
 const posic = 5
-const txtajuda = "\b\c3Dormir\b\n\
-Sintaxe: DORMIR [objeto]\n\
-Dorme no chão. Com o nome de um objeto, tenta dormir no objeto."
+const txtajuda = txtajuda1 + m_ajuda
+const txtajuda1 = "\b\c3Dormir\b\nSintaxe: DORMIR [objeto]\n"
+#
+const m_ajuda = "Dorme no chão. Com o nome de um objeto, tenta dormir no objeto."
+const m_naover = "Você não vê $m"
+const m_levantar = "Talvez você deva se levantar primeiro."
+const m_nao_consegue = "Você não consegue dormir."
+const m_nao_item = "Não é possível dormir $e $o."
+const m_cheio = "Não cabe mais ninguém $e $o."
+const m_dormir_chao1 = "Você deita e dorme."
+const m_dormir_chao2 = "$P deita e dorme."
+const m_dormir_item1 = "Você deita $e $o e dorme."
+const m_dormir_item2 = "$P deita $e $o e dorme."
+const admordem = "m_ajuda m_naover m_levantar m_nao_consegue m_nao_item\n\
+m_cheio m_dormir_chao1 m_dormir_chao2 m_dormir_item1 m_dormir_item2"
 
 func escr
   ref r
 # Checa posição
-  ret arg0.bitver & 0x800, arg0.msg("Você não consegue dormir.")
+  ret arg0.bitver & 0x800, $mens.mp(m_nao_consegue, arg0)
   casovar arg0.posicao
   casose "5" # Descansando
   casose "6" # Sentado
@@ -17,12 +29,12 @@ func escr
   casose "8" # Em pé
     sair
   casose # Outras posições
-    ret arg0.msg(arg0.erropos)
+    ret arg0.msgposicao
   casofim
 # Obtém aonde quer dormir
   se arg1
     refvar obj = misc:itemdono(arg0, arg1)
-    ret r && r != obj, $mens.mp("\c9Talvez você deva se levantar primeiro.\b", arg0)
+    ret r && r != obj, $mens.mp(m_levantar, arg0)
     r = obj
   fimse
   listaobj l
@@ -30,12 +42,12 @@ func escr
   se r
     casovar r.i_movel(arg0)
     casose
-      ret $mens.mp("Não é possível dormir $e $o.", arg0, nulo, r)
+      ret $mens.mp(m_nao_item, arg0, nulo, r)
     casose "2"
     casose "4"
     casofim
     se r != arg0.poslugar.objlista && r.i_lugar <= r.persolugar.total
-      ret $mens.mp("Não cabe mais ninguém $e $o.", arg0, nulo, r)
+      ret $mens.mp(m_cheio, arg0, nulo, r)
     fimse
     epara l.addfim(arg0.evento), l, l.ini.remove
       ret l.objini.cmd_dormirobj(arg0, r, arg0), nulo
@@ -44,7 +56,7 @@ func escr
       ret l.objini.cmd_dormirobj(arg0, r, r), nulo
     efim
     $mens.p(arg0, nulo, r)
-    $mens.mtodos1("$P deita $e $o e dorme.")
+    $mens.mtodos2(m_dormir_item1, m_dormir_item2)
     arg0.poslugar.remove
     arg0.poslugar = r.persolugar.addfim(arg0)
     arg0.posicao = 4
@@ -57,14 +69,14 @@ func escr
 # Dormir num objeto que não existe
   senao arg1
     $mens.mens = arg1
-    $mens.mp("Você não vê $m.", arg0)
+    $mens.mp(m_naover, arg0)
 # Dormir no chão
   senao
     epara l.addfim(arg0.evento), l, l.ini.remove
       ret l.objini.cmd_dormirchao(arg0), nulo
     efim
     $mens.p(arg0)
-    $mens.mtodos1("$P deita e dorme.")
+    $mens.mtodos2(m_dormir_chao1, m_dormir_chao2)
     arg0.poslugar.remove, arg0.posicao = 4
     epara l.addfim(arg0.evento), l, l.ini.remove
       l.objini.cmd_dormiuchao(arg0)
@@ -72,27 +84,42 @@ func escr
   fimse
 
 
-classe cmd_acordar
+classe h_cmd_acordar
 herda comando_comum
 const posic = 4
-const txtajuda = "\b\c3Acordar\b\n\
-Sintaxe: ACORDAR [personagem]\n\
-Acorda. Com o nome de um personagem, tenta acordar o personagem."
+const txtajuda = txtajuda1 + m_ajuda
+const txtajuda1 = "\b\c3Acordar\b\nSintaxe: ACORDAR [personagem]\n"
+#
+const m_ajuda = "Acorda. Com o nome de um personagem, tenta acordar o personagem."
+const m_naover = "Você não vê $m"
+const m_perso_acordado = "Mas você já está acordad$s."
+const m_alvo_acordado = "$A não está dormindo."
+const m_nao_consegue1 = "Você tenta acordar $a."
+const m_nao_consegue2 = "$P tenta acordar $a."
+const m_nao_perso = "Você não consegue acordar."
+const m_acorda_perso1 = "Você acorda."
+const m_acorda_perso2 = "$P acorda."
+const m_acorda_alvo1 = "Você acorda $a."
+const m_acorda_alvo2 = "$P acorda você."
+const m_acorda_alvo3 = "$P acorda $a."
+const admordem = "m_ajuda m_naover m_perso_acordado m_alvo_acordado\n\
+m_nao_consegue1 m_nao_consegue2 m_nao_perso m_acorda_perso1 m_acorda_perso2\n\
+m_acorda_alvo1 m_acorda_alvo2 m_acorda_alvo3"
 
 func escr
 # Acordar outro personagem
   se arg1
-    ret arg0.posicao == 4, arg0.msg(arg0.erropos)
+    ret arg0.posicao == 4, arg0.msgposicao
     ref r = misc:persodono(arg0, arg1)
     se !r
       $mens.mens = arg1
-      $mens.mp("Você não vê $m.", arg0)
+      $mens.mp(m_naover, arg0)
       ret
     senao r.posicao != 4
-      ret $mens.mp("$A não está dormindo.", arg0, r)
+      ret $mens.mp(m_alvo_acordado, arg0, r)
     senao r.bitver & 0xC00 == 0x400
       $mens.p(arg0, r)
-      $mens.mtodos1("$P tenta acordar $a.")
+      $mens.mtodos2(m_nao_consegue1, m_nao_consegue1)
       ret
     fimse
     listaobj l
@@ -104,7 +131,7 @@ func escr
     efim
     r.posicao = 5
     $mens.p(arg0, r)
-    $mens.mtodos1("$P acorda $a.")
+    $mens.mtodos3(m_acorda_alvo1, m_acorda_alvo2, m_acorda_alvo3)
     epara l.addfim(r.evento), l, l.ini.remove
       l.objini.cmd_acordou(r, arg0, r)
     efim
@@ -113,9 +140,9 @@ func escr
     efim
 # Acordar o próprio personagem
   senao arg0.posicao > 4
-    ret $mens.mp("\c9Mas você já está acordad$s.\b", arg0)
+    ret $mens.mp(m_perso_acordado, arg0)
   senao arg0.bitver & 0xC00 == 0x400
-    ret $mens.mp("Você não consegue acordar.", arg0, r)
+    ret $mens.mp(m_nao_perso, arg0, r)
   senao
     listaobj l
     epara l.addfim(arg0.evento), l, l.ini.remove
@@ -123,8 +150,126 @@ func escr
     efim
     arg0.posicao = 5
     $mens.p(arg0)
-    $mens.mtodos1("$P acorda.")
+    $mens.mtodos2(m_acorda_perso1, m_acorda_perso2)
     epara l.addfim(arg0.evento), l, l.ini.remove
       l.objini.cmd_acordou(arg0, nulo, arg0)
     efim
   fimse
+
+
+classe m_cmd_dormir
+herda comando_menu_cmd
+#
+const nome1 = "Ajuda"
+const tipo1 = "opc_texto"
+const clas1 = "cmd_dormir"
+const vari1 = "m_ajuda"
+#
+const nome2 = "Alvo não existe"
+const tipo2 = "opc_linha"
+const clas2 = "cmd_dormir"
+const vari2 = "m_naover"
+#
+const nome3 = "Levantar"
+const tipo3 = "opc_linha"
+const clas3 = "cmd_dormir"
+const vari3 = "m_levantar"
+#
+const nome4 = "Não consegue"
+const tipo4 = "opc_linha"
+const clas4 = "cmd_dormir"
+const vari4 = "m_nao_consegue"
+#
+const nome5 = "Item impróprio"
+const tipo5 = "opc_linha"
+const clas5 = "cmd_dormir"
+const vari5 = "m_nao_item"
+#
+const nome6 = "Sem lugar"
+const tipo6 = "opc_linha"
+const clas6 = "cmd_dormir"
+const vari6 = "m_cheio"
+#
+const nome7 = "Dorme no chão perso"
+const tipo7 = "opc_linha"
+const clas7 = "cmd_dormir"
+const vari7 = "m_dormir_chao1"
+#
+const nome8 = "Dorme no chão outros"
+const tipo8 = "opc_linha"
+const clas8 = "cmd_dormir"
+const vari8 = "m_dormir_chao2"
+#
+const nome9 = "Dorme em item perso"
+const tipo9 = "opc_linha"
+const clas9 = "cmd_dormir"
+const vari9 = "m_dormir_item1"
+#
+const nome10 = "Dorme em item outros"
+const tipo10 = "opc_linha"
+const clas10 = "cmd_dormir"
+const vari10 = "m_dormir_item2"
+
+
+classe m_cmd_acordar
+herda comando_menu_cmd
+#
+const nome1 = "Ajuda"
+const tipo1 = "opc_texto"
+const clas1 = "cmd_acordar"
+const vari1 = "m_ajuda"
+#
+const nome2 = "Alvo não existe"
+const tipo2 = "opc_linha"
+const clas2 = "cmd_acordar"
+const vari2 = "m_naover"
+#
+const nome3 = "Perso acordado"
+const tipo3 = "opc_linha"
+const clas3 = "cmd_acordar"
+const vari3 = "m_perso_acordado"
+#
+const nome4 = "Alvo acordado"
+const tipo4 = "opc_linha"
+const clas4 = "cmd_acordar"
+const vari4 = "m_alvo_acordado"
+#
+const nome5 = "Não consegue perso"
+const tipo5 = "opc_linha"
+const clas5 = "cmd_acordar"
+const vari5 = "m_nao_consegue1"
+#
+const nome6 = "Não consegue outros"
+const tipo6 = "opc_linha"
+const clas6 = "cmd_acordar"
+const vari6 = "m_nao_consegue2"
+#
+const nome7 = "Você não consegue"
+const tipo7 = "opc_linha"
+const clas7 = "cmd_acordar"
+const vari7 = "m_nao_perso"
+#
+const nome8 = "Você acorda perso"
+const tipo8 = "opc_linha"
+const clas8 = "cmd_acordar"
+const vari8 = "m_acorda_perso1"
+#
+const nome9 = "Você acorda outros"
+const tipo9 = "opc_linha"
+const clas9 = "cmd_acordar"
+const vari9 = "m_acorda_perso2"
+#
+const nome10 = "Acordou perso"
+const tipo10 = "opc_linha"
+const clas10 = "cmd_acordar"
+const vari10 = "m_acorda_alvo1"
+#
+const nome11 = "Acordou alvo"
+const tipo11 = "opc_linha"
+const clas11 = "cmd_acordar"
+const vari11 = "m_acorda_alvo2"
+#
+const nome12 = "Acordou outros"
+const tipo12 = "opc_linha"
+const clas12 = "cmd_acordar"
+const vari12 = "m_acorda_alvo3"

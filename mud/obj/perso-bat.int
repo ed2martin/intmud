@@ -82,27 +82,27 @@ func acertapos # Acerta posição
   p_imortal && pvida < pvidamax && (pvida = pvidamax) # Imortal
   !p_tempoatu && (p_tempoatu = 170) # Para atualizar o personagem
   se !pvidaok # Morto
-    poslugar.remove, posicao = 0, arg0 && morreu
-    ret
+    poslugar.remove, posicao = 0
+    ret arg0 ? morreu
   fimse
   casovar intpos(pvida * 100 / pvidamax)
   casose "0"
-    poslugar.remove, posicao = 1 # mortalmente ferido
+    posicao = 1 # mortalmente ferido
     ret
   casose "1"
   casose "2"
-    poslugar.remove, posicao = 2 # incapacitado
+    posicao = 2 # incapacitado
     ret
   casose "3"
-    poslugar.remove, posicao = 3 # fraco
+    posicao = 3 # fraco
     ret
   casose
     se bitver & 1024
       posicao = 4
     senao atkenv
-      poslugar.remove, posicao = 7 # lutando
+      posicao = 7 # lutando
     senao posicao < 4 || posicao == 7
-      poslugar.remove, posicao = (poslugar ? 6 : pospadr) # posição padrão
+      posicao = (poslugar ? 6 : pospadr) # posição padrão
     fimse
   casofim
 
@@ -196,6 +196,8 @@ const batalhaini = contr.bat_ini_int(arg0.contr, este, arg0)
 func bat_ini_int # Chamado internamente por batalhaini
 # Personagem 'arg1' de 'este' quer atacar personagem 'arg2' de 'arg0'
   ret este == arg0, nulo # Não inicia batalha contra o próprio personagem
+# Se o alvo está montado neste personagem, desmonta
+  arg0.poslugar.objlista == este && arg0.poslugar.remove
 # Se o alvo do ataque mudou, deixa de atacar o alvo
   se atkenv.objlista != arg0
     atkenv.remove
