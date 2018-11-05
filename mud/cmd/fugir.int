@@ -2,8 +2,7 @@ classe h_cmd_fugir
 herda comando_comum
 const posic = 7
 const txtajuda = txtajuda1 + m_ajuda
-const txtajuda1 = "\b\c3Fugir\b\n\
-Sintaxe: FUGIR [número]\n"
+const txtajuda1 = "\b\c3Fugir\b\nSintaxe: FUGIR [número]\n"
 #
 const m_ajuda = "Tenta fugir de uma batalha.\n\
 Seguido de um número, muda os pontos para a fuga. Quando os pontos\n\
@@ -67,13 +66,7 @@ func fugir # Tenta fugir da luta
     ret
   fimse
 # Foge
-  arg0.pmove -= 5
-  arg0.batalhafim
-  $mens.p(arg0)
-  $mens.mtodos2($cmd_[dir].m_fugir1, $cmd_[dir].m_fugir2)
-  arg0.mudadono(r)
-  $mens.mens = ""
-  !(arg0.bitver & 256) && $mens.mvis2("", $cmd_[dir].m_entra1)
+  $cmd_[dir].fugir(arg0, r)
 
 
 classe m_cmd_fugir

@@ -16,6 +16,7 @@ const m_nao_possui = "Você não possui $m."
 const m_soltaranim1 = "Você solta $a."
 const m_soltaranim2 = "$P solta $a."
 const m_animal_solto = "Já possui um animal solto."
+const m_chama_solta = "Não é possível soltar $a."
 const m_naosolta = "Você não consegue soltar itens aqui."
 const m_semperm_soltar = "Melhor não soltar nada aqui."
 const m_nao_container = "$O não é container."
@@ -103,7 +104,7 @@ func soltaranimal
 # arg0 = quem está soltando
 # arg1 = sala destino
 # arg2 = animal
-  ret arg2.p_animal != 2, $mens.mp(m_chama_solta, arg0, r)
+  ret arg2.p_animal != 2, $mens.mp(m_chama_solta, arg0, arg2)
   listaobj e
   epara e.addfim(arg0.evento), e, e.ini.remove
     ret e.objini.cmd_soltaranim(arg0, arg1, arg2, arg0), nulo

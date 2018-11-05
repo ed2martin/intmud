@@ -62,6 +62,10 @@ const c_mana1 = 30
 const c_mana2 = 20
 const tipoatk = 4 # Tipo: 4 Fogo
 const msgextra = "Pode causar queimaduras."
+const atk1_auto1 = "$P lança brasa em $a, $m"
+const atk1_perso1 = "$P lança brasa em $a, $m"
+const atk1_matou1 = "$P transforma $a em brasa, $m"
+const atk1_errou1 = "$P lança brasa mas não acerta $a, $m"
 
 
 classe cmd_cajado
@@ -255,6 +259,11 @@ const a_batalha = 2 # Condição: 2 Fora da batalha
 const a_efeito1 = "furtividade"
 const c_move1 = 20
 const c_move2 = 5
+const atk1_auto1 = ""
+const atk1_perso1 = ""
+const atk1_matou1 = ""
+const atk1_errou1 = ""
+const atk1_nulo1 = ""
 
 
 classe cmd_gás_tóxico
@@ -375,6 +384,11 @@ const a_batalha = 2 # Condição: 2 Fora da batalha
 const a_efeito1 = "ocultar"
 const c_move1 = 20
 const c_move2 = 5
+const atk1_auto1 = ""
+const atk1_perso1 = ""
+const atk1_matou1 = ""
+const atk1_errou1 = ""
+const atk1_nulo1 = ""
 
 
 classe cmd_onda_trovão
@@ -566,6 +580,11 @@ const c_mana2 = 5
 const ataquemin = 0
 const ataquemax = 0
 const tipoatk = 14 # Tipo: 14 Psíquico
+const atk1_auto1 = ""
+const atk1_perso1 = ""
+const atk1_matou1 = ""
+const atk1_errou1 = ""
+const atk1_nulo1 = ""
 
 
 classe magia_chama_protetora
@@ -593,14 +612,53 @@ func cmd_alvo
   fimse
 
 
+classe magia_combatente
+herda comando_ataque
+const nomevar = "m_Combatente"
+const tipoalvo = 7 # Alvo: 7 O personagem; não é ataque
+const msgextra = "Só pode ser usado durante uma luta e se você estiver em grupo.\n\
+Adiciona um combatente no grupo, até o limite de 3 combatentes na sala.\n\
+Vide também o comando Grupo."
+const atk1_auto1 = "Algo acontece..."
+const atk1_perso1 = "Algo acontece..."
+const atk1_matou1 = "$A simplesmente morre na mão de $p"
+const atk1_errou1 = "Ninguém aparece para ajudar"
+const atk1_nulo1 = "Ninguém aparece para ajudar"
+
+func cmd_alvo
+  se !arg0.donogrupo
+    arg0.msg("Você não está em nenhum grupo.")
+    ret 1
+  senao !arg0.atkenv
+    arg0.msg("Você não está lutando.")
+    ret 1
+  senao arg0.dono.dentro2.total("p_teste041") >= 3
+    arg0.msg("Atingido limite de 3 combatentes.")
+    ret 1
+  fimse
+
+func cmd_alvofim
+  refvar lider = arg0.donogrupo
+  se lider
+    refvar r = criar("p_teste041", arg0.dono, intpos(arg0.nivel - 4), "h_socar=4")
+    r.seguir(lider)
+    r.tseguir = 1
+    r.batalhaini(arg0.atkenv.objlista) # Compra briga com o alvo do personagem
+  fimse
+
+
 classe magia_criar_fonte
 herda comando_ataque
 const nomevar = "m_Criar fonte"
 const tipoalvo = 7 # Alvo: 7 O personagem; não é ataque
 const c_mana1 = 15
 const c_mana2 = 5
+const atkfalha = 0
 const atk1_auto1 = "$P faz um gesto circular com as mãos."
 const atk1_perso1 = "$P faz um gesto circular com as mãos."
+const atk1_matou1 = ""
+const atk1_errou1 = ""
+const atk1_nulo1 = ""
 
 func cmd_alvofim
   refvar sala = arg0.contr.dono # sala = sala aonde o personagem está
@@ -609,8 +667,6 @@ func cmd_alvofim
     $mens.p(arg0)
     $mens.mtodos1("Aos poucos, uma fonte brota do chão.")
   fimse
-
-const atkfalha = 0
 
 
 classe magia_curar
@@ -623,6 +679,7 @@ const c_mana2 = 5
 const valor = 100
 const atk1_auto1 = "$P se cura"
 const atk1_perso1 = "$P cura $a"
+const atk1_matou1 = ""
 const atk1_errou1 = "$P tenta curar $a"
 const atk1_nulo1 = "$P tenta curar $a"
 
@@ -636,6 +693,11 @@ const c_mana1 = 30
 const c_mana2 = 5
 const valor = 100
 const atk1_usar1 = "$P fala solenemente 'Curar Cegueira'"
+const atk1_auto1 = ""
+const atk1_perso1 = ""
+const atk1_matou1 = ""
+const atk1_errou1 = ""
+const atk1_nulo1 = ""
 
 
 classe magia_drenar_energia
@@ -693,6 +755,11 @@ const a_remove = "voar"
 const c_mana1 = 20
 const c_mana2 = 5
 const atk1_usar1 = "$P fala solenemente 'Flutuar'"
+const atk1_auto1 = ""
+const atk1_perso1 = ""
+const atk1_matou1 = ""
+const atk1_errou1 = ""
+const atk1_nulo1 = ""
 
 
 classe magia_fogo
@@ -733,6 +800,11 @@ const a_efeito1 = "invisibilidade"
 const c_mana1 = 20
 const c_mana2 = 5
 const atk1_usar1 = "$P fala solenemente 'Inv'"
+const atk1_auto1 = ""
+const atk1_perso1 = ""
+const atk1_matou1 = ""
+const atk1_errou1 = ""
+const atk1_nulo1 = ""
 
 
 classe magia_proteção_de_luz
@@ -830,6 +902,11 @@ const ataquemin = 0
 const ataquemax = 0
 const tipoatk = 14 # Tipo: 14 Psíquico
 const atk1_usar1 = "$P inicia uma canção de ninar para $a."
+const atk1_auto1 = ""
+const atk1_perso1 = ""
+const atk1_matou1 = ""
+const atk1_errou1 = ""
+const atk1_nulo1 = ""
 
 
 classe magia_sopro_de_gelo
@@ -858,6 +935,11 @@ const c_mana2 = 4
 const aulaini = 3
 const aulafim = 5
 const atk1_usar1 = "$P fala solenemente 'Ver Inv'"
+const atk1_auto1 = ""
+const atk1_perso1 = ""
+const atk1_matou1 = ""
+const atk1_errou1 = ""
+const atk1_nulo1 = ""
 
 
 classe magia_ver_oculto
@@ -868,6 +950,11 @@ const a_efeito1 = "ver oculto"
 const c_mana1 = 30
 const c_mana2 = 4
 const atk1_usar1 = "$P fala solenemente 'Ver Oculto'"
+const atk1_auto1 = ""
+const atk1_perso1 = ""
+const atk1_matou1 = ""
+const atk1_errou1 = ""
+const atk1_nulo1 = ""
 
 
 classe magia_voar
@@ -879,6 +966,11 @@ const a_remove = "flutuar"
 const c_mana1 = 40
 const c_mana2 = 10
 const atk1_usar1 = "$P fala solenemente 'Voar'"
+const atk1_auto1 = ""
+const atk1_perso1 = ""
+const atk1_matou1 = ""
+const atk1_errou1 = ""
+const atk1_nulo1 = ""
 
 
 classe magia_volta

@@ -1118,7 +1118,7 @@ const sexoini = 2 # Sexo Perso: 2 Aleatório
 const pesoobj = 30100
 const volobj = 300
 const p_agressivo = 2 # Agressivo: 2 Sim
-const p_captura = 2 # Capturar: 2 Fácil
+const p_captura = 2 # Domar: 2 Fácil
 const inivar = "h_arremessar=1"
 
 
@@ -1219,6 +1219,7 @@ m_Cegueira 8\n\
 m_Curar_Cegueira 8\n\
 m_Criar_Fonte 8\n\
 m_Raio_Confusão 8\n\
+m_Combatente 8\n\
 h_Rosnar 8\n\
 h_Roncar 8\n\
 h_Esquiva 6"
@@ -2010,6 +2011,19 @@ herda comum_perso
 const nome = "vendedora bilhetes"
 const descnome = "uma vendedora de bilhetes"
 const lojaitem = "teste068 0"
+
+
+classe p_teste041
+herda comum_persobat
+const nome = "combatente"
+const descnome = "combatente"
+
+func cmd_pnj_proc
+  se !atkenv # Se não está lutando...
+    apagar(este)
+    $mens.p(este)
+    $mens.mtodos2("", "$P desaparece!")
+  fimse
 
 
 classe s_teste001

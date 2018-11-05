@@ -237,8 +237,13 @@ bool TConsole::Inic(bool completo)
     terminal.c_cc[VMIN]=0;         // Retornar imediatamente
     terminal.c_cc[VTIME]=0;        // Não retornar após algum tempo
     tcsetattr(STDIN_FILENO, TCSAFLUSH, &terminal);
+    fcntl_stdin = fcntl(STDIN_FILENO, F_GETFL, 0);
+    if (fcntl_stdin < 0)
+        fcntl_stdin = 0;
+    fcntl_ler = (fcntl_stdin | O_NONBLOCK);
+    fcntl_escr = (fcntl_stdin & ~O_NONBLOCK);
     fcntl_block = true;
-    fcntl(STDIN_FILENO, F_SETFL, 0);
+    fcntl(STDIN_FILENO, F_SETFL, fcntl_escr);
 #endif
 
     Aberto = 2;
@@ -257,6 +262,7 @@ void TConsole::Fim()
 #else
     printf("\x1B[0m\n");
     tcsetattr(STDIN_FILENO, TCSAFLUSH, &term_antes);
+    fcntl(STDIN_FILENO, F_SETFL, fcntl_stdin);
 #endif
 }
 
@@ -411,7 +417,7 @@ const char * TConsole::LerTecla()
 
     if (fcntl_block)
     {
-        fcntl(STDIN_FILENO, F_SETFL, O_NONBLOCK);
+        fcntl(STDIN_FILENO, F_SETFL, fcntl_ler);
         fcntl_block=false;
     }
 #if 0
@@ -688,7 +694,7 @@ void TConsole::EnvTxt(const char * texto, int tamanho)
     }
 #else
     if (!fcntl_block)
-        { fcntl(STDIN_FILENO, F_SETFL, 0); fcntl_block=true; }
+        { fcntl(STDIN_FILENO, F_SETFL, fcntl_escr); fcntl_block=true; }
     while (tamanho>0)
     {
         char mens[1024];
@@ -802,7 +808,7 @@ void TConsole::CorTxt(unsigned int novacor)
     *destino++ = 'm';
     *destino = 0;
     if (!fcntl_block)
-        { fcntl(STDIN_FILENO, F_SETFL, 0); fcntl_block=true; }
+        { fcntl(STDIN_FILENO, F_SETFL, fcntl_escr); fcntl_block=true; }
     printf("%s", mens);
 #endif
 }
@@ -827,7 +833,7 @@ void TConsole::CursorLin(int valor)
     MoverCursor = true;
 #else
     if (!fcntl_block)
-        { fcntl(STDIN_FILENO, F_SETFL, 0); fcntl_block=true; }
+        { fcntl(STDIN_FILENO, F_SETFL, fcntl_escr); fcntl_block=true; }
     if (valor>0)
         printf("\x1B[%dB", valor);
     else
@@ -849,7 +855,7 @@ void TConsole::CursorCol(int valor)
     MoverCursor = true;
 #else
     if (!fcntl_block)
-        { fcntl(STDIN_FILENO, F_SETFL, 0); fcntl_block=true; }
+        { fcntl(STDIN_FILENO, F_SETFL, fcntl_escr); fcntl_block=true; }
     if (valor>0)
         printf("\x1B[%dC", valor);
     else
@@ -871,7 +877,7 @@ void TConsole::CursorPosic(int lin, int col)
     MoverCursor = true;
 #else
     if (!fcntl_block)
-        { fcntl(STDIN_FILENO, F_SETFL, 0); fcntl_block=true; }
+        { fcntl(STDIN_FILENO, F_SETFL, fcntl_escr); fcntl_block=true; }
     printf("\x1B[%d;%dH", LinAtual+1, ColAtual+1);
 #endif
 }
@@ -896,7 +902,7 @@ void TConsole::InsereLin(int valor)
     ScrollConsoleScreenBuffer(con_out, &scroll, NULL, dest, &charinfo);
 #else
     if (!fcntl_block)
-        { fcntl(STDIN_FILENO, F_SETFL, 0); fcntl_block=true; }
+        { fcntl(STDIN_FILENO, F_SETFL, fcntl_escr); fcntl_block=true; }
     printf("\x1B[%dL", valor);
 #endif
 }
@@ -921,7 +927,7 @@ void TConsole::ApagaLin(int valor)
     ScrollConsoleScreenBuffer(con_out, &scroll, NULL, dest, &charinfo);
 #else
     if (!fcntl_block)
-        { fcntl(STDIN_FILENO, F_SETFL, 0); fcntl_block=true; }
+        { fcntl(STDIN_FILENO, F_SETFL, fcntl_escr); fcntl_block=true; }
     printf("\x1B[%dM", valor);
 #endif
 }
@@ -944,7 +950,7 @@ void TConsole::InsereCol(int valor)
     ScrollConsoleScreenBuffer(con_out, &scroll, NULL, dest, &charinfo);
 #else
     if (!fcntl_block)
-        { fcntl(STDIN_FILENO, F_SETFL, 0); fcntl_block=true; }
+        { fcntl(STDIN_FILENO, F_SETFL, fcntl_escr); fcntl_block=true; }
     printf("\x1B[%d@", valor);
 #endif
 }
@@ -967,7 +973,7 @@ void TConsole::ApagaCol(int valor)
     ScrollConsoleScreenBuffer(con_out, &scroll, NULL, dest, &charinfo);
 #else
     if (!fcntl_block)
-        { fcntl(STDIN_FILENO, F_SETFL, 0); fcntl_block=true; }
+        { fcntl(STDIN_FILENO, F_SETFL, fcntl_escr); fcntl_block=true; }
     printf("\x1B[%dP", valor);
 
     printf("\x1B[s" // Salva o cursor
@@ -993,7 +999,7 @@ void TConsole::LimpaFim()
                 posic, &CharsWritten);
 #else
     if (!fcntl_block)
-        { fcntl(STDIN_FILENO, F_SETFL, 0); fcntl_block=true; }
+        { fcntl(STDIN_FILENO, F_SETFL, fcntl_escr); fcntl_block=true; }
     printf("\x1B[K");
 #endif
 }
@@ -1010,7 +1016,7 @@ void TConsole::LimpaTela()
                 posic, &CharsWritten);
 #else
     if (!fcntl_block)
-        { fcntl(STDIN_FILENO, F_SETFL, 0); fcntl_block=true; }
+        { fcntl(STDIN_FILENO, F_SETFL, fcntl_escr); fcntl_block=true; }
     printf("\x1B[2J");
 #endif
 }

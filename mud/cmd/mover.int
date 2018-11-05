@@ -153,22 +153,25 @@ func mover # Personagem anda em uma direção
   se !(s1.socktot || arg1.socktot) # Não tem jogador por perto
     arg0.mudadono(arg1)
   senao arg0.p_bebida >= $miscfome.bebedir - rand(20) # Cambaleando não anda em silêncio
-    abriu1 && $mens.msgvis(abriu1, arg0)
-    refvar ssai = arg0.bitinv & 0x30 ? arg0.p_som_voasai : arg0.p_som_sai
-    refvar sent = arg0.bitinv & 0x30 ? arg0.p_som_voaentra : arg0.p_som_entra
-    refvar msai = abriu2 + m_sai4
-    refvar ment = m_entra4
-    $mens.p(arg0, nulo, arg3)
-    $mens.mvis2som(msai, ssai)
+    abriu1 && $mens.mp(abriu1, arg0, nulo, arg2)
+    msgsair(arg0, arg2, abriu2 + m_sai4, 1)
     arg0.mudadono(arg1)
-    $mens.p(arg0, nulo, arg3)
-    $mens.mvis2som(ment, sent)
+    msgentrar(arg0, arg3, m_entra4, 1)
   senao arg0.bitinv & 48 # Voando ou voando alto
-    mover2(arg0, arg1, arg2, arg3, abriu2 + m_sai3, m_entra3)
+    abriu1 && $mens.mp(abriu1, arg0, nulo, arg2)
+    msgsair(arg0, arg2, abriu2 + m_sai3)
+    arg0.mudadono(arg1)
+    msgentrar(arg0, arg3, m_entra3)
   senao arg0.bitver & 0x200 # Flutuando
-    mover2(arg0, arg1, arg2, arg3, abriu2 + m_sai2, m_entra2)
+    abriu1 && $mens.mp(abriu1, arg0, nulo, arg2)
+    msgsair(arg0, arg2, abriu2 + m_sai2)
+    arg0.mudadono(arg1)
+    msgentrar(arg0, arg3, m_entra2)
   senao # Não está voando nem flutuando
-    mover2(arg0, arg1, arg2, arg3, abriu2 + m_sai1, m_entra1)
+    abriu1 && $mens.mp(abriu1, arg0, nulo, arg2)
+    msgsair(arg0, arg2, abriu2 + m_sai1)
+    arg0.mudadono(arg1)
+    msgentrar(arg0, arg3, m_entra1)
   fimse
   epara l.addfim(arg0.evento), l, l.ini.remove
     ret l.objini.cmd_moveu(arg0, s1, dir, arg0, arg1, arg2, arg3), 0
@@ -220,47 +223,47 @@ func mover # Personagem anda em uma direção
   efim
   ret 1
 
-func mover2 # Chamado por mover, para mudar de sala enviando mensagem
+func msgsair # Envia mensagens do personagem saindo da sala
 # arg0 = personagem
-# arg1 = sala destino
-# arg2 = item aonde está entrando (na sala origem) ou nulo
-# arg3 = item de onde está saindo (na sala destino) ou nulo
-# arg4 = mensagem saiu da sala origem
-# arg5 = mensagem entrou na sala destino
-# abriu1 = mensagem para o personagem
+# arg1 = item aonde está entrando (na sala origem) ou nulo
+# arg2 = mensagem saiu da sala origem
+# arg3 = verdadeiro se não deve andar em silêncio
   listaobj l
-  $mens.p(arg0, nulo, arg2)
-  abriu1 && $mens.msgvis(abriu1, arg0)
+  $mens.p(arg0, nulo, arg1)
   refvar ssai = arg0.bitinv & 0x30 ? arg0.p_som_voasai : arg0.p_som_sai
-  refvar sent = arg0.bitinv & 0x30 ? arg0.p_som_voaentra : arg0.p_som_entra
-  txt100 carga
-  se arg0.persolugar
-    l.addfim(arg0.persolugar)
-    carga += " carregando " + l.objini.nome
-    epara l.ini.remove, l, l.ini.remove
-      carga += (l.total > 1 ? ", " : " e ") + l.objini.nome
-    efim
-  fimse
-  se arg0.bitver & 256 # Anda em silêncio
-    carga = " em silêncio" + carga
-    refvar msai = txttroca(arg4, "$m", arg2 ? " $e $o" + carga : carga)
-    refvar ment = txttroca(arg3 ? "$P saiu $d $o$m." : arg5, "$m", carga)
+  txt100 carga = arg0.desccarga
+  se !arg3 && arg0.bitver & 256 # Anda em silêncio
+    $mens.mens = " em silêncio" + (carga ? " carregando " + carga)
+    refvar msai = arg1 ? txttroca(arg2, "$m", " $e $o$m") : arg2
     l.addfim(arg0.dono.dentro2)
     epara l.remove(arg0), l, l.ini.remove
       l.objini.bitver & 0x1000 && $mens.msgsomvis(msai, ssai, l.objini)
     efim
-    arg0.mudadono(arg1)
-    $mens.p(arg0, nulo, arg3)
+  senao
+    $mens.mens = carga ? " carregando " + carga
+    refvar msai = arg1 ? txttroca(arg2, "$m", " $e $o$m") : arg2
+    $mens.mvis2som(msai, ssai)
+  fimse
+
+func msgentrar # Envia mensagens do personagem entrando na sala
+# arg0 = personagem
+# arg1 = item de onde está saindo (na sala destino) ou nulo
+# arg2 = mensagem entrou na sala destino
+# arg3 = verdadeiro se não deve andar em silêncio
+  $mens.p(arg0, nulo, arg1)
+  listaobj l
+  refvar sent = arg0.bitinv & 0x30 ? arg0.p_som_voaentra : arg0.p_som_entra
+  txt100 carga = arg0.desccarga
+  se !arg3 && arg0.bitver & 256 # Anda em silêncio
+    $mens.mens = " em silêncio" + (carga ? " carregando " + carga)
+    refvar ment = arg1 ? "$P saiu $d $o$m." : arg2
     l.addfim(arg0.dono.dentro2)
     epara l.remove(arg0, arg0.persolugar), l, l.ini.remove
       l.objini.bitver & 0x1000 && $mens.msgsomvis(ment, sent, l.objini)
     efim
   senao
-    refvar msai = txttroca(arg4, "$m", arg2 ? " $e $o" + carga : carga)
-    refvar ment = txttroca(arg3 ? "$P saiu $d $o$m." : arg5, "$m", carga)
-    $mens.mvis2som(msai, ssai)
-    arg0.mudadono(arg1)
-    $mens.p(arg0, nulo, arg3)
+    $mens.mens = carga ? " carregando " + carga
+    refvar ment = arg1 ? "$P saiu $d $o$m." : arg2
     l.addfim(arg0.dono.dentro2)
     epara l.remove(arg0, arg0.persolugar), l, l.ini.remove
       $mens.msgsomvis(ment, sent, l.objini)
@@ -268,7 +271,7 @@ func mover2 # Chamado por mover, para mudar de sala enviando mensagem
   fimse
 
 func fugirdir # Obtém direção para onde pode fugir
-# Entrada: arg0 = personagem
+# arg0 = personagem
 # Retorna: direção ou "" se não há para onde fugir
   refvar dono = ref(arg0.dono)
   txt100 t
@@ -279,6 +282,21 @@ func fugirdir # Obtém direção para onde pode fugir
     !dono.fugir_[y](arg0) && int(dono.porta_[y]) < 2 && (t += y + " ")
   efim
   ret t ? txtsub(t, rand(intsub(t)), 1) : ""
+
+func fugir # Foge nssa direção
+# arg0 = personagem
+# arg1 = sala destino ou nulo se deve obter a sala a partir do personagem
+  ref r = arg1 ?? arg0.dono.dirsala(dir, arg0)
+  ret !r, nulo
+  ref perso = arg0.poslugar.objlista ?? arg0
+  arg0.pmove -= 5
+  arg0.batalhafim
+  perso.batalhafim
+  $mens.mens = ""
+  $mens.mp(m_fugir1, perso)
+  msgsair(perso, nulo, m_fugir2, 1)
+  perso.mudadono(r)
+  msgentrar(perso, nulo, m_entra1, 1)
 
 
 classe h_cmd_n
@@ -292,7 +310,7 @@ const m_sai2 = "$P flutuou para o norte$m."
 const m_sai3 = "$P voou para o norte$m."
 const m_sai4 = "$P foi para o norte cambaleando."
 const m_fugir1 = "Você fugiu para o norte."
-const m_fugir2 = "$P fugiu para o norte."
+const m_fugir2 = "$P fugiu para o norte$m."
 const m_porta = "a porta norte"
 const dir = "n"
 
@@ -308,7 +326,7 @@ const m_sai2 = "$P flutuou para o sul$m."
 const m_sai3 = "$P voou para o sul$m."
 const m_sai4 = "$P foi para o sul cambaleando."
 const m_fugir1 = "Você fugiu para o sul."
-const m_fugir2 = "$P fugiu para o sul."
+const m_fugir2 = "$P fugiu para o sul$m."
 const m_porta = "a porta sul"
 const dir = "s"
 
@@ -324,7 +342,7 @@ const m_sai2 = "$P flutuou para leste$m."
 const m_sai3 = "$P voou para leste$m."
 const m_sai4 = "$P foi para leste cambaleando."
 const m_fugir1 = "Você fugiu para leste."
-const m_fugir2 = "$P fugiu para leste."
+const m_fugir2 = "$P fugiu para leste$m."
 const m_porta = "a porta leste"
 const dir = "l"
 
@@ -340,7 +358,7 @@ const m_sai2 = "$P flutuou para oeste$m."
 const m_sai3 = "$P voou para oeste$m."
 const m_sai4 = "$P foi para oeste cambaleando."
 const m_fugir1 = "Você fugiu para oeste."
-const m_fugir2 = "$P fugiu para oeste."
+const m_fugir2 = "$P fugiu para oeste$m."
 const m_porta = "a porta oeste"
 const dir = "o"
 
@@ -356,7 +374,7 @@ const m_sai2 = "$P flutuou para cima$m."
 const m_sai3 = "$P voou para cima$m."
 const m_sai4 = "$P subiu cambaleando."
 const m_fugir1 = "Você fugiu para cima."
-const m_fugir2 = "$P fugiu para cima."
+const m_fugir2 = "$P fugiu para cima$m."
 const m_porta = "a passagem para cima"
 const dir = "c"
 
@@ -372,7 +390,7 @@ const m_sai2 = "$P flutuou para baixo$m."
 const m_sai3 = "$P voou para baixo$m."
 const m_sai4 = "$P desceu cambaleando."
 const m_fugir1 = "Você fugiu para cima."
-const m_fugir2 = "$P fugiu para cima."
+const m_fugir2 = "$P fugiu para cima$m."
 const m_porta = "a passagem para baixo"
 const dir = "b"
 
@@ -388,7 +406,7 @@ const m_sai2 = "$P flutuou para o nordeste$m."
 const m_sai3 = "$P voou para o nordeste$m."
 const m_sai4 = "$P foi para o nordeste cambaleando."
 const m_fugir1 = "Você fugiu para o nordeste."
-const m_fugir2 = "$P fugiu para o nordeste."
+const m_fugir2 = "$P fugiu para o nordeste$m."
 const m_porta = "a porta nordeste"
 const dir = "ne"
 
@@ -404,7 +422,7 @@ const m_sai2 = "$P flutuou para o noroeste$m."
 const m_sai3 = "$P voou para o noroeste$m."
 const m_sai4 = "$P foi para o noroeste cambaleando."
 const m_fugir1 = "Você fugiu para o noroeste."
-const m_fugir2 = "$P fugiu para o noroeste."
+const m_fugir2 = "$P fugiu para o noroeste$m."
 const m_porta = "a porta noroeste"
 const dir = "no"
 
@@ -420,7 +438,7 @@ const m_sai2 = "$P flutuou para o sudeste$m."
 const m_sai3 = "$P voou para o sudeste$m."
 const m_sai4 = "$P foi para o sudeste cambaleando."
 const m_fugir1 = "Você fugiu para o sudeste."
-const m_fugir2 = "$P fugiu para o sudeste."
+const m_fugir2 = "$P fugiu para o sudeste$m."
 const m_porta = "a porta sudeste"
 const dir = "se"
 
@@ -436,7 +454,7 @@ const m_sai2 = "$P flutuou para o sudoeste$m."
 const m_sai3 = "$P voou para o sudoeste$m."
 const m_sai4 = "$P foi para o sudoeste cambaleando."
 const m_fugir1 = "Você fugiu para o sudoeste."
-const m_fugir2 = "$P fugiu para o sudoeste."
+const m_fugir2 = "$P fugiu para o sudoeste$m."
 const m_porta = "a porta sudoeste"
 const dir = "so"
 
@@ -452,7 +470,7 @@ const m_sai2 = "$P flutuou para fora$m."
 const m_sai3 = "$P voou para fora$m."
 const m_sai4 = "$P saiu cambaleando."
 const m_fugir1 = "Você fugiu para fora."
-const m_fugir2 = "$P fugiu para fora."
+const m_fugir2 = "$P fugiu para fora$m."
 const m_porta = "fora"
 const dir = "sair"
 
@@ -468,7 +486,7 @@ const m_sai2 = "$P entrou flutuando$m."
 const m_sai3 = "$P entrou voando$m."
 const m_sai4 = "$P entrou cambaleando."
 const m_fugir1 = "Você fugiu entrando."
-const m_fugir2 = "$P fugiu entrando."
+const m_fugir2 = "$P fugiu entrando$m."
 const m_porta = "dentro"
 const dir = "entrar"
 const m_naover = "Você não vê $m."

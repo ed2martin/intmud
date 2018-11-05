@@ -370,6 +370,16 @@ func msgposicao # Envia uma mensagem conforme a posição
     ret msg("\c9Você tenta, mas não consegue.\b")
   casofim
 
+func desccarga # Obtém texto dos personagens montados
+  ret !persolugar, ""
+  listaobj l
+  l.addfim(persolugar)
+  txt100 carga = l.objini.nome
+  epara l.ini.remove, l, l.ini.remove
+    carga += (l.total > 1 ? ", " : " e ") + l.objini.nome
+  efim
+  ret carga
+
 func descpos
   se posicao == pospadr && !(iseguir && tseguir == 3)
     refvar m = txt(descpadr(arg0))

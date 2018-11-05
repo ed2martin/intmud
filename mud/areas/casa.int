@@ -784,12 +784,8 @@ func cmd_mover
   fimse
 
 func cmd_fugir
-  arg0.pmove -= 5
-  arg0.batalhafim
-  $mens.p(arg0)
-  $mens.mtodos1("$P fugiu para oeste.")
-  arg0.mudadono($s_casa001)
-  $mens.mvis2("", "$P chegou do leste.")
+  $cmd_o.fugir(arg0, $s_casa001)
+# Nota: tem o mesmo efeito de $cmd_o.fugir(arg0)
   ret 1
 
 
