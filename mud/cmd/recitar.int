@@ -1,12 +1,23 @@
-classe cmd_recitar
+classe h_cmd_recitar
 herda comando_comebebe
-const txtajuda = "\b\c3Recitar\b\n\
+const txtajuda = txtajuda1 + m_ajuda
+const txtajuda1 = "\b\c3Recitar\b\n\
 Sintaxe: RECITAR <objeto>\n\
-         RECITAR <objeto>  <alvo>\n\
-Tenta recitar alguma coisa, geralmente um pergaminho.\n\
+         RECITAR <objeto> <alvo>\n"
+const posic = 5
+#
+const m_ajuda = "Tenta recitar alguma coisa, geralmente um pergaminho.\n\
 Conforme as magias contidas no pergaminho, é possível direcioná-las\n\
 para um personagem ou mesmo um item."
-const posic = 5
+const m_sem_args = "Recitar o quê?"
+const m_naover = "Você não vê $m."
+const m_nao_recita = "Não há nada para recitar em $o."
+const m_embriaguez = "Você não consegue ler o que está escrito $e $o."
+const m_nivel = "$O é complicad$u demais."
+const m_recitou1 = "Você recita $o."
+const m_recitou2 = "$P recita $o."
+const admordem = "m_ajuda m_sem_args m_naover m_nao_recita m_embriaguez\n\
+m_nivel m_recitou1 m_recitou2"
 
 func escr
   listaobj l
@@ -14,18 +25,18 @@ func escr
   misc:separa(arg1) # Separa nome do objeto do nome do alvo
   txt100 nome
   nome = misc:sep2
-  ret !arg1, arg0.msg("Recitar o quê?")
+  ret !arg1, $mensjog.msg(m_sem_args, arg0)
   ref r = misc:itemdentro(arg0, misc:sep1)
 # Checa se consegue recitar
   se !r
-    ret arg0.msg("Você não vê isso.")
+    $mens.mens = misc:sep1
+    ret $mens.mp(m_naover, arg0)
   senao r.f_tipo != 4 # Checa se pode recitar
-    ret arg0.msg("Não há nada para recitar em " + r.descnome + ".")
+    ret $mens.mp(m_nao_recita, arg0, nulo, r)
   senao arg0.p_bebida >= $miscfome.cheio / 2
-    ret arg0.msg("Você não consegue ler o que está escrito em " + r.descnome + ".")
+    ret $mens.mp(m_embriaguez, arg0, nulo, r)
   senao int(r.pnivel) > arg0.pnivel
-    refvar lin = txtcopiamai(r.descnome, "A")
-    ret arg0.msg(lin + " é complicad" + (r.msexo ? "o" : "a") + " demais.")
+    ret $mens.mp(m_nivel, arg0, nulo, r)
   senao
     refvar f = txt(arg0.dono.s_falar(arg0))
     ret f, arg0.msg(f)
@@ -39,8 +50,7 @@ func escr
   efim
 # Recita o objeto
   $mens.p(arg0, nulo, r)
-  refvar msg1 = r.f_msgperso ? r.f_msgperso : "$P recita $o."
-  $mens.mvis2(msg1, r.f_msgoutros ? r.f_msgoutros : msg1)
+  $mens.mvis2(r.f_msgperso ?? m_recitou1, r.f_msgoutros ?? r.f_msgperso ?? m_recitou2)
   r.apagar(1)
   efeito(arg0, nome, r)
 # Eventos
@@ -50,3 +60,49 @@ func escr
   epara l.addfim(r.evento), l, l.ini.remove
     l.objini.cmd_recitou(arg0, r, r)
   efim
+
+
+classe m_cmd_recitar
+herda comando_menu_cmd
+#
+const nome1 = "Ajuda"
+const tipo1 = "opc_texto"
+const clas1 = "cmd_recitar"
+const vari1 = "m_ajuda"
+#
+const nome2 = "Sem argumentos"
+const tipo2 = "opc_linha"
+const clas2 = "cmd_recitar"
+const vari2 = "m_sem_args"
+#
+const nome3 = "Sem alvo"
+const tipo3 = "opc_linha"
+const clas3 = "cmd_recitar"
+const vari3 = "m_naover"
+#
+const nome4 = "Não recita"
+const tipo4 = "opc_linha"
+const clas4 = "cmd_recitar"
+const vari4 = "m_nao_recita"
+#
+const nome5 = "Embriagado"
+const tipo5 = "opc_linha"
+const clas5 = "cmd_recitar"
+const vari5 = "m_embriaguez"
+#
+const nome6 = "Nível insuficiente"
+const tipo6 = "opc_linha"
+const clas6 = "cmd_recitar"
+const vari6 = "m_nivel"
+#
+const nome7 = "Recitou perso"
+const info7 = "Quando não houver mensagem no menu \"Fome e sede\" do item"
+const tipo7 = "opc_linha"
+const clas7 = "cmd_recitar"
+const vari7 = "m_recitou1"
+#
+const nome8 = "Recitou alvo"
+const info8 = "Quando não houver mensagem no menu \"Fome e sede\" do item"
+const tipo8 = "opc_linha"
+const clas8 = "cmd_recitar"
+const vari8 = "m_recitou2"

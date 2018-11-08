@@ -276,14 +276,15 @@ func seguir # Segue um item ou personagem
   arg0 != este && (iseguir = arg0.lseguir.addfim(este))
 
 func mesmogrupo # Retorna 1 se arg0 está no mesmo grupo ou 0 se não está (vide comando grupo)
-  ref p1 = (tseguir == 3 ? iseguir.obj) ?? este
-  ref p2 = (arg0.tseguir == 3 ? arg0.iseguir.obj) ?? arg0
+  ref p1 = (tseguir == 3 ? iseguir.objlista) ?? este
+  ref p2 = (arg0.tseguir == 3 ? arg0.iseguir.objlista) ?? arg0
+  ret p1 == p2, 1
   ret p1.tseguir == 2, p2.tseguir == 1 && p2.iseguir.objlista == p1
   ret p2.tseguir == 2, p1.tseguir == 1 && p1.iseguir.objlista == p2
   ret p1.tseguir == 1 && p2.tseguir == 1 && p1.iseguir.objlista == p2.iseguir.objlista
 
 func donogrupo # Retorna o dono do grupo ou nulo se não estiver em um grupo
-  ref p1 = (tseguir == 3 ? iseguir.obj) ?? este
+  ref p1 = (tseguir == 3 ? iseguir.objlista) ?? este
   ret ref(p1.tseguir == 2 ? p1 : p1.tseguir == 1 ? p1.iseguir.objlista)
 
 func rastrearsala # Obtém o caminho para chegar até uma sala

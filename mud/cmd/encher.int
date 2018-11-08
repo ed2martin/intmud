@@ -1,12 +1,30 @@
-classe cmd_encher
+classe h_cmd_encher
 herda comando_comum
-const txtajuda = "\b\c3Encher\b\n\
-Sintaxe: ENCHER <objeto1> [objeto2]\n\
-Tenta encher o objeto1 com o líquido do objeto2. Digitando apenas o nome\n\
-do objeto1, enche com o líquido da fonte (caso exista uma por perto)."
+const txtajuda = txtajuda1 + m_ajuda
+const txtajuda1 = "\b\c3Encher\b\n\
+Sintaxe: ENCHER <objeto1> [objeto2]\n"
 const posic = 5
 #
+const m_ajuda = "Tenta encher o objeto1 com o líquido do objeto2. Digitando apenas o nome\n\
+do objeto1, enche com o líquido da fonte (caso exista uma por perto)."
 const m_sem_args = "Encher o quê?"
+const m_naover = "Você não vê $m."
+const m_nao_consegue = "Você não consegue encher $o."
+const m_nao_enche = "Não é possível encher $a com $o."
+const m_pegar = "Você precisa pegar $o primeiro."
+const m_fechado = "$O está fechad$u."
+const m_vazio = "$O está vazi$u."
+const m_cheio = "$O está chei$u."
+const m_sem_liquido = "$O não contém líquido."
+const m_sem_fonte = "Não há uma fonte aqui."
+const m_outro_liquido = "$O contém outro líquido."
+const m_encheu_item1 = "Você encheu $o com $m de $a."
+const m_encheu_item2 = "$P encheu $o com $m de $a."
+const m_encheu_fonte1 = "Você encheu $o com $m."
+const m_encheu_fonte2 = "$P encheu $o com $m."
+const admordem = "m_ajuda m_sem_args m_naover m_nao_consegue m_nao_enche\n\
+m_pegar m_fechado m_vazio m_cheio m_sem_liquido m_sem_fonte m_outro_liquido\n\
+m_encheu_item1 m_encheu_item2 m_encheu_fonte1 m_encheu_fonte2"
 
 func escr
   listaobj l
@@ -18,55 +36,55 @@ func escr
   r1 = misc:itemdentro(arg0, txt1(arg1))
   se !r1
     $mens.mens = txt1(arg1)
-    ret $mens.mp("Você não vê $m.", arg0)
+    ret $mens.mp(m_naover, arg0)
   senao r1.i_aberto >= 3
-    ret $mens.mp("$O está fechad$u.", arg0, nulo, r1)
+    ret $mens.mp(m_fechado, arg0, nulo, r1)
   senao r1.f_tipo != 5
-    ret $mens.mp("Você não consegue encher $o.", arg0, nulo, r1)
+    ret $mens.mp(m_nao_consegue, arg0, nulo, r1)
   fimse
 # Obtém o segundo objeto
   se txt2(arg1)
     r2 = misc:itemtudo(arg0, txt2(arg1))
     se !r2
       $mens.mens = txt2(arg1)
-      ret $mens.mp("Você não vê $m.", arg0, nulo, r1)
+      ret $mens.mp(m_naover, arg0)
     senao r2.f_tipo == 1 # Fonte
       liq = $liq_[r2.f_liquido]
-      ret !liq, $mens.mp("Não é possível encher $a com $o.", arg0, r1, r2)
+      ret !liq, $mens.mp(m_nao_enche, arg0, r1, r2)
     senao r2.f_tipo == 5 # Container de líquido
       liq = $liq_[txt2(r2.var.z_liquido)]
       se r2.dono != arg0
-        ret $mens.mp("Você precisa pegar $o primeiro.", arg0, nulo, r2)
+        ret $mens.mp(m_pegar, arg0, nulo, r2)
       senao r2.i_aberto >= 3
-        ret $mens.mp("$O está fechad$u.", arg0, nulo, r2)
+        ret $mens.mp(m_fechado, arg0, nulo, r2)
       senao !r2.var.z_liquido
-        ret $mens.mp("$O está vazi$u.", arg0, nulo, r2)
+        ret $mens.mp(m_vazio, arg0, nulo, r2)
       senao !liq
         r2.var.z_liquido = ""
         r2.ajustapeso
-        ret $mens.mp("$O está vazi$u.", arg0, nulo, r2)
+        ret $mens.mp(m_vazio, arg0, nulo, r2)
       fimse
     senao
-      ret $mens.mp("$O não contém líquido.", arg0, nulo, r2)
+      ret $mens.mp(m_sem_liquido, arg0, nulo, r2)
     fimse
   senao
     epara l.addfim(arg0.dono.dentro1), l, l.ini.remove
       sair l.objini.f_tipo == 1 && l.objini.visivel(arg0)
     efim
     r2 = l.objini, l.limpar
-    ret !r2, arg0.msg("Não há uma fonte aqui.")
+    ret !r2, $mens.mp(m_sem_fonte, arg0)
     liq = $liq_[r2.f_liquido]
-    ret !liq, $mens.mp("Não é possível encher $a com $o.", arg0, r1, r2)
+    ret !liq, $mens.mp(m_nao_enche, arg0, r1, r2)
   fimse
 # Obtém a quantidade de líquido
   int32 qtd1 = r1.f_totalml - txt1(r1.var.z_liquido)
   int32 qtd2 = r2.f_tipo == 5 ? txt1(r2.var.z_liquido) : qtd1
   se qtd1 <= 0
-    ret $mens.mp("$O está chei$u.", arg0, nulo, r1)
+    ret $mens.mp(m_cheio, arg0, nulo, r1)
   senao qtd2 <= 0
-    ret $mens.mp("$O está vazi$u.", arg0, nulo, r1)
+    ret $mens.mp(m_vazio, arg0, nulo, r1)
   senao r1.var.z_liquido && $liq_[txt2(r1.var.z_liquido)] != liq
-    ret $mens.mp("$O contém outro líquido.", arg0, nulo, r2)
+    ret $mens.mp(m_outro_liquido, arg0, nulo, r2)
   fimse
   qtd2 = intmin(qtd1, qtd2)
 # Eventos
@@ -82,6 +100,7 @@ func escr
   efim
 # Transfere o líquido
   $mens.mens = liq.nome
+  $mens.o_1 = liq.aspecto
   $mens.p(arg0, r2, r1)
   r1.var.z_liquido = txt(intpos(qtd2 + r1.var.z_liquido)) + " " + txt(liq, 4)
   r1.ajustapeso
@@ -89,9 +108,9 @@ func escr
     qtd2 = intpos(txt1(r2.var.z_liquido) - qtd2)
     r2.var.z_liquido = qtd2 ? txt(qtd2) + " " + txt(liq, 4)
     r2.ajustapeso
-    $mens.mtodos1("$P encheu $o com $m de $a.")
+    $mens.mtodos2(m_encheu_item1, m_encheu_item2)
   senao
-    $mens.mtodos1("$P encheu $o com $m.")
+    $mens.mtodos2(m_encheu_fonte1, m_encheu_fonte2)
   fimse
 # Eventos
   liq.cmd_encheu(arg0, r1, r2, liq, qtd2, liq)
@@ -104,3 +123,91 @@ func escr
   epara l.addfim(r2.evento), l, l.ini.remove
     l.objini.cmd_encheu(arg0, r1, r2, liq, qtd2, r2)
   efim
+
+
+classe m_cmd_encher
+herda comando_menu_cmd
+#
+const nome1 = "Ajuda"
+const tipo1 = "opc_texto"
+const clas1 = "cmd_encher"
+const vari1 = "m_ajuda"
+#
+const nome2 = "Sem argumentos"
+const tipo2 = "opc_linha"
+const clas2 = "cmd_encher"
+const vari2 = "m_sem_args"
+#
+const nome3 = "Sem alvo"
+const tipo3 = "opc_linha"
+const clas3 = "cmd_encher"
+const vari3 = "m_naover"
+#
+const nome4 = "Não consegue"
+const tipo4 = "opc_linha"
+const clas4 = "cmd_encher"
+const vari4 = "m_nao_consegue"
+#
+const nome5 = "Item não enche"
+const tipo5 = "opc_linha"
+const clas5 = "cmd_encher"
+const vari5 = "m_nao_enche"
+#
+const nome6 = "Precisa pegar"
+const tipo6 = "opc_linha"
+const clas6 = "cmd_encher"
+const vari6 = "m_pegar"
+#
+const nome7 = "Item fechado"
+const tipo7 = "opc_linha"
+const clas7 = "cmd_encher"
+const vari7 = "m_fechado"
+#
+const nome8 = "Item vazio"
+const tipo8 = "opc_linha"
+const clas8 = "cmd_encher"
+const vari8 = "m_vazio"
+#
+const nome9 = "Item cheio"
+const tipo9 = "opc_linha"
+const clas9 = "cmd_encher"
+const vari9 = "m_cheio"
+#
+const nome10 = "Sem líquido"
+const tipo10 = "opc_linha"
+const clas10 = "cmd_encher"
+const vari10 = "m_sem_liquido"
+#
+const nome11 = "Sem fonte"
+const tipo11 = "opc_linha"
+const clas11 = "cmd_encher"
+const vari11 = "m_sem_fonte"
+#
+const nome12 = "Contém outro líquido"
+const tipo12 = "opc_linha"
+const clas12 = "cmd_encher"
+const vari12 = "m_outro_liquido"
+#
+const nome14 = "Encheu de item perso"
+const info14 = "$o=item enchido, $a=item esvaziado, $m=nome do líquido, $1=aspecto"
+const tipo14 = "opc_linha"
+const clas14 = "cmd_encher"
+const vari14 = "m_encheu_item1"
+#
+const nome15 = "Encheu de item outros"
+const info15 = "$o=item enchido, $a=item esvaziado, $m=nome do líquido, $1=aspecto"
+const tipo15 = "opc_linha"
+const clas15 = "cmd_encher"
+const vari15 = "m_encheu_item2"
+#
+const nome16 = "Encheu de fonte perso"
+const info16 = "$o=item enchido, $a=item fonte, $m=nome do líquido, $1=aspecto"
+const tipo16 = "opc_linha"
+const clas16 = "cmd_encher"
+const vari16 = "m_encheu_fonte1"
+#
+const nome17 = "Encheu de fonte outros"
+const info17 = "$o=item enchido, $a=item fonte, $m=nome do líquido, $1=aspecto"
+const tipo17 = "opc_linha"
+const clas17 = "cmd_encher"
+const vari17 = "m_encheu_fonte2"

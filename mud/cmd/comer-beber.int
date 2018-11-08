@@ -23,14 +23,17 @@ func efeito
 
 classe cmd_comer
 herda comando_comebebe
-const txtajuda = "\b\c3Comer\b\n\
-Sintaxe: COMER <objeto>\n\
-Tenta comer alguma coisa, geralmente um alimento."
+const txtajuda = txtajuda1 + m_ajuda
+const txtajuda1 = "\b\c3Comer\b\n\
+Sintaxe: COMER <objeto>\n"
 const posic = 5
+#
+const m_ajuda = "Tenta comer alguma coisa, geralmente um alimento."
+const m_sem_args = "Comer o quê?"
 
 func escr
   ret arg0.posicao == 7, msgposicao # Não come durante a luta
-  ret !arg1, arg0.msg("Comer o quê?")
+  ret !arg1, $mensjog.msg(m_sem_args, arg0)
   refvar r = misc:itemdentro(arg0, arg1)
   se !r
     ret arg0.msg("Você não vê isso.")
@@ -75,13 +78,15 @@ func comer # Personagem arg0 come item arg1
 
 classe cmd_beber
 herda comando_comebebe
+const txtajuda = txtajuda1 + m_ajuda
 const txtajuda = "\b\c3Beber\b\n\
 Sintaxe: BEBER [objeto]\n\
-         TOMAR [objeto]\n\
-Tenta beber alguma coisa. Sem argumentos, bebe a primeira fonte\n\
-que encontrar."
+         TOMAR [objeto]\n"
 const posic = 5
 const totalml = 1
+#
+const m_ajuda = "Tenta beber alguma coisa. Sem argumentos, bebe a primeira fonte\n\
+que encontrar."
 
 func escr
   listaobj l
@@ -177,8 +182,10 @@ const objcmd = $cmd_beber
 
 classe cmd_provar
 herda cmd_beber
-const txtajuda = "\b\c3Provar\b\n\
-Sintaxe: PROVAR [objeto]\n\
-Tenta provar alguma coisa (bebe 1 décimo do que beberia teclando Beber).\n\
-Sem argumentos, prova a primeira fonte que encontrar."
+const txtajuda = txtajuda1 + m_ajuda
+const txtajuda1 = "\b\c3Provar\b\n\
+Sintaxe: PROVAR [objeto]\n"
 const totalml = 0.1
+#
+const m_ajuda = "Tenta provar alguma coisa (bebe 1 décimo do que beberia teclando Beber).\n\
+Sem argumentos, prova a primeira fonte que encontrar."

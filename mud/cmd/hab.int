@@ -149,7 +149,7 @@ func checahab2 # Checa se personagem pode usar habilidade/magia e avisa o person
     $mens.mp(comando_hab_cfg:m_desmontado, contr0, arg0)
     ret
   senao arg2.item # Usou algum objeto: não checa a posição e a arma usada
-  senao contr0.pnivel + config:animal_n < arg0.pnivel
+  senao contr0 != arg0 && contr0.pnivel + config:animal_n < arg0.pnivel
     $mens.mp(comando_hab_cfg:m_nao_obedece, contr0, arg0)
     ret
   senao arg0.posicao < posic # Checa a posição necessária
@@ -220,7 +220,7 @@ func autohab2 # Checa se personagem pode usar habilidade/magia em ataque automát
   ret a_batalha == (contr0.atkenv ? 2 : 1), nulo
   ret a_montado == 1 && contr0.poslugar, nulo
   ret a_montado > 1 && !contr0.poslugar, nulo
-  ret contr0.pnivel + config:animal_n < arg0.pnivel, nulo
+  ret contr0 != arg0 && contr0.pnivel + config:animal_n < arg0.pnivel, nulo
   ret contr0.dono.s_semmagia && txt(nomevar, 0, 1) == "m", nulo
   ret arg0.pvida <= arg1 * (c_vida2 - c_vida1) + c_vida1, nulo
   ret arg0.pmana < arg1 * (c_mana2 - c_mana1) + c_mana1, nulo
