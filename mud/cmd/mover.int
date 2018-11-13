@@ -232,15 +232,16 @@ func msgsair # Envia mensagens do personagem saindo da sala
   $mens.p(arg0, nulo, arg1)
   refvar ssai = arg0.bitinv & 0x30 ? arg0.p_som_voasai : arg0.p_som_sai
   txt100 carga = arg0.desccarga
+  carga && (carga = arg0.perso ? " carregando " + carga : " com " + carga)
   se !arg3 && arg0.bitver & 256 # Anda em silêncio
-    $mens.mens = " em silêncio" + (carga ? " carregando " + carga)
+    $mens.mens = " em silêncio" + carga
     refvar msai = arg1 ? txttroca(arg2, "$m", " $e $o$m") : arg2
     l.addfim(arg0.dono.dentro2)
     epara l.remove(arg0), l, l.ini.remove
       l.objini.bitver & 0x1000 && $mens.msgsomvis(msai, ssai, l.objini)
     efim
   senao
-    $mens.mens = carga ? " carregando " + carga
+    $mens.mens = carga
     refvar msai = arg1 ? txttroca(arg2, "$m", " $e $o$m") : arg2
     $mens.mvis2som(msai, ssai)
   fimse

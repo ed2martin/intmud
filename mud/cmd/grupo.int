@@ -16,7 +16,7 @@ Quando alguém do grupo é atacado os outros também entram na luta.\n\
 Os membros do grupo podem ainda conversar entre si com o comando GCHAT.\n\
 Na movimentação pelo MUD, o grupo é semelhante aos seus integrantes\n\
 seguindo o líder.\n\n\
-Digitando GRUPO e o nome de um personagem adiciona no seu grupo\n\
+Digitando GRUPO e o nome de um personagem, adiciona no seu grupo\n\
 o personagem que está seguindo você. Se já estava adicionado, remove.\n\
 Um personagem também pode deixar o grupo digitando SEGUIR.\n\
 GRUPO + adiciona todos que estão seguindo você.\n\
@@ -94,7 +94,7 @@ func escr
     arg0.tseguir = 2
     msggrupo(arg0, m_adicionado, txt2(lin))
     ret
-# Adicionar um personagem no grupo
+# Adicionar/remover um personagem no grupo
   senao arg1
     se arg0.iseguir && arg0.tseguir == 1
       ret $mens.mp(m_nao_lider, arg0)
@@ -109,7 +109,7 @@ func escr
     se !obj
       $mens.mens = arg1
       ret $mens.mp(m_naover, arg0)
-    senao int(obj) >= 2
+    senao int(obj.tseguir) >= 2
       ret $mens.mp(m_nao_adicionar, arg0, obj)
     fimse
     nivelgrupo(arg0)

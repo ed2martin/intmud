@@ -258,7 +258,7 @@ func exechab # Chamado quando personagem usa habilidade ou magia
     ret $mens.mp("Em você mesm$s?", contr0)
   casofim
 # Checa o alvo
-  se contr0.mesmogrupo(contr1)
+  se contr0 != contr1 && contr0.mesmogrupo(contr1)
     ret $mens.mp("Atacar outro integrante do grupo?", contr0, contr1)
   senao !contr0.dono.s_luta
     refvar msg1 = arg4.item ? "A magia falhou." : "Aqui é um lugar pacífico."
@@ -271,8 +271,8 @@ func exechab # Chamado quando personagem usa habilidade ou magia
   senao !contr0.p_agressivo(arg1)
     ret $mens.mp("Você não quer brigar com $a.", contr0, contr1)
   senao
-    ref p0 = (contr0.tseguir == 3 ? contr0.iseguir.obj) ?? contr0
-    ref p1 = (contr1.tseguir == 3 ? contr1.iseguir.obj) ?? contr1
+    ref p0 = (contr0.tseguir == 3 ? contr0.iseguir.objlista) ?? contr0
+    ref p1 = (contr1.tseguir == 3 ? contr1.iseguir.objlista) ?? contr1
     se p0.jog && p1.jog && (contr0.dono.s_luta == 1 || contr1.dono.s_luta == 1)
       ret arg0 != arg1, $mens.mp("Você não quer brigar com $a aqui.", contr0, contr1)
     fimse

@@ -203,9 +203,8 @@ func bat_ini_int # Chamado internamente por batalhaini
     atkenv.remove
     atkenv = arg0.atkrec.addfim(este)
     atkdiv.limpar
-    atktempo = config:atktempo, atkturno = 0
+    atktempo = config:atktempo, atkturno = 0, atkdanos = 1
     posicao >= 4 && (posicao = 7)
-    atkdanos = 1
   fimse
 # Adiciona personagem para ganhar experiência
   atkdiv.addfim1(arg1)
@@ -214,9 +213,8 @@ func bat_ini_int # Chamado internamente por batalhaini
     arg0.atkenv = atkrec.addfim(arg0)
     arg0.atkdiv.limpar
     arg0.atkdiv.addfim(arg2)
-    arg0.atktempo = 1, arg0.atkturno = 0
+    arg0.atktempo = 1, arg0.atkturno = 0, arg0.atkdanos = 1
     arg0.posicao >= 4 && (arg0.posicao = 7)
-    arg0.atkdanos = 1
   fimse
 # Acerta variáveis
   atkturno = arg0.atkturno = 0
@@ -229,6 +227,7 @@ func bat_ini_int # Chamado internamente por batalhaini
     i.obj.e_condicao == 3 && apagar(i.obj)
   efim
 # Checa se pode batalhar em grupo, obtém o líder do grupo do alvo
+  listaobj l
   ref r
   se p_atk_individual || arg0.p_atk_individual
     ret
@@ -237,28 +236,45 @@ func bat_ini_int # Chamado internamente por batalhaini
   senao arg0.iseguir && arg0.tseguir == 1
     r = arg0.iseguir.objlista
   fimse
-  ret !r, nulo
-# Faz o líder atacar se não estiver batalhando
-  se !r.atkenv && r.dono == dono
+# Faz o líder do outro grupo atacar se não estiver batalhando
+  se r && !r.atkenv && r.dono == dono
     r.atkenv = atkrec.addfim(r)
     r.atkdiv.limpar
     r.atkdiv.addfim(r.persobat)
-    r.atktempo = 1, r.atkturno = 0
+    r.atktempo = 1, r.atkturno = 0, r.atkdanos = 1
     r.posicao >= 4 && (r.posicao = 7)
-    r.atkdanos = 1
     r.p_proc = 1 # Para gerar evento de PNJs
   fimse
-# Faz os outros integrantes do grupo atacarem se não estiverem batalhando
-  listaobj l
+# Faz os outros integrantes do outro grupo atacarem se não estiverem batalhando
   epara l.addfim(r.lseguir), l, l.ini.remove
     r = l.objini
     continuar r.atkenv || r.tseguir != 1 || r.dono != dono
     r.atkenv = atkrec.addfim(r)
     r.atkdiv.limpar
     r.atkdiv.addfim(r.persobat)
-    r.atktempo = 1, r.atkturno = 0
+    r.atktempo = 1, r.atkturno = 0, r.atkdanos = 1
     r.posicao >= 4 && (r.posicao = 7)
-    r.atkdanos = 1
+    r.p_proc = 1 # Para gerar evento de PNJs
+  efim
+# Faz o dono atacar se não estiver batalhando
+  r = iseguir.objlista
+  se r && !r.atkenv && r.dono == dono && tseguir == 3
+    r.atkenv = arg0.atkrec.addfim(r)
+    r.atkdiv.limpar
+    r.atkdiv.addfim(r.persobat)
+    r.atktempo = 1, r.atkturno = 0, r.atkdanos = 1
+    r.posicao >= 4 && (r.posicao = 7)
+    r.p_proc = 1 # Para gerar evento de PNJs
+  fimse
+# Faz os animais atacarem se não estiverem batalhando
+  epara l.addfim(lseguir), l, l.ini.remove
+    r = l.objini
+    continuar r.atkenv || r.tseguir != 3 || r.dono != dono
+    r.atkenv = arg0.atkrec.addfim(r)
+    r.atkdiv.limpar
+    r.atkdiv.addfim(r.persobat)
+    r.atktempo = 1, r.atkturno = 0, r.atkdanos = 1
+    r.posicao >= 4 && (r.posicao = 7)
     r.p_proc = 1 # Para gerar evento de PNJs
   efim
 

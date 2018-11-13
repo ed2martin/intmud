@@ -82,7 +82,7 @@ func escr
   se r
     se !r.i_movel(arg0)
       ret $mens.mp(m_item_nao, arg0, nulo, r)
-    senao r != arg0.poslugar.objlista && r.i_lugar <= r.persolugar.total
+    senao r != arg0.poslugar.objlista && int(r.i_lugar) <= r.persolugar.total
       ret $mens.mp(m_item_cheio, arg0, nulo, r)
     fimse
     epara l.addfim(arg0.evento), l, l.ini.remove
@@ -95,7 +95,7 @@ func escr
     arg0.poslugar = r.persolugar.addfim(arg0)
     arg0.posicao = 6
     $mens.p(arg0, nulo, r)
-    $mens.mtodos2(m_sentou_item1, m_sentou_item1)
+    $mens.mtodos2(m_sentou_item1, m_sentou_item2)
     epara l.addfim(arg0.evento), l, l.ini.remove
       l.objini.cmd_sentouobj(arg0, r, arg0)
     efim
@@ -165,7 +165,7 @@ func escr
   se r
     se !r.i_movel(arg0)
       ret $mens.mp(m_item_nao, arg0, nulo, r)
-    senao r != arg0.poslugar.objlista && r.i_lugar <= r.persolugar.total
+    senao r != arg0.poslugar.objlista && int(r.i_lugar) <= r.persolugar.total
       ret $mens.mp(m_item_cheio, arg0, nulo, r)
     fimse
     epara l.addfim(arg0.evento), l, l.ini.remove
