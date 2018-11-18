@@ -138,15 +138,31 @@ func fim # Objeto foi apagado
   fimse
   persolugar.limpar, batalhafim, comum_obj:fim
 
-func mudadono # Coloca personagem em outra sala
-# arg0 = nova sala
+func mudadono # Coloca personagem em outra sala ou outro personagem
+# arg0 = nova sala ou novo personagem
 # arg1 = quantidade (é ignorado por essa função)
   listaobj l
 # Muda de sala
   poslugar && poslugar.objlista.dono != arg0 && poslugar.remove
   atkrec.limpar, mdono(arg0), cmd_mudadono
+  se dono.perso
+    tseguir = 0, iseguir.remove, persolugar.limpar, p_proc = 1
+    se !var.z_dono
+      var.z_dono = dono.nome
+      var.z_pnivel = pnivel
+    fimse
+  senao donoantes.perso
+    tseguir = 3, iseguir.remove, iseguir = donoantes.lseguir.addfim(este)
+  fimse
+  !dono && persolugar.limpar
 # Eventos cmd_saiu e variável donoantes.s_item
   se donoantes && !donoantes.perso
+    se !sock
+    senao donoantes.dentro1.total && !donoantes.socktot
+      donoantes.t_item = donoantes.s_item * 600
+    senao
+      donoantes.t_item = 0
+    fimse
     refvar salasaiu = ref(donoantes)
     epara l.addfim(evento), l, l.ini.remove
       l.objini.cmd_saiu(este, salasaiu, este)
@@ -154,22 +170,9 @@ func mudadono # Coloca personagem em outra sala
     epara l.addfim(salasaiu.evento), l, l.ini.remove
       l.objini.cmd_saiu(este, salasaiu, salasaiu)
     efim
-    se !sock
-    senao donoantes.dentro1.total && !donoantes.socktot
-      donoantes.t_item = donoantes.s_item * 600
-    senao
-      donoantes.t_item = 0
-    fimse
   fimse
 # Checa se novo dono é personagem
-  se dono.perso
-    persolugar.limpar
-    p_proc = 1
-    ret este
-  senao !dono
-    persolugar.limpar
-    ret este
-  fimse
+  ret !dono || dono.perso, este
 # Eventos cmd_chegou
   (sock || jog) && dono.s_reset1, dono.cmd_salaperso(este)
   refvar salachegou = ref(dono)
@@ -191,10 +194,6 @@ func mudadono # Coloca personagem em outra sala
     epara l.addfim(dono.dentro2), l, l.ini.remove
       (l.objini.p_agressivo(este) == 2 || l.objini.var.r_[nome]_) && (l.objini.p_proc = 1)
     efim
-# Se vai ser animal de um personagem, acerta quem é o primeiro dono
-  senao dono.perso && !var.z_dono
-    var.z_dono = dono.nome
-    var.z_pnivel = pnivel
   fimse
 # Mostra descrição (jogador) ou processamento do personagem (não jogador)
   se !sock
@@ -216,6 +215,21 @@ func mudadono # Coloca personagem em outra sala
   efim
   ret este
 
+func mudadomador # Muda o domador
+# arg0 = domador (personagem) ou nulo se não deve pertencer a um domador
+# Não tem efeito se estiver no comando Animal (estiver em outro personagem)
+  ret dono.perso, nulo
+  ref alvo = arg0
+  se alvo
+    tseguir = 3, iseguir.remove, iseguir = alvo.lseguir.addfim(este)
+    se !var.z_dono
+      var.z_dono = alvo.nome
+      var.z_pnivel = pnivel
+    fimse
+  senao tseguir == 3
+    tseguir = 0, iseguir.remove
+  fimse
+
 func montar # Monta em arg0 (ou desmonta, se arg0 for nulo)
   ref alvo = arg0
   poslugar.remove
@@ -232,9 +246,15 @@ func montar # Monta em arg0 (ou desmonta, se arg0 for nulo)
 
 func cabedentro # Retorna 1 se personagem cabe em uma sala ou 0 se não cabe
 # arg0 = sala
-  ret !arg0.s_sala || arg0.volden + voltot > arg0.volmax, 0
-  ret jog, int(arg0.dentro2.total("jogador") < arg0.s_jog)
-  ret int(sock || arg0.dentro2.total - arg0.dentro2.total("jogador") < arg0.s_pnj)
+  ret !arg0.s_sala, 0
+  refvar j = (jog ? 1 : 0) + persolugar.total("jogador") + arg0.dentro2.total("jogador")
+  ret j > arg0.s_jog || 1 + persolugar.total + arg0.dentro2.total - j > arg0.s_pnj, 0
+  int32 vol = voltot + arg0.volden
+  listaitem i
+  epara i = persolugar.ini, i, i.depois
+    vol += i.obj.voltot
+  efim
+  ret voltot <= arg0.volmax
 
 func recalc_exec # Ajusta variáveis
 # Acerta atributos básicos

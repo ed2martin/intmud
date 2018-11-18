@@ -622,7 +622,7 @@ func escr
   h.linhas && t.addfim("Tipo,raça,classe: " + txttroca(h.remove(10), "\n", ", "))
   t.addfim("Sexo:             " + (r.psexo ? "Masculino" : "Feminino"))
 # Quem pegou
-  se r != r.contr && r.var.z_dono
+  se r.var.z_dono
     t1 = "Pego por:         " + txte(r.var.z_dono)
     t.addfim(t1 + " (no nível " + int(r.var.z_pnivel) + ")")
   fimse

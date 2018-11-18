@@ -121,21 +121,31 @@ func cabedentro # Retorna quantos itens iguais a esse cabem em sala/item/persona
 # arg0 = sala, item ou personagem
   ret este == arg0, 0
   refvar v1 = arg0.objmax - arg0.dentro1.total
-  refvar v2 = (arg0.volmax - arg0.volden) / voltot
-  real2 v3 = v2
-  se arg0.item
-    ref r1
-    ref r2
-    epara r1 = este, r1.item, r1 = r1.dono
+  real2 v2 # Limite de volume
+  real2 v3 # Limite de itens na sala ou no personagem
+  ref r1 # Sala ou personagem aonde este item está
+  epara r1 = este, r1.item, r1 = r1.dono
+  efim
+  se persolugar # Tem personagem sentado: Destino deve ser uma sala
+    ret !arg0.s_sala, 0
+    refvar j = persolugar.total("jogador") + arg0.dentro2.total("jogador")
+    ret j > arg0.s_jog || persolugar.total + arg0.dentro2.total - j > arg0.s_pnj, 0
+    int32 vol = voltot
+    listaitem i
+    epara i = persolugar.ini, i, i.depois
+      vol += i.obj.voltot
     efim
+    v2 = (arg0.volmax - arg0.volden) / vol
+    v3 = r1 == arg0 ? v1 : (arg0.objlimite - (arg0.objnum >> 1)) / (objnum >> 1)
+  senao arg0.item # Destino é item
+    v2 = (arg0.volmax - arg0.volden) / voltot
+    ref r2
     epara r2 = arg0, r2.item, r2 = r2.dono
     efim
-    r1 != r2 && (v3 = (r2.objlimite - (r2.objnum >> 1)) / (objnum >> 1))
-  senao
-    ref r1
-    epara r1 = este, r1.item, r1 = r1.dono
-    efim
-    r1 != arg0 && (v3 = (arg0.objlimite - (arg0.objnum >> 1)) / (objnum >> 1))
+    v3 = r1 == r2 ? v1 : (r2.objlimite - (r2.objnum >> 1)) / (objnum >> 1)
+  senao # Destino não é item
+    v2 = (arg0.volmax - arg0.volden) / voltot
+    v3 = r1 == arg0 ? v1 : (arg0.objlimite - (arg0.objnum >> 1)) / (objnum >> 1)
   fimse
   ret intpos(intdiv(intmin(v1, v2, v3)))
 

@@ -52,12 +52,13 @@ func escr
   t.addfim((arg0.persobat == arg0 ? "0* " : "0  ") + m_voce + "  N" + arg0.pnivel)
   epara i = arg0.dentro2.ini, i, i.depois
     continuar !i.obj.perso
-    lin = txt(++num) + (arg0.persobat == i.obj ? "*" : " ")
-    se i.obj.pvida
-      lin += " " + txtcopiamai(i.obj.nome, "A") + "  N" + i.obj.pnivel
-    senao
-      lin += " (" + txtcopiamai(i.obj.nome, "A") + ")  N" + i.obj.pnivel
+    lin = txt(++num) + (arg0.persoesc == i.obj ? "* " : "  ")
+    se !i.obj.pvidaok
+      lin += "(desmaiado) "
+    senao i.obj.pnivel > arg0.pnivel + config:animal_n
+      lin += "(não obedece) "
     fimse
+    lin += txtcopiamai(i.obj.nome, "A") + "  N" + i.obj.pnivel
     t.addfim(lin)
   efim
   se t.linhas == 1

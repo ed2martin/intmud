@@ -43,14 +43,14 @@ func escr # Executa o comando
   se arg0.poslugar # Montado
     obj = arg0.poslugar.objlista
     se !obj.perso # Não é personagem
-      ret !obj.i_mover, arg0.msgposicao
+      ret !obj.i_mover(arg0), arg0.msgposicao
     senao obj.tseguir == 3 # Animal tem dono
       ret obj.iseguir.objlista != arg0, $mens.mp(comando_mover_cfg:m_ignorar, arg0, obj)
     senao int(obj.p_montar_tipo) < 3 # Animal não tem dono e não obedece
       ret $mens.mp(comando_mover_cfg:m_ignorar, arg0, obj)
     fimse
   fimse
-  ret obj.posicao < 8, arg0.msgposicao
+  ret obj.posicao < 8 || arg0.posicao == 7, arg0.msgposicao
   se !arg0.jog || rand($miscfome.bebedir, $miscfome.cheio) > arg0.p_bebida
     dir1 = dir
     refvar saladest = obj.dono.dirsala(dir1, obj)
@@ -211,15 +211,18 @@ func mover # Personagem anda em uma direção
     ret 0
   casofim
 # Seguir
-  epara l.addfim(arg0.lseguir), l, l.ini.remove
-    se l.objini.posicao < 8 || l.objini.dono != s1
-    senao $comando_mover.lseg.possui(l.objini)
-    senao l.objini.tseguir == 3
-      mover(l.objini, arg1, arg2, arg3)
-    senao arg0.visivel(l.objini) && s1.visivel(l.objini)
-      $mens.mp(comando_mover_cfg:m_seguir, l.objini, arg0)
-      mover(l.objini, arg1, arg2, arg3)
-    fimse
+  listaobj l2
+  epara l2.addfim(arg0, arg0.persolugar), l2, l2.ini.remove
+    epara l.addfim(l2.objini.lseguir), l, l.ini.remove
+      se l.objini.posicao < 8 || l.objini.dono != s1
+      senao $comando_mover.lseg.possui(l.objini)
+      senao l.objini.tseguir == 3
+        mover(l.objini, arg1, arg2, arg3)
+      senao l2.objini.visivel(l.objini) && s1.visivel(l.objini)
+        $mens.mp(comando_mover_cfg:m_seguir, l.objini, l2.objini)
+        mover(l.objini, arg1, arg2, arg3)
+      fimse
+    efim
   efim
   ret 1
 

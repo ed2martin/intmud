@@ -121,7 +121,6 @@ func pegar # Pega o animal; vai para o comando Animal
   arg2.mudadono(arg0) # Muda de dono
   arg2.objsolto.remove(arg2) # Não conta mais na lista de personagens soltos
   arg0.recalc = 1
-  arg2.ajustapeso # Para o peso do personagem ir para 0 (não conta no jogador)
   $mens.p(arg0, arg2)
   se estacheio
     arg2.idono.remove, arg2.idono = arg2.dono.dentro3.addfim(arg2)
@@ -153,9 +152,7 @@ func domar # Pega o animal; passa a ser do personagem mas fica na sala
   efim
   arg2.batalhafim
   arg2.objsolto.remove(arg2) # Não conta mais na lista de personagens soltos
-  arg2.tseguir = 3
-  arg2.iseguir.remove
-  arg2.iseguir = arg0.lseguir.addfim(arg2)
+  arg2.mudadomador(arg0)
   $mens.p(arg0, arg2)
   $mens.mvis2(capturar_equipe1, capturar_equipe2)
   epara e.addfim(arg0.evento), e, e.ini.remove
