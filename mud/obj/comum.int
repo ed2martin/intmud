@@ -1,6 +1,12 @@
 classe comum_obj
 # Comum a todos os personagens, itens e salas
 #
+# const perso = 1 # (ou outro valor diferente de 0) Se for personagem
+# const persopnj = 1 # Se for PNJ sem dono (conta no limite de PNJs na sala)
+# const jog = 1 # Se for jogador (conta no limite de jogadores na sala)
+# const item = 1 # (ou outro valor diferente de 0) Se for item
+# const s_sala = 1 # Se for sala (personagens podem entrar)
+#
 ref dono # Quem possui esse objeto; mesmo que: idono.objlista
 ref donoantes # Dono anterior
 ref contr # Quem está controlando; mesmo que: (perso && dono.perso ? dono : este)
@@ -34,6 +40,11 @@ uint16 luzden # Somente leitura: quantas fontes de luz dentro
 uint16 luztot # Somente leitura: quantidade total de fontes de luz
 # const luztipo = 0 # 0=não repassa a luz, 1=não é fonte de luz, 2=é fonte de luz
 #
+uint16 jogtot # Quantidade de jogadores (personagens com jog=1) em dentro2 é (jottot>>1)
+uint16 pnjtot # Quantidade de PNJs (personagens com persopnj=1) em dentro2 é (pnjtot>>1)
+# Bit 0 de jogtot e pnjtot em 1 signifia que adicionou 2 em dono.jogtot e dono.pnjtot
+# Essas veriáveis têm influência no limite de jogadores e de PNJs em uma sala
+#
 # const evhora = 1 # Receber evento cmd_hora a cada hora MUD
 # const eveste = 1 # Receber eventos do próprio objeto
 # const evperso = 1 # Receber eventos do dono se o dono for personagem
@@ -61,7 +72,8 @@ func fim # Objeto vai sair do jogo
     i.obj.tseguir == 3 ? i.depois : i.obj.msg(msgfim) + i.removedepois
   efim
 
-func ajustapeso # Acerta peso e volume (pesoden, pesotot, volden, voltot)
+func ajustapeso # Acerta peso, volume, jog e pnj
+# Variáveis: pesoden, pesotot, volden, voltot, jogtot, pnjtot
   real2 x
   ref r
 # Acerta o peso (pesoden e pesotot)
@@ -98,6 +110,15 @@ func ajustapeso # Acerta peso e volume (pesoden, pesotot, volden, voltot)
   senao
     objnum++
   fimse
+# Ajusta total de jogadores e PNJs
+  refvar j = (jog ? 1 : 0) - (jogtot & 1)
+  refvar p = (persopnj ? 1 : 0) - (pnjtot & 1)
+  jogtot += j, dono.jogtot += 2 * j, pnjtot += p, dono.pnjtot += 2 * p
+
+func ajustajogpnj # Ajusta total de jogadores e PNJs
+  refvar j = (jog ? 1 : 0) - (jogtot & 1)
+  refvar p = (persopnj ? 1 : 0) - (pnjtot & 1)
+  jogtot += j, dono.jogtot += 2 * j, pnjtot += p, dono.pnjtot += 2 * p
 
 func ajustaobj # Acerta dono e eventos do objeto
   dono = idono.objlista
@@ -144,6 +165,9 @@ func mdono # Objeto muda de dono (arg0 = novo dono)
       r.socktot -= socktot
     efim
   fimse
+# Quantidade de jogadores e PNJs
+  (jogtot & 1) && (dono.jogtot -= 2) + (jogtot -= 1)
+  (pnjtot & 1) && (dono.pnjtot -= 2) + (pnjtot -= 1)
 # Muda de dono e acerta eventos
   evrec.1.remove, evrec.2.remove, eveste && (evrec.1 = evento.addfim(este))
   r = dono = arg0, idono.remove # Muda o dono atual
@@ -190,6 +214,9 @@ func mdono # Objeto muda de dono (arg0 = novo dono)
       r.socktot += socktot
     efim
   fimse
+# Quantidade de jogadores e PNJs
+  jog && (jogtot += 1) + (dono.jogtot += 2)
+  persopnj && (pnjtot += 1) + (dono.pnjtot += 2)
 # Limpa outras variáveis e adiciona rastro de jogador
   jog && (dono.var.r_[nome]@ = 36000) # 60*60*10 = uma hora
   perso && atkenv.remove + atkrec.limpar

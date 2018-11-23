@@ -2,6 +2,7 @@ classe comum_perso
 herda comum_persoitem
 # Personagem sem estrutura de batalha
 const perso = 1 # Para identificar que é personagem
+const persopnj = tseguir != 3 || !iseguir # Classificado como PNJ se não tiver dono
 comum listaobj objsolto # Lista de personagens soltos (não pertencem a outros)
 const jogperm = sock.jogperm # Permissões do personagem
 const jogarea = sock.jogarea # Área aonde tem permissão
@@ -143,17 +144,19 @@ func mudadono # Coloca personagem em outra sala ou outro personagem
 # arg1 = quantidade (é ignorado por essa função)
   listaobj l
 # Muda de sala
+# Nota: mdono() checa const persopnj, que checa iseguir e tseguir
+# Por isso, é preciso acertar iseguir e tseguir antes de chamar mdono()
   poslugar && poslugar.objlista.dono != arg0 && poslugar.remove
-  atkrec.limpar, mdono(arg0), cmd_mudadono
-  se dono.perso
+  se arg0.perso # Vai para um personagem
     tseguir = 0, iseguir.remove, persolugar.limpar, p_proc = 1
     se !var.z_dono
-      var.z_dono = dono.nome
+      var.z_dono = arg0.nome
       var.z_pnivel = pnivel
     fimse
-  senao donoantes.perso
-    tseguir = 3, iseguir.remove, iseguir = donoantes.lseguir.addfim(este)
+  senao dono.perso # Estava em um personagem
+    tseguir = 3, iseguir.remove, iseguir = dono.lseguir.addfim(este)
   fimse
+  atkrec.limpar, mdono(arg0), cmd_mudadono
   !dono && persolugar.limpar
 # Eventos cmd_saiu e variável donoantes.s_item
   se donoantes && !donoantes.perso
@@ -221,13 +224,13 @@ func mudadomador # Muda o domador
   ret dono.perso, nulo
   ref alvo = arg0
   se alvo
-    tseguir = 3, iseguir.remove, iseguir = alvo.lseguir.addfim(este)
+    tseguir = 3, iseguir.remove, iseguir = alvo.lseguir.addfim(este), ajustajogpnj
     se !var.z_dono
       var.z_dono = alvo.nome
       var.z_pnivel = pnivel
     fimse
   senao tseguir == 3
-    tseguir = 0, iseguir.remove
+    tseguir = 0, iseguir.remove, ajustajogpnj
   fimse
 
 func montar # Monta em arg0 (ou desmonta, se arg0 for nulo)
@@ -247,14 +250,16 @@ func montar # Monta em arg0 (ou desmonta, se arg0 for nulo)
 func cabedentro # Retorna 1 se personagem cabe em uma sala ou 0 se não cabe
 # arg0 = sala
   ret !arg0.s_sala, 0
-  refvar j = (jog ? 1 : 0) + persolugar.total("jogador") + arg0.dentro2.total("jogador")
-  ret j > arg0.s_jog || 1 + persolugar.total + arg0.dentro2.total - j > arg0.s_pnj, 0
-  int32 vol = voltot + arg0.volden
   listaitem i
+  int8 j = jogtot & 1 # Quantidade de jogadores
+  int8 p = pnjtot & 1 # Quantidade de PNJs
+  int32 vol = voltot # Volume total
   epara i = persolugar.ini, i, i.depois
-    vol += i.obj.voltot
+    vol += i.obj.voltot, j += (i.obj.jogtot & 1), p += (i.obj.pnjtot & 1)
   efim
-  ret voltot <= arg0.volmax
+  ret j && j + (arg0.jogtot >> 1) > arg0.s_jog, 0
+  ret p && p + (arg0.pnjtot >> 1) > arg0.s_pnj, 0
+  ret voltot + arg0.volden <= arg0.volmax
 
 func recalc_exec # Ajusta variáveis
 # Acerta atributos básicos

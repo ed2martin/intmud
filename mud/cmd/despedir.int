@@ -61,9 +61,10 @@ func despedir
     apagar(arg2) # Apaga animal
     arg2.mdono(nulo) # Indica que não tem o animal
   senao
-    arg2.tseguir = 0
-    arg2.iseguir.remove
-    arg2.mudadono(arg0.dono)
+    arg2.mudadono(arg1)
+    arg2.mudadomador
+    arg2.z_dono = ""
+    arg2.z_pnivel = ""
   fimse
   arg0.recalc = 1 # Acerta personagem
   arg0.persobat == arg2 && (arg0.persobat = arg0)

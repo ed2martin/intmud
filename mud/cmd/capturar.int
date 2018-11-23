@@ -58,7 +58,7 @@ func escr
     lugares = 1
   senao r.p_animal != 0 # Pode ficar na sala
     listaitem li
-    epara li = lseguir.ini, li && li.obj.tseguir != 3, li.depois
+    epara li = arg0.lseguir.ini, li && li.obj.tseguir != 3, li.depois
     efim
     !li && (lugares = 2)
   fimse

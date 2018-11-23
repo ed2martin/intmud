@@ -48,12 +48,17 @@ func info # Usado por escr
   lin += arg0.volexp ? "expande" : "não expande"
   arg1.addfim(lin)
 # Objetos dentro
-  arg.socktotal == 1
   lin = "Dentro: " + arg0.socktot + " jogador" + (arg0.socktot != 1 ? "es")
-  lin += ", " + arg0.dentro1.total + (arg0.dentro1.total == 1 ? " item" : " itens")
-  lin += ", " + arg0.dentro2.total + " perso, representa " + (arg0.objnum >> 1)
-  lin += arg0.objnum >> 1 == 1 ? " item" : " itens"
+  lin += ", " + arg0.dentro2.total + " perso, " + arg0.dentro2.total
+  lin += (arg0.dentro1.total == 1 ? " item" : " itens") + ", representa "
+  lin += txt(arg0.objnum >> 1) + (arg0.objnum >> 1 == 1 ? " item" : " itens")
   arg1.addfim(lin)
+# Personagens
+  se arg0.s_sala
+    lin = "Limite: " + (arg0.jogtot >> 1) + "/" + int(arg0.s_jog) + " jogadores"
+    lin += ", " + (arg0.pnjtot >> 1) + "/" + int(arg0.s_pnj) + " PNJs sem dono"
+    arg1.addfim(lin)
+  fimse
 # Seguindo
   arg0.iseguir && arg1.addfim("Seguindo:         " + nobj(arg0.iseguir.objlista))
   se arg0.lseguir.total
