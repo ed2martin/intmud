@@ -83,10 +83,10 @@ const nome14 = "Arquivos de log"
 const tipo14 = "menu_econfig_log--"
 #
 const nome15 = "Mensagens"
-const tipo15 = "menu_econfig_msg1--"
+const tipo15 = "menu_econfig_msg--"
 #
-const nome16 = "Mensagens por hora"
-const tipo16 = "menu_econfig_hora--"
+const nome16 = "Personagens"
+const tipo16 = "m_perso--"
 #
 const nome17 = "Comandos Admin"
 const tipo17 = "menu_econfig_adm--"
@@ -477,10 +477,26 @@ const extr12 = "Um por dia\nUm a cada 5 dias\nUm a cada 10 dias\nUm por mês"
 const exec12 = "misclog:atualiza_exec"
 
 
-classe menu_econfig_msg1
+classe menu_econfig_msg
 herda comando_menu
 const titulo = "Mensagens"
 const menufim = "menu_econfig"
+const colunas = 35
+#
+const nome1 = "Mensagens do jogo"
+const tipo1 = "menu_econfig_msgjogo--"
+#
+const nome2 = "Mensagens entra e sai"
+const tipo2 = "menu_econfig_entrasai--"
+#
+const nome3 = "Mensagens por hora"
+const tipo3 = "menu_econfig_hora--"
+
+
+classe menu_econfig_msgjogo
+herda comando_menu
+const titulo = "Mensagens do jogo"
+const menufim = "menu_econfig_msg"
 const colunas = 35
 #
 const nome1 = "Apresentação"
@@ -537,68 +553,75 @@ const info9 = "Aparece após título e descrição da sala. Se estiver vazio, não ap
 const tipo9 = "opc_linha--"
 const clas9 = "config"
 const vari9 = "perigomsg"
+
+
+classe menu_econfig_entrasai
+herda comando_menu
+const titulo = "Mensagens entra e sai"
+const menufim = "menu_econfig_msg"
+const colunas = 35
 #
-const nome10 = "Jogador entrou, admin"
-const info10 = "Mensagem de jogador entrando, para administradores\n\
+const nome1 = "Jogador entrou, admin"
+const info1 = "Mensagem de jogador entrando, para administradores\n\
 $P Personagem, $C Conexão, $N Nível, $M Moedas, $$ símbolo $"
-const tipo10 = "opc_linha--"
-const clas10 = "config"
-const vari10 = "entrou_msgadm"
+const tipo1 = "opc_linha--"
+const clas1 = "config"
+const vari1 = "entrou_msgadm"
 #
-const nome11 = "Jogador entrou, outros"
-const info11 = "Mensagem de jogador entrando, para jogadores\n\
+const nome2 = "Jogador entrou, outros"
+const info2 = "Mensagem de jogador entrando, para jogadores\n\
 $P Personagem, $C Conexão, $N Nível, $M Moedas, $$ símbolo $"
-const tipo11 = "opc_linha--"
-const clas11 = "config"
-const vari11 = "entrou_msgjog"
+const tipo2 = "opc_linha--"
+const clas2 = "config"
+const vari2 = "entrou_msgjog"
 #
-const nome12 = "Jogador saiu, admin"
-const info12 = "Mensagem de jogador saindo, para administradores\n\
+const nome3 = "Jogador saiu, admin"
+const info3 = "Mensagem de jogador saindo, para administradores\n\
 $P Personagem, $C Conexão, $$ símbolo $"
-const tipo12 = "opc_linha--"
-const clas12 = "config"
-const vari12 = "saiu_msgadm"
+const tipo3 = "opc_linha--"
+const clas3 = "config"
+const vari3 = "saiu_msgadm"
 #
-const nome13 = "Jogador saiu, outros"
-const info13 = "Mensagem de jogador saindo, para jogadores\n\
+const nome4 = "Jogador saiu, outros"
+const info4 = "Mensagem de jogador saindo, para jogadores\n\
 $P Personagem, $C Conexão, $$ símbolo $"
-const tipo13 = "opc_linha--"
-const clas13 = "config"
-const vari13 = "saiu_msgjog"
+const tipo4 = "opc_linha--"
+const clas4 = "config"
+const vari4 = "saiu_msgjog"
 #
-const nome14 = "Criando personagem"
-const info14 = "Mensagem quando está criando personagem, para administradores\n\
+const nome5 = "Criando personagem"
+const info5 = "Mensagem quando está criando personagem, para administradores\n\
 $P Personagem, $C Conexão, $$ símbolo $"
-const tipo14 = "opc_linha--"
-const clas14 = "config"
-const vari14 = "criar_msgadm"
+const tipo5 = "opc_linha--"
+const clas5 = "config"
+const vari5 = "criar_msgadm"
 #
-const nome15 = "Desistiu de criar"
-const info15 = "Mensagem quando desistiu de criando personagem, para administradores\n\
+const nome6 = "Desistiu de criar"
+const info6 = "Mensagem quando desistiu de criando personagem, para administradores\n\
 $P Personagem, $C Conexão, $$ símbolo $"
-const tipo15 = "opc_linha--"
-const clas15 = "config"
-const vari15 = "naocriar_msgadm"
+const tipo6 = "opc_linha--"
+const clas6 = "config"
+const vari6 = "naocriar_msgadm"
 #
-const nome16 = "Criou personagem, admin"
-const info16 = "Mensagem quando criou personagem, para administradores\n\
+const nome7 = "Criou personagem, admin"
+const info7 = "Mensagem quando criou personagem, para administradores\n\
 $P Personagem, $C Conexão, $N Nível, $M Moedas, $$ símbolo $"
-const tipo16 = "opc_linha--"
-const clas16 = "config"
-const vari16 = "criou_msgadm"
+const tipo7 = "opc_linha--"
+const clas7 = "config"
+const vari7 = "criou_msgadm"
 #
-const nome17 = "Criou personagem, jog"
-const info17 = "Mensagem quando criou personagem, para jogadores\n\
+const nome8 = "Criou personagem, jog"
+const info8 = "Mensagem quando criou personagem, para jogadores\n\
 $P Personagem, $C Conexão, $N Nível, $M Moedas, $$ símbolo $"
-const tipo17 = "opc_linha--"
-const clas17 = "config"
-const vari17 = "criou_msgjog"
+const tipo8 = "opc_linha--"
+const clas8 = "config"
+const vari8 = "criou_msgjog"
 
 
 classe menu_econfig_hora
 herda comando_menu
-const titulo = "Mensagens"
-const menufim = "menu_econfig"
+const titulo = "Mensagens por hora"
+const menufim = "menu_econfig_msg"
 const colunas = 35
 #
 const nome1 = "1 horas"

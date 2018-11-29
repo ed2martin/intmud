@@ -1,0 +1,145 @@
+classe h_perso_cfg
+const posicao0a = "\c9Você está mort$s!!!\b"
+const posicao1a = "\c9Você está muito mal, incapaz de fazer qualquer coisa.\b"
+const posicao2a = "\c9Você está muito mal, incapaz de fazer qualquer coisa.\b"
+const posicao3a = "\c9A única coisa que você pode fazer agora é pensar nas estrelas.\b"
+const posicao4a = "\c9Nos seus sonhos...\b"
+const posicao5a = "\c9Você se sente relaxad" + (msexo ? "o" : "a") + " demais para fazer \
+isso.\b"
+const posicao6a = "\c9Talvez você deva ficar em pé primeiro.\b"
+const posicao7a = "\c9Sem chance! Você está lutando pela sua vida.\b"
+const posicao8a = "\c9Você tenta, mas não consegue.\b"
+#
+const posicao0b = "\c9$Q está mort$s!!!\b"
+const posicao1b = "\c9$Q está muito mal, incapaz de fazer qualquer coisa.\b"
+const posicao2b = "\c9$Q está muito mal, incapaz de fazer qualquer coisa.\b"
+const posicao3b = "\c9$Q está frac$s demais.\b"
+const posicao4b = "\c9$Q está dormindo.\b"
+const posicao5b = "\c9$Q está descansando.\b"
+const posicao6b = "\c9Talvez $q deva ficar em pé primeiro.\b"
+const posicao7b = "\c9Sem chance! $Q está lutando pela sua del$v.\b"
+const posicao8b = "\c9$Q tenta, mas não consegue.\b"
+
+func iniclasse
+  ret txt(arg0, 0, 2) != "h_", !$[arg0] && criar(arg0)
+  prog p
+  ret p.existe(txt(arg0, 2)), nulo
+  p.criar(txt(arg0, 2) + "\nconfig/perso\nherda " + arg0)
+  misccriar:add(txt(arg0, 2))
+
+
+classe m_perso
+herda comando_menu
+const titulo = "Personagem"
+const menufim = "menu_econfig"
+const colunas = 28
+#
+const nome1 = "Você não consegue"
+const tipo1 = "m_perso_posicao_a--"
+#
+const nome2 = "Montaria não consegue"
+const tipo2 = "m_perso_posicao_b--"
+
+
+classe m_perso_posicao_a
+herda comando_menu
+const titulo = "Você não consegue"
+const menufim = "m_perso"
+const colunas = 28
+#
+const nome1 = "Morto"
+const tipo1 = "opc_linha"
+const clas1 = "perso_cfg"
+const vari1 = "posicao0a"
+#
+const nome2 = "Mortalmente ferido"
+const tipo2 = "opc_linha"
+const clas2 = "perso_cfg"
+const vari2 = "posicao1a"
+#
+const nome3 = "Incapacitado"
+const tipo3 = "opc_linha"
+const clas3 = "perso_cfg"
+const vari3 = "posicao2a"
+#
+const nome4 = "Fraco"
+const tipo4 = "opc_linha"
+const clas4 = "perso_cfg"
+const vari4 = "posicao3a"
+#
+const nome5 = "Dormindo"
+const tipo5 = "opc_linha"
+const clas5 = "perso_cfg"
+const vari5 = "posicao4a"
+#
+const nome6 = "Descansando"
+const tipo6 = "opc_linha"
+const clas6 = "perso_cfg"
+const vari6 = "posicao5a"
+#
+const nome7 = "Sentado"
+const tipo7 = "opc_linha"
+const clas7 = "perso_cfg"
+const vari7 = "posicao6a"
+#
+const nome8 = "Lutando"
+const tipo8 = "opc_linha"
+const clas8 = "perso_cfg"
+const vari8 = "posicao7a"
+#
+const nome9 = "Não consegue"
+const tipo9 = "opc_linha"
+const clas9 = "perso_cfg"
+const vari9 = "posicao8a"
+
+
+classe m_perso_posicao_b
+herda comando_menu
+const titulo = "Montaria não consegue"
+const menufim = "m_perso"
+const colunas = 28
+#
+const nome1 = "Morto"
+const tipo1 = "opc_linha"
+const clas1 = "perso_cfg"
+const vari1 = "posicao0b"
+#
+const nome2 = "Mortalmente ferido"
+const tipo2 = "opc_linha"
+const clas2 = "perso_cfg"
+const vari2 = "posicao1b"
+#
+const nome3 = "Incapacitado"
+const tipo3 = "opc_linha"
+const clas3 = "perso_cfg"
+const vari3 = "posicao2b"
+#
+const nome4 = "Fraco"
+const tipo4 = "opc_linha"
+const clas4 = "perso_cfg"
+const vari4 = "posicao3b"
+#
+const nome5 = "Dormindo"
+const tipo5 = "opc_linha"
+const clas5 = "perso_cfg"
+const vari5 = "posicao4b"
+#
+const nome6 = "Descansando"
+const tipo6 = "opc_linha"
+const clas6 = "perso_cfg"
+const vari6 = "posicao5b"
+#
+const nome7 = "Sentado"
+const tipo7 = "opc_linha"
+const clas7 = "perso_cfg"
+const vari7 = "posicao6b"
+#
+const nome8 = "Lutando"
+const tipo8 = "opc_linha"
+const clas8 = "perso_cfg"
+const vari8 = "posicao7b"
+#
+const nome9 = "Não consegue"
+const tipo9 = "opc_linha"
+const clas9 = "perso_cfg"
+const vari9 = "posicao8b"

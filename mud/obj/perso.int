@@ -77,7 +77,8 @@ p_atk_anda\n\
 p_atk_desvia\n\
 p_atk_individual\n\
 p_atktipo\n\
-p_captura\n\
+p_animal p_captura p_domar_hab p_domar_aulas\n\
+p_montar_tipo p_montar_hab p_montar_aulas1 p_montar_aulas2 p_lugar\n\
 p_comecorpo\n\
 p_corpo\n\
 p_exp\n\
@@ -255,7 +256,7 @@ func cabedentro # Retorna 1 se personagem cabe em uma sala ou 0 se não cabe
   int8 p = pnjtot & 1 # Quantidade de PNJs
   int32 vol = voltot # Volume total
   epara i = persolugar.ini, i, i.depois
-    vol += i.obj.voltot, j += (i.obj.jogtot & 1), p += (i.obj.pnjtot & 1)
+    vol += i.obj.voltot, j += i.obj.jogtot & 1, p += i.obj.pnjtot & 1
   efim
   ret j && j + (arg0.jogtot >> 1) > arg0.s_jog, 0
   ret p && p + (arg0.pnjtot >> 1) > arg0.s_pnj, 0
@@ -375,25 +376,12 @@ func p_espera_exec # Pega o próximo comando
   sock ? sock.espera_exec : p_proc_exec
 
 func msgposicao # Envia uma mensagem conforme a posição
-  casovar posicao
-  casose "0"
-    ret msg("\c9Você está mort" + (msexo ? "o" : "a") + "!!!\b")
-  casose "1" # Mortalmente ferido
-  casose "2" # Incapacitado
-    ret msg("\c9Você está muito mal, incapaz de fazer qualquer coisa.\b")
-  casose "3" # Fraco
-    ret msg("\c9A única coisa que você pode fazer agora é pensar nas estrelas.\b")
-  casose "4" # Dormindo
-    ret msg("\c9Nos seus sonhos...\b")
-  casose "5" # Descansando
-    ret msg("\c9Você se sente relaxad" + (msexo ? "o" : "a") + " demais para fazer isso.\b")
-  casose "6" # Sentado
-    ret msg("\c9Talvez você deva ficar em pé primeiro.\b")
-  casose "7" # Lutando
-    ret msg("\c9Sem chance! Você está lutando pela sua vida.\b")
-  casose
-    ret msg("\c9Você tenta, mas não consegue.\b")
-  casofim
+# arg0 = quem recebe a mensagem; se for nulo é o próprio personagem
+  se arg0 && arg0 != este
+    arg0.msg($mensjog.txt(perso_cfg:posicao[intmin(posicao, 8)]b, este))
+  senao
+    $mensjog.msg(perso_cfg:posicao[intmin(posicao, 8)]a, este)
+  fimse
 
 func descpos
   se posicao == pospadr && !(iseguir && tseguir == 3)

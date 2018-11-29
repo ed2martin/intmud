@@ -6,10 +6,11 @@ const m_itemfechado = "$O está fechad$u."
 const m_espaco = "Não tem espaço para seguir nessa direção."
 const m_flutuando = "Você não consegue porque não está flutuando."
 const m_cansado = "Você está cansad$s demais."
+const m_animcansado = "$A está cansad$t demais."
 const m_seguir = "Você segue $a."
 const m_ignorar = "$A não quer obedecer."
 const admordem = "m_impossivel m_portafechada m_itemfechado m_espaco m_flutuando\n\
-m_cansado m_seguir m_ignorar"
+m_cansado m_animcansado m_seguir m_ignorar"
 
 
 classe comando_mover
@@ -39,26 +40,16 @@ func escr # Executa o comando
   ref sala = arg0.dono
 # Anda
   txt100 dir1
-  ref obj = arg0 # Personagem ou item que vai mover em uma direção
-  se arg0.poslugar # Montado
-    obj = arg0.poslugar.objlista
-    se !obj.perso # Não é personagem
-      ret !obj.i_mover(arg0), arg0.msgposicao
-    senao obj.tseguir == 3 # Animal tem dono
-      ret obj.iseguir.objlista != arg0, $mens.mp(comando_mover_cfg:m_ignorar, arg0, obj)
-    senao int(obj.p_montar_tipo) < 3 # Animal não tem dono e não obedece
-      ret $mens.mp(comando_mover_cfg:m_ignorar, arg0, obj)
-    fimse
-  fimse
-  ret obj.posicao < 8 || arg0.posicao == 7, arg0.msgposicao
+  ref obj = objmover2(arg0) # Personagem ou item que vai mover em uma direção
+  ret !obj, nulo
   se !arg0.jog || rand($miscfome.bebedir, $miscfome.cheio) > arg0.p_bebida
     dir1 = dir
     refvar saladest = obj.dono.dirsala(dir1, obj)
-    ret !mover(obj, saladest, nulo, obj.dono.diritem(dir1, obj)), nulo
+    ret !mover(obj, saladest, nulo, obj.dono.diritem(dir1, obj), arg0), nulo
   senao # Bêbado andando em uma direção aleatória
     dir1 = txt(fugirdir(obj)) ?? dir
     refvar saladest = obj.dono.dirsala(dir1, obj)
-    ret !$cmd_[dir1].mover(obj, saladest), nulo
+    ret !$cmd_[dir1].mover(obj, saladest, nulo, nulo, arg0), nulo
   fimse
 # Fecha a porta
   se sala.fecha_[dir1] && sala.porta_[dir1] < 2 && $comando_mover.andou
@@ -68,15 +59,47 @@ func escr # Executa o comando
 # Próximo comando
   arg1 && arg0.sock.comandos.addini(arg1)
 
+func objmover1 # Retorna o objeto que deve se movimentar ou nulo se deve ficar parado
+# Não envia mensagens
+# arg0 = personagem que digitou o comando
+  ret !arg0.poslugar, arg0.posicao >= 8 ? arg0
+  ref obj = arg0.poslugar.objlista # Personagem ou item que vai mover em uma direção
+  se !obj.perso # Não é personagem
+    ret !obj.i_mover(arg0), nulo
+  senao obj.tseguir == 3 # Animal tem dono
+    ret obj.iseguir.objlista != arg0, nulo
+  senao int(obj.p_montar_tipo) < 3 # Animal não tem dono e não obedece
+    ret nulo
+  fimse
+  ret arg0.posicao != 7 && obj.posicao >= 8, obj
+
+func objmover2 # Retorna o objeto que deve se movimentar ou nulo se deve ficar parado
+# Se não puder se movimentar, envia mensagens
+# arg0 = personagem que digitou o comando
+  ret !arg0.poslugar, arg0.posicao >= 8 ? arg0 : (arg0.msgposicao : nulo)
+  ref obj = arg0.poslugar.objlista # Personagem ou item que vai mover em uma direção
+  se !obj.perso # Não é personagem
+    ret !obj.i_mover(arg0), arg0.msgposicao : nulo
+  senao obj.tseguir == 3 # Animal tem dono
+    ref is = obj.iseguir.objlista
+    ret is != arg0, $mens.mp(comando_mover_cfg:m_ignorar, arg0, obj) : nulo
+  senao int(obj.p_montar_tipo) < 3 # Animal não tem dono e não obedece
+    ret $mens.mp(comando_mover_cfg:m_ignorar, arg0, obj) : nulo
+  fimse
+  ret arg0.posicao != 7 && obj.posicao >= 8, obj
+  arg0.posicao == 7 ? arg0.msgposicao : obj.msgposicao(arg0)
+
 func mover # Personagem anda em uma direção
 # arg0 = personagem
 # arg1 = sala destino (se não for sala, não deixa prosseguir nessa direção)
 # arg2 = item aonde está entrando (na sala origem) ou nulo
 # arg3 = item de onde está saindo (na sala destino) ou nulo
+# arg4 = personagem no controle e para quem enviar mensagens (se nulo, assume arg0)
 # Retorna 1 se conseguiu mover ou 0 se não conseguiu
-  refvar perm_msg = $perm_[arg0.jogperm].andar
+  refvar p1 = arg4 ?? arg0
+  refvar perm_msg = $perm_[p1.jogperm].andar
   se perm_msg
-    $mensjog.msg(perm_msg, arg0)
+    $mensjog.msg(perm_msg, p1)
     ret 0
   fimse
   listaobj l
@@ -86,14 +109,14 @@ func mover # Personagem anda em uma direção
   $comando_mover.lseg.addfim(arg0)
   abriu1 = abriu2 = ""
   se !arg1.s_sala
-    $mens.mp(comando_mover_cfg:m_impossivel, arg0)
+    $mens.mp(comando_mover_cfg:m_impossivel, p1)
     ret 0
   senao !arg2 && s1.porta_[dir] & 3 >= 2 && !arg0.j_imortal
     ret !s1.socktot, 0
-    refvar casa = $c_[s1.fechadura_[dir](arg0)]
+    refvar casa = $c_[s1.fechadura_[dir](p1)]
     refvar cod = casa.chave
     se !cod
-      arg0.msg($mens_porta.mens(comando_mover_cfg:m_portafechada, s1, dir))
+      p1.msg($mens_porta.mens(comando_mover_cfg:m_portafechada, s1, dir))
       ret 0
     fimse
     listaitem i
@@ -101,27 +124,27 @@ func mover # Personagem anda em uma direção
       sair cod == i.obj.i_chave && i.obj.visivel(arg0)
     efim
     se !i
-      arg0.msg($mens_porta.mens(comando_mover_cfg:m_portafechada, s1, dir))
+      p1.msg($mens_porta.mens(comando_mover_cfg:m_portafechada, s1, dir))
       ret 0
     fimse
     casovar casa.infotaxa
     casose "2" # Casa bloqueada por falta de pagamento
-      $mens.mp(config:casamsgbloq, arg0)
+      $mens.mp(config:casamsgbloq, p1)
       ret 0
     casose "1" # Atrasou pagamento da taxa
-      $mens.mp(config:casamsgaviso, arg0)
+      $mens.mp(config:casamsgaviso, p1)
     casofim
     abriu1 = config:casaabriu1
     abriu2 = config:casaabriu2
     abriu2 && (abriu2 += "\n")
   senao arg2 && arg2.i_aberto > 2 && !arg0.j_imortal
-    $mens.mp(comando_mover_cfg:m_itemfechado, arg0, nulo, arg2)
+    $mens.mp(comando_mover_cfg:m_itemfechado, p1, nulo, arg2)
     ret 0
   senao !arg0.cabedentro(arg1)
-    $mens.mp(comando_mover_cfg:m_espaco, arg0)
+    $mens.mp(comando_mover_cfg:m_espaco, p1)
     ret 0
-  senao !arg2 && s1.voar_[dir](arg0) && !(arg0.bitver & 512 || arg0.bitinv & 48)
-    $mens.mp(comando_mover_cfg:m_flutuando, arg0)
+  senao !arg2 && s1.voar_[dir](p1) && !(p1.bitver & 512 || p1.bitinv & 48)
+    $mens.mp(comando_mover_cfg:m_flutuando, p1)
     ret 0
   fimse
   uint8 total = s1.totalmove + arg1.totalmove
@@ -129,23 +152,24 @@ func mover # Personagem anda em uma direção
   total *= (2 + $miscfome.f.[arg0.p_sede] + $miscfome.f.[arg0.p_fome]) / 2
   (arg0.bitver & 512 || arg0.bitinv & 48) && (total /= 2) # Flutuando gasta menos movimentos
   se arg0.pmove < intdiv((total + 1) / 2)
-    $mens.mp(comando_mover_cfg:m_cansado, arg0)
+    refvar m = p1 == arg0 ? comando_mover_cfg:m_cansado : comando_mover_cfg:m_animcansado
+    $mens.mp(m, p1, arg0)
     ret 0
   fimse
   epara l.addfim(arg0.evento), l, l.ini.remove
-    ret l.objini.cmd_mover(arg0, s1, dir, arg0, arg1, arg2, arg3), 0
+    ret l.objini.cmd_mover(arg0, s1, dir, arg0, arg1, arg2, arg3, p1), 0
   efim
   epara l.addfim(s1.evento), l, l.ini.remove
-    ret l.objini.cmd_mover(arg0, s1, dir, s1, arg1, arg2, arg3), 0
+    ret l.objini.cmd_mover(arg0, s1, dir, s1, arg1, arg2, arg3, p1), 0
   efim
   epara l.addfim(arg3.evento), l, l.ini.remove
-    ret l.objini.cmd_mover(arg0, s1, dir, arg3, arg1, arg2, arg3), 0
+    ret l.objini.cmd_mover(arg0, s1, dir, arg3, arg1, arg2, arg3, p1), 0
   efim
   epara l.addfim(arg1.evento), l, l.ini.remove
-    ret l.objini.cmd_moverdest(arg0, s1, dir, arg1, arg1, arg2, arg3), 0
+    ret l.objini.cmd_moverdest(arg0, s1, dir, arg1, arg1, arg2, arg3, p1), 0
   efim
   epara l.addfim(arg2.evento), l, l.ini.remove
-    ret l.objini.cmd_moverdest(arg0, s1, dir, arg2, arg1, arg2, arg3), 0
+    ret l.objini.cmd_moverdest(arg0, s1, dir, arg2, arg1, arg2, arg3, p1), 0
   efim
   $comando_mover.andou = 1
   !arg0.j_imortal && (arg0.pmove -= intdiv((total + 1) / 2))
@@ -153,40 +177,40 @@ func mover # Personagem anda em uma direção
   se !(s1.socktot || arg1.socktot) # Não tem jogador por perto
     arg0.mudadono(arg1)
   senao arg0.p_bebida >= $miscfome.bebedir - rand(20) # Cambaleando não anda em silêncio
-    abriu1 && $mens.mp(abriu1, arg0, nulo, arg2)
+    abriu1 && $mens.mp(abriu1, p1, nulo, arg2)
     msgsair(arg0, arg2, abriu2 + m_sai4, 1)
     arg0.mudadono(arg1)
     msgentrar(arg0, arg3, m_entra4, 1)
   senao arg0.bitinv & 48 # Voando ou voando alto
-    abriu1 && $mens.mp(abriu1, arg0, nulo, arg2)
+    abriu1 && $mens.mp(abriu1, p1, nulo, arg2)
     msgsair(arg0, arg2, abriu2 + m_sai3)
     arg0.mudadono(arg1)
     msgentrar(arg0, arg3, m_entra3)
   senao arg0.bitver & 0x200 # Flutuando
-    abriu1 && $mens.mp(abriu1, arg0, nulo, arg2)
+    abriu1 && $mens.mp(abriu1, p1, nulo, arg2)
     msgsair(arg0, arg2, abriu2 + m_sai2)
     arg0.mudadono(arg1)
     msgentrar(arg0, arg3, m_entra2)
   senao # Não está voando nem flutuando
-    abriu1 && $mens.mp(abriu1, arg0, nulo, arg2)
+    abriu1 && $mens.mp(abriu1, p1, nulo, arg2)
     msgsair(arg0, arg2, abriu2 + m_sai1)
     arg0.mudadono(arg1)
     msgentrar(arg0, arg3, m_entra1)
   fimse
   epara l.addfim(arg0.evento), l, l.ini.remove
-    ret l.objini.cmd_moveu(arg0, s1, dir, arg0, arg1, arg2, arg3), 0
+    l.objini.cmd_moveu(arg0, s1, dir, arg0, arg1, arg2, arg3, p1)
   efim
   epara l.addfim(s1.evento), l, l.ini.remove
-    ret l.objini.cmd_moveu(arg0, s1, dir, s1, arg1, arg2, arg3), 0
+    l.objini.cmd_moveu(arg0, s1, dir, s1, arg1, arg2, arg3, p1)
   efim
   epara l.addfim(arg3.evento), l, l.ini.remove
-    ret l.objini.cmd_moveu(arg0, s1, dir, arg3, arg1, arg2, arg3), 0
+    l.objini.cmd_moveu(arg0, s1, dir, arg3, arg1, arg2, arg3, p1)
   efim
   epara l.addfim(arg1.evento), l, l.ini.remove
-    ret l.objini.cmd_moveudest(arg0, s1, dir, arg1, arg1, arg2, arg3), 0
+    l.objini.cmd_moveudest(arg0, s1, dir, arg1, arg1, arg2, arg3, p1)
   efim
   epara l.addfim(arg2.evento), l, l.ini.remove
-    ret l.objini.cmd_moveudest(arg0, s1, dir, arg2, arg1, arg2, arg3), 0
+    l.objini.cmd_moveudest(arg0, s1, dir, arg2, arg1, arg2, arg3, p1)
   efim
 # Checa se morre ao entrar
   casovar arg1.s_morre(arg0)
@@ -214,13 +238,13 @@ func mover # Personagem anda em uma direção
   listaobj l2
   epara l2.addfim(arg0, arg0.persolugar), l2, l2.ini.remove
     epara l.addfim(l2.objini.lseguir), l, l.ini.remove
-      se l.objini.posicao < 8 || l.objini.dono != s1
-      senao $comando_mover.lseg.possui(l.objini)
-      senao l.objini.tseguir == 3
-        mover(l.objini, arg1, arg2, arg3)
-      senao l2.objini.visivel(l.objini) && s1.visivel(l.objini)
-        $mens.mp(comando_mover_cfg:m_seguir, l.objini, l2.objini)
-        mover(l.objini, arg1, arg2, arg3)
+      refvar obj = objmover1(l.objini)
+      se !obj || obj.dono != s1 || $comando_mover.lseg.possui(obj)
+      senao obj.tseguir == 3
+        mover(obj, arg1, arg2, arg3, obj)
+      senao l2.objini.visivel(obj) && s1.visivel(obj)
+        $mens.mp(comando_mover_cfg:m_seguir, obj, l2.objini)
+        mover(obj, arg1, arg2, arg3, obj)
       fimse
     efim
   efim
@@ -556,10 +580,12 @@ func escr # Executa o comando
 # Entra
   $comando_mover.lseg.limpar
   $comando_mover.andou = 0
+  ref obj = objmover2(arg0)
+  ret !obj, nulo
   se dest.item
-    ret !mover(arg0, dest.dono, item, dest)
+    ret !mover(obj, dest.dono, item, dest, arg0)
   senao
-    ret !mover(arg0, dest, item), nulo
+    ret !mover(obj, dest, item, nulo, arg0), nulo
   fimse
 
 
@@ -677,21 +703,26 @@ const tipo5 = "opc_linha"
 const clas5 = "comando_mover_cfg"
 const vari5 = "m_flutuando"
 #
-const nome6 = "Cansado"
+const nome6 = "Você cansado"
 const tipo6 = "opc_linha"
 const clas6 = "comando_mover_cfg"
 const vari6 = "m_cansado"
 #
-const nome7 = "Seguir"
+const nome7 = "Animal cansado"
 const tipo7 = "opc_linha"
 const clas7 = "comando_mover_cfg"
-const vari7 = "m_seguir"
+const vari7 = "m_animcansado"
 #
-const nome8 = "Animal não obede"
-const info8 = "Quando está montado em um animal"
+const nome8 = "Seguir"
 const tipo8 = "opc_linha"
 const clas8 = "comando_mover_cfg"
-const vari8 = "m_ignorar"
+const vari8 = "m_seguir"
+#
+const nome9 = "Animal não obede"
+const info9 = "Quando está montado em um animal"
+const tipo9 = "opc_linha"
+const clas9 = "comando_mover_cfg"
+const vari9 = "m_ignorar"
 
 
 classe menu_mover_comum

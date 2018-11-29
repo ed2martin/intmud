@@ -3,7 +3,7 @@ classe misc
 # Deve ser usado como misc:variável ao invés de $misc.variável
 #
 # Versão do MUD, aparece no comando Serv
-const versao = "18/11/2018"
+const versao = "27/11/2018"
 #
 # Objetos obtidos por em misc:separa
 comum txt100 sep1 # Objeto procurado
@@ -305,8 +305,7 @@ func txtmoedas # Retorna texto correspondente à quantidade de moedas
 func evento # Objeto passa a receber eventos até um objeto mudar de sala
 # arg0 a arg2 = objetos cujos eventos serão recebidos
   ret !ref(arg0), nulo
-  ref r
-  r = criar("misc_evento")
+  ref r = criar("misc_evento")
   r.perso1 = arg0.evento.addfim(este, r)
   r.perso2 = arg1.evento.addfim(este, r)
   r.perso3 = arg2.evento.addfim(este, r)
