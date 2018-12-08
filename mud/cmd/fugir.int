@@ -58,7 +58,7 @@ func fugir # Tenta fugir da luta
   fimse
 # Obtém direção para onde fugir
   refvar dir = $comando_mover.fugirdir(arg0)
-  refvar r = ref(arg0.dono.dir_[dir](arg0))
+  refvar r = ref(arg0.dono.dirsala(dir, arg0))
   se !r || r == arg0.dono || !dir
     $mens.p(arg0)
     $mens.mens = ""

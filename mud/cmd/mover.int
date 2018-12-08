@@ -65,7 +65,7 @@ func objmover1 # Retorna o objeto que deve se movimentar ou nulo se deve ficar p
   ret !arg0.poslugar, arg0.posicao >= 8 ? arg0
   ref obj = arg0.poslugar.objlista # Personagem ou item que vai mover em uma direção
   se !obj.perso # Não é personagem
-    ret !obj.i_mover(arg0), nulo
+    ret arg0.posicao != 7 && obj.i_mover(arg0) ? obj
   senao obj.tseguir == 3 # Animal tem dono
     ret obj.iseguir.objlista != arg0, nulo
   senao int(obj.p_montar_tipo) < 3 # Animal não tem dono e não obedece
@@ -79,7 +79,8 @@ func objmover2 # Retorna o objeto que deve se movimentar ou nulo se deve ficar p
   ret !arg0.poslugar, arg0.posicao >= 8 ? arg0 : (arg0.msgposicao : nulo)
   ref obj = arg0.poslugar.objlista # Personagem ou item que vai mover em uma direção
   se !obj.perso # Não é personagem
-    ret !obj.i_mover(arg0), arg0.msgposicao : nulo
+    ret arg0.posicao != 7 && obj.i_mover(arg0), obj
+    ret arg0.msgposicao : nulo
   senao obj.tseguir == 3 # Animal tem dono
     ref is = obj.iseguir.objlista
     ret is != arg0, $mens.mp(comando_mover_cfg:m_ignorar, arg0, obj) : nulo
@@ -311,7 +312,7 @@ func fugirdir # Obtém direção para onde pode fugir
   efim
   ret t ? txtsub(t, rand(intsub(t)), 1) : ""
 
-func fugir # Foge nssa direção
+func fugir # Foge nessa direção
 # arg0 = personagem
 # arg1 = sala destino ou nulo se deve obter a sala a partir do personagem
   ref r = arg1 ?? arg0.dono.dirsala(dir, arg0)
@@ -417,8 +418,8 @@ const m_sai1 = "$P desceu$m."
 const m_sai2 = "$P flutuou para baixo$m."
 const m_sai3 = "$P voou para baixo$m."
 const m_sai4 = "$P desceu cambaleando."
-const m_fugir1 = "Você fugiu para cima."
-const m_fugir2 = "$P fugiu para cima$m."
+const m_fugir1 = "Você fugiu para baixo."
+const m_fugir2 = "$P fugiu para baixo$m."
 const m_porta = "a passagem para baixo"
 const dir = "b"
 
