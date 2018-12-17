@@ -173,7 +173,7 @@ char * TMudarAux::FimInstr(char * comando)
 //------------------------------------------------------------------------------
 bool TMudarAux::CodifInstr(TAddBuffer * destino, const char * origem)
 {
-    char mens[BUF_CODIF];
+    char mens[BUF_CODIF+30];
     char menscod[BUF_CODIF];
     int linhanum = 1;
     char * linhaend = mens;

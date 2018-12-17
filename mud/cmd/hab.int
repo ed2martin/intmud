@@ -131,8 +131,12 @@ func checahab2 # Checa se personagem pode usar habilidade/magia e avisa o person
 # arg2 = item usado, ou nulo se não usou nenhum item
 # Retorna verdadeiro se pode usar
   refvar contr0 = arg0.contr
-  se contr0.posicao < 7 && !contr0.poslugar
+  se !contr0.poslugar && contr0.posicao < 7 # Checa a posição do personagem
     contr0.msgposicao
+    ret
+  senao arg0 != contr && arg0.posicao < posic # Checa a posição do animal
+    arg0.msgposicao(contr0)
+    ret
   senao !arg0.pvidaok
     $mens.mp(comando_hab_cfg:m_desmaiado[arg0 == contr0], contr0, arg0)
     ret
@@ -151,32 +155,6 @@ func checahab2 # Checa se personagem pode usar habilidade/magia e avisa o person
   senao arg2.item # Usou algum objeto: não checa a posição e a arma usada
   senao contr0 != arg0 && contr0.pnivel + config:animal_n < arg0.pnivel
     $mens.mp(comando_hab_cfg:m_nao_obedece, contr0, arg0)
-    ret
-  senao arg0.posicao < posic # Checa a posição necessária
-    refvar lin = arg0 == contr0 ? "Você" : txtcopiamai(arg0.nome, "A")
-    casovar arg0.posicao
-    casose "0"
-      contr0.msg(lin + " desmaiou.")
-      ret
-    casose "1"
-    casose "2"
-    casose "3"
-      contr0.msg(lin + " está frac" + (arg0.msexo ? "o" : "a") + " demais.")
-      ret
-    casose "4"
-      contr0.msg(lin + " está dormindo.")
-      ret
-    casose "5"
-      contr0.msg(lin + " está descansando.")
-      ret
-    casose "6"
-      contr0.msg(lin + " está sentad" + (arg0.msexo ? "o" : "a") + ".")
-      ret
-    casose "7"
-      contr0.msg(lin + " está lutando.")
-      ret
-    casofim
-    contr0.msg(lin + " não consegue fazer isso.")
     ret
   senao !tipoarma # Nenhum tipo de arma definido: aceita qualquer arma
   senao tipoarma & intbit(int(arg0.iempu.obj.armatipo)) # Usando a arma certa

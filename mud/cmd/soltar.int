@@ -45,10 +45,7 @@ func escr
     $mens.mens = arg1
     refvar r = arg0.animalnum(arg1)
     ret !r, $mens.mp(m_nao_possui, arg0)
-    listaitem i
-    epara i = arg0.lseguir.ini, i && i.obj.tseguir != 3, i.depois
-    efim
-    ret i, $mens.mp(m_animal_solto, arg0)
+    ret !arg0.animal2mais, $mens.mp(m_animal_solto, arg0)
     ret soltaranimal(arg0, arg0.dono, r)
   fimse
 # Obtém o objeto de onde soltar

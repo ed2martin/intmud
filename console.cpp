@@ -240,10 +240,7 @@ bool TConsole::Inic(bool completo)
     fcntl_stdin = fcntl(STDIN_FILENO, F_GETFL, 0);
     if (fcntl_stdin < 0)
         fcntl_stdin = 0;
-    fcntl_ler = (fcntl_stdin | O_NONBLOCK);
-    fcntl_escr = (fcntl_stdin & ~O_NONBLOCK);
-    fcntl_block = true;
-    fcntl(STDIN_FILENO, F_SETFL, fcntl_escr);
+    fcntl(STDIN_FILENO, F_SETFL, fcntl_stdin & ~O_NONBLOCK);
 #endif
 
     Aberto = 2;
@@ -415,26 +412,27 @@ const char * TConsole::LerTecla()
 
 #else
 
-    if (fcntl_block)
-    {
-        fcntl(STDIN_FILENO, F_SETFL, fcntl_ler);
-        fcntl_block=false;
-    }
-#if 0
-    int ch = getc(stdin);
-    if (ch<0) return 0;
-    if (ch==3) return "BREAK";
-    if (ch<' ') sprintf(LerTexto, "[%d]", ch);
-    else sprintf(LerTexto, "%c[%d]", ch, ch);
-    return LerTexto;
-#endif
     while (true)
     {
     // Lê próxima tecla
         int ch;
         if (LerTexto[0]==0)
         {
-            ch = getc(stdin);
+            fd_set read_fds;
+            struct timeval tselect;
+            tselect.tv_sec = 0;
+            tselect.tv_usec = 0;
+            FD_ZERO(&read_fds);
+            FD_SET(STDIN_FILENO, &read_fds);
+            select(FD_SETSIZE, &read_fds, 0, 0, &tselect);
+            if (FD_ISSET(STDIN_FILENO, &read_fds))
+            {
+                unsigned char ch1;
+                int lido = read(STDIN_FILENO, &ch1, 1);
+                ch = (lido > 0 ? ch1 : -1);
+            }
+            else
+                ch = -1;
             if (ch >= Charset)
             {
                 if (ch >= 0xC0) // Primeiro byte do caracter
@@ -533,7 +531,7 @@ const char * TConsole::LerTecla()
 
     // Códigos começam com ESC + [ ou ESC + O e terminam com caracter >= A
     // Após o ESC, obrigatoriamente em ordem alfabética:
-        const char * cod_esc[] = {
+        static const char * cod_esc[] = {
             "O2P\0"     "S_F1",
             "O2Q\0"     "S_F2",
             "O2R\0"     "S_F3",
@@ -693,8 +691,6 @@ void TConsole::EnvTxt(const char * texto, int tamanho)
         }
     }
 #else
-    if (!fcntl_block)
-        { fcntl(STDIN_FILENO, F_SETFL, fcntl_escr); fcntl_block=true; }
     while (tamanho>0)
     {
         char mens[1024];
@@ -807,8 +803,6 @@ void TConsole::CorTxt(unsigned int novacor)
     }
     *destino++ = 'm';
     *destino = 0;
-    if (!fcntl_block)
-        { fcntl(STDIN_FILENO, F_SETFL, fcntl_escr); fcntl_block=true; }
     printf("%s", mens);
 #endif
 }
@@ -832,8 +826,6 @@ void TConsole::CursorLin(int valor)
 #ifdef __WIN32__
     MoverCursor = true;
 #else
-    if (!fcntl_block)
-        { fcntl(STDIN_FILENO, F_SETFL, fcntl_escr); fcntl_block=true; }
     if (valor>0)
         printf("\x1B[%dB", valor);
     else
@@ -854,8 +846,6 @@ void TConsole::CursorCol(int valor)
 #ifdef __WIN32__
     MoverCursor = true;
 #else
-    if (!fcntl_block)
-        { fcntl(STDIN_FILENO, F_SETFL, fcntl_escr); fcntl_block=true; }
     if (valor>0)
         printf("\x1B[%dC", valor);
     else
@@ -876,8 +866,6 @@ void TConsole::CursorPosic(int lin, int col)
 #ifdef __WIN32__
     MoverCursor = true;
 #else
-    if (!fcntl_block)
-        { fcntl(STDIN_FILENO, F_SETFL, fcntl_escr); fcntl_block=true; }
     printf("\x1B[%d;%dH", LinAtual+1, ColAtual+1);
 #endif
 }
@@ -901,8 +889,6 @@ void TConsole::InsereLin(int valor)
     charinfo.Attributes = CorAtributos;
     ScrollConsoleScreenBuffer(con_out, &scroll, NULL, dest, &charinfo);
 #else
-    if (!fcntl_block)
-        { fcntl(STDIN_FILENO, F_SETFL, fcntl_escr); fcntl_block=true; }
     printf("\x1B[%dL", valor);
 #endif
 }
@@ -926,8 +912,6 @@ void TConsole::ApagaLin(int valor)
     charinfo.Attributes = CorAtributos;
     ScrollConsoleScreenBuffer(con_out, &scroll, NULL, dest, &charinfo);
 #else
-    if (!fcntl_block)
-        { fcntl(STDIN_FILENO, F_SETFL, fcntl_escr); fcntl_block=true; }
     printf("\x1B[%dM", valor);
 #endif
 }
@@ -949,8 +933,6 @@ void TConsole::InsereCol(int valor)
     charinfo.Attributes = CorAtributos;
     ScrollConsoleScreenBuffer(con_out, &scroll, NULL, dest, &charinfo);
 #else
-    if (!fcntl_block)
-        { fcntl(STDIN_FILENO, F_SETFL, fcntl_escr); fcntl_block=true; }
     printf("\x1B[%d@", valor);
 #endif
 }
@@ -972,8 +954,6 @@ void TConsole::ApagaCol(int valor)
     charinfo.Attributes = CorAtributos;
     ScrollConsoleScreenBuffer(con_out, &scroll, NULL, dest, &charinfo);
 #else
-    if (!fcntl_block)
-        { fcntl(STDIN_FILENO, F_SETFL, fcntl_escr); fcntl_block=true; }
     printf("\x1B[%dP", valor);
 
     printf("\x1B[s" // Salva o cursor
@@ -998,8 +978,6 @@ void TConsole::LimpaFim()
     FillConsoleOutputAttribute(con_out, CorAtributos, ColTotal-ColAtual,
                 posic, &CharsWritten);
 #else
-    if (!fcntl_block)
-        { fcntl(STDIN_FILENO, F_SETFL, fcntl_escr); fcntl_block=true; }
     printf("\x1B[K");
 #endif
 }
@@ -1015,8 +993,6 @@ void TConsole::LimpaTela()
     FillConsoleOutputAttribute(con_out, CorAtributos, ColTotal*LinTotal,
                 posic, &CharsWritten);
 #else
-    if (!fcntl_block)
-        { fcntl(STDIN_FILENO, F_SETFL, fcntl_escr); fcntl_block=true; }
     printf("\x1B[2J");
 #endif
 }

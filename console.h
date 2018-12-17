@@ -126,13 +126,7 @@ private:
 #else
     struct termios term_antes; ///< Configuração anterior do terminal
     int LerPont; ///< Para processar ESC em Ler()
-    bool fcntl_block;
-        ///< Para acessar stdin/stdout
-        /**< - Antes de ler: fcntl(STDIN_FILENO, F_SETFL, fcntl_ler);
-         *   - Antes de escrever: fcntl(STDIN_FILENO, F_SETFL, fcntl_escr); */
     int fcntl_stdin; /**< Valor original de F_SETFL para STDIN_FILENO */
-    int fcntl_ler;  /**< Valor de F_SETFL stdin sem O_NONBLOCK */
-    int fcntl_escr; /**< Valor de F_SETFL stdin com O_NONBLOCK */
 #endif
 };
 

@@ -4,11 +4,15 @@ const objcmd = config:animal1 && config:animal2 ? este
 const txtajuda = config:animal1 && config:animal2 ? txtajuda1 + m_ajuda
 const txtajuda1 = "\b\c3Reserva\b\n\
 Sintaxe: RESERVA\n\
-         RESERVA <número ou nome>"
+         RESERVA <nome>\n\
+         RESERVA +<número ou nome>\n\
+         RESERTA -<nome>\n"
 #
-const m_ajuda = "Sem argumentos mostra os seus animais reserva.\n\
-Com um número guarda seu animal para a lista de animais reserva.\n\
-Com um nome pega um animal reserva."
+const m_ajuda = "Sem argumentos mostra os seus animais na reserva.\n\
+Seguido de um nome mostra algumas informações de um animal na reserva.\n\
+Seguido de + e um número coloca na reserva um animal do comando Animal.\n\
+Seguido de + e um nome coloca na reserva um animal solto na sala.\n\
+Seguido de - e um nome retira o animal da reserva."
 const m_lidar_reserva = "Você não sabe como lidar com animais reserva."
 const m_lugar = "Não pode lidar com animais reserva aqui."
 const m_batalha = "Você está lutando pela sua vida."
@@ -18,11 +22,16 @@ const m_animal_cheio = "Sem espaço para pegar animal reserva."
 const m_reserva_cheio = "Atingido o limite de animais reserva."
 const m_sem_animal = "Você não possui $m."
 const m_sem_reserva = "Você não possui animal reserva $m."
+const m_outra_sala = "Animal $m não está aqui."
 const m_guardar = "Você guardou $a N$m."
 const m_pegar = "Você pegou $a N$m."
+const m_dasala1 = "Você traz $a de volta."
+const m_dasala2 = "$P traz $a de volta."
+const m_parasala1 = "Você solta animal reserva $a."
+const m_parasala2 = "$P solta $a."
 const admordem = "m_ajuda m_lidar_reserva m_lugar m_batalha m_nenhum_reserva\n\
 m_animais m_animal_cheio m_reserva_cheio m_sem_animal m_sem_reserva\n\
-m_guardar m_pegar"
+m_outra_sala m_guardar m_pegar m_parasala1 m_parasala2"
 
 func escr
   se arg0.dentro3.total != txt(int(arg0.dentro3.total))
@@ -32,63 +41,95 @@ func escr
   senao arg0.atkenv
     $mens.mp(m_batalha, arg0)
   senao !arg1
-    textotxt t
-    txt100 lin
-    listaitem i
-    epara i = arg0.dentro3.ini, i, i.depois
-      se i.obj.pvidaok
-        lin = "1 " + txtcopiamai(i.obj.nome, "A") + "  N" + i.obj.pnivel
-      senao
-        lin = "1 (" + txtcopiamai(i.obj.nome, "A") + ")  N" + i.obj.pnivel
-      fimse
-      t.addfim(lin)
-    efim
-    se !t.linhas
-      $mens.mp(m_nenhum_reserva, arg0)
+    listar(arg0)
+  senao txt(arg1, 0, 1) == "+"
+    guardar(arg0, txtremove(txt(arg1, 1), "ed"))
+  senao txt(arg1, 0, 1) == "-"
+    retirar(arg0, txtremove(txt(arg1, 1), "ed"))
+  senao
+    mostrar(arg0, arg1)
+  fimse
+
+func listar # Lista animais na reserva
+# arg0 = personagem
+  textotxt t
+  txt100 lin
+  listaitem i
+  epara i = arg0.dentro3.ini, i, i.depois
+    se i.obj.pvidaok
+      lin = "1 " + txtcopiamai(i.obj.nome, "A") + "  N" + i.obj.pnivel
     senao
-      t.juntalin("(", "x)")
-      arg0.msg2("\b\c6" + m_animais + ":\b\n" + t.remove(1000))
+      lin = "1 (" + txtcopiamai(i.obj.nome, "A") + ")  N" + i.obj.pnivel
     fimse
-  senao arg1 == intpos(arg1) && int(arg1) && config:animal1 >= arg1
-    se arg0.dentro3.total >= config:animal2
-      ret $mens.mp(m_reserva_cheio, arg0)
-    fimse
-    refvar r = arg0.animalnum(arg1)
-    se !r
-      $mens.mens = arg1
-      $mens.mp(m_sem_animal, arg0)
-      ret
-    fimse
-    listaobj e
-    epara e.addfim(arg0.evento, r.evento, arg0.dono.evento), e, e.ini.remove
-      ret e.objini.cmd_reservaguarda(arg0, r, arg0.dono), nulo
-    efim
-    ret r.dono != arg0, nulo # Retorna se não possui mais o animal
-    r.idono.remove
-    r.idono = r.dono.dentro3.addfim(r)
+    t.addfim(lin)
+  efim
+  se !t.linhas
+    $mens.mp(m_nenhum_reserva, arg0)
+  senao
+    t.juntalin("(", "x)")
+    arg0.msg2("\b\c6" + m_animais + ":\b\n" + t.remove(1000))
+  fimse
+
+func mostrar # Mostra um animal da reserva
+# arg0 = personagem
+# arg1 = nome do animal
+  $mens.mens = arg1
+  ref r = misc:itemlista(arg0, arg1, arg0.dentro3)
+  ret !r, $mens.mp(m_sem_reserva, arg0)
+  txt100 t1
+  arg0.msg("\b\c6Animal reserva \"" + r.nome + "\" nível "+ r.pnivel + "\b")
+  t1 = "Vida " + r.pvida + "/" + r.pvidamax
+  t1 += "  Mana " + r.pmana + "/" + r.pmanamax
+  t1 += "  Vigor " + r.pmove + "/" + r.pmovemax
+  arg0.msg(t1)
+
+func guardar # Guarda um animal na reserva
+# arg0 = personagem
+# arg1 = nome ou número do animal
+  ret arg0.dentro3.total >= config:animal2, $mens.mp(m_reserva_cheio, arg0)
+  ref r = arg0.animalnum(arg1)
+  !r || r == arg0 ? (r = arg0.animal2nome(arg1))
+  $mens.mens = arg1
+  ret !r, $mens.mp(m_sem_animal, arg0)
+  ret r.dono != arg0 && r.dono != arg0.dono, $mens.mp(m_outra_sala, arg0)
+  listaobj e
+  epara e.addfim(arg0.evento, r.evento, arg0.dono.evento), e, e.ini.remove
+    ret e.objini.cmd_reservaguarda(arg0, r, arg0.dono), nulo
+  efim
+  se r.dono != arg0
+    r.mudadono(arg0)
+    r.idono.remove, r.idono = r.dono.dentro3.addfim(r)
+    arg0.recalc = 1
+    $mens.mens = r.pnivel
+    $mens.p(arg0, r)
+    $mens.mvis2(m_dasala1, m_dasala2)
+  senao
+    r.idono.remove, r.idono = r.dono.dentro3.addfim(r)
     arg0.recalc = 1
     $mens.mens = r.pnivel
     $mens.mp(m_guardar, arg0, r)
-  senao
-    listaobj l
-    nomeobj n # Para reconhecer os itens
-    n.ini(arg1, 1)
-    epara l.addfim(arg0.dentro3), l, l.ini.remove
-      sair n.nome(l.objini.ident, l.objini.objtot)
-    efim
-    refvar r = ref(l.objini)
-    se !r
-      $mens.mens = arg1
-      $mens.mp(m_sem_reserva, arg0)
-      ret
-    senao !arg0.animalmais
-      ret $mens.mp(m_animal_cheio, arg0)
-    fimse
-    r.idono.remove
-    r.idono = r.dono.dentro2.addfim(r)
+  fimse
+
+func retirar # Pega um animal da reserva
+# arg0 = personagem
+# arg1 = nome do animal
+  ref r = misc:itemlista(arg0, arg1, arg0.dentro3)
+  se !r
+    $mens.mens = arg1
+    $mens.mp(m_sem_reserva, arg0)
+  senao int(r.p_animal) != 1 && arg0.animalmais
+    r.idono.remove, r.idono = r.dono.dentro2.addfim(r)
     arg0.recalc = 1
     $mens.mens = r.pnivel
     $mens.mp(m_pegar, arg0, r)
+  senao int(r.p_animal) != 0 && arg0.animal2mais
+    r.mudadono(arg0.dono)
+    arg0.recalc = 1
+    $mens.mens = r.pnivel
+    $mens.p(arg0, r)
+    $mens.mvis2(m_parasala1, m_parasala2)
+  senao
+    $mens.mp(m_animal_cheio, arg0)
   fimse
 
 
@@ -153,12 +194,37 @@ const tipo11 = "opc_linha"
 const clas11 = "cmd_reserva"
 const vari11 = "m_sem_reserva"
 #
-const nome12 = "Guardar animal"
+const nome12 = "Em outra sala"
 const tipo12 = "opc_linha"
 const clas12 = "cmd_reserva"
-const vari12 = "m_guardar"
+const vari12 = "m_outra_sala"
 #
-const nome13 = "Pegar animal"
+const nome13 = "Guardar animal"
 const tipo13 = "opc_linha"
 const clas13 = "cmd_reserva"
-const vari13 = "m_pegar"
+const vari13 = "m_guardar"
+#
+const nome14 = "Pegar animal"
+const tipo14 = "opc_linha"
+const clas14 = "cmd_reserva"
+const vari14 = "m_pegar"
+#
+const nome15 = "Da sala perso"
+const tipo15 = "opc_linha"
+const clas15 = "cmd_reserva"
+const vari15 = "m_dasala1"
+#
+const nome16 = "Da sala outros"
+const tipo16 = "opc_linha"
+const clas16 = "cmd_reserva"
+const vari16 = "m_dasala2"
+#
+const nome17 = "Para sala perso"
+const tipo17 = "opc_linha"
+const clas17 = "cmd_reserva"
+const vari17 = "m_parasala1"
+#
+const nome18 = "Para sala outros"
+const tipo18 = "opc_linha"
+const clas18 = "cmd_reserva"
+const vari18 = "m_parasala2"

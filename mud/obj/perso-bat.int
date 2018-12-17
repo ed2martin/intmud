@@ -816,8 +816,7 @@ func escolhebat # Escolhe um personagem em condições de lutar
   fimse
 
 func animalmais # Retorna quantos animais ainda pode adquirir
-  uint8 x
-  x = config:animal1
+  uint8 x = config:animal1
   listaitem i
   epara i = dentro2.ini, i, (i.obj.perso && x--) + i.depois
   efim
@@ -830,15 +829,39 @@ func animaltot # Retorna quantos animais possui
   efim
   ret x
 
-func animalnum # Retorna o animal a partir do número
+func animalnum # Retorna o animal a partir do número; pode retornar o próprio personagem
 # arg0 = número do animal (0 = o próprio personagem)
   int8 x = arg0
+  ret txt(x) != arg0, nulo
   ret !x, este
   listaitem i
   epara i = dentro2.ini, i, i.depois
     sair i.obj.perso && !--x
   efim
   ret ref(i.obj)
+
+func animal2mais # Retorna quantos animais soltos pode adquirir
+  uint8 x = 1
+  listaitem i
+  epara i = lseguir.ini, i, (i.obj.tseguir == 3 && x--) + i.depois
+  efim
+  ret x
+
+func animal2tot # Retorna quantos animais estão soltos
+  uint8 x
+  listaitem i
+  epara i = lseguir.ini, i, (i.obj.tseguir == 3 && x++) + i.depois
+  efim
+  ret x
+
+func animal2nome # Retorna o animal a partir do nome
+  listaitem i
+  nomeobj n
+  n.ini(arg0, 1)
+  epara i = lseguir.ini, i, i.depois
+    refvar r = i.obj
+    ret r.tseguir == 3 && n.nome(r.ident, r.objtot), ref(r)
+  efim
 
 func p_proc_animal # Escolhe um animal em condições de batalhar
 # Retorna: 1=mudou de animal, 0=não mudou de animal
