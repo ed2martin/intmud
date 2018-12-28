@@ -311,21 +311,10 @@ func exechab # Chamado quando personagem usa habilidade ou magia
 # Alvos secundários (somente ataques de área)
   se tipoalvo >= 2 && tipoalvo <= 5
     listaitem i
+    listaobj outros
+    contr0.listagrupo(outros)
     l.addfim(contr1.dono.dentro2)
-    l.remove(contr0, contr1)
-    se contr0.tseguir == 2 # Líder do grupo: não ataca os outros integrantes
-      i = l.ini
-      enquanto i
-        i.obj.tseguir == 1 && i.obj.iseguir.objlista == contr0 ? i.removedepois : i.depois
-      efim
-    senao contr0.tseguir == 1 && contr0.iseguir # Seguindo o líder do grupo
-      refvar p2 = contr0.iseguir.objlista
-      l.remove(p2)
-      i = l.ini
-      enquanto i
-        i.obj.tseguir == 1 && i.obj.iseguir.objlista == p2 ? i.removedepois : i.depois
-      efim
-    fimse
+    l.remove(contr0, contr1, outros)
     se contr0.jog && contr0.dono.s_luta < 2 # Sala não permite luta entre jogadores
       epara i = l.ini, i, i.obj.jog ? i.removedepois : i.depois
       efim

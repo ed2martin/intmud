@@ -71,7 +71,7 @@ func comer # Personagem arg0 come item arg1
 # Come o objeto
   $mens.mens = ""
   $mens.p(arg0, nulo, arg1)
-  $mens.mvis2(r.f_msgperso ?? m_comer1, r.f_msgoutros ?? r.f_msgperso ?? m_comer2)
+  $mens.mvis2(arg1.f_msgperso ?? m_comer1, arg1.f_msgoutros ?? arg1.f_msgperso ?? m_comer2)
   arg1.apagar(1)
   efeito(arg0, "", arg1)
 # Eventos
@@ -167,30 +167,31 @@ func beber # Personagem arg0 bebe item arg1, arg2=quantidade (de 0 a 1)
   $mens.p(arg0, nulo, arg1)
   $mens.o_1 = liq.nome
   $mens.o_2 = liq.aspecto
+  refvar m_outros = arg1.f_msgoutros ?? arg1.f_msgperso
   se arg1.f_tipo == 1 # Fonte
-    $mens.mvis2(arg1.f_msgperso ?? m_fonte1, r.f_msgoutros ?? r.f_msgperso ?? m_fonte2)
+    $mens.mvis2(arg1.f_msgperso ?? m_fonte1, m_outros ?? m_fonte2)
     efeito(arg0, "", arg1, liq, 1)
   senao arg1.f_tipo == 5 # Container de líquido
     refvar varliq = arg1.var.z_liquido
     refvar totalml = intpos(int(liq.beber * arg2))
     se !liq
-      $mens.mvis2(arg1.f_msgperso ?? m_item1d, r.f_msgoutros ?? r.f_msgperso ?? m_item2d)
+      $mens.mvis2(arg1.f_msgperso ?? m_item1d, m_outros ?? m_item2d)
       varliq = ""
       efeito(arg0, "", arg1)
     senao int(varliq) > totalml
-      $mens.mvis2(arg1.f_msgperso ?? m_item1c, r.f_msgoutros ?? r.f_msgperso ?? m_item2c)
+      $mens.mvis2(arg1.f_msgperso ?? m_item1c, m_outros ?? m_item2c)
       varliq = txt(int(varliq - totalml)) + " " + txt(varliq, 4)
       arg1.ajustapeso
       efeito(arg0, "", arg1, liq, arg2)
     senao
-      $mens.mvis2(arg1.f_msgperso ?? m_item1c, r.f_msgoutros ?? r.f_msgperso ?? m_item2c)
+      $mens.mvis2(arg1.f_msgperso ?? m_item1c, m_outros ?? m_item2c)
       refvar total = int(varliq) / liq.beber
       varliq = ""
       arg1.ajustapeso
       efeito(arg0, "", arg1, liq, total)
     fimse
   senao # Poção
-    $mens.mvis2(arg1.f_msgperso ?? m_pocao1, r.f_msgoutros ?? r.f_msgperso ?? m_pocao2)
+    $mens.mvis2(arg1.f_msgperso ?? m_pocao1, m_outros ?? m_pocao2)
     arg1.apagar(1)
     efeito(arg0, "", arg1)
   fimse

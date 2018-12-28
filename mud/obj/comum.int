@@ -314,6 +314,18 @@ func donogrupo # Retorna o dono do grupo ou nulo se não estiver em um grupo
   ref p1 = tseguir == 3 ? iseguir.objlista ?? este
   ret ref(p1.tseguir == 2 ? p1 : p1.tseguir == 1 ? p1.iseguir.objlista)
 
+func listagrupo # Adiciona todos os integrantes do grupo em uma listaobj
+# Se não estiver em grupo, adiciona o personagem e os animais dele
+# arg0 = variável listaobj
+  ref p1 = tseguir == 3 ? iseguir.objlista ?? este
+  listaitem i = arg0.addfim(p1.tseguir == 1 ? p1.iseguir.objlista : p1)
+  listaitem j
+  epara nulo, i, i.depois
+    epara j = i.obj.lseguir.ini, j, j.depois
+      (j.obj.tseguir == 1 || j.obj.tseguir == 3) && arg0.addfim1(j.obj)
+    efim
+  efim
+
 func rastrearsala # Obtém o caminho para chegar até uma sala
 # arg0 = sala para onde quer ir
 # arg1 = um texto que pode ser "" ou ter uma ou mais letras entre:

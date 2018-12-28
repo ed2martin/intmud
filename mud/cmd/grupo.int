@@ -129,17 +129,11 @@ func escr
     ret
 # Informações sobre os integrantes do grupo
   senao
-    ref lider
-    se arg0.tseguir == 2
-      lider = arg0
-    senao arg0.iseguir && arg0.tseguir == 1
-      lider = arg0.iseguir.objlista
-    fimse
-    ret !lider, $mens.mp(m_nenhum_grupo, arg0)
-    $mens.mp(m_nome_grupo, arg0, lider)
-    arg0.msg(info(lider))
-    epara l.addfim(lider.lseguir), l, l.ini.remove
-      l.objini.tseguir == 1 && arg0.msg(info(l.objini))
+    ref lider = arg0.donogrupo
+    arg0.listagrupo(l)
+    $mens.mp(lider ? m_nome_grupo : m_nenhum_grupo, arg0, lider)
+    epara !lider && l.ini.remove, l, l.ini.remove
+      arg0.msg(info(l.objini))
     efim
     ret
   fimse
@@ -148,6 +142,8 @@ func info # Retorna informações de um personagem
 # arg0 = personagem
   txt100 lin
   lin = txtcopiamai(arg0.nome, "A")
+  refvar dono = arg0.tseguir == 3 && arg0.iseguir ? arg0.iseguir.objlista
+  dono && (lin += " de " + txtcopiamai(dono.nome, "A"))
   lin += " Vida " + arg0.pvida + "/" + arg0.pvidamax
   lin += "  Mana " + arg0.pmana + "/" + arg0.pmanamax
   lin += "  Vigor " + arg0.pmove + "/" + arg0.pmovemax
