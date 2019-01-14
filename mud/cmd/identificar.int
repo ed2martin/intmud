@@ -2,13 +2,16 @@ classe comando_identificar
 herda comando_hab, opc_atribcomum
 const txtajuda = "\c3" + misc:nomevar(nomevar) + "\b\n" + msgextra
 const cmdmenu = "identif" # Editável via "menu_hab_identif" e "menu_magia_identif"
-const a_batalha = 2 # Somente fora da batalha
+const a_montado = 1
+const a_em_pe = 1
 const tipoalvo = 6 # Não agressivo
 const c_espera = 15 # Tempo de esperar após usar esse comando
 textovar var
 #
 # Ordem que deve organizar as constantes:
 const admordem = "nomevar\n\
+a_dormindo a_descansando a_sentado a_montado\n\
+a_em_pe a_bat_sentado a_bat_montado a_bat_em_pe\n\
 c_espera\n\
 c_vida1 c_vida2\n\
 c_mana1 c_mana2\n\

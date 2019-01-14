@@ -454,77 +454,116 @@ const naoataque = "Magia não é ataque: "
 classe menu_hab_comum
 herda comando_menu
 #
-const nome2 = "Condição batalha"
-const tipo2 = "opc_opcao"
-const clas2 = var.classe1
-const vari2 = "a_batalha"
-const extr2 = "Nenhuma\nDurante a batalha\nFora da batalha"
+const nome2 = "Posição"
+const tipo2 = "menu_hab_posicao--"
 #
-const nome3 = "Condição montaria"
-const tipo3 = "opc_opcao"
+const nome3 = "Falha iniciante"
+const info3 = "Taxa de falha em porcentagem, de 0 a 100 (100 sempre falha)"
+const tipo3 = "opc_numero"
 const clas3 = var.classe1
-const vari3 = "a_montado"
-const extr3 = "Nenhuma\nDesmontado\nMontado"
+const vari3 = "falha1"
+const extr3 = "-1 100"
 #
-const nome4 = "Falha iniciante"
+const nome4 = "Falha perito"
 const info4 = "Taxa de falha em porcentagem, de 0 a 100 (100 sempre falha)"
 const tipo4 = "opc_numero"
 const clas4 = var.classe1
-const vari4 = "falha1"
+const vari4 = "falha2"
 const extr4 = "-1 100"
 #
-const nome5 = "Falha perito"
-const info5 = "Taxa de falha em porcentagem, de 0 a 100 (100 sempre falha)"
-const tipo5 = "opc_numero"
+const nome5 = "Requer arma"
+const info5 = "Se vazio, a arma é ignorada: ataca sem arma mesmo se estiver empunhando uma"
+const tipo5 = "opc_vetor"
 const clas5 = var.classe1
-const vari5 = "falha2"
-const extr5 = "-1 100"
+const vari5 = "tipoarma"
+const extr5 = config:arma_txt
 #
-const nome6 = "Requer arma"
-const info6 = "Se vazio, a arma é ignorada: ataca sem arma mesmo se estiver empunhando uma"
-const tipo6 = "opc_vetor"
-const clas6 = var.classe1
-const vari6 = "tipoarma"
-const extr6 = config:arma_txt
+const nome6 = "Consome"
+const tipo6 = "menu_hab_custo--"
 #
-const nome7 = "Consome"
-const tipo7 = "menu_hab_custo--"
+const nome7 = "Preço da aula"
+const info7 = "Quantas moedas os personagens cobram para ensinar"
+const tipo7 = "opc_numero"
+const clas7 = var.classe1
+const vari7 = "valor"
 #
-const nome8 = "Preço da aula"
-const info8 = "Quantas moedas os personagens cobram para ensinar"
+const nome8 = "Pontos de aula"
+const info8 = "Quantos pontos de aula consome por aula"
 const tipo8 = "opc_numero"
 const clas8 = var.classe1
-const vari8 = "valor"
+const vari8 = "aulapontos"
 #
-const nome9 = "Pontos de aula"
-const info9 = "Quantos pontos de aula consome por aula"
-const tipo9 = "opc_numero"
+const nome9 = "Depende de"
+const info9 = "Habilidades, magias e idiomas necessários para aprender esse ataque"
+const tipo9 = "opc_tipodep"
 const clas9 = var.classe1
-const vari9 = "aulapontos"
+const vari9 = "depende"
 #
-const nome10 = "Depende de"
-const info10 = "Habilidades, magias e idiomas necessários para aprender esse ataque"
-const tipo10 = "opc_tipodep"
+const nome10 = "Iniciante nível"
+const info10 = "A partir de que nível pode ter a primeira aula"
+const tipo10 = "opc_numero"
 const clas10 = var.classe1
-const vari10 = "depende"
+const vari10 = "aulaini"
 #
-const nome11 = "Iniciante nível"
-const info11 = "A partir de que nível pode ter a primeira aula"
+const nome11 = "Perito nível"
+const info11 = "A partir de que nível pode ter todas as aulas"
 const tipo11 = "opc_numero"
 const clas11 = var.classe1
-const vari11 = "aulaini"
+const vari11 = "aulafim"
 #
-const nome12 = "Perito nível"
-const info12 = "A partir de que nível pode ter todas as aulas"
-const tipo12 = "opc_numero"
+const nome12 = "Somente tipos"
+const info12 = "Se estiver vazio, todas as classes e raças podem aprender"
+const tipo12 = "opc_tipos"
 const clas12 = var.classe1
-const vari12 = "aulafim"
+const vari12 = "tipoperso"
+
+
+classe menu_hab_posicao
+herda comando_menu
+const titulo = "Posição"
+const menufim = var.menufim
+const colunas = 25
 #
-const nome13 = "Somente tipos"
-const info13 = "Se estiver vazio, todas as classes e raças podem aprender"
-const tipo13 = "opc_tipos"
-const clas13 = var.classe1
-const vari13 = "tipoperso"
+const nome1 = "Dormindo"
+const info1 = "Animal dormindo, quem controla o animal precisa estar acordado"
+const tipo1 = "opc_simnao"
+const clas1 = var.classe1
+const vari1 = "a_dormindo"
+#
+const nome2 = "Descansando"
+const tipo2 = "opc_simnao"
+const clas2 = var.classe1
+const vari2 = "a_descansando"
+#
+const nome3 = "Sentado"
+const tipo3 = "opc_simnao"
+const clas3 = var.classe1
+const vari3 = "a_sentado"
+#
+const nome4 = "Montado"
+const tipo4 = "opc_simnao"
+const clas4 = var.classe1
+const vari4 = "a_montado"
+#
+const nome5 = "Em pé"
+const tipo5 = "opc_simnao"
+const clas5 = var.classe1
+const vari5 = "a_em_pe"
+#
+const nome6 = "Lutando sentado"
+const tipo6 = "opc_simnao"
+const clas6 = var.classe1
+const vari6 = "a_bat_sentado"
+#
+const nome7 = "Lutando nontado"
+const tipo7 = "opc_simnao"
+const clas7 = var.classe1
+const vari7 = "a_bat_montado"
+#
+const nome8 = "Lutando em pé"
+const tipo8 = "opc_simnao"
+const clas8 = var.classe1
+const vari8 = "a_bat_em_pe"
 
 
 classe menu_hab_custo

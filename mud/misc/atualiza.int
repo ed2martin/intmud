@@ -1,4 +1,4 @@
-classe atualiza_484
+classe atualiza_502
 # Atualiza arquivos mud/config/* e mud/areas/* de acordo com novas mudanças
 prog p
 debug dbg
@@ -729,8 +729,8 @@ func ini3_exec
 func ini4_exec
   apagar(este)
 # Checa e muda a versão
-  ret (versao = config:versao) >= 484, nulo
-  p.criar("config", "const versao = 484 # Para atualizar diretórios areas e config")
+  ret (versao = config:versao) >= 502, nulo
+  p.criar("config", "const versao = 502 # Para atualizar diretórios areas e config")
   config:salvar
 # Comando Fim e Dicas aleatórias
   se versao < 457
@@ -841,6 +841,22 @@ func ini4_exec
         p.criar(p.texto, "const falha1 = " + valor)
         p.criar(p.texto, "const falha2 = " + valor)
       fimse
+    efim
+  fimse
+# Condição batalha das habilidades e magias
+  se versao < 502
+    epara p.iniherdainv("comando_hab"), p.lin, p.depois
+      dbg.ini
+      continuar p.existe(p.texto, "a_batalha") != 1
+      se [p.texto]:a_batalha == 1 # Durante a batalha
+        p.criar(p.texto, "const a_montado = 0")
+        p.criar(p.texto, "const a_em_pe = 0")
+      senao [p.texto]:a_batalha == 2 # Fora da batalha
+        p.criar(p.texto, "const a_bat_sentado = 0")
+        p.criar(p.texto, "const a_bat_montado = 0")
+        p.criar(p.texto, "const a_bat_em_pe = 0")
+      fimse
+      p.apagar(p.texto, "a_batalha")
     efim
   fimse
 # Avisa que atualizou arquivos

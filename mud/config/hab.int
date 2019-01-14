@@ -169,7 +169,7 @@ func cmd_atacar # Vai atacar
   fimse
 
 func cmd_atacou # Realizou o ataque
-  se !arg2.result && arg1.tipo1 != "anão"
+  se arg2.result == 0 && arg1.tipo1 != "anão"
     criar("e_dreno_de_mana", arg1, 0) # Cria efeito Dreno de Mana nível 0 em arg1
   fimse
 
@@ -208,7 +208,7 @@ func cmd_atkenv
 func cmd_atacou
   refvar vida = arg0.pvida
   refvar max = arg0.pvidamax
-  se !arg2.result && vida && vida < max
+  se arg2.result == 0 && vida && vida < max
     pontos = intpos(pontos - arg1.pvida) / 2
     vida += pontos
     vida > max && (vida = max)
@@ -219,7 +219,8 @@ classe cmd_endurecer
 herda comando_ataque
 const nomevar = "h_Endurecer"
 const tipoalvo = 7 # Alvo: 7 O personagem; não é ataque
-const a_batalha = 1 # Condição: 1 Durante a batalha
+const a_montado = 0 # Montado: Não
+const a_em_pe = 0 # Em pé: Não
 const a_efeito1 = "endurecer"
 const c_espera = 40
 const c_move1 = 15
@@ -244,7 +245,7 @@ const msgextra = "Extremamente forte, mas quem aplica esse golpe desmaia."
 const atk1_auto1 = "$P explodiu na direção de $a, $m"
 const atk1_perso1 = "$P explodiu na direção de $a, $m"
 const atk1_matou1 = "$P explodiu na direção de $a, $m"
-const atk1_errou1 = "$P explodiu mas $a desviou em tempo., errou"
+const atk1_errou1 = "$P explodiu mas $a desviou em tempo."
 const atk1_nulo1 = "$P explodiu, nada acontece com $a, nada acontece"
 
 func cmd_atacou # Desmaia após o ataque
@@ -255,7 +256,9 @@ classe cmd_furtividade
 herda comando_ataque
 const nomevar = "h_Furtividade"
 const tipoalvo = 7 # Alvo: 7 O personagem; não é ataque
-const a_batalha = 2 # Condição: 2 Fora da batalha
+const a_bat_sentado = 0 # Lutando sentado: Não
+const a_bat_montado = 0 # Lutando nontado: Não
+const a_bat_em_pe = 0 # Lutando em pé: Não
 const a_efeito1 = "furtividade"
 const c_move1 = 20
 const c_move2 = 5
@@ -336,6 +339,8 @@ classe cmd_meditar
 herda comando_ataque
 const nomevar = "h_Meditar"
 const tipoalvo = 7 # Alvo: 7 O personagem; não é ataque
+const a_descansando = 1 # Descansando: Sim
+const a_sentado = 1 # Sentado: Sim
 const a_efeito1 = "meditando"
 const atk1_auto1 = "$P começa a meditar."
 const atk1_perso1 = "$P começa a meditar."
@@ -380,7 +385,9 @@ classe cmd_ocultar
 herda comando_ataque
 const nomevar = "h_Ocultar"
 const tipoalvo = 7 # Alvo: 7 O personagem; não é ataque
-const a_batalha = 2 # Condição: 2 Fora da batalha
+const a_bat_sentado = 0 # Lutando sentado: Não
+const a_bat_montado = 0 # Lutando nontado: Não
+const a_bat_em_pe = 0 # Lutando em pé: Não
 const a_efeito1 = "ocultar"
 const c_move1 = 20
 const c_move2 = 5
@@ -430,6 +437,12 @@ classe cmd_roncar
 herda comando_ataque
 const nomevar = "h_Roncar"
 const tipoalvo = 4 # Alvo: 4 Todos sem dividir o ataque
+const a_dormindo = 1 # Dormindo: Sim
+const a_montado = 0 # Montado: Não
+const a_em_pe = 0 # Em pé: Não
+const a_bat_sentado = 0 # Lutando sentado: Não
+const a_bat_montado = 0 # Lutando nontado: Não
+const a_bat_em_pe = 0 # Lutando em pé: Não
 const c_move1 = 10
 const c_move2 = 4
 const ataquemin = 35
@@ -446,14 +459,6 @@ const atk1_matou2 = "$A sucumbe com o ronco ensurdecedor de $P, $m"
 const atk1_matou3 = "$A sucumbe com o ronco ensurdecedor de $P, $m"
 const atk1_errou1 = "$P ronca alto mas $a se afasta a tempo."
 const atk1_nulo1 = "$A apenas observa $p roncando alto."
-const posic = 4
-
-func cmd_atacar
-  se arg0.posicao > 4
-    $mens.p(arg0)
-    $mens.msginv("$P não consegue roncar estando acordad$s.", arg0)
-    ret 1
-  fimse
 
 
 classe cmd_rosnar
@@ -544,7 +549,9 @@ classe cmd_visivel
 herda comando_ataque
 const nomevar = "h_Visivel"
 const tipoalvo = 7 # Alvo: 7 O personagem; não é ataque
-const a_batalha = 2 # Condição: 2 Fora da batalha
+const a_bat_sentado = 0 # Lutando sentado: Não
+const a_bat_montado = 0 # Lutando nontado: Não
+const a_bat_em_pe = 0 # Lutando em pé: Não
 const a_remove = "furtividade\ninvisibilidade\nocultar"
 const atk1_auto1 = "$P fica visível."
 const atk1_perso1 = "$P fica visível."
@@ -639,7 +646,7 @@ func cmd_alvo
 
 func cmd_alvofim
   refvar lider = arg0.donogrupo
-  se lider
+  se arg2.result == 0 && lider
     refvar r = criar("p_teste041", arg0.dono, intpos(arg0.nivel - 4), "h_socar=4")
     r.seguir(lider)
     r.tseguir = 1
@@ -662,7 +669,7 @@ const atk1_nulo1 = ""
 
 func cmd_alvofim
   refvar sala = arg0.contr.dono # sala = sala aonde o personagem está
-  se sala.dentro1.total("i_teste042") < 5
+  se arg2.result == 0 && sala.dentro1.total("i_teste042") < 5
     criar("i_teste042", sala)
     $mens.p(arg0)
     $mens.mtodos1("Aos poucos, uma fonte brota do chão.")
@@ -717,7 +724,7 @@ const atk1_errou1 = "$P se cansou à toa."
 const atk1_nulo1 = "$A parece tão cansad$t quanto antes."
 
 func cmd_atacou
-  se !arg2.result
+  se arg2.result == 0
     arg1.pmana *= 0.6
     arg1.pmove *= 0.6
   fimse
@@ -795,7 +802,9 @@ classe magia_invisibilidade
 herda comando_ataque
 const nomevar = "m_Invisibilidade"
 const tipoalvo = 7 # Alvo: 7 O personagem; não é ataque
-const a_batalha = 2 # Condição: 2 Fora da batalha
+const a_bat_sentado = 0 # Lutando sentado: Não
+const a_bat_montado = 0 # Lutando nontado: Não
+const a_bat_em_pe = 0 # Lutando em pé: Não
 const a_efeito1 = "invisibilidade"
 const c_mana1 = 20
 const c_mana2 = 5
@@ -981,6 +990,8 @@ const atk1_auto1 = "$P volta."
 const atk1_perso2 = "$P faz $a voltar."
 
 func cmd_alvofim
-  arg1.contr.mudadono($s_casa002)
-  $mens.p(arg1)
-  $mens.mtodos1("$P caiu aqui.")
+  se arg2.result == 0
+    arg1.contr.mudadono($s_casa002)
+    $mens.p(arg1)
+    $mens.mtodos1("$P caiu aqui.")
+  fimse

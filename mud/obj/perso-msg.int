@@ -9,6 +9,7 @@ isso.\b"
 const posicao6a = "\c9Talvez você deva ficar em pé primeiro.\b"
 const posicao7a = "\c9Sem chance! Você está lutando pela sua vida.\b"
 const posicao8a = "\c9Você tenta, mas não consegue.\b"
+const semluta_a = "\c9Você não está lutando.\b"
 #
 const posicao0b = "\c9$Q está mort$s!!!\b"
 const posicao1b = "\c9$Q está muito mal, incapaz de fazer qualquer coisa.\b"
@@ -19,6 +20,12 @@ const posicao5b = "\c9$Q está descansando.\b"
 const posicao6b = "\c9Talvez $q deva ficar em pé primeiro.\b"
 const posicao7b = "\c9Sem chance! $Q está lutando pela sua del$v.\b"
 const posicao8b = "\c9$Q tenta, mas não consegue.\b"
+const acordado_b = "\c9$Q não está dormind$s.\b"
+#
+const admordem = "posicao0a posicao1a posicao2a posicao3a posicao4a posicao5a\n\
+posicao6a posicao7a posicao8a semluta_a\n\
+posicao0b posicao1b posicao2b posicao3b posicao4b posicao5b\n\
+posicao6b posicao7b posicao8b acordado_b"
 
 func iniclasse
   ret txt(arg0, 0, 2) != "h_", !$[arg0] && criar(arg0)
@@ -28,23 +35,10 @@ func iniclasse
   misccriar:add(txt(arg0, 2))
 
 
-classe m_perso
-herda comando_menu
-const titulo = "Personagem"
-const menufim = "menu_econfig"
-const colunas = 28
-#
-const nome1 = "Você não consegue"
-const tipo1 = "m_perso_posicao_a--"
-#
-const nome2 = "Montaria não consegue"
-const tipo2 = "m_perso_posicao_b--"
-
-
 classe m_perso_posicao_a
 herda comando_menu
 const titulo = "Você não consegue"
-const menufim = "m_perso"
+const menufim = "menu_econfig_msg"
 const colunas = 28
 #
 const nome1 = "Morto"
@@ -91,12 +85,17 @@ const nome9 = "Não consegue"
 const tipo9 = "opc_linha"
 const clas9 = "perso_cfg"
 const vari9 = "posicao8a"
+#
+const nome10 = "Não está lutando"
+const tipo10 = "opc_linha"
+const clas10 = "perso_cfg"
+const vari10 = "semluta_a"
 
 
 classe m_perso_posicao_b
 herda comando_menu
 const titulo = "Montaria não consegue"
-const menufim = "m_perso"
+const menufim = "menu_econfig_msg"
 const colunas = 28
 #
 const nome1 = "Morto"
@@ -143,3 +142,8 @@ const nome9 = "Não consegue"
 const tipo9 = "opc_linha"
 const clas9 = "perso_cfg"
 const vari9 = "posicao8b"
+#
+const nome10 = "Acordado"
+const tipo10 = "opc_linha"
+const clas10 = "perso_cfg"
+const vari10 = "acordado_b"

@@ -4,7 +4,7 @@ herda comando_hab
 const objcmd = arg0.persobat.var.[nomevar] || arg0.pnivel <= nivel ? este
 const txtajuda = int(nivel) >= 0 ? "\c3" + misc:nomevar(nomevar) + "\b\n" + msgextra
 const cmdmenu = "retornar" # Editável via "menu_hab_retornar" e "menu_magia_retornar"
-const a_batalha = 2 # Somente fora da batalha
+const a_em_pe = 1
 const tipoalvo = 6 # Não agressivo
 const c_espera = 15 # Tempo de esperar após usar esse comando
 const msgantes2 = "$P some em um redemoinho de fumaça."
@@ -15,6 +15,8 @@ const msgretorno = "Você não possui ponto de retorno."
 #
 # Ordem que deve organizar as constantes:
 const admordem = "nomevar nivel sala\n\
+a_dormindo a_descansando a_sentado a_montado\n\
+a_em_pe a_bat_sentado a_bat_montado a_bat_em_pe\n\
 c_espera\n\
 c_vida1 c_vida2\n\
 c_mana1 c_mana2\n\
