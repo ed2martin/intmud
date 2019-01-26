@@ -261,17 +261,20 @@ func msgsair # Envia mensagens do personagem saindo da sala
   refvar ssai = arg0.bitinv & 0x30 ? arg0.p_som_voasai : arg0.p_som_sai
   txt100 carga = arg0.desccarga
   carga && (carga = arg0.perso ? " carregando " + carga : " com " + carga)
+  l.addfim(arg0.dono.dentro2)
+  l.remove(arg0, arg0.persolugar)
   se !arg3 && arg0.bitver & 256 # Anda em silêncio
     $mens.mens = " em silêncio" + carga
     refvar msai = arg1 ? txttroca(arg2, "$m", " $e $o$m") : arg2
-    l.addfim(arg0.dono.dentro2)
-    epara l.remove(arg0), l, l.ini.remove
+    epara nulo, l, l.ini.remove
       l.objini.bitver & 0x1000 && $mens.msgsomvis(msai, ssai, l.objini)
     efim
   senao
     $mens.mens = carga
     refvar msai = arg1 ? txttroca(arg2, "$m", " $e $o$m") : arg2
-    $mens.mvis2som(msai, ssai)
+    epara nulo, l, l.ini.remove
+      $mens.msgsomvis(msai, ssai, l.objini)
+    efim
   fimse
 
 func msgentrar # Envia mensagens do personagem entrando na sala
@@ -283,18 +286,18 @@ func msgentrar # Envia mensagens do personagem entrando na sala
   listaobj l
   refvar sent = arg0.bitinv & 0x30 ? arg0.p_som_voaentra : arg0.p_som_entra
   txt100 carga = arg0.desccarga
+  l.addfim(arg0.dono.dentro2)
+  l.remove(arg0, arg0.persolugar)
   se !arg3 && arg0.bitver & 256 # Anda em silêncio
     $mens.mens = " em silêncio" + (carga ? " carregando " + carga)
     refvar ment = arg1 ? "$P saiu $d $o$m." : arg2
-    l.addfim(arg0.dono.dentro2)
-    epara l.remove(arg0, arg0.persolugar), l, l.ini.remove
+    epara nulo, l, l.ini.remove
       l.objini.bitver & 0x1000 && $mens.msgsomvis(ment, sent, l.objini)
     efim
   senao
     $mens.mens = carga ? " carregando " + carga
     refvar ment = arg1 ? "$P saiu $d $o$m." : arg2
-    l.addfim(arg0.dono.dentro2)
-    epara l.remove(arg0, arg0.persolugar), l, l.ini.remove
+    epara nulo, l, l.ini.remove
       $mens.msgsomvis(ment, sent, l.objini)
     efim
   fimse

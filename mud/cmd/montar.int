@@ -2,12 +2,15 @@ classe h_cmd_montar
 herda comando_comum
 const posic = 5
 const txtajuda = txtajuda1 + m_ajuda
-const txtajuda1 = "\b\c3Montar\b\nSintaxe: MONTAR <personagem>\n"
+const txtajuda1 = "\b\c3Montar\b\nSintaxe: MONTAR\n         MONTAR <personagem>\n"
 #
 const m_ajuda = "Monta no personagem especificado. Se você estiver montado em um animal\n\
 seu, esse comando coloca outros personagens na montaria. Nesse caso,\n\
-o personagem especificado deve estar seguindo você."
-const m_sem_perso = "Montar em quem?"
+o personagem especificado deve estar seguindo você.\n\
+Digitando apenas montar, mostra aonde você está montado ou sentado."
+const m_info_desmontado = "Você não está montad$s."
+const m_info_montado = "$A carrega $m."
+const m_info_sentado = "$A está com $m."
 const m_naover = "Você não vê $m"
 const m_montado = "$A já está montad$t."
 const m_carregando = "Você está carregando alguém."
@@ -23,12 +26,22 @@ const m_montou3 = "$P montou $e $a."
 const m_trouxe1 = "$O montou você $e $a."
 const m_trouxe2 = "$O montou $a em você."
 const m_trouxe3 = "$O montou $p $e $a."
-const admordem = "m_ajuda m_sem_perso m_naover m_montado m_carregando\n\
-m_perso_car m_perso_dono m_perso_nao m_perso_cheio m_nao_seguir\n\
-m_hab m_montou1 m_montou2 m_montou3 m_trouxe1 m_trouxe2 m_trouxe3"
+const admordem = "m_ajuda m_info_desmontado m_info_montado m_info_sentado\n\
+m_naover m_montado m_carregando m_perso_car m_perso_dono m_perso_nao\n\
+m_perso_cheio m_nao_seguir m_hab m_montou1 m_montou2 m_montou3\n\
+m_trouxe1 m_trouxe2 m_trouxe3"
 
 func escr
-  ret !arg1, $mens.mp(m_sem_perso, arg0)
+  se !arg1
+    ref r = arg0.poslugar.objlista
+    $mens.mens = r.desccarga
+    se !r
+      $mens.mp(m_info_desmontado, arg0)
+    senao
+      $mens.mp(r.perso ? m_info_montado : m_info_sentado, arg0, r)
+    fimse
+    ret
+  fimse
   ref r = misc:persooutro(arg0, arg1)
   se !r
     $mens.mens = arg1
@@ -173,85 +186,95 @@ const tipo1 = "opc_texto"
 const clas1 = "cmd_montar"
 const vari1 = "m_ajuda"
 #
-const nome2 = "Sem alvo"
+const nome2 = "Está desmontado"
 const tipo2 = "opc_linha"
 const clas2 = "cmd_montar"
-const vari2 = "m_sem_perso"
+const vari2 = "m_info_desmontado"
 #
-const nome3 = "Alvo não existe"
+const nome3 = "Está montado"
 const tipo3 = "opc_linha"
 const clas3 = "cmd_montar"
-const vari3 = "m_naover"
+const vari3 = "m_info_montado"
 #
-const nome4 = "Está montado"
+const nome4 = "Está sentado"
 const tipo4 = "opc_linha"
 const clas4 = "cmd_montar"
-const vari4 = "m_montado"
+const vari4 = "m_info_sentado"
 #
-const nome5 = "Você carregando"
+const nome5 = "Alvo não existe"
 const tipo5 = "opc_linha"
 const clas5 = "cmd_montar"
-const vari5 = "m_carregando"
+const vari5 = "m_naover"
 #
-const nome6 = "Alguém carregando"
+const nome6 = "Está montado"
 const tipo6 = "opc_linha"
 const clas6 = "cmd_montar"
-const vari6 = "m_perso_car"
+const vari6 = "m_montado"
 #
-const nome7 = "Não é o dono"
+const nome7 = "Você carregando"
 const tipo7 = "opc_linha"
 const clas7 = "cmd_montar"
-const vari7 = "m_perso_dono"
+const vari7 = "m_carregando"
 #
-const nome8 = "Não é possível"
+const nome8 = "Alguém carregando"
 const tipo8 = "opc_linha"
 const clas8 = "cmd_montar"
-const vari8 = "m_perso_nao"
+const vari8 = "m_perso_car"
 #
-const nome9 = "Sem lugar"
+const nome9 = "Não é o dono"
 const tipo9 = "opc_linha"
 const clas9 = "cmd_montar"
-const vari9 = "m_perso_cheio"
+const vari9 = "m_perso_dono"
 #
-const nome10 = "Não está seguindo"
+const nome10 = "Não é possível"
 const tipo10 = "opc_linha"
 const clas10 = "cmd_montar"
-const vari10 = "m_nao_seguir"
+const vari10 = "m_perso_nao"
 #
-const nome11 = "Sem conhecimento"
+const nome11 = "Sem lugar"
 const tipo11 = "opc_linha"
 const clas11 = "cmd_montar"
-const vari11 = "m_hab"
+const vari11 = "m_perso_cheio"
 #
-const nome12 = "Montou perso"
+const nome12 = "Não está seguindo"
 const tipo12 = "opc_linha"
 const clas12 = "cmd_montar"
-const vari12 = "m_montou1"
+const vari12 = "m_nao_seguir"
 #
-const nome13 = "Montou alvo"
+const nome13 = "Sem conhecimento"
 const tipo13 = "opc_linha"
 const clas13 = "cmd_montar"
-const vari13 = "m_montou2"
+const vari13 = "m_hab"
 #
-const nome14 = "Montou outros"
+const nome14 = "Montou perso"
 const tipo14 = "opc_linha"
 const clas14 = "cmd_montar"
-const vari14 = "m_montou3"
+const vari14 = "m_montou1"
 #
-const nome15 = "Trouxe perso"
+const nome15 = "Montou alvo"
 const tipo15 = "opc_linha"
 const clas15 = "cmd_montar"
-const vari15 = "m_trouxe1"
+const vari15 = "m_montou2"
 #
-const nome16 = "Trouxe alvo"
+const nome16 = "Montou outros"
 const tipo16 = "opc_linha"
 const clas16 = "cmd_montar"
-const vari16 = "m_trouxe2"
+const vari16 = "m_montou3"
 #
-const nome17 = "Trouxe outros"
+const nome17 = "Trouxe perso"
 const tipo17 = "opc_linha"
 const clas17 = "cmd_montar"
-const vari17 = "m_trouxe3"
+const vari17 = "m_trouxe1"
+#
+const nome18 = "Trouxe alvo"
+const tipo18 = "opc_linha"
+const clas18 = "cmd_montar"
+const vari18 = "m_trouxe2"
+#
+const nome19 = "Trouxe outros"
+const tipo19 = "opc_linha"
+const clas19 = "cmd_montar"
+const vari19 = "m_trouxe3"
 
 
 classe m_cmd_desmontar

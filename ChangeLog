@@ -1,3 +1,77 @@
+* 25/1/2019 IntMUD 1.12a MUD baseado na revisão 503
+
+   No IntMUD:
+  1. Corrigido bug no console na versão para Linux
+
+   No MUD:
+  1. Corrigido bug no comando Econfig/Ataques e batalha/Nível animais:
+     não permitia atacar se esse número fosse negativo
+  2. Corrigido bug: jogador podia atacar os próprios animais (bug nas
+     funções mesmogrupo e donogrupo)
+  3. Corrigido bug: ao atacar o próprio personagem, vinha a mensagem:
+     "Atacar outro integrante do grupo?"
+  4. Corrigido bug: o comando Grupo podia ser usado em animais do
+     próprio jogador (nesse caso, deixava de ser do jogador)
+  5. Corrigido bug: o comando Sentar estar usando a mensagem do comando
+     Econfig, menu 18, sentar, opção "Sentou chão perso" ao invés de
+     "Sentou chão outros"
+  6. Corrigido bug: opção "30.Lugares" do comando Eitem permitia sentar
+     se não estivesse definido (estivesse com <nulo> 0)
+  7. Corrigido bug: personagem sentado em um item que se move conseguia
+     fugir da luta digitando uma direção
+  8. Corrigido bug: sentado ou montado, o jogador conseguia entrar em
+     lugares não permitidos a jogadores
+  9. Corrigido bug: personagens não seguiam outros personagens montados
+     ou sentados
+ 10. Corrigido bug: era possível capturar um animal e manter ele na sala
+     mesmo já possuindo um animal solto na sala
+ 11. Corrigido bug: Se não é possível ir em uma direção e o jogador está
+     sentado em um item ou animal, o jogador não recebia a mensagem
+ 12. Corrigido bug: Mensagem ao fugir para baixo era "Você fugiu para
+     cima"
+ 13. Corrigida magia Criar Fonte e outras habilidades/magias: estava
+     criando mesmo se a magia falhasse
+ 14. Habilidade Roncar volta a funcionar
+ 15. Opções "2.Condição Batalha" e "3.Condição Montaria" das habilidades
+     e magias foi substituída pelo menu "2.Posição"
+ 16. Animais na sala agora lutam em grupo (atacam se atacarem o jogador
+     e vice-versa)
+ 17. Ao ir para outra sala sentado em um item, agora diz os nomes dos
+     personagens sentados
+ 18. Comando Capturar muda o dono original do animal mesmo se ele não
+     for para o comando Animal
+ 19. Comando Estat agora mostra o dono original do animal mesmo que seja
+     o próprio jogador
+ 20. Comando Info agora mostra também o limite de jogadores e de PNJs na
+     sala
+ 21. Quantidade de PNJs na sala agora significa PNJs sem dono (animais
+     dos jogadores não contam)
+ 22. Ao usar a função mudadono para soltar um animal na sala, agora o
+     animal continua pertencendo ao jogador
+ 23. Criada função mudadomador (somente animais na sala): define quem
+     possui o animal (vide arquivo mud/doc/08-perso.txt)
+ 24. Criada função listagrupo em comum.int (vide mud/doc/06-comum.txt)
+ 25. Comando Reserva agora permite pegar animais da sala e soltar na
+     sala
+ 26. Comandos Comer, Beber, Provar, Encher, Esvaziar, Recitar e Resgatar
+     no novo padrão dos menus
+ 27. Comando Grupo agora mostra também os animais dos jogadores
+ 28. Quando não está em grupo, o comando Grupo mostra os animais do
+     jogador
+ 29. Comando Econfig, menu 17, Mover, menu 1, mensagem do animal cansado
+ 30. Comando Econfig, menu 15 agora são Mensagens do jogo, da hora e da
+     posição dos personagens
+ 31. Criada sala teste171 com um exemplo de animais e montaria
+ 32. Ao mudar de sala montado em um animal, o animal e quem está montado
+     não aparecem na descrição da sala
+ 33. Ao mudar de sala, quem está montado não recebe a mensagem que o
+     animal mudou de sala
+ 34. Digitando apenas Montar, agora mostra aonde o jogador está montado
+     ou sentado
+ 35. Eventos cmd_mover e cmd_moveu agora possuem argumento arg7 =
+     personagem no controle (quem deve receber mensagens se não
+     conseguiu mover)
+
 * 4/11/2018 IntMUD 1.12a MUD baseado na revisão 493
 
    No IntMUD

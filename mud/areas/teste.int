@@ -1053,6 +1053,62 @@ func cmd_ini
   criar("i_teste052", este, 30)
 
 
+classe i_teste072
+herda comum_item
+const nome = "pedra verde"
+const descnome = "uma pedra verde"
+const eveste = 1 # Eventos item: Sim
+
+func cmd_pegarobj # Quer pegar alguma coisa
+  se tem_animal(arg0, "p_teste043") || tem_animal(arg0, "p_teste044")
+    arg0.msg("Melhor não, você já tem um lagarto.")
+    ret 1
+  fimse
+
+func cmd_pegouobj # Pegou alguma coisa
+  apagar(este)
+  criar("p_teste043", arg0, 1, "h_socar=2")
+  $mens.p(arg0)
+  $mens.mtodos1("$P adquiriu um lagarto verde.")
+
+func tem_animal # Verifica se um personagem (arg0) tem um animal (arg1=nome da classe)
+# Retorna 1 (verdadeiro) se possui ou 0 (falso) se não possui
+  ret arg0.dentro2.objini(arg1) || arg0.dentro3.objini(arg1), 1
+  listaitem i
+  epara i = arg0.lseguir.ini, i, i.depois
+    ret i.obj.tseguir == 3 && txt(arg1) == i.obj, 1
+  efim
+  ret 0
+
+
+classe i_teste073
+herda comum_item
+const nome = "pedra vermelha"
+const descnome = "uma pedra vermelha"
+const eveste = 1 # Eventos item: Sim
+
+func cmd_pegarobj # Quer pegar alguma coisa
+  se tem_animal(arg0, "p_teste043") || tem_animal(arg0, "p_teste044")
+    arg0.msg("Melhor não, você já tem um lagarto.")
+    ret 1
+  fimse
+
+func cmd_pegouobj # Pegou alguma coisa
+  apagar(este)
+  criar("p_teste044", arg0, 1, "h_socar=2")
+  $mens.p(arg0)
+  $mens.mtodos1("$P adquiriu um lagarto vermelho.")
+
+func tem_animal # Verifica se um personagem (arg0) tem um animal (arg1=nome da classe)
+# Retorna 1 (verdadeiro) se possui ou 0 (falso) se não possui
+  ret arg0.dentro2.objini(arg1) || arg0.dentro3.objini(arg1), 1
+  listaitem i
+  epara i = arg0.lseguir.ini, i, i.depois
+    ret i.obj.tseguir == 3 && txt(arg1) == i.obj, 1
+  efim
+  ret 0
+
+
 classe p_teste001
 herda comum_perso
 const nome = "Jardineiro"
@@ -2026,6 +2082,79 @@ func cmd_pnj_proc
   fimse
 
 
+classe p_teste042
+herda comum_perso
+const nome = "colecionador"
+const descnome = "um colecionador"
+const msexo = 1 # Sexo Msg: 1 Masculino
+const evsala = 1 # Eventos dono sala: Sim
+
+func cmd_chegou # Chegou na sala
+  ret !arg0.jog, nulo # Retorna se não for jogador
+  misc:tempo("entrou", arg0) # Dispara funções 'entrou'
+
+func entrou10
+  se tem_animal(arg0, "p_teste043")
+    arg0.msg("Colecionador: Como vai indo com o lagarto verde")
+  senao tem_animal(arg0, "p_teste044")
+    arg0.msg("Colecionador: Como vai indo com o lagarto vermelho")
+  senao
+    arg0.msg("Colecionador: Você pode pegar a pedra verde, que contém um lagarto verde")
+    arg0.msg("Colecionador: ou a pedra vermelha, que contem um lagarto vermelho")
+  fimse
+
+func tem_animal # Verifica se um personagem (arg0) tem um animal (arg1=nome da classe)
+# Retorna 1 (verdadeiro) se possui ou 0 (falso) se não possui
+  ret arg0.dentro2.objini(arg1) || arg0.dentro3.objini(arg1), 1
+  listaitem i
+  epara i = arg0.lseguir.ini, i, i.depois
+    ret i.obj.tseguir == 3 && txt(arg1) == i.obj, 1
+  efim
+  ret 0
+
+
+classe p_teste043
+herda comum_persobat
+const nome = "lagarto verde"
+const descnome = "lagarto verde"
+const msexo = 1 # Sexo Msg: 1 Masculino
+const p_animal = 2 # Lugar após domar: 2 No comando Animal ou na sala
+const p_montar_tipo = 1 # Montar: 1 Somente se tiver dono
+const p_lugar = 3
+const eveste = 1 # Eventos perso: Sim
+const evperso = 1 # Eventos dono perso: Sim
+
+func cmd_chegou
+  refvar r = arg0 == este ? este : arg0 == dono ? dono : nulo
+  r.dono.dentro2.objini("p_teste011") && misc:tempo("entrou", arg0)
+
+func entrou1
+  apagar(este)
+  $mens.p(este)
+  $mens.mtodos1("$P ficou com medo e foi embora.")
+
+
+classe p_teste044
+herda comum_persobat
+const nome = "lagarto vermelho"
+const descnome = "lagarto vermelho"
+const msexo = 1 # Sexo Msg: 1 Masculino
+const p_animal = 2 # Lugar após domar: 2 No comando Animal ou na sala
+const p_montar_tipo = 1 # Montar: 1 Somente se tiver dono
+const p_lugar = 3
+const eveste = 1 # Eventos perso: Sim
+const evperso = 1 # Eventos dono perso: Sim
+
+func cmd_chegou
+  refvar r = arg0 == este ? este : arg0 == dono ? dono : nulo
+  r.dono.dentro2.objini("p_teste011") && misc:tempo("entrou", arg0)
+
+func entrou1
+  apagar(este)
+  $mens.p(este)
+  $mens.mtodos1("$P ficou com medo e foi embora.")
+
+
 classe s_teste001
 herda b_teste
 const s_titulo = "Entrada"
@@ -2589,8 +2718,10 @@ herda b_teste
 const s_titulo = "Quinto andar: Loja, professores e ponto de retorno"
 const s_desc = "À leste há um vendedor e um professor.\n\
 À oeste trata-se do ponto de retorno.\n\
+Ao norte, animais e montaria.\n\
 Ao sul você pode matar um PNJ e pegar itens e dinheiro do corpo dele.\n\
 Ou pode teclar AA nessa sala, para ficar com mil moedas."
+const dir_n = $s_teste171
 const dir_s = $s_teste051
 const dir_l = $s_teste031
 const dir_o = $s_teste049
@@ -4929,3 +5060,21 @@ const s_desc = "João o mercenário (a oeste) vende uma aljava com 30 flechas.\n\
 Isso foi feito com trigger. As flechas (item teste052) são criadas\n\
 na função cmd_ini da aljava (item teste071)."
 const dir_o = $s_teste031
+
+
+classe s_teste171
+herda b_teste
+const s_titulo = "Animais e montaria"
+const s_desc = "Aqui você pode adquirir um lagarto, caso não tenha nenhum. Ele ajuda nas\n\
+lutas e pode servir de montaria. No entanto, ele tem medo de camundongos\n\
+(indo ao sul tem um). Se entrar em uma sala que tem um, ele vai embora."
+const dir_s = $s_teste030
+const s_reset = "P 100 teste042 0 0 1\nS 100 teste072 1 S\nS 100 teste073 1 S"
+
+func s_reset1 # Realiza o reset
+# Não alterar; função criada automaticamente a partir de s_reset
+  se p_teste042:objsolto.total < 1
+    criar("p_teste042", este, 0)
+  fimse
+  !dentro1.objini("i_teste072") && criar("i_teste072", este, 1)
+  !dentro1.objini("i_teste073") && criar("i_teste073", este, 1)

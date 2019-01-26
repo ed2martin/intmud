@@ -220,6 +220,7 @@ func descsala # Retorna descrição da sala
 # arg0 = objeto que está vendo a descrição
 # arg1 é o número 0 somado com: +1 se mostra descrição completa,
 # +2 se mostra saídas, +4 se mostra itens, +8 se mostra o nome da sala
+# arg2 = itens e e personagens que não devem aparecer na descrição, ou nulo
   textotxt t
   se visivel(arg0)
     se !config:perigomsg
@@ -257,7 +258,7 @@ func descsala # Retorna descrição da sala
     textotxt t2
     listaobj l
     l.addfim(dentro1, dentro2)
-    l.remove(arg0)
+    l.remove(arg0, arg2)
     ref r
     enquanto l
       r = l.fim.obj, l.fim.remove

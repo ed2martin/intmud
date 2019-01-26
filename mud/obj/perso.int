@@ -211,7 +211,8 @@ func mudadono # Coloca personagem em outra sala ou outro personagem
     dono.t_item = 0
     msgsom(dono.s_som)
     refvar cfg = (jogconfig.bits & 3 | (dono.s_morre ? 5 : 4)) | (jogconfig.16 ? 8)
-    msg2(dono.descsala(este, cfg))
+    l.addfim(persolugar, poslugar.objlista, poslugar.objlista.persolugar)
+    msg2(dono.descsala(este, cfg, l))
   fimse
 # Move quem está montado
   epara l.addfim(persolugar), l, l.ini.remove
