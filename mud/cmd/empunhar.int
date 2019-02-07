@@ -1,63 +1,77 @@
-classe cmd_empunhar
+classe h_cmd_empunhar
 herda comando_comum
-const txtajuda = "\b\c3Empunhar\b\n\
-Sintaxe: EMPUNHAR <objeto>\n\
-Seu personagem empunha uma arma que está carregando."
+const txtajuda = txtajuda1 + m_ajuda
+const txtajuda1 = "\b\c3Empunhar\b\n\
+Sintaxe: EMPUNHAR <objeto>\n"
 const posic = 5
 #
+const m_ajuda = "Seu personagem empunha uma arma que está carregando."
 const m_sem_args = "Empunhar o quê?"
+const m_naover = "Você não vê $m."
 const m_nao_arma = "$O não é arma."
-const m_nao_consegue = "Você não consegue empunhar $o."
-const m_conhecimento = "Você não conhece $m."
-const m_nivel = "Você precisa chegar no nível $m para empunhar $o."
+const m_empunhando_p = "Você já está empunhando uma arma."
+const m_empunhando_a = "$A já está empunhando uma arma."
+const m_nao_consegue_p = "Você não consegue empunhar $o."
+const m_nao_consegue_a = "$A não consegue empunhar $o."
+const m_conhecimento_p = "Você não conhece $m."
+const m_conhecimento_a = "$A não conhece $m."
+const m_nivel_p = "Você precisa chegar no nível $m para empunhar $o."
+const m_nivel_a = "$A precisa chegar no nível $m para empunhar $o."
 const m_renascer1 = "Você precisa renascer uma vez para empunhar $o."
 const m_renascer2 = "Você precisa renascer duas vezes para empunhar $o."
 const m_renascer3 = "Você precisa renascer $m vezes para empunhar $o."
-const m_empunha1 = "Você empunha $o."
-const m_empunha2 = "$P empunha $o."
+const m_empunhou1_p = "Você empunha $o."
+const m_empunhou1_a = "$A empunha $o."
+const m_empunhou2_p = "$P empunha $o."
+const m_empunhou2_a = "$A empunha $o."
+const admordem = "m_ajuda m_sem_args m_naover m_nao_arma m_empunhando_p\n\
+m_empunhando_a m_nao_consegue_p m_nao_consegue_a m_conhecimento_p\n\
+m_conhecimento_a m_nivel_p m_nivel_a m_renascer1 m_renascer2 m_renascer3\n\
+m_empunhou1_p m_empunhou2_p"
 
 func escr
   ret !arg1, $mensjog.msg(m_sem_args, arg0)
   refvar perm_msg = $perm_[arg0.jogperm].vestir
   ret perm_msg, $mensjog.msg(perm_msg, arg0)
-  refvar alvo = ref(arg0.persoesc)
-  ret alvo.iempu, $mens.mp("$A já está empunhando uma arma.", arg0, alvo)
+  refvar alvo = ref(arg0.persoesc) ?? arg0
+  refvar tipomsg = arg0 == alvo ? "_p" : "_a"
+  ret alvo.iempu, $mens.mp(m_empunhando[tipomsg], arg0, alvo)
   refvar tipo1 = txte(alvo.tipo1)
   refvar tipo2 = txte(alvo.tipo2)
   refvar tipo3 = txte(alvo.tipo3)
 # Empunha
   ref r = misc:itemdentro(arg0, arg1)
-  $mens.p(alvo, nulo, r)
+  $mens.p(arg0, alvo, r)
   se !r
     $mens.mens = arg1
-    ret $mens.mp("Você não vê $m.", arg0)
+    ret $mens.msg(m_naover, arg0)
   senao !r.armatipo
-    ret $mens.mp(m_nao_arma, arg0, nulo, r)
+    ret $mens.msg(m_nao_arma, arg0)
   senao r.vestirsim == (alvo == arg0 ? 2 : 1)
-    ret $mens.mp(m_nao_consegue, arg0, nulo, r)
+    ret $mens.msg(m_nao_consegue[tipomsg], arg0)
   senao r.vestirsexo == (alvo.psexo ? 1 : 2)
-    ret $mens.mp(m_nao_consegue, arg0, nulo, r)
+    ret $mens.msg(m_nao_consegue[tipomsg], arg0)
   senao int(r.pnivel) > alvo.pnivel
     $mens.mens = r.pnivel
-    ret $mens.mp(m_nivel, arg0, nulo, r)
-  senao int(r.renascer) > alvo.prenascer
+    ret $mens.msg(m_nivel[tipomsg], arg0)
+  senao int(r.renascer) > arg0.prenascer
     $mens.mens = r.renascer
     se arg2.renascer == 1
-      ret $mens.mp(m_renascer1, arg0)
+      ret $mens.msg(m_renascer1, arg0)
     senao arg2.renascer == 2
-      ret $mens.mp(m_renascer2, arg0)
+      ret $mens.msg(m_renascer2, arg0)
     fimse
-    ret $mens.mp(m_renascer3, arg0)
+    ret $mens.msg(m_renascer3, arg0)
   senao !alvo.var.h_[txtsublin(config:arma_txt, r.armatipo, 1)]
     $mens.mens = txtsublin(config:arma_txt, r.armatipo, 1)
-    ret $mens.mp(m_conhecimento, arg0, nulo, r)
+    ret $mens.msg(m_conhecimento[tipomsg], arg0)
   senao r.vestirnao
     se tipo1 && txtproclin(txte(r.vestirnao), tipo1) >= 0
-      ret $mens.mp(m_nao_consegue, arg0, nulo, r)
+      ret $mens.msg(m_nao_consegue[tipomsg], arg0)
     senao tipo2 && txtproclin(txte(r.vestirnao), tipo2) >= 0
-      ret $mens.mp(m_nao_consegue, arg0, nulo, r)
+      ret $mens.msg(m_nao_consegue[tipomsg], arg0)
     senao tipo3 && txtproclin(txte(r.vestirnao), tipo3) >= 0
-      ret $mens.mp(m_nao_consegue, arg0, nulo, r)
+      ret $mens.msg(m_nao_consegue[tipomsg], arg0)
     fimse
   fimse
   listaobj e
@@ -66,8 +80,111 @@ func escr
   efim
   r.vestir(50)
   $mens.p(arg0, nulo, r)
-  $mens.msgsomvis(m_empunha1, r.i_som_emp1, arg0)
-  $mens.mvis2som(m_empunha2, r.i_som_emp1)
+  $mens.msgsomvis(m_empunhou1[tipomsg], r.i_som_emp1, arg0)
+  $mens.mvis2som(m_empunhou2[tipomsg], r.i_som_emp1)
   epara e.addfim(alvo.evento, r.evento), e, e.ini.remove
     e.objini.cmd_vestiu(alvo, r, 50)
   efim
+
+
+classe m_cmd_empunhar
+herda comando_menu_cmd
+#
+const nome1 = "Ajuda"
+const tipo1 = "opc_texto"
+const clas1 = "cmd_empunhar"
+const vari1 = "m_ajuda"
+#
+const nome2 = "Sem argumentos"
+const tipo2 = "opc_linha"
+const clas2 = "cmd_empunhar"
+const vari2 = "m_sem_args"
+#
+const nome3 = "Sem alvo"
+const tipo3 = "opc_linha"
+const clas3 = "cmd_empunhar"
+const vari3 = "m_naover"
+#
+const nome4 = "Não é arma"
+const tipo4 = "opc_linha"
+const clas4 = "cmd_empunhar"
+const vari4 = "m_nao_arma"
+#
+const nome5 = "Renascer 1 vez"
+const tipo5 = "opc_linha"
+const clas5 = "cmd_empunhar"
+const vari5 = "m_renascer1"
+#
+const nome6 = "Renascer 2 vezes"
+const tipo6 = "opc_linha"
+const clas6 = "cmd_empunhar"
+const vari6 = "m_renascer2"
+#
+const nome7 = "Renascer mais vezes"
+const tipo7 = "opc_linha"
+const clas7 = "cmd_empunhar"
+const vari7 = "m_renascer3"
+#
+const titu8 = " * Personagem empunha"
+#
+const nome8 = "Já está empunhando"
+const tipo8 = "opc_linha"
+const clas8 = "cmd_empunhar"
+const vari8 = "m_empunhando_p"
+#
+const nome9 = "Não consegue"
+const tipo9 = "opc_linha"
+const clas9 = "cmd_empunhar"
+const vari9 = "m_nao_consegue_p"
+#
+const nome10 = "Sem conhecimento"
+const tipo10 = "opc_linha"
+const clas10 = "cmd_empunhar"
+const vari10 = "m_conhecimento_p"
+#
+const nome11 = "Nível insuficiente"
+const tipo11 = "opc_linha"
+const clas11 = "cmd_empunhar"
+const vari11 = "m_nivel_p"
+#
+const nome12 = "Empunha perso"
+const tipo12 = "opc_linha"
+const clas12 = "cmd_empunhar"
+const vari12 = "m_empunhou1_p"
+#
+const nome13 = "Empunha outros"
+const tipo13 = "opc_linha"
+const clas13 = "cmd_empunhar"
+const vari13 = "m_empunhou2_p"
+#
+const titu14 = " * Animal empunha"
+#
+const nome14 = "Já está empunhando"
+const tipo14 = "opc_linha"
+const clas14 = "cmd_empunhar"
+const vari14 = "m_empunhando_a"
+#
+const nome15 = "Não consegue"
+const tipo15 = "opc_linha"
+const clas15 = "cmd_empunhar"
+const vari15 = "m_nao_consegue_a"
+#
+const nome16 = "Sem conhecimento"
+const tipo16 = "opc_linha"
+const clas16 = "cmd_empunhar"
+const vari16 = "m_conhecimento_a"
+#
+const nome17 = "Nível insuficiente"
+const tipo17 = "opc_linha"
+const clas17 = "cmd_empunhar"
+const vari17 = "m_nivel_a"
+#
+const nome18 = "Empunha perso"
+const tipo18 = "opc_linha"
+const clas18 = "cmd_empunhar"
+const vari18 = "m_empunhou1_a"
+#
+const nome19 = "Empunha outros"
+const tipo19 = "opc_linha"
+const clas19 = "cmd_empunhar"
+const vari19 = "m_empunhou2_a"

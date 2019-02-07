@@ -566,11 +566,12 @@ func morreu # Procedimentos quando morre
     i.obj.e_condicao && apagar(i.obj)
   efim
 # Gera eventos
+  cmd_persomorreu(arg0, corpo)
   epara l.addfim(evento), l, l.ini.remove
-    l.objini.cmd_morreu(este, arg0, este)
+    l.objini.cmd_morreu(este, arg0, este, corpo)
   efim
   epara l.addfim(arg0.evento), l, l.ini.remove
-    l.objini.cmd_morreu(este, arg0, arg0)
+    l.objini.cmd_morreu(este, arg0, arg0, corpo)
   efim
   !jog && !dono.perso && mudadono(nulo)
   ret corpo

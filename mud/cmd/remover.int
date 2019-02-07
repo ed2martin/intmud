@@ -1,17 +1,31 @@
-classe cmd_remover
+classe h_cmd_remover
 herda comando_comum
-const txtajuda = "\b\c3Remover\b\n\
+const txtajuda = txtajuda1 + m_ajuda
+const txtajuda1 = "\b\c3Remover\b\n\
 Sintaxe: REMOVER <objeto>\n\
-         REMOVER <quantidade> <objeto>\n\
-Seu personagem deixa de usar um objeto que está vestindo ou usando.\n\
-Para remover tudo (até 10 objetos) tecle TUDO ao invés do objeto."
+         REMOVER <quantidade> <objeto>\n"
 const posic = 5
+#
+const m_ajuda = "Seu personagem deixa de usar um objeto que está vestindo ou usando.\n\
+Para remover tudo (até 10 objetos) tecle TUDO ao invés do objeto."
+const m_sem_args = "Remover o quê?"
+const m_naover_p = "Você não está usando isso."
+const m_naover_a = "$A não está usando isso."
+const m_em_cima_p = "Antes você precisa parar de usar $o."
+const m_em_cima_a = "Antes $a precisa parar de usar $o."
+const m_removeu1_p = "Você removeu $o."
+const m_removeu1_a = "$A removeu $o."
+const m_removeu2_p = "$P removeu $o."
+const m_removeu2_a = "$A removeu $o."
+const admordem = "m_ajuda m_sem_args m_naover_p m_naover_a m_em_cima_p\n\
+m_em_cima_a m_removeu1_p m_removeu1_a m_removeu2_p m_removeu2_a"
 
 func escr
-  ret !arg1, arg0.msg("Remover o que?")
+  ret !arg1, $mensjog.msg(m_sem_args, arg0)
   refvar perm_msg = $perm_[arg0.jogperm].vestir
   ret perm_msg, $mensjog.msg(perm_msg, arg0)
-  refvar alvo = ref(arg0.persoesc) # Quem vai remover
+  refvar alvo = ref(arg0.persoesc) ?? arg0 # Quem vai remover
+  refvar tipomsg = arg0 == alvo ? "_p" : "_a"
 # Preenche a variável vest com o que está vestindo
   txt12 vest # Aonde está vestindo
   listaitem item
@@ -34,7 +48,7 @@ func escr
         continuar !item.obj.vestpos
         sair txttroca(intbith(item.obj.vestpos - 1) & valor, "0", "")
       efim
-      $mens.mp("Antes precisa parar de usar $o.", arg0, nulo, item.obj)
+      $mens.mp(m_em_cima[tipomsg], arg0, alvo, item.obj)
       continuar
     fimse
     refvar posic = int(r.vestpos)
@@ -48,8 +62,9 @@ func escr
     vest &= ~txthex(intbith(r.vestpos - 1), 12)
     refvar som = r.vestpos == 50 ? r.i_som_emp0 : r.i_som_vest0
     r.vestir(0)
-    $mens.p(alvo, nulo, r)
-    $mens.mvis1som("$P remove $o.", som)
+    $mens.p(arg0, alvo, r)
+    $mens.msgsomvis(m_removeu1[tipomsg], som, arg0)
+    $mens.mvis2som(m_removeu2[tipomsg], som)
     epara e.addfim(alvo.evento), e, e.ini.remove
       e.objini.cmd_removeu(alvo, r, posic, alvo)
     efim
@@ -58,4 +73,62 @@ func escr
     efim
   efim
 # Ajusta variáveis
-  !total && $mens.mp("$A não está usando isso.", arg0, alvo)
+  !total && $mens.mp(m_naover[tipomsg], arg0, alvo)
+
+
+classe m_cmd_remover
+herda comando_menu_cmd
+#
+const nome1 = "Ajuda"
+const tipo1 = "opc_texto"
+const clas1 = "cmd_remover"
+const vari1 = "m_ajuda"
+#
+const nome2 = "Sem argumentos"
+const tipo2 = "opc_linha"
+const clas2 = "cmd_remover"
+const vari2 = "m_sem_args"
+#
+const titu3 = " * Personagem remove"
+#
+const nome3 = "Sem alvo"
+const tipo3 = "opc_linha"
+const clas3 = "cmd_remover"
+const vari3 = "m_naover_p"
+#
+const nome4 = "Tem item em cima"
+const tipo4 = "opc_linha"
+const clas4 = "cmd_remover"
+const vari4 = "m_em_cima_p"
+#
+const nome5 = "Removeu perso"
+const tipo5 = "opc_linha"
+const clas5 = "cmd_remover"
+const vari5 = "m_removeu1_p"
+#
+const nome6 = "Removeu outros"
+const tipo6 = "opc_linha"
+const clas6 = "cmd_remover"
+const vari6 = "m_removeu2_p"
+#
+const titu7 = " * Animal remove"
+#
+const nome7 = "Sem alvo"
+const tipo7 = "opc_linha"
+const clas7 = "cmd_remover"
+const vari7 = "m_naover_a"
+#
+const nome8 = "Tem item em cima"
+const tipo8 = "opc_linha"
+const clas8 = "cmd_remover"
+const vari8 = "m_em_cima_a"
+#
+const nome9 = "Removeu perso"
+const tipo9 = "opc_linha"
+const clas9 = "cmd_remover"
+const vari9 = "m_removeu1_a"
+#
+const nome10 = "Removeu outros"
+const tipo10 = "opc_linha"
+const clas10 = "cmd_remover"
+const vari10 = "m_removeu2_a"

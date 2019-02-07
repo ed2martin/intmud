@@ -164,6 +164,11 @@ Chamado para o próprio item, quando um personagem quer vestir (roupa)
 ou empunhar (arma). Se retornar um texto, o personagem não conseguirá
 vestir e será enviado esse texto.
 
+func cmd_persomorreu
+Chamado para o próprio personagem, quando morreu
+arg0 = personagem que matou; pode ser nulo
+arg1 = corpo do personagem morto ou null se não deixou corpo
+
 func cmd_hora
 arg0 = hora atual
 É chamado sempre que a hora MUD muda (a cada 5 minutos), desde que o objeto
@@ -405,6 +410,7 @@ func cmd_morreu
 arg0 = personagem que morreu
 arg1 = personagem que matou; pode ser nulo
 arg2 = origem do evento: arg0 ou arg1
+arg3 = corpo do personagem morto ou null se não deixou corpo
 
 
 4. Eventos condicionais
