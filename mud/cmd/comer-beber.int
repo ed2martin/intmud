@@ -24,8 +24,7 @@ func efeito
 classe h_cmd_comer
 herda comando_comebebe
 const txtajuda = txtajuda1 + m_ajuda
-const txtajuda1 = "\b\c3Comer\b\n\
-Sintaxe: COMER <objeto>\n"
+const txtajuda1 = "\b\c3Comer\b\nSintaxe: COMER <objeto>\n"
 const posic = 5
 #
 const m_ajuda = "Tenta comer alguma coisa, geralmente um alimento."
@@ -87,9 +86,7 @@ func comer # Personagem arg0 come item arg1
 classe h_cmd_beber
 herda comando_comebebe
 const txtajuda = txtajuda1 + m_ajuda
-const txtajuda1 = "\b\c3Beber\b\n\
-Sintaxe: BEBER [objeto]\n\
-         TOMAR [objeto]\n"
+const txtajuda1 = "\b\c3Beber\b\nSintaxe: BEBER [objeto]\n         TOMAR [objeto]\n"
 const posic = 5
 const totalml = 1
 #
@@ -105,8 +102,8 @@ const m_cheio = "Você não consegue beber mais nada."
 const m_embriaguez = "Você não consegue levar $o à boca."
 const m_fonte1 = "Você bebe $d $o."
 const m_fonte2 = "$P bebe $d $o."
-const m_item1c = "Você bebe $1 $d $o."
-const m_item2c = "$P bebe um líquido $2 $d $o."
+const m_item1c = "Você bebe $m $d $o."
+const m_item2c = "$P bebe um líquido $1 $d $o."
 const m_item1d = "Você bebe $d $o."
 const m_item2d = "$P bebe $d $o."
 const m_pocao1 = "Você bebe $o."
@@ -165,8 +162,10 @@ func beber # Personagem arg0 bebe item arg1, arg2=quantidade (de 0 a 1)
   efim
 # Bebe o objeto
   $mens.p(arg0, nulo, arg1)
-  $mens.o_1 = liq.nome
-  $mens.o_2 = liq.aspecto
+  $mens.mens = liq.nome
+  $mens.o_1 = liq.aspecto
+  $mens.o_2 = liq.msexo ? "um" : "uma"
+  $mens.o_3 = liq.msexo ? "o" : "a"
   refvar m_outros = arg1.f_msgoutros ?? arg1.f_msgperso
   se arg1.f_tipo == 1 # Fonte
     $mens.mvis2(arg1.f_msgperso ?? m_fonte1, m_outros ?? m_fonte2)
@@ -213,8 +212,7 @@ const objcmd = $cmd_beber
 classe h_cmd_provar
 herda h_cmd_beber
 const txtajuda = txtajuda1 + m_ajuda
-const txtajuda1 = "\b\c3Provar\b\n\
-Sintaxe: PROVAR [objeto]\n"
+const txtajuda1 = "\b\c3Provar\b\nSintaxe: PROVAR [objeto]\n"
 const totalml = 0.1
 #
 const m_ajuda = "Tenta provar alguma coisa (bebe 1 décimo do que beberia teclando Beber).\n\
@@ -326,13 +324,13 @@ const clas11 = cl
 const vari11 = "m_fonte2"
 #
 const nome12 = "Bebe líquido perso"
-const info12 = "Líquido conhecido; $1=nome do líquido e $2=aparência do líquido"
+const info12 = "Líquido conhecido; $m=nome do líquido, $1=aspecto, $2=um ou uma, $3=o ou a"
 const tipo12 = "opc_linha"
 const clas12 = cl
 const vari12 = "m_item1c"
 #
 const nome13 = "Bebe líquido outros"
-const info13 = "Líquido conhecido; $1=nome do líquido e $2=aparência do líquido"
+const info13 = "Líquido conhecido; $m=nome do líquido, $1=aspecto, $2=um ou uma, $3=o ou a"
 const tipo13 = "opc_linha"
 const clas13 = cl
 const vari13 = "m_item2c"

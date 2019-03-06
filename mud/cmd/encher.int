@@ -1,8 +1,7 @@
 classe h_cmd_encher
 herda comando_comum
 const txtajuda = txtajuda1 + m_ajuda
-const txtajuda1 = "\b\c3Encher\b\n\
-Sintaxe: ENCHER <objeto1> [objeto2]\n"
+const txtajuda1 = "\b\c3Encher\b\nSintaxe: ENCHER <objeto1> [objeto2]\n"
 const posic = 5
 #
 const m_ajuda = "Tenta encher o objeto1 com o líquido do objeto2. Digitando apenas o nome\n\
@@ -101,6 +100,8 @@ func escr
 # Transfere o líquido
   $mens.mens = liq.nome
   $mens.o_1 = liq.aspecto
+  $mens.o_2 = liq.msexo ? "um" : "uma"
+  $mens.o_3 = liq.msexo ? "o" : "a"
   $mens.p(arg0, r2, r1)
   r1.var.z_liquido = txt(intpos(qtd2 + r1.var.z_liquido)) + " " + txt(liq, 4)
   r1.ajustapeso
@@ -189,25 +190,29 @@ const clas12 = "cmd_encher"
 const vari12 = "m_outro_liquido"
 #
 const nome14 = "Encheu de item perso"
-const info14 = "$o=item enchido, $a=item esvaziado, $m=nome do líquido, $1=aspecto"
+const info14 = "$o=item enchido, $a=item esvaziado,\n\
+$m=nome do líquido, $1=aspecto, $2=um ou uma, $3=o ou a"
 const tipo14 = "opc_linha"
 const clas14 = "cmd_encher"
 const vari14 = "m_encheu_item1"
 #
 const nome15 = "Encheu de item outros"
-const info15 = "$o=item enchido, $a=item esvaziado, $m=nome do líquido, $1=aspecto"
+const info15 = "$o=item enchido, $a=item esvaziado,\n\
+$m=nome do líquido, $1=aspecto, $2=um ou uma, $3=o ou a"
 const tipo15 = "opc_linha"
 const clas15 = "cmd_encher"
 const vari15 = "m_encheu_item2"
 #
 const nome16 = "Encheu de fonte perso"
-const info16 = "$o=item enchido, $a=item fonte, $m=nome do líquido, $1=aspecto"
+const info16 = "$o=item enchido, $a=item fonte,\n\
+$m=nome do líquido, $1=aspecto, $2=um ou uma, $3=o ou a"
 const tipo16 = "opc_linha"
 const clas16 = "cmd_encher"
 const vari16 = "m_encheu_fonte1"
 #
 const nome17 = "Encheu de fonte outros"
-const info17 = "$o=item enchido, $a=item fonte, $m=nome do líquido, $1=aspecto"
+const info17 = "$o=item enchido, $a=item fonte,\n\
+$m=nome do líquido, $1=aspecto, $2=um ou uma, $3=o ou a"
 const tipo17 = "opc_linha"
 const clas17 = "cmd_encher"
 const vari17 = "m_encheu_fonte2"

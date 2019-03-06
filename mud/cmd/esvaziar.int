@@ -1,7 +1,7 @@
 classe h_cmd_esvaziar
 herda comando_comum
 const txtajuda = txtajuda1 + m_ajuda
-const txtajuda1 = "\b\c3Esvaziar\b\n\Sintaxe: ESVAZIAR <objeto>\n"
+const txtajuda1 = "\b\c3Esvaziar\b\nSintaxe: ESVAZIAR <objeto>\n"
 const posic = 5
 #
 const m_ajuda = "Tenta esvaziar o objeto, jogando fora o líquido que tiver dentro."
@@ -44,6 +44,8 @@ func escr
   r1.ajustapeso
   $mens.mens = liq.nome
   $mens.o_1 = liq.aspecto
+  $mens.o_2 = liq.msexo ? "um" : "uma"
+  $mens.o_3 = liq.msexo ? "o" : "a"
   $mens.p(arg0, nulo, r1)
   $mens.mtodos2(m_esvaziou1, m_esvaziou2)
 # Eventos
@@ -90,13 +92,13 @@ const clas6 = "cmd_esvaziar"
 const vari6 = "m_vazio"
 #
 const nome7 = "Esvaziou perso"
-const info7 = "$o=item esvaziado, $m=nome do líquido, $1=aspecto"
+const info7 = "$o=item esvaziado, $m=nome do líquido, $1=aspecto, $2=um ou uma, $3=o ou a"
 const tipo7 = "opc_linha"
 const clas7 = "cmd_esvaziar"
 const vari7 = "m_esvaziou1"
 #
 const nome8 = "Esvaziou outros"
-const info8 = "$o=item esvaziado, $m=nome do líquido, $1=aspecto"
+const info8 = "$o=item esvaziado, $m=nome do líquido, $1=aspecto, $2=um ou uma, $3=o ou a"
 const tipo8 = "opc_linha"
 const clas8 = "cmd_esvaziar"
 const vari8 = "m_esvaziou2"

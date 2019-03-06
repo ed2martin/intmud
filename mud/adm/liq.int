@@ -145,87 +145,94 @@ const tipo2 = "opc_linha"
 const clas2 = var.classe1
 const vari2 = "aspecto"
 #
-const nome3 = "Beber ml"
-const info3 = "Quantos ml bebe com o comando beber"
-const tipo3 = "opc_numero"
+const nome3 = "Sexo Msg"
+const info3 = "Usado nas mensagens com o liquido"
+const tipo3 = "opc_opcao"
 const clas3 = var.classe1
-const vari3 = "beber"
+const vari3 = "msexo"
+const extr3 = "Feminino\nMasculino"
 #
-const nome4 = "Peso"
-const info4 = "Peso de 1 ml em gramas (ou 1 litro em Kg)"
-const tipo4 = "opc_numreal"
+const nome4 = "Beber ml"
+const info4 = "Quantos ml bebe com o comando beber"
+const tipo4 = "opc_numero"
 const clas4 = var.classe1
-const vari4 = "peso"
+const vari4 = "beber"
 #
-const nome5 = "Sacia a sede"
-const info5 = "Um minuto são de 3 a 4 unidades, exceto no deserto"
-const tipo5 = "opc_numero"
+const nome5 = "Peso"
+const info5 = "Peso de 1 ml em gramas (ou 1 litro em Kg)"
+const tipo5 = "opc_numreal"
 const clas5 = var.classe1
-const vari5 = "f_sede"
-const extr5 = "-250 250"
+const vari5 = "peso"
 #
-const nome6 = "Sustenta"
-const info6 = "Um minuto são de 3 a 4 unidades"
+const nome6 = "Sacia a sede"
+const info6 = "Um minuto são de 3 a 4 unidades, exceto no deserto"
 const tipo6 = "opc_numero"
 const clas6 = var.classe1
-const vari6 = "f_fome"
+const vari6 = "f_sede"
 const extr6 = "-250 250"
 #
-const nome7 = "Embriaguez"
-const info7 = "Um minuto são de 6 a 8 unidades"
+const nome7 = "Sustenta"
+const info7 = "Um minuto são de 3 a 4 unidades"
 const tipo7 = "opc_numero"
 const clas7 = var.classe1
-const vari7 = "f_bebida"
+const vari7 = "f_fome"
 const extr7 = "-250 250"
 #
-const nome8 = "Digestão"
-const info8 = "Quanto tempo leva para digerir o alimento\n\
-Um minuto são de 3 a 12 unidades, dependendo da posição do personagem"
+const nome8 = "Embriaguez"
+const info8 = "Um minuto são de 6 a 8 unidades"
 const tipo8 = "opc_numero"
 const clas8 = var.classe1
-const vari8 = "f_diges"
+const vari8 = "f_bebida"
 const extr8 = "-250 250"
 #
-const nome9 = "Magia 1"
-const info9 = "Nome da magia"
-const tipo9 = "opc_linha"
+const nome9 = "Digestão"
+const info9 = "Quanto tempo leva para digerir o alimento\n\
+Um minuto são de 3 a 12 unidades, dependendo da posição do personagem"
+const tipo9 = "opc_numero"
 const clas9 = var.classe1
-const vari9 = "f_magia1"
+const vari9 = "f_diges"
+const extr9 = "-250 250"
 #
-const nome10 = "Nível 1"
-const tipo10 = "opc_numero"
+const nome10 = "Magia 1"
+const info10 = "Nome da magia"
+const tipo10 = "opc_linha"
 const clas10 = var.classe1
-const vari10 = "f_nivel1"
-const extr10 = "0 65535"
+const vari10 = "f_magia1"
 #
-const nome11 = "Magia 2"
-const info11 = "Nome da magia"
-const tipo11 = "opc_linha"
+const nome11 = "Nível 1"
+const tipo11 = "opc_numero"
 const clas11 = var.classe1
-const vari11 = "f_magia2"
+const vari11 = "f_nivel1"
+const extr11 = "0 65535"
 #
-const nome12 = "Nível 2"
-const tipo12 = "opc_numero"
+const nome12 = "Magia 2"
+const info12 = "Nome da magia"
+const tipo12 = "opc_linha"
 const clas12 = var.classe1
-const vari12 = "f_nivel2"
-const extr12 = "0 65535"
+const vari12 = "f_magia2"
 #
-const nome13 = "Magia 3"
-const info13 = "Nome da magia"
-const tipo13 = "opc_linha"
+const nome13 = "Nível 2"
+const tipo13 = "opc_numero"
 const clas13 = var.classe1
-const vari13 = "f_magia3"
+const vari13 = "f_nivel2"
+const extr13 = "0 65535"
 #
-const nome14 = "Nível 3"
-const tipo14 = "opc_numero"
+const nome14 = "Magia 3"
+const info14 = "Nome da magia"
+const tipo14 = "opc_linha"
 const clas14 = var.classe1
-const vari14 = "f_nivel3"
-const extr14 = "0 65535"
+const vari14 = "f_magia3"
 #
-const nome15 = "Atualizar"
-const tipo15 = "opc_liq"
+const nome15 = "Nível 3"
+const tipo15 = "opc_numero"
 const clas15 = var.classe1
-const vari15 = "recalc2_auto"
+const vari15 = "f_nivel3"
+const extr15 = "0 65535"
+#
+const nome16 = "Atualizar"
+const tipo16 = "opc_liq"
+const clas16 = var.classe1
+const vari16 = "recalc2_auto"
 
 
 classe opc_liq
@@ -256,7 +263,7 @@ func passo # Mudar o estado atual
 classe comum_liq
 const iniclasse = !$[arg0] && criar(arg0)
 # Ordem que deve organizar as constantes:
-const admordem = "nome aspecto beber peso\n\
+const admordem = "nome aspecto msexo beber peso\n\
 f_sede\n\
 f_fome\n\
 f_bebida\n\

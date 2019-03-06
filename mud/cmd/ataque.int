@@ -105,12 +105,12 @@ atk5_esquivou1 atk5_esquivou2 atk5_esquivou3"
 #
 const escr = escrhab(arg0, arg1)
 
-func escrhab # Atacar alguém
+func escrhab # Atacar alguém ou usar habilidade/magia não ofensiva em alguém
 # arg0 = personagem
 # arg1 = o que o personagem digitou; usado para obter o personagem alvo
 # arg2 = item usado, ou nulo se não usou nenhum item
 # arg3 = nível da magia, se usou algum item
-  ref r
+  ref alvo
   refvar perm = $perm_[arg0.jogperm]
   refvar m1 = txt1(txte(nomevar)) == "m" ? perm.usar_mag : perm.usar_hab
   txt100 dir
@@ -125,12 +125,24 @@ func escrhab # Atacar alguém
     refvar arma1 = tipoarma ? ref(arg0.iempu.obj) : nulo
     refvar dist = int(arma1 ? arma1.armamove : armamove)
     dir = dist > 0 ? misc:d1[txt1(arg1)]
-    se !misc:d3[dir] # Atacar na mesma sala
-      n.ini(arg1, 1)
-      epara i = arg0.dono.dentro2.ini, i, i.depois
-        sair i.obj.visivel(arg0) && n.nome(i.obj.ident)
-      efim
-    senao txt2(arg1) # Atacar um alvo específico em outra sala
+    se !misc:d3[dir] # Alvo está na mesma sala
+      se arg1 != intpos(arg1) || config:animal1 < arg1 || !config:animal1
+        n.ini(arg1, 1)
+        epara i = arg0.dono.dentro2.ini, i, i.depois
+          sair i.obj.visivel(arg0) && n.nome(i.obj.ident)
+        efim
+        alvo = i.obj.persobat
+      senao arg1 == "0"
+        alvo = arg0
+      senao
+        uint8 num = arg1
+        epara i = arg0.dentro2.ini, i, i.depois
+          i.obj.perso && num--
+          sair num == 0
+        efim
+        alvo = i.obj
+      fimse
+    senao txt2(arg1) # Um alvo específico em outra sala
       ref sala
       n.ini(txt2(arg1), 1)
       epara sala = arg0.dono, sala && move < dist, sala = sala.dirsala(dir)
@@ -142,7 +154,8 @@ func escrhab # Atacar alguém
         sair i.obj || int(sala.porta_[dir]) >= 2 # Achou o alvo ou porta fechada
         move += intmax(1, sala.dirsala(dir).s_atk_move)
       efim
-    senao # Atacar qualquer um em outra sala
+      alvo = i.obj.persobat
+    senao # Qualquer um em outra sala
       ref sala
       uint8 totalperso
       epara sala = arg0.dono, sala && move < dist, sala = sala.dirsala(dir)
@@ -161,25 +174,27 @@ func escrhab # Atacar alguém
         sair int(sala.porta_[dir]) >= 2 # Achou porta fechada
         move += intmax(1, sala.dirsala(dir).s_atk_move)
       efim
+      alvo = i.obj.persobat
     fimse
-    r = i.obj
-    ret !r, arg0.msg("Você não vê isso.")
+    ret !alvo, arg0.msg("Você não vê isso.")
   senao tipoalvo >= 6 # Hab não agressiva: o alvo é o próprio personagem
-    r = arg0
+    alvo = arg0.persobat
   senao arg2.f_tipo == 4 # Hab agressiva usando pergaminho
-    r = arg0.atkenv.objlista
-    (!r || r.dono != arg0.dono) && (r = arg0)
+    alvo = arg0.atkenv.objlista
+    (!alvo || alvo.dono != arg0.dono) && (alvo = arg0)
+    alvo = alvo.persobat
   senao arg2.item # Hab agressiva usando outro item
-    r = arg0
+    alvo = arg0.persobat
   senao # Hab agressiva sem usar um item: o alvo é quem está batalhando
-    r = arg0.atkenv.objlista
-    ret !r || r.dono != arg0.dono, arg0.msg("Atacar quem?")
+    alvo = arg0.atkenv.objlista
+    ret !alvo || alvo.dono != arg0.dono, arg0.msg("Atacar quem?")
+    alvo = alvo.persobat
   fimse
   refvar p = arg0.persoesc
   se arg2
-    exechab(p, r.persobat, 0.5, arg3, arg2, dir)
+    exechab(p, alvo, 0.5, arg3, arg2, dir)
   senao
-    exechab(p, r.persobat, intpos(p.var.[nomevar]_ - 1) / 7, p.pnivel, nulo, dir)
+    exechab(p, alvo, intpos(p.var.[nomevar]_ - 1) / 7, p.pnivel, nulo, dir)
   fimse
 
 func exechabperso # Personagem usa uma habilidade ou magia
@@ -264,7 +279,7 @@ func exechab # Chamado quando personagem usa habilidade ou magia
     ret $mens.mp("Em você mesm$s?", contr0)
   casofim
 # Checa o alvo
-  se contr0 != contr1 && contr0.mesmogrupo(contr1)
+  se arg0 != arg1 && contr0.mesmogrupo(contr1)
     ret $mens.mp("Atacar outro integrante do grupo?", contr0, contr1)
   senao !contr0.dono.s_luta
     refvar msg1 = arg4.item ? "A magia falhou." : "Aqui é um lugar pacífico."

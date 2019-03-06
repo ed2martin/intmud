@@ -91,11 +91,11 @@ func objmover2 # Retorna o objeto que deve se movimentar ou nulo se deve ficar p
   arg0.posicao == 7 ? arg0.msgposicao : obj.msgposicao(arg0)
 
 func mover # Personagem anda em uma direção
-# arg0 = personagem
+# arg0 = personagem ou item que quer se mover
 # arg1 = sala destino (se não for sala, não deixa prosseguir nessa direção)
 # arg2 = item aonde está entrando (na sala origem) ou nulo
 # arg3 = item de onde está saindo (na sala destino) ou nulo
-# arg4 = personagem no controle e para quem enviar mensagens (se nulo, assume arg0)
+# arg4 = personagem no controle e para quem enviar mensagens; se nulo assume arg0
 # Retorna 1 se conseguiu mover ou 0 se não conseguiu
   refvar p1 = arg4 ?? arg0
   refvar perm_msg = $perm_[p1.jogperm].andar
@@ -144,7 +144,7 @@ func mover # Personagem anda em uma direção
   senao !arg0.cabedentro(arg1)
     $mens.mp(comando_mover_cfg:m_espaco, p1)
     ret 0
-  senao !arg2 && s1.voar_[dir](p1) && !(p1.bitver & 512 || p1.bitinv & 48)
+  senao !arg2 && s1.voar_[dir](arg0) && !(arg0.bitver & 512 || arg0.bitinv & 48)
     $mens.mp(comando_mover_cfg:m_flutuando, p1)
     ret 0
   fimse
