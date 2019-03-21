@@ -56,9 +56,9 @@ func escr
     ret $mens.msg(m_nivel[tipomsg], arg0)
   senao int(r.renascer) > arg0.prenascer
     $mens.mens = r.renascer
-    se arg2.renascer == 1
+    se r.renascer == 1
       ret $mens.msg(m_renascer1, arg0)
-    senao arg2.renascer == 2
+    senao r.renascer == 2
       ret $mens.msg(m_renascer2, arg0)
     fimse
     ret $mens.msg(m_renascer3, arg0)

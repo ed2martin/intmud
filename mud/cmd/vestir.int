@@ -1,37 +1,51 @@
 classe cmd_usar
-herda cmd_vestir
+herda h_cmd_vestir
 const objcmd = $cmd_vestir
 
 
-classe cmd_vestir
+classe h_cmd_vestir
 herda comando_comum
-const txtajuda = "\b\c3Vestir\b\n\
-Sintaxe: VESTIR <objeto> [posição]\n\
-         USAR <objeto> [posição]\n\
-Seu personagem veste ou usa um objeto que está carregando.\n\
-Para vestir tudo (até 10 objetos) tecle TUDO ao invés do objeto.\n\
-Para saber em que posições pode vestir algo, tecle EQUIP TUDO"
 const posic = 5
 txt12 lugar # Posições aonde quer vestir
 txt12 vest # Posições aonde está vestindo alguma coisa
+const txtajuda = txtajuda1 + m_ajuda
+const txtajuda1 = "\b\c3Vestir\b\n\
+Sintaxe: VESTIR <objeto> [posição]\n\
+         USAR <objeto> [posição]\n"
 #
+const m_ajuda = "Seu personagem veste ou usa um objeto que está carregando.\n\
+Para vestir tudo (até 10 objetos) tecle TUDO ao invés do objeto.\n\
+Para saber em que posições pode vestir algo, tecle EQUIP TUDO"
 const m_sem_args = "Vestir o quê?"
-const m_nao_consegue = "Você não consegue vestir $o."
-const m_nivel = "Você precisa chegar no nível $m para vestir $o."
+const m_naover = "Você não vê $m."
+const m_nao_consegue_p = "Você não consegue vestir $o."
+const m_nao_consegue_a = "$A não consegue vestir $o."
+const m_nivel_p = "Você precisa chegar no nível $m para vestir $o."
+const m_nivel_a = "$A precisa chegar no nível $m para vestir $o."
 const m_renascer1 = "Você precisa renascer uma vez para vestir $o."
 const m_renascer2 = "Você precisa renascer duas vezes para vestir $o."
 const m_renascer3 = "Você precisa renascer $m vezes para vestir $o."
+const m_posicao_p = "Você não sabe aonde fica $m."
+const m_posicao_a = "$A não sabe aonde fica $m."
+const m_em_uso_p = "Você já está usando $o nessa posição."
+const m_em_uso_a = "$A já está usando $o nessa posição."
+const m_em_cima_p = "Antes você precisa parar de usar $o."
+const m_em_cima_a = "Antes $A precisa parar de usar $o."
+const admordem = "m_ajuda m_sem_args m_naover m_nao_consegue_p\n\
+m_nao_consegue_a m_nivel_p m_nivel_a m_renascer1 m_renascer2 m_renascer3\n\
+m_posicao_p m_posicao_a m_em_uso_p m_em_uso_a m_em_cima_p m_em_cima_a"
 
 func escr
   ret !arg1, $mensjog.msg(m_sem_args, arg0)
   refvar perm_msg = $perm_[arg0.jogperm].vestir
   ret perm_msg, $mensjog.msg(perm_msg, arg0)
   refvar alvo = ref(arg0.persoesc) # Quem vai vestir
+  refvar tipomsg = arg0 == alvo ? "_p" : "_a"
   refvar tipo1 = txte(alvo.tipo1)
   refvar tipo2 = txte(alvo.tipo2)
   refvar tipo3 = txte(alvo.tipo3)
 # Variáveis
-  int8 total # Quantidade de itens encontrados
+  int8 achou # Se 0, não achou nenhum item para vestir
   nomeobj n # Para reconhecer os itens
   listaitem item
   vest = lugar = "0"
@@ -51,11 +65,11 @@ func escr
     t.addfim(config:equip_txt)
     refvar lug2 = ~txthex(alvo.equippos, 12)
     epara p = t.ini, p, p.depois
-      (lug2 & intbith(p.linha)) == "0" && n.nome(p.texto) && (lugar |= intbith(p.linha))
+      lug2 & intbith(p.linha) == "0" && n.nome(p.texto) && (lugar |= intbith(p.linha))
     efim
     se lugar == "0"
       $mens.mens = misc:sep2
-      $mens.mp("Você não sabe aonde fica $m.", arg0)
+      $mens.mp(m_posicao[tipomsg], arg0, alvo)
       ret
     fimse
   fimse
@@ -65,18 +79,18 @@ func escr
   epara l.addfim(alvo.dentro1), l, l.ini.remove
     ref r = l.objini
     continuar !r.visivel(arg0) || !n.nome(r.ident, r.objtot)
-    total += n
+    achou = 1
     txt100 erro # Se for um texto vazio, pode vestir
 # Checa se o personagem pode vestir
     se r.vestirsim == (alvo == arg0 ? 2 : 1)
-      erro = m_nao_consegue
+      erro = m_nao_consegue[tipomsg]
     senao r.vestirsexo == (alvo.psexo ? 1 : 2)
-      erro = m_nao_consegue
+      erro = m_nao_consegue[tipomsg]
 # Checa o nível
     senao int(r.pnivel) > alvo.pnivel
       $mens.mens = r.pnivel
-      erro = m_nivel
-    senao int(r.renascer) > alvo.prenascer
+      erro = m_nivel[tipomsg]
+    senao int(r.renascer) > arg0.prenascer
       $mens.mens = r.renascer
       se r.renascer == 1
         erro = m_renascer1
@@ -88,47 +102,43 @@ func escr
 # Checa se a classe ou a raça tem permissão
     senao !r.vestirnao
     senao tipo1 && txtproclin(txte(r.vestirnao), tipo1) >= 0
-      erro = m_nao_consegue
+      erro = m_nao_consegue[tipomsg]
     senao tipo2 && txtproclin(txte(r.vestirnao), tipo2) >= 0
-      erro = m_nao_consegue
+      erro = m_nao_consegue[tipomsg]
     senao tipo3 && txtproclin(txte(r.vestirnao), tipo3) >= 0
-      erro = m_nao_consegue
+      erro = m_nao_consegue[tipomsg]
     fimse
 # Tenta vestir
-    se erro
-      $mens.p(alvo, nulo, r)
-      $mens.msginv(erro, arg0)
-    senao
-      erro = objvestir(arg0, r, int(n))
-      erro && arg0.msg(erro)
-    fimse
+    !erro && (erro = objvestir(alvo, r, int(n)))
+    erro && $mens.mp(erro, arg0, alvo, r)
   efim
 # Avisa se não encontrou nenhum item
-  se !total
+  se !achou
     misc:separa(arg1)
     $mens.mens = misc:sep1
-    $mens.mp("Você não vê $m.", arg0)
+    $mens.mp(m_naover, arg0)
   fimse
 
 func objvestir # Quer vestir um item
 # arg0 = personagem, arg1 = objeto, arg2 = quantidade
-# Retorna mensagem de erro ou "" se conseguiu vestir
+  refvar tipomsg = arg0 == arg0.contr ? "_p" : "_a"
   uint8 total
   epara total = arg2, total, total--
 # Checa se o item pode ser vestido
     refvar lugar1 = lugar & txt(arg1.vestir1) # Posições aonde pode vestir o item
     se lugar1 == "0"
-      ret arg1.vestir1, "Você não consegue vestir " + arg1.descnome + "."
-      ret "Não se pode vestir " + arg1.descnome + "."
+      $mens.mp(m_nao_consegue[tipomsg], arg0.contr, arg0, arg1)
+      ret
     fimse
 # Exclui posições em que está vestindo algo
     refvar lugar2 = lugar1 & ~txthex(vest, 12)
     se lugar2 == "0"
       listaitem item
       epara item = arg0.dentro2.ini, item, item.depois
-        sair item.obj.vestpos && (intbith(item.obj.vestpos - 1) & (lugar1 & vest)) != "0"
+        sair item.obj.vestpos && intbith(item.obj.vestpos - 1) & (lugar1 & vest) != "0"
       efim
-      ret "Já está usando " + item.obj.descnome + " nessa posição."
+      $mens.mp(m_em_uso[tipomsg], arg0.contr, arg0, item.obj)
+      ret
     fimse
 # Checa os itens que estão em cima
     txt512 lin
@@ -143,7 +153,8 @@ func objvestir # Quer vestir um item
         continuar !item.obj.vestpos
         sair txttroca(intbith(item.obj.vestpos - 1) & pos, "0", "")
       efim
-      ret $mens.mp("Antes precisa parar de usar $o.", arg0, nulo, item.obj)
+      $mens.mp(m_em_cima[tipomsg], arg0.contr, arg0, item.obj)
+      ret
     fimse
 # Checa se o item deixa vestir
     txt100 txtvestir = arg1.cmd_podevestir(arg0)
@@ -160,9 +171,11 @@ func objvestir # Quer vestir um item
 # Veste o item
     arg1.vestir(numpos)
     vest |= intbith(numpos - 1)
-    refvar mvestir = txtsublin(config:equip_vestir, numpos - 1, 1)
+    refvar mvestir_a = txtsublin(config:equip_vestir, numpos - 1, 1) ?? "$P veste $o."
+    refvar mvestir_p = txtsublin(config:equip_perso, numpos - 1, 1) ?? mvestir_a
     $mens.p(arg0, nulo, arg1)
-    $mens.mvis1som(mvestir ?? "$P veste $o.", arg1.i_som_vest1)
+    $mens.msgsomvis(mvestir[tipomsg], arg1.i_som_vest1, arg0.contr)
+    $mens.mvis2som(mvestir_a, arg1.i_som_vest1)
 # Eventos
     epara l.addfim(arg0.evento), l, l.ini.remove
       l.objini.cmd_vestiu(arg0, arg1, numpos, arg0)
@@ -171,3 +184,81 @@ func objvestir # Quer vestir um item
       l.objini.cmd_vestiu(arg0, arg1, numpos, arg1)
     efim
   efim
+
+
+classe m_cmd_vestir
+herda comando_menu_cmd
+#
+const nome1 = "Ajuda"
+const tipo1 = "opc_texto"
+const clas1 = "cmd_vestir"
+const vari1 = "m_ajuda"
+#
+const nome2 = "Sem argumentos"
+const tipo2 = "opc_linha"
+const clas2 = "cmd_vestir"
+const vari2 = "m_sem_args"
+#
+const nome3 = "Sem alvo"
+const tipo3 = "opc_linha"
+const clas3 = "cmd_vestir"
+const vari3 = "m_naover"
+#
+const nome4 = "Renascer 1 vez"
+const tipo4 = "opc_linha"
+const clas4 = "cmd_vestir"
+const vari4 = "m_renascer1"
+#
+const nome5 = "Renascer 2 vezes"
+const tipo5 = "opc_linha"
+const clas5 = "cmd_vestir"
+const vari5 = "m_renascer2"
+#
+const nome6 = "Renascer mais vezes"
+const tipo6 = "opc_linha"
+const clas6 = "cmd_vestir"
+const vari6 = "m_renascer3"
+#
+const titu7 = " * Personagem veste"
+#
+const nome7 = "Não consegue"
+const tipo7 = "opc_linha"
+const clas7 = "cmd_vestir"
+const vari7 = "m_nao_consegue_p"
+#
+const nome8 = "Posição não existe"
+const tipo8 = "opc_linha"
+const clas8 = "cmd_vestir"
+const vari8 = "m_posicao_p"
+#
+const nome9 = "Já tem outro item"
+const tipo9 = "opc_linha"
+const clas9 = "cmd_vestir"
+const vari9 = "m_em_uso_p"
+#
+const nome9 = "Outro item em cima"
+const tipo9 = "opc_linha"
+const clas9 = "cmd_vestir"
+const vari9 = "m_em_cima_p"
+#
+const titu10 = " * Animal veste"
+#
+const nome10 = "Não consegue"
+const tipo10 = "opc_linha"
+const clas10 = "cmd_vestir"
+const vari10 = "m_nao_consegue_a"
+#
+const nome11 = "Posição não existe"
+const tipo11 = "opc_linha"
+const clas11 = "cmd_vestir"
+const vari11 = "m_posicao_a"
+#
+const nome12 = "Já tem outro item"
+const tipo12 = "opc_linha"
+const clas12 = "cmd_vestir"
+const vari12 = "m_em_uso_a"
+#
+const nome13 = "Outro item em cima"
+const tipo13 = "opc_linha"
+const clas13 = "cmd_vestir"
+const vari13 = "m_em_cima_a"
