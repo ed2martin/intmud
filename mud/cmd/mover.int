@@ -633,8 +633,11 @@ herda comando_comum
 const objcmd = $cmd_b.objcmd(arg0)
 
 
-classe m_cmd_mover
-herda comando_menu_cmd
+classe menu_mover
+herda comando_menu
+const titulo = "Andar pelo jogo"
+const menufim = "menu_econfig_msg"
+const colunas = 35
 #
 const nome1 = "Todas as direções"
 const tipo1 = "mmenu_mover_cfg--"
@@ -679,7 +682,7 @@ const tipo13 = "menu_mover_entrar--"
 classe mmenu_mover_cfg
 herda comando_menu
 const titulo = "Todas as direções"
-const menufim = "m_cmd_mover"
+const menufim = "menu_mover"
 const colunas = 28
 #
 const nome1 = "Impossível"
@@ -732,7 +735,7 @@ const vari9 = "m_ignorar"
 classe menu_mover_comum
 herda comando_menu
 const titulo = "Mover"
-const menufim = "m_cmd_mover"
+const menufim = "menu_mover"
 const colunas = 28
 #
 const nome1 = "Chegou andando"

@@ -1,3 +1,29 @@
+classe h_comando_ataque_cfg
+herda comando_comum
+const m_nao_consegue = "Você ainda não consegue fazer isso."
+const m_naover = "Você não vê $m."
+const m_desmaiado = "$A está desmaiado$t."
+const m_nao_desmaiado = "$A não está desmaiad$t."
+const m_sem_efeito = comando_hab_cfg:m_sem_efeito # # # Pega de outro menu
+const m_hab_auto = "A habilidade $m não pode ser usada nos outros."
+const m_mag_auto = "A magia $m não pode ser usada nos outros."
+const m_grupo = "Atacar outro integrante do grupo?"
+const m_magia_falhou = "A magia falhou."
+const m_lugar_pacifico1 = "Aqui é um lugar pacífico."
+const m_lugar_pacifico2 = "O alvo está em um lugar pacífico."
+const m_alvo_pacifico = "$A não quer brigar."
+const m_perso_pacifico = "Você não quer brigar com $a."
+const m_jog_pacifico = "Você não quer brigar com $a aqui."
+const m_municao_jog = "Você está sem munição."
+const m_municao_animal = "$A está sem munição."
+const m_municao_arma = "$O está sem munição."
+const m_municao_nao = "$O não possui munição."
+const admordem = "m_nao_consegue m_naover m_desmaiado m_nao_desmaiado\n\
+m_hab_auto m_mag_auto m_grupo m_magia_falhou m_lugar_pacifico1\n\
+m_lugar_pacifico2 m_alvo_pacifico m_perso_pacifico m_jog_pacifico\n\
+m_municao_jog m_municao_animal m_municao_arma m_municao_nao"
+
+
 classe comando_ataque
 herda comando_hab, comando_danos
 const objcmd = tipoalvo < 8 && arg0.persoesc.var.[nomevar] ? este
@@ -117,7 +143,7 @@ func escrhab # Atacar alguém ou usar habilidade/magia não ofensiva em alguém
   se m1
     ret arg0.msg(m1)
   senao arg0.pnivel < intpos(int(aulaini) - config:nrenascer * txt2(arg0.var.[nomevar]))
-    ret arg0.msg("Você ainda não consegue fazer isso.")
+    ret $mens.mp(comando_ataque_cfg:m_nao_consegue, arg0)
   senao arg1 # Digitou o alvo
     int16 move
     listaitem i
@@ -176,7 +202,10 @@ func escrhab # Atacar alguém ou usar habilidade/magia não ofensiva em alguém
       efim
       alvo = i.obj.persobat
     fimse
-    ret !alvo, arg0.msg("Você não vê isso.")
+    se !alvo
+      $mens.mens = arg1
+      ret $mens.mp(comando_ataque_cfg:m_naover, arg0)
+    fimse
   senao tipoalvo >= 6 # Hab não agressiva: o alvo é o próprio personagem
     alvo = arg0.persobat
   senao arg2.f_tipo == 4 # Hab agressiva usando pergaminho
@@ -214,11 +243,11 @@ func exechab # Chamado quando personagem usa habilidade ou magia
   refvar contr1 = arg1.contr
 # Checa condição do alvo
   se !a_cond
-    ret !arg1.pvidaok, contr0.msg("Alvo está desmaiado.")
+    ret !arg1.pvidaok, $mens.mp(comando_ataque_cfg:m_desmaiado, contr0, arg1)
   senao a_cond == 1
-    ret arg1.pvidaok, contr0.msg("Alvo não está desmaiado.")
+    ret arg1.pvidaok, $mens.mp(comando_ataque_cfg:m_nao_desmaiado, contr0, arg1)
   senao dono.s_semmagia && txt(nomevar, 0, 1) == "m"
-    ret contr0.msg("A magia não teve efeito.")
+    ret $mens.mp(comando_ataque_cfg:m_sem_efeito, contr0, arg1)
   fimse
 # Obtém a arma usada
   refvar errmuni = execmunicao(arg0)
@@ -228,8 +257,8 @@ func exechab # Chamado quando personagem usa habilidade ou magia
   casovar tipoalvo
   casose "7"
     se arg0 != arg1
-      refvar msg = txt(nomevar, 0, 1) == "m" ? "magia" : "habilidade"
-      contr0.msg("Essa " + msg + " não pode ser usada nos outros.")
+      refvar msg = txt(nomevar, 0, 1) == "m" ? "m_mag_auto" : "m_hab_auto"
+      $mens.mp(comando_ataque_cfg:[msg], contr0, arg0)
       ret
     fimse
   casose "6"
@@ -280,27 +309,27 @@ func exechab # Chamado quando personagem usa habilidade ou magia
   casofim
 # Checa o alvo
   se arg0 != arg1 && contr0.mesmogrupo(contr1)
-    ret $mens.mp("Atacar outro integrante do grupo?", contr0, contr1)
+    ret $mens.mp(comando_ataque_cfg:m_grupo, contr0, contr1)
   senao !contr0.dono.s_luta
-    refvar msg1 = arg4.item ? "A magia falhou." : "Aqui é um lugar pacífico."
-    ret $mens.mp(msg1, contr0, contr1)
+    refvar msg1 = arg4.item ? "m_magia_falhou" : "m_lugar_pacifico1"
+    ret $mens.mp(comando_ataque_cfg:[msg1], contr0, contr1)
   senao !contr1.dono.s_luta
-    refvar msg1 = "A magia falhou." : "O alvo está em um lugar pacífico."
-    ret $mens.mp(msg1, contr0, contr1)
+    refvar msg1 = arg4.item ? "m_magia_falhou" : "m_lugar_pacifico2"
+    ret $mens.mp(comando_ataque_cfg:[msg1], contr0, contr1)
   senao !contr1.p_agressivo(arg0)
-    ret $mens.mp("$A não quer brigar.", contr0, contr1)
+    ret $mens.mp(comando_ataque_cfg:m_alvo_pacifico, contr0, contr1)
   senao !contr0.p_agressivo(arg1)
-    ret $mens.mp("Você não quer brigar com $a.", contr0, contr1)
+    ret $mens.mp(comando_ataque_cfg:m_perso_pacifico, contr0, contr1)
   senao
     ref p0 = (contr0.tseguir == 3 ? contr0.iseguir.objlista) ?? contr0
     ref p1 = (contr1.tseguir == 3 ? contr1.iseguir.objlista) ?? contr1
     se p0.jog && p1.jog && (contr0.dono.s_luta == 1 || contr1.dono.s_luta == 1)
-      ret arg0 != arg1, $mens.mp("Você não quer brigar com $a aqui.", contr0, contr1)
+      ret arg0 != arg1, $mens.mp(comando_ataque_cfg:m_jog_pacifico, contr0, contr1)
     fimse
-    se (contr0.p_atk_individual || contr1.p_atk_individual) && (contr0.atkenv || contr1.atkenv)
+    refvar m = contr0.p_atk_individual ?? contr1.p_atk_individual
+    se m && (contr0.atkenv || contr1.atkenv)
       se !contr0.atkrec.possui(contr1) || !contr1.atkrec.possui(contr0)
-        refvar msg1 = "Você não quer brigar com $a agora."
-        ret $mens.mp(contr1.p_atk_individual ?? msg1, contr0, contr1)
+        ret $mens.mp(m, contr0, contr1)
       fimse
     fimse
   fimse
@@ -459,6 +488,7 @@ func exechab # Chamado quando personagem usa habilidade ou magia
 func execmunicao # Obtém a arma usada: arma1 e arma2
 # arg0 = personagem
 # Retorna mensagem de erro ou "" se conseguiu obter a munição
+  txt40 erro
   arma1 = tipoarma ? ref(arg0.iempu.obj) : nulo
   arma2 = nulo
   se !tipomunicao # Não usa munição
@@ -473,7 +503,7 @@ func execmunicao # Obtém a arma usada: arma1 e arma2
       sair p_nivel >= int(i.obj.pnivel) && p_renascer >= int(i.obj.renascer)
     efim
     arma2 = i.obj
-    ret !arma2, "Está sem munição."
+    !arma2 && (erro = arg0 == contr.arg0 ? "m_municao_jog" : "m_municao_animal")
   senao arma1.armamunicao == 1 # Munição no inventário
     int16 p_nivel = arg0.pnivel
     int8 p_renascer = arg0.renascer
@@ -484,13 +514,16 @@ func execmunicao # Obtém a arma usada: arma1 e arma2
       sair p_nivel >= int(i.obj.pnivel) && p_renascer >= int(i.obj.renascer)
     efim
     arma2 = i.obj
-    ret !arma2, "Está sem munição."
+    !arma2 && (erro = arg0 == contr.arg0 ? "m_municao_jog" : "m_municao_animal")
   senao arma1.armamunicao == 2 # Munição na arma
     arma2 = arma1.dentro1.objini
-    ret !arma2, "Está sem munição."
-  senao
-    ret "Essa arma não possui munição"
+    !arma2 && (erro = "m_municao_arma")
+  senao # Ataque requer munição mas a arma não usa munição
+    erro = "m_municao_nao"
   fimse
+  ret !erro, ""
+  $mens.p(arg0.contr, arg0, arma1)
+  ret $mens.txt(comando_ataque_cfg:[erro], arg0.contr)
 
 func efeitohab # Efeito da habilidade ou magia sobre o alvo
 # arg0 = quem lançou a habilidade ou magia
@@ -725,3 +758,97 @@ func menssub # Usado em mensgolpe
   arg0.1 = [lin]2 ?? arg0.0
   arg0.2 = [lin]3 ?? arg0.0
   ret 1
+
+
+classe menu_comando_ataque
+herda comando_menu
+const titulo = "Hbilidades e magias comuns"
+const menufim = "menu_econfig_msg"
+const colunas = 35
+#
+const nome1 = "Nível insuficiente"
+const tipo1 = "opc_linha"
+const clas1 = "comando_ataque_cfg"
+const vari1 = "m_nao_consegue"
+#
+const nome2 = "Sem alvo"
+const tipo2 = "opc_linha"
+const clas2 = "comando_ataque_cfg"
+const vari2 = "m_naover"
+#
+const nome3 = "Alvo desmaiado"
+const tipo3 = "opc_linha"
+const clas3 = "comando_ataque_cfg"
+const vari3 = "m_desmaiado"
+#
+const nome4 = "Alvo não está desmaiado"
+const tipo4 = "opc_linha"
+const clas4 = "comando_ataque_cfg"
+const vari4 = "m_nao_desmaiado"
+#
+const nome5 = "Hab somente personagem"
+const tipo5 = "opc_linha"
+const clas5 = "comando_ataque_cfg"
+const vari5 = "m_hab_auto"
+#
+const nome6 = "Mag somente personagem"
+const tipo6 = "opc_linha"
+const clas6 = "comando_ataque_cfg"
+const vari6 = "m_mag_auto"
+#
+const nome7 = "Atacar grupo"
+const tipo7 = "opc_linha"
+const clas7 = "comando_ataque_cfg"
+const vari7 = "m_grupo"
+#
+const nome8 = "Magia em lugar pacífico"
+const info8 = "Atacar usando um item (exemplo, um pergaminho) em um lugar pacífico"
+const tipo8 = "opc_linha"
+const clas8 = "comando_ataque_cfg"
+const vari8 = "m_magia_falhou"
+#
+const nome9 = "Perso em lugar pacífico"
+const tipo9 = "opc_linha"
+const clas9 = "comando_ataque_cfg"
+const vari9 = "m_lugar_pacifico1"
+#
+const nome10 = "Alvo em lugar pacífico"
+const tipo10 = "opc_linha"
+const clas10 = "comando_ataque_cfg"
+const vari10 = "m_lugar_pacifico2"
+#
+const nome11 = "Alvo é pacífico"
+const tipo11 = "opc_linha"
+const clas11 = "comando_ataque_cfg"
+const vari11 = "m_alvo_pacifico"
+#
+const nome12 = "Perso é pacífico"
+const tipo12 = "opc_linha"
+const clas12 = "comando_ataque_cfg"
+const vari12 = "m_perso_pacifico"
+#
+const nome13 = "Sem luta entre jogadores"
+const info13 = "Atacar outro jogador em um lugar que não permite jogador contra jogador"
+const tipo13 = "opc_linha"
+const clas13 = "comando_ataque_cfg"
+const vari13 = "m_jog_pacifico"
+#
+const nome14 = "Personagem sem muniçao"
+const tipo14 = "opc_linha"
+const clas14 = "comando_ataque_cfg"
+const vari14 = "m_municao_jog"
+#
+const nome15 = "Animal sem muniçao"
+const tipo15 = "opc_linha"
+const clas15 = "comando_ataque_cfg"
+const vari15 = "m_municao_animal"
+#
+const nome16 = "Arma sem muniçao"
+const tipo16 = "opc_linha"
+const clas16 = "comando_ataque_cfg"
+const vari16 = "m_municao_arma"
+#
+const nome17 = "Arma não usa muniçao"
+const tipo17 = "opc_linha"
+const clas17 = "comando_ataque_cfg"
+const vari17 = "m_municao_nao"

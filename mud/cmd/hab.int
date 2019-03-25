@@ -260,9 +260,11 @@ func custohab2 # Aplica os custos da habilidade/magia
   arg0.contr.p_espera < c_espera && (arg0.contr.p_espera = c_espera)
 
 
-classe m_cmd_habcomum
-herda comando_menu_cmd
-const titulo = "Todas as habilidades e magias"
+classe menu_habcomum
+herda comando_menu
+const titulo = "Habilidades e magias"
+const menufim = "menu_econfig_msg"
+const colunas = 35
 #
 const nome1 = "Perso desmaiado"
 const tipo1 = "opc_linha"
