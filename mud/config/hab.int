@@ -14,7 +14,7 @@ const atk1_nulo1 = "$P lança $o, mas $a sente apenas cóssegas"
 classe cmd_arma_exótica
 herda comando_ataque
 const nomevar = "h_arma_exótica"
-const tipoalvo = 8 # Alvo: 8 Ataque automático
+const tipoalvo = 9
 const tipoarma = 256 # Usa arma: 8-Arma exótica
 const atk1_auto1 = "$P ataca $a, $m"
 const atk1_perso1 = "$P ataca $a, $m"
@@ -41,7 +41,7 @@ const atk1_nulo1 = "$P se joga contra $a, nada acontece"
 classe cmd_Bater
 herda comando_ataque
 const nomevar = "h_Bater"
-const tipoalvo = 8 # Alvo: 8 Ataque automático
+const tipoalvo = 9
 const atk1_auto1 = "$P bate em $a, $m"
 const atk1_perso1 = "$P bate em $a, $m"
 const atk1_matou1 = "$P dá uma batida fatal em $a, $m"
@@ -71,7 +71,7 @@ const atk1_errou1 = "$P lança brasa mas não acerta $a, $m"
 classe cmd_cajado
 herda comando_ataque
 const nomevar = "h_cajado"
-const tipoalvo = 8 # Alvo: 8 Ataque automático
+const tipoalvo = 9
 const tipoarma = 4 # Usa arma: 2-Cajado
 const atk1_auto1 = "$P lança um raio com um cajado em $a, $m"
 const atk1_perso1 = "$P lança um raio com um cajado em $a, $m"
@@ -83,7 +83,7 @@ const atk1_nulo1 = "$P lança um raio com um cajado em $a mas nada acontece"
 classe cmd_chicote_e_corrente
 herda comando_ataque
 const nomevar = "h_chicote_e_corrente"
-const tipoalvo = 8 # Alvo: 8 Ataque automático
+const tipoalvo = 9
 const tipoarma = 128 # Usa arma: 7-Chicote e Corrente
 const atk1_auto1 = "$P ataca $a, $m"
 const atk1_perso1 = "$P ataca $a, $m"
@@ -290,7 +290,7 @@ const atk1_nulo1 = "$P lança gás tóxico em $a, nada acontece"
 classe cmd_lâmina_curta
 herda comando_ataque
 const nomevar = "h_lâmina_curta"
-const tipoalvo = 8 # Alvo: 8 Ataque automático
+const tipoalvo = 9
 const tipoarma = 8 # Usa arma: 3-Lâmina curta
 const atk1_auto1 = "$P fura $a com $o, $m"
 const atk1_perso1 = "$P fura $a com $o, $m"
@@ -302,7 +302,7 @@ const atk1_nulo1 = "$P tenta furar $a com $o, sem sucesso"
 classe cmd_lâmina_longa
 herda comando_ataque
 const nomevar = "h_lâmina_longa"
-const tipoalvo = 8 # Alvo: 8 Ataque automático
+const tipoalvo = 9
 const tipoarma = 16 # Usa arma: 4-Lâmina longa
 const atk1_auto1 = "$P corta $a, $m"
 const atk1_perso1 = "$P corta $a, $m"
@@ -314,7 +314,7 @@ const atk1_nulo1 = "$P tenta cortar $a, sem sucesso"
 classe cmd_maca_e_martelo
 herda comando_ataque
 const nomevar = "h_maca_e_martelo"
-const tipoalvo = 8 # Alvo: 8 Ataque automático
+const tipoalvo = 9
 const tipoarma = 32 # Usa arma: 5-Maca e Martelo
 const atk1_auto1 = "$P ataca $a, $m"
 const atk1_perso1 = "$P ataca $a, $m"
@@ -326,7 +326,7 @@ const atk1_nulo1 = "$P ataca $a, nada acontece"
 classe cmd_mangual
 herda comando_ataque
 const nomevar = "h_mangual"
-const tipoalvo = 8 # Alvo: 8 Ataque automático
+const tipoalvo = 9
 const tipoarma = 64 # Usa arma: 6-Mangual
 const atk1_auto1 = "$P ataca $a, $m"
 const atk1_perso1 = "$P ataca $a, $m"
@@ -536,7 +536,7 @@ const atk1_nulo1 = "$P boceja, nada acontece"
 classe cmd_varinha
 herda comando_ataque
 const nomevar = "h_varinha"
-const tipoalvo = 8 # Alvo: 8 Ataque automático
+const tipoalvo = 9
 const tipoarma = 2 # Usa arma: 1-Varinha
 const atk1_auto1 = "$P lança um feitiço em $a, $m"
 const atk1_perso1 = "$P lança um feitiço em $a, $m"
@@ -674,6 +674,21 @@ func cmd_alvofim
     $mens.p(arg0)
     $mens.mtodos1("Aos poucos, uma fonte brota do chão.")
   fimse
+
+
+classe magia_cura_massiva
+herda comando_ataque
+const nomevar = "m_Cura Massiva"
+const tipoalvo = 8 # Alvo: 8 Todos do grupo; não é ataque
+const a_vida1 = 20
+const valor = 100
+const atk1_auto1 = "Você lança cura massiva"
+const atk1_auto2 = "$P lança cura massiva"
+const atk1_perso1 = "$P cura $a"
+const atk1_perso2 = "$P cura você"
+const atk1_matou1 = ""
+const atk1_errou1 = "$P tenta curar $a"
+const atk1_nulo1 = "$P tenta curar $a"
 
 
 classe magia_curar

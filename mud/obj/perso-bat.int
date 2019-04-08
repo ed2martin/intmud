@@ -405,7 +405,7 @@ func atkauto # Realiza um ataque automático
     obj = $cmd_[p_atktipo]
     aulas = intpos(arg1 - 1) / 14 # Primeiro ataque sai com aulas=0.5 (intermediário)
   fimse
-  ret int(obj.tipoalvo) != 8, nulo # Retorna se não for ataque automático
+  ret int(obj.tipoalvo) != 9, nulo # Retorna se não for ataque automático
   ret !obj.autohab2(este, aulas), nulo # Checa condições para atacar
 # ret txt(obj.cmdmenu) != "ataque", nulo # Retorna se comando não é habilidade
   obj.exechab(este, arg0, aulas, pnivel) # Realiza um ataque
@@ -701,12 +701,12 @@ func p_proc_atacar # Realiza um ataque
   refvar var = persoesc.var
   epara t1 = var.ini("h_"), t1, t1 = var.depois(t1, "h_")
     refvar r = $cmd_[txt(t1, 2)]
-    r.cmdmenu && 8 != r.tipoalvo && l.addfim(r)
+    r.cmdmenu && 9 != r.tipoalvo && l.addfim(r)
   efim
   se !dono.s_semmagia
     epara t1 = var.ini("m_"), t1, t1 = var.depois(t1, "m_")
       refvar r = $magia_[txt(t1, 2)]
-      r.cmdmenu && 8 != r.tipoalvo && l.addfim(r)
+      r.cmdmenu && 9 != r.tipoalvo && l.addfim(r)
     efim
   fimse
   se l.total # Se tem algum ataque, realiza um ataque manual

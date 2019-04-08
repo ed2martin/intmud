@@ -19,6 +19,17 @@ const txtajuda = "\b\c3Lhab\b\n\
 Sintaxe: LHAB [nome]\n\
 Lista as habilidades que começam com o nome especificado.\n\
 Se o nome for omitido, lista todas as habilidades."
+#
+const nome1 = ", Outros"
+const nome2 = ", Todos dividindo ataque"
+const nome3 = ", Outros dividindo ataque"
+const nome4 = ", Todos sem dividir ataque"
+const nome5 = ", Outros sem dividir ataque"
+const nome6 = "Não agressivo"
+const nome7 = "Não agressivo, O próprio"
+const nome8 = "Não agressivo, O grupo"
+const nome9 = "Automático"
+const nome10 = "Nenhum" 
 
 func escr
   prog p
@@ -33,36 +44,7 @@ func escr
     se $[p.texto].tipoalvo < 6
       lin += txtsublin(config:atknomes, $[p.texto].tipoatk, 1)
     fimse
-    casovar $[p.texto].tipoalvo
-    casose "1"
-      lin += ", Outros"
-      sair
-    casose "2"
-      lin += ", Todos dividindo ataque"
-      sair
-    casose "3"
-      lin += ", Outros dividindo ataque"
-      sair
-    casose "4"
-      lin += ", Todos sem dividir ataque"
-      sair
-    casose "5"
-      lin += ", Outros sem dividir ataque"
-      sair
-    casose "6"
-      lin += "Não agressivo"
-      sair
-    casose "7"
-      lin += "Não agressivo, O próprio"
-      sair
-    casose "8"
-      lin += "Automático"
-      sair
-    casose "9"
-      lin += "Nenhum"
-      sair
-    casofim
-    t.addfim(lin)
+    t.addfim(lin + nome[$[p.texto].tipoalvo])
   efim
   se t.linhas
     arg0.msg2("\b\c6Habilidade, Tipo, Alvo\b\n" + t.remove(500))
@@ -77,6 +59,17 @@ const txtajuda = "\b\c3Lmag\b\n\
 Sintaxe: LMAG [nome]\n\
 Lista as magias que começam com o nome especificado.\n\
 Se o nome for omitido, lista todas as magias."
+#
+const nome1 = ", Outros"
+const nome2 = ", Todos dividindo ataque"
+const nome3 = ", Outros dividindo ataque"
+const nome4 = ", Todos sem dividir ataque"
+const nome5 = ", Outros sem dividir ataque"
+const nome6 = "Não agressivo"
+const nome7 = "Não agressivo, O próprio"
+const nome8 = "Não agressivo, O grupo"
+const nome9 = "Automático"
+const nome10 = "Nenhum" 
 
 func escr
   prog p
@@ -91,36 +84,7 @@ func escr
     se $[p.texto].tipoalvo < 6
       lin += txtsublin(config:atknomes, $[p.texto].tipoatk, 1)
     fimse
-    casovar $[p.texto].tipoalvo
-    casose "1"
-      lin += ", Outros"
-      sair
-    casose "2"
-      lin += ", Todos dividindo ataque"
-      sair
-    casose "3"
-      lin += ", Outros dividindo ataque"
-      sair
-    casose "4"
-      lin += ", Todos sem dividir ataque"
-      sair
-    casose "5"
-      lin += ", Outros sem dividir ataque"
-      sair
-    casose "6"
-      lin += "Não agressivo"
-      sair
-    casose "7"
-      lin += "Não agressivo, O próprio"
-      sair
-    casose "8"
-      lin += "Automático"
-      sair
-    casose "9"
-      lin += "Nenhum"
-      sair
-    casofim
-    t.addfim(lin)
+    t.addfim(lin + nome[$[p.texto].tipoalvo])
   efim
   se t.linhas
     arg0.msg2("\b\c6Magia, Tipo, Alvo\b\n" + t.remove(500))
@@ -432,7 +396,7 @@ func escr
     ret arg0.msg(naoencontrado + nome)
   efim
   ret obj.cmdmenu != "ataque", arg0.msg(naoataque + txt(obj.nomevar, 2))
-  ret obj.tipoalvo > 5 && obj.tipoalvo < 8, arg0.msg(naoataque + txt(obj.nomevar, 2))
+  ret obj.tipoalvo > 5 && obj.tipoalvo < 9, arg0.msg(naoataque + txt(obj.nomevar, 2))
   textotxt t
   obj.danosgolpe(perso, alvo, t)
   arg0.msg2(t.remove(1000))

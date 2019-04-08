@@ -31,7 +31,7 @@ func danosgolpe # Obtém informações sobre os danos que o ataque causaria
     arg2.addfim("   Força " + aulas + ": \b" + ataquemedio)
   fimse
 # Ataque automático
-  se tipoalvo == 8
+  se tipoalvo == 9
     arg2.addfim(txt(++num) + ". Ataque automático: \bmultiplica por " + config:atkfor / 100)
     dano *= config:atkfor / 100
   fimse
@@ -175,7 +175,7 @@ func danosgolpe # Obtém informações sobre os danos que o ataque causaria
     lin = "Danos " + aulas + ": \b"
     lin += danosg_sub(danomin, danomax, ataquemedio, danosporseg) + "\n"
   fimse
-  se tipoalvo == 8
+  se tipoalvo == 9
     lin += "Danos sem arma:\b"
     lin += danosg_sub(danomin, danomax, (ataquemin + ataquemax) / 2, danosporseg) + "\n"
   fimse
@@ -217,7 +217,7 @@ func danosg_espera # Retorna o tempo de espera após cada golpe, em décimos de se
 # arg2 = textotxt aonde colocar as informações
   int8 num
   real2 tempoespera
-  se tipoalvo == 8
+  se tipoalvo == 9
     arg2.addfim(txt(++num) + ". Ataque automático: \b" + config:atktempo)
     tempoespera = config:atktempo
   senao arg0.pveloc <= 0

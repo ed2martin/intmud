@@ -1273,6 +1273,8 @@ m_Invisibilidade 8\n\
 m_Flutuar 8\n\
 m_Cegueira 8\n\
 m_Curar_Cegueira 8\n\
+m_Curar 8\n\
+m_Cura_Massiva 8\n\
 m_Criar_Fonte 8\n\
 m_Raio_Confusão 8\n\
 m_Combatente 8\n\
@@ -1807,9 +1809,9 @@ const eveste = 1 # Eventos perso: Sim
 
 func cmd_social
   se arg1 == este && arg2.tipo == 1
-    $magia_curar.exechabperso(este, arg0)
+    $magia_curar.exechabperso(este, arg0.persoesc)
   senao arg1 == este && arg2.tipo == 2
-    $cmd_socar.exechabperso(este, arg0)
+    $cmd_socar.exechabperso(este, arg0.persobat)
   fimse
 
 

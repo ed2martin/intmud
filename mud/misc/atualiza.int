@@ -1,4 +1,4 @@
-classe atualiza_502
+classe atualiza_509
 # Atualiza arquivos mud/config/* e mud/areas/* de acordo com novas mudanças
 prog p
 debug dbg
@@ -729,8 +729,8 @@ func ini3_exec
 func ini4_exec
   apagar(este)
 # Checa e muda a versão
-  ret (versao = config:versao) >= 502, nulo
-  p.criar("config", "const versao = 502 # Para atualizar diretórios areas e config")
+  ret (versao = config:versao) >= 509, nulo
+  p.criar("config", "const versao = 509 # Para atualizar diretórios areas e config")
   config:salvar
 # Comando Fim e Dicas aleatórias
   se versao < 457
@@ -857,6 +857,15 @@ func ini4_exec
         p.criar(p.texto, "const a_bat_em_pe = 0")
       fimse
       p.apagar(p.texto, "a_batalha")
+    efim
+  fimse
+# Tipo de ataque: todos do grupo
+  se versao < 509
+    epara p.iniherdainv("comando_ataque"), p.lin, p.depois
+      dbg.ini
+      uint8 tipo = 1 + [p.texto]:tipoalvo
+      continuar tipo < 9 || p.existe(p.texto, "tipoalvo") != 1
+      p.criar(p.texto, "const tipoalvo = " + tipo)
     efim
   fimse
 # Avisa que atualizou arquivos

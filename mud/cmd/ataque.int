@@ -26,7 +26,7 @@ m_municao_jog m_municao_animal m_municao_arma m_municao_nao"
 
 classe comando_ataque
 herda comando_hab, comando_danos
-const objcmd = tipoalvo < 8 && arg0.persoesc.var.[nomevar] ? este
+const objcmd = tipoalvo < 9 && arg0.persoesc.var.[nomevar] ? este
 const cmdmenu = "ataque" # Editável via "menu_hab_ataque" e "menu_magia_ataque"
 const nomevar = "" # Nome da variável que indica o quanto sabe do ataque
 const aulapontos = config:a_aulapontos
@@ -255,6 +255,7 @@ func exechab # Chamado quando personagem usa habilidade ou magia
 # Técnicas não agressivas
   listaobj l
   casovar tipoalvo
+  casose "8"
   casose "7"
     se arg0 != arg1
       refvar msg = txt(nomevar, 0, 1) == "m" ? "m_mag_auto" : "m_hab_auto"
@@ -298,6 +299,39 @@ func exechab # Chamado quando personagem usa habilidade ou magia
     epara l.addfim(arg0 != arg1 ? arg1.evento), l, l.ini.remove
       l.objini.cmd_alvofim(arg0, arg1, este, arg1)
     efim
+    se tipoalvo == 8 && result == 0
+      ref r
+      txt100 acertou = arg0.nome
+      listaobj outros
+      contr0.listagrupo(outros)
+      epara outros.remove(contr0), outros, outros.ini.remove
+        r = outros.objini.persobat
+        l.limpar
+        epara l.addfim(arg0.evento), l, l.ini.remove
+          sair l.objini.cmd_alvo(arg0, r, este, arg0)
+        efim
+        continuar l
+        epara l.addfim(arg0 != arg1 ? arg1.evento), l, l.ini.remove
+          sair l.objini.cmd_alvo(arg0, r, este, r)
+        efim
+        continuar l
+        acertou += ", " + txtcopiamai(r.contr.nome, "A")
+        result = 0 # Acertou o alvo
+        efeitohab(arg0, r, arg2, arg3)
+        r.p_imortal && (r.pvida = intmax(r.pvida, r.pvidamax)) # Imortal
+        mensgolpe2(arg0, r, arg5)
+        epara l.addfim(arg0.evento), l, l.ini.remove
+          l.objini.cmd_alvofim(arg0, r, este, arg0)
+        efim
+        epara l.addfim(r.evento), l, l.ini.remove
+          l.objini.cmd_alvofim(arg0, r, este, r)
+        efim
+      efim
+      acertou = "Acertou: " + acertou
+      epara l.addfim(contr0.dono.dentro2), l, l.ini.remove
+        l.objini.msg(acertou)
+      efim
+    fimse
     arg1.pvidaok ? arg1.acertapos(1) : arg1.morreu(arg0)
     arg0 != arg1 && arg0.acertapos(1)
     ret
@@ -387,7 +421,7 @@ func exechab # Chamado quando personagem usa habilidade ou magia
   casose "3"
     atk = (ataquemin + (ataquemax - ataquemin) * arg2) / (l.total + 1)
     sair
-  casose "8" # Ataque automático
+  casose "9" # Ataque automático
     atk = (ataquemin + (ataquemax - ataquemin) * arg2) * config:atkfor / 100
     sair
   casose # Outros ataques
@@ -409,7 +443,7 @@ func exechab # Chamado quando personagem usa habilidade ou magia
   atk /= (2 + $miscfome.f.[arg0.p_sede] + $miscfome.f.[arg0.p_fome]) / 2
 # Ataca o alvo escolhido
   listaobj e
-  tipoalvo != 8 && velgolpe(arg0, arg1) # Tempo do golpe
+  tipoalvo != 9 && velgolpe(arg0, arg1) # Tempo do golpe
   arg5 && (contr1.p_atacou_dir = misc:d2[arg5])
   se arg5 && arg1.p_atk_desvia
     arg0.batalhaini(arg1)
@@ -448,7 +482,7 @@ func exechab # Chamado quando personagem usa habilidade ou magia
       sair e.objini.cmd_atacar(arg0, r, este, r, 0)
     efim
     continuar e
-    tipoalvo != 8 && velgolpe(arg0, r) # Tempo do golpe
+    tipoalvo != 9 && velgolpe(arg0, r) # Tempo do golpe
     arg5 && 2 == r.contr.p_ataquelonge && (r.contr.p_atacou_dir = misc:d2[arg5])
     se arg5 && r.p_atk_desvia
       arg0.batalhaini(r)
@@ -469,7 +503,7 @@ func exechab # Chamado quando personagem usa habilidade ou magia
       e.objini.cmd_atacou(arg0, r, este, r, 0)
     efim
     se r.pvidaok
-      acertou && (danos += ", " + r.nome + " " + mudavida)
+      acertou && (danos += ", " + txtcopiamai(r.nome, "A") + " " + mudavida)
       r.acertapos(1)
     senao
       !config:atkexpsecundario && arg0.batalhafim # Não ganha experiência matando esse alvo
@@ -478,7 +512,7 @@ func exechab # Chamado quando personagem usa habilidade ou magia
   efim
   e.limpar
   se danos
-    danos = "Danos:" + txt(danos, 1)
+    danos = "Danos: " + txt(danos, 1)
     epara l.addfim(contr0.dono.dentro2), l, l.ini.remove
       l.objini.msg(danos)
     efim

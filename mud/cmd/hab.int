@@ -38,8 +38,8 @@ func habajuda # Retorna um texto que contém informações
   txt512 lin
   refvar sintaxe = (txt(nomevar, 0, 1) == "m" ? "Lançar " : "") + txts(txt(nomevar, 2))
   lin = "\c3" + misc:nomevar(nomevar) + "\b\n"
-  se tipoalvo >= 8
-  senao tipoalvo == 7
+  se tipoalvo >= 9
+  senao tipoalvo == 7 || tipoalvo == 8
     lin += "Sintaxe: " + sintaxe
   senao armamove
     lin += "Sintaxe: " + sintaxe + " [personagem]\n"
@@ -244,7 +244,7 @@ func autohab2 # Checa se personagem pode usar habilidade/magia em ataque automát
   ret arg0.pvida <= arg1 * (c_vida2 - c_vida1) + c_vida1, nulo
   ret arg0.pmana < arg1 * (c_mana2 - c_mana1) + c_mana1, nulo
   ret arg0.pmove < arg1 * (c_move2 - c_move1) + c_move1, nulo
-  ret !contr0.dono.s_luta && tipoalvo != 6 && tipoalvo != 7, nulo
+  ret !contr0.dono.s_luta && (tipoalvo < 6 || tipoalvo > 8), nulo
   ret 1
 
 func custohab1 # Aplica os custos da habilidade/magia
