@@ -1,6 +1,7 @@
 classe jogolocal
 herda jogsock
 # Jogando localmente
+intexec j_msg_inicio
 telatxt j_tela
 textotxt j_hist_texto
 textopos j_hist_pos
@@ -14,6 +15,9 @@ func ini
   msgsock("Jogando localmente")
   msgsock("Tecla ESC encerra o programa")
   msgsock("Teclas PGUP e PGDN permitem acessar o histórico dos comandos que você digitou")
+  j_msg_inicio = 1 # Para executar jogsock:ini só após criar objeto jogsock_msg
+
+func j_msg_inicio_exec
   jogsock:ini
 
 func j_tela_msg

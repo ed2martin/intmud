@@ -1,4 +1,5 @@
 classe h_perso_cfg
+# Posição personagem
 const posicao0a = "\c9Você está mort$s!!!\b"
 const posicao1a = "\c9Você está muito mal, incapaz de fazer qualquer coisa.\b"
 const posicao2a = "\c9Você está muito mal, incapaz de fazer qualquer coisa.\b"
@@ -11,6 +12,7 @@ const posicao7a = "\c9Sem chance! Você está lutando pela sua vida.\b"
 const posicao8a = "\c9Você tenta, mas não consegue.\b"
 const semluta_a = "\c9Você não está lutando.\b"
 #
+# Posição outro
 const posicao0b = "\c9$Q está mort$s!!!\b"
 const posicao1b = "\c9$Q está muito mal, incapaz de fazer qualquer coisa.\b"
 const posicao2b = "\c9$Q está muito mal, incapaz de fazer qualquer coisa.\b"
@@ -22,10 +24,102 @@ const posicao7b = "\c9Sem chance! $Q está lutando pela sua del$v.\b"
 const posicao8b = "\c9$Q tenta, mas não consegue.\b"
 const acordado_b = "\c9$Q não está dormind$s.\b"
 #
-const admordem = "posicao0a posicao1a posicao2a posicao3a posicao4a posicao5a\n\
-posicao6a posicao7a posicao8a semluta_a\n\
+# Fome e sede
+const fome0sede1a = "Sua boca está um pouco seca."
+const fome0sede2a = "Você está com sede."
+const fome0sede3a = "Você está morrendo de sede, $m"
+const fome1sede0a = "Você sente umas pontadas de fome."
+const fome1sede1a = "Você sente umas pontadas de fome e a boca um pouco seca."
+const fome1sede2a = "Você está com sede e sente umas pontadas de fome."
+const fome1sede3a = "Você está morrendo de sede e sente umas pontadas de fome, $m"
+const fome2sede0a = "Você está com fome."
+const fome2sede1a = "Você está com fome e sente a boca um pouco seca."
+const fome2sede2a = "Você está com fome e sede."
+const fome2sede3a = "Você está morrendo de sede e com fome, $m"
+const fome3sede0a = "Você está morrendo de fome, $m"
+const fome3sede1a = "Você está morrendo de fome e sente a boca um pouco seca, $m"
+const fome3sede2a = "Você está morrendo de fome e com sede, $m"
+const fome3sede3a = "Você está morrendo de fome e sede, $m"
+const fome0sede2b = "$P está com sede."
+const fome0sede3b = "$P está morrendo de sede."
+const fome2sede0b = "Você ouve o estômago de $P roncar."
+const fome2sede2b = "$P está com fome e sede."
+const fome2sede3b = "$P está morrendo de sede e com fome."
+const fome3sede0b = "$P está morrendo de fome."
+const fome3sede2b = "$P está morrendo de fome e com sede."
+const fome3sede3b = "$P está morrendo de fome e sede."
+#
+# Criar personagem
+const ini_perso1 = "Digite o nome do seu personagem:"
+const ini_perso_caract = "O nome deve ter de 3 a 16 caracteres; digite outro"
+const ini_perso_invalido = "Nome inválido; digite outro"
+const ini_perso_existe = "Personagem '$m' já existe"
+const ini_perso_uso = "Nome já está sendo usado; digite outro"
+const ini_perso_perm = "Nome não permitido para personagem"
+const ini_perso_confirma = "Deseja criar o personagem '$m'? (tecle S ou N)"
+#
+# Senha do personagem
+const ini_senha_criar1 = "Digite uma senha para o personagem"
+const ini_senha_atual1 = "Digite a senha atual do personagem ou Z para desistir"
+const ini_senha_atual2 = "Senha incorreta; cancelado"
+const ini_senha_mudar1 = "Digite a nova senha do personagem ou Z para desistir"
+const ini_senha_inv1 = "A senha deve ter de 5 a 16 caracteres, digite outra"
+const ini_senha_inv2 = "Senha deve ter letras e números, digite outra"
+const ini_senha_inv3 = "Senha inválida, digite outra"
+const ini_senha_entrar1 = "Digite a senha ou tecle Z se não for seu:"
+const ini_senha_entrar2 = "Senha incorreta"
+const ini_senha_repetir1 = "Digite novamente a senha"
+const ini_senha_diferente1 = "As senhas são diferentes"
+const ini_senha_diferente2 = "As senhas são diferentes; cancelado"
+#
+# E-mail e gênero
+const ini_email1 = "Digite seu e-mail ou N para nenhum"
+const ini_email2 = "Digite seu e-mail"
+const ini_email_espaco = "O e-mail não pode conter espaços; digite outro"
+const ini_email_inv = "E-mail inválido; digite outro"
+const ini_sexo1 = "Você é homem ou mulher? (tecle H ou M)"
+#
+# Raça e classe
+const ini_tipo1_esc = "Escolha uma raça:"
+const ini_tipo1_inv = "Raça inválida; escolha uma:"
+const ini_tipo1_quer = "Você quer essa raça? (tecle S ou N)"
+const ini_tipo2_esc = "Escolha uma classe:"
+const ini_tipo2_inv = "Classe inválida; escolha uma:"
+const ini_tipo2_quer = "Você quer essa classe? (tecle S ou N)"
+const ini_tipo3_esc = "Escolha uma subclasse:"
+const ini_tipo3_inv = "Subclasse inválida; escolha uma:"
+const ini_tipo3_quer = "Você quer essa subclasse? (tecle S ou N)"
+#
+# Personagem entrando
+const ini_iniciando = "Iniciando jogo; para ajuda tecle AJUDA"
+const ini_continuando = "Continuando jogo salvo"
+const ini_reconectando = "Reconectado"
+const ini_usarperso = "Jogador $m começou a usar seu personagem"
+const ini_salvar_sim = "Jogo salvo"
+const ini_salvar_nao = "Não foi possível salvar o personagem"
+const ini_lutando1 = "Alguém está lutando com você!"
+const ini_lutando2 = "$m está lutando com você!"
+#
+const admordem = "posicao0a posicao1a posicao2a posicao3a posicao4a\n\
+posicao5a posicao6a posicao7a posicao8a semluta_a\n\
 posicao0b posicao1b posicao2b posicao3b posicao4b posicao5b\n\
-posicao6b posicao7b posicao8b acordado_b"
+posicao6b posicao7b posicao8b acordado_b\n\
+fome0sede1a fome0sede2a fome0sede3a fome1sede0a fome1sede1a\n\
+fome1sede2a fome1sede3a fome2sede0a fome2sede1a fome2sede2a\n\
+fome2sede3a fome3sede0a fome3sede1a fome3sede2a fome3sede3a\n\
+fome0sede2b fome0sede3b fome2sede0b fome2sede2b fome2sede3b\n\
+fome3sede0b fome3sede2b fome3sede3b\n\
+ini_perso1 ini_perso_caract ini_perso_invalido ini_perso_existe\n\
+ini_perso_uso ini_perso_perm ini_perso_confirma\n\
+ini_senha_criar1 ini_senha_atual1 ini_senha_atual2 ini_senha_mudar1\n\
+ini_senha_inv1 ini_senha_inv2 ini_senha_inv3 ini_senha_entrar1 ini_senha_entrar2\n\
+ini_senha_repetir1 ini_senha_diferente1 ini_senha_diferente2\n\
+ini_email1 ini_email2 ini_email_espaco ini_email_inv ini_sexo1\n\
+ini_tipo1_esc ini_tipo1_inv ini_tipo1_quer\n\
+ini_tipo2_esc ini_tipo2_inv ini_tipo2_quer\n\
+ini_tipo3_esc ini_tipo3_inv ini_tipo3_quer\n\
+ini_iniciando ini_continuando ini_reconectando ini_usarperso\n\
+ini_salvar_sim ini_salvar_nao ini_lutando1 ini_lutando2"
 
 func iniclasse
   ret txt(arg0, 0, 2) != "h_", !$[arg0] && criar(arg0)
@@ -147,3 +241,347 @@ const nome10 = "Acordado"
 const tipo10 = "opc_linha"
 const clas10 = "perso_cfg"
 const vari10 = "acordado_b"
+
+
+classe m_perso_fomesede_a
+herda comando_menu
+const titulo = "Fome e sede personagem"
+const menufim = "menu_econfig_msg"
+const colunas = 30
+#
+const nome1 = "Pouca sede"
+const tipo1 = "opc_linha"
+const clas1 = "perso_cfg"
+const vari1 = "fome0sede1a"
+#
+const nome2 = "Sede"
+const tipo2 = "opc_linha"
+const clas2 = "perso_cfg"
+const vari2 = "fome0sede2a"
+#
+const nome3 = "Muita sede"
+const tipo3 = "opc_linha"
+const clas3 = "perso_cfg"
+const vari3 = "fome0sede3a"
+#
+const nome4 = "Pouca fome e pouca sede"
+const tipo4 = "opc_linha"
+const clas4 = "perso_cfg"
+const vari4 = "fome1sede1a"
+#
+const nome5 = "Pouca fome e sede"
+const tipo5 = "opc_linha"
+const clas5 = "perso_cfg"
+const vari5 = "fome1sede2a"
+#
+const nome6 = "Pouca fome e muita sede"
+const tipo6 = "opc_linha"
+const clas6 = "perso_cfg"
+const vari6 = "fome1sede3a"
+#
+const nome7 = "Fome e pouca sede"
+const tipo7 = "opc_linha"
+const clas7 = "perso_cfg"
+const vari7 = "fome2sede1a"
+#
+const nome8 = "Fome e sede"
+const tipo8 = "opc_linha"
+const clas8 = "perso_cfg"
+const vari8 = "fome2sede2a"
+#
+const nome9 = "Fome e muita sede"
+const tipo9 = "opc_linha"
+const clas9 = "perso_cfg"
+const vari9 = "fome2sede3a"
+#
+const nome10 = "Muita fome e pouca sede"
+const tipo10 = "opc_linha"
+const clas10 = "perso_cfg"
+const vari10 = "fome3sede1a"
+#
+const nome11 = "Muita fome e sede"
+const tipo11 = "opc_linha"
+const clas11 = "perso_cfg"
+const vari11 = "fome3sede2a"
+#
+const nome12 = "Muita fome e muita sede"
+const tipo12 = "opc_linha"
+const clas12 = "perso_cfg"
+const vari12 = "fome3sede3a"
+#
+
+classe m_perso_fomesede_b
+herda comando_menu
+const titulo = "Fome e sede outros"
+const menufim = "menu_econfig_msg"
+const colunas = 30
+#
+const nome1 = "Sede"
+const tipo1 = "opc_linha"
+const clas1 = "perso_cfg"
+const vari1 = "fome0sede2b"
+#
+const nome2 = "Muita sede"
+const tipo2 = "opc_linha"
+const clas2 = "perso_cfg"
+const vari2 = "fome0sede3b"
+#
+const nome3 = "Fome e sede"
+const tipo3 = "opc_linha"
+const clas3 = "perso_cfg"
+const vari3 = "fome2sede2b"
+#
+const nome4 = "Fome e muita sede"
+const tipo4 = "opc_linha"
+const clas4 = "perso_cfg"
+const vari4 = "fome2sede3b"
+#
+const nome5 = "Muita fome e sede"
+const tipo5 = "opc_linha"
+const clas5 = "perso_cfg"
+const vari5 = "fome3sede2b"
+#
+const nome6 = "Muita fome e muita sede"
+const tipo6 = "opc_linha"
+const clas6 = "perso_cfg"
+const vari6 = "fome3sede3b"
+
+
+classe m_perso_perso
+herda comando_menu
+const titulo = "Criar personagem"
+const menufim = "menu_econfig_msg"
+const colunas = 28
+#
+const nome1 = "Digite o nome"
+const tipo1 = "opc_linha"
+const clas1 = "perso_cfg"
+const vari1 = "ini_perso1"
+#
+const nome2 = "De 3 a 16 caracteres"
+const tipo2 = "opc_linha"
+const clas2 = "perso_cfg"
+const vari2 = "ini_perso_caract"
+#
+const nome3 = "Nome inválido"
+const tipo3 = "opc_linha"
+const clas3 = "perso_cfg"
+const vari3 = "ini_perso_invalido"
+#
+const nome4 = "Nome já existe"
+const tipo4 = "opc_linha"
+const clas4 = "perso_cfg"
+const vari4 = "ini_perso_existe"
+#
+const nome5 = "Nome em uso"
+const tipo5 = "opc_linha"
+const clas5 = "perso_cfg"
+const vari5 = "ini_perso_uso"
+#
+const nome6 = "Nome não permitido"
+const tipo6 = "opc_linha"
+const clas6 = "perso_cfg"
+const vari6 = "ini_perso_perm"
+#
+const nome7 = "Confirmar nome"
+const tipo7 = "opc_linha"
+const clas7 = "perso_cfg"
+const vari7 = "ini_perso_confirma"
+
+
+classe m_perso_senha
+herda comando_menu
+const titulo = "Senha do personagem"
+const menufim = "menu_econfig_msg"
+const colunas = 28
+#
+const nome1 = "Digite uma senha"
+const tipo1 = "opc_linha"
+const clas1 = "perso_cfg"
+const vari1 = "ini_senha_criar1"
+#
+const nome2 = "Digite a senha atual"
+const tipo2 = "opc_linha"
+const clas2 = "perso_cfg"
+const vari2 = "ini_senha_atual1"
+#
+const nome3 = "Senha incorreta"
+const tipo3 = "opc_linha"
+const clas3 = "perso_cfg"
+const vari3 = "ini_senha_atual2"
+#
+const nome4 = "Digite a nova senha"
+const tipo4 = "opc_linha"
+const clas4 = "perso_cfg"
+const vari4 = "ini_senha_mudar1"
+#
+const nome5 = "De 3 a 16 caracteres"
+const tipo5 = "opc_linha"
+const clas5 = "perso_cfg"
+const vari5 = "ini_senha_inv1"
+#
+const nome6 = "Senha fácil"
+const tipo6 = "opc_linha"
+const clas6 = "perso_cfg"
+const vari6 = "ini_senha_inv2"
+#
+const nome7 = "Senha inválida"
+const tipo7 = "opc_linha"
+const clas7 = "perso_cfg"
+const vari7 = "ini_senha_inv3"
+#
+const nome8 = "Senha do personagem"
+const tipo8 = "opc_linha"
+const clas8 = "perso_cfg"
+const vari8 = "ini_senha_entrar1"
+#
+const nome9 = "Senha incorreta"
+const tipo9 = "opc_linha"
+const clas9 = "perso_cfg"
+const vari9 = "ini_senha_entrar2"
+#
+const nome10 = "Repetir a senha"
+const tipo10 = "opc_linha"
+const clas10 = "perso_cfg"
+const vari10 = "ini_senha_repetir1"
+#
+const nome11 = "Senhas diferentes"
+const tipo11 = "opc_linha"
+const clas11 = "perso_cfg"
+const vari11 = "ini_senha_diferente1"
+#
+const nome12 = "Senhas diferentes cancelado"
+const tipo12 = "opc_linha"
+const clas12 = "perso_cfg"
+const vari12 = "ini_senha_diferente2"
+
+
+classe m_perso_email
+herda comando_menu
+const titulo = "E-mail e gênero"
+const menufim = "menu_econfig_msg"
+const colunas = 28
+#
+const nome1 = "Email, opcional"
+const tipo1 = "opc_linha"
+const clas1 = "perso_cfg"
+const vari1 = "ini_email1"
+#
+const nome2 = "E-mail, obrigatório"
+const tipo2 = "opc_linha"
+const clas2 = "perso_cfg"
+const vari2 = "ini_email2"
+#
+const nome3 = "E-mail com espaços"
+const tipo3 = "opc_linha"
+const clas3 = "perso_cfg"
+const vari3 = "ini_email_espaco"
+#
+const nome4 = "e-mail inválido"
+const tipo4 = "opc_linha"
+const clas4 = "perso_cfg"
+const vari4 = "ini_email_inv"
+#
+const nome5 = "Homem ou mulher"
+const tipo5 = "opc_linha"
+const clas5 = "perso_cfg"
+const vari5 = "ini_sexo1"
+
+
+classe m_perso_raca
+herda comando_menu
+const titulo = "Raça e classe"
+const menufim = "menu_econfig_msg"
+const colunas = 28
+#
+const nome1 = "Escolher raça"
+const tipo1 = "opc_linha"
+const clas1 = "perso_cfg"
+const vari1 = "ini_tipo1_esc"
+#
+const nome2 = "Raça inválida"
+const tipo2 = "opc_linha"
+const clas2 = "perso_cfg"
+const vari2 = "ini_tipo1_inv"
+#
+const nome3 = "Confirmar raça"
+const tipo3 = "opc_linha"
+const clas3 = "perso_cfg"
+const vari3 = "ini_tipo1_quer"
+#
+const nome4 = "Escolher classe"
+const tipo4 = "opc_linha"
+const clas4 = "perso_cfg"
+const vari4 = "ini_tipo2_esc"
+#
+const nome5 = "Classe inválida"
+const tipo5 = "opc_linha"
+const clas5 = "perso_cfg"
+const vari5 = "ini_tipo2_inv"
+#
+const nome6 = "Confirmar classe"
+const tipo6 = "opc_linha"
+const clas6 = "perso_cfg"
+const vari6 = "ini_tipo2_quer"
+#
+const nome7 = "Escolher subclasse"
+const tipo7 = "opc_linha"
+const clas7 = "perso_cfg"
+const vari7 = "ini_tipo3_esc"
+#
+const nome8 = "Subclasse inválida"
+const tipo8 = "opc_linha"
+const clas8 = "perso_cfg"
+const vari8 = "ini_tipo3_inv"
+#
+const nome9 = "Confirmar subclasse"
+const tipo9 = "opc_linha"
+const clas9 = "perso_cfg"
+const vari9 = "ini_tipo3_quer"
+
+
+classe m_perso_entrando
+herda comando_menu
+const titulo = "Personagem entrando"
+const menufim = "menu_econfig_msg"
+const colunas = 28
+#
+const nome1 = "Entrando no jogo"
+const tipo1 = "opc_linha"
+const clas1 = "perso_cfg"
+const vari1 = "ini_iniciando"
+#
+const nome2 = "Continando jogo"
+const tipo2 = "opc_linha"
+const clas2 = "perso_cfg"
+const vari2 = "ini_continuando"
+#
+const nome3 = "Reconectando"
+const tipo3 = "opc_linha"
+const clas3 = "perso_cfg"
+const vari3 = "ini_reconectando"
+#
+const nome4 = "Desconectado"
+const tipo4 = "opc_linha"
+const clas4 = "perso_cfg"
+const vari4 = "ini_usarperso"
+#
+const nome5 = "Salvou jogo"
+const tipo5 = "opc_linha"
+const clas5 = "perso_cfg"
+const vari5 = "ini_salvar_sim"
+#
+const nome6 = "Erro ao salvar"
+const tipo6 = "opc_linha"
+const clas6 = "perso_cfg"
+const vari6 = "ini_salvar_nao"
+#
+const nome7 = "Alguém lutando"
+const tipo7 = "opc_linha"
+const clas7 = "perso_cfg"
+const vari7 = "ini_lutando1"
+#
+const nome8 = "Personagem visível lutando"
+const tipo8 = "opc_linha"
+const clas8 = "perso_cfg"
+const vari8 = "ini_lutando2"

@@ -160,108 +160,101 @@ func p_tempoatu_exec # Atualiza variáveis de tempos em tempos
     casovar txtchr(97 + $miscfome.t.[p_fome]) + $miscfome.t.[p_sede]
     casose "a1" # Pouca sede
       p_tempomsg = 5
-      msg("Sua boca está um pouco seca.")
+      $mens.mp(perso_cfg:fome0sede1a, este)
       sair
     casose "a2" # Com sede
       p_tempomsg = 5
-      msg("Você está com sede.")
-      sair !config:fomemsg
+      $mens.mp(perso_cfg:fome0sede2a, este)
       $mens.p(este)
-      $mens.mvis2("", "$P está com sede.")
+      $mens.mvis2("", perso_cfg:fome0sede2b)
       sair
     casose "a3" # Muita sede
       p_tempomsg = 5
       pvida -= 5
-      msg("Você está morrendo de sede, -5")
+      $mens.mens = "-5"
+      $mens.mp(perso_cfg:fome0sede3a, este)
       $mens.p(este)
-      $mens.mvis2("", "$P está morrendo de sede.")
+      $mens.mvis2("", perso_cfg:fome0sede3b)
       sair
     casose "b0" # Pouca fome
       p_tempomsg = 5
-      msg("Você sente umas pontadas de fome.")
+      $mens.mp(perso_cfg:fome1sede0a, este)
       sair
     casose "b1" # Pouca fome + Pouca sede
       p_tempomsg = 5
-      msg("Você sente umas pontadas de fome e a boca um pouco seca.")
+      $mens.mp(perso_cfg:fome1sede1a, este)
       sair
     casose "b2" # Pouca fome + Com sede
       p_tempomsg = 5
-      msg("Você está com sede e sente umas pontadas de fome.")
-      sair !config:fomemsg
+      $mens.mp(perso_cfg:fome1sede2a, este)
       $mens.p(este)
-      $mens.mvis2("", "$P está com sede.")
+      $mens.mvis2("", perso_cfg:fome0sede2b)
       sair
     casose "b3" # Pouca fome + Muita sede
       p_tempomsg = 5
       pvida -= 5
-      msg("Você está morrendo de sede e sente umas pontadas de fome, -5")
+      $mens.mens = "-5"
+      $mens.mp(perso_cfg:fome1sede3a, este)
       $mens.p(este)
-      sair !config:fomemsg
-      $mens.mvis2("", "$P está morrendo de sede.")
+      $mens.mvis2("", perso_cfg:fome0sede3b)
       sair
     casose "c0" # Com fome
       p_tempomsg = 5
-      msg("Você está com fome.")
-      sair !config:fomemsg
+      $mens.mp(perso_cfg:fome2sede0a, este)
       $mens.p(este)
-      $mens.mvis2("", "Você ouve o estômago de $P roncar.")
+      $mens.mvis2("", perso_cfg:fome2sede0b)
       sair
     casose "c1" # Com fome + Pouca sede
       p_tempomsg = 5
-      msg("Você está com fome e sente a boca um pouco seca.")
-      sair !config:fomemsg
+      $mens.mp(perso_cfg:fome2sede1a, este)
       $mens.p(este)
-      $mens.mvis2("", "Você ouve o estômago de $P roncar.")
+      $mens.mvis2("", perso_cfg:fome2sede0b)
       sair
     casose "c2" # Com fome + Com sede
       p_tempomsg = 5
-      msg("Você está com fome e sede.")
-      sair !config:fomemsg
+      $mens.mp(perso_cfg:fome2sede2a, este)
       $mens.p(este)
-      $mens.mvis2("", "$P está com fome e sede.")
+      $mens.mvis2("", perso_cfg:fome2sede2b)
       sair
     casose "c3" # Com fome + Muita sede
       p_tempomsg = 5
       pvida -= 5
-      msg("Você está morrendo de sede e com fome, -5")
+      $mens.mens = "-5"
+      $mens.mp(perso_cfg:fome2sede3a, este)
       $mens.p(este)
-      se config:fomemsg
-        $mens.mvis2("", "$P está morrendo de sede e com fome.")
-      senao
-        $mens.mvis2("", "$P está morrendo de sede.")
-      fimse
+      $mens.mvis2("", perso_cfg:fome2sede3b)
       sair
     casose "d0" # Muita fome
       p_tempomsg = 5
       pvida -= 10
-      msg("Você está morrendo de fome, -10")
+      $mens.mens = "-10"
+      $mens.mp(perso_cfg:fome3sede0a, este)
       $mens.p(este)
-      $mens.mvis2("", "$P está morrendo de fome.")
+      $mens.mvis2("", perso_cfg:fome3sede0b)
       sair
     casose "d1" # Muita fome + Pouca sede
       p_tempomsg = 5
       pvida -= 10
-      msg("Você está morrendo de fome e sente a boca um pouco seca, -10")
+      $mens.mens = "-10"
+      $mens.mp(perso_cfg:fome3sede1a, este)
       $mens.p(este)
-      $mens.mvis2("", "$P está morrendo de fome.")
+      $mens.mvis2("", perso_cfg:fome3sede0b)
       sair
     casose "d2" # Muita fome + Com sede
       p_tempomsg = 5
       pvida -= 10
-      msg("Você está morrendo de fome e com sede, -10")
+      $mens.mens = "-10"
+      $mens.mp(perso_cfg:fome3sede2a, este)
       $mens.p(este)
-      se config:fomemsg
-        $mens.mvis2("", "$P está morrendo de fome e com sede.")
-      senao
-        $mens.mvis2("", "$P está morrendo de fome.")
-      fimse
+      $mens.mvis2("", perso_cfg:fome3sede2b)
       sair
     casose "d3" # Muita fome + Muita sede
       p_tempomsg = 5
       pvida -= 15
-      msg("Você está morrendo de fome e sede, -15")
+      $mens.mens = "-15"
+      $mens.mp(perso_cfg:fome3sede3a, este)
       $mens.p(este)
-      $mens.mvis2("", "$P está morrendo de fome e sede.")
+      $mens.mvis2("", perso_cfg:fome3sede3b)
       sair
     casofim
   fimse

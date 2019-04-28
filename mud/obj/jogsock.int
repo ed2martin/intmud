@@ -61,11 +61,11 @@ func fim
   indiceitem ind
   ind.obj("pn " + txt2(cnome)).sock_saiu(txt1(info) == "b")
   se nomefim
-    $jogsock_chegou.p(este, nomefim)
+    $jogsock_msg.p(este, nomefim)
     se txt(passo, 0, 4) == "ini_"
-      $jogsock_chegou.msg("Cancelou: $p, $c", config:naocriar_msgadm)
+      $jogsock_msg.msg("Cancelou: $p, $c", config:naocriar_msgadm)
     senao
-      $jogsock_chegou.msg("Saiu: $p, $c", config:saiu_msgadm, config:saiu_msgjog)
+      $jogsock_msg.msg("Saiu: $p, $c", config:saiu_msgadm, config:saiu_msgjog)
     fimse
   fimse
 
@@ -103,11 +103,11 @@ func mudaperso # Muda o personagem, arg0=novo personagem
 
 func reinicia # Volta ao início: pede o nome do personagem
   se nomefim
-    $jogsock_chegou.p(este, nomefim)
+    $jogsock_msg.p(este, nomefim)
     se txt(passo, 0, 4) == "ini_"
-      $jogsock_chegou.msg("Cancelou: $p, $c", config:naocriar_msgadm)
+      $jogsock_msg.msg("Cancelou: $p, $c", config:naocriar_msgadm)
     senao
-      $jogsock_chegou.msg("Saiu: $p, $c", config:saiu_msgadm, config:saiu_msgjog)
+      $jogsock_msg.msg("Saiu: $p, $c", config:saiu_msgadm, config:saiu_msgjog)
     fimse
     nomefim = ""
   fimse
@@ -426,24 +426,24 @@ func passo
   casofim
   texto = txts(txtnome(arg1))
   se !arg1
-    arg0.msg("Digite o nome do seu personagem:\cn ")
+    $jogsock_msg.msgsock(arg0, perso_cfg:ini_perso1 + "\cn")
   senao inttotal(arg1) < 3 || inttotal(arg1) > 16
-    arg0.msg("O nome deve ter de 3 a 16 caracteres; digite outro")
+    $jogsock_msg.msgsock(arg0, perso_cfg:ini_perso_caract)
   senao intnome(arg1) || txtproc(txtsepara("a" + arg1, "L+D"), " ") >= 0
-    arg0.msg("Nome inválido; digite outro")
+    $jogsock_msg.msgsock(arg0, perso_cfg:ini_perso_invalido)
   senao sav1.existe("sav1/" + texto + ".sav") # Carregar jogo salvo
-    arg0.msg("Personagem '" + txtmaimin(arg1) + "' já existe")
+    $jogsock_msg.msgsock(arg0, perso_cfg:ini_perso_existe, txtmaimin(arg1))
     arg0.tpasso = txtmaimin(arg1)
     $ini_entrasenha.passo(arg0)
   senao ind.obj("un " + texto)
-    arg0.msg("Nome já está sendo usado; digite outro")
+    $jogsock_msg.msgsock(arg0, perso_cfg:ini_perso_uso)
   senao # Criar personagem
     refvar t = arg0.info
     se txt1(t) != "l" && $miscban1.banido(txt2(t))
       arg0.msg(config:apresban)
       txt1(t) != "b" && apagar(arg0)
     senao $admnomesnao.nomes.n_[texto] # Checa se nome permitido
-      arg0.msg("Nome não permitido para personagem")
+      $jogsock_msg.msgsock(arg0, perso_cfg:ini_perso_perm, txtmaimin(arg1))
     senao
       arg0.cnome = "un " + texto
       arg0.nome = txtmaimin(arg1)
@@ -468,11 +468,11 @@ func passo
       $ini_sexo1.passo(arg0)
     fimse
     arg0.nomefim = arg0.info
-    $jogsock_chegou.p(arg0, arg0.nomefim)
-    $jogsock_chegou.msg("Criando: $p, $c", config:criar_msgadm)
+    $jogsock_msg.p(arg0, arg0.nomefim)
+    $jogsock_msg.msg("Criando: $p, $c", config:criar_msgadm)
   senao
     arg0.passo = este
-    arg0.msg("Deseja criar o personagem '" + arg0.nome + "'? (tecle S ou N)")
+    $jogsock_msg.msgsock(arg0, perso_cfg:ini_perso_confirma, arg0.nome)
   fimse
   ret 1
 
@@ -484,13 +484,13 @@ herda comando_comum
 func passo
   arg0.passo = este
   se !arg1
-    arg0.msg("Digite uma senha para o personagem\cm")
+    $jogsock_msg.msgsock(arg0, perso_cfg:ini_senha_criar1 + "\cm", arg0.nome)
   senao inttotal(arg1) < 5 || inttotal(arg1) > 16
-    arg0.msg("A senha deve ter de 5 a 16 caracteres, digite outra")
+    $jogsock_msg.msgsock(arg0, perso_cfg:ini_senha_inv1, arg0.nome)
   senao intsenha(arg1) == 3
-    arg0.msg("Senha deve ter letras e números, digite outra")
+    $jogsock_msg.msgsock(arg0, perso_cfg:ini_senha_inv2, arg0.nome)
   senao intsenha(arg1)
-    arg0.msg("Senha inválida, digite outras")
+    $jogsock_msg.msgsock(arg0, perso_cfg:ini_senha_inv3, arg0.nome)
   senao
     arg0.var.j_senha = arg1
     $ini_criasenha2.passo(arg0)
@@ -505,9 +505,9 @@ herda comando_comum
 func passo
   arg0.passo = este
   se !arg1
-    arg0.msg("Digite novamente a senha")
+    $jogsock_msg.msgsock(arg0, perso_cfg:ini_senha_repetir1, arg0.nome)
   senao arg1 != arg0.var.j_senha
-    arg0.msg("As senhas são diferentes")
+    $jogsock_msg.msgsock(arg0, perso_cfg:ini_senha_diferente1, arg0.nome)
     arg0.var.limpar("j_")
     $ini_perso1.passo(arg0)
   senao
@@ -525,20 +525,18 @@ func passo
   txt100 lin.3
   se !arg1
     se config:email == 1
-      arg0.msg("Digite seu e-mail ou N para nenhum\cn")
+      $jogsock_msg.msgsock(arg0, perso_cfg:ini_email1 + "\cn")
     senao
-      arg0.msg("Digite seu e-mail\cn")
+      $jogsock_msg.msgsock(arg0, perso_cfg:ini_email2 + "\cn")
     fimse
   senao arg1 == "n" && config:email == 1
     $ini_sexo1.passo(arg0)
   senao txtproc(arg1, " ") >= 0
-    arg0.msg("O e-mail não pode conter espaços; digite outro")
-  senao txtremove(arg1, "7") !== arg1
-    arg0.msg("E-mail contém caracteres inválidos, digite outro")
-  senao lin.separar(arg1, "@") != 2 || lin.0 == ""
-    arg0.msg("E-mail inválido; digite outro")
-  senao txtfim(lin.1, 1) == "." || txtproc(lin.1, ".") <= 0
-    arg0.msg("E-mail inválido; digite outro")
+    $jogsock_msg.msgsock(arg0, perso_cfg:ini_email_espaco)
+  senao txtremove(arg1, "7") !== arg1 || lin.separar(arg1, "@") != 2
+    $jogsock_msg.msgsock(arg0, perso_cfg:ini_email_inv)
+  senao lin.0 == "" || txtfim(lin.1, 1) == "." || txtproc(lin.1, ".") <= 0
+    $jogsock_msg.msgsock(arg0, perso_cfg:ini_email_inv)
   senao
     arg0.var.j_email = arg1
     $ini_sexo1.passo(arg0)
@@ -553,7 +551,7 @@ herda comando_comum
 func passo
   arg0.passo = este
   se arg1 != "H" && arg1 != "M"
-    arg0.msg("Você é homem ou mulher? (tecle H ou M)")
+    $jogsock_msg.msgsock(arg0, perso_cfg:ini_sexo1)
     ret 1
   fimse
   arg0.var.j_sexo = arg1 == "H" # 0=feminino, 1=masculino
@@ -592,8 +590,7 @@ func passo1
       tpasso = txt1(tpasso)
       ret 1
     senao
-      lin = int(tpasso) == 1 ? "raça" : int(tpasso) == 2 ? "classe" : "subclasse"
-      arg0.msg("Você quer essa " + lin + "? (tecle S ou N)")
+      $jogsock_msg.msgsock(arg0, perso_cfg:ini_tipo[txt1(tpasso)]_quer)
       ret 0
     fimse
   fimse
@@ -628,11 +625,8 @@ func passo1
 # Mais de uma raça: apresenta o menu
   senao
     lin = int(tpasso) == 1 ? "raça" : int(tpasso) == 2 ? "classe" : "subclasse"
-    se arg1
-      arg0.txtmais.addini(txtmaimin(lin) + " inválida; escolha uma:")
-    senao
-      arg0.txtmais.addini("Escolha uma " + lin + ":")
-    fimse
+    refvar msg = perso_cfg:ini_tipo[txt1(tpasso)]_[arg1 ? "inv" : "esc"]
+    arg0.txtmais.addini($jogsock_msg.txtsock(arg0, msg))
     arg0.txtmostra
     ret 0
   fimse
@@ -656,7 +650,7 @@ herda comando_comum
 func passo
   arg0.passo = ""
   arg0.jogconfig.bits = config:jogconfig # Configurações iniciais
-  arg0.msg("Iniciando jogo; para ajuda tecle AJUDA")
+  $jogsock_msg.msgsock(arg0, perso_cfg:ini_iniciando, arg0.nome)
   refvar v = arg0.var
   arg0.mudaperso(criar("jogador", nulo, v.j_tipo1, v.j_tipo2, v.j_tipo3))
   arg0.perso.cnome = "pn " + txt2(arg0.cnome)
@@ -671,10 +665,10 @@ func passo
   arg0.jogperm = config:autorizar ? "autorizar" : "jog"
   arg0.perso.jogperm = arg0.jogperm
   se arg0.perso.senha && !$perm_[arg0.jogperm].c_salvar
-    !arg0.perso.salvar && arg0.msg("Não foi possível salvar o personagem")
+    !arg0.perso.salvar && $jogsock_msg.msgsock(arg0, perso_cfg:ini_salvar_nao, arg0.nome)
   fimse
-  $jogsock_chegou.p(arg0, arg0.nomefim, arg0.perso.pnivel, arg0.perso.var.z_moedas)
-  $jogsock_chegou.msg("Criou: $p, $c", config:criou_msgadm, config:criou_msgjog)
+  $jogsock_msg.p(arg0, arg0.nomefim, arg0.perso.pnivel, arg0.perso.var.z_moedas)
+  $jogsock_msg.msg("Criou: $p, $c", config:criou_msgadm, config:criou_msgjog)
   $mens.p(arg0.perso)
   $mens.mvis2("", "$P chegou.")
   ret 1
@@ -690,13 +684,13 @@ func passo
   arqsav sav1
   arg0.passo = este
   se !arg1
-    arg0.msg("Digite a senha ou tecle Z se não for seu: \cm")
+    $jogsock_msg.msgsock(arg0, perso_cfg:ini_senha_entrar1 + " \cm", arg0.nome)
     ret 1
   senao arg1 == "z"
     arg0.nome = ""
     ret $ini_perso1.passo(arg0)
   senao !sav1.senha("sav1/" + texto + ".sav", txtmin(arg1))
-    arg0.msg("Senha incorreta")
+    $jogsock_msg.msgsock(arg0, perso_cfg:ini_senha_entrar2, arg0.nome)
     casovar txt1(arg0.info)
     casose "t" # Conectado via Papovox
     casose "p" # Conectado via Telnet
@@ -715,13 +709,13 @@ func passo
     casose "h" # Conectado via navegador
       apagar(r)
       r.mudaperso(nulo)
-      r.msg("Jogador " + arg0.info + " começou a usar seu personagem")
+      $jogsock_msg.msgsock(r, perso_cfg:ini_usarperso, arg0.info)
       r.nomefim = ""
       r.cnome = ""
     casose ""
       sair
     casose
-      r.msg("Jogador " + arg0.info + " começou a usar seu personagem")
+      $jogsock_msg.msgsock(r, perso_cfg:ini_usarperso, arg0.info)
       r.reinicia
     casofim
   fimse
@@ -736,18 +730,18 @@ func passo
     arg0.jogperm = arg0.perso.jogperm
     arg0.jogarea = arg0.perso.jogarea
     arg0.temposair # Acerta tempo para sair do MUD
-    arg0.msg("Reconectado\cn")
+    $jogsock_msg.msgsock(arg0, perso_cfg:ini_reconectando + "\cn", arg0.nome)
     txt200 lin
     arg0.nomefim = arg0.info
-    $jogsock_chegou.p(arg0, arg0.nomefim, arg0.perso.pnivel, arg0.perso.var.z_moedas)
-    $jogsock_chegou.msg("Entrou: $p, $c", config:entrou_msgadm, config:entrou_msgjog)
+    $jogsock_msg.p(arg0, arg0.nomefim, arg0.perso.pnivel, arg0.perso.var.z_moedas)
+    $jogsock_msg.msg("Entrou: $p, $c", config:entrou_msgadm, config:entrou_msgjog)
     refvar alvo = arg0.perso.atkenv.objlista
     se !alvo
       arg0.perso.teclou("olhar")
-    senao !alvo.visivel(arg0)
-      arg0.msg("Alguém está lutando com você!")
+    senao !alvo.visivel(arg0.perso)
+      $jogsock_msg.msgsock(arg0, perso_cfg:ini_lutando1)
     senao
-      arg0.msg(txtcopiamai(alvo.descnome, "A") + " está lutando com você!")
+      $jogsock_msg.msgsock(arg0, perso_cfg:ini_lutando2, txtcopiamai(alvo.descnome, "A"))
     fimse
   senao
 # Primeiro cria personagem
@@ -789,11 +783,11 @@ func passo
 # Muda de sala e volta ao jogo
     arg0.perso.p_espera = 2 # Para processar um comando do jogador só após mudar de sala
     criar("jogsock_retorna", arg0.perso, $[arg0.perso.salanome], l1) # Para mudar de sala
-    arg0.msg("Continuando jogo salvo\cn")
+    $jogsock_msg.msgsock(arg0, perso_cfg:ini_continuando + "\cn", arg0.nome)
     txt200 lin
     arg0.nomefim = arg0.info
-    $jogsock_chegou.p(arg0, arg0.nomefim, arg0.perso.pnivel, arg0.perso.var.z_moedas)
-    $jogsock_chegou.msg("Entrou: $p, $c", config:entrou_msgadm, config:entrou_msgjog)
+    $jogsock_msg.p(arg0, arg0.nomefim, arg0.perso.pnivel, arg0.perso.var.z_moedas)
+    $jogsock_msg.msg("Entrou: $p, $c", config:entrou_msgadm, config:entrou_msgjog)
   fimse
   ret 1
 
@@ -805,12 +799,12 @@ herda comando_comum
 func passo
   arg0.passo = este
   se !arg1
-    arg0.msg("Digite a senha atual do personagem ou z para desistir")
+    $jogsock_msg.msgsock(arg0, perso_cfg:ini_senha_atual1, arg0.nome)
   senao arg1 == "z"
     arg0.passo = ""
     arg0.msg("Cancelado")
   senao arg1 != arg0.perso.senha
-    arg0.msg("Senha incorreta; cancelado")
+    $jogsock_msg.msgsock(arg0, perso_cfg:ini_senha_atual2, arg0.nome)
     arg0.passo = ""
   senao
     $ini_mudasenha2.passo(arg0)
@@ -825,16 +819,16 @@ herda comando_comum
 func passo
   arg0.passo = este
   se !arg1
-    arg0.msg("Digite a nova senha do personagem ou Z para desistir")
+    $jogsock_msg.msgsock(arg0, perso_cfg:ini_senha_mudar1, arg0.nome)
   senao arg1 == "z"
     arg0.passo = ""
     arg0.msg("Cancelado")
   senao inttotal(arg1) < 5 || inttotal(arg1) > 16
-    arg0.msg("A senha deve ter de 5 a 16 caracteres, digite outra")
+    $jogsock_msg.msgsock(arg0, perso_cfg:ini_senha_inv1, arg0.nome)
   senao intsenha(arg1) == 3
-    arg0.msg("Senha deve ter letras e números, digite outra")
+    $jogsock_msg.msgsock(arg0, perso_cfg:ini_senha_inv2, arg0.nome)
   senao intsenha(arg1)
-    arg0.msg("Senha inválida, digite outras")
+    $jogsock_msg.msgsock(arg0, perso_cfg:ini_senha_inv3, arg0.nome)
   senao
     arg0.tpasso = arg1
     $ini_mudasenha3.passo(arg0)
@@ -849,23 +843,32 @@ herda comando_comum
 func passo
   arg0.passo = este
   se !arg1
-    arg0.msg("Digite novamente a senha")
+    $jogsock_msg.msgsock(arg0, perso_cfg:ini_senha_repetir1, arg0.nome)
   senao arg0.tpasso != arg1
-    arg0.msg("As senhas são diferentes; cancelado")
+    $jogsock_msg.msgsock(arg0, perso_cfg:ini_senha_diferente2, arg0.nome)
     arg0.passo = ""
   senao
     arg0.perso.senha = txtmin(arg1)
-    arg0.msg(arg0.perso.salvar ? "Jogo salvo" : "Não foi possível salvar")
+    se arg0.perso.salvar
+      $jogsock_msg.msgsock(arg0, perso_cfg:ini_salvar_sim, arg0.nome)
+    senao
+      $jogsock_msg.msgsock(arg0, perso_cfg:ini_salvar_nao, arg0.nome)
+    fimse
     arg0.passo = ""
   fimse
   ret 1
 
 
-classe jogsock_chegou
-# Mensagens de jogador entrando no MUD ou saindo
-# Modo de usar:
-# $jogsock_chegou.p(objeto jogsock, texto conexão, texto nível, texto moedas)
-# $jogsock_chegou.msg(mensagem log, mensagem admin, mensagem jogadores)
+classe jogsock_msg
+# Mensagens de jogador entrando no MUD ou saindo:
+# $jogsock_msg.p(objeto jogsock, texto conexão, texto nível, texto moedas)
+# $jogsock_msg.msg(mensagem log, mensagem admin, mensagem jogadores)
+#
+# Mensagem de jogsock:
+# $jogsock_msg.msgsock(objeto jogsock, mensagem, texto de $m)
+#
+# Obter texto da mensagem de jogsock (retorna o texto:
+# $jogsock_msg.txtsock(objeto jogsock, mensagem, texto de $m)
 #
 const iniclasse = !$[arg0] && criar(arg0)
 txt100 m_p # Personagem
@@ -874,11 +877,13 @@ txt10 m_n # Nível do personagem
 txt30 m_m # Quantidade de moedas
 const m_@ = "$"
 ref obj # Personagem
+txt100 s_m # Texto de msgsock()
+const s_@ = "$"
 
 func p # Preenche os dados do personagem
   obj = arg0, m_p = arg0.nome, m_c = arg1, m_n = arg2, m_m = arg3
 
-func msg # Envia mensagem
+func msg # Envia mensagem de entrando ou saindo
 # arg0 = mensagem para o log
 # arg1 = mensagem para administradores
 # arg2 = mensagem para jogadores
@@ -896,6 +901,14 @@ func msg # Envia mensagem
       item.obj.msg(jog)
     fimse
   efim
+
+func msgsock # Envia mensagem de jogsock
+  s_m = arg2
+  arg0.msg(vartroca(txttroca(arg1, "$$", "$@"), "$", "s_"))
+
+func txtsock # Envia mensagem de jogsock
+  s_m = arg2
+  ret vartroca(txttroca(arg1, "$$", "$@"), "$", "s_")
 
 
 classe jogsock_retorna
