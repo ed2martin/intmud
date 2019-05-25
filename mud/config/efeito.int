@@ -87,13 +87,12 @@ func cmd_escr
   casose "cmd_chat"
     ret
   casofim
-  arg0.msg("Você está congelad" + (arg0.msexo ? "o." : "a."))
+  $mens.mp("Você está congelad$s.", arg0)
   ret 1
 
 func cmd_atacar
   se arg0 == dono
-    $mens.p(arg0)
-    $mens.msginv("$P está congelad$s.", arg0)
+    $mens.mp("$P está congelad$s.", arg0)
     ret 1
   fimse
 

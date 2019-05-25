@@ -25,37 +25,47 @@ func escr
 # Dar animal a outro personagem
   se txt1(arg1) == intpos(arg1) && int(arg1) && intsub(arg1) <= 2 && config:animal1 >= arg1
     refvar r = arg0.animalnum(arg1)
-    ret !r, arg0.msg("Você não possui " + arg1 + ".")
-    ret r.p_soltar, arg0.msg("Não é possível dar esse animal.")
-    ret !txt2(arg1), arg0.msg("Dar " + arg1 + " para quem?")
+    se !r
+      $mens.mens = arg1
+      ret $mens.mp("Você não possui $m.", arg0)
+    senao r.p_soltar
+      ret $mens.mp("Não é possível dar esse animal.", arg0)
+    senao !txt2(arg1)
+      $mens.mens = arg1
+      ret $mens.mp("Dar $m para quem?", arg0)
+    fimse
     listaobj l
     nomeobj n
     n.ini(txt2(arg1), 1)
     epara l.addfim(arg0.dono.dentro2), l, l.ini.remove
-      continuar !l.objini.visivel(arg0) || !n.nome(l.objini.ident)
-      ret daranimal(arg0, l.objini, r)
+      ref ll = l.objini
+      continuar !ll.visivel(arg0) || !n.nome(ll.var.z_ident ?? ll.ident)
+      ret daranimal(arg0, ll, r)
     efim
-    ret arg0.msg("Você não vê " + txt2(arg1) + ".")
+    $mens.mens = txt2(arg1)
+    ret $mens.mp("Você não vê $m.", arg0)
   fimse
 # Obtém para quem dar
   misc:separa(arg1) # Separa nome do objeto do nome do alvo
   ret !misc:sep2, arg0.msg("Dar itens para quem?")
   sala = misc:persodono(arg0, misc:sep2) # Procura o alvo para o personagem arg0
   se !sala
-    ret arg0.msg("Você não vê " + misc:sep2 + ".")
+    $mens.mens = misc:sep2
+    ret $mens.mp("Você não vê $m.", arg0)
   senao !sala.p_recebe(arg0)
-    ret arg0.msg("Não é possível dar nada para " + sala.descnome + ".")
+    ret $mens.mp("Não é possível dar nada para $a.", arg0, sala)
   senao sala == arg0
-    ret arg0.msg("Dar para você mesm" + (arg0.msexo ? "o?" : "a?"))
+    ret $mens.mp("Dar para você mesm$s?", arg0)
   fimse
   nomeobj n # Para reconhecer os itens
   n.ini(misc:sep1, misc:objmax, misc:tudo)
 # Dá os itens
   achou = 0, erro = "Você não vê isso."
   epara l.addfim(arg0.dentro1), l, l.ini.remove
-    continuar !l.objini.visivel(arg0) || !n.nome(l.objini.ident, l.objini.objtot)
+    ref ll = l.objini
+    continuar !ll.visivel(arg0) || !n.nome(ll.var.z_ident ?? ll.ident, ll.objtot)
     total = n # Quantidade de itens
-    darobj(arg0, sala, l.objini)
+    darobj(arg0, sala, ll)
     sair achou >= 10
   efim
   ret achou, nulo
@@ -70,11 +80,11 @@ func escr
 func daranimal
 # arg0=quem está dando, arg1=destino, arg2=animal
   se arg1 == arg0
-    ret arg0.msg("Dar para você mesm" + (arg0.msexo ? "o?" : "a?"))
+    ret $mens.mp("Dar para você mesm$s?", arg0)
   senao !arg1.jog
-    ret arg0.msg(txtcopiamai(arg1.descnome, "A") + " não é jogador.")
+    ret $mens.mp("$A não é jogador.", arg0, arg1)
   senao !arg1.animalmais
-    ret arg0.msg(txtcopiamai(arg1.descnome, "A") + " não tem espaço para receber animal.")
+    ret $mens.mp("$A não tem espaço para receber animal.", arg0, arg1)
   fimse
   listaobj e
   epara e.addfim(arg0.evento), e, e.ini.remove
@@ -94,7 +104,7 @@ func daranimal
   arg0.persoesc == arg2 && (arg0.persoesc = arg0)
   arg0.escolhebat # Escolhe um animal em condições de batalhar
   $mens.p(arg0, arg1)
-  $mens.mvis1("$P dá " + arg2.descnome + " para $a.")
+  $mens.mvis1("$P dá " + arg2.descnome2 + " para $a.")
   epara e.addfim(arg0.evento), e, e.ini.remove
     e.objini.cmd_deunim(arg0, arg1, arg2, arg0)
   efim
@@ -110,10 +120,10 @@ func darobj
 # Faz achou+=1 se soltou o item
 # Coloca mensagem de erro na variável erro se não conseguiu pegar
   se arg2.cabedentro(arg1) < total
-    erro = txtcopiamai(arg1.descnome, "A") + " não consegue carregar tanta coisa."
+    erro = txtcopiamai(arg1.descnome2, "A") + " não consegue carregar tanta coisa."
     ret
   senao arg1.pesoden - arg1.pesoveste + arg2.pesotot * total / arg2.objtot > arg1.pesomax
-    erro = "É pesado demais para " + txtcopiamai(arg1.descnome, "A") + "."
+    erro = "É pesado demais para " + txtcopiamai(arg1.descnome2, "A") + "."
     ret
   fimse
   achou++

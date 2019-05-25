@@ -72,8 +72,9 @@ func escr
       int8 achou # Se carregou com algum item
       n.ini(arg1, misc:objmax, misc:tudo)
       epara l.addfim(arg0.dentro1), l, l.ini.remove
-        continuar !l.objini.visivel(arg0) || !n.nome(l.objini.ident, l.objini.objtot)
-        refvar e = carregar(arg0, arma, l.objini, int(n))
+        ref ll = l.objini
+        continuar !ll.visivel(arg0) || !n.nome(ll.var.z_ident ?? ll.ident, ll.objtot)
+        refvar e = carregar(arg0, arma, ll, int(n))
         e ? (erro = e) : achou++
         sair achou >= 10
       efim

@@ -139,12 +139,12 @@ func info # Usado por escr
   listaitem i
   arg0.dentro1 && arg1.addfim("Dentro1:")
   epara i = arg0.dentro1.ini, i, i.depois
-    refvar titulo = i.obj.s_sala ? i.obj.s_titulo : i.obj.descnome
+    refvar titulo = i.obj.s_sala ? i.obj.s_titulo : i.obj.descnome2
     arg1.addfim(txt(i.obj) + "  " + i.obj.objtot + "x  " + titulo)
   efim
   arg0.dentro2 && arg1.addfim("Dentro2:")
   epara i = arg0.dentro2.ini, i, i.depois
-    refvar titulo = i.obj.s_sala ? i.obj.s_titulo : i.obj.descnome
+    refvar titulo = i.obj.s_sala ? i.obj.s_titulo : i.obj.descnome2
     arg1.addfim(txt(i.obj) + "  " + i.obj.objtot + "x  " + titulo)
   efim
   arg1.linhas <= 1 && arg1.addfim("Nenhum objeto")

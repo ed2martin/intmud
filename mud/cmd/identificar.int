@@ -35,9 +35,7 @@ func escrhab
 # arg2 = item usado, ou nulo se não usou nenhum item
   ret !arg1, arg0.msg("Identificar o quê?")
   ret !checahab1(arg0.persobat, arg2), nulo
-  nomeobj n
   listaobj l
-  n.ini(arg1, 1)
   l.addfim(arg0.dono.dentro1, arg0.dono.dentro2, arg0.dentro1)
   $mens.mens = arg1
   ref r = misc:itemlista(arg0, arg1, l)
@@ -84,18 +82,18 @@ func txtident # Adiciona informações de item ou personagem em um textotxt
   txt100 lin
 # Identificar personagem
   se arg1.perso
-    lin = txtcopiamai(arg1.persobat.descnome, "A")
+    lin = txtcopiamai(arg1.persobat.descnome2, "A")
     se arg1 != arg1.persobat
-      lin += " de " + arg1.descnome, arg1 = arg1.persobat
+      lin += " de " + arg1.descnome2, arg1 = arg1.persobat
     fimse
     lin += ", nível " + arg1.pnivel
     arg1.prenascer && (lin += ", R" + arg1.prenascer)
     txt100 nome
-    nome = (!arg1.msexo ? $t_[arg1.tipo1].nome2) ?? $t_[arg1.tipo1].nome ?? arg1.tipo1
+    nome = (!arg1.msexo2 ? $t_[arg1.tipo1].nome2) ?? $t_[arg1.tipo1].nome ?? arg1.tipo1
     nome && (lin += ", " + nome)
-    nome = (!arg1.msexo ? $t_[arg1.tipo2].nome2) ?? $t_[arg1.tipo2].nome ?? arg1.tipo2
+    nome = (!arg1.msexo2 ? $t_[arg1.tipo2].nome2) ?? $t_[arg1.tipo2].nome ?? arg1.tipo2
     nome && (lin += ", " + nome)
-    nome = (!arg1.msexo ? $t_[arg1.tipo3].nome2) ?? $t_[arg1.tipo3].nome ?? arg1.tipo3
+    nome = (!arg1.msexo2 ? $t_[arg1.tipo3].nome2) ?? $t_[arg1.tipo3].nome ?? arg1.tipo3
     nome && (lin += ", " + nome)
     arg2.addfim(lin)
     refvar m = txt(arg1.descident(arg0))

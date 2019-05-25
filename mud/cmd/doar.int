@@ -36,8 +36,9 @@ func escr
   $mens.mens = arg1
   erro = $mens.txt(m_naover, arg0)
   epara l.addfim(arg0.dentro1), l, l.ini.remove
-    continuar !l.objini.visivel(arg0) || !n.nome(l.objini.ident, l.objini.objtot)
-    doarobj(arg0, l.objini, int(n))
+    ref ll = l.objini
+    continuar !ll.visivel(arg0) || !n.nome(ll.var.z_ident ?? ll.ident, ll.objtot)
+    doarobj(arg0, ll, int(n))
     sair achou >= 10
   efim
 # Mensagem se não doou nada

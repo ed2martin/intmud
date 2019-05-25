@@ -48,14 +48,14 @@ func negociar_msg # Checa se PNJ pode negociar e obtém o motivo
 # Retorna: "" se negocia, "\b" se apenas não negocia ou mensagem com o motivo
   ret arg0.atkenv || arg1.atkenv || !arg1.visivel(arg0), "\b"
   se !arg0.visivel(arg1)
-    ret txtcopiamai(arg1.descnome, "A") + ": Não negocio com quem não posso ver."
+    ret txtcopiamai(arg1.descnome2, "A") + ": Não negocio com quem não posso ver."
   senao !arg1.lojanao # negocia com todos
   senao arg0.tipo1 && txtproclin(txte(arg1.lojanao), txte(arg0.tipo1)) >= 0
-    ret txtcopiamai(arg1.descnome, "A") + ": Não negocio com " + arg0.tipo1
+    ret txtcopiamai(arg1.descnome2, "A") + ": Não negocio com " + arg0.tipo1
   senao arg0.tipo2 && txtproclin(txte(arg1.lojanao), txte(arg0.tipo2)) >= 0
-    ret txtcopiamai(arg1.descnome, "A") + ": Não negocio com " + arg0.tipo2
+    ret txtcopiamai(arg1.descnome2, "A") + ": Não negocio com " + arg0.tipo2
   senao arg0.tipo3 && txtproclin(txte(arg1.lojanao), txte(arg0.tipo3)) >= 0
-    ret txtcopiamai(arg1.descnome, "A") + ": Não negocio com " + arg0.tipo3
+    ret txtcopiamai(arg1.descnome2, "A") + ": Não negocio com " + arg0.tipo3
   fimse
   se !arg1.lojasim # negocia com todos
   senao arg0.tipo1 && txtproclin(txte(arg1.lojasim), txte(arg0.tipo1)) >= 0
@@ -65,7 +65,7 @@ func negociar_msg # Checa se PNJ pode negociar e obtém o motivo
     txt100 lin = arg0.tipo1 ? " " + arg0.tipo1
     lin += (arg0.tipo2 ? " " + arg0.tipo2 : "") + (arg0.tipo3 ? " " + arg0.tipo3)
     !lin && (lin = " você")
-    ret txtcopiamai(arg1.descnome, "A") + ": Não negocio com" + lin
+    ret txtcopiamai(arg1.descnome2, "A") + ": Não negocio com" + lin
   fimse
   refvar abre = int(arg1.lojaini) - misc:hora
   refvar fecha = int(arg1.lojafim) - misc:hora

@@ -307,7 +307,7 @@ const i_fechadura = "algema1"
 func cmd_mover
 # Nos tornozelos, prejudica os pontos de movimento
   se vestpos == 18 && arg0.pmove < arg0.pmovemax * 0.3
-    arg0.msg("Você está cansad" + (arg0.msexo ? "o" : "a") + " demais.")
+    $mens.mp("Você está cansad$s demais.", arg0)
     ret 1
   fimse
 
@@ -325,7 +325,7 @@ func cmd_remover
     epara i = arg0.dentro1.ini, i, i.depois
       ret i_fechadura == i.obj.i_chave && i.obj.visivel(arg0), nulo
     efim
-    arg0.msg("Você não possui a chave de " + descnome + ".")
+    $mens.mp("Você não possui a chave de $o.", arg0, nulo, este)
     ret 1
   fimse
 
@@ -1132,7 +1132,7 @@ func entrou20
 func cmd_darobj # Alguém quer dar algum item
 # arg0=quem quer dar, arg1=quem vai receber, arg2=objeto, arg3=quantidade
   se arg2.nome != "pedra"
-    arg0.msg("Jardineiro não aceita " + arg2.descnome + ".")
+    $mens.mp("Jardineiro não aceita $o.", arg0, nulo, arg2)
     ret 1 # Para não receber o item
   fimse
 
@@ -1633,7 +1633,7 @@ const msexo = 1 # Sexo Msg: 1 Masculino
 
 func descpadr
   se iseguir # Se está seguindo alguém...
-    ret "Um ajudante está aqui, à serviço de " + iseguir.objlista.descnome + "."
+    ret "Um ajudante está aqui, à serviço de " + iseguir.objlista.descnome2 + "."
   senao
     ret "Um ajudante está aqui."
   fimse
@@ -1734,7 +1734,7 @@ func entrou10
 func cmd_darobj # Alguém quer dar algum item
 # arg0=quem quer dar, arg1=quem vai receber, arg2=item, arg3=quantidade
   se arg2.nome != "palito de fósforo"
-    arg0.msg("Úrsula não aceita " + arg2.descnome + ".")
+    $mens.mp("Úrsula não aceita $o.", arg0, nulo, arg2)
     ret 1 # Para não receber o item
   senao arg3 + arg0.var.j_ursula_ > 3
     refvar total = 3 - arg0.var.j_ursula_
@@ -2434,7 +2434,7 @@ func cmd_escr # Escreveu algo
       arg0.msg("Nível máximo é 80")
       arg0.pnivel = 80
     senao
-      arg0.msg(arg0.descnome + " é nível " + arg0.pnivel)
+      arg0.msg(arg0.descnome2 + " é nível " + arg0.pnivel)
     fimse
     ret 1
   casose "dd"
@@ -2443,7 +2443,7 @@ func cmd_escr # Escreveu algo
   casose "d"
     arg0.pnivel--
     arg0.recalc = 1
-    arg0.msg(arg0.descnome + " é nível " + arg0.pnivel)
+    arg0.msg(arg0.descnome2 + " é nível " + arg0.pnivel)
     ret 1
   casofim
 

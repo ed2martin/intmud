@@ -132,7 +132,7 @@ func p_tempoatu_exec # Atualiza variáveis de tempos em tempos
   fimse
 # Acerta fome, sede e embriaguez
   se p_bebida == 1 || p_bebida == 2
-    msg(msexo ? "Você está sóbrio." : "Você está sóbria.")
+    msg(msexo2 ? "Você está sóbrio." : "Você está sóbria.")
   fimse
   se jogconfig.20 # Imortal
     p_sede = intmax($miscfome.semfome, p_sede - 1)

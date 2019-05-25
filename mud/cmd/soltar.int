@@ -82,15 +82,16 @@ func escr
   n.ini(misc:sep1, misc:objmax, misc:tudo)
   achou = 0, erro = "Você não vê isso."
   epara l.addfim(arg0.dentro1), l, l.ini.remove
-    continuar !l.objini.visivel(arg0) || !n.nome(l.objini.ident, l.objini.objtot)
+    refvar ll = l.objini
+    continuar !ll.visivel(arg0) || !n.nome(ll.var.z_ident ?? ll.ident, ll.objtot)
     total = n # Quantidade de itens
-    soltarobj(arg0, item, sala, l.objini)
+    soltarobj(arg0, item, sala, ll)
     sair achou >= 10
   efim
   ret achou, nulo
 # Solta moedas
   se arg0.var.z_moedas_ && sala.visivel(arg0) && n.nome("moedas", arg0.var.z_moedas_)
-    ret sala.i_itens, arg0.msg("Não é possível colocar moedas em " + sala.descnome + ".")
+    ret sala.i_itens, $mens.mp("Não é possível colocar moedas em $o.", arg0, nulo, sala)
     total = n
     ret soltarmoedas(arg0, sala)
   fimse
@@ -134,21 +135,21 @@ func soltarobj
 # Faz achou++ se soltou o item
 # Coloca mensagem de erro na variável erro se não conseguiu pegar
   se arg3 == arg1 || arg3 == arg2 # Soltar o objeto dentro dele mesmo
-    se arg1.msexo
-      erro = "Não é possível colocar " + arg1.descnome + " dentro dele mesmo."
+    se arg1.msexo2
+      erro = "Não é possível colocar " + arg1.descnome2 + " dentro dele mesmo."
     senao
-      erro = "Não é possível colocar " + arg1.descnome + " dentro dela mesma."
+      erro = "Não é possível colocar " + arg1.descnome2 + " dentro dela mesma."
     fimse
     ret
   senao arg2.i_itens && txtproclin(arg1.i_itens, txt(arg3, 2)) < 0
-    erro = "Não é possível colocar " + arg3.descnome + " em " + arg1.descnome + "."
+    erro = "Não é possível colocar " + arg3.descnome2 + " em " + arg1.descnome2 + "."
     ret
   senao arg3.cabedentro(arg2) < total
     se !arg1.item
       erro = "Não consegue soltar tanta coisa aqui."
       ret
     fimse
-    erro = arg1.descnome + "."
+    erro = arg1.descnome2 + "."
     casovar txtmin(txt1(erro))
     casose "o"
     casose "a"

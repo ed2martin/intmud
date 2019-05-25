@@ -34,11 +34,11 @@ func escr1 # Consultar a lista de taxas
         sair lin
       efim
       se lin
-        t.addfim(txtcopiamai(p.descnome, "A") + ": " + lin)
+        t.addfim(txtcopiamai(p.descnome2, "A") + ": " + lin)
         continuar
       fimse
     fimse
-    t.addfim("\b\c6" + txtcopiamai(p.descnome, "A") + " informa:\b")
+    t.addfim("\b\c6" + txtcopiamai(p.descnome2, "A") + " informa:\b")
     lucro = (100 + p.taxavenda) / 100
 # Informa casas
     se 1
@@ -119,7 +119,7 @@ func escr2 # Consultar um item
         continuar txt(++linha) != arg1 && !n.nome(casa.ident, 1)
         valor = hora.numdias - casa.diataxa
         se valor < 0
-          ret arg0.msg(txtcopiamai(p.descnome, "A") + " informa que a taxa já está paga.")
+          ret $mens.mp("$A informa que a taxa já está paga.", arg0, p)
         senao config:casatempotaxa
           refvar total = intdiv(valor / config:casatempotaxa) + 1
           valor = total * lucro * casa.valor * config:casataxa / 100
@@ -135,7 +135,7 @@ func escr2 # Consultar um item
           casa.tempotaxa = 1
           casa.objmudou = 1
         fimse
-        ret arg0.msg(txtcopiamai(p.descnome, "A") + " informa que a taxa foi paga.")
+        ret $mens.mp("$A informa que a taxa foi paga.", arg0, p)
       efim
       !mudou && t.addfim("Você não deve nada.")
     fimse

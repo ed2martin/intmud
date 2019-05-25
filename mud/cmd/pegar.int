@@ -40,10 +40,9 @@ func escr
     senao item.dono.s_sala && item.dono.var.ini("u_") && !item.dono.var.u_[arg0.nome]_
       ret arg0.msg("Melhor não pegar nada daqui.")
     senao !item.i_aberto && !sala
-      ret arg0.msg(txtcopiamai(item.descnome, "A") + " não é container.")
+      ret $mens.mp("$O não é container.", arg0, nulo, item)
     senao item.i_aberto > 2 && !arg0.j_imortal
-      ret arg0.msg(txtcopiamai(item.descnome, "A") + " está fechad" + (item.msexo ? "o." : \
-"a."))
+      ret $mens.mp("$O está fechad$u.", arg0, nulo, item)
     fimse
     !sala && (sala = item)
     mens = " $d $a."

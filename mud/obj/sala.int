@@ -252,7 +252,7 @@ func descsala # Retorna descrição da sala
   senao 1 & arg0.bitver
     t.addfim("Está escuro...")
   senao
-    t.addfim("Você está ceg" + (arg0.msexo ? "o" : "a") + ".")
+    t.addfim("Você está ceg" + (arg0.msexo2 ? "o" : "a") + ".")
   fimse
   se arg1 & 4
     textotxt t2
@@ -263,8 +263,9 @@ func descsala # Retorna descrição da sala
     enquanto l
       r = l.fim.obj, l.fim.remove
       continuar !r.visivel(arg0)
-      refvar n = txtsublin(r.atribs.ini.textolin(2), 1)
-      t2.addfim(txt(r.objtot) + r.atribs.ini.texto + r.descpos(arg0) + n)
+      refvar a1 = r.var.z_descpos ?? r.descpos(arg0)
+      refvar a2 = txtsublin(r.atribs.ini.textolin(2), 1)
+      t2.addfim(txt(r.objtot) + r.atribs.ini.texto + a1 + a2)
     efim
     t2.juntalin("(", "x)")
 # t.fim.add(t2.ini, t2.linhas)

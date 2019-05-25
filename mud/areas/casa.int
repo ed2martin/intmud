@@ -620,7 +620,7 @@ func cmd_morreu
   se arg0 != este # Se quem morreu não é esse personagem
     $mens.p(este, arg0)
     $mens.mvis1("O corpo de $A começa a se mexer com um aspecto cadavérico.")
-    nomealvo = " " + arg0.descnome
+    nomealvo = " " + arg0.descnome2
     pvida = pvidamax
   fimse
 
@@ -674,12 +674,12 @@ func cmd_darobj # Alguém deu algum item
 # t.msg(">" + arg0 + "/" + arg1 + "/" + arg2 + "\n")
   casovar arg2
   casose "i_casa008"
-    arg0.msg("Ivone: Essa não é a minha bolsa..")
+    arg0.msg("Ivone: Essa não é a minha bolsa.")
     ret 1 # Para não receber o item
   casose "i_casa009"
     ret
   casose
-    arg0.msg("Ivone não aceita " + arg2.descnome + ".")
+    $mens.mp("Ivone não aceita $o.", arg0, nulo, arg2)
     ret 1 # Para não receber o item
   casofim
 
@@ -818,7 +818,7 @@ func ver_batalha
   listaitem i
   textotxt t
   epara i = $s_casa005.dentro2.ini, i, i.depois
-    i.obj.jog && t.addfim(i.obj.descnome)
+    i.obj.jog && t.addfim(i.obj.descnome2)
   efim
   arg0.msg("Jogo Batalha")
   casovar t.linhas

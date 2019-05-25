@@ -53,7 +53,7 @@ func escr
 # Checa se possui o nível necessário
       se nivel < int(r.aulaini)
         lin = "Você não possui o nível necessário."
-        ret arg0.msg(txtcopiamai(p.descnome, "A") + ": " + lin)
+        ret arg0.msg(txtcopiamai(p.descnome2, "A") + ": " + lin)
       senao nivel >= int(r.aulafim)
       senao
         nivel = intdiv(1 + (nivel - r.aulaini) * 7 / (r.aulafim - r.aulaini))

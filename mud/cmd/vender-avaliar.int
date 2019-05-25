@@ -63,7 +63,7 @@ func escr
         senao
           lin = "Eu pagaria " + valor + " moedas pela sua casa."
         fimse
-        ret arg0.msg(txtcopiamai(p.descnome, "A") + ": " + lin)
+        ret arg0.msg(txtcopiamai(p.descnome2, "A") + ": " + lin)
       fimse
     efim
     ret arg0.msg("Ninguém quer comprar casa.")
@@ -72,8 +72,9 @@ func escr
   nomeobj n # Para reconhecer os itens
   n.ini(arg1, 1000000)
   epara l.addfim(arg0.dentro1), l, l.ini.remove
-    continuar !l.objini.visivel(arg0) || !n.nome(l.objini.ident, l.objini.objtot)
-    ret exec(arg0, l.objini, int(n))
+    refvar ll = l.objini
+    continuar !ll.visivel(arg0) || !n.nome(ll.var.z_ident ?? ll.ident, ll.objtot)
+    ret exec(arg0, ll, int(n))
   efim
 # Não encontrou o item
   arg0.msg("Você não vê isso.")
@@ -93,7 +94,7 @@ func exec # Avalia ou vende um item
     continuar lin == "\b"
     ret lin, arg0.msg(lin)
     se lin = evento(arg0, p) # Nota: atribui mensagem a lin e checa se lin!=""
-      arg0.msg(txtcopiamai(p.descnome, "A") + ": " + lin)
+      arg0.msg(txtcopiamai(p.descnome2, "A") + ": " + lin)
       continuar
     fimse
     int32 valor # Valor do item
@@ -124,12 +125,12 @@ func exec # Avalia ou vende um item
       senao
         lin = "Eu pagaria " + valor + " moedas por isso."
       fimse
-      arg0.msg(txtcopiamai(p.descnome, "A") + ": " + lin)
+      arg0.msg(txtcopiamai(p.descnome2, "A") + ": " + lin)
       mudou = 1
     fimse
   efim
 # Ninguém quer comprar
-  !mudou && arg0.msg("Ninguém quer comprar " + arg1.descnome + ".")
+  !mudou && $mens.mp("Ninguém quer comprar $o.", arg0, nulo, arg1)
 
 func evento # Gera evento para arg0 e arg1
   listaobj l

@@ -108,18 +108,18 @@ func acertapos # Acerta posição
 
 func estadopos # Retorna texto que contém o estado atual do personagem
   ret !pvidamax, "perfeitamente saudável"
-  ret !pvidaok, "está desmaiad" + (msexo ? "o" : "a")
+  ret !pvidaok, "está desmaiad" + (msexo2 ? "o" : "a")
   casovar intpos(intdiv(pvida * 6 / pvidamax))
   casose "0"
     ret "está à beira da morte"
   casose "1"
     ret "está sangrando bastante"
   casose "2"
-    ret "está muito machucad" + (msexo ? "o" : "a")
+    ret "está muito machucad" + (msexo2 ? "o" : "a")
   casose "3"
-    ret "está bastante machucad" + (msexo ? "o" : "a")
+    ret "está bastante machucad" + (msexo2 ? "o" : "a")
   casose "4"
-    ret "está um pouco machucad" + (msexo ? "o" : "a")
+    ret "está um pouco machucad" + (msexo2 ? "o" : "a")
   casose "5"
     ret "possui algumas escoriações"
   casose
@@ -139,7 +139,7 @@ func recalc_exec # Ajusta variáveis, principalmente batalha
       ++num >= 5 && (expatual = 0)
     efim
     se num
-      $mens.o_1 = txtcopiamai(descnome, "A") + (este != contr ? " de " + contr.descnome)
+      $mens.o_1 = txtcopiamai(descnome2, "A") + (este != contr ? " de " + contr.descnome2)
       $mens.mens = pnivel
       $mens.p(este)
       $mens.mtodos2(config:nivelmsg1, config:nivelmsg2)
@@ -374,17 +374,10 @@ func ganhaexp # Personagem ganha experiência
   ret !exp1, nulo
   expatual += exp1
 # Mensagem de experiência ganha
-  se !arg1
-    refvar n1 = este == contr ? "Você" : txtcopiamai(descnome, "A")
-    se exp1 > 1
-      contr.msg(n1 + " recebe " + exp1 + " pontos de experiência.")
-    senao exp1 < -1
-      contr.msg(n1 + " perde " + -exp1 + " pontos de experiência.")
-    senao exp1 == 1
-      contr.msg(n1 + " recebe 1 ponto de experiência.")
-    senao exp1 == -1
-      contr.msg(n1 + " perde 1 ponto de experiência.")
-    fimse
+  se !arg1 && exp1
+    txt20 m1 = (exp1 > 0 ? "add" : "sub") + (intabs(exp1) == 1 ? "1_" : "2_")
+    $mens.mens = intabs(exp1)
+    $mens.mp(perso_cfg:exp_[m1][este == contr ? "perso" : "outro"], contr, este)
   fimse
 # Subir de nível
   refvar nmax = pnivelmax
@@ -487,11 +480,11 @@ func morreu # Procedimentos quando morre
     se !arg0.perso
       $misclog.mortes(nome + " N" + pnivel)
     senao arg0.contr.jog
-      refvar lin = nome + " N" + pnivel + " por jogador " + arg0.descnome + " N" + arg0.pnivel
-      $misclog.mortes(arg0 == arg0.contr ? lin : lin + " de " + arg0.contr.descnome)
+      refvar lin = nome + " N" + pnivel + " por jogador " + arg0.descnome2 + " N" + arg0.pnivel
+      $misclog.mortes(arg0 == arg0.contr ? lin : lin + " de " + arg0.contr.descnome2)
     senao
-      refvar lin = nome + " N" + pnivel + " por " + arg0.descnome + " N" + arg0.pnivel
-      $misclog.mortes(arg0 == arg0.contr ? lin : lin + " de " + arg0.contr.descnome)
+      refvar lin = nome + " N" + pnivel + " por " + arg0.descnome2 + " N" + arg0.pnivel
+      $misclog.mortes(arg0 == arg0.contr ? lin : lin + " de " + arg0.contr.descnome2)
     fimse
     pvida = intpos(pvidamax / 2 - 10) + 2
     pmana = pmanamax / 2
@@ -861,7 +854,7 @@ func animal2nome # Retorna o animal a partir do nome
   n.ini(arg0, 1)
   epara i = lseguir.ini, i, i.depois
     refvar r = i.obj
-    ret r.tseguir == 3 && n.nome(r.ident, r.objtot), ref(r)
+    ret r.tseguir == 3 && n.nome(r.var.z_ident ?? r.ident, r.objtot), ref(r)
   efim
 
 func p_proc_animal # Escolhe um animal em condições de batalhar

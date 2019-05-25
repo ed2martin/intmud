@@ -21,9 +21,9 @@ func escr
   epara item.ini("pn "), txt1(item.txt) == "pn", item.depois
     continuar item.obj.jogconfig.17 && !ver
     refvar obj = item.obj
-    refvar v1 = (!obj.msexo ? $t_[obj.tipo1].nomequem2) ?? $t_[obj.tipo1].nomequem
-    refvar v2 = (!obj.msexo ? $t_[obj.tipo2].nomequem2) ?? $t_[obj.tipo2].nomequem
-    refvar v3 = (!obj.msexo ? $t_[obj.tipo3].nomequem2) ?? $t_[obj.tipo3].nomequem
+    refvar v1 = (!obj.msexo2 ? $t_[obj.tipo1].nomequem2) ?? $t_[obj.tipo1].nomequem
+    refvar v2 = (!obj.msexo2 ? $t_[obj.tipo2].nomequem2) ?? $t_[obj.tipo2].nomequem
+    refvar v3 = (!obj.msexo2 ? $t_[obj.tipo3].nomequem2) ?? $t_[obj.tipo3].nomequem
     total.[obj.jogconfig.20]++
     t1 = txt(obj.pnivel) + (obj.prenascer ? " R" + obj.prenascer)
     t1 += txtesp(7 - inttotal(t1)) + " " + obj.nome
@@ -245,7 +245,7 @@ func escr
     refvar i = item.obj
     continuar !i.visivel(arg0)
     refvar nn = txtsublin(i.atribs.ini.textolin(2), 1)
-    t.addfim(txt(i.objtot) + i.atribs.ini.texto + txtcopiamai(i.descnome, "A") + nn)
+    t.addfim(txt(i.objtot) + i.atribs.ini.texto + txtcopiamai(i.descnome2, "A") + nn)
   efim
   t.juntalin("(", "x)")
   se t
@@ -302,7 +302,7 @@ func escr
     se obj.vestpos && obj.visivel(arg0)
       nomepos = "\c2(" + misc:equip(obj.vestpos) + ")\b "
       nomepos += txtesp(23 - inttotal(nomepos)) + obj.atribs.ini.texto(1)
-      t.addfim(nomepos + txtcopiamai(obj.descnome, "A"))
+      t.addfim(nomepos + txtcopiamai(obj.descnome2, "A"))
     senao (lugar & intbith(1 + txt1(lin))) != "0"
       nomepos = "\c2(" + misc:equip(1 + txt1(lin)) + ")\b "
       se nomepos != "\c2(desconhecido)\b "
@@ -526,7 +526,7 @@ func escr
     se 1 & arg0.bitver
       arg0.msg("Está escuro...")
     senao
-      arg0.msg("Você está ceg" + (arg0.msexo ? "o" : "a") + ".")
+      $mens.mp("Você está ceg$s.", arg0)
     fimse
     ret
   fimse

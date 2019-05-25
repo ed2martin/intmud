@@ -3,7 +3,7 @@ classe misc
 # Deve ser usado como misc:variável ao invés de $misc.variável
 #
 # Versão do MUD, aparece no comando Serv
-const versao = "27/4/2018"
+const versao = "24/5/2018"
 #
 # Objetos obtidos por em misc:separa
 comum txt100 sep1 # Objeto procurado
@@ -174,10 +174,12 @@ func itemtudo # Obtém um item no personagem ou na sala
   nomeobj n
   n.ini(arg1, 1)
   epara i = arg0.dentro1.ini, i, i.depois
-    ret i.obj.visivel(arg0) && n.nome(i.obj.ident, i.obj.objtot), ref(i.obj)
+    refvar ii = i.obj
+    ret ii.visivel(arg0) && n.nome(ii.var.z_ident ?? ii.ident, ii.objtot), ref(ii)
   efim
   epara i = arg0.dono.dentro1.ini, i, i.depois
-    ret i.obj.visivel(arg0) && n.nome(i.obj.ident, i.obj.objtot), ref(i.obj)
+    refvar ii = i.obj
+    ret ii.visivel(arg0) && n.nome(ii.var.z_ident ?? ii.ident, ii.objtot), ref(ii)
   efim
 
 func itemdono # Obtém um item na sala
@@ -187,7 +189,8 @@ func itemdono # Obtém um item na sala
   nomeobj n
   n.ini(arg1, 1)
   epara i = arg0.dono.dentro1.ini, i, i.depois
-    ret i.obj.visivel(arg0) && n.nome(i.obj.ident, i.obj.objtot), ref(i.obj)
+    refvar ii = i.obj
+    ret ii.visivel(arg0) && n.nome(ii.var.z_ident ?? ii.ident, ii.objtot), ref(ii)
   efim
 
 func itemdentro # Obtém um item no personagem
@@ -197,7 +200,8 @@ func itemdentro # Obtém um item no personagem
   nomeobj n
   n.ini(arg1, 1)
   epara i = arg0.dentro1.ini, i, i.depois
-    ret i.obj.visivel(arg0) && n.nome(i.obj.ident, i.obj.objtot), ref(i.obj)
+    refvar ii = i.obj
+    ret ii.visivel(arg0) && n.nome(ii.var.z_ident ?? ii.ident, ii.objtot), ref(ii)
   efim
 
 func persodono # Obtém um personagem na sala
@@ -207,7 +211,8 @@ func persodono # Obtém um personagem na sala
   nomeobj n
   n.ini(arg1, 1)
   epara i = arg0.dono.dentro2.ini, i, i.depois
-    ret i.obj.visivel(arg0) && n.nome(i.obj.ident, i.obj.objtot), ref(i.obj)
+    refvar ii = i.obj
+    ret ii.visivel(arg0) && n.nome(ii.var.z_ident ?? ii.ident, ii.objtot), ref(ii)
   efim
 
 func persooutro # Obtém um personagem na sala que não seja o próprio personagem
@@ -218,7 +223,7 @@ func persooutro # Obtém um personagem na sala que não seja o próprio personagem
   n.ini(arg1, 1)
   epara i = arg0.dono.dentro2.ini, i, i.depois
     refvar r = i.obj
-    ret r != arg0 && r.visivel(arg0) && n.nome(r.ident, r.objtot), ref(r)
+    ret r != arg0 && r.visivel(arg0) && n.nome(r.var.z_ident ?? r.ident, r.objtot), ref(r)
   efim
 
 func itemlista # Obtém item ou personagem a partir de uma listaobj
@@ -229,7 +234,8 @@ func itemlista # Obtém item ou personagem a partir de uma listaobj
   nomeobj n
   n.ini(arg1, 1)
   epara i = arg2.ini, i, i.depois
-    ret i.obj.visivel(arg0) && n.nome(i.obj.ident, i.obj.objtot), ref(i.obj)
+    refvar ii = i.obj
+    ret ii.visivel(arg0) && n.nome(ii.var.z_ident ?? ii.ident, ii.objtot), ref(ii)
   efim
 
 func persoinfo # Obtém o personagem que o jogador quer consultar a partir de um texto
@@ -251,8 +257,9 @@ func persoinfo # Obtém o personagem que o jogador quer consultar a partir de um 
   nomeobj n # Para reconhecer os itens
   n.ini(txt1(arg1), 1000000)
   epara l.addfim(arg0.dono.dentro2), l, l.ini.remove
-    continuar !l.objini.visivel(arg0) || !n.nome(l.objini.ident, l.objini.objtot)
-    r = l.objini
+    refvar ll = l.objini
+    continuar !ll.visivel(arg0) || !n.nome(ll.var.z_ident ?? ll.ident, ll.objtot)
+    r = ll
     sair
   efim
   se !r
@@ -262,7 +269,7 @@ func persoinfo # Obtém o personagem que o jogador quer consultar a partir de um 
   refvar num = txt2(arg1)
   ret num != intpos(num) || config:animal1 < num, r
   refvar rr = r.animalnum(num)
-  !rr && arg0.msg(txtcopiamai(r.descnome, "A") + " não possui animal " + num + ".")
+  !rr && arg0.msg(txtcopiamai(r.descnome2, "A") + " não possui animal " + num + ".")
   ret rr
 
 func txtmoedas # Retorna texto correspondente à quantidade de moedas

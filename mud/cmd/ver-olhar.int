@@ -83,7 +83,8 @@ func escr
   listaobj l
   l.addfim(r1.dentro1, r1.dentro2, arg0.dentro1)
   epara nulo, l, l.ini.remove
-    sair l.objini.visivel(arg0) && n.nome(l.objini.ident, l.objini.objtot)
+    refvar ll = l.objini
+    sair ll.visivel(arg0) && n.nome(ll.var.z_ident ?? ll.ident, ll.objtot)
   efim
   r1 = l.objini
   se !r1
@@ -142,7 +143,7 @@ func escr
 # continuar vest.bits & config:vestir[obj.vestpos - 1]
         nomepos = "\c2(" + misc:equip(obj.vestpos) + ")\b "
         nomepos += txtesp(20 - inttotal(nomepos))
-        t.addfim(nomepos + txtcopiamai(obj.descnome, "A"))
+        t.addfim(nomepos + txtcopiamai(obj.descnome2, "A"))
       efim
       t.linhas && m_usando && t.addini($mens.txt(m_usando, arg0))
     fimse
@@ -165,7 +166,7 @@ func escr
     listaitem item
     epara item = r2.dentro1.ini, item, item.depois
       continuar !item.obj.visivel(arg0)
-      t.addfim(txt(item.obj.objtot) + " " + txtcopiamai(item.obj.descnome, "A"))
+      t.addfim(txt(item.obj.objtot) + " " + txtcopiamai(item.obj.descnome2, "A"))
     efim
     se !t.linhas
       t.addini($mens.txt(m_vazio, arg0))
@@ -179,10 +180,14 @@ func escr
 # Nome, nível, situação atual e animal que escolheu
   txt200 t2
   se r1.perso
-    t2 += niveltipo(r1, " é", ",") + " " + r1.estadopos
+    refvar a1 = niveltipo(r1)
+    refvar a2 = r1.estadopos
+    t2 += (a1 && a2 ? " é " + a1 + ", " + a2 : a1 ? " é " + a1 : a2 ? " " + a2 : "")
     se r1.persobat && r1.persobat != r1
       t2 += ".\b\nEscolheu " + txtcopiamai(r1.persobat.nome, "A")
-      t2 += niveltipo(r1.persobat) + ", " + r1.persobat.estadopos
+      refvar b1 = niveltipo(r1.persobat)
+      refvar b2 = r1.persobat.estadopos
+      t2 += (b1 && b2 ? " é " + b1 + ", " + b2 : b1 ? " é " + b1 : b2 ? " " + b2 : "")
     fimse
   senao r1.pnivel || r1.renascer
     t2 += " é um objeto do nível " + r1.pnivel
@@ -191,18 +196,18 @@ func escr
 # Luz
   se int(r1.luztempo.abs) >= 25
     refvar tempo = int(r1.luztempo.abs / 50)
-    r1.luztempo > 0 && (t2 += r1.msexo ? ", aceso" : ", acesa")
+    r1.luztempo > 0 && (t2 += r1.msexo2 ? ", aceso" : ", acesa")
     t2 += ", produz luz por " + tempo + (tempo == 1 ? " minuto" : " minutos")
 # t2 += r1.luztempo
   fimse
 # Descrição ao olhar
   se !completo
-    ret arg0.msg("\b" + txtcopiamai(r1.descnome, "A") + t2 + ".\b " + t.remove(1000))
+    ret arg0.msg("\b" + txtcopiamai(r1.descnome2, "A") + t2 + ".\b " + t.remove(1000))
   senao
     refvar m1 = !arg0.psexo && r1.var.z_mdesc ? r1.var.z_mdesc : r1.var.z_desc
     refvar m2 = r1.descver(arg0)
     se m1 || m2 # Com descrição extra
-      t2 && t.addini(txtcopiamai(r1.descnome, "A") + t2 + ".")
+      t2 && t.addini(txtcopiamai(r1.descnome2, "A") + t2 + ".")
       m1 && t.addini(m1)
       m2 && t.addini(m2)
       t.addini("\b\c6" + nomevolume(r1, r2) + "\b")
@@ -224,31 +229,29 @@ func escr
 
 func niveltipo # Usado para informar nível, raça e classe do personagem
 # arg0 = personagem
-# arg1 = texto que deve ser colocado no começo da mensagem, se não for vazia
-# arg2 = texto que deve ser colocado no final da mensagem, se não for vazia
   txt200 t
-  arg0.jog ? (t = arg0.msexo ? " jogador" : " jogadora")
+  arg0.jog ? (t = arg0.msexo2 ? " jogador" : " jogadora")
   se v_olhartipo
     txt100 nome
-    nome = !arg0.msexo ? $t_[arg0.tipo1].nome2 ?? $t_[arg0.tipo1].nome ?? arg0.tipo1
+    nome = !arg0.msexo2 ? $t_[arg0.tipo1].nome2 ?? $t_[arg0.tipo1].nome ?? arg0.tipo1
     nome && (t += " " + nome)
-    nome = !arg0.msexo ? $t_[arg0.tipo2].nome2 ?? $t_[arg0.tipo2].nome ?? arg0.tipo2
+    nome = !arg0.msexo2 ? $t_[arg0.tipo2].nome2 ?? $t_[arg0.tipo2].nome ?? arg0.tipo2
     nome && (t += " " + nome)
-    nome = !arg0.msexo ? $t_[arg0.tipo3].nome2 ?? $t_[arg0.tipo3].nome ?? arg0.tipo3
+    nome = !arg0.msexo2 ? $t_[arg0.tipo3].nome2 ?? $t_[arg0.tipo3].nome ?? arg0.tipo3
     nome && (t += " " + nome)
   fimse
   se v_olharnivel && (arg0.pnivel || arg0.prenascer)
     t += " nível " + arg0.pnivel
     arg0.prenascer && (t += " R" + arg0.prenascer)
   fimse
-  ret t ? txt(arg1) + t + arg2 : ""
+  ret txt(t, 1)
 
 func nomevolume # Nome do item ou personagem e volume
 # arg0 = item ou personagem
 # arg1 = objeto que representa o conteúdo interno do item ou personagem
-  ret !v_olharvolume, txtcopiamai(arg0.descnome, "A")
+  ret !v_olharvolume, txtcopiamai(arg0.descnome2, "A")
   txt100 nome
-  nome = txtcopiamai(arg0.descnome, "A") + " (volume " + arg0.voltot / arg0.objtot
+  nome = txtcopiamai(arg0.descnome2, "A") + " (volume " + arg0.voltot / arg0.objtot
   se arg0.item && (arg0.i_aberto == 1 || arg0.i_aberto == 2) || arg1.s_sala
     ret nome + " dentro " + arg1.volden + "/" + arg1.volmax + ")"
   fimse

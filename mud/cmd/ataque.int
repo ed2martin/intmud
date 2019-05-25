@@ -155,7 +155,7 @@ func escrhab # Atacar alguém ou usar habilidade/magia não ofensiva em alguém
       se arg1 != intpos(arg1) || config:animal1 < arg1 || !config:animal1
         n.ini(arg1, 1)
         epara i = arg0.dono.dentro2.ini, i, i.depois
-          sair i.obj.visivel(arg0) && n.nome(i.obj.ident)
+          sair i.obj.visivel(arg0) && n.nome(i.obj.var.z_ident ?? i.obj.ident)
         efim
         alvo = i.obj.persobat
       senao arg1 == "0"

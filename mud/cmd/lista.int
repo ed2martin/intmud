@@ -26,10 +26,10 @@ func escr1 # Consultar a lista de itens
     continuar lin == "\b"
     ret lin, arg0.msg(lin)
     se lin = evento(arg0, p) # Nota: atribui mensagem a lin e checa se lin!=""
-      t.addfim(txtcopiamai(p.descnome, "A") + ": " + lin)
+      t.addfim(txtcopiamai(p.descnome2, "A") + ": " + lin)
       continuar
     fimse
-    t.addfim("\b\c6" + txtcopiamai(p.descnome, "A") + " informa:\b")
+    t.addfim("\b\c6" + txtcopiamai(p.descnome2, "A") + " informa:\b")
     lucro = (100 + p.taxavenda) / 100
 # Itens fixos - lojaitem
     se 1
@@ -55,7 +55,7 @@ func escr1 # Consultar a lista de itens
         nivel = e.objini.pnivel
         valor = lucro * e.objini.valor
         lin = "\b\c2" + linha + (linha < 10 ? "\b. " : "\b.")
-        lin += txtcopiamai(e.objini.descnome, "A")
+        lin += txtcopiamai(e.objini.descnome2, "A")
         lin += txtesp(40 - inttotal(lin + valor)) + "$" + valor
         nivel && (lin += "   N" + nivel)
         lin += "   x" + e.objini.objtot
@@ -123,8 +123,8 @@ func escr2 # Consultar um item
       r = criar(lin), apagar(r)
       valor = lucro * r.valor
       t2.limpar
-      t2.addfim("\b\c6" + txtcopiamai(p.descnome, "A") + " mostra:\b")
-      lin = txtcopiamai(r.descnome, "A") + (r.pnivel ? ", nível " + r.pnivel)
+      t2.addfim("\b\c6" + txtcopiamai(p.descnome2, "A") + " mostra:\b")
+      lin = txtcopiamai(r.descnome2, "A") + (r.pnivel ? ", nível " + r.pnivel)
       t2.addfim(lin + ", custa $" + valor + ".")
       $comando_identificar.txtident(arg0, r, t2)
       ret arg0.msg2(t2.remove(1000))
@@ -134,15 +134,16 @@ func escr2 # Consultar um item
       listaobj e
       p.lojainv && e.addfim(p.dentro1)
       epara e.addfim($s_[p.lojasala].dentro1), e, e.ini.remove
-        continuar txt(++linha) != arg1 && !n.nome(e.objini.ident, 1)
-        nivel = e.objini.pnivel
-        valor = lucro * e.objini.valor
+        ref r = e.objini
+        continuar txt(++linha) != arg1 && !n.nome(r.var.z_ident ?? r.ident, 1)
+        nivel = r.pnivel
+        valor = lucro * r.valor
         t2.limpar
-        t2.addfim("\b\c6" + txtcopiamai(p.descnome, "A") + " mostra:\b")
-        lin = txtcopiamai(e.objini.descnome, "A")
-        e.objini.pnivel && (lin += ", nível " + e.objini.pnivel)
+        t2.addfim("\b\c6" + txtcopiamai(p.descnome2, "A") + " mostra:\b")
+        lin = txtcopiamai(r.descnome2, "A")
+        r.pnivel && (lin += ", nível " + r.pnivel)
         t2.addfim(lin + ", custa $" + valor + ".")
-        $comando_identificar.txtident(arg0, e.objini, t2)
+        $comando_identificar.txtident(arg0, r, t2)
         ret arg0.msg2(t2.remove(1000))
       efim
     fimse
@@ -157,7 +158,7 @@ func escr2 # Consultar um item
         continuar r.nomejog || txt(++linha) != arg1 && !n.nome(r.ident, 1)
         valor = lucro * r.valor
         t2.limpar
-        t2.addfim("\b\c6" + txtcopiamai(p.descnome, "A") + " mostra:\b")
+        t2.addfim("\b\c6" + txtcopiamai(p.descnome2, "A") + " mostra:\b")
         t2.addfim(r.descloja + ", custa $" + valor + ".")
         r.desc && t2.addfim(r.desc)
         ret arg0.msg2(t2.remove(1000))
@@ -170,13 +171,13 @@ func escr2 # Consultar um item
       senao txt(++linha) == arg1 || n.nome("chave da casa", 1)
         valor = (100 + p.taxavenda) / 100 * config:casachave
         t2.limpar
-        t2.addfim("\b\c6" + txtcopiamai(p.descnome, "A") + " explica:\b")
+        t2.addfim("\b\c6" + txtcopiamai(p.descnome2, "A") + " explica:\b")
         t2.addfim("Faço uma cópia da chave da sua casa por $" + valor + ".")
         ret arg0.msg2(t2.remove(1000))
       senao txt(++linha) == arg1 || n.nome("fechadura da casa", 1)
         valor = (100 + p.taxavenda) / 100 * config:casafechadura
         t2.limpar
-        t2.addfim("\b\c6" + txtcopiamai(p.descnome, "A") + " explica:\b")
+        t2.addfim("\b\c6" + txtcopiamai(p.descnome2, "A") + " explica:\b")
         t2.addfim("Troco a fechadura da sua casa por $" + valor + ".")
         ret arg0.msg2(t2.remove(1000))
       fimse

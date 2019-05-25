@@ -27,10 +27,10 @@ func escr1 # Consultar a lista de aulas
     continuar lin == "\b"
     ret lin, arg0.msg(lin)
     se lin = evento(arg0, p) # Nota: atribui mensagem a lin e checa se lin!=""
-      t.addfim(txtcopiamai(p.descnome, "A") + ": " + lin)
+      t.addfim(txtcopiamai(p.descnome2, "A") + ": " + lin)
       continuar
     fimse
-    t.addfim("\b\c6" + txtcopiamai(p.descnome, "A") + " ensina:\b")
+    t.addfim("\b\c6" + txtcopiamai(p.descnome2, "A") + " ensina:\b")
     lucro = p.taxaaula / 100
     textotxt t2
     t2.addfim(p.lojaaula(arg0))
@@ -74,7 +74,7 @@ func escr2 # Consultar uma aula
         t2.limpar
         t2.addfim("\b\c3" + lin + "\b")
       fimse
-      t2.addini("\b\c6" + txtcopiamai(p.descnome, "A") + " explica:\b")
+      t2.addini("\b\c6" + txtcopiamai(p.descnome2, "A") + " explica:\b")
       lin = "Ensino até o nível " + txtmin(txtsublin(misc:aulas, aulas, 1))
       lin += valor <= 0 ? ", não cobro nada." : ", cobro $" + valor + " por aula."
       t2.addfim(lin)

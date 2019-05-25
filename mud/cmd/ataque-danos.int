@@ -185,11 +185,11 @@ func danosgolpe # Obtém informações sobre os danos que o ataque causaria
   lin += danosg_sub(danomin, danomax, ataquemax, danosporseg)
   arg2.addini(lin)
 # Cabeçalho
-  lin = "\c6" + txtmaimin(txt(nomevar, 2)) + ":\c7 " + arg0.descnome
-  lin += " ataca " + arg1.descnome
+  lin = "\c6" + txtmaimin(txt(nomevar, 2)) + ":\c7 " + arg0.descnome2
+  lin += " ataca " + arg1.descnome2
   se arma1 || arma2
-    lin += "\n" + (arma1 ? "Arma: " + arma1.descnome) + (arma1 && arma2 ? "   ")
-    lin += arma2 ? "Munição: " + arma2.descnome
+    lin += "\n" + (arma1 ? "Arma: " + arma1.descnome2) + (arma1 && arma2 ? "   ")
+    lin += arma2 ? "Munição: " + arma2.descnome2
   fimse
   arg2.addini(lin)
 # Acerta posições dos textos

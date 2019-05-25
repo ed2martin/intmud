@@ -9,9 +9,12 @@ const jogarea = sock.jogarea # Área aonde tem permissão
 int1 jogconfig.32 # Configurações do personagem, mesmo que sock.jogconfig
 sav int1 psexo # Sexo do personagem: 0=feminino, 1=masculino
 const sexoini = msexo # Sexo inicial: 0=feminino, 1=masculino, 2=aleatório
+const msexo = 0 # Sexo: 0=feminino, 1=masculino
+const msexo2 = int(var.z_msexo ?? msexo)
 const nome = "sem nome"
 const ident = nome
 const descnome = nome
+const descnome2 = var.z_descnome ?? descnome
 const volexp = 1 # Volume expande se tiver itens dentro
 const volmax = config:p_volmax
 const objmax = config:p_objmax
@@ -387,24 +390,24 @@ func msgposicao # Envia uma mensagem conforme a posição
 
 func descpos
   se posicao == pospadr && !(iseguir && tseguir == 3)
-    refvar m = txt(descpadr(arg0))
+    refvar m = txt(var.z_descpadr ?? descpadr(arg0))
     ret m, m
   fimse
-  txt100 desc1 = txtcopiamai(descnome, "A")
-  iseguir && tseguir == 3 && (desc1 += " de " + iseguir.objlista.descnome)
+  txt100 desc1 = txtcopiamai(descnome2, "A")
+  iseguir && tseguir == 3 && (desc1 += " de " + iseguir.objlista.descnome2)
   refvar imortal = j_imortal ? " diante de você." : "."
   casovar posicao
   casose "0"
     ret desc1 + " jaz aqui" + imortal
   casose "1"
-    ret desc1 + " está aqui mortalmente ferid" + (msexo ? "o" : "a") + imortal
+    ret desc1 + " está aqui mortalmente ferid" + (msexo2 ? "o" : "a") + imortal
   casose "2"
-    ret desc1 + " está aqui incapacitad" + (msexo ? "o." : "a") + imortal
+    ret desc1 + " está aqui incapacitad" + (msexo2 ? "o." : "a") + imortal
   casose "3"
-    ret desc1 + " está aqui, muito frac" + (msexo ? "o." : "a") + imortal
+    ret desc1 + " está aqui, muito frac" + (msexo2 ? "o." : "a") + imortal
   casose "4"
     ret !poslugar, txtcopiamai(nome, "A") + " dorme aqui" + imortal
-    refvar mens = poslugar.objlista.descnome
+    refvar mens = poslugar.objlista.descnome2
     casovar txt1(mens)
     casose "a"
     casose "A"
@@ -416,7 +419,7 @@ func descpos
     ret desc1 + " dorme em " + mens + imortal
   casose "5"
     ret !poslugar, desc1 + " descansa aqui" + imortal
-    refvar mens = poslugar.objlista.descnome
+    refvar mens = poslugar.objlista.descnome2
     casovar txt1(mens)
     casose "a"
     casose "A"
@@ -427,9 +430,9 @@ func descpos
     casofim
     ret desc1 + " descansa em " + mens + imortal
   casose "6"
-    refvar lin = desc1 + " está sentad" + (msexo ? "o" : "a")
+    refvar lin = desc1 + " está sentad" + (msexo2 ? "o" : "a")
     ret !poslugar, lin + " aqui" + imortal
-    refvar mens = poslugar.objlista.descnome
+    refvar mens = poslugar.objlista.descnome2
     casovar txt1(mens)
     casose "a"
     casose "A"
@@ -446,7 +449,7 @@ func descpos
     senao alvo == arg0
       ret desc1 + " está lutando com você!"
     senao alvo.visivel(arg0)
-      ret desc1 + " está lutando com " + alvo.descnome + imortal
+      ret desc1 + " está lutando com " + alvo.descnome2 + imortal
     senao
       ret desc1 + " está lutando com alguém" + imortal
     fimse

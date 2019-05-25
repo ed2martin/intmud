@@ -40,7 +40,7 @@ func escr
   n.ini(arg1, misc:objmax, misc:tudo)
   epara l.addfim(alvo.dentro2), l, l.ini.remove
     ref r = l.objini
-    continuar !r.vestpos || !r.visivel(arg0) || !n.nome(r.ident, r.objtot)
+    continuar !r.vestpos || !r.visivel(arg0) || !n.nome(r.var.z_ident ?? r.ident, r.objtot)
     total++
     refvar valor = vest & txt(config:vestir[r.vestpos - 1])
     se txttroca(valor, "0", "")
