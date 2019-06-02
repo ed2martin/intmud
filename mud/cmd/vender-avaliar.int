@@ -41,6 +41,7 @@ func escr
         continuar
       senao vender
         arg0.var.z_moedas_ += valor
+        p.var.z_moedas_ -= valor
         r.nomejog = ""
         r.mudachave # Já faz r.objmudou=1
         arg0.salvar, r.salvar # Salva personagem do jogador e casa
@@ -103,6 +104,7 @@ func exec # Avalia ou vende um item
       valor *= arg2
       arg1.apagar(arg2)
       arg0.var.z_moedas_ += valor
+      p.var.z_moedas_ -= valor
       $mens.p(arg0, p, arg1)
       se arg2 == 1
         lin = "$P vende $o para $a"

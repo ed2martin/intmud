@@ -250,9 +250,9 @@ func descsala # Retorna descrição da sala
     arg1 & 2 && t.addfim(txtsai(arg0))
     arg1 & 4 && var.z_moedas && t.addfim("Aqui há " + misc:txtmoedas(var.z_moedas) + ".")
   senao 1 & arg0.bitver
-    t.addfim("Está escuro...")
+    t.addfim($mensjog.txt(comando_mover_cfg:m_escuro, arg0))
   senao
-    t.addfim("Você está ceg" + (arg0.msexo2 ? "o" : "a") + ".")
+    t.addfim($mensjog.txt(comando_mover_cfg:m_cego, arg0))
   fimse
   se arg1 & 4
     textotxt t2

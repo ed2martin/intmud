@@ -74,6 +74,7 @@ func escr
           totcompra += r.objtot
           total -= r.objtot
           arg0.var.z_moedas_ -= r.objtot * valor
+          p.var.z_moedas_ += r.objtot * valor
           item = r.mudadono(arg0, r.objtot)
         senao
           apagar(r)
@@ -110,6 +111,7 @@ func escr
         fimse
         r = r.mudadono(arg0, total)
         arg0.var.z_moedas_ -= valor * total
+        p.var.z_moedas_ += valor * total
         $mens.p(arg0, p, r)
         se total == 1
           $mens.mtodos2(m_compra_um1, m_compra_um2)
@@ -156,6 +158,7 @@ func escr
         r.mudachave # Já faz r.objmudou=1
         r.limpa_sjog
         arg0.var.z_moedas_ -= valor
+        p.var.z_moedas_ += valor * total
         r.salvar, arg0.salvar # Salva casa e personagem do jogador
         $mens.p(arg0, p)
         $mens.mens = r.nome ?? "uma casa"
@@ -184,6 +187,7 @@ func escr
         refvar r = criar("comum_chave", arg0, 1)
         r.i_chave = casa.chave
         arg0.var.z_moedas_ -= valor
+        p.var.z_moedas_ += valor
         $mens.p(arg0, p)
         $mens.mtodos2(m_chave1, m_chave2)
         ret
@@ -195,6 +199,7 @@ func escr
           ret
         fimse
         arg0.var.z_moedas_ -= valor
+        p.var.z_moedas_ += valor
         casa.mudachave # Já faz r.objmudou=1
         $mens.p(arg0, p, r)
         ret $mens.mtodos2(m_fechadura1, m_fechadura2)

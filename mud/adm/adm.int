@@ -21,6 +21,7 @@ Os tópicos são:\n\
   \c2PERM\b      Permissões de jogadores\n\
   \c2JOG\b       Comandos para jogadores\n\
   \c2OUTROS\b    Outros comandos\n\
+  \c2NOMES\b     Atribuir nomes a um item ou personagem\n\
   \c2MENS\b      Mostra os caracteres especiais em mensagens\n\
   \c2CORES\b     Mostra as cores permitidas em mensagens"
 
@@ -78,6 +79,52 @@ const txtajuda = "\c3Outros comandos\b\n\
   \c2CMDP\b      Executa um comando do IntMUD em um personagem da sala\n\
   \c2CMDJ\b      Executa um comando do IntMUD em um personagem de jogador\n\
   \c2CMDI\b      Executa um comando do IntMUD em um item seu ou da da sala"
+
+
+classe adm_nomes
+const iniclasse = !$[arg0] && criar(arg0)
+const txtajuda = "\b\c3Atribuir nomes a um item ou personagem específico\b\n\n\
+É possível redefinir os nomes e o gênero de um item ou personagem em\n\
+particular, substituindo o que foi definido com os comandos Eitem e Eperso.\n\
+Basta alterar as seguintes variáveis com comandos Cmdi e Cmdp:\n\
+var.z_ident    = Palavras chave\n\
+var.z_descnome = Descrição curta\n\
+var.z_descpos  = Descrição na sala, geralmente usado só em itens\n\
+var.z_descpadr = Descrição na posição padrão, usado só em personagens\n\
+var.z_msexo    = Gênero: \"0\"=feminino, \"1\"=masculino\n\
+  ou \"\"=pegar do item ou personagem\n\n\
+Por exemplo, se há uma bolsa na sala, e quiser mudar para baú grande,\n\
+pode-se usar os seguintes comandos:\n\
+cmdi bolsa var.z_descnome=\"um baú grande\"\n\
+cmdi bolsa var.z_descpos=\"um baú grande foi largado aqui.\"\n\
+cmdi bolsa var.z_msexo=\"1\"\n\
+cmdi bolsa var.z_ident=\"baú grande\"\n\n\
+E para o baú grande voltar a ser uma bolsa:\n\
+cmdi baú_grande var.z_descnome=\"\"\n\
+cmdi baú_grande var.z_descpos=\"\"\n\
+cmdi baú_grande var.z_msexo=\"\"\n\
+cmdi baú_grande var.z_ident=\"\"\n\n\
+Para personagens, usar cmdp ao invés de cmdi.\n\n\
+Notar que a partir do momento que a variável var.z_ident foi mudada,\n\
+as palavras chave passaram a ser baú grande (as palavras que deve-se\n\
+digitar para se referir ao item).\n\n\
+Para poupar digitação, é aconselhável criar atalhos como esses:\n\
+atalho textoitem cmdi $1 var.z_ident=\"$s\"\n\
+atalho nomeitem cmdi $1 var.z_descnome=\"$s\"\n\
+atalho salaitem cmdi $1 var.z_descpos=\"$s\"\n\
+atalho sexoitem cmdi $1 var.z_msexo=\"$s\"\n\
+atalho textoperso cmdp $1 var.z_ident=\"$s\"\n\
+atalho nomeperso cmdp $1 var.z_descnome=\"$s\"\n\
+atalho salaperso cmdp $1 var.z_descpadr=\"$s\"\n\
+atalho sexoperso cmdp $1 var.z_msexo=\"$s\"\n\n\
+Com esses atalhos, mudar a bolsa para baú grande pode ser feito\n\
+digitando os seguintes comandos:\n\
+nomeitem bolsa um baú grande\n\
+salaitem bolsa um baú grande foi largado aqui.\n\
+sexoitem bolsa 1\n\
+textoitem bolsa baú grande\n\n\
+E digitar somente o comando e o item ou personagem faz voltar ao que\n\
+está definido nos comandos Eitem e Eperso (ex. nomeitem baú grande)."
 
 
 classe adm_mens
