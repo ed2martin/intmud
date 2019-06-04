@@ -50,12 +50,13 @@ const m_levantar = "\c9Talvez você deva se levantar primeiro.\b"
 const m_item_nao = "Não é possível sentar $e $o."
 const m_item_cheio = "Não cabe mais ninguém $e $o."
 const m_naover = "Você não vê $m."
+const m_carregando = "Você está carregando alguém."
 const m_sentou_item1 = "Você sentou-se $e $o."
 const m_sentou_item2 = "$P sentou-se $e $o."
 const m_sentou_chao1 = "Você sentou-se."
 const m_sentou_chao2 = "$P sentou-se."
 const admordem = "m_ajuda m_sentado m_levantar m_item_nao m_item_cheio m_naover\n\
-m_sentou_item1 m_sentou_item2 m_sentou_chao1 m_sentou_chao2"
+m_carregando m_sentou_item1 m_sentou_item2 m_sentou_chao1 m_sentou_chao2"
 
 func escr
   ref r
@@ -80,7 +81,9 @@ func escr
   listaobj l
 # Sentar em algum objeto
   se r
-    se !r.i_movel(arg0)
+    se arg0.persolugar.total
+      ret $mens.mp(m_carregando, arg0)
+    senao !r.i_movel(arg0)
       ret $mens.mp(m_item_nao, arg0, nulo, r)
     senao r != arg0.poslugar.objlista && int(r.i_lugar) <= r.persolugar.total
       ret $mens.mp(m_item_cheio, arg0, nulo, r)
@@ -133,12 +136,13 @@ const m_levantar = "\c9Talvez você deva se levantar primeiro.\b"
 const m_item_nao = "Não é possível descansar $e $o."
 const m_item_cheio = "Não cabe mais ninguém $e $o."
 const m_naover = "Você não vê $m."
+const m_carregando = "Você está carregando alguém."
 const m_descansou_item1 = "Você descansa $e $o."
 const m_descansou_item2 = "$P descansa $e $o."
 const m_descansou_chao1 = "Você descansa."
 const m_descansou_chao2 = "$P descansa."
 const admordem = "m_ajuda m_descansando m_levantar m_item_nao m_item_cheio m_naover\n\
-m_descansou_item1 m_descansou_item2 m_descansou_chao1 m_descansou_chao2"
+m_carregando m_descansou_item1 m_descansou_item2 m_descansou_chao1 m_descansou_chao2"
 
 func escr
   ref r
@@ -163,7 +167,9 @@ func escr
   listaobj l
 # Descansar em algum objeto
   se r
-    se !r.i_movel(arg0)
+    se arg0.persolugar.total
+      ret $mens.mp(m_carregando, arg0)
+    senao !r.i_movel(arg0)
       ret $mens.mp(m_item_nao, arg0, nulo, r)
     senao r != arg0.poslugar.objlista && int(r.i_lugar) <= r.persolugar.total
       ret $mens.mp(m_item_cheio, arg0, nulo, r)
@@ -246,45 +252,50 @@ const tipo2 = "opc_linha"
 const clas2 = "cmd_sentar"
 const vari2 = "m_naover"
 #
-const nome3 = "Sentado"
+const nome3 = "Você carregando"
 const tipo3 = "opc_linha"
-const clas3 = "cmd_sentar"
-const vari3 = "m_sentado"
+const clas3 = "cmd_montar"
+const vari3 = "m_carregando"
 #
-const nome4 = "Levantar"
+const nome4 = "Sentado"
 const tipo4 = "opc_linha"
 const clas4 = "cmd_sentar"
-const vari4 = "m_levantar"
+const vari4 = "m_sentado"
 #
-const nome5 = "Não é possível"
+const nome5 = "Levantar"
 const tipo5 = "opc_linha"
 const clas5 = "cmd_sentar"
-const vari5 = "m_item_nao"
+const vari5 = "m_levantar"
 #
-const nome6 = "Item cheio"
+const nome6 = "Não é possível"
 const tipo6 = "opc_linha"
 const clas6 = "cmd_sentar"
-const vari6 = "m_item_cheio"
+const vari6 = "m_item_nao"
 #
-const nome7 = "Sentou chão perso"
+const nome7 = "Item cheio"
 const tipo7 = "opc_linha"
 const clas7 = "cmd_sentar"
-const vari7 = "m_sentou_chao1"
+const vari7 = "m_item_cheio"
 #
-const nome8 = "Sentou chão outros"
+const nome8 = "Sentou chão perso"
 const tipo8 = "opc_linha"
 const clas8 = "cmd_sentar"
-const vari8 = "m_sentou_chao2"
+const vari8 = "m_sentou_chao1"
 #
-const nome9 = "Sentou item perso"
+const nome9 = "Sentou chão outros"
 const tipo9 = "opc_linha"
 const clas9 = "cmd_sentar"
-const vari9 = "m_sentou_item1"
+const vari9 = "m_sentou_chao2"
 #
-const nome10 = "Sentou item outros"
+const nome10 = "Sentou item perso"
 const tipo10 = "opc_linha"
 const clas10 = "cmd_sentar"
-const vari10 = "m_sentou_item2"
+const vari10 = "m_sentou_item1"
+#
+const nome11 = "Sentou item outros"
+const tipo11 = "opc_linha"
+const clas11 = "cmd_sentar"
+const vari11 = "m_sentou_item2"
 
 
 classe m_cmd_descansar
@@ -300,42 +311,47 @@ const tipo2 = "opc_linha"
 const clas2 = "cmd_descansar"
 const vari2 = "m_naover"
 #
-const nome3 = "Descansando"
+const nome3 = "Você carregando"
 const tipo3 = "opc_linha"
-const clas3 = "cmd_descansar"
-const vari3 = "m_descansando"
+const clas3 = "cmd_montar"
+const vari3 = "m_carregando"
 #
-const nome4 = "Levantar"
+const nome4 = "Descansando"
 const tipo4 = "opc_linha"
 const clas4 = "cmd_descansar"
-const vari4 = "m_levantar"
+const vari4 = "m_descansando"
 #
-const nome5 = "Não é possível"
+const nome5 = "Levantar"
 const tipo5 = "opc_linha"
 const clas5 = "cmd_descansar"
-const vari5 = "m_item_nao"
+const vari5 = "m_levantar"
 #
-const nome6 = "Item cheio"
+const nome6 = "Não é possível"
 const tipo6 = "opc_linha"
 const clas6 = "cmd_descansar"
-const vari6 = "m_item_cheio"
+const vari6 = "m_item_nao"
 #
-const nome7 = "Descansou chão perso"
+const nome7 = "Item cheio"
 const tipo7 = "opc_linha"
 const clas7 = "cmd_descansar"
-const vari7 = "m_descansou_chao1"
+const vari7 = "m_item_cheio"
 #
-const nome8 = "Descansou chão outros"
+const nome8 = "Descansou chão perso"
 const tipo8 = "opc_linha"
 const clas8 = "cmd_descansar"
-const vari8 = "m_descansou_chao2"
+const vari8 = "m_descansou_chao1"
 #
-const nome9 = "Descansou item perso"
+const nome9 = "Descansou chão outros"
 const tipo9 = "opc_linha"
 const clas9 = "cmd_descansar"
-const vari9 = "m_descansou_item1"
+const vari9 = "m_descansou_chao2"
 #
-const nome10 = "Descansou item outros"
+const nome10 = "Descansou item perso"
 const tipo10 = "opc_linha"
 const clas10 = "cmd_descansar"
-const vari10 = "m_descansou_item2"
+const vari10 = "m_descansou_item1"
+#
+const nome11 = "Descansou item outros"
+const tipo11 = "opc_linha"
+const clas11 = "cmd_descansar"
+const vari11 = "m_descansou_item2"

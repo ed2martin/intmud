@@ -9,14 +9,18 @@ Se o personagem for omitido ou for você mesmo, você passa a não seguir\n\
 ninguém. Para outros personagens não seguirem você, veja a opção SEGUIR\n\
 do comando CONFIG."
 const m_naover = "Você não vê $m."
+const m_temdono = "Você só quer seguir $a."
 const m_ninguem = "Você não segue ninguém."
 const m_seguir = "Você segue $a."
 const m_naoseguir = "Você não consegue seguir $a."
-const admordem = "m_ajuda m_naover m_ninguem m_seguir m_naoseguir"
+const admordem = "m_ajuda m_naover m_temdono m_ninguem m_seguir m_naoseguir"
 
 func escr
+# Verifica se tem dono
+  se arg0.tseguir == 3 && arg0.iseguir
+    ret $mens.mp(m_temdono, arg0, r.iseguir.objlista)
 # Sem argumentos: deixa de seguir
-  se !arg1
+  senao !arg1
     arg0.iseguir.remove
     $mensjog.msg(m_ninguem, arg0)
     ret
@@ -42,13 +46,18 @@ herda comando_menu_cmd
 #
 const nome1 = "Ajuda"
 const tipo1 = "opc_texto"
-const clas1 = "cmd_abrir"
+const clas1 = "cmd_seguir"
 const vari1 = "m_ajuda"
 #
 const nome2 = "Sem alvo"
 const tipo2 = "opc_linha"
 const clas2 = "cmd_seguir"
 const vari2 = "m_naover"
+#
+const nome3 = "Tem dono"
+const tipo3 = "opc_linha"
+const clas3 = "cmd_seguir"
+const vari3 = "m_temdono"
 #
 const nome3 = "Não segue ninguém"
 const tipo3 = "opc_linha"

@@ -209,7 +209,7 @@ func mudadono # Coloca personagem em outra sala ou outro personagem
     dono.t_item = 0
   senao posicao <= 4
     dono.t_item = 0
-    msg("Você vê estranhas imagens em seus sonhos...")
+    $mensjog.msg(comando_mover_cfg:m_ignorar, este)
   senao
     dono.t_item = 0
     msgsom(dono.s_som)
@@ -357,9 +357,10 @@ func teclouperm # Processa comando com permissões específicas
     efim
 # Magia: Executa comando
     se !lin
-      msg("Lançar que magia?")
+      $mens.mp(comando_hab_cfg:m_magia_sem, este)
     senao !obj
-      msg("Você não possui a magia " + lin)
+      $mens.mens = lin
+      $mens.mp(comando_hab_cfg:m_magia_nao, este)
     senao posicao < obj.posic
       msgposicao
     senao

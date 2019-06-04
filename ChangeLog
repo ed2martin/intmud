@@ -1,3 +1,51 @@
+* 3/6/2019 IntMUD 1.12a MUD baseado na revisão 513
+
+   No MUD:
+  1. Corrigido bug: personagem sentado em um item que está flutuando não
+     entra em uma sala que precisa estar flutuando ou voando para entrar
+  2. Corrigido bug: evento cmd_social não estava sendo chamado ao
+     digitar um comando social sem argumentos
+  3. Personagem Curandeira (teste028) não estava curando/atacando
+     animais do jogador
+  4. Adicionada opção "Sexo Msg" no comando Eliq
+  5. Nas mensagens de esvaziou/encheu/bebeu (comandos Esvaziar, encher,
+     beber): $m=nome do líquido, $1=aspecto, 2=um ou uma, $3=o ou a
+  6. Comandos Empunhar, Vestir, Remover, Sjog, Salvar e Senha no novo
+     padrão dos menus
+  7. Criado comando Ordenar
+  8. Opção "4 Mensagens perso vestir" no menu "20 Vestir itens" do
+     comando Econfig
+  9. Em cmd_morreu, agora arg3 = corpo do personagem morto ou null se
+     não deixou corpo
+ 10. Evento cmd_persomorreu: chamado para o próprio personagem quando
+     morreu
+ 11. Agora é possível usar habilidades e magias em um animal do comando
+     Animal digitando o número do animal como sendo o personagem alvo
+ 12. No comando Econfig: Mover e Habcomum do menu "17 Comandos
+     Jogadores" agora são os submenus "Andar pelo jogo" e "Habilidades e
+     magias" do menu "15 Mensagens"
+ 13. No comando Econfig: Adicionados vários submenus no menu "14
+     Mensagens"
+ 14. No comando Econfig: Retirada opção "Avisar fome e sede" do menu
+     "Configurações do MUD"
+ 15. No comando Econfig: Adicionado submenus "Ganhar/perder experiência"
+     no menu "14 Mensagens"
+ 16. Adicionado tipo de alvo nos comandos Ehab e Emag: Todos do grupo;
+     não é ataque
+ 17. Personagem Faixa Preta da sala teste031 agora ensina Cura Massiva
+     (uma magia de grupo)
+ 18. Criadas variáveis em itens e personsagens: var.z_ident,
+     var.z_descnome, var.z_descpos, var.z_descpadr e var.z_msexo (vide
+     ADM NOMES)
+ 19. Explicação sobre como atribuir nomes a um item ou personagem ao
+     teclar ADM NOMES
+ 20. Comandos Comprar e Vender mudam a quantidade de moedas do vendedor
+ 21. Opções está escuro e está cego no menu Mensagens/Andar pelo
+     jogo/Todas as direções do comando Econfig
+ 22. Opção está sobrio no menu Mensagens/Fome e sede personagem do
+     comando Econfig
+ 23. Documentadas funções descnome2 e msexo2 em mud/doc/06-comum.txt
+
 * 26/1/2019 IntMUD 1.12a MUD baseado na revisão 504
 
    No IntMUD:

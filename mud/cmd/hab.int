@@ -1,5 +1,7 @@
 classe h_comando_hab_cfg
 herda comando_comum
+const m_magia_sem = "Lançar que magia?"
+const m_magia_nao = "Você não possui a magia $m."
 const m_desmaiado0 = "Você está desmaiad$s."
 const m_desmaiado1 = "$A está desmaiad$t."
 const m_nao_obedece = "$A não quer obedecer você."
@@ -10,8 +12,9 @@ const m_sem_efeito = "A magia não teve efeito."
 const m_vida = "Pontos de vida insuficientes."
 const m_mana = "Mana insuficiente."
 const m_move = "Vigor insuficiente."
-const admordem = "m_desmaiado0 m_desmaiado1 m_nao_obedece m_sem_arma m_com_arma\n\
-m_arma_errada m_sem_efeito m_vida m_mana m_move"
+const admordem = "m_magia_sem m_magia_nao m_desmaiado0 m_desmaiado1\n\
+m_nao_obedece m_sem_arma m_com_arma m_arma_errada m_sem_efeito\n\
+m_vida m_mana m_move"
 
 
 classe comando_hab
@@ -266,52 +269,62 @@ const titulo = "Habilidades e magias"
 const menufim = "menu_econfig_msg"
 const colunas = 35
 #
-const nome1 = "Perso desmaiado"
+const nome1 = "Faltou nome da magia"
 const tipo1 = "opc_linha"
 const clas1 = "comando_hab_cfg"
-const vari1 = "m_desmaiado0"
+const vari1 = "m_magia_sem"
 #
-const nome2 = "Animal desmaiado"
+const nome2 = "Magia desconhecida"
 const tipo2 = "opc_linha"
 const clas2 = "comando_hab_cfg"
-const vari2 = "m_desmaiado1"
+const vari2 = "m_magia_nao"
 #
-const nome3 = "Animal não obedece"
+const nome3 = "Perso desmaiado"
 const tipo3 = "opc_linha"
 const clas3 = "comando_hab_cfg"
-const vari3 = "m_nao_obedece"
+const vari3 = "m_desmaiado0"
 #
-const nome4 = "Sem arma"
+const nome4 = "Animal desmaiado"
 const tipo4 = "opc_linha"
 const clas4 = "comando_hab_cfg"
-const vari4 = "m_sem_arma"
+const vari4 = "m_desmaiado1"
 #
-const nome5 = "Com arma"
+const nome5 = "Animal não obedece"
 const tipo5 = "opc_linha"
 const clas5 = "comando_hab_cfg"
-const vari5 = "m_com_arma"
+const vari5 = "m_nao_obedece"
 #
-const nome6 = "Arma errada"
+const nome6 = "Sem arma"
 const tipo6 = "opc_linha"
 const clas6 = "comando_hab_cfg"
-const vari6 = "m_arma_errada"
+const vari6 = "m_sem_arma"
 #
-const nome7 = "Não teve efeito"
+const nome7 = "Com arma"
 const tipo7 = "opc_linha"
 const clas7 = "comando_hab_cfg"
-const vari7 = "m_sem_efeito"
+const vari7 = "m_com_arma"
 #
-const nome8 = "Vida insuficiente"
+const nome8 = "Arma errada"
 const tipo8 = "opc_linha"
 const clas8 = "comando_hab_cfg"
-const vari8 = "m_vida"
+const vari8 = "m_arma_errada"
 #
-const nome9 = "Mana insuficiente"
+const nome9 = "Não teve efeito"
 const tipo9 = "opc_linha"
 const clas9 = "comando_hab_cfg"
-const vari9 = "m_mana"
+const vari9 = "m_sem_efeito"
 #
-const nome10 = "Vigor insuficiente"
+const nome10 = "Vida insuficiente"
 const tipo10 = "opc_linha"
 const clas10 = "comando_hab_cfg"
-const vari10 = "m_move"
+const vari10 = "m_vida"
+#
+const nome11 = "Mana insuficiente"
+const tipo11 = "opc_linha"
+const clas11 = "comando_hab_cfg"
+const vari11 = "m_mana"
+#
+const nome12 = "Vigor insuficiente"
+const tipo12 = "opc_linha"
+const clas12 = "comando_hab_cfg"
+const vari12 = "m_move"
