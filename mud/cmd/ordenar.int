@@ -10,6 +10,7 @@ const m_sem_args = "Ordenar quem?"
 const m_naover = "Você não vê $m."
 const m_controle = "$A não está sob o seu controle."
 const m_sem_cmd = "Ordenar o quê?"
+const m_nao_obedece = "$A não quer obedecer você."
 const m_ordenar1 = "Você ordena $a."
 const m_ordenar2 = "$P dá a seguinte ordem: $m"
 const m_ordenar3 = "$P ordena $a."
@@ -23,6 +24,9 @@ func escr
   ret !r, $mens.mp(m_naover, arg0, r)
   ret r.tseguir != 3 || r.iseguir.objlista != arg0, $mens.mp(m_controle, arg0, r)
   ret !txt2(arg1), $mens.mp(m_sem_cmd, arg0, r)
+  se arg0.pnivel + config:animal_n < r.pnivel
+    ret $mens.mp(comando_hab_cfg:m_nao_obedece, arg0, r)
+  fimse
   $mens.mens = txt2(arg1)
   $mens.p(arg0, r)
   $mens.mvis3(m_ordenar1, m_ordenar2, m_ordenar3)
@@ -57,17 +61,22 @@ const tipo5 = "opc_linha"
 const clas5 = "cmd_ordenar"
 const vari5 = "m_sem_args"
 #
-const nome6 = "Ordena Perso"
+const nome6 = "Animal não obedece"
 const tipo6 = "opc_linha"
 const clas6 = "cmd_ordenar"
-const vari6 = "m_ordena1"
+const vari6 = "m_nao_obedece"
 #
-const nome7 = "Ordena Alvo"
+const nome7 = "Ordena Perso"
 const tipo7 = "opc_linha"
 const clas7 = "cmd_ordenar"
-const vari7 = "m_ordena2"
+const vari7 = "m_ordenar1"
 #
-const nome8 = "Ordena Outros"
+const nome8 = "Ordena Alvo"
 const tipo8 = "opc_linha"
 const clas8 = "cmd_ordenar"
-const vari8 = "m_ordena3"
+const vari8 = "m_ordenar2"
+#
+const nome9 = "Ordena Outros"
+const tipo9 = "opc_linha"
+const clas9 = "cmd_ordenar"
+const vari9 = "m_ordenar3"

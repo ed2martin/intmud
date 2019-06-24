@@ -203,6 +203,7 @@ func escrobj # Destrancar um item
 # Procura a chave
   ref chave
   se r.i_fechadura && !arg0.j_imortal
+    listaitem i
     epara i = arg0.dentro1.ini, i, i.depois
       sair r.i_fechadura == i.obj.i_chave && i.obj.visivel(arg0)
     efim
@@ -392,8 +393,6 @@ const nome17 = "Trancou porta outros"
 const tipo17 = "opc_linha"
 const clas17 = "cmd_trancar"
 const vari17 = "m_porta_trancou2"
-
-
 
 
 classe m_cmd_destrancar

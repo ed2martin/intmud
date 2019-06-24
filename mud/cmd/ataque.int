@@ -7,6 +7,7 @@ const m_nao_desmaiado = "$A não está desmaiad$t."
 const m_sem_efeito = comando_hab_cfg:m_sem_efeito # # # Pega de outro menu
 const m_hab_auto = "A habilidade $m não pode ser usada nos outros."
 const m_mag_auto = "A magia $m não pode ser usada nos outros."
+const m_auto = "Em você mesm$s?"
 const m_grupo = "Atacar outro integrante do grupo?"
 const m_magia_falhou = "A magia falhou."
 const m_lugar_pacifico1 = "Aqui é um lugar pacífico."
@@ -19,7 +20,7 @@ const m_municao_animal = "$A está sem munição."
 const m_municao_arma = "$O está sem munição."
 const m_municao_nao = "$O não possui munição."
 const admordem = "m_nao_consegue m_naover m_desmaiado m_nao_desmaiado\n\
-m_hab_auto m_mag_auto m_grupo m_magia_falhou m_lugar_pacifico1\n\
+m_hab_auto m_mag_auto m_auto m_grupo m_magia_falhou m_lugar_pacifico1\n\
 m_lugar_pacifico2 m_alvo_pacifico m_perso_pacifico m_jog_pacifico\n\
 m_municao_jog m_municao_animal m_municao_arma m_municao_nao"
 
@@ -339,7 +340,7 @@ func exechab # Chamado quando personagem usa habilidade ou magia
   casose "3"
   casose "5"
     sair arg0 != arg1
-    ret $mens.mp("Em você mesm$s?", contr0)
+    ret $mens.mp(comando_ataque_cfg:m_auto, contr0)
   casofim
 # Checa o alvo
   se arg0 != arg1 && contr0.mesmogrupo(contr1)
@@ -830,59 +831,64 @@ const tipo6 = "opc_linha"
 const clas6 = "comando_ataque_cfg"
 const vari6 = "m_mag_auto"
 #
-const nome7 = "Atacar grupo"
+const nome7 = "No próprio personagem"
 const tipo7 = "opc_linha"
 const clas7 = "comando_ataque_cfg"
-const vari7 = "m_grupo"
+const vari7 = "m_auto"
 #
-const nome8 = "Magia em lugar pacífico"
-const info8 = "Atacar usando um item (exemplo, um pergaminho) em um lugar pacífico"
+const nome8 = "Atacar grupo"
 const tipo8 = "opc_linha"
 const clas8 = "comando_ataque_cfg"
-const vari8 = "m_magia_falhou"
+const vari8 = "m_grupo"
 #
-const nome9 = "Perso em lugar pacífico"
+const nome9 = "Magia em lugar pacífico"
+const info9 = "Atacar usando um item (exemplo, um pergaminho) em um lugar pacífico"
 const tipo9 = "opc_linha"
 const clas9 = "comando_ataque_cfg"
-const vari9 = "m_lugar_pacifico1"
+const vari9 = "m_magia_falhou"
 #
-const nome10 = "Alvo em lugar pacífico"
+const nome10 = "Perso em lugar pacífico"
 const tipo10 = "opc_linha"
 const clas10 = "comando_ataque_cfg"
-const vari10 = "m_lugar_pacifico2"
+const vari10 = "m_lugar_pacifico1"
 #
-const nome11 = "Alvo é pacífico"
+const nome11 = "Alvo em lugar pacífico"
 const tipo11 = "opc_linha"
 const clas11 = "comando_ataque_cfg"
-const vari11 = "m_alvo_pacifico"
+const vari11 = "m_lugar_pacifico2"
 #
-const nome12 = "Perso é pacífico"
+const nome12 = "Alvo é pacífico"
 const tipo12 = "opc_linha"
 const clas12 = "comando_ataque_cfg"
-const vari12 = "m_perso_pacifico"
+const vari12 = "m_alvo_pacifico"
 #
-const nome13 = "Sem luta entre jogadores"
-const info13 = "Atacar outro jogador em um lugar que não permite jogador contra jogador"
+const nome13 = "Perso é pacífico"
 const tipo13 = "opc_linha"
 const clas13 = "comando_ataque_cfg"
-const vari13 = "m_jog_pacifico"
+const vari13 = "m_perso_pacifico"
 #
-const nome14 = "Personagem sem muniçao"
+const nome14 = "Sem luta entre jogadores"
+const info14 = "Atacar outro jogador em um lugar que não permite jogador contra jogador"
 const tipo14 = "opc_linha"
 const clas14 = "comando_ataque_cfg"
-const vari14 = "m_municao_jog"
+const vari14 = "m_jog_pacifico"
 #
-const nome15 = "Animal sem muniçao"
+const nome15 = "Personagem sem muniçao"
 const tipo15 = "opc_linha"
 const clas15 = "comando_ataque_cfg"
-const vari15 = "m_municao_animal"
+const vari15 = "m_municao_jog"
 #
-const nome16 = "Arma sem muniçao"
+const nome16 = "Animal sem muniçao"
 const tipo16 = "opc_linha"
 const clas16 = "comando_ataque_cfg"
-const vari16 = "m_municao_arma"
+const vari16 = "m_municao_animal"
 #
-const nome17 = "Arma não usa muniçao"
+const nome17 = "Arma sem muniçao"
 const tipo17 = "opc_linha"
 const clas17 = "comando_ataque_cfg"
-const vari17 = "m_municao_nao"
+const vari17 = "m_municao_arma"
+#
+const nome18 = "Arma não usa muniçao"
+const tipo18 = "opc_linha"
+const clas18 = "comando_ataque_cfg"
+const vari18 = "m_municao_nao"
