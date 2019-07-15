@@ -36,7 +36,8 @@ func inicasa_exec # Carrega objetos da casa
   epara item = l1.fim, item, item.antes
     d.ini
     se txt(item.obj, 0, 2) == "s_" # Se for sala
-      apagar($[item.obj]), item.obj.ini # Apaga a sala que já existia e inicializa essa
+      $[item.obj] != item.obj && apagar($[item.obj]) # Apaga a sala que já existia
+      item.obj.ini # Inicializa essa sala
     senao !item.obj.dono # Se for item sem dono
       apagar(item.obj) # Apaga o item
     fimse

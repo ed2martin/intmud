@@ -1191,24 +1191,44 @@ void TClasse::LimpaInstr()
         fflush(stdout);
 #endif
     // Acerta endereços das variáveis na classe herdada
-        for (unsigned int y=0; y<cl->NumVar; y++)
-            if (cl->InstrVar[y] >= ini &&
-                        cl->InstrVar[y] < fim)
-                cl->InstrVar[y] -= tam_herda;
+        cl->LimpaInstrSub(ini, fim, -tam_herda);
     // Acerta endereços das variáveis nas outras classes
         for (unsigned int numd=0; numd < cl->NumDeriv; numd++)
-        {
-            TClasse * deriv = cl->ListaDeriv[numd];
-            for (unsigned int y=0; y<deriv->NumVar; y++)
-                if (deriv->InstrVar[y] >= ini &&
-                        deriv->InstrVar[y] < fim)
-                    deriv->InstrVar[y] -= tam_herda;
-        }
+            cl->ListaDeriv[numd]->LimpaInstrSub(ini, fim, -tam_herda);
     }
 // Indica que a classe não está sendo herdada
     delete[] ListaDeriv;
     ListaDeriv = 0;
     NumDeriv = 0;
+}
+
+//----------------------------------------------------------------------------
+void TClasse::LimpaInstrSub(const char * ini, const char * fim, int desloc)
+{
+    for (unsigned int y=0; y<NumVar; y++)
+    {
+        char * defvar = InstrVar[y];
+        if (defvar < ini || defvar >= fim)
+            continue;
+        defvar += desloc;
+        InstrVar[y] = defvar;
+        int indvar = IndiceVar[y];
+        TVariavel v;
+        v.defvar = defvar;
+        if (indvar & 0x400000) // Variável da classe
+        {
+            v.endvar = Vars + (indvar & 0x3FFFFF);
+            v.MoverDef();
+        }
+        else // Variável do objeto
+        {
+            for (TObjeto * obj = ObjetoIni; obj; obj = obj->Depois)
+            {
+                v.endvar = obj->Vars + (indvar & 0x3FFFFF);
+                v.MoverDef();
+            }
+        }
+    }
 }
 
 //----------------------------------------------------------------------------

@@ -1,0 +1,460 @@
+classe adm_diag
+herda comando_adm
+const txtajuda = "\b\c3Diag\b\n\
+Sintaxe: DIAG <comando>\n\
+Comandos de diagnóstico para detectar problemas como uso excessivo do\n\
+processador (o comando Serv mostra o uso) e memória.\n\
+\b\c6Diag seguir\b\n\
+Mostra quantos personagens/itens estão seguindo outro personagem/item\n\
+\b\c6Diag eventos\b\n\
+Mostra a quantidade total de eventos e o objeto que recebe mais eventos\n\
+\b\c6Diag dono\b\n\
+Mostra personagens/itens sem dono (não estão em uma sala, um personagem ou\n\
+um item). Em princípio, um personagem ou item nunca deveria ficar sem dono.\n\
+\b\c6Diag limpadono\b\n\
+Apaga personagens/itens sem dono.\n\
+\b\c6Diag perso\b\n\
+Mostra a quantidade de personagens dos jogadores e não jogadores.\n\
+\b\c6Diag limpaperso\b\n\
+Apaga todos os personagens do MUD exceto jogadores e animais de jogadores.\n\
+\b\c6Diag item\b\n\
+Mostra a quantidade de itens em casas, fora de casas e perto dos jogadores.\n\
+\b\c6Diag limpaitem\b\n\
+Apaga todos os itens do MUD exceto em salas de casas ou com jogadores.\n\
+\b\c6Diag sala\b\n\
+Mostra a quantidade de salas de casas, dentro de itens e outras salas.\n\
+\b\c6Diag limpasala\b\n\
+Apaga e recria todas as salas exceto de casas, dentro de itens,\n\
+com jogadores ou com algum animal de jogador.\n\
+\b\c6Diag casa\b\n\
+Mostra casas, salas e jogadores nas casas.\n\
+\b\c6Diag limpacasa\b\n\
+Salva, apaga e cria novamente todas as salas das casas, desde que\n\
+não tenham nenhum jogador ou animal de jogador.\n\
+\b\c6Diag reset\b\n\
+Reinicia o MUD apagando e criando novamente todas as classes e objetos\n\
+exceto adm_diag"
+#
+textotxt cria_sala # Lista de salas que serão criadas
+intexec exec_sala # Para criar salas
+#
+# Para o comando RESET
+textovar clnome # Texto das classes
+textovar clini # Classes que precisam ser inicializadas (chamar função iniclasse)
+intexec clreset1
+intexec clreset2
+intexec clreset3
+
+func escr
+  prog p
+  se !arg1
+    arg0.msg("Tecle o nome do comando após DIAG")
+  senao !p.existe(este, "cmd_" + txt1(arg1))
+    arg0.msg("Comando não existe: " + txt1(arg1))
+  senao
+    este.cmd_[txt1(arg1)](arg0, txt2(arg1))
+  fimse
+
+func cmd_seguir
+  debug dbg
+  prog p
+  ref r
+  int32 perso # Número de personagens seguindo
+  ref obj # Quem tem mais seguidores
+  uint16 total # Número de seguidores
+  dbg.exec = 500100
+  epara p.iniherdainv("comum_persoitem"), p.lin, p.depois
+    epara r = $[p.texto], r, r = objdepois(r)
+      r.iseguir && perso++
+      continuar total >= r.lseguir.total
+      total = r.lseguir.total, obj = r
+    efim
+  efim
+  arg0.msg("Número de objetos seguindo: " + perso)
+  se obj
+    arg0.msg("Objeto com mais seguidores: " + obj + ", com " + total)
+  fimse
+
+func cmd_eventos
+  debug dbg
+  prog p
+  ref r
+  int32 eventos
+  uint16 total
+  ref obj
+  dbg.exec = 500100
+  epara p.iniherdainv("comum_persoitem"), p.lin, p.depois
+    epara r = $[p.texto], r, r = objdepois(r)
+      eventos += r.evento.total
+      continuar total >= r.evento.total
+      total = r.evento.total, obj = r
+    efim
+  efim
+  arg0.msg("Quantidade total de eventos: " + eventos)
+  se obj
+    arg0.msg("Objeto com mais eventos: " + obj + " (" + total + ")")
+  fimse
+
+func cmd_dono
+  debug dbg
+  prog p
+  ref r
+  int32 perso
+  int32 item
+  textotxt t
+  dbg.exec = 500100
+  epara p.iniherdainv("comum_persoitem"), p.lin, p.depois
+    epara r = $[p.texto], r, r = objdepois(r)
+      continuar r.dono
+      r.perso ? perso++ : item++
+      perso + item < 50 && t.addfim(p.texto + ",")
+    efim
+  efim
+  se perso + item == 0
+    arg0.msg("Nenhum personagem ou item sem dono.")
+  senao
+    arg0.msg("Personagens sem dono: " + perso)
+    arg0.msg("Itens sem dono:       " + item)
+    arg0.msg("Primeiros objetos:")
+    textopos pos
+    pos = t.fim, pos.antes
+    pos.mudar("", inttotal(pos.texto) - 1, 1)
+    t.juntar
+    t.dividelin(50, 70)
+    arg0.msg(t.remove(10))
+  fimse
+
+func cmd_limpadono
+  cmdlog(arg0, "diag", "limpadono")
+  debug dbg
+  prog p
+  ref r
+  int32 perso
+  int32 item
+  dbg.exec = 500100
+  epara p.iniherdainv("comum_persoitem"), p.lin, p.depois
+    epara r = $[p.texto], r, r = objdepois(r)
+      continuar r.dono
+      apagar(r), r.perso ? perso++ : item++
+    efim
+  efim
+  ret perso + item == 0, arg0.msg("Nenhum personagem ou item apagado.")
+  arg0.msg("Personagens apagados: " + perso)
+  arg0.msg("Itens apagados:       " + item)
+
+func cmd_perso
+  debug dbg
+  prog p
+  ref r
+  int16 jog
+  int32 animal
+  int32 outros
+  dbg.exec = 500100
+  epara p.iniherdainv("comum_perso"), p.lin, p.depois
+    epara r = $[p.texto], r, r = objdepois(r)
+      r.jog ? jog++ : r.dono.jog || r.tseguir == 3 ? animal++ : outros++
+    efim
+  efim
+  arg0.msg("Jogadores:             " + jog)
+  arg0.msg("Animais dos jogadores: " + animal)
+  arg0.msg("Outros personagens:    " + outros)
+
+func cmd_limpaperso
+  cmdlog(arg0, "diag", "limpaperso")
+  debug dbg
+  prog p
+  ref r
+  int32 total
+  epara p.iniherdainv("comum_perso"), p.lin, p.depois
+    epara r = $[p.texto], r, r = objdepois(r)
+      continuar r.jog || r.dono.jog || r.tseguir == 3
+      total++, apagar(r)
+    efim
+  efim
+  arg0.msg("Personagens apagados: " + total)
+
+func cmd_item
+  debug dbg
+  prog p
+  ref r
+  int32 sala # Itens em salas que não são de casas
+  int32 casa # Itens em salas de casas
+  int32 jog # Itens em salas com jogadores
+# Marca as salas de todas as casas
+  marca_casas
+# Busca as salas novamente
+  dbg.exec = 500100
+  epara p.iniherdainv("sala"), p.lin, p.depois
+    epara r = $[p.texto], r, r = objdepois(r)
+      r.s_rastrdir ? (casa += r.dentro1.total) : (sala += r.dentro1.total)
+      (r.jogtot || r.socktot) && (jog += r.dentro1.total)
+    efim
+  efim
+# Resultado
+  arg0.msg("Itens em casas:               " + casa)
+  arg0.msg("Itens em outras salas:        " + sala)
+  arg0.msg("Itens em salas com jogadores: " + jog)
+  arg0.msg("Nota: itens dentro de itens não são considerados")
+
+func cmd_limpaitem
+  cmdlog(arg0, "diag", "limpaitem")
+  debug dbg
+  prog p
+  ref r
+  int32 total
+# Marca as salas de todas as casas
+  marca_casas
+# Busca as salas novamente
+  dbg.exec = 500100
+  epara p.iniherdainv("sala"), p.lin, p.depois
+    epara r = $[p.texto], r, r = objdepois(r)
+      continuar r.s_rastrdir || r.jogtot || r.socktot
+      total += r.dentro1.total, r.dentro1.apagar
+    efim
+  efim
+  arg0.msg("Itens apagados: " + total)
+
+func cmd_sala
+  debug dbg
+  prog p
+  ref r
+  int32 sala # Salas sem jogadores e que não são de casas
+  int32 casa # Salas de casas
+  int32 item # Salas dentro de itens
+  int32 jog # Salas com jogadores
+# Marca as salas de todas as casas
+  marca_casas
+# Busca as salas novamente
+  dbg.exec = 500100
+  epara p.iniherdainv("sala"), p.lin, p.depois
+    epara r = $[p.texto], r, r = objdepois(r)
+      r.s_rastrdir ? casa++, r.dono ? item++
+      !(r.s_rastrdir || r.dono) ? sala++
+      r.jogtot || r.socktot ? jog++
+    efim
+  efim
+# Resultado
+  listaobj salas_animais
+  salas_jog(salas_animais)
+  arg0.msg("Salas de casas:         " + casa)
+  arg0.msg("Salas dentro de itens:  " + item)
+  arg0.msg("Outras salas:           " + sala)
+  arg0.msg("Salas com jogadores:    " + jog)
+  arg0.msg("Salas com animais dos jogadores: " + salas_animais.total)
+
+func cmd_limpasala
+  cmdlog(arg0, "diag", "limpasala")
+  debug dbg
+  prog p
+  ref r
+  int32 total
+  listaobj l
+# Marca as salas de todas as casas
+  marca_casas
+# Marca as salas com animais dos jogadores
+  epara salas_jog(l), l, l.ini.remove
+    l.objini.s_rastrdir = "1"
+  efim
+# Busca as salas novamente
+  dbg.exec = 500100
+  cria_sala.limpar
+  epara p.iniherdainv("sala"), p.lin, p.depois
+    epara r = $[p.texto], r, r = objdepois(r)
+      continuar r.s_rastrdir || r.dono || r.jogtot || r.socktot
+      total++, apagar(r), cria_sala, cria_sala.addfim(r)
+    efim
+  efim
+# Resultado
+  se cria_sala.linhas == 1
+    arg0.msg("Recriando uma sala")
+  senao
+    arg0.msg("Recriando " + cria_sala.linhas + " salas")
+  fimse
+  exec_sala = 1
+
+func exec_sala_exec
+  debug dbg
+  enquanto cria_sala.linhas
+    dbg.ini, exec_sala = 1
+    refvar nome = cria_sala.remove(1)
+    !$[nome] && criar(nome)
+  efim
+  exec_sala = 0
+
+const cmd_casa = comum_casa(arg0, 0)
+const cmd_limpacasa = comum_casa(arg0, 1)
+
+func comum_casa
+# arg0 = personagem
+# arg1 = comando: 0=ver, 1=limpar
+  debug dbg
+  prog p
+  ref r
+  ref jog
+  listaobj l
+  listaobj salas # Salas das casas
+  int16 numcasas # Número de casas
+  int16 nummudou # Casas pendentes para salvar
+  int16 numsalas # Número de salas
+  int16 numanimais # Animais dos jogadores nas salas
+  int16 numjog # Jogadores nas salas
+# Obtém as salas de todas as casas
+  dbg.exec = 500100
+  epara p.iniherdainv("casa"), p.lin, p.depois
+    numcasas++
+    $[p.texto].mudou && nummudou++
+    epara r = $[p.texto], r, r = objdepois(r)
+      r.addlista(salas)
+    efim
+  efim
+  numsalas = salas.total
+# Obtém os animais nas casas
+  salas_jog(l)
+  numanimais = l.total, l.remove(salas), numanimais -= l.total
+  salas.remove(l)
+  l.limpar
+# Obtém os jogadores nas casas
+  epara jog = $jogador, jog, jog = objdepois(r)
+    epara r = jog.dono, r, r = r.dono
+      r.s_sala && l.addfim(r)
+    efim
+  efim
+  numjog = l.total, l.remove(salas), numjog -= l.total
+  l.limpar
+# Resultado
+  se !arg1
+    arg0.msg("Casas:                 " + numcasas)
+    arg0.msg("Casas não salvas:      " + nummudou)
+    arg0.msg("Salas:                 " + numsalas)
+    arg0.msg("Jogadores:             " + numjog)
+    arg0.msg("Animais dos jogadores: " + numanimais)
+  senao
+    ret numjog, arg0.msg("Casas possuem pelo menos um jogador")
+    ret numanimais, arg0.msg("Casas possuem pelo menos um animal de jogador")
+    cmdlog(arg0, "diag", "limpacasa")
+    epara p.iniherdainv("casa"), p.lin, p.depois
+      $[p.texto].mudou && $[p.texto].salvar
+      $[p.texto].inicasa = 1
+    efim
+    arg0.msg("Recriando " + numcasas + " casas")
+  fimse
+
+func marca_casas # Marca as salas que pertencem a casas
+# Salas com casas possuem r.s_rastrdir = "1"
+  debug dbg
+  prog p
+  ref r
+  listaobj l
+# Desmarca todas as salas
+  dbg.exec = 500100
+  epara p.iniherdainv("sala"), p.lin, p.depois
+    epara r = $[p.texto], r, r = objdepois(r)
+      r.s_rastrdir = ""
+    efim
+  efim
+# Obtém as salas de todas as casas
+  dbg.exec = 500100
+  epara p.iniherdainv("casa"), p.lin, p.depois
+    epara r = $[p.texto], r, r = objdepois(r)
+      r.addlista(l)
+    efim
+  efim
+# Marca as salas de todas as casas
+  epara nulo, l, l.ini.remove
+    l.objini.s_rastrdir = "1"
+  efim
+
+func salas_jog # Obtém as salas com animais dos jogadores
+# arg0 = listaobj aonde serão colocadas as salas
+  prog p
+  ref r
+  ref jog
+  listaitem i
+  epara jog = $jogador, jog, jog = objdepois(r)
+    epara i = jog.lseguir.ini, i, i.depois
+      continuar i.obj.tseguir != 3
+      epara r = i.obj.dono, r, r = r.dono
+        r.s_sala && arg0.addfim(r)
+      efim
+    efim
+  efim
+  arg0.remove
+
+func cmd_reset
+  prog p1
+  prog p2
+  prog p3
+  debug dbg
+  clnome.limpar
+  clini.limpar
+# Salva jogadores e casas
+  $miscsav.salvartudo
+# Avisa jogadores e administradores
+  cmdlog(arg0, "diag", "reset")
+  dbg.ini
+  indiceitem item
+  epara item.ini("un "), txt1(item.txt) == "un", item.depois
+    item.obj.msg("\bO MUD está reiniciando.")
+  efim
+# Retira jogadores do MUD
+  dbg.ini
+  ref r
+  epara r = $jogador, r, r = objdepois(r)
+    apagar(r)
+    r.sock = nulo
+  efim
+# Limpa a classe casa para não perder os itens salvos nas casas
+# quando a classe casa for apagada (e antes disso, os objetos forem apagados)
+  p1.criar("casa\n")
+# Obtém e exclui classes
+  textotxt t
+  epara p1.iniarq, p1.lin, p1.depois
+    epara p2.iniarq(p1.texto), p2.lin, p2.depois
+      dbg.exec = 1000000
+      t.addfim(p2.texto)
+      t.addfim(p1.texto)
+      epara p3.inilinha(p2.texto), p3.lin, p3.depois
+        t.addfim(p3.texto)
+      efim
+      int32 total = clnome.total
+      clnome.v[total] = t.remove(1000000)
+      continuar p2.texto == este
+      clini.[p2.texto] = 1
+      p2.apagar(p2.texto)
+    efim
+  efim
+# Próxima etapa
+  clreset1 = 1
+
+func clreset1_exec # Cria classes mas sem conteúdo
+  debug dbg
+  prog p
+  int32 linha
+  epara linha = 0, linha < clnome.total, linha++
+    dbg.ini
+    refvar lin = txtsublin(clnome.v[linha], 0, 2)
+    txtsublin(lin, 0, 1) != este && p.criar(lin)
+  efim
+  clreset2 = 1
+
+func clreset2_exec # Adiciona conteúdo nas classes
+  debug dbg
+  prog p
+  int32 linha
+  epara linha = 0, linha < clnome.total, linha++
+    dbg.ini, p.criar(clnome.v[linha])
+  efim
+  clnome.limpar
+  clreset3 = 1
+
+func clreset3_exec # Chama função iniclasse
+  debug dbg
+  clreset3 = 1
+  enquanto 1
+    txt100 nome = clini.ini
+    sair !nome
+    clini.mudar(nome + "=")
+    [nome]:iniclasse(nome)
+    dbg.ini
+  efim
+  clreset3 = 0

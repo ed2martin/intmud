@@ -107,6 +107,14 @@ public:
         ///< Apaga todas as instruções e indica que a classe não é herdada
         /**< Chamado automaticamente no destrutor da classe */
 
+    void LimpaInstrSub(const char * ini, const char * fim, int desloc);
+        ///< Chamado internamente por LimpaInstr()
+        /**< Desloca InstrVar uma quantidade de bytes para frente ou para trás
+         *   Isso é necessário após remover uma herança por exemplo
+         *   @param ini Pega as variáveis cujo InstrVar >= ini
+         *   @param fim Pega as variáveis cujo InstrVar < fim
+         *   @param desloc Soma esse valor ao InstrVar de cada variável */
+
     TClasse ** ListaDeriv;
         ///< Lista de classes derivadas dessa, ou NULL se NumDeriv=0
     unsigned int NumDeriv;

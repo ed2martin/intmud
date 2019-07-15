@@ -1874,59 +1874,75 @@ telnet_cor:
             bufRec[pontRec++].carac = *buffer++, tamanho--;
             if ((dado & 0x7F) < 126)
             {
-                bufRec[pontRec++].carac = 0;
-                bufRec[pontRec++].carac = 0;
-                bufRec[pontRec++].carac = 0;
+                for (int a=0; a<7; a++)
+                    bufRec[pontRec++].carac = 0;
                 bufRec[pontRec++].carac = (dado & 0x7F);
                 break;
             }
-        case 2: // Tamanho (16 bits)
+        case 2: // Primeiros 4 bytes do tamanho de 64 bits
+        case 3:
+        case 4:
+        case 5:
+            while (pontRec < 6)
+            {
+                if (tamanho <= 0) return 0;
+                bufRec[pontRec++].carac = 0;
+                if ((bufRec[1].carac & 0x7F) != 127)
+                    continue;
+                if (*buffer != 0)
+                {
+                    FecharSock(-1, 0);
+                    return 0;
+                }
+                buffer++, tamanho--;
+            }
+        case 6: // Tamanho (64 bits)
             if (tamanho <= 0) return 0;
             if ((bufRec[1].carac & 0x7F) == 127)
                 bufRec[pontRec++].carac = *buffer++, tamanho--;
             else
                 bufRec[pontRec++].carac = 0;
-        case 3: // Tamanho (16 bits)
+        case 7: // Tamanho (64 bits)
             if (tamanho <= 0) return 0;
             if ((bufRec[1].carac & 0x7F) == 127)
                 bufRec[pontRec++].carac = *buffer++, tamanho--;
             else
                 bufRec[pontRec++].carac = 0;
-        case 4: // Tamanho (32 bits)
+        case 8: // Tamanho (16 bits)
             if (tamanho <= 0) return 0;
             bufRec[pontRec++].carac = *buffer++, tamanho--;
-        case 5:
+        case 9:
             if (tamanho <= 0) return 0;
             bufRec[pontRec++].carac = *buffer++, tamanho--;
         }
-    // bufRec[6] a bufRec[9] = máscara
-        if (pontRec < 10)
+    // bufRec[10] a bufRec[13] = máscara
+        if (pontRec < 14)
         {
             if ((bufRec[1].carac & 0x80) == 0)
             {
-                bufRec[6].carac = 0;
-                bufRec[7].carac = 0;
-                bufRec[8].carac = 0;
-                bufRec[9].carac = 0;
-                pontRec=10;
+                bufRec[10].carac = 0;
+                bufRec[11].carac = 0;
+                bufRec[12].carac = 0;
+                bufRec[13].carac = 0;
+                pontRec=14;
             }
-            while (pontRec < 10)
+            while (pontRec < 14)
             {
                 if (tamanho <= 0) return 0;
                 bufRec[pontRec++].carac = *buffer++, tamanho--;
             }
         }
-    // bufRec[10] em diante = mensagem
+    // bufRec[14] em diante = mensagem
         if (tamanho <= 0)
             return 0;
         const unsigned int max = (SOCKET_REC - 10) & 0xFFFFFC;
         unsigned int total = // Tamanho da mensagem
-            (unsigned char)bufRec[2].carac * 0x1000000 +
-            (unsigned char)bufRec[3].carac * 0x10000 +
-            (unsigned char)bufRec[4].carac * 0x100 +
-            (unsigned char)bufRec[5].carac;
+            (unsigned char)bufRec[6].carac * 0x1000000 +
+            (unsigned char)bufRec[7].carac * 0x10000 +
+            (unsigned char)bufRec[8].carac * 0x100 +
+            (unsigned char)bufRec[9].carac;
         unsigned int tot2 = (total < max ? total : max);
-        tot2 -= pontRec-10; // tot2 = quantos bytes para completar o buffer
+        tot2 -= pontRec-14; // tot2 = quantos bytes para completar o buffer
         if ((unsigned int)tamanho < tot2)
         {
             for (; tamanho>0; tamanho--)
@@ -1948,9 +1964,9 @@ telnet_cor:
         char mens[SOCKET_REC * 2];
         char * d = mens;
         int cod = 0;
-        for (unsigned int x=10; x<pontRec; x++)
+        for (unsigned int x=14; x<pontRec; x++)
         {
-            char dadoch = bufRec[x].carac ^ bufRec[6 + cod].carac;
+            char dadoch = bufRec[x].carac ^ bufRec[10 + cod].carac;
             char ch = ((dadoch >> 4) & 15);
             *d++ = (ch < 10 ? ch+'0' : ch+'a'-10);
             ch = (dadoch & 15);
@@ -1960,18 +1976,18 @@ telnet_cor:
         *d = 0;
     // Acerta bufRec
         int codigo = telnetecho;
-        total -= pontRec-10;
+        total -= pontRec-14;
         if (total == 0)
             pontRec = 0;
         else
         {
             codigo = bufRec[0].carac & 0x7F;
             telnetecho &= 0x80;
-            pontRec = 10;
-            bufRec[2].carac = total >> 24;
-            bufRec[3].carac = total >> 16;
-            bufRec[4].carac = total >> 8;
-            bufRec[5].carac = total;
+            pontRec = 14;
+            bufRec[6].carac = total >> 24;
+            bufRec[7].carac = total >> 16;
+            bufRec[8].carac = total >> 8;
+            bufRec[9].carac = total;
             bufRec[0].carac = 0;
         }
 

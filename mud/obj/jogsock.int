@@ -506,7 +506,7 @@ func passo
   arg0.passo = este
   se !arg1
     $jogsock_msg.msgsock(arg0, perso_cfg:ini_senha_repetir1, arg0.nome)
-  senao arg1 != arg0.var.j_senha
+  senao arg1 !== arg0.var.j_senha
     $jogsock_msg.msgsock(arg0, perso_cfg:ini_senha_diferente1, arg0.nome)
     arg0.var.limpar("j_")
     $ini_perso1.passo(arg0)
@@ -689,7 +689,7 @@ func passo
   senao arg1 == "z"
     arg0.nome = ""
     ret $ini_perso1.passo(arg0)
-  senao !sav1.senha("sav1/" + texto + ".sav", txtmin(arg1))
+  senao !sav1.senha("sav1/" + texto + ".sav", arg1)
     $jogsock_msg.msgsock(arg0, perso_cfg:ini_senha_entrar2, arg0.nome)
     casovar txt1(arg0.info)
     casose "t" # Conectado via Papovox
@@ -751,7 +751,7 @@ func passo
     arg0.mudaperso(criar("jogador"))
     arg0.perso.cnome = "pn " + texto
     arg0.perso.nome = arg0.nome
-    arg0.perso.senha = txtmin(arg1)
+    arg0.perso.senha = arg1
 # Carrega personagem
     listaobj l1
     l1.addfim(arg0.perso)
@@ -803,7 +803,7 @@ func passo
   senao arg1 == "z"
     arg0.passo = ""
     arg0.msg("Cancelado")
-  senao arg1 != arg0.perso.senha
+  senao arg1 !== arg0.perso.senha
     $jogsock_msg.msgsock(arg0, perso_cfg:ini_senha_atual2, arg0.nome)
     arg0.passo = ""
   senao
@@ -844,11 +844,11 @@ func passo
   arg0.passo = este
   se !arg1
     $jogsock_msg.msgsock(arg0, perso_cfg:ini_senha_repetir1, arg0.nome)
-  senao arg0.tpasso != arg1
+  senao arg0.tpasso !== arg1
     $jogsock_msg.msgsock(arg0, perso_cfg:ini_senha_diferente2, arg0.nome)
     arg0.passo = ""
   senao
-    arg0.perso.senha = txtmin(arg1)
+    arg0.perso.senha = arg1
     se arg0.perso.salvar
       $jogsock_msg.msgsock(arg0, perso_cfg:ini_salvar_sim, arg0.nome)
     senao
