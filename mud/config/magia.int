@@ -1,0 +1,432 @@
+classe magia_cegueira
+herda comando_ataque
+const nomevar = "m_Cegueira"
+const a_efeito1 = "cegueira"
+const c_mana1 = 20
+const c_mana2 = 5
+const ataquemin = 0
+const ataquemax = 0
+const tipoatk = 14 # Tipo: 14 Psíquico
+const atk1_auto1 = ""
+const atk1_perso1 = ""
+const atk1_matou1 = ""
+const atk1_errou1 = ""
+const atk1_nulo1 = ""
+
+
+classe magia_chama_protetora
+herda comando_ataque
+const nomevar = "m_Chama Protetora"
+const tipoalvo = 6 # Alvo: 6 Qualquer um; não é ataque
+const a_efeito1 = "Chama Protetora"
+const tipoatk = 4 # Tipo: 4 Fogo
+const atk1_usar1 = "$P esfrega as mãos até aparecer uma pequena chama."
+const atk1_auto1 = "$P fecha os olhos e a chama cresce, até ficar totalmente transparente."
+const atk1_perso1 = "$P separa as mãos e a chama caminha em direção a $a."
+const atk1_matou1 = "$P ataca e mata $a, $m"
+const atk1_errou1 = "$P perde a concentração e a chama diminui até desaparecer."
+const atk1_nulo1 = "$P separa as mãos e a chama desaparece, enquanto segue em direção a $a."
+#
+# Nota: nas habilidades/magias ofensivas (ataques), usar a função cmd_atacar
+# ao invés da função cmd_alvo.
+
+func cmd_alvo
+  se arg1.dentro2.objini("e_chama_protetora") # Se o alvo está com o efeito
+    mensinicio(arg0, arg1) # Envia mensagem inicial
+    result = 1 # Resultado: 0=acertou o alvo, 1=não teve efeito, 2=errou o alvo
+    mensgolpe(arg0, arg1) # Envia mensagem de acordo com a variável result
+    ret 1 # Para cancelar a magiaclasse magia_curar
+  fimse
+
+
+classe magia_combatente
+herda comando_ataque
+const nomevar = "m_Combatente"
+const tipoalvo = 7 # Alvo: 7 O personagem; não é ataque
+const msgextra = "Só pode ser usado durante uma luta e se você estiver em grupo.\n\
+Adiciona um combatente no grupo, até o limite de 3 combatentes na sala.\n\
+Vide também o comando Grupo."
+const atk1_auto1 = "Algo acontece..."
+const atk1_perso1 = "Algo acontece..."
+const atk1_matou1 = "$A simplesmente morre na mão de $p"
+const atk1_errou1 = "Ninguém aparece para ajudar"
+const atk1_nulo1 = "Ninguém aparece para ajudar"
+
+func cmd_alvo
+  se !arg0.donogrupo
+    arg0.msg("Você não está em nenhum grupo.")
+    ret 1
+  senao !arg0.atkenv
+    arg0.msg("Você não está lutando.")
+    ret 1
+  senao arg0.dono.dentro2.total("p_teste041") >= 3
+    arg0.msg("Atingido limite de 3 combatentes.")
+    ret 1
+  fimse
+
+func cmd_alvofim
+  refvar lider = arg0.donogrupo
+  se arg2.result == 0 && lider
+    refvar r = criar("p_teste041", arg0.dono, intpos(arg0.nivel - 4), "h_socar=4")
+    r.seguir(lider)
+    r.tseguir = 1
+    r.batalhaini(arg0.atkenv.objlista) # Compra briga com o alvo do personagem
+  fimse
+
+
+classe magia_criar_fonte
+herda comando_ataque
+const nomevar = "m_Criar fonte"
+const tipoalvo = 7 # Alvo: 7 O personagem; não é ataque
+const c_mana1 = 15
+const c_mana2 = 5
+const atkfalha = 0
+const atk1_auto1 = "$P faz um gesto circular com as mãos."
+const atk1_perso1 = "$P faz um gesto circular com as mãos."
+const atk1_matou1 = ""
+const atk1_errou1 = ""
+const atk1_nulo1 = ""
+
+func cmd_alvofim
+  refvar sala = arg0.contr.dono # sala = sala aonde o personagem está
+  se arg2.result == 0 && sala.dentro1.total("i_teste042") < 5
+    criar("i_teste042", sala)
+    $mens.p(arg0)
+    $mens.mtodos1("Aos poucos, uma fonte brota do chão.")
+  fimse
+
+
+classe magia_cura_massiva
+herda comando_ataque
+const nomevar = "m_Cura Massiva"
+const tipoalvo = 8 # Alvo: 8 Todos do grupo; não é ataque
+const a_vida1 = 20
+const valor = 100
+const atk1_auto1 = "Você lança cura massiva"
+const atk1_auto2 = "$P lança cura massiva"
+const atk1_perso1 = "$P cura $a"
+const atk1_perso2 = "$P cura você"
+const atk1_matou1 = ""
+const atk1_errou1 = "$P tenta curar $a"
+const atk1_nulo1 = "$P tenta curar $a"
+
+
+classe magia_curar
+herda comando_ataque
+const nomevar = "m_Curar"
+const tipoalvo = 6 # Alvo: 6 Qualquer um; não é ataque
+const a_vida1 = 40
+const c_mana1 = 30
+const c_mana2 = 5
+const valor = 100
+const atk1_auto1 = "$P se cura"
+const atk1_perso1 = "$P cura $a"
+const atk1_matou1 = ""
+const atk1_errou1 = "$P tenta curar $a"
+const atk1_nulo1 = "$P tenta curar $a"
+
+
+classe magia_curar_cegueira
+herda comando_ataque
+const nomevar = "m_Curar cegueira"
+const tipoalvo = 6 # Alvo: 6 Qualquer um; não é ataque
+const a_remove = "cegueira"
+const c_mana1 = 30
+const c_mana2 = 5
+const valor = 100
+const atk1_usar1 = "$P fala solenemente 'Curar Cegueira'"
+const atk1_auto1 = ""
+const atk1_perso1 = ""
+const atk1_matou1 = ""
+const atk1_errou1 = ""
+const atk1_nulo1 = ""
+
+
+classe magia_drenar_energia
+herda comando_ataque
+const nomevar = "m_Drenar energia"
+const tipoalvo = 1 # Alvo: 1 Exceto o personagem; ataque
+const c_mana1 = 30
+const c_mana2 = 10
+const ataquemin = 0
+const ataquemax = 0
+const tipoatk = 11 # Tipo: 11 Trevas
+const msgextra = "Retira parte do mana e do vigor do alvo."
+const atk1_auto1 = "$P se sente cansad$s."
+const atk1_perso1 = "$P deixa $a cansad$t."
+const atk1_matou1 = "$P esgota as últimas energias de $a."
+const atk1_errou1 = "$P se cansou à toa."
+const atk1_nulo1 = "$A parece tão cansad$t quanto antes."
+
+func cmd_atacou
+  se arg2.result == 0
+    arg1.pmana *= 0.6
+    arg1.pmove *= 0.6
+  fimse
+
+
+classe magia_flechas_enfurecidas
+herda comando_ataque
+const nomevar = "m_Flechas enfurecidas"
+const ataquemin = 40
+const ataquemax = 130
+const tipoarma = 64 # Requer arma: 6-Arco e flecha
+const tipomunicao = 1 # Munição: 1 Usa mas não perde
+const atk1_auto1 = "Com a força dos ventos, $p dispara 3 flechas $e $a, $m"
+const atk1_perso1 = "Com a força dos ventos, $p dispara 3 flechas $e $a, $m"
+const atk1_matou1 = "Com a força dos ventos, $p mata $a com 3 flechas, $m"
+const atk1_errou1 = "Com a força dos ventos, $p dispara 3 flechas, mas $a desvia"
+const atk1_nulo1 = "$P dispara 3 flechas que mal alcançam $a"
+
+func cmd_atacar
+  se arg4 && arg2.arma2.objtot < 3
+    arg0.msg("Precisa de três flechas para essa magia.")
+    ret 1
+  fimse
+
+func cmd_atacou
+  arg4 && arg2.arma2.apagar(3)
+
+
+classe magia_flutuar
+herda comando_ataque
+const nomevar = "m_Flutuar"
+const tipoalvo = 6 # Alvo: 6 Qualquer um; não é ataque
+const a_efeito1 = "flutuar"
+const a_remove = "voar"
+const c_mana1 = 20
+const c_mana2 = 5
+const atk1_usar1 = "$P fala solenemente 'Flutuar'"
+const atk1_auto1 = ""
+const atk1_perso1 = ""
+const atk1_matou1 = ""
+const atk1_errou1 = ""
+const atk1_nulo1 = ""
+
+
+classe magia_fogo
+herda comando_ataque
+const nomevar = "m_Fogo"
+const tipoalvo = 0 # Alvo: 0 Qualquer um; ataque
+const c_mana1 = 15
+const c_mana2 = 10
+const armamove = 3
+const tipoatk = 4 # Tipo: 4 Fogo
+const valor = 100
+const atk1_auto1 = "$P lança fogo em si mesm$s, $m"
+const atk1_perso1 = "$P lança fogo em $a, $m"
+const atk1_matou1 = "$P assa $a em fogo alto, $m"
+const atk1_errou1 = "$P lança fogo em $a mas erra."
+const atk1_nulo1 = "$P lança fogo em $a mas nada acontece."
+
+
+classe magia_identificar
+herda comando_identificar
+const nomevar = "m_Identificar"
+const c_mana1 = 20
+const c_mana2 = 5
+const valor = 100
+const msgextra = "Obtém informações sobre itens e personagens."
+const msgperso1 = "Você olha $a com atenção."
+const msgobj1 = "Você olha $o com atenção."
+const msgerrou1 = "A magia falhou."
+const msgnulo1 = "A magia não teve efeito."
+
+
+classe magia_invisibilidade
+herda comando_ataque
+const nomevar = "m_Invisibilidade"
+const tipoalvo = 7 # Alvo: 7 O personagem; não é ataque
+const a_bat_sentado = 0 # Lutando sentado: Não
+const a_bat_montado = 0 # Lutando nontado: Não
+const a_bat_em_pe = 0 # Lutando em pé: Não
+const a_efeito1 = "invisibilidade"
+const c_mana1 = 20
+const c_mana2 = 5
+const atk1_usar1 = "$P fala solenemente 'Inv'"
+const atk1_auto1 = ""
+const atk1_perso1 = ""
+const atk1_matou1 = ""
+const atk1_errou1 = ""
+const atk1_nulo1 = ""
+
+
+classe magia_proteção_de_luz
+herda comando_ataque
+const nomevar = "m_Proteção de luz"
+const tipoalvo = 7 # Alvo: 7 O personagem; não é ataque
+const a_efeito1 = "proteção de luz"
+const c_mana1 = 10
+const c_mana2 = 5
+const msgextra = "Corta pela metade os danos de luz e trevas que você receber."
+const atk1_auto1 = "$P respira fundo e uma luz começa a aparecer."
+const atk1_perso1 = "$P ataca $a, $m"
+const atk1_matou1 = "$P respira fundo e sucumbe em seguida."
+const atk1_errou1 = "$P respira fundo e por um instante uma luz começa a aparecer e some em \
+seguida."
+const atk1_nulo1 = "$P respira fundo mas nada acontece."
+
+func cmd_alvo
+  listaitem i
+  epara i = arg0.dentro2.ini, i, i.depois
+    ret i.obj.vestpos == 3, nulo # 2 no menu do Econfig é nos olhos, aqui é 2+1
+  efim
+  arg0.msg("Sem usar nada nos olhos, você não consegue se concentrar.")
+  ret 1
+
+
+classe magia_raio_confusão
+herda comando_ataque
+const nomevar = "m_Raio confusão"
+const a_efeito1 = "confusao"
+const a_prob1 = 100
+const c_mana1 = 20
+const c_mana2 = 5
+const ataquemin = 40
+const ataquemax = 120
+const tipoatk = 14 # Tipo: 14 Psíquico
+const msgextra = "Pode causar confusão.\n\
+Não funciona se o alvo estiver cego ou estiver usando algo nos olhos."
+const atk1_auto1 = "$P lança em raio de confusão em si mesm$m, $m"
+const atk1_perso1 = "$P lança um raio de confusão em $a, $m"
+const atk1_matou1 = "$P destrói $a com um raio de confusão, $m"
+const atk1_errou1 = "$P lança um raio de confusão na direção de $a"
+const atk1_nulo1 = "$P lança um raio em $a, mas o raio se dissipa."
+
+func cmd_atacar
+# Checa se o alvo está cego
+  se !(arg1.bitver & 1)
+    $mens.p(arg0, arg1)
+    $mens.mtodos1("$P lança um raio nos olhos $d $a, mas el$w está ceg$t!")
+    ret 1
+  fimse
+# Checa se o alvo está usando algo nos olhos
+  listaitem i
+  epara i = arg1.dentro2.ini, i && i.obj.vestpos != 3, i.depois
+  efim
+  se i.obj
+    $mens.p(arg0, arg1, i.obj)
+    $mens.mtodos1("$P lança um raio nos olhos $d $a, mas $o desvia o raio.")
+    ret 1
+  fimse
+
+
+classe magia_restaurar_vitalidade
+herda comando_ataque
+const nomevar = "m_Restaurar vitalidade"
+const tipoalvo = 7 # Alvo: 7 O personagem; não é ataque
+const a_move1 = 20
+const a_move2 = 3
+const c_mana1 = 12
+const c_mana2 = 5
+const tipoatk = 10 # Tipo: 10 Luz
+const msgextra = "Recupera alguns pontos de vigor."
+const atk1_auto1 = "$P faz um gesto e se sente mais descansad$s."
+const atk1_perso1 = "$P ataca $a, $m"
+const atk1_matou1 = "$P ataca e mata $a, $m"
+const atk1_errou1 = "$P faz um gesto esquisito."
+const atk1_nulo1 = "$P faz um gesto e se sente tão descansad$s quanto antes."
+
+
+classe magia_retornar
+herda comando_retornar
+const nomevar = "m_Retornar"
+const c_mana1 = 20
+const c_mana2 = 5
+const valor = 100
+
+
+classe magia_sono_profundo
+herda comando_ataque
+const nomevar = "m_Sono profundo"
+const a_efeito1 = "sono profundo"
+const c_mana1 = 20
+const c_mana2 = 5
+const ataquemin = 0
+const ataquemax = 0
+const tipoatk = 14 # Tipo: 14 Psíquico
+const atk1_usar1 = "$P inicia uma canção de ninar para $a."
+const atk1_auto1 = ""
+const atk1_perso1 = ""
+const atk1_matou1 = ""
+const atk1_errou1 = ""
+const atk1_nulo1 = ""
+
+
+classe magia_sopro_de_gelo
+herda comando_ataque
+const nomevar = "m_Sopro de gelo"
+const a_efeito1 = "congelado"
+const a_prob1 = 10
+const c_mana1 = 30
+const c_mana2 = 15
+const tipoatk = 6 # Tipo: 6 Gelo
+const msgextra = "Pode congelar."
+const atk1_auto1 = "$P lança um sopro de gelo em si mesm$s, $m"
+const atk1_perso1 = "$P lança um sopro de gelo em $a, $m"
+const atk1_matou1 = "$P destrói $a com um sopro de gelo, $m"
+const atk1_errou1 = "$P lança um sopro de gelo na direção de $a."
+const atk1_nulo1 = "$P lança um sopro de gelo em $a, mas a temperatura sequer chega a cair."
+
+
+classe magia_ver_invisivel
+herda comando_ataque
+const nomevar = "m_Ver Invisível"
+const tipoalvo = 7 # Alvo: 7 O personagem; não é ataque
+const a_efeito1 = "ver invisível"
+const c_mana1 = 30
+const c_mana2 = 4
+const aulaini = 3
+const aulafim = 5
+const atk1_usar1 = "$P fala solenemente 'Ver Inv'"
+const atk1_auto1 = ""
+const atk1_perso1 = ""
+const atk1_matou1 = ""
+const atk1_errou1 = ""
+const atk1_nulo1 = ""
+
+
+classe magia_ver_oculto
+herda comando_ataque
+const nomevar = "m_Ver Oculto"
+const tipoalvo = 7 # Alvo: 7 O personagem; não é ataque
+const a_efeito1 = "ver oculto"
+const c_mana1 = 30
+const c_mana2 = 4
+const atk1_usar1 = "$P fala solenemente 'Ver Oculto'"
+const atk1_auto1 = ""
+const atk1_perso1 = ""
+const atk1_matou1 = ""
+const atk1_errou1 = ""
+const atk1_nulo1 = ""
+
+
+classe magia_voar
+herda comando_ataque
+const nomevar = "m_Voar"
+const tipoalvo = 6 # Alvo: 6 Qualquer um; não é ataque
+const a_efeito1 = "voar"
+const a_remove = "flutuar"
+const c_mana1 = 40
+const c_mana2 = 10
+const atk1_usar1 = "$P fala solenemente 'Voar'"
+const atk1_auto1 = ""
+const atk1_perso1 = ""
+const atk1_matou1 = ""
+const atk1_errou1 = ""
+const atk1_nulo1 = ""
+
+
+classe magia_volta
+herda comando_ataque
+const nomevar = "m_Volta"
+const tipoalvo = 6 # Alvo: 6 Qualquer um; não é ataque
+const atk1_auto1 = "$P volta."
+const atk1_perso2 = "$P faz $a voltar."
+
+func cmd_alvofim
+  se arg2.result == 0
+    arg1.contr.mudadono($s_casa002)
+    $mens.p(arg1)
+    $mens.mtodos1("$P caiu aqui.")
+  fimse

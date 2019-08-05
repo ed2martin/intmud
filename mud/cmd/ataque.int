@@ -7,6 +7,7 @@ const m_nao_desmaiado = "$A não está desmaiad$t."
 const m_sem_efeito = comando_hab_cfg:m_sem_efeito # # # Pega de outro menu
 const m_hab_auto = "A habilidade $m não pode ser usada nos outros."
 const m_mag_auto = "A magia $m não pode ser usada nos outros."
+const m_tec_auto = "Esse item não pode ser usado nos outros."
 const m_auto = "Em você mesm$s?"
 const m_grupo = "Atacar outro integrante do grupo?"
 const m_magia_falhou = "A magia falhou."
@@ -137,6 +138,8 @@ func escrhab # Atacar alguém ou usar habilidade/magia não ofensiva em alguém
 # arg1 = o que o personagem digitou; usado para obter o personagem alvo
 # arg2 = item usado, ou nulo se não usou nenhum item
 # arg3 = nível da magia, se usou algum item
+# arg4 = texto "classe função" executada se usou a habilidade/magia
+# exemplo, "a b" chama $a.b(arg0, arg1, arg2, arg3)
   ref alvo
   refvar perm = $perm_[arg0.jogperm]
   refvar m1 = txt1(txte(nomevar)) == "m" ? perm.usar_mag : perm.usar_hab
@@ -222,9 +225,9 @@ func escrhab # Atacar alguém ou usar habilidade/magia não ofensiva em alguém
   fimse
   refvar p = arg0.persoesc
   se arg2
-    exechab(p, alvo, 0.5, arg3, arg2, dir)
+    exechab(p, alvo, 0.5, arg3, arg2, dir, arg4)
   senao
-    exechab(p, alvo, intpos(p.var.[nomevar]_ - 1) / 7, p.pnivel, nulo, dir)
+    exechab(p, alvo, intpos(p.var.[nomevar]_ - 1) / 7, p.pnivel, nulo, dir, arg4)
   fimse
 
 func exechabperso # Personagem usa uma habilidade ou magia
@@ -239,6 +242,8 @@ func exechab # Chamado quando personagem usa habilidade ou magia
 # arg3 = nível da habilidade ou magia (=nível do personagem)
 # arg4 = item usado (exemplo, um pergaminho), ou nulo se não usou nenhum item
 # arg5 = direção do personagem ao alvo, se o alvo não estiver na mesma sala
+# arg6 = texto "classe função" executada se usou a habilidade/magia
+# exemplo, "a b" chama $a.b(arg0, arg1, arg2, arg3)
   ret !checahab2(arg0, arg2, arg4), nulo
   refvar contr0 = arg0.contr
   refvar contr1 = arg1.contr
@@ -259,7 +264,8 @@ func exechab # Chamado quando personagem usa habilidade ou magia
   casose "8"
   casose "7"
     se arg0 != arg1
-      refvar msg = txt(nomevar, 0, 1) == "m" ? "m_mag_auto" : "m_hab_auto"
+      refvar tt = txt(nomevar, 0, 1)
+      refvar msg = tt == "m" ? "m_mag_auto" : tt == "h" ? "m_hab_auto" : "m_tec_auto"
       $mens.mp(comando_ataque_cfg:[msg], contr0, arg0)
       ret
     fimse
@@ -281,6 +287,7 @@ func exechab # Chamado quando personagem usa habilidade ou magia
       custohab2(arg0, arg2)
       mensinicio(arg0, arg1)
     fimse
+    arg6 && $[txt1(arg6)].[txt2(arg6)](arg0, arg1, arg2, arg3, arg4, arg5)
     tipomunicao == 2 && arma2.apagar(1)
     mudavida = 0
     se contr0.dono.s_semmagia && txt(nomevar, 0, 1) == "m"
@@ -346,10 +353,10 @@ func exechab # Chamado quando personagem usa habilidade ou magia
   se arg0 != arg1 && contr0.mesmogrupo(contr1)
     ret $mens.mp(comando_ataque_cfg:m_grupo, contr0, contr1)
   senao !contr0.dono.s_luta
-    refvar msg1 = arg4.item ? "m_magia_falhou" : "m_lugar_pacifico1"
+    refvar msg1 = arg4.item && !arg6 ? "m_magia_falhou" : "m_lugar_pacifico1"
     ret $mens.mp(comando_ataque_cfg:[msg1], contr0, contr1)
   senao !contr1.dono.s_luta
-    refvar msg1 = arg4.item ? "m_magia_falhou" : "m_lugar_pacifico2"
+    refvar msg1 = arg4.item && !arg6 ? "m_magia_falhou" : "m_lugar_pacifico2"
     ret $mens.mp(comando_ataque_cfg:[msg1], contr0, contr1)
   senao !contr1.p_agressivo(arg0)
     ret $mens.mp(comando_ataque_cfg:m_alvo_pacifico, contr0, contr1)
@@ -387,6 +394,7 @@ func exechab # Chamado quando personagem usa habilidade ou magia
     custohab2(arg0, arg2)
     mensinicio(arg0, arg1)
   fimse
+  arg6 && $[txt1(arg6)].[txt2(arg6)](arg0, arg1, arg2, arg3, arg4, arg5)
   tipomunicao == 2 && arma2.apagar(1)
   se contr0.dono.s_semmagia && txt(nomevar, 0, 1) == "m"
     result = 1
@@ -826,69 +834,74 @@ const tipo5 = "opc_linha"
 const clas5 = "comando_ataque_cfg"
 const vari5 = "m_hab_auto"
 #
-const nome6 = "Mag somente personagem"
+const nome6 = "Magia somente personagem"
 const tipo6 = "opc_linha"
 const clas6 = "comando_ataque_cfg"
 const vari6 = "m_mag_auto"
 #
-const nome7 = "No próprio personagem"
+const nome7 = "Técnica somente personagem"
 const tipo7 = "opc_linha"
 const clas7 = "comando_ataque_cfg"
-const vari7 = "m_auto"
+const vari7 = "m_tec_auto"
 #
-const nome8 = "Atacar grupo"
+const nome8 = "No próprio personagem"
 const tipo8 = "opc_linha"
 const clas8 = "comando_ataque_cfg"
-const vari8 = "m_grupo"
+const vari8 = "m_auto"
 #
-const nome9 = "Magia em lugar pacífico"
-const info9 = "Atacar usando um item (exemplo, um pergaminho) em um lugar pacífico"
+const nome9 = "Atacar grupo"
 const tipo9 = "opc_linha"
 const clas9 = "comando_ataque_cfg"
-const vari9 = "m_magia_falhou"
+const vari9 = "m_grupo"
 #
-const nome10 = "Perso em lugar pacífico"
+const nome10 = "Magia em lugar pacífico"
+const info10 = "Atacar usando um item (exemplo, um pergaminho) em um lugar pacífico"
 const tipo10 = "opc_linha"
 const clas10 = "comando_ataque_cfg"
-const vari10 = "m_lugar_pacifico1"
+const vari10 = "m_magia_falhou"
 #
-const nome11 = "Alvo em lugar pacífico"
+const nome11 = "Perso em lugar pacífico"
 const tipo11 = "opc_linha"
 const clas11 = "comando_ataque_cfg"
-const vari11 = "m_lugar_pacifico2"
+const vari11 = "m_lugar_pacifico1"
 #
-const nome12 = "Alvo é pacífico"
+const nome12 = "Alvo em lugar pacífico"
 const tipo12 = "opc_linha"
 const clas12 = "comando_ataque_cfg"
-const vari12 = "m_alvo_pacifico"
+const vari12 = "m_lugar_pacifico2"
 #
-const nome13 = "Perso é pacífico"
+const nome13 = "Alvo é pacífico"
 const tipo13 = "opc_linha"
 const clas13 = "comando_ataque_cfg"
-const vari13 = "m_perso_pacifico"
+const vari13 = "m_alvo_pacifico"
 #
-const nome14 = "Sem luta entre jogadores"
-const info14 = "Atacar outro jogador em um lugar que não permite jogador contra jogador"
+const nome14 = "Perso é pacífico"
 const tipo14 = "opc_linha"
 const clas14 = "comando_ataque_cfg"
-const vari14 = "m_jog_pacifico"
+const vari14 = "m_perso_pacifico"
 #
-const nome15 = "Personagem sem muniçao"
+const nome15 = "Sem luta entre jogadores"
+const info15 = "Atacar outro jogador em um lugar que não permite jogador contra jogador"
 const tipo15 = "opc_linha"
 const clas15 = "comando_ataque_cfg"
-const vari15 = "m_municao_jog"
+const vari15 = "m_jog_pacifico"
 #
-const nome16 = "Animal sem muniçao"
+const nome16 = "Personagem sem muniçao"
 const tipo16 = "opc_linha"
 const clas16 = "comando_ataque_cfg"
-const vari16 = "m_municao_animal"
+const vari16 = "m_municao_jog"
 #
-const nome17 = "Arma sem muniçao"
+const nome17 = "Animal sem muniçao"
 const tipo17 = "opc_linha"
 const clas17 = "comando_ataque_cfg"
-const vari17 = "m_municao_arma"
+const vari17 = "m_municao_animal"
 #
-const nome18 = "Arma não usa muniçao"
+const nome18 = "Arma sem muniçao"
 const tipo18 = "opc_linha"
 const clas18 = "comando_ataque_cfg"
-const vari18 = "m_municao_nao"
+const vari18 = "m_municao_arma"
+#
+const nome19 = "Arma não usa muniçao"
+const tipo19 = "opc_linha"
+const clas19 = "comando_ataque_cfg"
+const vari19 = "m_municao_nao"

@@ -1109,6 +1109,29 @@ func tem_animal # Verifica se um personagem (arg0) tem um animal (arg1=nome da c
   ret 0
 
 
+classe i_teste074
+herda comum_itemgrupo
+const nome = "caixa transparente"
+const descnome = "uma caixa transparente"
+const msexo = 0 # Sexo Msg: 0 Feminino
+const i_item_tecnica = "Invisibilidade"
+const i_item_nivel = 0
+
+
+classe i_teste075
+herda comum_itemgrupo
+const nome = "pedra cura"
+const descnome = "uma pedra de cura"
+const msexo = 0 # Sexo Msg: 0 Feminino
+const i_item_tecnica = "curar"
+const i_item_nivel = 0
+const i_item_auto1 = "Você usou uma pedra de cura."
+const i_item_auto2 = "$P usou uma pedra de cura."
+const i_item_outro1 = "Você usou uma pedra de cura em $A."
+const i_item_outro2 = "$P usou uma pedra de cura em você."
+const i_item_outro3 = "$P usou uma pedra de cura em $A."
+
+
 classe p_teste001
 herda comum_perso
 const nome = "Jardineiro"
@@ -2583,11 +2606,13 @@ classe s_teste023
 herda b_teste
 const s_titulo = "Segundo andar: Luz e itens que iluminam"
 const s_desc = "À leste você pode pegar uma lamparina.\n\
-À oeste há uma sala escura, porém visível se houver uma lamparina."
-const dir_b = $s_teste014
+À oeste há uma sala escura, porém visível se houver uma lamparina.\n\
+Ao norte usar item."
+const dir_n = $s_teste172
 const dir_l = $s_teste024
 const dir_o = $s_teste025
 const dir_c = $s_teste026
+const dir_b = $s_teste014
 
 
 classe s_teste024
@@ -5080,3 +5105,19 @@ func s_reset1 # Realiza o reset
   fimse
   !dentro1.objini("i_teste072") && criar("i_teste072", este, 1)
   !dentro1.objini("i_teste073") && criar("i_teste073", este, 1)
+
+
+classe s_teste172
+herda b_teste
+const s_titulo = "Usar item"
+const s_desc = "Aqui há uma caixa transparente que deixa o personagem invisível.\n\
+Para usá-la basta pegar e tecla Item caixa.\n\
+Há também uma pedra de cura que pode ser usada com o comando Item.\n\
+Para curar outros, teclar Item cura seguido do nome do personagem."
+const dir_s = $s_teste023
+const s_reset = "S 100 teste074 3 S\nS 100 teste075 3 S"
+
+func s_reset1 # Realiza o reset
+# Não alterar; função criada automaticamente a partir de s_reset
+  !dentro1.objini("i_teste074") && criar("i_teste074", este, 3)
+  !dentro1.objini("i_teste075") && criar("i_teste075", este, 3)

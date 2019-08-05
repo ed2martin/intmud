@@ -1,16 +1,22 @@
 classe adm_hab
 const iniclasse = !$[arg0] && criar(arg0)
-const txtajuda = "\b\c3Habilidades e magias\b\n\
+const txtajuda = "\b\c3Habilidades, magias e técnicas de itens\b\n\
   \c2LHAB\b      Lista habilidades existentes\n\
   \c2LMAG\b      Lista magias existentes\n\
+  \c2LTEC\b      Lista técnicas de itens existentes\n\
   \c2CHAB\b      Cria uma habilidade\n\
   \c2CMAG\b      Cria uma magia\n\
+  \c2CTEC\b      Cria uma técnica de item\n\
   \c2EHAB\b      Edita uma habilidade\n\
   \c2EMAG\b      Edita uma magia\n\
+  \c2ETEC\b      Edita uma técnica de item\n\
   \c2AHAB\b      Apaga uma ou mais habilidades\n\
   \c2AMAG\b      Apaga uma ou mais magias\n\
+  \c2AMAG\b      Apaga uma ou mais técnicas de item\n\
   \c2DHAB\b      Calcula danos causados por uma habilidade\n\
-  \c2DMAG\b      Calcula danos causados por uma magia"
+  \c2DMAG\b      Calcula danos causados por uma magia\n\
+  \c2DTEC\b      Calcula danos causados por uma técnica de item\n\
+Nota: Técnicas de itens são usadas no comando Item"
 
 
 classe adm_lhab
@@ -30,11 +36,15 @@ const nome7 = "Não agressivo, O próprio"
 const nome8 = "Não agressivo, O grupo"
 const nome9 = "Automático"
 const nome10 = "Nenhum"
+#
+const prefixo = "cmd_"
+const nenhum = "\bNenhuma habilidade encontrada."
+const lista = "\b\c6Habilidade, Tipo, Alvo\b\n"
 
 func escr
   prog p
-  se !p.iniclasse("cmd_" + arg1)
-    ret arg0.msg("\bNenhuma habilidade encontrada.")
+  se !p.iniclasse(prefixo + arg1)
+    ret arg0.msg(nenhum)
   fimse
   textotxt t
   txt100 lin
@@ -47,50 +57,34 @@ func escr
     t.addfim(lin + nome[$[p.texto].tipoalvo])
   efim
   se t.linhas
-    arg0.msg2("\b\c6Habilidade, Tipo, Alvo\b\n" + t.remove(500))
+    arg0.msg2(lista + t.remove(500))
   senao
-    arg0.msg("\bNenhuma habilidade encontrada.")
+    arg0.msg(nenhum)
   fimse
 
 
 classe adm_lmag
-herda comando_adm
+herda adm_lhab
 const txtajuda = "\b\c3Lmag\b\n\
 Sintaxe: LMAG [nome]\n\
 Lista as magias que começam com o nome especificado.\n\
 Se o nome for omitido, lista todas as magias."
 #
-const nome1 = ", Outros"
-const nome2 = ", Todos dividindo ataque"
-const nome3 = ", Outros dividindo ataque"
-const nome4 = ", Todos sem dividir ataque"
-const nome5 = ", Outros sem dividir ataque"
-const nome6 = "Não agressivo"
-const nome7 = "Não agressivo, O próprio"
-const nome8 = "Não agressivo, O grupo"
-const nome9 = "Automático"
-const nome10 = "Nenhum"
+const prefixo = "magia_"
+const nenhum = "\bNenhuma magia encontrada."
+const lista = "\b\c6Magia, Tipo, Alvo\b\n"
 
-func escr
-  prog p
-  se !p.iniclasse("magia_" + arg1)
-    ret arg0.msg("\bNenhuma magia encontrada.")
-  fimse
-  textotxt t
-  txt100 lin
-  epara nulo, p.lin && t.linhas < 499, p.depois
-    continuar !$[p.texto].cmdmenu # Continua se não é uma magia editável
-    lin = txtcopiamai(txt2(txte(p.texto)), "A") + ", "
-    se $[p.texto].tipoalvo < 6
-      lin += txtsublin(config:atknomes, $[p.texto].tipoatk, 1)
-    fimse
-    t.addfim(lin + nome[$[p.texto].tipoalvo])
-  efim
-  se t.linhas
-    arg0.msg2("\b\c6Magia, Tipo, Alvo\b\n" + t.remove(500))
-  senao
-    arg0.msg("\bNenuma magia encontrada.")
-  fimse
+
+classe adm_ltec
+herda adm_lhab
+const txtajuda = "\b\c3Ltec\b\n\
+Sintaxe: LTEC [nome]\n\
+Lista as técnicas de item que começam com o nome especificado.\n\
+Se o nome for omitido, lista todas as técnicas."
+#
+const prefixo = "tecnica_"
+const nenhum = "\bNenhuma técnica encontrada."
+const lista = "\b\c6Técnica, Tipo, Alvo\b\n"
 
 
 classe adm_chab
@@ -100,6 +94,7 @@ Sintaxe: CHAB <nome>\n\
 Cria uma habilidade com o nome especificado.\n\
 O nome deve ser composto de letras, mas pode ter espaços no meio."
 const tipo = "habilidade"
+const arquivo = "hab"
 
 func escr
   prog p
@@ -141,7 +136,7 @@ func passo # Escolher o tipo de habilidade ou magia
     ret 1
   casose "o"
     arg0.txtmais.limpar
-    arg0.txtmais.addfim("C Habilidade ou magia comum")
+    arg0.txtmais.addfim("C Comum")
     arg0.txtmais.addfim("I Identificar")
     arg0.txtmais.addfim("R Retornar")
     arg0.txtmostra
@@ -158,11 +153,11 @@ func passo # Escolher o tipo de habilidade ou magia
   casofim
 # Cria habilidade ou magia
   txt512 lin
-  lin = arg0.var.opcclasse + "\nconfig/hab\nherda " + deriv
+  lin = arg0.var.opcclasse + "\nconfig/" + arquivo + "\nherda " + deriv
   lin += "\nconst nomevar = \"" + arg0.var.opcvar + "\""
   prog p
   p.criar(lin)
-  criar("admordena", "config/hab")
+  criar("admordena", "config/" + arquivo)
 # config:salvar
   arg0.msg("\bCriou " + tipo + ": " + txt(arg0.var.opcvar, 2))
   admlog(arg0, "criou " + tipo + " " + txt(arg0.var.opcvar, 2))
@@ -179,6 +174,7 @@ Sintaxe: CMAG <nome>\n\
 Cria uma magia com o nome especificado.\n\
 O nome deve ser composto de letras, mas pode ter espaços no meio."
 const tipo = "magia"
+const arquivo = "magia"
 
 func escr
   prog p
@@ -198,6 +194,36 @@ func escr
 # Pergunta que tipo de magia criar
   arg0.sock.var.opcclasse = "magia_" + txts(txtmin(nome))
   arg0.sock.var.opcvar = "m_" + txtcopiamai(txte(nome), "A")
+  passo(arg0.sock, "")
+
+
+classe adm_ctec
+herda adm_chab
+const txtajuda = "\b\c3Ctec\b\n\
+Sintaxe: CTEC <nome>\n\
+Cria uma técnica de item com o nome especificado.\n\
+O nome deve ser composto de letras, mas pode ter espaços no meio."
+const tipo = "técnica de item"
+const arquivo = "tecnica"
+
+func escr
+  prog p
+# Checa se digitou nome do ataque
+  se arg1 == ""
+    ret arg0.msg("Tecle o nome da técnica de item após CTEC")
+  fimse
+# Checa se nome válido
+  txt80 nome = txte(txtremove(arg1, "EMDSA"))
+  se txtproc(txtsepara(txttroca(nome, " ", ""), "O+DOL,DOL+O"), " ") >= 0
+    ret arg0.msg("Nome inválido para técnica de item: " + nome)
+  senao inttotal(nome) > 40
+    ret arg0.msg("Nome deve ter até 40 caracteres: " + nome)
+  senao p.existe("tecnica_" + nome)
+    ret arg0.msg("Já existe a técnica de item: " + nome)
+  fimse
+# Pergunta que tipo de técnica criar
+  arg0.sock.var.opcclasse = "tecnica_" + txts(txtmin(nome))
+  arg0.sock.var.opcvar = "t_" + txtcopiamai(txte(nome), "A")
   passo(arg0.sock, "")
 
 
@@ -307,6 +333,59 @@ func passo # Confirmar que quer apagar magia
   ret 1
 
 
+classe adm_atec
+herda comando_adm
+const txtajuda = "\b\c3Atec\b\n\
+Sintaxe: ATEC <nomes das técnicas de item>\n\
+Apaga uma ou mais técnicas de item, com os nomes especificados.\n\
+Para apagar uma técnicas de item cujo nome contém espaços no meio, use\n\
+sublinhado no lugar dos espaços. Exemplo, se o nome da técnica de item\n\
+for Curar Cegueira, você deve teclar: atec Curar_Cegueira"
+
+func escr
+  prog p
+  se arg1 == ""
+    ret arg0.msg("Tecle um ou mais nomes de técnicas de item após ATEC")
+  fimse
+  uint16 x
+  enquanto txtsub(arg1, x, 1)
+    se !p.existe("tecnica_" + txtsub(arg1, x, 1))
+      ret arg0.msg("Técnica de item não existe: " + txtsub(arg1, x, 1))
+    senao !$tecnica_[txtsub(arg1, x, 1)].cmdmenu
+      ret arg0.msg("Técnica de item não pode ser apagada: " + txtsub(arg1, x, 1))
+    fimse
+    x++
+  efim
+  arg0.sock.tpasso = arg1
+  passo(arg0.sock, "")
+
+func passo # Confirmar que quer apagar técnica de item
+  arg0.passo = ""
+  se arg1 == "n"
+    arg0.msg("Cancelado")
+  senao arg1 == "s"
+    prog p
+    uint16 x
+    enquanto txtsub(arg0.tpasso, x, 1)
+      p.apagar("tecnica_" + txtsub(arg0.tpasso, x, 1))
+      x++
+    efim
+    config:salvar
+    se x < 2
+      arg0.msg("Técnica de item apagada: " + arg0.tpasso)
+      admlog(arg0, "apagou técnica de item " + arg0.tpasso)
+    senao
+      arg0.msg("Técnicas de item apagadas: " + arg0.tpasso)
+      admlog(arg0, "apagou técnicas de item " + arg0.tpasso)
+    fimse
+  senao
+    arg0.passo = este
+    refvar m1 = txt2(arg0.tpasso) ? "técnicas de item" : "técnica de item"
+    arg0.msg("Apagar " + m1 + " " + arg0.tpasso + "? Tecle S ou N")
+  fimse
+  ret 1
+
+
 classe adm_ehab
 herda comando_adm
 const txtajuda = "\b\c3Ehab\b\n\
@@ -345,6 +424,27 @@ func escr
   senao
     arg0.sock.var.classe1 = "magia_" + txts(txtmin(arg1))
     arg0.sock.var.menufim = "menu_magia_" + $magia_[arg1].cmdmenu
+    arg0.sock.m_menu(arg0.sock.var.menufim)
+  fimse
+
+
+classe adm_etec
+herda comando_adm
+const txtajuda = "\b\c3Etec\b\n\
+Sintaxe: ETEC <nome>\n\
+Edita a técnica de item com o nome especificado."
+
+func escr
+  prog p
+  se arg1 == ""
+    arg0.msg("Tecle o nome da técnica de item após ETEC")
+  senao !p.existe("tecnica_" + arg1)
+    arg0.msg("Técnica de item não existe: " + arg1)
+  senao !$tecnica_[arg1].cmdmenu
+    arg0.msg("Comando não é uma técnica de item: " + arg1)
+  senao
+    arg0.sock.var.classe1 = "tecnica_" + txts(txtmin(arg1))
+    arg0.sock.var.menufim = "menu_tecnica_" + $tecnica_[arg1].cmdmenu
     arg0.sock.m_menu(arg0.sock.var.menufim)
   fimse
 
@@ -413,6 +513,19 @@ o seu personagem faria."
 const prefixo = "magia_"
 const naoencontrado = "Magia não encontrada: "
 const naoataque = "Magia não é ataque: "
+
+
+classe adm_dtec
+herda adm_dhab
+const txtajuda = "\b\c3Dtec\b\n\
+Sintaxe: DTEC <técnica de item> <alvo>\n\
+         DTEC <personagem> <técnica de item> <alvo>\n\
+Calcula os danos que uma técnica de item faria no personagem alvo.\n\
+Se for fornecido apenas a écnica de item e o alvo, calcula os danos que\n\
+o seu personagem faria."
+const prefixo = "tecnica_"
+const naoencontrado = "Técnica de item não encontrada: "
+const naoataque = "Técnica de item não é ataque: "
 
 
 classe menu_hab_comum

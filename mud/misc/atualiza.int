@@ -1,4 +1,4 @@
-classe atualiza_510
+classe atualiza_516
 # Atualiza arquivos mud/config/* e mud/areas/* de acordo com novas mudanças
 prog p
 debug dbg
@@ -729,8 +729,8 @@ func ini3_exec
 func ini4_exec
   apagar(este)
 # Checa e muda a versão
-  ret (versao = config:versao) >= 510, nulo
-  p.criar("config", "const versao = 510 # Para atualizar diretórios areas e config")
+  ret (versao = config:versao) >= 516, nulo
+  p.criar("config", "const versao = 516 # Para atualizar diretórios areas e config")
   config:salvar
 # Comando Fim e Dicas aleatórias
   se versao < 457
@@ -870,6 +870,15 @@ func ini4_exec
   fimse
   se versao < 510
     p.apagar("config", "fomemsg")
+  fimse
+# Magias no arquivo config/magia.int
+  se versao < 516
+    txt100 lin
+    epara p.iniclasse("magia_"), p.lin, p.depois
+      dbg.ini
+      lin ? p.cldepois(lin, p.texto) : p.clini("config/magia", p.texto)
+      lin = p.texto
+    efim
   fimse
 # Avisa que atualizou arquivos
   tela.msg("Diretórios areas e config atualizados\n")
