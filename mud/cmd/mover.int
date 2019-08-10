@@ -111,6 +111,7 @@ func mover # Personagem anda em uma direção
   debug dbg
   dbg.ini
   $comando_mover.lseg.addfim(arg0)
+# Verifica se pode mover e acerta textos de abriu1 e abrius
   abriu1 = abriu2 = ""
   se !arg1.s_sala
     $mens.mp(comando_mover_cfg:m_impossivel, p1)
@@ -151,6 +152,7 @@ func mover # Personagem anda em uma direção
     $mens.mp(comando_mover_cfg:m_flutuando, p1)
     ret 0
   fimse
+# Verifica pontos de movimento
   uint8 total = s1.totalmove + arg1.totalmove
   !s1.visivel(arg0) && (total *= 2) # No escuro gasta mais movimentos
   total *= (2 + $miscfome.f.[arg0.p_sede] + $miscfome.f.[arg0.p_fome]) / 2
@@ -160,6 +162,7 @@ func mover # Personagem anda em uma direção
     $mens.mp(m, p1, arg0)
     ret 0
   fimse
+# Eventos antes
   epara l.addfim(arg0.evento), l, l.ini.remove
     ret l.objini.cmd_mover(arg0, s1, dir, arg0, arg1, arg2, arg3, p1), 0
   efim
@@ -175,6 +178,7 @@ func mover # Personagem anda em uma direção
   epara l.addfim(arg2.evento), l, l.ini.remove
     ret l.objini.cmd_moverdest(arg0, s1, dir, arg2, arg1, arg2, arg3, p1), 0
   efim
+# Muda de sala
   $comando_mover.andou = 1
   !arg0.j_imortal && (arg0.pmove -= intdiv((total + 1) / 2))
   arg0.p_espera = intmin(30, total ?? 1) * 2
@@ -201,6 +205,7 @@ func mover # Personagem anda em uma direção
     arg0.mudadono(arg1)
     msgentrar(arg0, arg3, m_entra1)
   fimse
+# Eventos depois
   epara l.addfim(arg0.evento), l, l.ini.remove
     l.objini.cmd_moveu(arg0, s1, dir, arg0, arg1, arg2, arg3, p1)
   efim
