@@ -186,24 +186,24 @@ func mover # Personagem anda em uma direção
     arg0.mudadono(arg1)
   senao arg0.p_bebida >= $miscfome.bebedir - rand(20) # Cambaleando não anda em silêncio
     abriu1 && $mens.mp(abriu1, p1, nulo, arg2)
-    msgsair(arg0, arg2, abriu2 + m_sai4, 1)
+    msgsair(arg0, arg2, abriu2 + (arg2.i_entraitem4 ?? m_sai4), 1)
     arg0.mudadono(arg1)
-    msgentrar(arg0, arg3, m_entra4, 1)
+    msgentrar(arg0, arg3, arg3.i_saiitem4 ?? m_entra4)
   senao arg0.bitinv & 48 # Voando ou voando alto
     abriu1 && $mens.mp(abriu1, p1, nulo, arg2)
-    msgsair(arg0, arg2, abriu2 + m_sai3)
+    msgsair(arg0, arg2, abriu2 + (arg2.i_entraitem3 ?? m_sai3))
     arg0.mudadono(arg1)
-    msgentrar(arg0, arg3, m_entra3)
+    msgentrar(arg0, arg3, arg3.i_saiitem3 ?? m_entra3)
   senao arg0.bitver & 0x200 # Flutuando
     abriu1 && $mens.mp(abriu1, p1, nulo, arg2)
-    msgsair(arg0, arg2, abriu2 + m_sai2)
+    msgsair(arg0, arg2, abriu2 + (arg2.i_entraitem2 ?? m_sai2))
     arg0.mudadono(arg1)
-    msgentrar(arg0, arg3, m_entra2)
+    msgentrar(arg0, arg3, arg3.i_saiitem2 ?? m_entra2)
   senao # Não está voando nem flutuando
     abriu1 && $mens.mp(abriu1, p1, nulo, arg2)
-    msgsair(arg0, arg2, abriu2 + m_sai1)
+    msgsair(arg0, arg2, abriu2 + (arg2.i_entraitem1 ?? m_sai1))
     arg0.mudadono(arg1)
-    msgentrar(arg0, arg3, m_entra1)
+    msgentrar(arg0, arg3, arg3.i_saiitem1 ?? m_entra1)
   fimse
 # Eventos depois
   epara l.addfim(arg0.evento), l, l.ini.remove
@@ -273,15 +273,13 @@ func msgsair # Envia mensagens do personagem saindo da sala
   l.remove(arg0, arg0.persolugar)
   se !arg3 && arg0.bitver & 256 # Anda em silêncio
     $mens.mens = " em silêncio" + carga
-    refvar msai = arg1 ? txttroca(arg2, "$m", " $e $o$m") : arg2
     epara nulo, l, l.ini.remove
-      l.objini.bitver & 0x1000 && $mens.msgsomvis(msai, ssai, l.objini)
+      l.objini.bitver & 0x1000 && $mens.msgsomvis(arg2, ssai, l.objini)
     efim
   senao
     $mens.mens = carga
-    refvar msai = arg1 ? txttroca(arg2, "$m", " $e $o$m") : arg2
     epara nulo, l, l.ini.remove
-      $mens.msgsomvis(msai, ssai, l.objini)
+      $mens.msgsomvis(arg2, ssai, l.objini)
     efim
   fimse
 
@@ -298,15 +296,13 @@ func msgentrar # Envia mensagens do personagem entrando na sala
   l.remove(arg0, arg0.persolugar)
   se !arg3 && arg0.bitver & 256 # Anda em silêncio
     $mens.mens = " em silêncio" + (carga ? " carregando " + carga)
-    refvar ment = arg1 ? "$P saiu $d $o$m." : arg2
     epara nulo, l, l.ini.remove
-      l.objini.bitver & 0x1000 && $mens.msgsomvis(ment, sent, l.objini)
+      l.objini.bitver & 0x1000 && $mens.msgsomvis(arg2, sent, l.objini)
     efim
   senao
     $mens.mens = carga ? " carregando " + carga
-    refvar ment = arg1 ? "$P saiu $d $o$m." : arg2
     epara nulo, l, l.ini.remove
-      $mens.msgsomvis(ment, sent, l.objini)
+      $mens.msgsomvis(arg2, sent, l.objini)
     efim
   fimse
 
@@ -529,6 +525,15 @@ const m_fugir1 = "Você fugiu entrando."
 const m_fugir2 = "$P fugiu entrando$m."
 const m_porta = "dentro"
 const dir = "entrar"
+#
+const m_entraitem1 = "$P entrou $e $o$m."
+const m_entraitem2 = "$P flutuou para $o fora$m."
+const m_entraitem3 = "$P voou para $o$m."
+const m_entraitem4 = "$P entrou $e $o cambaleando."
+const m_saiitem1 = "$P saiu $d $o$m."
+const m_saiitem2 = "$P flutuou $d $o$m."
+const m_saiitem3 = "$P voou $d $o$m."
+const m_saiitem4 = "$P saiu $d $o cambaleando."
 const m_naover = "Você não vê $m."
 const m_impossivelitem = "Não é possível entrar $e $o."
 const m_impossivelporta = "Não é possível entrar $e $o por $M."
@@ -685,6 +690,9 @@ const tipo12 = "menu_mover_sair--"
 #
 const nome13 = "Entrar"
 const tipo13 = "menu_mover_entrar--"
+#
+const nome14 = "Entrar/sair item"
+const tipo14 = "menu_mover_item--"
 
 
 classe mmenu_mover_cfg
@@ -882,33 +890,80 @@ classe menu_mover_entrar
 herda menu_mover_comum
 const titulo = "Entrar"
 const n_classe = "cmd_entrar"
+
+
+classe menu_mover_item
+herda comando_menu
+const titulo = "Entrar/sair item"
+const menufim = "menu_mover"
+const colunas = 28
 #
-const nome11 = "Sem alvo"
+const nome1 = "Entrou andando"
+const tipo1 = "opc_linha"
+const clas1 = "cmd_entrar"
+const vari1 = "m_entraitem1"
+#
+const nome2 = "Entrou flutuando"
+const tipo2 = "opc_linha"
+const clas2 = "cmd_entrar"
+const vari2 = "m_entraitem2"
+#
+const nome3 = "Entrou voando"
+const tipo3 = "opc_linha"
+const clas3 = "cmd_entrar"
+const vari3 = "m_entraitem3"
+#
+const nome4 = "Entrou cambaleando"
+const tipo4 = "opc_linha"
+const clas4 = "cmd_entrar"
+const vari4 = "m_entraitem4"
+#
+const nome5 = "Saiu andando"
+const tipo5 = "opc_linha"
+const clas5 = "cmd_entrar"
+const vari5 = "m_saiitem1"
+#
+const nome6 = "Saiu flutuando"
+const tipo6 = "opc_linha"
+const clas6 = "cmd_entrar"
+const vari6 = "m_saiitem2"
+#
+const nome7 = "Saiu voando"
+const tipo7 = "opc_linha"
+const clas7 = "cmd_entrar"
+const vari7 = "m_saiitem3"
+#
+const nome8 = "Saiu cambaleando"
+const tipo8 = "opc_linha"
+const clas8 = "cmd_entrar"
+const vari8 = "m_saiitem4"
+#
+const nome9 = "Sem alvo"
+const tipo9 = "opc_linha"
+const clas9 = "cmd_entrar"
+const vari9 = "m_naover"
+#
+const nome10 = "Impossível item"
+const tipo10 = "opc_linha"
+const clas10 = "cmd_entrar"
+const vari10 = "m_impossivelitem"
+#
+const nome11 = "Impossível porta"
 const tipo11 = "opc_linha"
-const clas11 = n_classe
-const vari11 = "m_naover"
+const clas11 = "cmd_entrar"
+const vari11 = "m_impossivelporta"
 #
-const nome12 = "Impossível item"
+const nome12 = "Porta fechada"
 const tipo12 = "opc_linha"
-const clas12 = n_classe
-const vari12 = "m_impossivelitem"
+const clas12 = "cmd_entrar"
+const vari12 = "m_fechadoporta"
 #
-const nome13 = "Impossível porta"
+const nome13 = "Entradas"
 const tipo13 = "opc_linha"
-const clas13 = n_classe
-const vari13 = "m_impossivelporta"
+const clas13 = "cmd_entrar"
+const vari13 = "m_entradas"
 #
-const nome14 = "Porta fechada"
+const nome14 = "Embriagado"
 const tipo14 = "opc_linha"
-const clas14 = n_classe
-const vari14 = "m_fechadoporta"
-#
-const nome15 = "Entradas"
-const tipo15 = "opc_linha"
-const clas15 = n_classe
-const vari15 = "m_entradas"
-#
-const nome16 = "Embriagado"
-const tipo16 = "opc_linha"
-const clas16 = n_classe
-const vari16 = "m_embriaguez"
+const clas14 = "cmd_entrar"
+const vari14 = "m_embriaguez"

@@ -947,6 +947,14 @@ herda comum_item
 const nome = "barraca"
 const descnome = "uma pequena barraca"
 const i_salas = "teste162\nteste163"
+const i_entraitem1 = "$P se abaixou e entrou em uma pequena barraca."
+const i_entraitem2 = "$P se abaixou e entrou flutuando em uma pequena barraca."
+const i_entraitem3 = "$P se abaixou e entrou voando em uma pequena barraca."
+const i_entraitem4 = "$P se abaixou e entrou cambaleando em uma pequena barraca."
+const i_saiitem1 = "$P saiu encolhido de uma pequena barraca."
+const i_saiitem2 = "$P flutuou encolhido de uma pequena barraca."
+const i_saiitem3 = "$P voou encolhido de uma pequena barraca."
+const i_saiitem4 = "$P saiu encolhido e cambaleando de uma pequena barraca."
 const mantersala = 1 # Mantém na sala: Sim
 const volobj = 100
 
@@ -4929,7 +4937,10 @@ func a_reset1 # Realiza o reset
 classe s_teste161
 herda b_teste
 const s_titulo = "Itens com salas"
-const s_desc = "Aqui há uma pequena barraca com duas salas internas."
+const s_desc = "Aqui há uma pequena barraca com duas salas internas.\n\
+As mensagens de entrar e sair da barraca (item teste063) foram mudadas.\n\
+Quando alguém entra ou sai, quem está na sala recebe uma mensagem que\n\
+se abaixou e entrou na barraca ou que saiu encolhido da barraca."
 const dir_n = $s_teste167
 const dir_s = $s_teste160
 const a_reset = "S 100 teste063 1 S"
