@@ -40,6 +40,7 @@ sav listaobj persolugar # Quem está montado
 sav listaitem iempu # Arma que que está empunhando
 inttempo p_proc # Para processar comportamento do personagem
 const p_corpo = config:p_corpo
+const p_morreu0 = config:p_morreu0
 const p_morreu1 = config:p_morreu1
 const p_morreu2 = config:p_morreu2
 const p_fome = 100 # Não está com fome
@@ -141,7 +142,9 @@ func fim # Objeto foi apagado
     refvar obj = ind.obj("pn " + txt2(sock.cnome))
     obj ? sock.mudaperso(obj) : sock.reinicia
   fimse
+  refvar d = dono
   persolugar.limpar, batalhafim, comum_obj:fim
+  dono = nulo, d.perso && d.animalbat
 
 func mudadono # Coloca personagem em outra sala ou outro personagem
 # arg0 = nova sala ou novo personagem
@@ -160,9 +163,17 @@ func mudadono # Coloca personagem em outra sala ou outro personagem
   senao dono.perso # Estava em um personagem
     tseguir = 3, iseguir.remove, iseguir = dono.lseguir.addfim(este)
   fimse
-  atkrec.limpar, mdono(arg0), cmd_mudadono
+  atkrec.limpar, mdono(arg0)
   !dono && persolugar.limpar
-# Eventos cmd_saiu e variável donoantes.s_item
+# Acerta persoesc e persobat
+  dono.perso && dono.animalbat
+  se donoantes.perso
+    donoantes.persoesc == este && (donoantes.persoesc = donoantes)
+    donoantes.persobat == este && (donoantes.persobat = donoantes)
+    donoantes.animalbat
+  fimse
+# Eventos cmd_mudadono, cmd_saiu e variável donoantes.s_item
+  cmd_mudadono
   se donoantes && !donoantes.perso
     se !sock
     senao donoantes.dentro1.total && !donoantes.socktot

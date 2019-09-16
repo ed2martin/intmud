@@ -54,6 +54,7 @@ txt10 p_atacou_dir # De que direção atacaram esse personagem (ataque de outra sa
 intdec p_tpersegue # Quanto tempo para se ir de outra sala perseguindo
 const p_lembra = config:p_lembra
 const p_perseguevel = config:p_perseguevel
+const p_animalatk = 0
 
 func expmax
   refvar n = args ? arg0 : pnivel
@@ -102,7 +103,7 @@ func acertapos # Acerta posição
     senao atkenv
       posicao = 7 # lutando
     senao posicao < 4 || posicao == 7
-      posicao = (poslugar ? 6 : pospadr) # posição padrão
+      posicao = poslugar ? 6 : pospadr # posição padrão
     fimse
   casofim
 
@@ -182,7 +183,7 @@ func recalc_exec # Ajusta variáveis, principalmente batalha
   atribs_exec
   recalc = 0
 # Checa se ainda pode obedecer o dono
-  dono.perso && dono.escolhebat
+  dono.perso && dono.animalbat
 # Se for jogador, checa PNJs agressivos
   ret !jog, nulo
   epara i = dono.dentro2.ini, i, i.depois
@@ -355,7 +356,8 @@ func batalhaexp # Dá experiência a quem estiver atacando o personagem
   fimse
 # Ganha experiência
   ret !v1, nulo
-  refvar exp1 = arg0 * (config:atkexp0 + pnivel * config:atkexp1) * misc:mudaexp / (2000 * v1)
+  refvar exp1 = arg0 * (config:atkexp0 + pnivel * config:atkexp1) * misc:mudaexp / (2000 * \
+v1)
   epara i = l.ini, i, i.depois
     r = i.obj
     v1 = pnivel - r.pnivel
@@ -446,7 +448,7 @@ func restaurar # Restaura personagem (HP, mana, etc.)
   pmana = pmanamax, pmove = pmovemax
   se !pvidaok && dono.perso
     pvida = pvidamax
-    dono.escolhebat # Atualiza persobat
+    dono.animalbat # Atualiza persobat
   senao
     pvida = pvidamax
   fimse
@@ -497,6 +499,12 @@ func morreu # Procedimentos quando morre
     p_sede = intmax($miscfome.cheio / 2, p_sede)
     p_fome = intmax($miscfome.cheio / 2, p_fome)
     p_bebida = p_diges = 0
+    epara litem = dentro2.ini, litem, litem.depois
+      litem.obj.pvida = intpos(litem.obj.pvidamax / 2 - 10) + 2
+      litem.obj.pmana = litem.obj.pmanamax / 2
+      litem.obj.pmove = litem.obj.pmovemax / 2
+    efim
+    animalbat
     casovar config:atkmatoutipo
     casose # Quem atacou ganha experiência como ao matar um PNJ
       batalhaexp(config:atkmatouexp / 100)
@@ -521,7 +529,8 @@ func morreu # Procedimentos quando morre
     casofim
     batalhafim # Encerra a batalha
     expatual *= (100 - config:atkmorreuexp) / 100
-    p_morreu1 && $mens.p(este) + $mens.mtodos1(p_morreu1)
+    $mens.p(este)
+    $mens.mtodos2(p_morreu0, p_morreu1)
     mudadono(config:salafim)
     salvar # Salva o jogo
     indiceitem ind
@@ -531,7 +540,7 @@ func morreu # Procedimentos quando morre
     pvida = 0
     !dono.jog && batalhaexp(1.5) # Dá experiência se não for personagem de jogador
     p_morreu2 && $mens.p(este) + $mens.mtodos1(p_morreu2)
-    dono.escolhebat # Atualiza persobat
+    dono.animalbat # Atualiza persobat
 # Pertence a outro personagem: desmaiou, move para o comando Animal
   senao p_animal != 1 && tseguir == 3 && iseguir.objlista
     p_morreu2 && $mens.p(este) + $mens.mtodos1(p_morreu2)
@@ -541,7 +550,8 @@ func morreu # Procedimentos quando morre
 # Morre
   senao
     pvida = 0, batalhaexp(1), batalhafim
-    p_morreu1 && $mens.p(este) + $mens.mtodos1(p_morreu1)
+    $mens.p(este)
+    $mens.mtodos2(p_morreu0, p_morreu1)
     apagar(este)
     se p_corpo == 4
       epara l.addfim(dentro1, dentro2), l, l.ini.remove
@@ -571,6 +581,9 @@ func morreu # Procedimentos quando morre
     l.objini.cmd_morreu(este, arg0, arg0, corpo)
   efim
   !jog && !dono.perso && mudadono(nulo)
+# Verifica se é o último animal do dono
+  dono.perso && dono.persobat == dono && dono.p_animalatk == 2 && dono.morreu(arg0)
+# Retorna o corpo
   ret corpo
 
 func pegamoedas # Pega todas as moedas do personagem arg0
@@ -800,17 +813,21 @@ func ini
 
 func recalc_exec # Ajusta variáveis, principalmente batalha
   comum_persobat:recalc_exec
-  escolhebat
+  animalbat
 
-func escolhebat # Escolhe um personagem em condições de lutar
-  se persoesc.pvidaok && persoesc.pnivel <= pnivel + config:animal_n
-    persobat = persoesc
+func animalbat # Escolhe um personagem em condições de lutar
+  refvar a = p_animalatk
+  refvar e = persoesc
+  se a == 1 || a < 1 && e == este
+    persobat = este
+  senao (a < 2 || e != este) && e.pvidaok && e.pnivel <= pnivel + config:animal_n
+    persobat = e
   senao
     listaitem i
     epara i = dentro2.ini, i, i.depois
       sair i.obj.pvidaok && i.obj.pnivel <= pnivel + config:animal_n
     efim
-    persobat = i ? i.obj : este
+    persobat = i.obj ?? este
   fimse
 
 func animalmais # Retorna quantos animais ainda pode adquirir
@@ -863,18 +880,18 @@ func animal2nome # Retorna o animal a partir do nome
 
 func p_proc_animal # Escolhe um animal em condições de batalhar
 # Retorna: 1=mudou de animal, 0=não mudou de animal
-  ret persoesc != este && persoesc.pvidaok, 0
-  listaitem i
-  epara i = dentro2.ini, i, i.depois
-    sair i.obj.pvidaok && i.obj.pnivel <= pnivel + config:animal_n
-  efim
-  persobat = i ? i.obj : este
-  se persoesc != persobat
-    p_espera = 5
-    persoesc = persobat
-    $mens.p(este, persoesc)
-    refvar m = persobat == este ? "$P não escolhe ninguém." : "$P escolhe $b."
-    $mens.mvis1(m)
-    ret 1
+  se p_animalatk == 1
+    persobat = este
+  senao persobat == este || !persobat.pvidaok
+    listaitem i
+    epara i = dentro2.ini, i, i.depois
+      sair i.obj.pvidaok && i.obj.pnivel <= pnivel + config:animal_n
+    efim
+    persobat = i.obj ?? este
   fimse
-  ret 0
+  ret persoesc == persobat, 0
+  p_espera = 5
+  persoesc = persobat
+  $mens.p(este, persoesc)
+  $mens.mvis1(persobat == este ? "$P não escolhe ninguém." : "$P escolhe $b.")
+  ret 1

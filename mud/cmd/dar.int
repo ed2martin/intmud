@@ -99,10 +99,7 @@ func daranimal
   ret arg2.dono != arg0, nulo # Retorna se não possui mais o animal
   ret !arg1.animalmais, nulo
   arg0.recalc = 1, arg1.recalc = 1 # Acerta personagens
-  arg2.mdono(arg1) # Muda de dono
-  arg0.persobat == arg2 && (arg0.persobat = arg0)
-  arg0.persoesc == arg2 && (arg0.persoesc = arg0)
-  arg0.escolhebat # Escolhe um animal em condições de batalhar
+  arg2.mudadono(arg1) # Muda de dono
   $mens.p(arg0, arg1)
   $mens.mvis1("$P dá " + arg2.descnome2 + " para $a.")
   epara e.addfim(arg0.evento), e, e.ini.remove

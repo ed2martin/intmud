@@ -59,7 +59,7 @@ func despedir
   $mens.mvis1("$P se despede $d $a e $b vai embora.")
   se arg1 == nulo
     apagar(arg2) # Apaga animal
-    arg2.mdono(nulo) # Indica que não tem o animal
+    arg2.mudadono(nulo) # Indica que não tem o animal
   senao
     arg2.mudadono(arg1)
     arg2.mudadomador
@@ -67,9 +67,6 @@ func despedir
     arg2.z_pnivel = ""
   fimse
   arg0.recalc = 1 # Acerta personagem
-  arg0.persobat == arg2 && (arg0.persobat = arg0)
-  arg0.persoesc == arg2 && (arg0.persoesc = arg0)
-  arg0.escolhebat # Escolhe um animal em condições de batalhar
   epara e.addfim(arg0.evento), e, e.ini.remove
     e.objini.cmd_despediuanim(arg0, arg1, arg2, arg0)
   efim

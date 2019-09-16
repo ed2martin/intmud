@@ -49,7 +49,7 @@ func escr
   txt100 lin
   uint8 num
   listaitem i
-  t.addfim((arg0.persobat == arg0 ? "0* " : "0  ") + m_voce + "  N" + arg0.pnivel)
+  t.addfim((arg0.persoesc == arg0 ? "0* " : "0  ") + m_voce + "  N" + arg0.pnivel)
   epara i = arg0.dentro2.ini, i, i.depois
     continuar !i.obj.perso
     lin = txt(++num) + (arg0.persoesc == i.obj ? "* " : "  ")
@@ -93,15 +93,15 @@ func escr # Chamado pela função "teclou" do personagem ao escolher um animal
       arg0.p_espera = 40 # Espera 4 segundos
     fimse
     arg0.persoesc = arg0
+    arg0.animalbat # Atualiza persobat
     $mens.p(arg0)
     $mens.mvis2(m_ninguem1, m_ninguem2)
-    arg0.escolhebat # Atualiza persobat
   senao
     se arg0.persoesc.pvidaok && arg0.atkenv # Animal está bom e está lutando
       arg0.p_espera = 40 # Espera 4 segundos
     fimse
     arg0.persoesc = r
-    arg0.escolhebat # Atualiza persobat
+    arg0.animalbat # Atualiza persobat
     $mens.p(arg0, r)
     $mens.mvis2(m_escolhe1, m_escolhe2)
   fimse
