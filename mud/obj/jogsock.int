@@ -73,11 +73,6 @@ func mudaperso # Muda o personagem, arg0=novo personagem
   ret perso == arg0 || arg0.sock, nulo
 # Acerta variáveis
   se perso
-    se !perso.jog
-      perso.var.z_prompt = ""
-      perso.var.z_bprompt = ""
-      perso.jogconfig.bits = 0
-    fimse
     se arg0.jog
       arg0.jogconfig.bits = jogconfig.bits
       msg("Você retorna para " + arg0.nome)
@@ -86,6 +81,11 @@ func mudaperso # Muda o personagem, arg0=novo personagem
       arg0.var.z_pbprompt = perso.var.z_bprompt
       arg0.jogconfig.bits = jogconfig.bits
       msg("Você assume " + arg0.nome)
+    fimse
+    se !perso.jog
+      perso.var.z_prompt = ""
+      perso.var.z_bprompt = ""
+      perso.jogconfig.bits = 0
     fimse
   fimse
   ref r

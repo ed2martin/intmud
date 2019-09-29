@@ -3,7 +3,7 @@ classe misc
 # Deve ser usado como misc:variável ao invés de $misc.variável
 #
 # Versão do MUD, aparece no comando Serv
-const versao = "23/8/2019"
+const versao = "28/9/2019"
 #
 # Objetos obtidos por em misc:separa
 comum txt100 sep1 # Objeto procurado
@@ -313,7 +313,7 @@ func evento # Objeto passa a receber eventos até um objeto mudar de sala
 # arg0 a arg2 = objetos cujos eventos serão recebidos
   ret !ref(arg0), nulo
   ref r = criar("misc_evento")
-  r.perso1 = arg0.evento.addfim(este, r)
+  r.perso1 = arg0.evento.addfim(este, r) # este=personagem, r=misc_evento
   r.perso2 = arg1.evento.addfim(este, r)
   r.perso3 = arg2.evento.addfim(este, r)
 
@@ -321,7 +321,7 @@ func tempo # Eventos de tempo (cria objeto), vide classe misc_tempo
   ret !(txt(arg0) && ref(arg1)), nulo
   refvar r = criar("misc_tempo")
   r.tempo1 = r.tempo2 = 1
-  r.obj = este
+  r.obj = este, evento.addfim(r)
   r.func = arg0
   r.perso1 = arg1, r.perso1.evento.addfim(r)
   r.perso2 = arg2, r.perso2.evento.addfim(r)
@@ -340,6 +340,20 @@ const cmd_fim = fim + apagar(este) # Personagem saiu do jogo
 
 func fim # Este objeto foi apagado
   perso1.remove, perso2.remove, perso3.remove
+
+func cmd_mudaobjeto # Um objeto foi substituído por outro
+# arg0 = antigo dono, arg1 = novo dono
+  ref p = perso1.obj ?? perso2.obj ?? perso3.obj
+  arg0.evento.remove(este)
+  se perso1.objlista == arg0
+    perso1.remove, perso1 = arg1.evento.addfim(p, este) # p=personagem
+  fimse
+  se perso2.objlista == arg0
+    perso2.remove, perso2 = arg1.evento.addfim(p, este)
+  fimse
+  se perso3.objlista == arg0
+    perso3.remove, perso3 = arg1.evento.addfim(p, este)
+  fimse
 
 
 classe misc_tempo
@@ -387,6 +401,15 @@ func tempo1_exec # Executa eventos
   tempo1 = x - tempo2
   tempo2 = x
   obj.[func + v](perso1, perso2, perso3, este)
+
+func cmd_mudaobjeto # Um objeto foi substituído por outro
+# arg0 = antigo dono, arg1 = novo dono
+  arg0.evento.remove(este)
+  arg1.evento.addfim(este)
+  obj == arg0 && (obj = arg1)
+  perso1 == arg0 && (perso1 = arg1)
+  perso2 == arg0 && (perso2 = arg1)
+  perso3 == arg0 && (perso3 = arg1)
 
 
 classe miscserv

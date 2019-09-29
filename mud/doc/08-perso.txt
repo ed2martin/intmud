@@ -239,8 +239,19 @@ Envia mensagem para o personagem, mesmo se o autor da mensagem estiver
 invisível. Vide comentários na documentação de msgvis (logo acima).
 
 func dentrocasa
-Retorna 1 se o jogador está dentro da própria casa ou nulo se não está
-Para personagens não jogador, essa função retorna sempre nulo
+Retorna 1 se o jogador está dentro da própria casa ou nulo se não está.
+Para personagens não jogador, essa função retorna sempre nulo.
+
+func mudaobjeto( nome da classe do personagem )
+Muda o objeto desse personagem. Tecnicamente, cria um objeto de personagem,
+coloca no lugar, transfere todos os animais, itens e efeitos e apaga esse
+ebjeto. Retorna o objeto do novo personagem ou null se não mudou.
+Nota 1: Não funciona com o objeto que representa o jogador.
+Nota 2: O novo personagem deve ser do mesmo tipo (não luta/luta/usa animais).
+
+func mudaobjdono( antigo dono, novo dono )
+Transfere o personagem para outro objeto. Essa função é chamada pela função
+mudaobjeto do personagem, quando o personagem passa a ser outro objeto.
 
 
 2. Personagens não jogador (arquivos obj/perso*.int)
@@ -374,11 +385,6 @@ e não ensina). É um texto sendo que cada linha é uma raça ou classe.
 Exemplo:
 const lojanao = "anão\nguerreiro"
 
-* const p_pet = 0
-NÃO ESTÁ PRONTO
-0 = não pode ser animal de estimação
-1 = jogador pode pegar e usar em batalhas
-2 = segue ordens do jogador
 
 * const p_fora = 0
 NÃO ESTÁ PRONTO

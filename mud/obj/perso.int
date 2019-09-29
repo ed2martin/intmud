@@ -35,7 +35,7 @@ sav uint32 mortes # Quantas vezes morreu (chamou a função morreu)
 inttempo p_espera # Tempo de espera para o próximo comando
 sav uint8 posicao # Posição do personagem
 const pospadr = 8 # Posição padrão do personagem
-sav listaitem poslugar # Em qual móvel ou personagem está sentado/deitado/montado
+sav listaitem poslugar # Em qual móvel o personagem está sentado/deitado/montado
 sav listaobj persolugar # Quem está montado
 sav listaitem iempu # Arma que que está empunhando
 inttempo p_proc # Para processar comportamento do personagem
@@ -234,6 +234,72 @@ func mudadono # Coloca personagem em outra sala ou outro personagem
     l.objini.mudadono(dono, 1)
   efim
   ret este
+
+func mudaobjeto # Muda o objeto desse personagem
+# Tecnicamente, cria um objeto de personagem, coloca no lugar desse e apaga esse objeto
+# arg0 = nome da classe
+# Retorna o objeto do novo personagem ou null se não mudou
+  ret txt(este, 0, 2) != "p_" || !perso || perso !== [arg0]:perso, nulo
+  ref r = criar(arg0, dono)
+  ret !r, nulo
+  apagar(este)
+# Acerta variáveis
+  r.var = var
+  r.pnivel = pnivel
+  r.pvidamax = pvidamax
+  r.pmanamax = pmanamax
+  r.pmovemax = pmovemax
+  r.mortes = mortes
+  r.p_espera = p_espera
+  r.p_proc = p_proc
+  r.p_tmove = p_tmove
+# Acerta posição no dono
+  r.donoantes = donoantes
+  r.idono.remove, r.idono = idono.adddepois(r)
+# Acerta seguir
+  r.tseguir = tseguir
+  r.iseguir = iseguir.objlista.lseguir.addfim(r), iseguir.remove
+  epara nulo, lseguir, lseguir.ini.remove
+    lseguir.objini.iseguir = r.lseguir.addfim(lseguir.objini)
+  efim
+# Acerta sentado e montaria
+  r.posicao = posicao
+  r.poslugar = poslugar.objlista.persolugar.addfim(r), poslugar.remove
+  epara nulo, persolugar, persolugar.ini.remove
+    persolugar.objini.poslugar = r.persolugar.addfim(persolugar.objini)
+  efim
+# Acerta quem está lutando
+  r.atktempo = atktempo
+  r.atkdanos = atkdanos
+  r.atkenv = atkenv.objlista.atkrec.addfim(r), atkenv.remove
+  epara nulo, atkrec, atkrec.ini.remove
+    atkrec.objini.atkenv = r.atkrec.addfim(atkrec.objini)
+  efim
+# Acerta quem recebe experiência desse personagem
+  epara nulo, atkdiv, atkdiv.ini.remove
+    r.atkdiv.addfim(atkdiv.objini)
+  efim
+# Acerta itens e personagens dentro
+  listaobj l
+  epara l.addfim(dentro1, dentro2), l, l.ini.remove
+    l.objini.mudaobjdono(arg0, r)
+  efim
+# Acerta os animais usados pelo personagem
+  dono.persoesc == este && (dono.persoesc = r)
+  dono.persobat == este && (dono.persobat = r)
+  dono.animalbat
+# Gera eventos
+  r.recalc = 1
+  epara l.addfim(evento), l, l.ini.remove
+    l.objini.cmd_mudaobjeto(este, r)
+  efim
+# Jogador controlando o personagem
+  sock.mudaperso(r)
+  ret r
+
+func mudaobjdono # Objeto dono foi substituído por outro
+# arg0 = antigo dono, arg1 = novo dono
+  mdono(arg1)
 
 func mudadomador # Muda o domador
 # arg0 = domador (personagem) ou nulo se não deve pertencer a um domador

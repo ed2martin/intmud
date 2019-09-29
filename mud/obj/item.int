@@ -119,6 +119,12 @@ func mudadono # Item muda de dono (arg0 = novo dono, arg1 = quantidade)
   mdono(arg0), cmd_mudadono
   ret este
 
+func mudaobjdono # Objeto dono foi substituído por outro
+# arg0 = antigo dono, arg1 = novo dono
+  int8 novapos = vestpos
+  mdono(arg1)
+  novapos && vestir(novapos)
+
 func vestir # Veste o item, arg0=posição
   dono.recalc = 1 # Para recalcular atributos
   idono.remove, vestpos = arg0

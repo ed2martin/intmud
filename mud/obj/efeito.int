@@ -95,6 +95,11 @@ func ajustaobj # Acerta dono e eventos do objeto
   evrec.1.remove, evperso && (evrec.1 = dono.evento.addfim(este))
   evrec.2.remove, e_condicao >= 2 && (evrec.2 = dono.contr.atkbat.addfim(este))
 
+func mudaobjdono # Objeto dono foi substituído por outro
+# arg0 = antigo dono, arg1 = novo dono
+  idono.remove, idono = arg1.dentro2.addini(este)
+  ajustaobj
+
 func t_duracao_exec # Efeito expirou: apaga efeito
   apagar(este)
 
@@ -172,6 +177,12 @@ func cmd_chegou # Alguém mudou de sala: acerta eventos do dono do personagem
 func tatual_exec # Apaga personagem
   apagar(este), apagar(dono)
 
+func mudaobjdono # Objeto dono foi substituído por outro
+# arg0 = antigo dono, arg1 = novo dono
+  dono = arg1
+  idono.remove, idono = dono.dentro2.addini(este)
+  evrec.0.remove, evrec.0 = dono.evento.addfim(este)
+  evrec.1.remove, evrec.1 = dono.dono.evento.addfim(este)
 
 classe comum_modif
 # Modificadores que afetam os itens e personagens
