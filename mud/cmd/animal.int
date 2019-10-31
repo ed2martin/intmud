@@ -3,10 +3,11 @@ herda comando_comum
 const objcmd = config:animal1 ? este
 const posic = 0
 #
-const m_ajudaI = "  \c2CAPTURAR\b  Pega o animal que está lutando com você.\n\
+const m_ajudaI = "  \c2CAPTURAR\b  Pega o animal que está lutando com você\n\
   \c2DESPEDIR\b  Se despede (desfaz) de um animal seu\n\
   \c2MONTAR\b    Monta em um personagem\n\
-  \c2DESMONTAR\b Desmonta de um personagem"
+  \c2DESMONTAR\b Desmonta de um personagem\n\
+  \c2EVOLUIR\b   Faz um personagem seu evoluir"
 const m_ajudaA = "  \c2ANIMAL\b    Mostra animais que você possui\n\
   \c2DAR\b       Dá animal a outro personagem\n\
   \c2CHAMAR\b    Traz animal seu da sala para o comando Animal\n\
@@ -15,10 +16,10 @@ const m_ajudaA = "  \c2ANIMAL\b    Mostra animais que você possui\n\
   \c21\b a \c2$m\b     Escolhe um animal seu, de 1 a $m\n\
   \c2TROCAR\b    Dá itens para um animal e troca animais de lugar"
 const m_ajudaR = "  \c2RESERVA\b   Manuseio de animais reserva"
-const m_ajuda1 = "Nota: Seus animais acima do seu nível não lutam"
-const m_ajuda2 = "Nota: Seus animais $m níveis acima do seu nível não lutam"
-const m_ajuda3 = "Nota: Você precisa estar 1 nível acima do seu animal para ele lutar"
-const m_ajuda4 = "Nota: Você precisa estar $m níveis acima do seu animal para ele lutar"
+const m_ajuda1 = "Nota: Seus animais acima do seu nível não lutam."
+const m_ajuda2 = "Nota: Seus animais $m níveis acima do seu nível não lutam."
+const m_ajuda3 = "Nota: Você precisa estar 1 nível acima do seu animal para ele lutar."
+const m_ajuda4 = "Nota: Você precisa estar $m níveis acima do seu animal para ele lutar."
 const m_sem_animais = "Não possui nenhum animal."
 const m_voce = "Você"
 const m_animais = "Animais"
@@ -29,7 +30,6 @@ func txtajuda
   $mens.p(arg0)
   $mens.mens = config:animal1
   refvar ini = "\b\c3Animais\b\n" + $mens.txt(m_ajudaI, arg0)
-  $mens.mens = int(config:animal_n)
   ret !config:animal1, ini
   refvar anim = ini + "\n" + $mens.txt(m_ajudaA, arg0)
   se !config:animal2

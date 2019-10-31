@@ -1,0 +1,90 @@
+classe opc_evoluir
+herda comando_adm
+
+func menu
+# arg0=nome da classe, arg1=nome da variável
+  int16 total
+  prog p
+  epara p.inifunctudo(arg0, arg1), p.lin, p.depois
+    total++
+  efim
+  ret total == 0, "Nenhuma evolução definida"
+  ret total == 1, "Uma evolução"
+  ret txt(v.total("")) + " evoluções"
+
+func passo
+  arg0.passo = este
+  se txt(arg1, 0, 1) == "m" # Executa comando do MUD
+    arg0.perso.teclou(txtremove(txt(arg1, 1), "E"))
+  senao arg1 == "" || arg1 == "\b"
+    refvar nome = txt(arg0.var.classe1, 5)
+    arg0.msg("Evolução, tecle O para saber as opções")
+  senao arg1 == "z"
+    arg0.var.opcnivel = ""
+    ret passosair(arg0)
+  senao arg1 == "o"
+    prog p
+    refvar txtmais = arg0.txtmais
+    txtmais.limpar
+    txtmais.addfim("Evoluções:")
+    refvar classe = arg0.var.opcclasse
+    refvar funcao = arg0.var.opcvar + "p_"
+    refvar tot = inttotal(funcao)
+    epara p.inifunctudo(classe, funcao), p.lin, p.depois
+      txtmais.addfim(pnome(txt(p.texto, tot)) + " para " + pnome([classe]:[p.texto]))
+    efim
+    txtmais.linhas <= 1 && txtmais.addfim("Nenhuma evolução definida")
+    txtmais.addfim("Z Sair, M seguido de um texto executa comando do MUD")
+    txtmais.addfim("Ou digite o nome de um personagem")
+    arg0.txtmostra
+  senao
+    prog p
+    se !p.existe("p_" + arg1)
+      arg0.msg("Personagem não existe, digite outro, Z cancela")
+    senao
+      arg0.var.opcnivel = txts(arg1)
+      $opc_evoluir_perso.passo(arg0, "\b")
+    fimse
+  fimse
+  ret 1
+
+func pnome
+  txt100 nome = p_[arg0]:nome
+  ret nome ? arg0 + "(" + nome + ")" : arg0
+
+
+classe opc_evoluir_perso
+herda comando_adm
+const menu = ""
+
+func passo
+  prog p
+  arg0.passo = este
+  se arg1 == "" || arg1 == "\b"
+    arg0.msg("Digite o nome do personagem evoluído, N apaga, Z cancela")
+    ret 1
+  senao arg1 == "z"
+  senao arg1 == "n"
+    refvar nome = arg0.var.opcvar + "p_" + arg0.var.opcnivel
+    p.apagar(arg0.var.opcclasse, nome)
+    config:salvar
+    criar("admmudou", arg0.var.opcclasse, arg0.var.opcexec)
+    arg0.msg("Apagada evolução " + pnome(arg0.var.opcnivel))
+    admlog(arg0, "apagou " + arg0.var.opcclasse + ":" + nome + " " + arg0.var.opcnome)
+  senao !p.existe("p_" + arg1)
+    arg0.msg("Personagem não existe, digite outro, N apaga, Z cancela")
+    ret 1
+  senao
+    refvar nome = arg0.var.opcvar + "p_" + arg0.var.opcnivel
+    p.criar(arg0.var.opcclasse, "const " + nome + "= \"" + txts(arg1) + "\"")
+    config:salvar
+    criar("admmudou", arg0.var.opcclasse, arg0.var.opcexec)
+    arg0.msg("Evolui " + pnome(arg0.var.opcnivel) + " para " + pnome(arg1))
+    admlog(arg0, "mudou " + arg0.var.opcclasse + ":" + nome + " " + arg0.var.opcnome)
+  fimse
+  arg0.var.opcnivel = ""
+  ret $opc_evoluir.passo(arg0, "\b")
+
+func pnome
+  txt100 nome = p_[arg0]:nome
+  ret nome ? arg0 + "(" + nome + ")" : arg0

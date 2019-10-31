@@ -7,43 +7,79 @@ const posic = 4
 const m_ajuda = "Usa um item em um personagem. Somente em itens que contém habilidades."
 const m_sem_args = "Usar que item?"
 const m_naover = "Você não vê $m."
-const m_sem_hab = "Item $o não pode ser usado."
-const m_nivel = "$A precisa chegar no nível $m para usar $o."
+const m_sem_hab = "Item $o não pode ser usado em $m."
+const m_naopertence = "$A não pertence a você."
+const m_naoevolui = "Não foi possível evoluir $a."
+const m_nivel = "Você precisa chegar no nível $m para usar $o."
 const m_renascer1 = "Você precisa renascer uma vez para usar $o."
 const m_renascer2 = "Você precisa renascer duas vezes para usar $o."
 const m_renascer3 = "Você precisa renascer $m vezes para usar $o."
+const m_evoluir1 = "$P evolui para $c."
 const m_item_auto1 = "Você usa $o."
 const m_item_auto2 = "$P usa $o."
 const m_item_outro1 = "Você usa $o $e $a."
 const m_item_outro2 = "$P usa $o em você."
 const m_item_outro3 = "$P usa $o $e $a."
-const admordem = "m_ajuda m_sem_args m_naover m_sem_hab\n\
-m_nivel m_renascer1 m_renascer2 m_renascer3 m_item_auto1 m_item_auto2\n\
+const admordem = "m_ajuda m_sem_args m_naover m_sem_hab m_naopertence m_naoevolui\n\
+m_nivel m_renascer1 m_renascer2 m_renascer3 m_evoluir1 m_item_auto1 m_item_auto2\n\
 m_item_outro1 m_item_outro2"
 
 func escr
   $mens.mens = arg1
   ret !arg1, $mens.mp(m_sem_args, arg0)
-  ref r = misc:itemdentro(arg0, txt1(arg1))
-  ret !r, $mens.mp(m_naover, arg0)
-  ref tec = $tecnica_[r.i_item_tecnica]
-  se !tec
-    ret $mens.mp(m_sem_hab, arg0, nulo, r)
-  senao int(r.pnivel) > alvo.pnivel
-    $mens.mens = r.pnivel
-    ret $mens.msg(m_nivel, arg0)
-  senao int(r.renascer) > arg0.prenascer
-    $mens.mens = r.renascer
-    se r.renascer == 1
-      ret $mens.msg(m_renascer1, arg0)
-    senao r.renascer == 2
-      ret $mens.msg(m_renascer2, arg0)
-    fimse
-    ret $mens.msg(m_renascer3, arg0)
+  ref item = misc:itemdentro(arg0, txt1(arg1))
+  ret !item, $mens.mp(m_naover, arg0)
+  ref tec = $tecnica_[item.i_item_tecnica]
+  ref anim = misc:persodentro(arg0, txt2(arg1)) ?? misc:persodono(arg0, txt2(arg1))
+  refvar cl = item.i_evoluir_p_[txt(anim, 2)]
+# Tenta evoluir animal
+  se !cl
+  senao anim.dono != arg0 && (anim.tseguir != 3 || anim.iseguir.objlista != arg0)
+    ret $mens.mp(m_naopertence, arg0, anim)
+  senao
+    ret !checanivel(arg0, item), nulo
+    ref anim2 = anim.mudaobjeto("p_" + cl)
+    ret !anim2, $mens.mp(m_naoevolui, arg0, anim)
+    inicio(arg0, anim, nulo, nulo, item)
+    $mens.p(anim, anim2)
+    listaobj l
+    epara l.addfim(arg0.dono.dentro2), l, l.ini.remove
+      $mens.msginv(m_evoluir1, l.objini)
+    efim
+    ret
   fimse
-  tec.escrhab(arg0, txt2(arg1), r, item.i_item_nivel, txt(este) + " inicio")
+# Tenta usar técnica
+  se !tec
+    $mens.mens = txtsub(arg1, 1, 1)
+    ret $mens.mp(m_sem_hab, arg0, nulo, item)
+  fimse
+  ret !checanivel(arg0, item), nulo
+  tec.escrhab(arg0, txt2(arg1), item, item.i_item_nivel, txt(este) + " inicio")
 
-func inicio
+func checanivel # Verifica se tem nível para usar o item
+# arg0 = personagem
+# arg1 = item
+# Retorna verdadeiro se tem nível
+  se int(arg1.pnivel) > arg0.pnivel
+    $mens.mens = arg1.pnivel
+    $mens.mp(m_nivel, arg0, nulo, arg1)
+  senao int(arg1.renascer) > arg0.prenascer
+    $mens.mens = arg1.renascer
+    se arg1.renascer == 1
+      $mens.mp(m_renascer1, arg0, nulo, arg1)
+    senao arg1.renascer == 2
+      $mens.mp(m_renascer2, arg0, nulo, arg1)
+    senao
+      $mens.mp(m_renascer3, arg0, nulo, arg1)
+    fimse
+  senao
+    ret 1
+  fimse
+
+func inicio # Envia mensagem que usou o item e apaga o item
+# arg0 = personagem
+# arg1 = alvo
+# arg4 = item
   arg4.apagar(1)
   $mens.p(arg0, arg1, arg4)
   se arg0 == arg1
@@ -74,51 +110,66 @@ const tipo3 = "opc_linha"
 const clas3 = "cmd_item"
 const vari3 = "m_naover"
 #
-const nome4 = "Nível insuficiente"
+const nome4 = "Não pertence"
 const tipo4 = "opc_linha"
 const clas4 = "cmd_item"
-const vari4 = "m_nivel"
+const vari4 = "m_naopertence"
 #
-const nome5 = "Renascer 1 vez"
+const nome5 = "Não foi possível"
 const tipo5 = "opc_linha"
 const clas5 = "cmd_item"
-const vari5 = "m_renascer1"
+const vari5 = "m_naoevolui"
 #
-const nome6 = "Renascer 2 vezes"
+const nome6 = "Nível insuficiente"
 const tipo6 = "opc_linha"
 const clas6 = "cmd_item"
-const vari6 = "m_renascer2"
+const vari6 = "m_nivel"
 #
-const nome7 = "Renascer mais vezes"
+const nome7 = "Renascer 1 vez"
 const tipo7 = "opc_linha"
 const clas7 = "cmd_item"
-const vari7 = "m_renascer3"
+const vari7 = "m_renascer1"
 #
-const titu8 = " * Usou item em si mesmo"
-#
-const nome8 = "Msg perso"
+const nome8 = "Renascer 2 vezes"
 const tipo8 = "opc_linha"
 const clas8 = "cmd_item"
-const vari8 = "m_item_auto1"
+const vari8 = "m_renascer2"
 #
-const nome9 = "Msg outros"
+const nome9 = "Renascer mais vezes"
 const tipo9 = "opc_linha"
 const clas9 = "cmd_item"
-const vari9 = "m_item_auto2"
+const vari9 = "m_renascer3"
 #
-const titu10 = " * Usou item em outros"
-#
-const nome10 = "Msg perso"
+const nome10 = "Animal evolui"
 const tipo10 = "opc_linha"
 const clas10 = "cmd_item"
-const vari10 = "m_item_outro1"
+const vari10 = "m_evoluir1"
 #
-const nome11 = "Msg alvo"
+const titu11 = " * Usou item em si mesmo"
+#
+const nome11 = "Msg perso"
 const tipo11 = "opc_linha"
 const clas11 = "cmd_item"
-const vari11 = "m_item_outro2"
+const vari11 = "m_item_auto1"
 #
 const nome12 = "Msg outros"
 const tipo12 = "opc_linha"
 const clas12 = "cmd_item"
-const vari12 = "m_item_outro3"
+const vari12 = "m_item_auto2"
+#
+const titu13 = " * Usou item em outros"
+#
+const nome13 = "Msg perso"
+const tipo13 = "opc_linha"
+const clas13 = "cmd_item"
+const vari13 = "m_item_outro1"
+#
+const nome14 = "Msg alvo"
+const tipo14 = "opc_linha"
+const clas14 = "cmd_item"
+const vari14 = "m_item_outro2"
+#
+const nome15 = "Msg outros"
+const tipo15 = "opc_linha"
+const clas15 = "cmd_item"
+const vari15 = "m_item_outro3"

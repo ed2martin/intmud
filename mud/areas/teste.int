@@ -1140,6 +1140,19 @@ const i_item_outro2 = "$P usou uma pedra de cura em você."
 const i_item_outro3 = "$P usou uma pedra de cura em $A."
 
 
+classe i_teste076
+herda comum_itemgrupo
+const nome = "pedra verde"
+const descnome = "uma pedra verde"
+const msexo = 0 # Sexo Msg: 0 Feminino
+const i_item_auto1 = "Você usou uma pedra verde."
+const i_item_auto2 = "$P usou uma pedra verde."
+const i_item_outro1 = "Você usou uma pedra verde em $A."
+const i_item_outro2 = "$P usou uma pedra verde em você."
+const i_item_outro3 = "$P usou uma pedra verde em $A."
+const i_evoluir_p_teste043 = "teste045"
+
+
 classe p_teste001
 herda comum_perso
 const nome = "Jardineiro"
@@ -1968,7 +1981,7 @@ func entrou10
 
 classe p_teste034
 herda comum_perso
-const nome = "Afiador de facas"
+const nome = "afiador de facas"
 const msexo = 1 # Sexo Msg: 1 Masculino
 const evsala = 1 # Eventos dono sala: Sim
 
@@ -2016,7 +2029,7 @@ func cmd_soltouobj
 
 classe p_teste035
 herda comum_perso
-const nome = "Técnico de luz"
+const nome = "técnico de luz"
 const lojaaula = "m_Proteção_de_luz 8"
 
 
@@ -2153,7 +2166,7 @@ const descnome = "lagarto verde"
 const msexo = 1 # Sexo Msg: 1 Masculino
 const p_animal = 2 # Lugar após domar: 2 No comando Animal ou na sala
 const p_montar_tipo = 1 # Montar: 1 Somente se tiver dono
-const p_lugar = 3
+const p_lugar = 2
 const eveste = 1 # Eventos perso: Sim
 const evperso = 1 # Eventos dono perso: Sim
 
@@ -2174,7 +2187,9 @@ const descnome = "lagarto vermelho"
 const msexo = 1 # Sexo Msg: 1 Masculino
 const p_animal = 2 # Lugar após domar: 2 No comando Animal ou na sala
 const p_montar_tipo = 1 # Montar: 1 Somente se tiver dono
-const p_lugar = 3
+const p_lugar = 2
+const p_evoluiperso = "teste046"
+const p_evoluinivel = 2
 const eveste = 1 # Eventos perso: Sim
 const evperso = 1 # Eventos dono perso: Sim
 
@@ -2186,6 +2201,31 @@ func entrou1
   apagar(este)
   $mens.p(este)
   $mens.mtodos1("$P ficou com medo e foi embora.")
+
+
+classe p_teste045
+herda comum_persobat
+const nome = "lagarto planta"
+const descnome = "lagarto planta"
+const msexo = 1 # Sexo Msg: 1 Masculino
+const tipo1 = "normal"
+const tipo2 = "vegetal"
+const p_animal = 2 # Lugar após domar: 2 No comando Animal ou na sala
+const p_montar_tipo = 1 # Montar: 1 Somente se tiver dono
+const p_lugar = 3
+
+
+classe p_teste046
+herda comum_persobat
+const nome = "lagarto de fogo"
+const info = "lagarto fogo"
+const descnome = "lagarto de fogo"
+const msexo = 1 # Sexo Msg: 1 Masculino
+const tipo1 = "normal"
+const tipo2 = "fogo"
+const p_animal = 2 # Lugar após domar: 2 No comando Animal ou na sala
+const p_montar_tipo = 1 # Montar: 1 Somente se tiver dono
+const p_lugar = 3
 
 
 classe s_teste001
@@ -5117,6 +5157,8 @@ func s_reset1 # Realiza o reset
   !dentro1.objini("i_teste072") && criar("i_teste072", este, 1)
   !dentro1.objini("i_teste073") && criar("i_teste073", este, 1)
 
+const dir_o = $s_teste173
+
 
 classe s_teste172
 herda b_teste
@@ -5125,6 +5167,7 @@ const s_desc = "Aqui há uma caixa transparente que deixa o personagem invisível.
 Para usá-la basta pegar e tecla Item caixa.\n\
 Há também uma pedra de cura que pode ser usada com o comando Item.\n\
 Para curar outros, teclar Item cura seguido do nome do personagem."
+const dir_n = $s_teste173
 const dir_s = $s_teste023
 const s_reset = "S 100 teste074 3 S\nS 100 teste075 3 S"
 
@@ -5132,3 +5175,35 @@ func s_reset1 # Realiza o reset
 # Não alterar; função criada automaticamente a partir de s_reset
   !dentro1.objini("i_teste074") && criar("i_teste074", este, 3)
   !dentro1.objini("i_teste075") && criar("i_teste075", este, 3)
+
+
+classe s_teste173
+herda b_teste
+const s_titulo = "Evolução de animais"
+const s_desc = "Pode-se evoluir o lagarto verde com uma pedra verde. Depois de pegar\n\
+a pedra verde, teclar item verde e o nome ou número do animal.\n\
+Já o lagarto vermelho, evolui no nível 2 com o comando Evoluir.\n\
+Os lagartos são adquiridos indo para o leste."
+const dir_n = $s_teste174
+const dir_s = $s_teste172
+const dir_l = $s_teste171
+const s_reset = "S 100 teste076 3 S"
+
+func s_reset1 # Realiza o reset
+# Não alterar; função criada automaticamente a partir de s_reset
+  !dentro1.objini("i_teste076") && criar("i_teste076", este, 3)
+
+
+classe s_teste174
+herda b_teste
+const s_titulo = "Evoluir lagarto"
+const s_desc = "O lagarto vermelho evolui com o comando Evoluir a partir no nível 2.\n\
+Matando esses ratos com o lagarto ganha-se a experiência necessária."
+const dir_s = $s_teste173
+const s_reset = "P 100 teste037 0 0 1"
+
+func s_reset1 # Realiza o reset
+# Não alterar; função criada automaticamente a partir de s_reset
+  se p_teste037:objsolto.total < 1
+    criar("p_teste037", este, 0)
+  fimse

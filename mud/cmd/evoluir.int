@@ -1,0 +1,107 @@
+classe h_cmd_evoluir
+herda comando_comum
+const txtajuda = txtajuda1 + m_ajuda
+const txtajuda1 = "\b\c3Item\b\nSintaxe: EVOLUIR\n         EVOLUIR <personagem>\n"
+const posic = 4
+#
+const m_ajuda = "Faz um animal seu evoluir. Sem argumentos, mostra quais animais\n\
+podem eovluir."
+const m_naover = "Você não vê $m."
+const m_naopertence = "$A não pertence a você."
+const m_naopode = "$A não pode evoluir no nomento."
+const m_naoevolui = "Não foi possível evoluir $a."
+const m_vazio = "Nenhum animal em condição de evoluir."
+const m_lista = "Podem evoluir:"
+const m_animal = "$Q para $m"
+const m_evoluir1 = "$P evolui para $c."
+const admordem = "m_ajuda m_naover m_naopertence m_naopode m_naoevolui\n\
+m_vazio m_lista m_animal m_evoluir1"
+
+func escr
+  se !arg1
+    textotxt t
+    listaobj l
+    epara l.addfim(arg0.dentro2, arg0.lseguir), l, l.ini.remove
+      continuar l.objini.tseguir != 3 && l.objini.dono != arg0
+      continuar !evoluir(l.objini, arg0)
+      $mens.p(l.objini)
+      $mens.mens = p_[l.objini.p_evoluiperso]:descnome
+      t.addfim($mens.txt(m_animal, arg0))
+    efim
+    t.addini($mensjog.txt(t.linhas ? m_lista : m_vazio, arg0))
+    ret arg0.msg(t.remove(1000))
+  fimse
+# Obtém o animal
+  ref anim = misc:persodentro(arg0, arg1) ?? misc:persooutro(arg0, arg1)
+  se !anim
+    $mens.mens = arg1
+    ret $mens.mp(m_naover, arg0)
+  senao anim.dono != arg0 && (anim.tseguir != 3 || anim.iseguir.objlista != arg0)
+    ret $mens.mp(m_naopertence, arg0, anim)
+  senao !evoluir(anim, arg0)
+    ret $mens.mp(m_naopode, arg0, anim)
+  fimse
+# Tenta evoluir
+  ref anim2 = anim.mudaobjeto("p_" + anim.p_evoluiperso)
+  ret !anim2, $mens.mp(m_naoevolui, arg0, anim)
+  $mens.p(anim, anim2)
+  listaobj l
+  epara l.addfim(arg0.dono.dentro2), l, l.ini.remove
+    $mens.msginv(m_evoluir1, l.objini)
+  efim
+
+func evoluir # Verifica se um personagem pode evoluir
+# arg0 = personagem, arg1 = dono atual
+# Retorna: 0=não pode, 1=pode
+  ret !arg0.perso || arg0.pnivel < arg0.p_evoluinivel, 0
+  ret arg0.perso != p_[arg0.p_evoluiperso]:perso, 0
+  ret arg0.p_evoluicom && arg0.z_dono == arg1.nome ? 0 : 1
+
+
+classe m_cmd_evoluir
+herda comando_menu_cmd
+#
+const nome1 = "Ajuda"
+const tipo1 = "opc_texto"
+const clas1 = "cmd_evoluir"
+const vari1 = "m_ajuda"
+#
+const nome2 = "Sem personagem"
+const tipo2 = "opc_linha"
+const clas2 = "cmd_evoluir"
+const vari2 = "m_naover"
+#
+const nome3 = "Não pertence"
+const tipo3 = "opc_linha"
+const clas3 = "cmd_evoluir"
+const vari3 = "m_naopertence"
+#
+const nome4 = "Não evolui"
+const tipo4 = "opc_linha"
+const clas4 = "cmd_evoluir"
+const vari4 = "m_naopode"
+#
+const nome5 = "Não foi possível"
+const tipo5 = "opc_linha"
+const clas5 = "cmd_evoluir"
+const vari5 = "m_naoevolui"
+#
+const nome6 = "Nenhum animal"
+const tipo6 = "opc_linha"
+const clas6 = "cmd_evoluir"
+const vari6 = "m_vazio"
+#
+const nome7 = "Lista de animais"
+const tipo7 = "opc_linha"
+const clas7 = "cmd_evoluir"
+const vari7 = "m_lista"
+#
+const nome8 = "Animal da lista"
+const tipo8 = "opc_linha"
+const clas8 = "cmd_evoluir"
+const vari8 = "m_animal"
+#
+const nome9 = "Animal evolui"
+const tipo9 = "opc_linha"
+const clas9 = "cmd_evoluir"
+const vari9 = "m_evoluir1"

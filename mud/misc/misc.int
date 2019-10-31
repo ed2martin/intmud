@@ -3,7 +3,7 @@ classe misc
 # Deve ser usado como misc:variável ao invés de $misc.variável
 #
 # Versão do MUD, aparece no comando Serv
-const versao = "28/9/2019"
+const versao = "28/10/2019"
 #
 # Objetos obtidos por em misc:separa
 comum txt100 sep1 # Objeto procurado
@@ -224,6 +224,16 @@ func persooutro # Obtém um personagem na sala que não seja o próprio personagem
   epara i = arg0.dono.dentro2.ini, i, i.depois
     refvar r = i.obj
     ret r != arg0 && r.visivel(arg0) && n.nome(r.var.z_ident ?? r.ident, r.objtot), ref(r)
+  efim
+
+func persodentro # Obtém um animal no personagem (no comando Animais)
+# arg0 = personagem, arg1 = número do personagem (o que o usuário digitou)
+  ret arg1 != intpos(arg1) || config:animal1 < arg1 || !config:animal1, nulo
+  int8 num = arg1
+  listaitem i
+  epara i = arg0.dentro2.ini, i, i.depois
+    continuar !i.obj.perso
+    ret num-- == 1, ref(i.obj)
   efim
 
 func itemlista # Obtém item ou personagem a partir de uma listaobj
