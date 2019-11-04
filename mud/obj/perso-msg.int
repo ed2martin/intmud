@@ -108,6 +108,9 @@ const exp_sub1_perso = "Você perde 1 ponto de experiência"
 const exp_sub2_perso = "Você perde $m pontos de experiência"
 const exp_sub1_outro = "$A perde 1 ponto de experiência"
 const exp_sub2_outro = "$A perde $m pontos de experiência"
+const exp_nivelmsg1 = "Você avança para o nível $m."
+const exp_nivelmsg2 = "$1 avança para o nível $m."
+const exp_nmax = ""
 #
 const admordem = "posicao0a posicao1a posicao2a posicao3a posicao4a\n\
 posicao5a posicao6a posicao7a posicao8a semluta_a\n\
@@ -130,7 +133,8 @@ ini_tipo3_esc ini_tipo3_inv ini_tipo3_quer\n\
 ini_iniciando ini_continuando ini_reconectando ini_usarperso\n\
 ini_salvar_sim ini_salvar_nao ini_lutando1 ini_lutando2\n\
 exp_add1_voce exp_add2_voce exp_add1_animal exp_add2_animal\n\
-exp_sub1_voce exp_sub2_voce exp_sub1_animal exp_sub2_animal"
+exp_sub1_voce exp_sub2_voce exp_sub1_animal exp_sub2_animal\n\
+exp_nivelmsg1 exp_nivelmsg2 exp_nmax"
 
 func iniclasse
   ret txt(arg0, 0, 2) != "h_", !$[arg0] && criar(arg0)
@@ -605,7 +609,7 @@ const vari8 = "ini_lutando2"
 
 classe m_perso_exp
 herda comando_menu
-const titulo = "Ganhar/perder experiência"
+const titulo = "Experiência e nível"
 const menufim = "menu_econfig_msg"
 const colunas = 28
 #
@@ -648,3 +652,20 @@ const nome8 = "Animal perde vários"
 const tipo8 = "opc_linha"
 const clas8 = "perso_cfg"
 const vari8 = "exp_sub2_outro"
+#
+const nome9 = "Sobe nível perso"
+const info9 = "$P é o personagem, $1 é o nome do personagem visível a todos, $m é o nível"
+const tipo9 = "opc_linha"
+const clas9 = "perso_cfg"
+const vari9 = "exp_nivelmsg1"
+#
+const nome10 = "Sobe nível outros"
+const info10 = "$P é o personagem, $1 é o nome do personagem visível a todos, $m é o nível"
+const tipo10 = "opc_linha"
+const clas10 = "perso_cfg"
+const vari10 = "exp_nivelmsg2"
+#
+const nome11 = "Chegou ao nível máximo"
+const tipo11 = "opc_texto"
+const clas11 = "perso_cfg"
+const vari11 = "exp_nmax"

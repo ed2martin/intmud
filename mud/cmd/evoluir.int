@@ -13,9 +13,10 @@ const m_naoevolui = "Não foi possível evoluir $a."
 const m_vazio = "Nenhum animal em condição de evoluir."
 const m_lista = "Podem evoluir:"
 const m_animal = "$Q para $m"
+const m_podeevoluir = "$P já pode evoluir para $m."
 const m_evoluir1 = "$P evolui para $c."
 const admordem = "m_ajuda m_naover m_naopertence m_naopode m_naoevolui\n\
-m_vazio m_lista m_animal m_evoluir1"
+m_vazio m_lista m_animal m_podeevoluir m_evoluir1"
 
 func escr
   se !arg1
@@ -47,7 +48,7 @@ func escr
   $mens.p(anim, anim2)
   listaobj l
   epara l.addfim(arg0.dono.dentro2), l, l.ini.remove
-    $mens.msginv(m_evoluir1, l.objini)
+    $mens.msginv(anim2.p_evoluimsg1 ?? m_evoluir1, l.objini)
   efim
 
 func evoluir # Verifica se um personagem pode evoluir
@@ -57,6 +58,16 @@ func evoluir # Verifica se um personagem pode evoluir
   ret arg0.perso != p_[arg0.p_evoluiperso]:perso, 0
   ret arg0.p_evoluicom && arg0.z_dono == arg1.nome ? 0 : 1
 
+func infoevoluir # Informa o dono se o personagem já pode evoluir
+# arg0 = personagem
+# Nota: é chamado sempre que o personagem sobe um nível
+  ref dono = arg0.dono.perso ? arg0.dono : arg0.tseguir == 3 ? arg0.iseguir.objlista
+  se dono && evoluir(arg0, dono)
+    $mens.p(arg0, arg0.dono)
+    $mens.mens = p_[arg0.p_evoluiperso]:descnome
+    $mens.msginv(m_podeevoluir, dono)
+  fimse
+    
 
 classe m_cmd_evoluir
 herda comando_menu_cmd
@@ -101,7 +112,13 @@ const tipo8 = "opc_linha"
 const clas8 = "cmd_evoluir"
 const vari8 = "m_animal"
 #
-const nome9 = "Animal evolui"
+const nome9 = "Já pode evoluir"
+const info9 = "Ao subir de nível"
 const tipo9 = "opc_linha"
 const clas9 = "cmd_evoluir"
-const vari9 = "m_evoluir1"
+const vari9 = "m_podeevoluir"
+#
+const nome10 = "Animal evolui"
+const tipo10 = "opc_linha"
+const clas10 = "cmd_evoluir"
+const vari10 = "m_evoluir1"

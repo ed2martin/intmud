@@ -140,13 +140,17 @@ func recalc_exec # Ajusta variáveis, principalmente batalha
       ++num >= 5 && (expatual = 0)
     efim
     se num
+      listaobj l
       $mens.o_1 = txtcopiamai(descnome2, "A") + (este != contr ? " de " + contr.descnome2)
       $mens.mens = pnivel
       $mens.p(este)
-      $mens.mtodos2(config:nivelmsg1, config:nivelmsg2)
-      pnivel >= nmax && config:nmaxmsg && $mens.msginv(config:nmaxmsg, este)
+      epara l.addfim(contr.dono.dentro2), l, l.ini.remove
+        refvar m = l.objini == este ? perso_cfg:exp_nivelmsg1 : perso_cfg:exp_nivelmsg2
+        $mens.msginv(m, l.objini)
+      efim
+      pnivel >= nmax && perso_cfg:exp_nmax && $mens.msginv(perso_cfg:exp_nmax, este)
+      $cmd_evoluir.infoevoluir(este)
       cmd_nivel1(este, num)
-      listaobj l
       epara l.addfim(evento), l, l.ini.remove
         l.objini.cmd_nivel2(este, num)
       efim

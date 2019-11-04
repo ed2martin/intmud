@@ -1,4 +1,4 @@
-classe atualiza_516
+classe atualiza_522
 # Atualiza arquivos mud/config/* e mud/areas/* de acordo com novas mudanças
 prog p
 debug dbg
@@ -729,8 +729,8 @@ func ini3_exec
 func ini4_exec
   apagar(este)
 # Checa e muda a versão
-  ret (versao = config:versao) >= 519, nulo
-  p.criar("config", "const versao = 519 # Para atualizar diretórios areas e config")
+  ret (versao = config:versao) >= 522, nulo
+  p.criar("config", "const versao = 522 # Para atualizar diretórios areas e config")
   config:salvar
 # Comando Fim e Dicas aleatórias
   se versao < 457
@@ -883,6 +883,12 @@ func ini4_exec
 # Mensagem morreu
   se versao < 519
     criafunc("config", "const p_morreu0 = \"Você morreu.\"")
+  fimse
+# Mensagens de nível
+  se versao < 522
+    movefunc("config", "nivelmsg1", "perso_cfg", "exp_nivelmsg1")
+    movefunc("config", "nivelmsg2", "perso_cfg", "exp_nivelmsg2")
+    movefunc("config", "nmaxmsg", "perso_cfg", "exp_nmax")
   fimse
 # Avisa que atualizou arquivos
   tela.msg("Diretórios areas e config atualizados\n")
