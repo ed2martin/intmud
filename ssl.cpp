@@ -108,14 +108,14 @@ const char * AbreSSL()
         return "Erro ao carregar libeay32.dll";
     }
 #else
-    ssl_handle1 = dlopen("libssl.so", RTLD_LAZY);
+    ssl_handle1 = dlopen("libssl.so.1.0.0", RTLD_LAZY);
     if (ssl_handle1 == 0)
-        ssl_handle1 = dlopen("libssl.so.1.0.0", RTLD_LAZY);
+        ssl_handle1 = dlopen("libssl.so", RTLD_LAZY);
     if (ssl_handle1 == 0)
         return "Erro ao carregar libssl.so";
-    ssl_handle2 = dlopen("libcrypto.so", RTLD_LAZY);
-    if (ssl_handle2 == 0)
     ssl_handle2 = dlopen("libcrypto.so.1.0.0", RTLD_LAZY);
+    if (ssl_handle2 == 0)
+    ssl_handle2 = dlopen("libcrypto.so", RTLD_LAZY);
     if (ssl_handle2 == 0)
     {
         dlclose(ssl_handle1);

@@ -145,9 +145,8 @@ void err_printf(const char * mens, ...)
 
 // Envia mensagem
     const char msg1[] = "IntMUD versão " VERSION " (Interpretador MUD)\n";
-    switch (opcao_log)
+    if (!opcao_log)
     {
-    case 0:
         if (Console==0)
         {
             Console = new TConsole;
@@ -159,8 +158,9 @@ void err_printf(const char * mens, ...)
             Console->EnvTxt(msg1, strlen(msg1));
         }
         Console->EnvTxt(txt, destino-txt);
-        break;
-    case 1:
+    }
+    else
+    {
         if (err_log == 0)
         {
             mprintf(arqinicio, INT_NOME_TAM, "%s.log", TArqIncluir::ArqNome());
@@ -170,9 +170,6 @@ void err_printf(const char * mens, ...)
             fwrite(msg1, 1, strlen(msg1), err_log);
         }
         fwrite(txt, 1, destino-txt, err_log);
-        break;
-    default:
-        exit(EXIT_FAILURE);
     }
 }
 

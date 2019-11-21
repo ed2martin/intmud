@@ -88,19 +88,18 @@ private:
     SSL * sockssl;              ///< Se !=0, é o objeto da conexão segura
     char proto; ///< Protocolo (quando sock>=0), vide TSocketProto
     char cores;                 ///< 0=sem 1=ao receber, 2=ao enviar, 3=com
-    char acaossl:1;             ///< O que fazer na conexão SSL
-            /**<  - 0 esperando dados para recv()
-             *    - 1 esperando dados para send() */
-    char eventoenv:1;           ///< Se deve gerar evento _env
+    unsigned char receberssl:1; ///< Se deve verificar dados recebidos antes de enviar
+    unsigned char eventoenv:1;  ///< Se deve gerar evento _env
                                 /**< @note Caracteres de controle de Telnet
                                   *  não devem gerar eventos _env */
-    char usaropctelnet:1;       ///< Variável socket.opctelnet
-    char sockenvrec:1;          ///< 1=socket fechou ao enviar, 0=ao receber
+    unsigned char usaropctelnet:1; ///< Variável socket.opctelnet
+    unsigned char sockenvrec:1; ///< 1=socket fechou ao enviar, 0=ao receber
     struct sockaddr_in conSock; ///< Usado principalmente quando proto=0
 
 // Para enviar mensagens
     char bufEnv[SOCKET_ENV];    ///< Contém a mensagem que será enviada
     unsigned int pontEnv;       ///< Número de bytes pendentes em bufEnv
+    unsigned int pontEnvSsl;    ///< Quantos bytes tentou enviar ou 0 se não tentou
     static bool boolenvpend;    ///< Verdadeiro se tem algum dado pendente
 
 // Para receber mensagens

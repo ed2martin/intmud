@@ -336,6 +336,7 @@ TSocket::TSocket(int socknum, SSL * sslnum)
     sock=socknum;
     sockssl=sslnum;
     pontEnv=0;
+    pontEnvSsl=0;
     pontTelnet=0;
     pontESC=0;
     memset(telnetopc, 0, sizeof(telnetopc));
@@ -396,6 +397,7 @@ void TSocket::FecharSock(int erro, bool env)
     sock=-1;
     pontRec = 0;
     pontEnv = 0;
+    pontEnvSsl = 0;
     sockerro = erro;
     sockenvrec = env;
 }
@@ -407,7 +409,7 @@ void TSocket::CriaSSL()
         return;
     sockssl = SslNew(ssl_ctx_cliente);
     SslSetFd(sockssl, sock);
-    acaossl = 0;
+    receberssl = 0;
 #ifdef DEBUG_SSL
     puts("SSL_NEW"); fflush(stdout);
 #endif
@@ -1048,24 +1050,41 @@ void TSocket::EnvPend()
 #endif
     if (sockssl)
     {
-        resposta=SslWrite(sockssl, bufEnv, pontEnv);
+        if (receberssl)
+            return;
+        int erro = 0;
+        resposta=SslWrite(sockssl, bufEnv, pontEnvSsl ? pontEnvSsl : pontEnv);
         if (resposta <= 0)
-            switch (SslGetError(sockssl, resposta))
+        {
+            erro = SslGetError(sockssl, resposta);
+            switch (erro)
             {
             case SSL_ERROR_NONE:
-                resposta = 0;
-                break;
             case SSL_ERROR_WANT_READ:
-                resposta = 0, acaossl = 0;
-                break;
             case SSL_ERROR_WANT_WRITE:
-                resposta = 0, acaossl = 1;
+                resposta = 0;
                 break;
             default:
                 resposta = -1;
             }
+            // Se ocorreu erro, só vai enviar novamente após fazer uma leitura
+            if (erro != SSL_ERROR_NONE)
+            {
+                receberssl = 1;
 #ifdef DEBUG_SSL
-        printf("SSL_WRITE = %d (acaossl=%d)\n", resposta, acaossl);
+                printf("Não pode SSL_WRITE(%d)\n", sock);
+                fflush(stdout);
+#endif
+            }
+            // Próxima chamada a SslWrite deve ser com a mesma quantidade de bytes
+            if (pontEnvSsl == 0)
+                pontEnvSsl = pontEnv;
+        }
+        else
+            pontEnvSsl = 0;
+#ifdef DEBUG_SSL
+        printf("SSL_WRITE(%d, %d) = %d (erro=%d)\n",
+                sock, pontEnvSsl ? pontEnvSsl : pontEnv, resposta, erro);
         fflush(stdout);
 #endif
     }
@@ -1180,17 +1199,6 @@ void TSocket::Fd_Set(fd_set * set_entrada, fd_set * set_saida, fd_set * set_err)
             FD_SET(obj->sock, set_entrada);
             FD_SET(obj->sock, set_saida);
 #endif
-        }
-        else if (obj->sockssl)
-        {
-#ifdef DEBUG_SSL
-            printf("SSL_SELECT (acaossl=%d)\n", obj->acaossl);
-            fflush(stdout);
-#endif
-            if (obj->acaossl)
-                FD_SET(obj->sock, set_saida);
-            else
-                FD_SET(obj->sock, set_entrada);
         }
         else
         {
@@ -1310,19 +1318,20 @@ void TSocket::ProcEventos(fd_set * set_entrada,
                 obj = SockAtual;
                 continue;
             }
-            switch (SslGetError(obj->sockssl, resposta))
+            int erro = SslGetError(obj->sockssl, resposta);
+            switch (erro)
             {
+            case SSL_ERROR_NONE:
             case SSL_ERROR_WANT_READ:
-                resposta = 0, obj->acaossl = 0;
-                break;
             case SSL_ERROR_WANT_WRITE:
-                resposta = 0, obj->acaossl = 1;
+                resposta = 0;
                 break;
             default:
                 resposta = -1;
             }
 #ifdef DEBUG_SSL
-            printf("SSL_CONNECT = %d (acaossl=%d)\n", resposta, obj->acaossl);
+            printf("SSL_CONNECT(%d) = %d (erro=%d)\n",
+                    obj->sock, resposta, erro);
             fflush(stdout);
 #endif
             if (resposta >= 0) // Conexão pendente
@@ -1351,24 +1360,28 @@ void TSocket::ProcEventos(fd_set * set_entrada,
             if (obj->sockssl)
             {
                 coderro = 0;
+                int erro = 0;
                 resposta=SslRead(obj->sockssl, mens, sizeof(mens));
                 if (resposta <= 0)
-                    switch (SslGetError(obj->sockssl, resposta))
+                {
+                    erro = SslGetError(obj->sockssl, resposta);
+                    switch (erro)
                     {
                     case SSL_ERROR_NONE:
-                        resposta = 0;
-                        break;
                     case SSL_ERROR_WANT_READ:
-                        resposta = 0, obj->acaossl = 0;
-                        break;
                     case SSL_ERROR_WANT_WRITE:
-                        resposta = 0, obj->acaossl = 1;
+                        resposta = 0;
                         break;
                     default:
                         resposta = -1;
                     }
+                    obj->receberssl = 0;
+                }
 #ifdef DEBUG_SSL
-                printf("SSL_READ = %d (acaossl=%d)\n", resposta, obj->acaossl);
+                printf("SSL_READ(%d) = %d (erro=%d)\n",
+                        obj->sock, resposta, erro);
+                if (resposta <= 0)
+                    printf("Pode SSL_WRITE(%d)\n", obj->sock);
                 fflush(stdout);
 #endif
             }
@@ -1398,7 +1411,7 @@ void TSocket::ProcEventos(fd_set * set_entrada,
 #endif
             }
         // Verifica se socket fechou
-            if (resposta<0)
+            if (resposta < 0)
             {
                 obj->FecharSock(coderro, 0);
                 obj = obj->sDepois;
@@ -1418,7 +1431,7 @@ void TSocket::ProcEventos(fd_set * set_entrada,
                     obj = SockAtual;
                     break;
                 }
-                if (resposta == sizeof(mens))
+                if (obj->sockssl || resposta == sizeof(mens))
                     continue;
             }
         // Verifica se fim da leitura

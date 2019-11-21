@@ -92,13 +92,25 @@
 //----------------------------------------------------------------------------
 TVariavel::TVariavel()
 {
-    memset(this, 0, sizeof(TVariavel));
+    defvar = 0;
+    nomevar = 0;
+    endvar = 0;
+    tamanho = 0;
+    indice = 0;
+    numbit = 0;
+    numfunc = 0;
 }
 
 //----------------------------------------------------------------------------
 void TVariavel::Limpar()
 {
-    memset(this, 0, sizeof(TVariavel));
+    defvar = 0;
+    nomevar = 0;
+    endvar = 0;
+    tamanho = 0;
+    indice = 0;
+    numbit = 0;
+    numfunc = 0;
 }
 
 //------------------------------------------------------------------------------
