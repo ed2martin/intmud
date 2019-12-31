@@ -20,7 +20,7 @@ func escr
     arg0.msg("\bNenhum líquido encontrado.")
   senao
     textotxt t
-    t.addfim("\b\c6Líquido\b")
+    t.addfim("\b\c6Líquidos:\b")
     enquanto p.lin && t.linhas < 500
       t.addfim(txtcopiamai(txt2(txte(p.texto)), "A"))
       p.depois
@@ -99,7 +99,7 @@ func passo # Confirmar que quer apagar líquido
       arg0.msg("Líquido apagado: " + arg0.tpasso)
       admlog(arg0, "apagou líquido " + arg0.tpasso)
     senao
-      arg0.msg("líquidos apagados: " + arg0.tpasso)
+      arg0.msg("Líquidos apagados: " + arg0.tpasso)
       admlog(arg0, "apagou líquidos " + arg0.tpasso)
     fimse
   senao

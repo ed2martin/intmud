@@ -1,0 +1,305 @@
+classe adm_idioma
+const iniclasse = !$[arg0] && criar(arg0)
+const txtajuda = "\c3Idiomas\b\n\
+  \c2LIDIOMA\b   Lista idiomas existentes\n\
+  \c2CIDIOMA\b   Cria um idioma\n\
+  \c2EIDIOMA\b   Edita um idioma\n\
+  \c2AIDIOMA\b   Apaga um ou mais idiomas"
+
+
+classe adm_lidioma
+herda comando_adm
+const txtajuda = "\b\c3Lidioma\b\n\
+Sintaxe: LIDIOMA [nome]\n\
+Lista os idiomas que começam com o nome especificado.\n\
+Se o nome for omitido, lista todos os idiomas."
+
+func escr
+  prog p
+  se !p.iniclasse("idioma_" + arg1)
+    arg0.msg("\bNenhum idioma encontrado.")
+  senao
+    textotxt t
+    t.addfim("\b\c6Idiomas:\b")
+    enquanto p.lin && t.linhas < 500
+      t.addfim(txtcopiamai(txt2(txte(p.texto)), "A"))
+      p.depois
+    efim
+    arg0.msg2(t.remove(500))
+  fimse
+
+
+classe adm_cidioma
+herda comando_adm
+const txtajuda = "\b\c3Cidioma\b\n\
+Sintaxe: CIDIOMA <nome>\n\
+Cria um idioma com o nome especificado.\n\
+O nome deve ser composto de letras, mas pode ter espaços no meio."
+
+func escr
+  prog p
+# Checa se digitou nome do idioma
+  se arg1 == ""
+    ret arg0.msg("Tecle o nome do idioma após CIDIOMA")
+  fimse
+# Checa se nome válido
+  txt80 nome = txte(txtremove(arg1, "EMDSA"))
+  se txtproc(txtsepara(txttroca(nome, " ", ""), "O+DOL,DOL+O"), " ") >= 0
+    ret arg0.msg("Nome inválido para idioma: " + nome)
+  senao inttotal(nome) > 40
+    ret arg0.msg("Nome deve ter até 40 caracteres: " + nome)
+  senao p.existe("idioma_" + nome)
+    ret arg0.msg("Já existe o idioma: " + nome)
+  fimse
+# Cria idioma
+  refvar lin = "const falar = \"" + txte(txtmin(nome)) + "\""
+  p.criar("idioma_" + txts(txtmin(nome)) + "\nconfig/idioma\nherda comum_idioma\n" + lin)
+  criar("admordena", "config/idioma")
+# config:salvar
+  arg0.msg("\bCriou idioma: " + nome)
+  admlog(arg0, "criou idioma " + nome)
+
+
+classe adm_aidioma
+herda comando_adm
+const txtajuda = "\b\c3Aidioma\b\n\
+Sintaxe: AIDIOMA <nomes dos idiomas>\n\
+Apaga uma ou mais idiomas, com os nomes especificados.\n\
+Para apagar um idioma cujo nome contém espaços no meio, use sublinhado\n\
+no lugar dos espaços."
+
+func escr
+  prog p
+  se arg1 == ""
+    ret arg0.msg("Tecle um ou mais nomes de idioma após AIDIOMA")
+  fimse
+  uint16 x
+  enquanto txtsub(arg1, x, 1)
+    se !p.existe("idioma_" + txtsub(arg1, x, 1))
+      ret arg0.msg("Idioma não existe: " + txtsub(arg1, x, 1))
+    fimse
+    x++
+  efim
+  arg0.sock.tpasso = arg1
+  passo(arg0.sock, "")
+
+func passo # Confirmar que quer apagar idioma
+  arg0.passo = ""
+  se arg1 == "n"
+    arg0.msg("Cancelado")
+  senao arg1 == "s"
+    prog p
+    uint16 x
+    enquanto txtsub(arg0.tpasso, x, 1)
+      p.apagar("idioma_" + txtsub(arg0.tpasso, x, 1))
+      x++
+    efim
+    config:salvar
+    se x < 2
+      arg0.msg("Idiomas apagado: " + arg0.tpasso)
+      admlog(arg0, "apagou idioma " + arg0.tpasso)
+    senao
+      arg0.msg("Idiomas apagados: " + arg0.tpasso)
+      admlog(arg0, "apagou idiomas " + arg0.tpasso)
+    fimse
+  senao
+    arg0.passo = este
+    refvar m1 = txt2(arg0.tpasso) ? "idiomas" : "idioma"
+    arg0.msg("Apagar " + m1 + " " + arg0.tpasso + "? Tecle S ou N")
+  fimse
+  ret 1
+
+
+classe adm_eidioma
+herda comando_adm
+const txtajuda = "\b\c3Eidioma\b\n\
+Sintaxe: EIDIOMA <nome>\n\
+Edita o idioma com o nome especificado."
+
+func escr
+  prog p
+  se arg1 == ""
+    arg0.msg("Tecle o nome do idioma após EIDIOMA")
+  senao !p.existe("idioma_" + arg1)
+    arg0.msg("Idioma não existe: " + arg1)
+  senao
+    arg0.sock.var.classe1 = "idioma_" + txts(txtmin(arg1))
+    arg0.sock.var.menufim = "menu_idioma"
+    arg0.sock.m_menu(arg0.sock.var.menufim)
+  fimse
+
+
+classe opc_idioma
+herda comando_adm
+
+func menu
+# arg0=nome da classe, arg1=nome da variável
+  int16 total
+  prog p
+  epara p.inifunctudo(arg0, arg1), p.lin, p.depois
+    total++
+  efim
+  ret total == 0, "Nenhuma troca"
+  ret total == 1, "Uma troca"
+  ret txt(total) + " trocas"
+
+func passo
+  arg0.passo = este
+  se txt(arg1, 0, 1) == "m" # Executa comando do MUD
+    arg0.perso.teclou(txtremove(txt(arg1, 1), "E"))
+  senao arg1 == "" || arg1 == "\b"
+    refvar nome = txt(arg0.var.classe1, 5)
+    arg0.msg("Trocas, tecle O para saber as opções")
+  senao arg1 == "z"
+    arg0.var.opcnivel = ""
+    ret passosair(arg0)
+  senao arg1 == "o"
+    prog p
+    refvar txtmais = arg0.txtmais
+    txtmais.limpar
+    refvar classe = arg0.var.opcclasse
+    refvar funcao = arg0.var.opcvar
+    refvar tot = inttotal(funcao)
+    txt100 lin
+    epara p.inifunctudo(classe, funcao), p.lin, p.depois
+      refvar nome = txt(p.texto, tot)
+      continuar inttotal(nome) > 1
+      refvar t1 = nome + "=" + txtdec($[classe].[p.texto](txtcod(nome))) + ","
+      se inttotal(lin + t1) >= 70
+        txtmais.addfim(txt(lin, 1)), lin = ""
+      fimse
+      lin += " " + t1
+    efim
+    epara p.inifunctudo(classe, funcao), p.lin, p.depois
+      refvar nome = txt(p.texto, tot)
+      continuar inttotal(nome) == 1
+      refvar t1 = nome + "=" + txtdec($[classe].[p.texto](txtcod(nome))) + ","
+      se inttotal(lin + t1) >= 70
+        txtmais.addfim(txt(lin, 1)), lin = ""
+      fimse
+      lin += " " + t1
+    efim
+    lin && txtmais.addfim(txt(lin, 1, inttotal(lin) - 2))
+    txtmais.addini(txtmais.linhas ? "Trocas:" : "Nenhuma troca definida")
+    txtmais.addfim("Z Sair, M seguido de um texto executa comando do MUD")
+    txtmais.addfim("I Inserir ou mudar uma troca, A Apagar uma troca")
+    arg0.txtmostra
+  senao arg1 == "i"
+    $opc_idioma_i1.passo(arg0, "")
+  senao arg1 == "a"
+    $opc_idioma_a1.passo(arg0, "")
+  senao
+    arg0.msg("Opção não existe, digite outra, Z cancela")
+  fimse
+  ret 1
+
+
+classe opc_idioma_a1
+herda comando_adm
+
+func passo
+  prog p
+  refvar nome = txtcod(arg0.var.opcvar + arg1)
+  arg0.passo = este
+  se arg1 == "" || arg1 == "\b"
+    arg0.msg("Qual palavra apagar?")
+  senao !p.existe(arg0.var.opcclasse, nome)
+    arg0.msg("Palavra não existe: " + arg1)
+    $opc_idioma.passo(arg0, "")
+  senao
+    p.apagar(arg0.var.opcclasse, nome)
+    config:salvar
+    criar("admmudou", arg0.var.opcclasse, arg0.var.opcexec)
+    arg0.msg("Apagada palavra " + arg1)
+    admlog(arg0, "apagou " + arg0.var.opcclasse + ":" + nome + " " + arg0.var.opcnome)
+    $opc_idioma.passo(arg0, "")
+  fimse
+  ret 1
+
+
+classe opc_idioma_i1
+herda comando_adm
+
+func passo
+  arg0.passo = este
+  se arg1 == "" || arg1 == "\b"
+    arg0.msg("Qual palavra mudar")
+  senao
+    arg0.var.opcnivel = arg1
+    ret $opc_idioma_i2.passo(arg0, "")
+  fimse
+  ret 1
+
+
+classe opc_idioma_i2
+herda comando_adm
+
+func passo
+  arg0.passo = este
+  se arg1 == "" || arg1 == "\b"
+    arg0.msg("Mudar para qual palavra?")
+    ret 1
+  fimse
+  refvar opcvar = txtcod(arg0.var.opcvar)
+  refvar nome = opcvar + txtcod(arg0.var.opcnivel)
+  refvar valor = "txtcopiamai(\"" + txtcod(arg1) + "\", arg0)"
+  prog p
+  p.criar(arg0.var.opcclasse, "const " + nome + "=" + valor)
+  txt200 nomeantes
+  refvar tam0 = inttotal(opcvar)
+  refvar nometam = inttotal(nome) - tam0
+  epara p.inifunccl(arg0.var.opcclasse, opcvar), p.lin, p.depois
+    refvar tot1 = inttotal(p.texto) - tam0
+    se nometam <= 1 && tot1 > 1
+    senao nometam > 1 && tot1 <= 1 || p.texto < nome
+      nomeantes = p.texto
+    fimse
+  efim
+  nomeantes && p.fdepois(arg0.var.opcclasse, nome, nomeantes)
+  config:salvar
+  criar("admmudou", arg0.var.opcclasse, arg0.var.opcexec)
+  arg0.msg("Mudar " + arg0.var.opcnivel + " para " + arg1)
+  admlog(arg0, "mudou " + arg0.var.opcclasse + ":" + nome + " " + arg0.var.opcnome)
+  arg0.var.opcnivel = ""
+  $opc_idioma.passo(arg0, "")
+  ret 1
+
+
+classe menu_idioma
+herda comando_menu
+const titulo = "Idioma " + txt(var.classe1, 7)
+const colunas = 25
+#
+const nome1 = "Falar em"
+const info1 = "Para mensagens como \"Falou em xyz\""
+const tipo1 = "opc_linha"
+const clas1 = var.classe1
+const vari1 = "falar"
+#
+const nome2 = "Msg não conhece"
+const info2 = "Ao usar o comando falar, para quem não conhece o idioma"
+const tipo2 = "opc_linha"
+const clas2 = var.classe1
+const vari2 = "naoconhece"
+#
+const nome3 = "Trocar palavras 1"
+const tipo3 = "opc_idioma"
+const clas3 = var.classe1
+const vari3 = "troca1_"
+#
+const nome4 = "Trocar palavras 2"
+const tipo4 = "opc_idioma"
+const clas4 = var.classe1
+const vari4 = "troca2_"
+
+
+classe comum_idioma
+const iniclasse = !$[arg0] && criar(arg0)
+# Ordem que deve organizar as constantes:
+const admordem = "falar naoconhece"
+
+func converte # Converte texto conforme o conhecimento do idioma
+# arg0 = texto
+# arg1 = conhecimento do idioma, de 0 a 100
+  refvar t1 = vartroca(txtcod(arg0), "", "troca1_", 100 - arg1)
+  ret txtdec(vartroca(t1, "", "troca2_", 100 - arg1))

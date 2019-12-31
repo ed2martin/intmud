@@ -24,25 +24,25 @@ func escr
   fimse
   refvar txtmais = arg0.sock.txtmais
   txtmais.limpar
-  lin = "Menu raças:\n  "
+  lin = "\b\c6Menu raças:\b\n  "
   epara nulo, p.lin, p.depois
     continuar $[p.texto].menu != 1
     lin += txt(p.texto, 2) + ", " + $[p.texto].nome
     txtmais.addfim([p.texto]:t_reset ? lin + ", tres" : lin), lin = "  "
   efim
-  lin = "Menu classes:\n  "
+  lin = "\b\c6Menu classes:\b\n  "
   epara p.iniclasse("t_" + arg1), p.lin, p.depois
     continuar $[p.texto].menu != 2
     lin += txt(p.texto, 2) + ", " + $[p.texto].nome
     txtmais.addfim([p.texto]:t_reset ? lin + ", tres" : lin), lin = "  "
   efim
-  lin = "Menu subclasses:\n  "
+  lin = "\b\c6Menu subclasses:\b\n  "
   epara p.iniclasse("t_" + arg1), p.lin, p.depois
     continuar $[p.texto].menu != 3
     lin += txt(p.texto, 2) + ", " + $[p.texto].nome
     txtmais.addfim([p.texto]:t_reset ? lin + ", tres" : lin), lin = "  "
   efim
-  lin = "Em nenhum menu:\n  "
+  lin = "\b\c6Em nenhum menu:\b\n  "
   epara p.iniclasse("t_" + arg1), p.lin, p.depois
     continuar $[p.texto].menu
     lin += txt(p.texto, 2) + ", " + $[p.texto].nome

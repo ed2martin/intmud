@@ -250,8 +250,10 @@ func recebe1 # Função recebe após todos os atalhos
   senao perso.atktempo # Checa se está batalhando
     comandos.limpar
     comandos.addfim(com)
+    comandos.addfim(arg1)
   senao comandos.bytes < 1024 # Não chegou ao limite de comandos
     comandos.addfim(com)
+    comandos.addfim(arg1)
   senao # Chegou ao limite de comandos
     msg("Aguarde")
     ret 1
@@ -276,7 +278,9 @@ func avisamonit # Avisa quem está monitorando o personagem
 
 func espera_exec # Chamado por p_espera do personagem
   se comandos
-    perso.teclouperm(comandos.remove(1), perm) # Personagem processa comando
+    refvar com = comandos.remove(1)
+    refvar perm = $[comandos.remove(1)]
+    perso.teclouperm(com, perm) # Personagem processa comando
     perso.p_espera < 2 && (perso.p_espera = 2)
   fimse
 
@@ -608,13 +612,13 @@ func passo1
     senao txtproclin(r.classes, arg0.var.j_tipo2) < 0
       continuar
     fimse
-    refvar nome = (arg0.var.j_sexo == "0" ? r.nome2) ?? r.nome
+    refvar nome = arg0.var.j_sexo == "0" ? r.nome2 ?? r.nome
     arg0.txtmais.addfim(txt(arg0.txtmais.linhas + 1) + ". " + nome)
     lin = p.texto
     continuar txt(arg1) != txt(arg0.txtmais.linhas)
     arg0.txtmais.limpar
     tpasso += " " + p.texto
-    arg0.msg2((arg0.var.j_sexo == "0" ? r.desc2) ?? r.desc ?? nome)
+    arg0.msg2(arg0.var.j_sexo == "0" ? r.desc2 ?? r.desc ?? nome)
     ret 1
   efim
 # Uma ou nenhuma: escolhe automaticamente

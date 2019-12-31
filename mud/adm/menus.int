@@ -1082,68 +1082,6 @@ const m_nome = e_[arg1]:nome
 const m_total = arg0 == 1 ? "\c6Um efeito\b" : "\c6" + arg0 + " efeitos\b"
 
 
-classe admmudou
-herda comando_adm
-# Organiza constantes da classe na ordem definida pela constante admordem
-# da classe. Depois, se o nome da função especificada não for nulo,
-# chama essa função de todos os objetos da classe.
-# Modo de usar:
-# criar("admmudou", <nome da classe>, [nome da função])
-#
-txt100 nomeclasse
-txt100 nomefunc
-intexec ordem
-intexec repete
-listaobj l # Objetos cuja função ainda não foi chamada
-textotxt t # Usado para organizar as constantes no início da classe
-prog p # Usado para organizar as constantes no início da classe
-txt100 tantes # Nome da constante anterior em textotxt t
-int1 mudou # Se ocorreu alguma mudança no programa
-uint8 cont # Contador, como medida de segurança
-
-func ini
-  nomeclasse = arg0, nomefunc = arg1, ordem = 1
-
-func ordem_exec
-  tantes = ""
-  t.limpar
-  ++cont < 50 && t.addfim(txttroca([nomeclasse]:admordem, " ", "\n"))
-  p.inifunccl(nomeclasse)
-  enquanto t.linhas
-    se p.existe(nomeclasse, t.ini.texto) != 1 || p.vartipo(nomeclasse, t.ini.texto) != "const"
-      t.remove
-    senao p.texto == t.ini.texto
-      p.depois, tantes = t.remove
-    senao tantes
-      p.fdepois(nomeclasse, t.remove, tantes)
-      ordem = 1, mudou = 1
-      ret
-    senao
-      p.fantes(nomeclasse, t.remove)
-      ordem = 1, mudou = 1
-      ret
-    fimse
-  efim
-  mudou && config:salvar
-# Aqui obtém os objetos para chamar uma função de cada objeto
-  ret !nomefunc, apagar(este)
-  se txtproc(nomefunc, ":") > 0
-    refvar ind = txtproc(nomefunc, ":")
-    nomeclasse = txt(nomefunc, 0, ind)
-    nomefunc = txt(nomefunc, ind + 1)
-  fimse
-  repete = 1
-  ref r
-  epara r = $[nomeclasse], r, r = objdepois(r)
-    l.addfim(r)
-  efim
-
-func repete_exec
-  ret !l, apagar(este)
-  refvar r = ref(l.objini)
-  repete = 1, l.ini.remove, r.[nomefunc]
-
-
 classe opc_simnao
 herda comando_adm
 
@@ -1235,3 +1173,65 @@ func passo
     ret passo2(arg0, arg1, $idioma_[txt(arg1, 2)] != nulo)
   casofim
   ret passo2(arg0, arg1, 0)
+
+
+classe admmudou
+herda comando_adm
+# Organiza constantes da classe na ordem definida pela constante admordem
+# da classe. Depois, se o nome da função especificada não for nulo,
+# chama essa função de todos os objetos da classe.
+# Modo de usar:
+# criar("admmudou", <nome da classe>, [nome da função])
+#
+txt100 nomeclasse
+txt100 nomefunc
+intexec ordem
+intexec repete
+listaobj l # Objetos cuja função ainda não foi chamada
+textotxt t # Usado para organizar as constantes no início da classe
+prog p # Usado para organizar as constantes no início da classe
+txt100 tantes # Nome da constante anterior em textotxt t
+int1 mudou # Se ocorreu alguma mudança no programa
+uint8 cont # Contador, como medida de segurança
+
+func ini
+  nomeclasse = arg0, nomefunc = arg1, ordem = 1
+
+func ordem_exec
+  tantes = ""
+  t.limpar
+  ++cont < 50 && t.addfim(txttroca([nomeclasse]:admordem, " ", "\n"))
+  p.inifunccl(nomeclasse)
+  enquanto t.linhas
+    se p.existe(nomeclasse, t.ini.texto) != 1 || p.vartipo(nomeclasse, t.ini.texto) != "const"
+      t.remove
+    senao p.texto == t.ini.texto
+      p.depois, tantes = t.remove
+    senao tantes
+      p.fdepois(nomeclasse, t.remove, tantes)
+      ordem = 1, mudou = 1
+      ret
+    senao
+      p.fantes(nomeclasse, t.remove)
+      ordem = 1, mudou = 1
+      ret
+    fimse
+  efim
+  mudou && config:salvar
+# Aqui obtém os objetos para chamar uma função de cada objeto
+  ret !nomefunc, apagar(este)
+  se txtproc(nomefunc, ":") > 0
+    refvar ind = txtproc(nomefunc, ":")
+    nomeclasse = txt(nomefunc, 0, ind)
+    nomefunc = txt(nomefunc, ind + 1)
+  fimse
+  repete = 1
+  ref r
+  epara r = $[nomeclasse], r, r = objdepois(r)
+    l.addfim(r)
+  efim
+
+func repete_exec
+  ret !l, apagar(este)
+  refvar r = ref(l.objini)
+  repete = 1, l.ini.remove, r.[nomefunc]
