@@ -17,8 +17,20 @@ const m_ponderar1 = "Você ponderou '$m'"
 const m_ponderar2 = "$P ponderou '$m'"
 const m_continuar1 = "Você continuou '$m'"
 const m_continuar2 = "$P continuou '$m'"
+const i_falar1 = "Você falou em $1 '$m'"
+const i_falar2 = "$P falou em $1 '$m'"
+const i_perguntar1 = "Você perguntou em $1 '$m'"
+const i_perguntar2 = "$P perguntou em $1 '$m'"
+const i_exclamar1 = "Você exclamou em $1 '$m'"
+const i_exclamar2 = "$P exclamou em $1 '$m'"
+const i_ponderar1 = "Você ponderou em $1 '$m'"
+const i_ponderar2 = "$P ponderou em $1 '$m'"
+const i_continuar1 = "Você continuou em $1 '$m'"
+const i_continuar2 = "$P continuou em $1 '$m'"
 const admordem = "m_ajuda m_sem_args m_falar1 m_falar2 m_perguntar1 m_perguntar2\n\
-m_exclamar1 m_exclamar2 m_ponderar1 m_ponderar2 m_continuar1 m_continuar2"
+m_exclamar1 m_exclamar2 m_ponderar1 m_ponderar2 m_continuar1 m_continuar2\n\
+i_falar1 i_falar2 i_perguntar1 i_perguntar2 i_exclamar1 i_exclamar2\n\
+i_ponderar1 i_ponderar2 i_continuar1 i_continuar2"
 
 func escr
   refvar perm_msg = $perm_[arg0.jogperm].c_falar
@@ -32,17 +44,27 @@ func escr
   fimse
   $misclog.falar("falar " + arg0.nome + ": " + arg1)
   $mens.p(arg0)
-  $mens.mens = $miscbebida.msgperso(arg1, arg0.p_bebida)
+  ref idioma = $idioma_[arg0.var.z_idioma]
   se txt(arg1, 0, 3) == "..."
-    $mens.mtodos2(m_continuar1, m_continuar2)
+    refvar m1 = idioma ? i_continuar1 : m_continuar1
+    refvar m2 = idioma ? i_continuar2 : m_continuar2
+    $mens.mfalar2(m1, m2, arg1, idioma)
   senao txtfim(arg1, 1) == "?"
-    $mens.mtodos2(m_perguntar1, m_perguntar2)
+    refvar m1 = idioma ? i_perguntar1 : m_perguntar1
+    refvar m2 = idioma ? i_perguntar2 : m_perguntar2
+    $mens.mfalar2(m1, m2, arg1, idioma)
   senao txtfim(arg1, 1) == "!"
-    $mens.mtodos2(m_exclamar1, m_exclamar2)
+    refvar m1 = idioma ? i_exclamar1 : m_exclamar1
+    refvar m2 = idioma ? i_exclamar2 : m_exclamar2
+    $mens.mfalar2(m1, m2, arg1, idioma)
   senao txtfim(arg1, 3) == "..."
-    $mens.mtodos2(m_ponderar1, m_ponderar2)
+    refvar m1 = idioma ? i_ponderar1 : m_ponderar1
+    refvar m2 = idioma ? i_ponderar2 : m_ponderar2
+    $mens.mfalar2(m1, m2, arg1, idioma)
   senao
-    $mens.mtodos2(m_falar1, m_falar2)
+    refvar m1 = idioma ? i_falar1 : m_falar1
+    refvar m2 = idioma ? i_falar2 : m_falar2
+    $mens.mfalar2(m1, m2, arg1, idioma)
   fimse
 # Executa eventos
   listaobj l
@@ -63,6 +85,8 @@ const nome2 = "Sem argumentos"
 const tipo2 = "opc_linha"
 const clas2 = "cmd_falar"
 const vari2 = "m_sem_args"
+#
+const titu3 = " * Língua comum"
 #
 const nome3 = "Falar: perso"
 const info3 = "Ao teclar falar e uma mensagem qualquer"
@@ -123,3 +147,65 @@ const info12 = "Ao teclar falar e uma mensagem começada com reticências"
 const tipo12 = "opc_linha"
 const clas12 = "cmd_falar"
 const vari12 = "m_continuar2"
+#
+const titu13 = " * Outros idiomas"
+#
+const nome13 = "Falar: perso"
+const info13 = "Ao teclar falar e uma mensagem qualquer"
+const tipo13 = "opc_linha"
+const clas13 = "cmd_falar"
+const vari13 = "i_falar1"
+#
+const nome14 = "Falar: outros"
+const info14 = "Ao teclar falar e uma mensagem qualquer"
+const tipo14 = "opc_linha"
+const clas14 = "cmd_falar"
+const vari14 = "i_falar2"
+#
+const nome15 = "Perguntar: perso"
+const info15 = "Ao teclar falar e uma mensagem terminada com interrogação"
+const tipo15 = "opc_linha"
+const clas15 = "cmd_falar"
+const vari15 = "i_perguntar1"
+#
+const nome16 = "Perguntar: outros"
+const info16 = "Ao teclar falar e uma mensagem terminada com interrogação"
+const tipo16 = "opc_linha"
+const clas16 = "cmd_falar"
+const vari16 = "i_perguntar2"
+#
+const nome17 = "Exclamar: perso"
+const info17 = "Ao teclar falar e uma mensagem terminada com exclamação"
+const tipo17 = "opc_linha"
+const clas17 = "cmd_falar"
+const vari17 = "i_exclamar1"
+#
+const nome18 = "Exclamar: outros"
+const info18 = "Ao teclar falar e uma mensagem terminada com exclamação"
+const tipo18 = "opc_linha"
+const clas18 = "cmd_falar"
+const vari18 = "i_exclamar2"
+#
+const nome19 = "Ponderar: perso"
+const info19 = "Ao teclar falar e uma mensagem terminada com reticências"
+const tipo19 = "opc_linha"
+const clas19 = "cmd_falar"
+const vari19 = "i_ponderar1"
+#
+const nome20 = "Ponderar: outros"
+const info20 = "Ao teclar falar e uma mensagem terminada com reticências"
+const tipo20 = "opc_linha"
+const clas20 = "cmd_falar"
+const vari20 = "i_ponderar2"
+#
+const nome21 = "Continuar: perso"
+const info21 = "Ao teclar falar e uma mensagem começada com reticências"
+const tipo21 = "opc_linha"
+const clas21 = "cmd_falar"
+const vari21 = "i_continuar1"
+#
+const nome22 = "Continuar: outros"
+const info22 = "Ao teclar falar e uma mensagem começada com reticências"
+const tipo22 = "opc_linha"
+const clas22 = "cmd_falar"
+const vari22 = "i_continuar2"

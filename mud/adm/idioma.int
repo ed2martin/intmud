@@ -52,8 +52,11 @@ func escr
     ret arg0.msg("Já existe o idioma: " + nome)
   fimse
 # Cria idioma
-  refvar lin = "const falar = \"" + txte(txtmin(nome)) + "\""
-  p.criar("idioma_" + txts(txtmin(nome)) + "\nconfig/idioma\nherda comum_idioma\n" + lin)
+  txt512 lin = "idioma_" + txts(txtmin(nome))
+  lin += "\nconfig/idioma\nherda comum_idioma"
+  lin += "\nconst nomevar = \"i_" + txts(txtmin(nome)) + "\""
+  lin += "\nconst falar = \"" + txte(txtmin(nome)) + "\""
+  p.criar(lin)
   criar("admordena", "config/idioma")
 # config:salvar
   arg0.msg("\bCriou idioma: " + nome)
@@ -136,7 +139,7 @@ func menu
 # arg0=nome da classe, arg1=nome da variável
   int16 total
   prog p
-  epara p.inifunctudo(arg0, arg1), p.lin, p.depois
+  epara p.inifunc(arg0, arg1), p.lin, p.depois
     total++
   efim
   ret total == 0, "Nenhuma troca"
@@ -161,19 +164,19 @@ func passo
     refvar funcao = arg0.var.opcvar
     refvar tot = inttotal(funcao)
     txt100 lin
-    epara p.inifunctudo(classe, funcao), p.lin, p.depois
+    epara p.inifunc(classe, funcao), p.lin, p.depois
       refvar nome = txt(p.texto, tot)
       continuar inttotal(nome) > 1
-      refvar t1 = nome + "=" + txtdec($[classe].[p.texto](txtcod(nome))) + ","
+      refvar t1 = txtdec(nome) + "=" + $[classe].[p.texto](nome) + ","
       se inttotal(lin + t1) >= 70
         txtmais.addfim(txt(lin, 1)), lin = ""
       fimse
       lin += " " + t1
     efim
-    epara p.inifunctudo(classe, funcao), p.lin, p.depois
+    epara p.inifunc(classe, funcao), p.lin, p.depois
       refvar nome = txt(p.texto, tot)
       continuar inttotal(nome) == 1
-      refvar t1 = nome + "=" + txtdec($[classe].[p.texto](txtcod(nome))) + ","
+      refvar t1 = txtdec(nome) + "=" + $[classe].[p.texto](nome) + ","
       se inttotal(lin + t1) >= 70
         txtmais.addfim(txt(lin, 1)), lin = ""
       fimse
@@ -242,7 +245,7 @@ func passo
   fimse
   refvar opcvar = txtcod(arg0.var.opcvar)
   refvar nome = opcvar + txtcod(arg0.var.opcnivel)
-  refvar valor = "txtcopiamai(\"" + txtcod(arg1) + "\", arg0)"
+  refvar valor = "txtcopiamai(\"" + txtvis(arg1) + "\", arg0)"
   prog p
   p.criar(arg0.var.opcclasse, "const " + nome + "=" + valor)
   txt200 nomeantes
@@ -301,5 +304,5 @@ const admordem = "falar naoconhece"
 func converte # Converte texto conforme o conhecimento do idioma
 # arg0 = texto
 # arg1 = conhecimento do idioma, de 0 a 100
-  refvar t1 = vartroca(txtcod(arg0), "", "troca1_", 100 - arg1)
-  ret txtdec(vartroca(t1, "", "troca2_", 100 - arg1))
+  refvar t1 = vartrocacod(arg0, "", "troca1_", 100 - arg1)
+  ret vartrocacod(t1, "", "troca2_", 100 - arg1)

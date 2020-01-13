@@ -53,7 +53,7 @@
 #include "random.h"
 #include "misc.h"
 
-// ulimit -S -c 20000
+// ulimit -S -c 200000
 //#define CORE    // Para gerar arquivos core
 //#define DEBUG   // Para não colocar o programa em segundo plano
 

@@ -117,7 +117,8 @@ const Instr::TListaFunc Instr::ListaFunc[] = {
     { "txturlcod",    Instr::FuncTxt2, 16 },
     { "txturldec",    Instr::FuncTxt2, 17 },
     { "txtvis",       Instr::FuncTxt2, 14 },
-    { "vartroca",     Instr::FuncVarTroca, 0 }
+    { "vartroca",     Instr::FuncVarTroca, 0 },
+    { "vartrocacod",  Instr::FuncVarTroca, 1 }
 };
 
 //------------------------------------------------------------------------------

@@ -1,0 +1,83 @@
+classe h_cmd_idioma
+herda comando_comum
+const posic = 5
+const txtajuda = txtajuda1 + m_ajuda
+const txtajuda1 = "\b\c3Idioma\b\nSintaxe: IDIOMA\n         IDIOMA <nome do idioma>\n"
+#
+const m_ajuda = "Sem argumentos, mostra os idiomas que o seu personagem conhece.\n\
+Seguido de uma palvra, escolhe o idioma usado no comando Falar."
+const m_nenhum = "Você não conhece nenhum idioma."
+const m_lista = "Idiomas:"
+const m_comum = "Língua comum"
+const m_naoexiste = "Você não conhece $m."
+const m_escolheu = "Falando em $m."
+const admordem = "m_ajuda m_nenhum m_lista m_comum m_naoexiste m_escolheu"
+
+func escr
+  txt100 t1
+  txt100 t2
+  se !arg1
+    textotxt h
+    epara t1 = arg0.var.ini("i_"), t1, t1 = arg0.var.depois(t1, "i_")
+      t2 = txte(txt(t1, 2)) # , t2 += txtesp(30 - inttotal(t2))
+      t2 += " / " + txtsublin(misc:aulas, arg0.var.[t1], 1)
+      h.addfim(t2)
+    efim
+    ret !h.linhas, $mens.mp(m_nenhum, arg0)
+    $mens.p(arg0)
+    h.addini(m_comum)
+    h.addini("\b\c6" + $mens.txt(m_lista, arg0) + "\b")
+    ret arg0.msg(h.remove(1000))
+  fimse
+  nomeobj n
+  n.ini(arg1, 1000)
+  se n.nome(m_comum)
+    arg0.var.z_idioma = ""
+    $mens.mens = m_comum
+    $mens.mp(m_escolheu, arg0)
+    ret
+  fimse
+  epara t1 = arg0.var.ini("i_"), t1, t1 = arg0.var.depois(t1, "i_")
+    t2 = txt2(txte(t1))
+    continuar !n.nome(t2) || !$idioma_[t2]
+    arg0.var.z_idioma = t2
+    $mens.mens = $idioma_[t2].falar
+    $mens.mp(m_escolheu, arg0)
+    ret
+  efim
+  $mens.mens = arg1
+  $mens.mp(m_naoexiste, arg0)
+
+
+classe m_cmd_idioma
+herda comando_menu_cmd
+#
+const nome1 = "Ajuda"
+const tipo1 = "opc_texto"
+const clas1 = "cmd_idioma"
+const vari1 = "m_ajuda"
+#
+const nome2 = "Nenhum idioma"
+const tipo2 = "opc_linha"
+const clas2 = "cmd_idioma"
+const vari2 = "m_nenhum"
+#
+const nome3 = "Lista de idiomas"
+const tipo3 = "opc_linha"
+const clas3 = "cmd_idioma"
+const vari3 = "m_lista"
+#
+const nome4 = "Língua comum"
+const tipo4 = "opc_linha"
+const clas4 = "cmd_idioma"
+const vari4 = "m_comum"
+#
+const nome5 = "Não existe"
+const tipo5 = "opc_linha"
+const clas5 = "cmd_idioma"
+const vari5 = "m_naoexiste"
+#
+const nome6 = "Escolheu"
+const tipo6 = "opc_linha"
+const clas6 = "cmd_idioma"
+const vari6 = "m_escolheu"

@@ -2410,6 +2410,19 @@ Outra forma de escrever:
 const teste_a = arg0 === "A" ? "A maiúsculo" : "A minúsculo"
 vartroca("$A $a", "$", "teste_")
 
+15.4.11. vartrocacod(<texto>, <texto2>, <variável>, [porcentagem], [espaço])
+Funciona como vartroca, porém os nomes das funções são decodificados
+usando a função txtdec.
+
+Exemplo:
+
+const cod_a = "Letra A"
+const cod_@w = "Igual"
+vartrocacod("$a $=", "$", "cod_")
+
+Resulta no texto "Letra A Igual".
+Nota: txtdec("@w") é o sinal de igual.
+
 
 15.5. FUNÇÕES PARA APELIDO E SENHA
 
@@ -2938,7 +2951,7 @@ ou dividelincor.
 
 19.14. dividelin(<colmin>, <colmax>)
 Linhas que tiverem mais que <colmax> colunas são divididas entre
-as colunas <colmin> e <colmax>, preferêncialmente no último espaço
+as colunas <colmin> e <colmax>, preferencialmente no último espaço
 encontrado. Se <colmin> ou <colmax> for menor que dois, essa
 função não tem efeito.
 

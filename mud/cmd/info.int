@@ -159,33 +159,6 @@ func escr
   arg0.msg2(h.remove(1000))
 
 
-classe cmd_idioma
-herda comando_comum
-const posic = 5
-const txtajuda = "\b\c3Idioma\b\n\
-Sintaxe: IDIOMA\n\
-Mostra os idiomas que o seu personagem conhece."
-#
-const m_nenhum = "Nenhum idioma."
-const m_lista1 = "Idiomas:"
-const m_lista2 = "Idiomas de $c:"
-
-func escr
-  ref r = arg0.persoesc
-  textotxt h
-  txt100 t1
-  txt100 t2
-  epara t1 = r.var.ini("i_"), t1, t1 = r.var.depois(t1, "i_")
-    t2 = txte(txt(t1, 2)) # , t2 += txtesp(30 - inttotal(t2))
-    t2 += " / " + txtsublin(misc:aulas, r.var.[t1], 1)
-    h.addfim(t2)
-  efim
-  ret !h.linhas, $mens.mp(m_nenhum, arg0)
-  $mens.p(arg0, r)
-  h.addini("\b\c6" + $mens.txt(r == arg0 ? m_lista1 : m_lista2, arg0) + "\b")
-  arg0.msg(h.remove(1000))
-
-
 classe cmd_outros
 herda comando_comum
 const posic = 5

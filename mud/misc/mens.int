@@ -88,21 +88,21 @@ func mp # Atalho para função p seguido da função msg
   se arg1.sock
     contr = arg0.contr, r = perso = arg1, alvo = arg2, obj1 = arg3, obj2 = arg4
     refvar t = vartroca(txttroca(arg0, "$$", "$@"), "$", "o_")
-    arg1.msg(txtdec(vartroca(txtcod(t), "@d", "x_")))
+    arg1.msg(vartrocacod(t, "\d", "x_"))
   fimse
 
 func txt # Prepara e retorna mensagem
 # arg0=mensagem, arg1=a quem se destina a mensagem
   r = arg1
   refvar t = vartroca(txttroca(arg0, "$$", "$@"), "$", "o_")
-  ret txtdec(vartroca(txtcod(t), "@d", "x_"))
+  ret vartrocacod(t, "\d", "x_")
 
 func msg # Envia mensagem para um personagem
 # arg0=mensagem, arg1=a quem se destina a mensagem
   se arg1.sock
     r = arg1
     refvar t = vartroca(txttroca(arg0, "$$", "$@"), "$", "o_")
-    arg1.msg(txtdec(vartroca(txtcod(t), "@d", "x_")))
+    arg1.msg(vartrocacod(t, "\d", "x_"))
   fimse
 
 func msgvis # Envia mensagem se estiver acordado e vendo personagem perso
@@ -110,7 +110,7 @@ func msgvis # Envia mensagem se estiver acordado e vendo personagem perso
   se arg1.sock && arg1.posicao > 4 && perso.visivel(arg1)
     r = arg1
     refvar t = vartroca(txttroca(arg0, "$$", "$@"), "$", "o_")
-    arg1.msg(txtdec(vartroca(txtcod(t), "@d", "x_")))
+    arg1.msg(vartrocacod(t, "\d", "x_"))
   fimse
 
 func msgsomvis # Envia mensagem/som se estiver acordado e vendo personagem perso
@@ -119,7 +119,7 @@ func msgsomvis # Envia mensagem/som se estiver acordado e vendo personagem perso
     r = arg2
     refvar t = vartroca(txttroca(arg0, "$$", "$@"), "$", "o_")
     arg2.msgsom(arg1)
-    arg2.msg(txtdec(vartroca(txtcod(t), "@d", "x_")))
+    arg2.msg(vartrocacod(t, "\d", "x_"))
   fimse
 
 func msgvisdir # Envia mensagem estiver acordado e vendo personagem perso
@@ -129,7 +129,7 @@ func msgvisdir # Envia mensagem estiver acordado e vendo personagem perso
     r = arg1
     refvar t = vartroca(txttroca(arg0, "$$", "$@"), "$", "o_")
     refvar dir = (arg1.contr.dono ?? contr.dono) != contr.dono ? arg2
-    arg1.msg(txt(dir) + txtdec(vartroca(txtcod(t), "@d", "x_")))
+    arg1.msg(txt(dir) + vartrocacod(t, "\d", "x_"))
   fimse
 
 func msginv # Envia mensagem se estiver acordado
@@ -137,7 +137,7 @@ func msginv # Envia mensagem se estiver acordado
   se arg1.sock && arg1.posicao > 4
     r = arg1
     refvar t = vartroca(txttroca(arg0, "$$", "$@"), "$", "o_")
-    arg1.msg(txtdec(vartroca(txtcod(t), "@d", "x_")))
+    arg1.msg(vartrocacod(t, "\d", "x_"))
   fimse
 
 func msgsominv # Envia mensagem/som se estiver acordado
@@ -146,7 +146,7 @@ func msgsominv # Envia mensagem/som se estiver acordado
     r = arg2
     refvar t = vartroca(txttroca(arg0, "$$", "$@"), "$", "o_")
     arg2.msgsom(arg1)
-    arg2.msg(txtdec(vartroca(txtcod(t), "@d", "x_")))
+    arg2.msg(vartrocacod(t, "\d", "x_"))
   fimse
 
 func msginvdir # Envia mensagem se estiver acordado
@@ -156,7 +156,7 @@ func msginvdir # Envia mensagem se estiver acordado
     r = arg1
     refvar t = vartroca(txttroca(arg0, "$$", "$@"), "$", "o_")
     refvar dir = (arg1.contr.dono ?? contr.dono) != contr.dono ? arg2
-    arg1.msg(txt(dir) + txtdec(vartroca(txtcod(t), "@d", "x_")))
+    arg1.msg(txt(dir) + vartrocacod(t, "\d", "x_"))
   fimse
 
 func mtodos1 # Mensagem só para quem estiver acordado
@@ -383,6 +383,28 @@ func mareatodosS # Mensagem para quem está acordado na mesma área mas em outra s
     r.s_area == s.s_area && r != s && msginv(arg0, item.obj.perso)
   efim
 
+func mfalar2 # Mensagem de personagem falando
+# arg0 = mensagem para personagem
+# arg1 = mensagem para outros
+# arg2 = o que o personagem falou ($m nas mensagens)
+# arg3 = objeto que trata do idioma ($1 nas mensagens) ou null se língua comum
+  ret !contr.dono.socktot, nulo
+  refvar m1 = $miscbebida.msgperso(arg2, contr.p_bebida)
+  uint8 sabe1 = !arg3 ? 100 : contr.var.[arg3.nomevar] * 17 # Quanto conhece
+  o_1 = arg3.falar
+  se arg0
+    mens = sabe1 < 100 ? arg3.converte(m1, sabe1) : m1
+    msginv((!sabe1 ? arg3.naoconhece) ?? arg0, contr)
+  fimse
+  ret !arg1, nulo
+  listaobj l0
+  l0.addfim(contr.dono.dentro2)
+  epara l0.remove(contr), l0, l0.ini.remove
+    refvar sabe2 = !arg3 ? 100 : intmin(sabe1, l0.objini.var.[arg3.nomevar] * 17)
+    mens = sabe2 < 100 ? arg3.converte(m1, sabe2) : m1
+    msginv((!sabe2 ? arg3.naoconhece) ?? arg1, l0.objini)
+  efim
+
 func mens_min # Usado internamente
 # arg0 = personagem, arg1 = mensagem de tu/ti
   se arg0 == arg0.contr
@@ -567,13 +589,13 @@ func txt # Prepara e retorna mensagem
 # arg0=mensagem, arg1=a quem se destina a mensagem
   perso = arg1
   refvar t = vartroca(txttroca(arg0, "$$", "$@"), "$", "o_")
-  ret txtdec(vartroca(txtcod(t), "@d", "x_"))
+  ret vartrocacod(t, "\d", "x_")
 
 func msg # Envia mensagem
 # arg0=mensagem, arg1=a quem se destina a mensagem
   perso = arg1
   refvar t = vartroca(txttroca(arg0, "$$", "$@"), "$", "o_")
-  arg1.msg(txtdec(vartroca(txtcod(t), "@d", "x_")))
+  arg1.msg(vartrocacod(t, "\d", "x_"))
 
 const o_1 = ""
 const o_2 = ""
