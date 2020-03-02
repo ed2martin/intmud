@@ -47,25 +47,50 @@ func negociar_msg # Checa se PNJ pode negociar e obtém o motivo
 # arg1 = PNJ
 # Retorna: "" se negocia, "\b" se apenas não negocia ou mensagem com o motivo
   ret arg0.atkenv || arg1.atkenv || !arg1.visivel(arg0), "\b"
+  se arg1.lojaaulaidioma # Se requer idioma específico
+    refvar cond = txtproclin(txte(arg1.lojaidioma), txte(arg0.var.z_idioma)) < 0
+    se cond || int(arg1.lojaaulaidioma) > arg0.var.i_[arg0.var.z_idioma]_
+      $mens.mens = ""
+      int16 x
+      refvar total = intsublin(arg1.lojaidioma)
+      epara x = 0, x < total, x++
+        refvar i = txtsublin(arg1.lojaidioma, x, 1)
+        x > 0 && ($mens.mens += x == total - 1 ? " e " : ", ")
+        $mens.mens += $idioma_[i].falar ?? i
+      efim
+      $mens.o_1 = txtmin(txtsublin(misc:aulas, arg1.lojaaulaidioma, 1))
+      $mens.p(arg1, arg0)
+      ret $mens.txt(arg1.lojamsgidioma, arg0)
+    fimse
+  fimse
+  uint8 naotipos
   se !arg0.visivel(arg1)
-    ret txtcopiamai(arg1.descnome2, "A") + ": Não negocio com quem não posso ver."
+    $mens.p(arg1, arg0)
+    ret $mens.txt(arg1.lojainvisivel, arg0)
   senao !arg1.lojanao # negocia com todos
   senao arg0.tipo1 && txtproclin(txte(arg1.lojanao), txte(arg0.tipo1)) >= 0
-    ret txtcopiamai(arg1.descnome2, "A") + ": Não negocio com " + arg0.tipo1
+    naotipos |= 1
   senao arg0.tipo2 && txtproclin(txte(arg1.lojanao), txte(arg0.tipo2)) >= 0
-    ret txtcopiamai(arg1.descnome2, "A") + ": Não negocio com " + arg0.tipo2
+    naotipos |= 2
   senao arg0.tipo3 && txtproclin(txte(arg1.lojanao), txte(arg0.tipo3)) >= 0
-    ret txtcopiamai(arg1.descnome2, "A") + ": Não negocio com " + arg0.tipo3
+    naotipos |= 4
   fimse
   se !arg1.lojasim # negocia com todos
   senao arg0.tipo1 && txtproclin(txte(arg1.lojasim), txte(arg0.tipo1)) >= 0
   senao arg0.tipo2 && txtproclin(txte(arg1.lojasim), txte(arg0.tipo2)) >= 0
   senao arg0.tipo3 && txtproclin(txte(arg1.lojasim), txte(arg0.tipo3)) >= 0
   senao
-    txt100 lin = arg0.tipo1 ? " " + arg0.tipo1
-    lin += (arg0.tipo2 ? " " + arg0.tipo2 : "") + (arg0.tipo3 ? " " + arg0.tipo3)
-    !lin && (lin = " você")
-    ret txtcopiamai(arg1.descnome2, "A") + ": Não negocio com" + lin
+    arg0.tipo1 && (naotipos |= 1)
+    arg0.tipo2 && (naotipos |= 2)
+    arg0.tipo3 && (naotipos |= 4)
+  fimse
+  se naotipos
+    txt100 lin = naotipos & 1 ? " " + arg0.tipo1
+    naotipos & 2 && (lin += " " + arg0.tipo2)
+    naotipos & 4 && (lin += " " + arg0.tipo3)
+    $mens.p(arg1, arg0)
+    $mens.mens = txt(lin, 1) ?? config:mens_tu
+    ret $mens.txt(arg1.lojanaonegocia, arg0)
   fimse
   refvar abre = int(arg1.lojaini) - misc:hora
   refvar fecha = int(arg1.lojafim) - misc:hora
@@ -80,6 +105,10 @@ func negociar_checa # Checa se PNJ pode negociar
 # arg1 = PNJ
 # Retorna: "" se negocia ou "\b" se não negocia
   ret arg0.atkenv || arg1.atkenv || !arg1.visivel(arg0) || !arg0.visivel(arg1), "\b"
+  se arg1.lojaaulaidioma # Se requer idioma específico
+    ret txtproclin(txte(arg1.lojaidioma), txte(arg0.var.z_idioma)) < 0, "\b"
+    ret int(arg1.lojaaulaidioma) > arg0.var.i_[arg0.var.z_idioma]_, "\b"
+  fimse
   se arg1.lojanao
     ret arg0.tipo1 && txtproclin(txte(arg1.lojanao), txte(arg0.tipo1)) >= 0, "\b"
     ret arg0.tipo2 && txtproclin(txte(arg1.lojanao), txte(arg0.tipo2)) >= 0, "\b"

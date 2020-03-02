@@ -100,6 +100,7 @@ const ini_salvar_nao = "Não foi possível salvar o personagem"
 const ini_lutando1 = "Alguém está lutando com você!"
 const ini_lutando2 = "$m está lutando com você!"
 #
+# Experiência e nível
 const exp_add1_perso = "Você recebe 1 ponto de experiência"
 const exp_add2_perso = "Você recebe $m pontos de experiência"
 const exp_add1_outro = "$A recebe 1 ponto de experiência"
@@ -111,6 +112,12 @@ const exp_sub2_outro = "$A perde $m pontos de experiência"
 const exp_nivelmsg1 = "Você avança para o nível $m."
 const exp_nivelmsg2 = "$1 avança para o nível $m."
 const exp_nmax = ""
+#
+# Loja e aulas
+const loja_invisivel = "$P: Não negocio com quem não posso ver."
+const loja_naonegocia = "$P: Não negocio com $m."
+const loja_fechada = "$P: Volte outra hora."
+const loja_msgidioma = "$P só entende $m no nível $1."
 #
 const admordem = "posicao0a posicao1a posicao2a posicao3a posicao4a\n\
 posicao5a posicao6a posicao7a posicao8a semluta_a\n\
@@ -134,7 +141,9 @@ ini_iniciando ini_continuando ini_reconectando ini_usarperso\n\
 ini_salvar_sim ini_salvar_nao ini_lutando1 ini_lutando2\n\
 exp_add1_voce exp_add2_voce exp_add1_animal exp_add2_animal\n\
 exp_sub1_voce exp_sub2_voce exp_sub1_animal exp_sub2_animal\n\
-exp_nivelmsg1 exp_nivelmsg2 exp_nmax"
+exp_nivelmsg1 exp_nivelmsg2 exp_nmax\n\
+loja_invisivel loja_naonegocia loja_fechada loja_msgidioma"
+
 
 func iniclasse
   ret txt(arg0, 0, 2) != "h_", !$[arg0] && criar(arg0)
@@ -669,3 +678,30 @@ const nome11 = "Chegou ao nível máximo"
 const tipo11 = "opc_texto"
 const clas11 = "perso_cfg"
 const vari11 = "exp_nmax"
+
+
+classe m_perso_loja
+herda comando_menu
+const titulo = "Loja e aulas"
+const menufim = "menu_econfig_msg"
+const colunas = 28
+#
+const nome1 = "Msg invisível"
+const tipo1 = "opc_linha"
+const clas1 = "perso_cfg"
+const vari1 = "loja_invisivel"
+#
+const nome2 = "Não negocia"
+const tipo2 = "opc_linha"
+const clas2 = "perso_cfg"
+const vari2 = "loja_naonegocia"
+#
+const nome3 = "Fechado"
+const tipo3 = "opc_linha"
+const clas3 = "perso_cfg"
+const vari3 = "loja_fechada"
+#
+const nome4 = "Não entende idioma"
+const tipo4 = "opc_linha"
+const clas4 = "perso_cfg"
+const vari4 = "loja_msgidioma"

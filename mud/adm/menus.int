@@ -848,6 +848,50 @@ func passo2 # Usado intermanente: alterando um vetor de textos
   ret passosair(arg0)
 
 
+classe opc_tipodep
+herda comando_adm, opc_tipos
+
+func passo
+  prog p
+  arg0.passo = este
+  se arg1 == "o"
+    arg0.txtmais.limpar
+    epara p.iniclasse("cmd_"), p.lin, p.depois
+      $[p.texto].cmdmenu && arg0.txtmais.addfim("h_" + txt(p.texto, 4))
+    efim
+    epara p.iniclasse("magia_"), p.lin, p.depois
+      arg0.txtmais.addfim("m_" + txt(p.texto, 6))
+    efim
+    epara p.iniclasse("idioma_"), p.lin, p.depois
+      arg0.txtmais.addfim("i_" + txt(p.texto, 7))
+    efim
+  fimse
+  casovar txtmin(txt(arg1, 0, 2))
+  casose "h_"
+    ret passo2(arg0, arg1, $cmd_[txt(arg1, 2)].cmdmenu != nulo)
+  casose "m_"
+    ret passo2(arg0, arg1, $magia_[txt(arg1, 2)] != nulo)
+  casose "i_"
+    ret passo2(arg0, arg1, $idioma_[txt(arg1, 2)] != nulo)
+  casofim
+  ret passo2(arg0, arg1, 0)
+
+
+classe opc_listaidiomas
+herda comando_adm, opc_tipos
+
+func passo
+  prog p
+  arg0.passo = este
+  se arg1 == "o"
+    arg0.txtmais.limpar
+    epara p.iniclasse("idioma_"), p.lin, p.depois
+      arg0.txtmais.addfim(txt(p.texto, 7))
+    efim
+  fimse
+  ret passo2(arg0, arg1, p.existe("idioma_" + txts(arg1)))
+
+
 classe opc_sala
 herda comando_adm
 const salaitem = 0 # Se aceita também itens
@@ -1144,35 +1188,6 @@ func passo # Alterando uma opção que pode ser "SIM" ou "NÃO"
     ret 1
   casofim
   ret passosair(arg0)
-
-
-classe opc_tipodep
-herda comando_adm, opc_tipos
-
-func passo
-  prog p
-  arg0.passo = este
-  se arg1 == "o"
-    arg0.txtmais.limpar
-    epara p.iniclasse("cmd_"), p.lin, p.depois
-      $[p.texto].cmdmenu && arg0.txtmais.addfim("h_" + txt(p.texto, 4))
-    efim
-    epara p.iniclasse("magia_"), p.lin, p.depois
-      arg0.txtmais.addfim("m_" + txt(p.texto, 6))
-    efim
-    epara p.iniclasse("idioma_"), p.lin, p.depois
-      arg0.txtmais.addfim("i_" + txt(p.texto, 7))
-    efim
-  fimse
-  casovar txtmin(txt(arg1, 0, 2))
-  casose "h_"
-    ret passo2(arg0, arg1, $cmd_[txt(arg1, 2)].cmdmenu != nulo)
-  casose "m_"
-    ret passo2(arg0, arg1, $magia_[txt(arg1, 2)] != nulo)
-  casose "i_"
-    ret passo2(arg0, arg1, $idioma_[txt(arg1, 2)] != nulo)
-  casofim
-  ret passo2(arg0, arg1, 0)
 
 
 classe admmudou

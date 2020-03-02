@@ -47,7 +47,10 @@ const p_fome = 100 # Não está com fome
 const p_sede = 100 # Não está com sede
 intdec p_tmove # Quanto tempo para se mover novamente
 const p_movervel = config:p_movervel
-const lojafechada = "$P: Volte outra hora"
+const lojainvisivel = perso_cfg:loja_invisivel
+const lojanaonegocia = perso_cfg:loja_naonegocia
+const lojafechada = perso_cfg:loja_fechada
+const lojamsgidioma = perso_cfg:loja_msgidioma
 #
 # Ordem que deve organizar as constantes:
 const admordem = "nome\n\
@@ -68,7 +71,9 @@ tipo1 tipo2 tipo3\n\
 equip1 equip2 equip3\n\
 lojaini lojafim lojasim lojanao\n\
 lojaaula lojaitem lojainv\n\
-lojasala lojacasa lojachave lojafechada\n\
+lojasala lojacasa lojachave\n\
+lojaidioma lojaaulaidioma\n\
+lojainvisivel lojanaonegocia lojafechada lojamsgidioma\n\
 taxaaula\n\
 taxacasa\n\
 taxacompra\n\

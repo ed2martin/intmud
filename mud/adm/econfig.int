@@ -511,14 +511,17 @@ const tipo12 = "m_perso_fomesede_b--"
 const nome13 = "Experiência e nível"
 const tipo13 = "m_perso_exp--"
 #
-const nome14 = "Andar pelo jogo"
-const tipo14 = "menu_mover--"
+const nome14 = "Loja e aulas"
+const tipo14 = "m_perso_loja--"
 #
-const nome15 = "Habilidades e magias"
-const tipo15 = "menu_habcomum--"
+const nome15 = "Andar pelo jogo"
+const tipo15 = "menu_mover--"
 #
-const nome16 = "Habilidades e magias comuns"
-const tipo16 = "menu_comando_ataque--"
+const nome16 = "Habilidades e magias"
+const tipo16 = "menu_habcomum--"
+#
+const nome17 = "Habilidades e magias comuns"
+const tipo17 = "menu_comando_ataque--"
 
 
 classe menu_econfig_msgjogo
@@ -1313,7 +1316,24 @@ const titulo = "Herda"
 const menufim = "menu_econfig"
 const colunas = 35
 #
-const titu1 = " * Áreas"
+const nome1 = "Áreas"
+const tipo1 = "menu_econfig_herda1--"
+#
+const nome2 = "Itens"
+const tipo2 = "menu_econfig_herda2--"
+#
+const nome3 = "Personagens"
+const tipo3 = "menu_econfig_herda3--"
+#
+const nome4 = "Ataques"
+const tipo4 = "menu_econfig_herda4--"
+
+
+classe menu_econfig_herda1
+herda comando_menu
+const titulo = "Herda Áreas"
+const menufim = "menu_econfig_herda"
+const colunas = 35
 #
 const nome1 = "Volume dentro"
 const tipo1 = "opc_numero--"
@@ -1377,148 +1397,163 @@ const tipo10 = "opc_vetor--"
 const clas10 = "config"
 const vari10 = "s_doarnao"
 const extr10 = config:produtos
+
+
+classe menu_econfig_herda2
+herda comando_menu
+const titulo = "Herda Itens"
+const menufim = "menu_econfig_herda"
+const colunas = 35
 #
-const titu11 = " * Itens"
+const nome1 = "Volume"
+const tipo1 = "opc_numero--"
+const clas1 = "config"
+const vari1 = "i_volmax"
 #
-const nome11 = "Volume"
-const tipo11 = "opc_numero--"
-const clas11 = "config"
-const vari11 = "i_volmax"
+const nome2 = "Objetos máximo"
+const tipo2 = "opc_numero--"
+const clas2 = "config"
+const vari2 = "i_objmax"
+
+
+classe menu_econfig_herda3
+herda comando_menu
+const titulo = "Herda Personagens"
+const menufim = "menu_econfig_herda"
+const colunas = 35
 #
-const nome12 = "Objetos máximo"
-const tipo12 = "opc_numero--"
-const clas12 = "config"
-const vari12 = "i_objmax"
+const nome1 = "Volume dentro"
+const tipo1 = "opc_numero--"
+const clas1 = "config"
+const vari1 = "p_volmax"
 #
-const titu13 = " * Personagens"
+const nome2 = "Objetos inventário"
+const info2 = "Quantos itens pode ter no inventário"
+const tipo2 = "opc_numero--"
+const clas2 = "config"
+const vari2 = "p_objmax"
 #
-const nome13 = "Volume dentro"
-const tipo13 = "opc_numero--"
-const clas13 = "config"
-const vari13 = "p_volmax"
+const nome3 = "Objetos máximo"
+const info3 = "Inclui objetos dentro de outros objetos que estão no personagem"
+const tipo3 = "opc_numero"
+const clas3 = "config"
+const vari3 = "p_objlimite"
 #
-const nome14 = "Objetos inventário"
-const info14 = "Quantos itens pode ter no inventário"
-const tipo14 = "opc_numero--"
-const clas14 = "config"
-const vari14 = "p_objmax"
-#
-const nome15 = "Objetos máximo"
-const info15 = "Inclui objetos dentro de outros objetos que estão no personagem"
-const tipo15 = "opc_numero"
-const clas15 = "config"
-const vari15 = "p_objlimite"
-#
-const nome16 = "Corpo"
-const tipo16 = "opc_opcao--"
-const clas16 = "config"
-const vari16 = "p_corpo"
-const extr16 = "Não deixa corpo\n\
+const nome4 = "Corpo"
+const tipo4 = "opc_opcao--"
+const clas4 = "config"
+const vari4 = "p_corpo"
+const extr4 = "Não deixa corpo\n\
 Deixa corpo vazio\n\
 Deixa corpo com itens e moedas, somem com o corpo\n\
 Deixa corpo com itens e moedas, depois vão para sala"
 #
-const nome17 = "Experiência"
-const info17 = "Quanta experiência dá quando morre, em porcentagem"
-const tipo17 = "opc_numero--"
-const clas17 = "config"
-const vari17 = "p_exp"
+const nome5 = "Experiência"
+const info5 = "Quanta experiência dá quando morre, em porcentagem"
+const tipo5 = "opc_numero--"
+const clas5 = "config"
+const vari5 = "p_exp"
 #
-const nome18 = "Morreu perso"
-const info18 = "Mensagem para o próprio personagem"
-const tipo18 = "opc_linha--"
-const clas18 = "config"
-const vari18 = "p_morreu0"
+const nome6 = "Morreu perso"
+const info6 = "Mensagem para o próprio personagem"
+const tipo6 = "opc_linha--"
+const clas6 = "config"
+const vari6 = "p_morreu0"
 #
-const nome19 = "Morreu outros"
-const info19 = "Mensagem quando não tem dono"
-const tipo19 = "opc_linha--"
-const clas19 = "config"
-const vari19 = "p_morreu1"
+const nome7 = "Morreu outros"
+const info7 = "Mensagem quando não tem dono"
+const tipo7 = "opc_linha--"
+const clas7 = "config"
+const vari7 = "p_morreu1"
 #
-const nome20 = "Desmaiou"
-const info20 = "Mensagem quando pertence a outro personagem"
-const tipo20 = "opc_linha--"
-const clas20 = "config"
-const vari20 = "p_morreu2"
+const nome8 = "Desmaiou"
+const info8 = "Mensagem quando pertence a outro personagem"
+const tipo8 = "opc_linha--"
+const clas8 = "config"
+const vari8 = "p_morreu2"
 #
-const nome21 = "Tempo move"
-const info21 = "Tempo médio em décimos de segundo para ir para outra sala"
-const tipo21 = "opc_numero--"
-const clas21 = "config"
-const vari21 = "p_movervel"
-const extr21 = "5 1000"
+const nome9 = "Tempo move"
+const info9 = "Tempo médio em décimos de segundo para ir para outra sala"
+const tipo9 = "opc_numero--"
+const clas9 = "config"
+const vari9 = "p_movervel"
+const extr9 = "5 1000"
 #
-const nome22 = "Tempo lembra"
-const info22 = "Por quanto tempo se lembra dos jogadores que atacaram, em minutos"
-const tipo22 = "opc_numero--"
-const clas22 = "config"
-const vari22 = "p_lembra"
-const extr22 = "0 1747" # Valor máximo de inttempo dividido por 600
+const nome10 = "Tempo lembra"
+const info10 = "Por quanto tempo se lembra dos jogadores que atacaram, em minutos"
+const tipo10 = "opc_numero--"
+const clas10 = "config"
+const vari10 = "p_lembra"
+const extr10 = "0 1747" # Valor máximo de inttempo dividido por 600
 #
-const nome23 = "Tempo persegue"
-const info23 = "Tempo médio em décimos de segundo para ir para outra sala"
-const tipo23 = "opc_numero--"
-const clas23 = "config"
-const vari23 = "p_perseguevel"
-const extr23 = "5 1000"
+const nome11 = "Tempo persegue"
+const info11 = "Tempo médio em décimos de segundo para ir para outra sala"
+const tipo11 = "opc_numero--"
+const clas11 = "config"
+const vari11 = "p_perseguevel"
+const extr11 = "5 1000"
 #
-const nome24 = "Alvo dos ataques"
-const info24 = "Como o personagem escolhe quem atacar, quando está lutando com vários"
-const tipo24 = "opc_opcao--"
-const clas24 = "config"
-const vari24 = "p_atk_alvo"
-const extr24 = "Não muda\nAleatório\nPersonagem de menor nível"
+const nome12 = "Alvo dos ataques"
+const info12 = "Como o personagem escolhe quem atacar, quando está lutando com vários"
+const tipo12 = "opc_opcao--"
+const clas12 = "config"
+const vari12 = "p_atk_alvo"
+const extr12 = "Não muda\nAleatório\nPersonagem de menor nível"
+
+
+classe menu_econfig_herda4
+herda comando_menu
+const titulo = "Herda Ataques"
+const menufim = "menu_econfig_herda"
+const colunas = 35
 #
-const titu25 = " * Ataques"
+const nome1 = "Pontos de aula"
+const info1 = "Quantos pontos de aula consome por aula"
+const tipo1 = "opc_numero--"
+const clas1 = "config"
+const vari1 = "a_aulapontos"
 #
-const nome25 = "Pontos de aula"
-const info25 = "Quantos pontos de aula consome por aula"
-const tipo25 = "opc_numero--"
-const clas25 = "config"
-const vari25 = "a_aulapontos"
+const nome2 = "Força iniciante"
+const tipo2 = "opc_numero--"
+const clas2 = "config"
+const vari2 = "a_ataquemin"
 #
-const nome26 = "Força iniciante"
-const tipo26 = "opc_numero--"
-const clas26 = "config"
-const vari26 = "a_ataquemin"
+const nome3 = "Força perito"
+const tipo3 = "opc_numero--"
+const clas3 = "config"
+const vari3 = "a_ataquemax"
 #
-const nome27 = "Força perito"
-const tipo27 = "opc_numero--"
-const clas27 = "config"
-const vari27 = "a_ataquemax"
+const nome4 = "Fator mínimo"
+const info4 = "Fator é um número aleatório de fator mínimo a fator máximo"
+const tipo4 = "opc_numero--"
+const clas4 = "config"
+const vari4 = "a_fatormin"
 #
-const nome28 = "Fator mínimo"
-const info28 = "Fator é um número aleatório de fator mínimo a fator máximo"
-const tipo28 = "opc_numero--"
-const clas28 = "config"
-const vari28 = "a_fatormin"
+const nome5 = "Fator máximo"
+const info5 = "Fator é um número aleatório de fator mínimo a fator máximo"
+const tipo5 = "opc_numero--"
+const clas5 = "config"
+const vari5 = "a_fatormax"
 #
-const nome29 = "Fator máximo"
-const info29 = "Fator é um número aleatório de fator mínimo a fator máximo"
-const tipo29 = "opc_numero--"
-const clas29 = "config"
-const vari29 = "a_fatormax"
+const nome6 = "Danos diferença de nível"
+const info6 = "Se a diferença de nível entre os personagens influencia nos danos"
+const tipo6 = "opc_opcao--"
+const clas6 = "config"
+const vari6 = "atknivel"
+const extr6 = "Não\nSomente sem arma\nSim"
 #
-const nome30 = "Danos diferença de nível"
-const info30 = "Se a diferença de nível entre os personagens influencia nos danos"
-const tipo30 = "opc_opcao--"
-const clas30 = "config"
-const vari30 = "atknivel"
-const extr30 = "Não\nSomente sem arma\nSim"
+const nome7 = "Velocidade"
+const info7 = "Em porcentagem"
+const tipo7 = "opc_numero--"
+const clas7 = "config"
+const vari7 = "a_vel"
 #
-const nome31 = "Velocidade"
-const info31 = "Em porcentagem"
-const tipo31 = "opc_numero--"
-const clas31 = "config"
-const vari31 = "a_vel"
-#
-const nome32 = "Consome / Espera"
-const info32 = "Tempo mínimo que deve esperar, em décimos de segundo"
-const tipo32 = "opc_numero--"
-const clas32 = "config"
-const vari32 = "atkespera"
-const extr32 = "2 100"
+const nome8 = "Consome / Espera"
+const info8 = "Tempo mínimo que deve esperar, em décimos de segundo"
+const tipo8 = "opc_numero--"
+const clas8 = "config"
+const vari8 = "atkespera"
+const extr8 = "2 100"
 
 
 classe admnomesnao
