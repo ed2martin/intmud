@@ -1302,7 +1302,8 @@ const tipo1 = "Humano"
 const lojaaula = "h_Chutar 3\n\
 h_Voadora 7\n\
 h_Morder 4\n\
-i_Hebráico 2\n\
+i_Élfico 8\n\
+i_Latir 3\n\
 m_Fogo 4\n\
 m_Retornar 8\n\
 m_Identificar 8\n\
@@ -2228,6 +2229,74 @@ const p_lugar = 3
 const p_evoluimsg1 = "$P se transforma momentaneamente em chamas, e quando elas se apagam, você \
 vê um lindo lagarto de fogo."
 const info = "lagarto fogo"
+
+
+classe p_teste047
+herda comum_persobat
+const nome = "lagartixa"
+const descnome = "uma lagartixa"
+const descpadr = "Uma lagartixa está parada na parede."
+const msexo = 0 # Sexo Msg: 0 Feminino
+const tipo1 = "normal"
+const eveste = 1 # Receber eventos do próprio objeto
+
+func cmd_atacou
+  se arg1 == este && pvida > 0 && pvida < pvidamax / 2
+    ref r = mudaobjeto("p_teste046") # Tenta evoluir para p_teste046
+    se r
+      r.pvida = r.pvidamax # Restaura pontos de vida
+      r.var.h_chutar = 5 # Ganha a habilidade Chutar
+      $mens.p(este, r)
+      $mens.mtodos1("$P evolui para $a!")
+    fimse
+  fimse
+
+
+classe p_teste048
+herda comum_perso
+const nome = "cão"
+const descnome = "um cão"
+const msexo = 1 # Sexo Msg: 1 Masculino
+const lojaaula = "i_Latir 8"
+const lojaidioma = "latir"
+const lojaaulaidioma = 3 # Nível idioma: 3 Básico
+const lojainvisivel = "$P rosna."
+const lojanaonegocia = "$P rosna para você."
+const lojamsgidioma = "$P rosna para você."
+const evsala = 1 # Eventos dono sala: Sim
+
+func cmd_mudadono # Mudou de dono
+  listaobj l
+  epara l.addfim(donoantes.dentro2), l, l.ini.remove
+    misc:removeevento(este, l.objini)
+  efim
+  ret !dono.s_sala, nulo
+  epara l.addfim(dono.dentro2), l, l.ini.remove
+    misc:evento(l.objini)
+  efim
+
+func cmd_chegou # Personagem chegou
+  ret !arg0.jog, nulo # Retorna se o personagem não for jogador
+  ret arg2 != arg1, nulo # Retorna se a origem do evento não foi a sala
+  misc:evento(arg0)
+  misc:tempo("entrou", arg0) # Dispara funções 'entrou'
+
+func entrou5
+  $cmd_falar.msg(este, "Para onde devo ir? Fale uma direção.", $idioma_latir)
+
+func cmd_falou
+  refvar sala = arg0.dono.dir_[arg1](arg0)
+  se arg2 != $idioma_latir || arg3 < 3 # Se não falou em latir nível básico ou mais...
+  senao txtproclin("n\ns\nl\no\nne\nno\nse\nso", arg1) < 0 # Se a direção não existe...
+  senao !sala # Se não existe saída nessa direção...
+    $mens.p(este)
+    $mens.mtodos1("$P anda em círculo procurando uma saída.")
+  senao !arg0.dono.porta_[dir](este) > 1 # Se a porta está fechada...
+    $mens.p(este)
+    $mens.mtodos1("$P bate de cabeça na porta.")
+  senao # A saída existe e está aberta
+    $cmd_[arg1].mover(este, sala)
+  fimse
 
 
 classe s_teste001
@@ -5139,6 +5208,7 @@ const s_titulo = "Itens vendidos com itens dentro"
 const s_desc = "João o mercenário (a oeste) vende uma aljava com 30 flechas.\n\
 Isso foi feito com trigger. As flechas (item teste052) são criadas\n\
 na função cmd_ini da aljava (item teste071)."
+const dir_l = $s_teste175
 const dir_o = $s_teste031
 
 
@@ -5200,12 +5270,35 @@ classe s_teste174
 herda b_teste
 const s_titulo = "Evoluir lagarto"
 const s_desc = "O lagarto vermelho evolui com o comando Evoluir a partir no nível 2.\n\
-Matando esses ratos com o lagarto ganha-se a experiência necessária."
+Matando esses ratos com o lagarto ganha-se a experiência necessária.\n\
+Já a lagartixa evolui para lagarto quando ficar com menos da metade\n\
+dos pontos de vida após receber um golpe durante a luta."
 const dir_s = $s_teste173
-const s_reset = "P 100 teste037 0 0 1"
+const s_reset = "P 100 teste037 0 0 1\nP 100 teste047 0 0 1"
 
 func s_reset1 # Realiza o reset
 # Não alterar; função criada automaticamente a partir de s_reset
   se p_teste037:objsolto.total < 1
     criar("p_teste037", este, 0)
+  fimse
+  se p_teste047:objsolto.total < 1
+    criar("p_teste047", este, 0)
+  fimse
+
+
+classe s_teste175
+herda b_teste
+const s_titulo = "Idioma latir"
+const s_desc = "Esse cão só entende o idioma Latir, e a partir do nível básico. Você pode\n\
+aprender com Faixa preta, duas salas à leste. Depois disso, tecle idioma\n\
+latir para falar nesse idioma. Teclando apenas idioma, mostra os seus\n\
+idiomas. O cão ensina do nível básico até perito. Ele também vai para\n\
+outra sala se você dizer uma direção em Latir. Exemplo, teclar: falar o"
+const dir_o = $s_teste170
+const s_reset = "P 100 teste048 0 0 1 i_latir=7"
+
+func s_reset1 # Realiza o reset
+# Não alterar; função criada automaticamente a partir de s_reset
+  se p_teste048:objsolto.total < 1
+    criar("p_teste048", este, 0, "i_latir=7")
   fimse

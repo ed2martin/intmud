@@ -43,34 +43,41 @@ func escr
     ret f, arg0.msg(f)
   fimse
   $misclog.falar("falar " + arg0.nome + ": " + arg1)
-  $mens.p(arg0)
-  ref idioma = $idioma_[arg0.var.z_idioma]
-  se txt(arg1, 0, 3) == "..."
-    refvar m1 = idioma ? i_continuar1 : m_continuar1
-    refvar m2 = idioma ? i_continuar2 : m_continuar2
-    $mens.mfalar2(m1, m2, arg1, idioma)
-  senao txtfim(arg1, 1) == "?"
-    refvar m1 = idioma ? i_perguntar1 : m_perguntar1
-    refvar m2 = idioma ? i_perguntar2 : m_perguntar2
-    $mens.mfalar2(m1, m2, arg1, idioma)
-  senao txtfim(arg1, 1) == "!"
-    refvar m1 = idioma ? i_exclamar1 : m_exclamar1
-    refvar m2 = idioma ? i_exclamar2 : m_exclamar2
-    $mens.mfalar2(m1, m2, arg1, idioma)
-  senao txtfim(arg1, 3) == "..."
-    refvar m1 = idioma ? i_ponderar1 : m_ponderar1
-    refvar m2 = idioma ? i_ponderar2 : m_ponderar2
-    $mens.mfalar2(m1, m2, arg1, idioma)
-  senao
-    refvar m1 = idioma ? i_falar1 : m_falar1
-    refvar m2 = idioma ? i_falar2 : m_falar2
-    $mens.mfalar2(m1, m2, arg1, idioma)
-  fimse
+  refvar idioma = $idioma_[arg0.var.z_idioma]
+  refvar sabe = !idioma ? 8 : arg0.var.[idioma.nomevar]_
+  msg(arg0, arg1, idioma)
 # Executa eventos
   listaobj l
   epara l.addfim(arg0.evento), l, l.ini.remove
-    l.objini.cmd_falou(arg0, arg1)
+    l.objini.cmd_falou(arg0, arg1, idioma, sabe)
   efim
+
+func msg # Envia mensagem
+# arg0 = personagem
+# arg1 = mensagem
+# arg2 = objeto do idioma ou null se for língua comum
+  $mens.p(arg0)
+  se txt(arg1, 0, 3) == "..."
+    refvar m1 = arg2 ? i_continuar1 : m_continuar1
+    refvar m2 = arg2 ? i_continuar2 : m_continuar2
+    $mens.mfalar2(m1, m2, arg1, arg2)
+  senao txtfim(arg1, 1) == "?"
+    refvar m1 = arg2 ? i_perguntar1 : m_perguntar1
+    refvar m2 = arg2 ? i_perguntar2 : m_perguntar2
+    $mens.mfalar2(m1, m2, arg1, arg2)
+  senao txtfim(arg1, 1) == "!"
+    refvar m1 = arg2 ? i_exclamar1 : m_exclamar1
+    refvar m2 = arg2 ? i_exclamar2 : m_exclamar2
+    $mens.mfalar2(m1, m2, arg1, arg2)
+  senao txtfim(arg1, 3) == "..."
+    refvar m1 = arg2 ? i_ponderar1 : m_ponderar1
+    refvar m2 = arg2 ? i_ponderar2 : m_ponderar2
+    $mens.mfalar2(m1, m2, arg1, arg2)
+  senao
+    refvar m1 = arg2 ? i_falar1 : m_falar1
+    refvar m2 = arg2 ? i_falar2 : m_falar2
+    $mens.mfalar2(m1, m2, arg1, arg2)
+  fimse
 
 
 classe m_cmd_falar

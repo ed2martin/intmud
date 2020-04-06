@@ -112,6 +112,11 @@ func cmd_olhar
 
 Nota: Em outros eventos, a origem do evento pode não ser arg2.
 
+Para remover eventos, usar a função: misc:removeevento(objeto 1, objeto 2)
+Faz o objeto 1 deixar de receber eventos do objeto 2.
+Há um exemplo de como usar essa função no personagem teste048, na sala
+teste175 da área de teste.
+
 
 2. Funções chamadas somente para o próprio objeto
 
@@ -242,6 +247,8 @@ Mesmo que cmd_moveu, porém a origem do evento pode ser arg4 ou arg5
 func cmd_falou
 arg0 = personagem
 arg1 = o que o personagem falou (um texto)
+arg2 = objeto do idioma (exemplo, $idioma_elfico para idioma élfico)
+arg3 = o quanto sabe do idioma, de 0 (não sabe) a 8 (perito)
 A origem do evento é sempre arg0
 
 func cmd_gritou

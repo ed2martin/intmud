@@ -327,6 +327,13 @@ func evento # Objeto passa a receber eventos até um objeto mudar de sala
   r.perso2 = arg1.evento.addfim(este, r)
   r.perso3 = arg2.evento.addfim(este, r)
 
+func removeevento # Faz objeto arg0 deixar de receber eventos do objeto arg1
+  listaitem i
+  epara i = arg1.evento.ini("misc_evento"), i, i.objdepois
+    refvar r = i.obj
+    (r.perso1.obj == arg0 || r.perso2.obj == arg0 || r.perso3.obj == arg0) && apagar(r)
+  efim
+
 func tempo # Eventos de tempo (cria objeto), vide classe misc_tempo
   ret !(txt(arg0) && ref(arg1)), nulo
   refvar r = criar("misc_tempo")
