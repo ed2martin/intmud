@@ -35,6 +35,7 @@ uint32 voltot # Somente leitura: volume total do objeto
 const volobj = 1 # Volume do objeto quando estiver vazio
 const volmax = 1000000 # Volume máximo do que pode ter dentro
 const volexp = 0 # Diferente de 0 se expande com os itens que tem dentro
+const voladd = 1 # Se falso, o volume desse objeto não conta (voltot = 0)
 #
 uint16 luzden # Somente leitura: quantas fontes de luz dentro
 uint16 luztot # Somente leitura: quantidade total de fontes de luz
@@ -55,7 +56,7 @@ func ini # Objeto é criado, acerta eventos, peso, volume e luz
   evhora && (evrec.0 = $miscsav.evhora.addfim(este))
   eveste && (evrec.1 = evento.addfim(este))
   pesotot = pesoadd ? (pesoobj + pesovar) * objtot # Acerta o peso
-  voltot = volobj * objtot # Acerta o volume
+  voltot = voladd ? volobj * objtot # Acerta o volume
   luztipo > 1 && (luztot = 1) # Acerta a luz
 
 func fim # Objeto vai sair do jogo
@@ -85,10 +86,10 @@ func ajustapeso # Acerta peso, volume, jog e pnj
     efim
   fimse
 # Acerta o volume (volden e voltot)
-  x = volexp ? volden + volobj * objtot - voltot : volobj * objtot - voltot
+  x = voladd ? (volexp ? volden + volobj * objtot : volobj * objtot) - voltot : -voltot
   se x
     voltot += x, r = dono, r.volden += x
-    enquanto r.volexp
+    enquanto r.volexp && r.voladd
       r.voltot += x, r = r.dono, r.volden += x
     efim
   fimse
@@ -140,10 +141,12 @@ func mdono # Objeto muda de dono (arg0 = novo dono)
     efim
   fimse
 # Retira o volume
-  r = dono, r.volden -= voltot
-  enquanto r.volexp
-    r.voltot -= voltot, r = r.dono, r.volden -= voltot
-  efim
+  se voltot
+    r = dono, r.volden -= voltot
+    enquanto r.volexp && r.voladd
+      r.voltot -= voltot, r = r.dono, r.volden -= voltot
+    efim
+  fimse
 # Retira a luz
   se luztot
     r = dono, r.luzden -= luztot
@@ -189,10 +192,13 @@ func mdono # Objeto muda de dono (arg0 = novo dono)
     efim
   fimse
 # Acrescenta o volume
-  r = dono, r.volden += voltot
-  enquanto r.volexp
-    r.voltot += voltot, r = r.dono, r.volden += voltot
-  efim
+  voltot = voladd ? volobj * objtot # Acerta o volume
+  se voltot
+    r = dono, r.volden += voltot
+    enquanto r.volexp && r.voladd
+      r.voltot += voltot, r = r.dono, r.volden += voltot
+    efim
+  fimse
 # Acrescenta a luz
   se luztot
     r = dono, r.luzden += luztot

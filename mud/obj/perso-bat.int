@@ -11,6 +11,7 @@ const p_atk_alvo = config:p_atk_alvo # Alvo dos ataques
 const p_exp = config:p_exp # Quantidade de experiência que dá, em porcentagem
 const perso = 2 # Para identificar o tipo de personagem
 const pesoadd = contr == este && !(bitinv & 48) && !(bitver & 512) # Se falso, está voando
+const voladd = contr == este
 #
 sav textotxt p_hist # Histórico do personagem (quem ele matou)
 sav uint32 expatual # Experiência atual
@@ -584,7 +585,10 @@ func morreu # Procedimentos quando morre
   epara l.addfim(arg0.evento), l, l.ini.remove
     l.objini.cmd_morreu(este, arg0, arg0, corpo)
   efim
-  !jog && !dono.perso && mudadono(nulo)
+# Tira do jogo se não for jogador e não tiver dono
+  se !jog && !dono.perso
+    apagar(este), mudadono(nulo)
+  fimse
 # Verifica se é o último animal do dono
   dono.perso && dono.persobat == dono && dono.p_animalatk == 2 && dono.morreu(arg0)
 # Retorna o corpo
