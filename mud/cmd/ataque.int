@@ -316,6 +316,7 @@ func exechab # Chamado quando personagem usa habilidade ou magia
       contr0.listagrupo(outros)
       epara outros.remove(contr0), outros, outros.ini.remove
         r = outros.objini.persobat
+        continuar r.dono != contr0.dono
         l.limpar
         epara l.addfim(arg0.evento), l, l.ini.remove
           sair l.objini.cmd_alvo(arg0, r, este, arg0)

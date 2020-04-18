@@ -1,3 +1,78 @@
+* 17/4/2019 IntMUD 1.13 MUD baseado na revisão 530
+
+   No IntMUD:
+  1. Corrigido bug no SSL: não estava respeitando algumas limitações de
+     SslWrite()
+  2. Criada função vartrocacod, documentada no arquivo manual.txt
+  3. Criado arquivo testes/vartroca.int para testar a função vartrocacod
+  4. Versão do programa mudou para 1.13
+
+   No MUD:
+  1. Corrigido bug: ao criar atalho que digita duas vezes seguida um
+     comando como "chat oi", o segundo comando não estava respeitando as
+     permissões do jogador
+  2. Corrigido bug no comando Carregar: ao carregar mais de um item,
+     poderia aparecer qualquer texto no lugar da quantidade
+  3. Corrigido bug: Habilidades e magias de área estavam agindo também
+     sobre personagens do grupo que estão em outras salas
+  4. Corrigido bug: Eventos cmd_chamaramin e cmd_chamouanim não estavam
+     funcionando
+  5. Corrigito bug: O volume dos animais no comando Animal estavam sendo
+     adicionados no personagem
+  6. Adicionada constante varadd, semelhante à variável persoadd, no
+     arquivo mud/misc/comum.int
+  7. No comando Econfig, menu "6 Herda" as opções "Mensagem morreu" e
+     "Mensagem desmaiou" saíram e entraram "Morreu perso", "Morreu
+     outros" e "Desmaiou"
+  8. No comando Econfig, menu "14 Mensagens", submenu "16 Habilidades e
+     magias comuns", foram adicionadas as opções "Só luta com animal" e
+     "Só luta sem animal"
+  9. No comando Eperso em personagens que usam animais, foi criada a
+     opção "15.Personagem luta" no menu "28 Comportamento"
+ 10. No comando Etipo foram adicionadas as opções "Personagem luta",
+     "Morreu perso" e "Morreu outros" para jogadores
+ 11. Criada função mudaobjeto dos personagens (vide
+     mud/doc/08-perso.txt)
+ 12. Criada função mudaobjdono em itens, personagens e efeitos, usada
+     pela função mudaobjeto
+ 13. Criado evento cmd_mudaobjeto (vide mud/doc/13-evento.txt)
+ 14. Criado comando Evoluir
+ 15. Criadas opções no comando Eperso: Evolui nível, Evolui para, Evolui
+     com e Evolui mensagem
+ 16. Criada função misc:persodentro, documentada em
+     mud/doc/14-comandos.txt
+ 17. Comando Item agora pode ser usado para evoluir animais
+ 18. Criada sala teste173 para explicar sobre evoluir animais
+ 19. Criada sala teste174 com um rato fraco, para evoluir o lagarto
+     vermelho
+ 20. Econfig, menu "14 Mensagens, submenu "13.Ganhar/perder experiência"
+     mudou de nome para "13.Experiência e nível"
+ 21. Mensagens de subir de nível e chegar ao nível máximo saíram do menu
+     "1.Mensagens do jogo" e foram para o menu "13.Experiência e nível"
+ 22. Comandos para idiomas: Lidioma, Cidioma, Eidioma, Aidioma
+ 23. Criado idioma Élfico
+ 24. Comando Idioma agora permite também escolher um idioma
+ 25. Comando Idioma adicionado no menu "16 Comandos Jogadores" do
+     comando Econfig
+ 26. Comando Falar está respeitando o idioma escolhido
+ 27. Vendedores e professores agora podem não negociar dependendo do
+     idioma que o jogador estiver falando
+ 28. Adicionado menu "14 Loja e aulas" no menu "14 Mensagens" do comando
+     Econfig
+ 29. Adicionadas mensagens no menu "23 Loja e aulas" do comando Eperso
+ 30. Menu "6 Herda" do comando Econfig agora possui submenus para melhor
+     organização
+ 31. Criada função $mens.mfalar2 para enviar mensagem de personagem
+     falando
+ 32. Na sala teste174: exemplo de animal que evolui via trigger (quando
+     ficar com menos de 50% de vida)
+ 33. Na sala teste175: exemplo de personagem envolvendo idiomas
+ 34. Documentado $mens.mfalar2 no arquivo mud/doc/03-mensagens.txt
+ 35. Evento cmd_falou agora possui também o idioma e quanto sabe do
+     idioma
+ 36. Criada função misc:removeevento, documentada no arquivo
+     doc/13-evento.txt e usada no personagem teste048 (sala teste175)
+
 * 23/8/2019 IntMUD 1.12b MUD baseado na revisão 518
 
    No IntMUD:
