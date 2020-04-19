@@ -3,7 +3,7 @@ classe misc
 # Deve ser usado como misc:variável ao invés de $misc.variável
 #
 # Versão do MUD, aparece no comando Serv
-const versao = "17/4/2020"
+const versao = "19/4/2020"
 #
 # Objetos obtidos por em misc:separa
 comum txt100 sep1 # Objeto procurado
@@ -352,7 +352,7 @@ classe misc_evento
 listaitem perso1 # Primeiro personagem
 listaitem perso2 # Segundo personagem
 listaitem perso3 # Terceiro personagem
-const cmd_saiu = fim + apagar(este) # Personagem saiu da sala
+const cmd_saiu = arg2.perso && fim + apagar(este) # Personagem saiu da sala
 const cmd_fim = fim + apagar(este) # Personagem saiu do jogo
 
 func fim # Este objeto foi apagado
@@ -397,7 +397,7 @@ ref obj # Objeto que contém a função
 ref perso1 # Primeiro personagem
 ref perso2 # Segundo personagem
 ref perso3 # Terceiro personagem
-const cmd_saiu = apagar(este) # Personagem saiu da sala
+const cmd_saiu = arg2.perso && apagar(este) # Personagem saiu da sala
 const cmd_fim = apagar(este) # Personagem saiu do jogo
 
 func fim # Este objeto foi apagado

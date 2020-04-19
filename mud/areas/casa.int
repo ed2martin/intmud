@@ -451,14 +451,14 @@ classe p_casa007
 herda comum_persobat
 const nome = "bife"
 const descnome = "um bife"
-const msexo = 1
 const descpadr = "Um bife está flutuando aqui."
+const msexo = 1
+const p_agressivo = 1 # Agressivo: 1 Se atacarem
+const p_exp = arg0.pnivel < 10 ? 100 # Dá experiência até o nível 10
 const p_morreu1 = "Um bife caiu no chão, imóvel."
 const p_mover = 1
-const p_agressivo = 1 # Agressivo: 1 Se atacarem
 const inivar = "h_arremessar=2"
 const eveste = 1 # Receber eventos do próprio objeto
-const p_exp = arg0.pnivel < 10 ? 100 # Dá experiência até o nível 10
 
 func cmd_morreu
   criar("i_casa002", dono, nivel)
