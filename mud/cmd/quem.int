@@ -1,0 +1,256 @@
+classe h_cmd_quem
+herda comando_comum
+const posic = 0
+const txtajuda = txtajuda1 + m_ajuda
+const txtajuda1 = "\b\c3Quem\b\nSintaxe: QUEM\n"
+#
+const m_ajuda = "Mostra quem está conectado no MUD e jogando."
+const m_imortal = "Imortais online:"
+const m_jogador = "Jogadores online:"
+const m_outros = "Outros:"
+const m_linhajog = "N$nivel$ren $nome$titulo  $des$perm$inv$pnj$monit$tipo"
+const m_linhapnj = "N$nivel$ren $jog, $nome $tipo"
+const m_linhaentra = "N$nivel$ren $nome"
+const v_nivel = 0
+const m_renascer_a = " R"
+const m_renascer_d = ""
+const m_renascer_n = "    "
+const m_titulo_a = ", "
+const m_titulo_d = ""
+const m_tipo_a = " "
+const m_tipo_d = ""
+const m_tipo_e = " "
+const m_desconectado = " [Desconectado]"
+const m_perm_a = " ["
+const m_perm_d = "]"
+const m_inv = " [InvQuem]"
+const m_pnj = " [PNJ]"
+const m_monit_a = " [Monit "
+const m_monit_d = "]"
+const admordem = "m_ajuda m_imortal m_jogador m_outros m_linhajog m_linhapnj\n\
+m_linhaentra v_nivel m_renascer_a m_renascer_d m_titulo_a m_titulo_d\n\
+m_tipo_a m_tipo_d m_tipo_e m_desconectado m_perm_a m_perm_d m_inv m_pnj\n\
+m_monit_a m_monit_d"
+#
+ref usr # Objeto jogsock
+ref perso # Objeto jogador
+ref perm # Permissão do jogador
+#
+const t1_nome = perso.nome ?? usr.nome
+const t1_jog = usr.nome
+const t1_des = perso.p_tempofim ? m_desconectado
+const t1_inv = perso.jogconfig.17 && perm.c_config & 4 ? m_inv
+
+func t1_nivel
+  refvar nivel = perso ? txt(perso.pnivel) : "?"
+  ret v_nivel == 0, txt(nivel + "    ", 0, 5)
+  ret v_nivel == 1 ? txtfim("     " + nivel, 5) : nivel
+
+func t1_ren
+  refvar m = perso.prenascer
+  ret m ? m_renascer_a + m + (m < 10 ? " ") + m_renascer_d : m_renascer_n
+
+func t1_titulo
+  refvar m = perso.var.z_titulo
+  ret m ? m_titulo_a + m + m_titulo_d
+
+func t1_tipo
+  ret !perso, ""
+  refvar v1 = !perso.msexo2 ? $t_[perso.tipo1].nomequem2 ?? $t_[perso.tipo1].nomequem
+  refvar v2 = !perso.msexo2 ? $t_[perso.tipo2].nomequem2 ?? $t_[perso.tipo2].nomequem
+  refvar v3 = !perso.msexo2 ? $t_[perso.tipo3].nomequem2 ?? $t_[perso.tipo3].nomequem
+  refvar t1 = (v1 ? m_tipo_e + v1 : "") + (v2 ? m_tipo_e + v2) + (v3 ? m_tipo_e + v3)
+  refvar m = txt(t1, inttotal(m_tipo_e))
+  ret m ? m_tipo_a + m + m_tipo_d
+
+func t1_perm
+  ret !perso, ""
+  ret !(perm.c_config & 4), $[perm].nomequem
+  refvar m = txtremove(perso.jogperm + " " + perso.jogarea, "ED")
+  ret m == "" || m == "jog", ""
+  ret m_perm_a + m + m_perm_d
+
+func t1_monit
+  ret !(perso && perm.c_monit && perso.sock.imonit), ""
+  refvar m = perso.sock.imonit.objlista.nome
+  ret m ? m_monit_a + m + m_monit_d
+
+func t1_pnj
+  ret perso.jogconfig.17 && !(perso.sock || perso.p_tempofim) ? m_pnj
+
+func escr
+  textotxt t0
+  txt100 t1
+  int16 total.3
+# Lista de personagens dos jogadores
+  perm = arg2
+  refvar ver = arg2.c_config & 4
+  indiceitem item
+  epara item.ini("pn "), txt1(item.txt) == "pn", item.depois
+    continuar item.obj.jogconfig.17 && !ver
+    total.[obj.jogconfig.20]++
+    usr = perso.sock
+    perso = item.obj
+    refvar l1 = (perso.jogconfig.20 ? "A" : "B") + txt(999000 - perso.pnivel)
+    t0.addfim(l1 + " " + txtremove(vartroca(m_linhajog, "$", "t1_"), "d"))
+  efim
+# Lista de jogadores sem personagem de jogador
+  se ver
+    epara item.ini("un "), txt1(item.txt) == "un", item.depois
+      continuar item.obj.perso.jog # Continuar se personagem é jogador
+      total.2++
+      usr = item.obj
+      perso = usr.perso
+      refvar l1 = "C" + txt(999000 - obj.pnivel)
+      refvar l2 = vartroca(perso ? m_linhapnj : m_linhaentra, "$", "t1_")
+      t0.addfim(l1 + " " + txtremove(l2, "d"))
+    efim
+  fimse
+# Quantidade de personagens online
+  total.0 && t0.addfim("B 00000 \b\c6" + m_jogador + " " + total.0 + "\b")
+  total.1 && t0.addfim("A 00000 \b\c6" + m_imortal + " " + total.1 + "\b")
+  total.2 && t0.addfim("C 00000 \b\c6" + m_outros + " " + total.2 + "\b")
+# Ordena e mostra para o jogador
+  t0.ordena
+  textopos pos
+  txt1 ch
+  epara pos = t0.ini, pos, pos.depois
+    pos.mudar("", 0, 8)
+  efim
+  arg0.msg2(t0.remove(1000))
+
+
+classe m_cmd_quem
+herda comando_menu_cmd
+#
+const nome1 = "Ajuda"
+const tipo1 = "opc_texto"
+const clas1 = "cmd_idioma"
+const vari1 = "m_ajuda"
+#
+const nome2 = "Jogadores"
+const tipo2 = "opc_linha"
+const clas2 = "cmd_quem"
+const vari2 = "m_jogador"
+#
+const nome3 = "Imortais"
+const tipo3 = "opc_linha"
+const clas3 = "cmd_quem"
+const vari3 = "m_imortal"
+#
+const nome4 = "Outros"
+const tipo4 = "opc_linha"
+const clas4 = "cmd_quem"
+const vari4 = "m_outros"
+#
+const titu5 = " * Cada jogador"
+#
+const nome5 = "Jogando"
+const tipo5 = "opc_linha"
+const clas5 = "cmd_quem"
+const vari5 = "m_linhajog"
+#
+const nome6 = "Controlando PNJ"
+const info6 = "Somente se jogador pode ver InvQuem"
+const tipo6 = "opc_linha"
+const clas6 = "cmd_quem"
+const vari6 = "m_linhapnj"
+#
+const nome7 = "Entrando"
+const info7 = "Somente se jogador pode ver InvQuem"
+const tipo7 = "opc_linha"
+const clas7 = "cmd_quem"
+const vari7 = "m_linhaentra"
+#
+const titu8 = " * Opções"
+#
+const nome8 = "Dígitos nível $nivel"
+const tipo8 = "opc_opcao"
+const clas8 = "cmd_quem"
+const vari8 = "v_nivel"
+const extr8 = "Alinhado à esquerda\nAlinhado à direita\n1 a 5 dígitos sem espaço"
+#
+const nome9 = "Antes Renasceu $ren"
+const tipo9 = "opc_linha"
+const clas9 = "cmd_quem"
+const vari9 = "m_renascer_a"
+#
+const nome10 = "Depois Renasceu $ren"
+const tipo10 = "opc_linha"
+const clas10 = "cmd_quem"
+const vari10 = "m_renascer_d"
+#
+const nome11 = "Não Renasceu $ren"
+const tipo11 = "opc_linha"
+const clas11 = "cmd_quem"
+const vari11 = "m_renascer_n"
+#
+const nome12 = "Antes Título $titulo"
+const tipo12 = "opc_linha"
+const clas12 = "cmd_quem"
+const vari12 = "m_titulo_a"
+#
+const nome13 = "Depois Título $titulo"
+const tipo13 = "opc_linha"
+const clas13 = "cmd_quem"
+const vari13 = "m_titulo_d"
+#
+const nome14 = "Antes Tipos $tipo"
+const info14 = "Raça, classe e subclasse"
+const tipo14 = "opc_linha"
+const clas14 = "cmd_quem"
+const vari14 = "m_tipo_a"
+#
+const nome15 = "Depois Tipos $tipo"
+const info15 = "Raça, classe e subclasse"
+const tipo15 = "opc_linha"
+const clas15 = "cmd_quem"
+const vari15 = "m_tipo_d"
+#
+const nome16 = "Entre Tipos $tipo"
+const tipo16 = "opc_linha"
+const clas16 = "cmd_quem"
+const vari16 = "m_tipo_e"
+#
+const nome17 = "Desconectado $des"
+const tipo17 = "opc_linha"
+const clas17 = "cmd_quem"
+const vari17 = "m_desconectado"
+#
+const nome18 = "Antes Perm $perm"
+const info18 = "Somente se jogador pode ver InvQuem\n\
+Se não pode, $perm é o texto da opção \"Texto comando Quem\" do comando Eperm"
+const tipo18 = "opc_linha"
+const clas18 = "cmd_quem"
+const vari18 = "m_perm_a"
+#
+const nome19 = "Depois Perm $perm"
+const info19 = "Somente se jogador pode ver InvQuem\n\
+Se não pode, $perm é o texto da opção \"Texto comando Quem\" do comando Eperm"
+const tipo19 = "opc_linha"
+const clas19 = "cmd_quem"
+const vari19 = "m_perm_d"
+#
+const nome20 = "InvQuem $inv"
+const info20 = "Se está invisível no comando Quem"
+const tipo20 = "opc_linha"
+const clas20 = "cmd_quem"
+const vari20 = "m_inv"
+#
+const nome21 = "Controlando PNJ $pnj"
+const info21 = "Somente se jogador pode ver InvQuem"
+const tipo21 = "opc_linha"
+const clas21 = "cmd_quem"
+const vari21 = "m_pnj"
+#
+const nome22 = "Antes Monit $monit"
+const info22 = "Somente se jogador pode ver InvQuem"
+const tipo22 = "opc_linha"
+const clas22 = "cmd_quem"
+const vari22 = "m_monit_a"
+#
+const nome23 = "Depois Monit $monit"
+const info23 = "Somente se jogador pode ver InvQuem"
+const tipo23 = "opc_linha"
+const clas23 = "cmd_quem"
+const vari23 = "m_monit_d"

@@ -4,8 +4,24 @@ classe comando_adm
 const posic = 8 # Posição mínima para usar o comando; não usado em classes adm_
 const objcmd = arg1 == $perm_admin ? este # Objeto que processa o comando
 const iniclasse = !$[arg0] && criar(arg0)
-const admcod = txttroca(txttroca(arg0, "\"", "\\\""), "\n", "\\n")
-const admdec = txttroca(txtvis(arg0), "\\\"", "\"")
+#
+const admcod_@a = "\\\""
+const admcod_@0e = " "
+const admcod_@0n = "\\n"
+const admcod_@n = "\\n"
+const admdec_@b = "\\b"
+const admdec_@c = "\\c"
+const admdec_@d = "\\d"
+const admdec_@_@n@_ = "\\e\\n\\e"
+const admdec_@_@n = "\\e\\n"
+const admdec_@n@_ = "\\n\\e"
+const admdec_@n = "\\n"
+#
+const admcod = vartrocacod(arg0, "", "admcod_")
+
+func admdec
+  refvar t1 = vartrocacod("\n" + arg0 + "\n", "", "admdec_")
+  ret txt(t1, 2, inttotal(t1) - 4)
 
 func passosair # Sai do passo atual, volta para o menu
   $[arg0.passo = arg0.var.opcpasso].passo(arg0, "\b")

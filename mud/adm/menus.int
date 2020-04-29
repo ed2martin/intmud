@@ -305,18 +305,14 @@ func passo # Alterando um texto de várias linhas
       p.apagar(arg0.var.opcclasse, arg0.var.opcvar)
       config:salvar
       criar("admmudou", arg0.var.opcclasse, arg0.var.opcexec)
-      arg0.msg("Apagado: " + arg0.var.opcnome)
-      admlog(arg0, "apagou " + arg0.var.opcclasse + ":" + arg0.var.opcvar + " " + arg0.var.opcnom\
-e)
+      refvar opcnome = arg0.var.opcnome
+      arg0.msg("Apagado: " + opcnome)
+      admlog(arg0, "apagou " + arg0.var.opcclasse + ":" + arg0.var.opcvar + " " + opcnome)
       ret 1
     fimse
-    textopos p1
-    textotxt t1
-    epara p1 = arg0.teditor.ini, p1.lin, p1.depois
-      t1.addfim(txtinvis(p1.texto))
-    efim
-    txt200 t = "const " + arg0.var.opcvar + "=\""
-    p.criar(arg0.var.opcclasse, t + admcod(t1.remove(1000)) + "\"")
+    refvar t1 = "const " + arg0.var.opcvar + "=\""
+    refvar t2 = admcod(arg0.teditor.ini.textolin(1000))
+    p.criar(arg0.var.opcclasse, t1 + t2 + "\"")
     config:salvar
     criar("admmudou", arg0.var.opcclasse, arg0.var.opcexec)
     arg0.msg("Salvou " + arg0.var.opcnome)
