@@ -5,9 +5,12 @@ const txtajuda = txtajuda1 + m_ajuda
 const txtajuda1 = "\b\c3Quem\b\nSintaxe: QUEM\n"
 #
 const m_ajuda = "Mostra quem está conectado no MUD e jogando."
-const m_imortal = "Imortais online:"
-const m_jogador = "Jogadores online:"
-const m_outros = "Outros:"
+const m_imortal1 = "Imortais online: $m"
+const m_imortalN = "Imortais online: $m"
+const m_jogador1 = "Jogadores online: $m"
+const m_jogadorN = "Jogadores online: $m"
+const m_outros1 = "Outros: $m"
+const m_outrosN = "Outros: $m"
 const m_linhajog = "N$nivel$ren $nome$titulo  $des$perm$inv$pnj$monit$tipo"
 const m_linhapnj = "N$nivel$ren $jog, $nome $tipo"
 const m_linhaentra = "N$nivel$ren $nome"
@@ -27,14 +30,16 @@ const m_inv = " [InvQuem]"
 const m_pnj = " [PNJ]"
 const m_monit_a = " [Monit "
 const m_monit_d = "]"
-const admordem = "m_ajuda m_imortal m_jogador m_outros m_linhajog m_linhapnj\n\
-m_linhaentra v_nivel m_renascer_a m_renascer_d m_titulo_a m_titulo_d\n\
-m_tipo_a m_tipo_d m_tipo_e m_desconectado m_perm_a m_perm_d m_inv m_pnj\n\
-m_monit_a m_monit_d"
+const admordem = "m_ajuda m_imortal1 m_imortalN m_jogador1 m_jogadorN m_outros1\n\
+m_outrosN m_linhajog m_linhapnj m_linhaentra v_nivel m_renascer_a m_renascer_d\n\
+m_titulo_a m_titulo_d m_tipo_a m_tipo_d m_tipo_e m_desconectado\n\
+m_perm_a m_perm_d m_inv m_pnj m_monit_a m_monit_d"
 #
 ref usr # Objeto jogsock
 ref perso # Objeto jogador
 ref perm # Permissão do jogador
+int16 cabe_m
+const cabe_@g = "$"
 #
 const t1_nome = perso.nome ?? usr.nome
 const t1_jog = usr.nome
@@ -88,9 +93,9 @@ func escr
   indiceitem item
   epara item.ini("pn "), txt1(item.txt) == "pn", item.depois
     continuar item.obj.jogconfig.17 && !ver
-    total.[obj.jogconfig.20]++
     usr = perso.sock
     perso = item.obj
+    total.[perso.jogconfig.20]++
     refvar l1 = (perso.jogconfig.20 ? "A" : "B") + txt(999000 - perso.pnivel)
     t0.addfim(l1 + " " + txtremove(vartroca(m_linhajog, "$", "t1_"), "d"))
   efim
@@ -107,9 +112,21 @@ func escr
     efim
   fimse
 # Quantidade de personagens online
-  total.0 && t0.addfim("B 00000 \b\c6" + m_jogador + " " + total.0 + "\b")
-  total.1 && t0.addfim("A 00000 \b\c6" + m_imortal + " " + total.1 + "\b")
-  total.2 && t0.addfim("C 00000 \b\c6" + m_outros + " " + total.2 + "\b")
+  se total.0
+    cabe_m = total.0
+    refvar texto = total.0 == 1 ? m_jogador1 : m_jogadorN
+    t0.addfim(vartrocacod("B 00000 \b\c6" + texto + "\b", "$", "cabe_"))
+  fimse
+  se total.1
+    cabe_m = total.1
+    refvar texto = total.1 == 1 ? m_imortal1 : m_imortalN
+    t0.addfim(vartrocacod("A 00000 \b\c6" + texto + "\b", "$", "cabe_"))
+  fimse
+  se total.2
+    cabe_m = total.2
+    refvar texto = total.2 == 1 ? m_outros1 : m_outrosN
+    t0.addfim(vartrocacod("C 00000 \b\c6" + texto + "\b", "$", "cabe_"))
+  fimse
 # Ordena e mostra para o jogador
   t0.ordena
   textopos pos
@@ -128,129 +145,153 @@ const tipo1 = "opc_texto"
 const clas1 = "cmd_idioma"
 const vari1 = "m_ajuda"
 #
-const nome2 = "Jogadores"
+const nome2 = "Um jogador"
 const tipo2 = "opc_linha"
 const clas2 = "cmd_quem"
-const vari2 = "m_jogador"
+const vari2 = "m_jogador1"
 #
-const nome3 = "Imortais"
+const nome3 = "Mais de um jogador"
 const tipo3 = "opc_linha"
 const clas3 = "cmd_quem"
-const vari3 = "m_imortal"
+const vari3 = "m_jogadorN"
 #
-const nome4 = "Outros"
+const nome4 = "Um imortal"
 const tipo4 = "opc_linha"
 const clas4 = "cmd_quem"
-const vari4 = "m_outros"
+const vari4 = "m_imortal1"
 #
-const titu5 = " * Cada jogador"
-#
-const nome5 = "Jogando"
+const nome5 = "Mais de um imortal"
 const tipo5 = "opc_linha"
 const clas5 = "cmd_quem"
-const vari5 = "m_linhajog"
+const vari5 = "m_imortalN"
 #
-const nome6 = "Controlando PNJ"
-const info6 = "Somente se jogador pode ver InvQuem"
+const nome6 = "Um outros"
 const tipo6 = "opc_linha"
 const clas6 = "cmd_quem"
-const vari6 = "m_linhapnj"
+const vari6 = "m_outros1"
 #
-const nome7 = "Entrando"
-const info7 = "Somente se jogador pode ver InvQuem"
+const nome7 = "Mais de um outros"
 const tipo7 = "opc_linha"
 const clas7 = "cmd_quem"
-const vari7 = "m_linhaentra"
+const vari7 = "m_outrosN"
 #
-const titu8 = " * Opções"
+const titu8 = " * Cada jogador"
 #
-const nome8 = "Dígitos nível $nivel"
-const tipo8 = "opc_opcao"
+const nome8 = "Jogando"
+const info8 = "Um jogador no jogo"
+const tipo8 = "opc_linha"
 const clas8 = "cmd_quem"
-const vari8 = "v_nivel"
-const extr8 = "Alinhado à esquerda\nAlinhado à direita\n1 a 5 dígitos sem espaço"
+const vari8 = "m_linhajog"
 #
-const nome9 = "Antes Renasceu $ren"
+const nome9 = "Controlando PNJ"
+const info9 = "Um PNJ sendo controlado por um jogador\n\
+Aparece só para quem pode ver InvQuem"
 const tipo9 = "opc_linha"
 const clas9 = "cmd_quem"
-const vari9 = "m_renascer_a"
+const vari9 = "m_linhapnj"
 #
-const nome10 = "Depois Renasceu $ren"
+const nome10 = "Criando personagem"
+const info10 = "Um jogador criando um personagem\n\
+Aparece só para quem pode ver InvQuem"
 const tipo10 = "opc_linha"
 const clas10 = "cmd_quem"
-const vari10 = "m_renascer_d"
+const vari10 = "m_linhaentra"
 #
-const nome11 = "Não Renasceu $ren"
-const tipo11 = "opc_linha"
+const titu11 = " * Opções"
+#
+const nome11 = "Dígitos nível $nivel"
+const tipo11 = "opc_opcao"
 const clas11 = "cmd_quem"
-const vari11 = "m_renascer_n"
+const vari11 = "v_nivel"
+const extr11 = "Alinhado à esquerda\nAlinhado à direita\n1 a 5 dígitos sem espaço"
 #
-const nome12 = "Antes Título $titulo"
+const nome12 = "Antes Renasceu $ren"
+const info12 = "Texto antes de quantas vezes renasceu"
 const tipo12 = "opc_linha"
 const clas12 = "cmd_quem"
-const vari12 = "m_titulo_a"
+const vari12 = "m_renascer_a"
 #
-const nome13 = "Depois Título $titulo"
+const nome13 = "Depois Renasceu $ren"
+const info13 = "Texto depois de quantas vezes renasceu"
 const tipo13 = "opc_linha"
 const clas13 = "cmd_quem"
-const vari13 = "m_titulo_d"
+const vari13 = "m_renascer_d"
 #
-const nome14 = "Antes Tipos $tipo"
-const info14 = "Raça, classe e subclasse"
+const nome14 = "Não Renasceu $ren"
 const tipo14 = "opc_linha"
 const clas14 = "cmd_quem"
-const vari14 = "m_tipo_a"
+const vari14 = "m_renascer_n"
 #
-const nome15 = "Depois Tipos $tipo"
-const info15 = "Raça, classe e subclasse"
+const nome15 = "Antes Título $titulo"
+const info15 = "Texto antes do título"
 const tipo15 = "opc_linha"
 const clas15 = "cmd_quem"
-const vari15 = "m_tipo_d"
+const vari15 = "m_titulo_a"
 #
-const nome16 = "Entre Tipos $tipo"
+const nome16 = "Depois Título $titulo"
+const info16 = "Texto depois do título"
 const tipo16 = "opc_linha"
 const clas16 = "cmd_quem"
-const vari16 = "m_tipo_e"
+const vari16 = "m_titulo_d"
 #
-const nome17 = "Desconectado $des"
+const nome17 = "Antes Tipos $tipo"
+const info17 = "Texto antes dos tipos (raça, classe e subclasse)"
+const info17 = "Raça, classe e subclasse"
 const tipo17 = "opc_linha"
 const clas17 = "cmd_quem"
-const vari17 = "m_desconectado"
+const vari17 = "m_tipo_a"
 #
-const nome18 = "Antes Perm $perm"
-const info18 = "Somente se jogador pode ver InvQuem\n\
-Se não pode, $perm é o texto da opção \"Texto comando Quem\" do comando Eperm"
+const nome18 = "Depois Tipos $tipo"
+const info18 = "Texto depois dos tipos (raça, classe e subclasse)"
 const tipo18 = "opc_linha"
 const clas18 = "cmd_quem"
-const vari18 = "m_perm_a"
+const vari18 = "m_tipo_d"
 #
-const nome19 = "Depois Perm $perm"
-const info19 = "Somente se jogador pode ver InvQuem\n\
-Se não pode, $perm é o texto da opção \"Texto comando Quem\" do comando Eperm"
+const nome19 = "Entre Tipos $tipo"
+const info19 = "Texto separando raça, classe e subclasse"
 const tipo19 = "opc_linha"
 const clas19 = "cmd_quem"
-const vari19 = "m_perm_d"
+const vari19 = "m_tipo_e"
 #
-const nome20 = "InvQuem $inv"
-const info20 = "Se está invisível no comando Quem"
+const nome20 = "Desconectado $des"
 const tipo20 = "opc_linha"
 const clas20 = "cmd_quem"
-const vari20 = "m_inv"
+const vari20 = "m_desconectado"
 #
-const nome21 = "Controlando PNJ $pnj"
-const info21 = "Somente se jogador pode ver InvQuem"
+const nome21 = "Antes Perm $perm"
+const info21 = "Somente se jogador pode ver InvQuem\n\
+Se não pode, $perm é o texto da opção \"Texto comando Quem\" do comando Eperm"
 const tipo21 = "opc_linha"
 const clas21 = "cmd_quem"
-const vari21 = "m_pnj"
+const vari21 = "m_perm_a"
 #
-const nome22 = "Antes Monit $monit"
-const info22 = "Somente se jogador pode ver InvQuem"
+const nome22 = "Depois Perm $perm"
+const info22 = "Somente se jogador pode ver InvQuem\n\
+Se não pode, $perm é o texto da opção \"Texto comando Quem\" do comando Eperm"
 const tipo22 = "opc_linha"
 const clas22 = "cmd_quem"
-const vari22 = "m_monit_a"
+const vari22 = "m_perm_d"
 #
-const nome23 = "Depois Monit $monit"
-const info23 = "Somente se jogador pode ver InvQuem"
+const nome23 = "InvQuem $inv"
+const info23 = "Se está invisível no comando Quem"
 const tipo23 = "opc_linha"
 const clas23 = "cmd_quem"
-const vari23 = "m_monit_d"
+const vari23 = "m_inv"
+#
+const nome24 = "Controlando PNJ $pnj"
+const info24 = "Somente se jogador pode ver InvQuem"
+const tipo24 = "opc_linha"
+const clas24 = "cmd_quem"
+const vari24 = "m_pnj"
+#
+const nome25 = "Antes Monit $monit"
+const info25 = "Somente se jogador pode ver InvQuem"
+const tipo25 = "opc_linha"
+const clas25 = "cmd_quem"
+const vari25 = "m_monit_a"
+#
+const nome26 = "Depois Monit $monit"
+const info26 = "Somente se jogador pode ver InvQuem"
+const tipo26 = "opc_linha"
+const clas26 = "cmd_quem"
+const vari26 = "m_monit_d"
