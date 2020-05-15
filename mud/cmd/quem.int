@@ -11,7 +11,7 @@ const m_jogador1 = "Jogadores online: $m"
 const m_jogadorN = "Jogadores online: $m"
 const m_outros1 = "Outros: $m"
 const m_outrosN = "Outros: $m"
-const m_linhajog = "N$nivel$ren $nome$titulo  $des$perm$inv$pnj$monit$tipo"
+const m_linhajog = "N$nivel$ren $nome$titulo  $tipo$des$perm$inv$pnj$monit"
 const m_linhapnj = "N$nivel$ren $jog, $nome $tipo"
 const m_linhaentra = "N$nivel$ren $nome"
 const v_nivel = 0
@@ -70,7 +70,10 @@ func t1_tipo
 
 func t1_perm
   ret !perso, ""
-  ret !(perm.c_config & 4), $[perm].nomequem
+  se !(perm.c_config & 4)
+    refvar m = $perm_[perso.jogperm].nomequem
+    ret !m ? "" : m_perm_a + m + m_perm_d
+  fimse
   refvar m = txtremove(perso.jogperm + " " + perso.jogarea, "ED")
   ret m == "" || m == "jog", ""
   ret m_perm_a + m + m_perm_d
@@ -259,15 +262,13 @@ const clas20 = "cmd_quem"
 const vari20 = "m_desconectado"
 #
 const nome21 = "Antes Perm $perm"
-const info21 = "Somente se jogador pode ver InvQuem\n\
-Se não pode, $perm é o texto da opção \"Texto comando Quem\" do comando Eperm"
+const info21 = "Texto antes das permissões"
 const tipo21 = "opc_linha"
 const clas21 = "cmd_quem"
 const vari21 = "m_perm_a"
 #
 const nome22 = "Depois Perm $perm"
-const info22 = "Somente se jogador pode ver InvQuem\n\
-Se não pode, $perm é o texto da opção \"Texto comando Quem\" do comando Eperm"
+const info22 = "Texto depois das permissões"
 const tipo22 = "opc_linha"
 const clas22 = "cmd_quem"
 const vari22 = "m_perm_d"

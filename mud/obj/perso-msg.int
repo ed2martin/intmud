@@ -1,4 +1,40 @@
 classe h_perso_cfg
+# Personagem na sala
+const descperso0 = "$P jaz aqui."
+const descperso1 = "$P está aqui mortalmente ferid$s."
+const descperso2 = "$P está aqui incapacitad$s."
+const descperso3 = "$P está aqui, muito frac$s."
+const descperso4c = "$P dorme aqui."
+const descperso4i = "$P dorme $e $o."
+const descperso5c = "$P descansa aqui."
+const descperso5i = "$P descansa $e $o."
+const descperso6c = "$P está sentad$s."
+const descperso6i = "$P está sentad$s $e $o."
+const descperso6p = "$P está montad$s $e $b."
+const descperso7a = "$P está lutando."
+const descperso7b = "$P está lutando com você."
+const descperso7c = "$P está lutando com $a."
+const descperso8 = "$P está em pé aqui."
+const descpersoN = "$P está está aqui."
+#
+# Imortal na sala
+const descimortal0 = "$P jaz aqui diante de você."
+const descimortal1 = "$P está aqui mortalmente ferid$s diante de você."
+const descimortal2 = "$P está aqui incapacitad$s diante de você."
+const descimortal3 = "$P está aqui, muito frac$s diante de você."
+const descimortal4c = "$P dorme aqui diante de você."
+const descimortal4i = "$P dorme $e $o diante de você."
+const descimortal5c = "$P descansa aqui diante de você."
+const descimortal5i = "$P descansa $e $o diante de você."
+const descimortal6c = "$P está sentad$s diante de você."
+const descimortal6i = "$P está sentad$s $e $o diante de você."
+const descimortal6p = "$P está montad$s $e $b diante de você."
+const descimortal7a = "$P está lutando diante de você."
+const descimortal7b = "$P está lutando com você."
+const descimortal7c = "$P está lutando com $a diante de você."
+const descimortal8 = "$P está em pé aqui diante de você."
+const descimortalN = "$P está está aqui diante de você."
+#
 # Posição personagem
 const posicao0a = "\c9Você está mort$s!!!\b"
 const posicao1a = "\c9Você está muito mal, incapaz de fazer qualquer coisa.\b"
@@ -119,7 +155,13 @@ const loja_naonegocia = "$P: Não negocio com $m."
 const loja_fechada = "$P: Volte outra hora."
 const loja_msgidioma = "$P só entende $m no nível $1."
 #
-const admordem = "posicao0a posicao1a posicao2a posicao3a posicao4a\n\
+const admordem = "descperso0 descperso1 descperso2 descperso3 descperso4c descperso4i\n\
+descperso5c descperso5i descperso6c descperso6i descperso6p\n\
+descperso7a descperso7b descperso7c descperso8 descpersoN\n\
+descimortal0 descimortal1 descimortal2 descimortal3 descimortal4c descimortal4i\n\
+descimortal5c descimortal5i descimortal6c descimortal6i descimortal6p\n\
+descimortal7a descimortal7b descimortal7c descimortal8 descimortalN\n\
+posicao0a posicao1a posicao2a posicao3a posicao4a\n\
 posicao5a posicao6a posicao7a posicao8a semluta_a\n\
 posicao0b posicao1b posicao2b posicao3b posicao4b posicao5b\n\
 posicao6b posicao7b posicao8b acordado_b\n\
@@ -144,13 +186,106 @@ exp_sub1_voce exp_sub2_voce exp_sub1_animal exp_sub2_animal\n\
 exp_nivelmsg1 exp_nivelmsg2 exp_nmax\n\
 loja_invisivel loja_naonegocia loja_fechada loja_msgidioma"
 
-
 func iniclasse
   ret txt(arg0, 0, 2) != "h_", !$[arg0] && criar(arg0)
   prog p
   ret p.existe(txt(arg0, 2)), nulo
   p.criar(txt(arg0, 2) + "\nconfig/perso\nherda " + arg0)
   misccriar:add(txt(arg0, 2))
+
+  
+classe m_perso_descperso
+herda comando_menu
+const titulo = "Personagem na sala"
+const menufim = "menu_econfig_msg"
+const colunas = 28
+const variavel = "descperso"
+#
+const nome1 = "Morto"
+const tipo1 = "opc_linha"
+const clas1 = "perso_cfg"
+const vari1 = variavel + "0"
+#
+const nome2 = "Mortalmente ferido"
+const tipo2 = "opc_linha"
+const clas2 = "perso_cfg"
+const vari2 = variavel + "1"
+#
+const nome3 = "Incapacitado"
+const tipo3 = "opc_linha"
+const clas3 = "perso_cfg"
+const vari3 = variavel + "2"
+#
+const nome4 = "Fraco"
+const tipo4 = "opc_linha"
+const clas4 = "perso_cfg"
+const vari4 = variavel + "3"
+#
+const nome5 = "Dormindo no chão"
+const tipo5 = "opc_linha"
+const clas5 = "perso_cfg"
+const vari5 = variavel + "4c"
+#
+const nome6 = "Dormindo em item"
+const tipo6 = "opc_linha"
+const clas6 = "perso_cfg"
+const vari6 = variavel + "4i"
+#
+const nome7 = "Descansando no chão"
+const tipo7 = "opc_linha"
+const clas7 = "perso_cfg"
+const vari7 = variavel + "5c"
+#
+const nome8 = "Descansando em item"
+const tipo8 = "opc_linha"
+const clas8 = "perso_cfg"
+const vari8 = variavel + "5i"
+#
+const nome9 = "Sentado no chão"
+const tipo9 = "opc_linha"
+const clas9 = "perso_cfg"
+const vari9 = variavel + "6c"
+#
+const nome10 = "Sentado em item"
+const tipo10 = "opc_linha"
+const clas10 = "perso_cfg"
+const vari10 = variavel + "6i"
+#
+const nome11 = "Montado"
+const tipo11 = "opc_linha"
+const clas11 = "perso_cfg"
+const vari11 = variavel + "6p"
+#
+const nome12 = "Lutando"
+const tipo12 = "opc_linha"
+const clas12 = "perso_cfg"
+const vari12 = variavel + "7a"
+#
+const nome13 = "Lutando com alguém"
+const tipo13 = "opc_linha"
+const clas13 = "perso_cfg"
+const vari13 = variavel + "7b"
+#
+const nome14 = "Lutando com você"
+const tipo14 = "opc_linha"
+const clas14 = "perso_cfg"
+const vari14 = variavel + "7c"
+#
+const nome15 = "Em pé"
+const tipo15 = "opc_linha"
+const clas15 = "perso_cfg"
+const vari15 = variavel + "8"
+#
+const nome16 = "Outra posição"
+const tipo16 = "opc_linha"
+const clas16 = "perso_cfg"
+const vari16 = variavel + "N"
+
+
+classe m_perso_descimortal
+herda m_perso_descperso
+const titulo = "Jogador imortal na sala"
+const variavel = "descimortal"
 
 
 classe m_perso_posicao_a

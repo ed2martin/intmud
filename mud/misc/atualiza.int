@@ -1,4 +1,4 @@
-classe atualiza_522
+classe atualiza_534
 # Atualiza arquivos mud/config/* e mud/areas/* de acordo com novas mudanças
 prog p
 debug dbg
@@ -729,8 +729,8 @@ func ini3_exec
 func ini4_exec
   apagar(este)
 # Checa e muda a versão
-  ret (versao = config:versao) >= 522, nulo
-  p.criar("config", "const versao = 522 # Para atualizar diretórios areas e config")
+  ret (versao = config:versao) >= 534, nulo
+  p.criar("config", "const versao = 534 # Para atualizar diretórios areas e config")
   config:salvar
 # Comando Fim e Dicas aleatórias
   se versao < 457
@@ -889,6 +889,30 @@ func ini4_exec
     movefunc("config", "nivelmsg1", "perso_cfg", "exp_nivelmsg1")
     movefunc("config", "nivelmsg2", "perso_cfg", "exp_nivelmsg2")
     movefunc("config", "nmaxmsg", "perso_cfg", "exp_nmax")
+  fimse
+# Mensagem da posição padrão
+  se versao < 534
+    epara p.iniherdainv("comum_perso"), p.lin, p.depois
+      dbg.ini
+      continuar ![p.texto]:descpadr
+      casovar [p.texto]:pospadr
+      casose "4"
+        movefunc(p.texto, "descpadr", p.texto, "descsala4c")
+        sair
+      casose "5"
+        movefunc(p.texto, "descpadr", p.texto, "descsala5c")
+        sair
+      casose "6"
+        movefunc(p.texto, "descpadr", p.texto, "descsala6c")
+        sair
+      casose "8"
+        movefunc(p.texto, "descpadr", p.texto, "descsala8")
+        sair
+      casose
+        movefunc(p.texto, "descpadr", p.texto, "descsalaN")
+        sair
+      casofim
+    efim
   fimse
 # Avisa que atualizou arquivos
   tela.msg("Diretórios areas e config atualizados\n")

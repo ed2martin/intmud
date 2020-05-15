@@ -52,13 +52,32 @@ const lojanaonegocia = perso_cfg:loja_naonegocia
 const lojafechada = perso_cfg:loja_fechada
 const lojamsgidioma = perso_cfg:loja_msgidioma
 #
+const descsala0 = perso_cfg:descperso0
+const descsala1 = perso_cfg:descperso1
+const descsala2 = perso_cfg:descperso2
+const descsala3 = perso_cfg:descperso3
+const descsala4c = perso_cfg:descperso4c
+const descsala4i = perso_cfg:descperso4i
+const descsala5c = perso_cfg:descperso5c
+const descsala5i = perso_cfg:descperso5i
+const descsala6c = perso_cfg:descperso6c
+const descsala6i = perso_cfg:descperso6i
+const descsala6p = perso_cfg:descperso6p
+const descsala7a = perso_cfg:descperso7a
+const descsala7b = perso_cfg:descperso7b
+const descsala7c = perso_cfg:descperso7c
+const descsala8 = perso_cfg:descperso8
+const descsalaN = perso_cfg:descpersoN
+#
 # Ordem que deve organizar as constantes:
 const admordem = "nome\n\
 ident\n\
 descnome\n\
-descpadr\n\
 descver\n\
 descident\n\
+descsala0 descsala1 descsala2 descsala3 descsala4c descsala4i\n\
+descsala5c descsala5i descsala6c descsala6i descsala6p\n\
+descsala7a descsala7b descsala7c descsala8 descsalaN\n\
 msexo\n\
 sexoini\n\
 m_atrib1 m_atrib2\n\
@@ -477,73 +496,56 @@ func msgposicao # Envia uma mensagem conforme a posição
 
 func descpos
   se posicao == pospadr && !(iseguir && tseguir == 3)
-    refvar m = txt(var.z_descpadr ?? descpadr(arg0))
+    refvar m = txt(var.z_descpadr)
     ret m, m
   fimse
-  txt100 desc1 = txtcopiamai(descnome2, "A")
-  iseguir && tseguir == 3 && (desc1 += " de " + iseguir.objlista.descnome2)
-  refvar imortal = j_imortal ? " diante de você." : "."
   casovar posicao
   casose "0"
-    ret desc1 + " jaz aqui" + imortal
+    $mens.p(este)
+    ret $mens.txt(descsala0, arg0)
   casose "1"
-    ret desc1 + " está aqui mortalmente ferid" + (msexo2 ? "o" : "a") + imortal
+    $mens.p(este)
+    ret $mens.txt(descsala1, arg0)
   casose "2"
-    ret desc1 + " está aqui incapacitad" + (msexo2 ? "o." : "a") + imortal
+    $mens.p(este)
+    ret $mens.txt(descsala2, arg0)
   casose "3"
-    ret desc1 + " está aqui, muito frac" + (msexo2 ? "o." : "a") + imortal
+    $mens.p(este)
+    ret $mens.txt(descsala3, arg0)
   casose "4"
-    ret !poslugar, txtcopiamai(nome, "A") + " dorme aqui" + imortal
-    refvar mens = poslugar.objlista.descnome2
-    casovar txt1(mens)
-    casose "a"
-    casose "A"
-      ret desc1 + " dorme na " + txt2(mens) + imortal
-    casose "o"
-    casose "O"
-      ret desc1 + " dorme no " + txt2(mens) + imortal
-    casofim
-    ret desc1 + " dorme em " + mens + imortal
+    $mens.p(este, nulo, poslugar.objlista)
+    ret $mens.txt(poslugar.objlista.item ? descsala4i : descsala4c, arg0)
   casose "5"
-    ret !poslugar, desc1 + " descansa aqui" + imortal
-    refvar mens = poslugar.objlista.descnome2
-    casovar txt1(mens)
-    casose "a"
-    casose "A"
-      ret desc1 + " descansa na " + txt2(mens) + imortal
-    casose "o"
-    casose "O"
-      ret desc1 + " descansa no " + txt2(mens) + imortal
-    casofim
-    ret desc1 + " descansa em " + mens + imortal
+    $mens.p(este, nulo, poslugar.objlista)
+    ret $mens.txt(poslugar.objlista.item ? descsala5i : descsala5c, arg0)
   casose "6"
-    refvar lin = desc1 + " está sentad" + (msexo2 ? "o" : "a")
-    ret !poslugar, lin + " aqui" + imortal
-    refvar mens = poslugar.objlista.descnome2
-    casovar txt1(mens)
-    casose "a"
-    casose "A"
-      ret lin + " na " + txt2(mens) + imortal
-    casose "o"
-    casose "O"
-      ret lin + " no " + txt2(mens) + imortal
-    casofim
-    ret lin + " em " + mens + imortal
-  casose "7"
-    refvar alvo = atkenv.objlista
-    se !alvo
-      ret desc1 + " está lutando" + imortal
-    senao alvo == arg0
-      ret desc1 + " está lutando com você!"
-    senao alvo.visivel(arg0)
-      ret desc1 + " está lutando com " + alvo.descnome2 + imortal
+    se !poslugar
+      $mens.p(este)
+      ret $mens.txt(descsala6c, arg0)
+    senao poslugar.objlista.perso
+      $mens.p(este, poslugar.objlista)
+      ret $mens.txt(descsala6p, arg0)
     senao
-      ret desc1 + " está lutando com alguém" + imortal
+      $mens.p(este, nulo, poslugar.objlista)
+      ret $mens.txt(descsala6i, arg0)
+    fimse
+  casose "7"
+    se !atkenv.objlista
+      $mens.p(este)
+      ret $mens.txt(descsala7a, arg0)
+    senao alvo == arg0
+      $mens.p(este, arg0)
+      ret $mens.txt(descsala7b, arg0)
+    senao
+      $mens.p(este, atkenv.objlista)
+      ret $mens.txt(descsala7c, arg0)
     fimse
   casose "8"
-    ret desc1 + " está em pé aqui" + imortal
+    $mens.p(este)
+    ret $mens.txt(descsala8, arg0)
   casofim
-  ret desc1 + " está aqui" + imortal
+  $mens.p(este)
+  ret $mens.txt(descsalaN, arg0)
 
 func equippos # Retorna as posições aonde pode usar equipamentos
   txt100 lin

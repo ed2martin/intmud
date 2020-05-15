@@ -35,6 +35,23 @@ sav uint8 p_sede # Sede, quanto menor mais sede tem
 sav uint8 p_fome # Fome, quanto menor mais fome tem
 sav uint8 p_bebida # Embriaguez, quanto maior mais bêbado está
 sav uint8 p_diges # Digestão
+#
+const descsala0 = j_imortal ? perso_cfg:descimortal0 : perso_cfg:descperso0
+const descsala1 = j_imortal ? perso_cfg:descimortal1 : perso_cfg:descperso1
+const descsala2 = j_imortal ? perso_cfg:descimortal2 : perso_cfg:descperso2
+const descsala3 = j_imortal ? perso_cfg:descimortal3 : perso_cfg:descperso3
+const descsala4c = j_imortal ? perso_cfg:descimortal4c : perso_cfg:descperso4c
+const descsala4i = j_imortal ? perso_cfg:descimortal4i : perso_cfg:descperso4i
+const descsala5c = j_imortal ? perso_cfg:descimortal5c : perso_cfg:descperso5c
+const descsala5i = j_imortal ? perso_cfg:descimortal5i : perso_cfg:descperso5i
+const descsala6c = j_imortal ? perso_cfg:descimortal6c : perso_cfg:descperso6c
+const descsala6i = j_imortal ? perso_cfg:descimortal6i : perso_cfg:descperso6i
+const descsala6p = j_imortal ? perso_cfg:descimortal6p : perso_cfg:descperso6p
+const descsala7a = j_imortal ? perso_cfg:descimortal7a : perso_cfg:descperso7a
+const descsala7b = j_imortal ? perso_cfg:descimortal7b : perso_cfg:descperso7b
+const descsala7c = j_imortal ? perso_cfg:descimortal7c : perso_cfg:descperso7c
+const descsala8 = j_imortal ? perso_cfg:descimortal8 : perso_cfg:descperso8
+const descsalaN = j_imortal ? perso_cfg:descimortalN : perso_cfg:descpersoN
 
 func p_animalatk # Obtém animalatk a partir da raça e da classe
   ret intpos(($t_[tipo1].animalatk ?? $t_[tipo2].animalatk ?? $t_[tipo3].animalatk) - 1)

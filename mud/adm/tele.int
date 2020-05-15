@@ -58,6 +58,7 @@ func escr # Ir para uma sala específica
     $mens.mvis2("", mens1 ? mens1 : "$P some em um redemoinho de fumaça.")
     p.mudadono(s)
     mens1 = arg0.var.z_teleentra
+    $mens.p(p, arg0)
     $mens.mvis2("", mens1 ? mens1 : "$P aparece em um redemoinho de fumaça.")
   senao
     ret s == p.dono, arg0.msg(p.nome + " já está em " + txt(s, 2) + ".")
@@ -65,6 +66,7 @@ func escr # Ir para uma sala específica
     $mens.msginv("$A teletransporta você.", p)
     $mens.mvis2("", "$P some em um redemoinho de fumaça.")
     p.mudadono(s)
+    $mens.p(p, arg0)
     $mens.mvis2("", "$P aparece de um redemoinho de fumaça.")
     se p.jogperm == "admin"
       $misclog.cmdlog("tele " + arg0.nome + ": " + p.nome + " para " + txt(s, 2))
