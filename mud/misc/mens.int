@@ -407,39 +407,41 @@ func mfalar2 # Mensagem de personagem falando
 
 func mens_min # Usado internamente
 # arg0 = personagem, arg1 = mensagem de tu/ti
-  se arg0 == arg0.contr && (arg0.tseguir != 3 || !arg0.iseguir)
+  se arg0 == arg0.contr && (arg0.tseguir != 3 || !arg0.iseguir) || arg0.descdono == 1
     ret r == arg0, arg1
     ret arg0.visivel(r), arg0.descnome2
     ret arg0.perso ? "alguém" : "alguma coisa"
   fimse
   refvar c = arg0 != arg0.contr ? arg0.contr : arg0.iseguir.objlista
-  se txtproclin("o\na\num\numa", txt1(arg0.descnome2 + "x")) >= 0
-    ret r == c, (arg0.msexo2 ? "seu " : "sua ") + txt2(arg0.descnome2)
-    ret c.visivel(r), txt2(arg0.descnome2) + " de " + c.descnome2
-    ret arg0.visivel(r), txt2(arg0.descnome2) + " de alguém"
-  senao
-    ret r == c, (arg0.msexo2 ? "seu " : "sua ") + arg0.descnome2
+  se r == c
+    refvar i = txtproclin("o\na\num\numa", txt1(arg0.descnome2 + "x")) < 0
+    ret (arg0.msexo2 ? "seu " : "sua ") + (i ? arg0.descnome2 : txt2(arg0.descnome2))
+  senao arg0.descdono || txtproclin("o\na\num\numa", txt1(arg0.descnome2 + "x")) < 0
     ret c.visivel(r), arg0.descnome2 + " de " + c.descnome2
     ret arg0.visivel(r), arg0.descnome2 + " de alguém"
+  senao
+    ret c.visivel(r), txt2(arg0.descnome2) + " de " + c.descnome2
+    ret arg0.visivel(r), txt2(arg0.descnome2) + " de alguém"
   fimse
   ret arg0.perso ? "alguém" : "alguma coisa"
 
 func mens_mai # Usado internamente
 # arg0 = personagem, arg1 = mensagem de tu/ti
-  se arg0 == arg0.contr && (arg0.tseguir != 3 || !arg0.iseguir)
+  se arg0 == arg0.contr && (arg0.tseguir != 3 || !arg0.iseguir) || arg0.descdono == 1
     ret r == arg0, txtcopiamai(arg1, "A")
     ret arg0.visivel(r), txtcopiamai(arg0.descnome2, "A")
     ret arg0.perso ? "Alguém" : "Alguma coisa"
   fimse
   refvar c = arg0 != arg0.contr ? arg0.contr : arg0.iseguir.objlista
-  se txtproclin("o\na\num\numa", txt1(arg0.descnome2 + "x")) >= 0
-    ret r == c, (arg0.msexo2 ? "Seu " : "Sua ") + txt2(arg0.descnome2)
-    ret c.visivel(r), txtcopiamai(txt2(arg0.descnome2), "A") + " de " + c.descnome2
-    ret arg0.visivel(r), txtcopiamai(txt2(arg0.descnome2), "A") + " de alguém"
-  senao
-    ret r == c, (arg0.msexo2 ? "Seu " : "Sua ") + arg0.descnome2
+  se r == c
+    refvar i = txtproclin("o\na\num\numa", txt1(arg0.descnome2 + "x")) < 0
+    ret (arg0.msexo2 ? "Seu " : "Sua ") + (i ? arg0.descnome2 : txt2(arg0.descnome2))
+  senao arg0.descdono || txtproclin("o\na\num\numa", txt1(arg0.descnome2 + "x")) < 0
     ret c.visivel(r), txtcopiamai(arg0.descnome2, "A") + " de " + c.descnome2
     ret arg0.visivel(r), txtcopiamai(arg0.descnome2, "A") + " de alguém"
+  senao
+    ret c.visivel(r), txtcopiamai(txt2(arg0.descnome2), "A") + " de " + c.descnome2
+    ret arg0.visivel(r), txtcopiamai(txt2(arg0.descnome2), "A") + " de alguém"
   fimse
   ret arg0.perso ? "Alguém" : "Alguma coisa"
 
