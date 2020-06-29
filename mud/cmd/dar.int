@@ -1,14 +1,35 @@
 classe cmd_dar
 herda comando_comum
-const txtajuda = config:animal1 ? ta2 : ta1
+const posic = 5
+const txtajuda = config:animal1 ? ta2 + m_ajuda2 : ta1 + m_ajuda1
 const ta1 = "\b\c3Dar\b\n\
-Sintaxe: DAR <objeto> <personagem>\n\
-Dá um objeto para outro personagem."
+Sintaxe: DAR <objeto> <personagem>\n"
 const ta2 = "\b\c3Dar\b\n\
 Sintaxe: DAR <objeto> <personagem>\n\
-         DAR <número do animal> <personagem>\n\
-Dá um objeto ou animal para outro personagem."
-const posic = 5
+         DAR <número do animal> <personagem>\n"
+#
+const m_ajuda1 = "Dá um objeto para outro personagem."
+const m_ajuda2 = "Dá um objeto ou animal para outro personagem."
+const m_nao_possui = "Você não possui $m."
+const m_nao_dar = "Não é possível dar esse animal."
+const m_sem_alvo = "Dar $m para quem?"
+const m_naover = "Você não vê $m"
+const m_nao_pode = "Não é possível dar nada para $a."
+const m_nao_jogador = "$A não é jogador."
+const m_outro_dono = "$O não pertence a você."
+const m_espaco_animal = "$A não tem espaço para receber $o."
+const m_auto = "Dar para você mesm$s?"
+const m_muitos_itens = "$A não consegue carregar tanta coisa."
+const m_muito_peso = "É pesado demais para $a."
+const m_dar_animal1 = "Você dá $o para $a."
+const m_dar_animal2 = "$P dá $o para você."
+const m_dar_animal3 = "$P dá $o para $a."
+const m_dar_item1 = "Você dá $o para $a."
+const m_dar_item2 = "$P dá $o para você."
+const m_dar_item3 = "$P dá $o para $a."
+const m_dar_itens1 = "Você dá $mx $o para $a."
+const m_dar_itens2 = "$P dá $mx $o para você."
+const m_dar_itens3 = "$P dá $mx $o para $a."
 #
 ref sala # Para quem dar os itens
 uint32 total # Quantidade de itens do mesmo tipo
@@ -24,26 +45,21 @@ func escr
   efim
 # Dar animal a outro personagem
   se txt1(arg1) == intpos(arg1) && int(arg1) && intsub(arg1) <= 2 && config:animal1 >= arg1
-    refvar r = arg0.animalnum(arg1)
+    refvar r = misc:persodentro(arg0, txt1(arg1))
     se !r
       $mens.mens = arg1
-      ret $mens.mp("Você não possui $m.", arg0)
+      ret $mens.mp(m_nao_possui, arg0)
     senao r.p_soltar
-      ret $mens.mp("Não é possível dar esse animal.", arg0)
+      ret $mens.mp(m_nao_dar, arg0)
     senao !txt2(arg1)
       $mens.mens = arg1
-      ret $mens.mp("Dar $m para quem?", arg0)
+      ret $mens.mp(m_sem_alvo, arg0)
     fimse
-    listaobj l
-    nomeobj n
-    n.ini(txt2(arg1), 1)
-    epara l.addfim(arg0.dono.dentro2), l, l.ini.remove
-      ref ll = l.objini
-      continuar !ll.visivel(arg0) || !n.nome(ll.var.z_ident ?? ll.ident)
-      ret daranimal(arg0, ll, r)
-    efim
+    refvar alvo = misc:persooutro(arg0, txt2(arg1))
+    ret alvo, daranimal(arg0, alvo, r)
     $mens.mens = txt2(arg1)
-    ret $mens.mp("Você não vê $m.", arg0)
+    $mens.mp(m_naover, arg0)
+    ret
   fimse
 # Obtém para quem dar
   misc:separa(arg1) # Separa nome do objeto do nome do alvo
@@ -51,16 +67,16 @@ func escr
   sala = misc:persodono(arg0, misc:sep2) # Procura o alvo para o personagem arg0
   se !sala
     $mens.mens = misc:sep2
-    ret $mens.mp("Você não vê $m.", arg0)
+    ret $mens.mp(m_naover, arg0)
   senao !sala.p_recebe(arg0)
-    ret $mens.mp("Não é possível dar nada para $a.", arg0, sala)
+    ret $mens.mp(m_nao_pode, arg0, sala)
   senao sala == arg0
-    ret $mens.mp("Dar para você mesm$s?", arg0)
+    ret $mens.mp(m_auto, arg0)
   fimse
   nomeobj n # Para reconhecer os itens
   n.ini(misc:sep1, misc:objmax, misc:tudo)
 # Dá os itens
-  achou = 0, erro = "Você não vê isso."
+  achou = 0, erro = m_naover
   epara l.addfim(arg0.dentro1), l, l.ini.remove
     ref ll = l.objini
     continuar !ll.visivel(arg0) || !n.nome(ll.var.z_ident ?? ll.ident, ll.objtot)
@@ -75,17 +91,15 @@ func escr
     ret darmoedas(arg0, sala)
   fimse
 # Não encontrou o item
-  arg0.msg(erro)
+  $mens.mens = misc:sep1
+  $mens.mp(erro, arg0, sala)
 
 func daranimal
 # arg0=quem está dando, arg1=destino, arg2=animal
-  se arg1 == arg0
-    ret $mens.mp("Dar para você mesm$s?", arg0)
-  senao !arg1.jog
-    ret $mens.mp("$A não é jogador.", arg0, arg1)
-  senao !arg1.animalmais
-    ret $mens.mp("$A não tem espaço para receber animal.", arg0, arg1)
-  fimse
+  ret arg1 == arg0, $mens.mp(m_auto, arg0, arg1)
+  ret !arg1.jog, $mens.mp(m_nao_jogador, arg0, arg1)
+  ret arg2.persodomador != arg0, $mens.mp(m_outro_dono, arg0, arg1, arg2)
+  ret !arg1.animalmais, $mens.mp(m_espaco_animal, arg0, arg1, arg2)
   listaobj e
   epara e.addfim(arg0.evento), e, e.ini.remove
     ret e.objini.cmd_daranim(arg0, arg1, arg2, arg0), nulo
@@ -96,12 +110,16 @@ func daranimal
   epara e.addfim(arg2.evento), e, e.ini.remove
     ret e.objini.cmd_daranim(arg0, arg1, arg2, arg2), nulo
   efim
-  ret arg2.dono != arg0, nulo # Retorna se não possui mais o animal
-  ret !arg1.animalmais, nulo
+  ret arg2.persodomador != arg0, $mens.mp(m_outro_dono, arg0, arg1, arg2)
+  ret !arg1.animalmais, $mens.mp(m_espaco_animal, arg0, arg1, arg2)
   arg0.recalc = 1, arg1.recalc = 1 # Acerta personagens
-  arg2.mudadono(arg1) # Muda de dono
-  $mens.p(arg0, arg1)
-  $mens.mvis1("$P dá " + arg2.descnome2 + " para $a.")
+  se arg2.dono == arg0
+    arg2.mudadono(arg1)
+  senao
+    arg2.mudadomador(arg1)
+  fimse
+  $mens.p(arg0, arg1, arg2)
+  $mens.mvis3(m_dar_animal1, m_dar_animal2, m_dar_animal3)
   epara e.addfim(arg0.evento), e, e.ini.remove
     e.objini.cmd_deunim(arg0, arg1, arg2, arg0)
   efim
@@ -115,12 +133,12 @@ func daranimal
 func darobj
 # arg0=personagem, arg1=para quem dar, arg2=item que quer dar, total=quantidade de itens
 # Faz achou+=1 se soltou o item
-# Coloca mensagem de erro na variável erro se não conseguiu pegar
+# Coloca mensagem de erro na variável erro se não conseguiu dar
   se arg2.cabedentro(arg1) < total
-    erro = txtcopiamai(arg1.descnome2, "A") + " não consegue carregar tanta coisa."
+    erro = m_muitos_itens
     ret
   senao arg1.pesoden - arg1.pesoveste + arg2.pesotot * total / arg2.objtot > arg1.pesomax
-    erro = "É pesado demais para " + txtcopiamai(arg1.descnome2, "A") + "."
+    erro = m_muito_peso
     ret
   fimse
   achou++
@@ -135,10 +153,11 @@ func darobj
     ret e.objini.cmd_darobj(arg0, arg1, arg2, total, arg2), nulo
   efim
   $mens.p(arg0, arg1, arg2)
+  $mens.mens = total
   se total <= 1
-    $mens.mvis1("$P dá $o para $a.")
+    $mens.mvis3(m_dar_item1, m_dar_item2, m_dar_item3)
   senao
-    $mens.mvis1("$P dá " + total + "x $o para $a.")
+    $mens.mvis3(m_dar_itens1, m_dar_itens2, m_dar_itens3)
   fimse
   refvar r = arg2.mudadono(arg1, total)
   epara e.addfim(arg0.evento), e, e.ini.remove

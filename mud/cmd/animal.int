@@ -47,23 +47,43 @@ func txtajuda
 func escr
   textotxt t
   txt100 lin
-  uint8 num
+  listaobj l
   listaitem i
-  t.addfim((arg0.persoesc == arg0 ? "0* " : "0  ") + m_voce + "  N" + arg0.pnivel)
+# Obtém os personagens
   epara i = arg0.dentro2.ini, i, i.depois
+    i.obj.perso && l.addfim(i.obj)
+  efim
+  epara i = arg0.lseguir.ini, i, i.depois
+    i.obj.perso && i.obj.tseguir == 3 && l.addfim(i.obj)
+  efim
+# Adiciona o próprio personagem
+  t.addfim((arg0.persoesc == arg0 ? "100 0* " : "100 0  ") + m_voce + "  N" + arg0.pnivel)
+# Adiciona outros personagens
+  epara i = l.ini, i, i.depois
     continuar !i.obj.perso
-    lin = txt(++num) + (arg0.persoesc == i.obj ? "* " : "  ")
+    lin = txt(i.obj.pnumero) + (arg0.persoesc == i.obj ? "* " : "  ")
     se !i.obj.pvidaok
       lin += "(desmaiado) "
     senao i.obj.pnivel > arg0.pnivel + config:animal_n
       lin += "(não obedece) "
     fimse
+    se i.obj.dono == arg0.dono
+      lin += "(na sala) "
+    senao i.obj.dono != arg0
+      lin += "(longe) "
+    fimse
     lin += txtcopiamai(i.obj.nome, "A") + "  N" + i.obj.pnivel
-    t.addfim(lin)
+    t.addfim(txt(100 + i.obj.pnumero) + " " + lin)
   efim
+# Mostra os personagens
   se t.linhas == 1
     $mens.mp(m_sem_animais, arg0)
   senao
+    t.ordena
+    textopos pos
+    epara pos = t.ini, pos, pos.depois
+      pos.mudar("", 0, 4)
+    efim
     arg0.msg2("\b\c6" + m_animais + ":\b\n" + t.remove(1000))
   fimse
 
@@ -81,7 +101,7 @@ const m_escolhe1 = "Você escolhe $b."
 const m_escolhe2 = "$P escolhe $b."
 
 func escr # Chamado pela função "teclou" do personagem ao escolher um animal
-  refvar r = arg0.animalnum(num)
+  refvar r = misc:personum(arg0, num)
   se !r
     $mens.mens = num
     $mens.mp(m_ausente, arg0)
@@ -93,7 +113,6 @@ func escr # Chamado pela função "teclou" do personagem ao escolher um animal
       arg0.p_espera = 40 # Espera 4 segundos
     fimse
     arg0.persoesc = arg0
-    arg0.animalbat # Atualiza persobat
     $mens.p(arg0)
     $mens.mvis2(m_ninguem1, m_ninguem2)
   senao
@@ -101,7 +120,6 @@ func escr # Chamado pela função "teclou" do personagem ao escolher um animal
       arg0.p_espera = 40 # Espera 4 segundos
     fimse
     arg0.persoesc = r
-    arg0.animalbat # Atualiza persobat
     $mens.p(arg0, r)
     $mens.mvis2(m_escolhe1, m_escolhe2)
   fimse

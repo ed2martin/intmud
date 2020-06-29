@@ -10,8 +10,8 @@ const p_atktipo = config:atk_txt # Que habilidade usar em ataques automáticos
 const p_atk_alvo = config:p_atk_alvo # Alvo dos ataques
 const p_exp = config:p_exp # Quantidade de experiência que dá, em porcentagem
 const perso = 2 # Para identificar o tipo de personagem
-const pesoadd = contr == este && !(bitinv & 48) && !(bitver & 512) # Se falso, está voando
-const voladd = contr == este
+const pesoadd = !dono.perso && !(bitinv & 48) && !(bitver & 512) # Se falso, está voando
+const voladd = !dono.perso
 #
 sav textotxt p_hist # Histórico do personagem (quem ele matou)
 sav uint32 expatual # Experiência atual
@@ -74,9 +74,8 @@ func pnivelmax
 
 func ini # Objeto foi criado
   comum_perso:ini(arg0, arg1, arg2, arg3, arg4)
-  p_restaura = 100
+  persoesc = este, p_restaura = 100
   pvida = pvidamax, pmana = pmanamax, pmove = pmovemax
-  persobat = este, persoesc = este
 
 func acertapos # Acerta posição
 # Se arg0 for verdadeiro, checa também se morreu (pode chamar função morreu)
@@ -141,11 +140,12 @@ func recalc_exec # Ajusta variáveis, principalmente batalha
       ++num >= 5 && (expatual = 0)
     efim
     se num
+      refvar c = contr
       listaobj l
-      $mens.o_1 = txtcopiamai(descnome2, "A") + (este != contr ? " de " + contr.descnome2)
+      $mens.o_1 = txtcopiamai(descnome2, "A") + (este != c ? " de " + c.descnome2)
       $mens.mens = pnivel
       $mens.p(este)
-      epara l.addfim(contr.dono.dentro2), l, l.ini.remove
+      epara l.addfim(c.dono.dentro2), l, l.ini.remove
         refvar m = l.objini == este ? perso_cfg:exp_nivelmsg1 : perso_cfg:exp_nivelmsg2
         $mens.msginv(m, l.objini)
       efim
@@ -187,8 +187,6 @@ func recalc_exec # Ajusta variáveis, principalmente batalha
   bitver & 1024 && posicao > 4 && (posicao = 4)
   atribs_exec
   recalc = 0
-# Checa se ainda pode obedecer o dono
-  dono.perso && dono.animalbat
 # Se for jogador, checa PNJs agressivos
   ret !jog, nulo
   epara i = dono.dentro2.ini, i, i.depois
@@ -237,9 +235,9 @@ func bat_ini_int # Chamado internamente por batalhaini
   ref r
   se p_atk_individual || arg0.p_atk_individual
     ret
-  senao arg0.tseguir == 2 || arg0.tseguir == 3
+  senao arg0.tseguir == 2
     r = arg0
-  senao arg0.iseguir && arg0.tseguir == 1
+  senao arg0.iseguir && (arg0.tseguir == 1 || arg0.tseguir == 3)
     r = arg0.iseguir.objlista
   fimse
 # Faz o líder do outro grupo atacar se não estiver batalhando
@@ -278,7 +276,7 @@ func bat_ini_int # Chamado internamente por batalhaini
 # Faz os animais atacarem se não estiverem batalhando
   epara l.addfim(lseguir), l, l.ini.remove
     r = l.objini
-    continuar r.atkenv || r.tseguir != 3 || r.dono != dono
+    continuar r.atkenv || r.tseguir != 3 || r.p_animal == 3 || r.dono != dono
     continuar !r.p_agressivo(arg0) || !arg0.p_agressivo(r)
     r.atkenv = arg0.atkrec.addfim(r)
     r.atkdiv.limpar
@@ -412,8 +410,7 @@ func atkauto # Realiza um ataque automático
   ret int(obj.tipoalvo) != 9, nulo # Retorna se não for ataque automático
   ret !obj.autohab2(este, aulas), nulo # Checa condições para atacar
 # ret txt(obj.cmdmenu) != "ataque", nulo # Retorna se comando não é habilidade
-  obj.exechab(este, arg0, aulas, pnivel) # Realiza um ataque
-  ret 1
+  ret obj.exechab(persobat, arg0, aulas, pnivel) # Realiza um ataque
 
 func atktempo_exec # Encerra a batalha depois de um tempo
   refvar alvo = atkenv.objlista # Personagem alvo dos ataques
@@ -450,13 +447,7 @@ func atktempo_exec # Encerra a batalha depois de um tempo
   batalhafim(1)
 
 func restaurar # Restaura personagem (HP, mana, etc.)
-  pmana = pmanamax, pmove = pmovemax
-  se !pvidaok && dono.perso
-    pvida = pvidamax
-    dono.animalbat # Atualiza persobat
-  senao
-    pvida = pvidamax
-  fimse
+  pmana = pmanamax, pmove = pmovemax, pvida = pvidamax
 
 func morreu # Procedimentos quando morre
 # arg0 = quem atacou o personagem; pode ser nulo
@@ -476,10 +467,11 @@ func morreu # Procedimentos quando morre
   se arg0.perso
     arg0.p_hist.remove(arg0.p_hist.linhas - 9)
     refvar lin = "N" + arg0.pnivel + " x " + este + "(" + nome + ") N" + pnivel
-    se este == contr
+    refvar con = contr
+    se este == con
       arg0.p_hist.addfim(lin)
     senao
-      arg0.p_hist.addfim(lin + " de " + contr + "(" + contr.nome + ") N" + contr.pnivel)
+      arg0.p_hist.addfim(lin + " de " + con + "(" + con.nome + ") N" + contr.pnivel)
     fimse
   fimse
 # Jogador: anota no log, perde experiência e transfere jogador para outro lugar
@@ -488,14 +480,15 @@ func morreu # Procedimentos quando morre
     epara litem = dono.dentro2.ini, litem, litem.depois
       litem.obj.var.r_[nome]_ = 0
     efim
+    refvar arg0contr = arg0.contr
     se !arg0.perso
       $misclog.mortes(nome + " N" + pnivel)
-    senao arg0.contr.jog
+    senao arg0contr.jog
       refvar lin = nome + " N" + pnivel + " por jogador " + arg0.descnome2 + " N" + arg0.pnivel
-      $misclog.mortes(arg0 == arg0.contr ? lin : lin + " de " + arg0.contr.descnome2)
+      $misclog.mortes(arg0 == arg0contr ? lin : lin + " de " + arg0contr.descnome2)
     senao
       refvar lin = nome + " N" + pnivel + " por " + arg0.descnome2 + " N" + arg0.pnivel
-      $misclog.mortes(arg0 == arg0.contr ? lin : lin + " de " + arg0.contr.descnome2)
+      $misclog.mortes(arg0 == arg0contr ? lin : lin + " de " + arg0contr.descnome2)
     fimse
     pvida = intpos(pvidamax / 2 - 10) + 2
     pmana = pmanamax / 2
@@ -509,7 +502,6 @@ func morreu # Procedimentos quando morre
       litem.obj.pmana = litem.obj.pmanamax / 2
       litem.obj.pmove = litem.obj.pmovemax / 2
     efim
-    animalbat
     casovar config:atkmatoutipo
     casose # Quem atacou ganha experiência como ao matar um PNJ
       batalhaexp(config:atkmatouexp / 100)
@@ -545,7 +537,6 @@ func morreu # Procedimentos quando morre
     pvida = 0
     !dono.jog && batalhaexp(1.5) # Dá experiência se não for personagem de jogador
     p_morreu2 && $mens.p(este) + $mens.mtodos1(p_morreu2)
-    dono.animalbat # Atualiza persobat
 # Pertence a outro personagem: desmaiou, move para o comando Animal
   senao p_animal != 1 && tseguir == 3 && iseguir.objlista
     p_morreu2 && $mens.p(este) + $mens.mtodos1(p_morreu2)
@@ -713,7 +704,8 @@ func p_proc_alvo # Obtém um jogador alvo para atacar, se for agressivo
 func p_proc_atacar # Realiza um ataque
 # arg0 = personagem alvo do ataque
 # Retorna: 1=conseguiu atacar, 0=não conseguiu
-  ret !(arg0 && dono.s_luta && persobat.pvidaok), 0
+  refvar pbat = persobat
+  ret !(arg0 && dono.s_luta && pbat.pvidaok), 0
   listaobj l # Lista de habilidades e magias
   txt100 t1 # Nome da habilidade ou magia
   refvar var = persoesc.var
@@ -731,12 +723,12 @@ func p_proc_atacar # Realiza um ataque
     listaitem i
     i = l.ini, i.depois(rand(l.total))
     refvar obj = ref(i.obj) # Objeto que processa o ataque
-    refvar aulas = intpos(persobat.var.[obj.nomevar] - 1) / 7
-    ret !obj.autohab2(persobat, aulas), 0
-    obj.exechab(persobat, arg0.persobat, aulas, persobat.pnivel)
+    refvar aulas = intpos(pbat.var.[obj.nomevar] - 1) / 7
+    ret !obj.autohab2(pbat, aulas), 0
+    obj.exechab(pbat, arg0.persobat, aulas, pbat.pnivel)
     ret 1
   senao !atkenv # Ataque automático
-    persobat.atkauto(arg0.persobat, 8)
+    pbat.atkauto(arg0.persobat, 8)
     ret 1
   fimse
   ret 0
@@ -813,34 +805,35 @@ herda comum_persobat
 # Personagem que pode batalhar e carregar animais
 const perso = 3 # Para identificar o tipo de personagem
 const objmax = 15 # Quantos itens pode carregar
-sav ref persobat # Personagem usado na batalha
 sav ref persoesc # Personagem escolhido pelo jogador
+
+func persobat # Personagem usado na batalha
+  ret p_animalatk == 1 || !p_animalatk && persoesc == este, este
+  refvar e = persoesc
+  refvar niv = pnivel + config:animal_n
+  ret e != este && e.pvidaok && e.pnivel <= niv, e
+  ref r
+  listaitem i
+  epara i = dentro2.ini, i, i.depois
+    continuar !(i.obj.perso && i.obj.pvidaok && i.obj.pnivel <= niv)
+    continuar i.obj.p_animal == 1 || i.obj.p_animal == 2 || r && r.pnumero < i.obj.pnumero
+    r = i.obj
+  efim
+  epara i = lseguir.ini, i, i.depois
+    continuar !(i.obj.tseguir == 3 && i.obj.pvidaok && i.obj.pnivel <= niv)
+    continuar i.obj.p_animal == 1 || i.obj.p_animal == 2 || r && r.pnumero < i.obj.pnumero
+    i.obj.dono == dono && (r = i.obj)
+  efim
+  ret r ?? este
 
 func ini
   comum_persobat:ini(arg0, arg1, arg2, arg3, arg4)
 
-func recalc_exec # Ajusta variáveis, principalmente batalha
-  comum_persobat:recalc_exec
-  animalbat
-
-func animalbat # Escolhe um personagem em condições de lutar
-  refvar a = p_animalatk
-  refvar e = persoesc
-  se a == 1 || a < 1 && e == este
-    persobat = este
-  senao (a < 2 || e != este) && e.pvidaok && e.pnivel <= pnivel + config:animal_n
-    persobat = e
-  senao
-    listaitem i
-    epara i = dentro2.ini, i, i.depois
-      sair i.obj.pvidaok && i.obj.pnivel <= pnivel + config:animal_n
-    efim
-    persobat = i.obj ?? este
-  fimse
-
 func animalmais # Retorna quantos animais ainda pode adquirir
   uint8 x = config:animal1
   listaitem i
+  epara i = lseguir.ini, i, (i.obj.tseguir == 3 && x--) + i.depois
+  efim
   epara i = dentro2.ini, i, (i.obj.perso && x--) + i.depois
   efim
   ret x
@@ -850,23 +843,19 @@ func animaltot # Retorna quantos animais possui
   listaitem i
   epara i = dentro2.ini, i, (i.obj.perso && x++) + i.depois
   efim
+  epara i = lseguir.ini, i, (i.obj.tseguir == 3 && x++) + i.depois
+  efim
   ret x
 
-func animalnum # Retorna o animal a partir do número; pode retornar o próprio personagem
-# arg0 = número do animal (0 = o próprio personagem)
-  int8 x = arg0
-  ret txt(x) != arg0, nulo
-  ret !x, este
-  listaitem i
-  epara i = dentro2.ini, i, i.depois
-    sair i.obj.perso && !--x
-  efim
-  ret ref(i.obj)
-
 func animal2mais # Retorna quantos animais soltos pode adquirir
-  uint8 x = 1
   listaitem i
+  epara i = lseguir.ini, i, i.depois
+    ret i.obj.tseguir == 3, 0
+  efim
+  uint8 x = config:animal1
   epara i = lseguir.ini, i, (i.obj.tseguir == 3 && x--) + i.depois
+  efim
+  epara i = dentro2.ini, i, (i.obj.perso && x--) + i.depois
   efim
   ret x
 
@@ -877,29 +866,14 @@ func animal2tot # Retorna quantos animais estão soltos
   efim
   ret x
 
-func animal2nome # Retorna o animal a partir do nome
-  listaitem i
-  nomeobj n
-  n.ini(arg0, 1)
-  epara i = lseguir.ini, i, i.depois
-    refvar r = i.obj
-    ret r.tseguir == 3 && n.nome(r.var.z_ident ?? r.ident, r.objtot), ref(r)
-  efim
-
-func p_proc_animal # Escolhe um animal em condições de batalhar
+func p_proc_animal # Escolhe um animal em condições de lutar
 # Retorna: 1=mudou de animal, 0=não mudou de animal
-  se p_animalatk == 1
-    persobat = este
-  senao persobat == este || !persobat.pvidaok
-    listaitem i
-    epara i = dentro2.ini, i, i.depois
-      sair i.obj.pvidaok && i.obj.pnivel <= pnivel + config:animal_n
-    efim
-    persobat = i.obj ?? este
-  fimse
-  ret persoesc == persobat, 0
+  ref pesc = persoesc
+  ref pbat
+  persoesc = nulo, pbat = persobat, persoesc = pesc
+  ret pesc == pbat, 0
+  persoesc = pbat
   p_espera = 5
-  persoesc = persobat
   $mens.p(este, persoesc)
-  $mens.mvis1(persobat == este ? "$P não escolhe ninguém." : "$P escolhe $b.")
+  $mens.mvis1(persoesc == este ? "$P não escolhe ninguém." : "$P escolhe $b.")
   ret 1

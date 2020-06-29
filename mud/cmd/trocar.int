@@ -15,6 +15,7 @@ const m_animal_escolha = "Primeiro escolha um animal."
 const m_animal_sem = "$A não carrega nenhum item."
 const m_perso_cheio = "Você não consegue carregar $o."
 const m_naover = "Você não vê $m."
+const m_longe = "$A está longe."
 const m_animal_cheio = "$A não consegue carregar $o."
 const m_pegar1 = "Você pega $o de $a."
 const m_pegar2 = "$P pega $o de $a."
@@ -25,7 +26,7 @@ const m_dar2 = "$P dá $o para $a."
 const m_semtroca = "Nada para ser trocado."
 const m_trocar = "Você troca de lugar $1 $o e $2 $n."
 const admordem = "m_ajuda m_batalha m_animal_escolha m_animal_sem\n\
-m_perso_cheio m_naover m_animal_cheio m_pegar1 m_pegar2\n\
+m_perso_cheio m_naover m_longe m_animal_cheio m_pegar1 m_pegar2\n\
 m_pegar_dar1 m_pegar_dar2 m_dar1 m_dar2 m_semtroca m_trocar"
 
 func escr
@@ -46,39 +47,43 @@ func escr
 
 func escr_pegar # Pegar item do animal
 # arg0 = personagem
-  ret arg0.persoesc == arg0, $mens.mp(m_animal_escolha, arg0)
-  refvar rec = ref(arg0.persoesc.dentro1.ini.obj)
+  refvar animal = ref(arg0.persoesc)
+  ret animal == arg0, $mens.mp(m_animal_escolha, arg0)
+  ret animal.dono != arg0 && animal.dono != arg0.dono, $mens.mp(m_longe, arg0, animal)
+  refvar rec = ref(animal.dentro1.ini.obj)
   se !rec
-    $mens.mp(m_animal_sem, arg0, arg0.persoesc)
+    $mens.mp(m_animal_sem, arg0, animal)
   senao !rec.cabedentro(arg0)
     $mens.mp(m_perso_cheio, arg0, nulo, rec)
   senao
     rec.mudadono(arg0, 1)
-    $mens.p(arg0, arg0.persoesc, rec)
+    $mens.p(arg0, animal, rec)
     $mens.mvis2(m_pegar1, m_pegar2)
   fimse
 
 func escr_dar # Dar item para o animal
 # arg0 = personagem
 # arg1 = nome do item
-  ret arg0.persoesc == arg0, $mens.mp(m_animal_escolha, arg0)
+  refvar animal = ref(arg0.persoesc)
+  ret animal == arg0, $mens.mp(m_animal_escolha, arg0)
+  ret animal.dono != arg0 && animal.dono != arg0.dono, $mens.mp(m_longe, arg0, animal)
   ref env = misc:itemdentro(arg0, arg1)
-  ref rec = arg0.persoesc.dentro1.ini.obj
+  ref rec = animal.dentro1.ini.obj
   se !env
     $mens.mens = arg1
     $mens.mp(m_naover, arg0)
   senao env.objnum >> 1 > 1 # Animal não carrega objetos com coisas dentro
-    $mens.mp(m_animal_cheio, arg0, arg0.persoesc, env)
+    $mens.mp(m_animal_cheio, arg0, animal, env)
   senao !rec # Se animal não está carregando nada
-    env.mudadono(arg0.persoesc, 1)
-    $mens.p(arg0, arg0.persoesc, env)
+    env.mudadono(animal, 1)
+    $mens.p(arg0, animal, env)
     $mens.mvis2(m_dar1, m_dar2)
   senao !rec.cabedentro(env)
-    $mens.mp(m_animal_cheio, arg0, arg0.persoesc, env)
+    $mens.mp(m_animal_cheio, arg0, animal, env)
   senao
-    env.mudadono(arg0.persoesc, 1)
+    env.mudadono(animal, 1)
     rec.mudadono(arg0, 1)
-    $mens.p(arg0, arg0.persoesc, env, rec)
+    $mens.p(arg0, animal, env, rec)
     $mens.mvis2(m_pegar_dar1, m_pegar_dar2)
   fimse
 
@@ -86,19 +91,12 @@ func escr_trocar # Trocar dois animais de lugar
 # arg0 = personagem
 # arg1 = número do primeiro animal
 # arg2 = número do segundo animal
-  refvar a1 = arg0.animalnum(arg1)
-  refvar a2 = arg0.animalnum(arg2)
+  refvar a1 = misc:personum(arg0, arg1)
+  refvar a2 = misc:personum(arg0, arg2)
   ret a1 == a2, arg0.msg(m_semtroca)
-# Obtém os itens da lista
-  listaitem i1
-  listaitem i2
-  i1 = a1.idono
-  i2 = a2.idono
-# Adiciona novos itens na lista
-  a1.idono = i2 ? i2.adddepois(a1) : arg0.dentro2.addfim(a1)
-  a2.idono = i1 ? i1.adddepois(a2) : arg0.dentro2.addfim(a2)
-# Remove os itens antigos da lista
-  i1.remove, i2.remove
+# Faz a troca
+  a1.pnumero = arg2
+  a2.pnumero = arg1
 # Mensagens
   $mens.o_1 = arg1
   $mens.o_2 = arg2
@@ -138,47 +136,52 @@ const tipo6 = "opc_linha"
 const clas6 = "cmd_trocar"
 const vari6 = "m_naover"
 #
-const nome7 = "Perso cheio"
+const nome7 = "Animal longe"
 const tipo7 = "opc_linha"
 const clas7 = "cmd_trocar"
-const vari7 = "m_animal_cheio"
+const vari7 = "m_longe"
 #
-const nome8 = "Pegar item: perso"
+const nome8 = "Perso cheio"
 const tipo8 = "opc_linha"
 const clas8 = "cmd_trocar"
-const vari8 = "m_pegar1"
+const vari8 = "m_animal_cheio"
 #
-const nome9 = "Pegar item: outros"
+const nome9 = "Pegar item: perso"
 const tipo9 = "opc_linha"
 const clas9 = "cmd_trocar"
-const vari9 = "m_pegar2"
+const vari9 = "m_pegar1"
 #
-const nome10 = "Pegar/dar item: perso"
+const nome10 = "Pegar item: outros"
 const tipo10 = "opc_linha"
 const clas10 = "cmd_trocar"
-const vari10 = "m_pegar_dar1"
+const vari10 = "m_pegar2"
 #
-const nome11 = "Pegar/dar item: outros"
+const nome11 = "Pegar/dar item: perso"
 const tipo11 = "opc_linha"
 const clas11 = "cmd_trocar"
-const vari11 = "m_pegar_dar2"
+const vari11 = "m_pegar_dar1"
 #
-const nome12 = "Dar item: perso"
+const nome12 = "Pegar/dar item: outros"
 const tipo12 = "opc_linha"
 const clas12 = "cmd_trocar"
-const vari12 = "m_dar1"
+const vari12 = "m_pegar_dar2"
 #
-const nome13 = "Dar item: outros"
+const nome13 = "Dar item: perso"
 const tipo13 = "opc_linha"
 const clas13 = "cmd_trocar"
-const vari13 = "m_dar2"
+const vari13 = "m_dar1"
 #
-const nome14 = "Sem troca"
+const nome14 = "Dar item: outros"
 const tipo14 = "opc_linha"
 const clas14 = "cmd_trocar"
-const vari14 = "m_semtroca"
+const vari14 = "m_dar2"
 #
-const nome15 = "Trocar de lugar"
+const nome15 = "Sem troca"
 const tipo15 = "opc_linha"
 const clas15 = "cmd_trocar"
-const vari15 = "m_trocar"
+const vari15 = "m_semtroca"
+#
+const nome16 = "Trocar de lugar"
+const tipo16 = "opc_linha"
+const clas16 = "cmd_trocar"
+const vari16 = "m_trocar"

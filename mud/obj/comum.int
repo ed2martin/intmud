@@ -9,7 +9,6 @@ classe comum_obj
 #
 ref dono # Quem possui esse objeto; mesmo que: idono.objlista
 ref donoantes # Dono anterior
-ref contr # Quem está controlando; mesmo que: (perso && dono.perso ? dono : este)
 sav listaitem idono # Uso interno: aonde o objeto está
 sav listaobj dentro1 # Lista de objetos que possui
 sav listaobj dentro2 # Lista de personagens ou de objetos que está vestindo
@@ -123,7 +122,6 @@ func ajustajogpnj # Ajusta total de jogadores e PNJs
 
 func ajustaobj # Acerta dono e eventos do objeto
   dono = idono.objlista
-  contr = perso && dono.perso ? dono : este
   evrec.0.remove, evrec.1.remove, evrec.2.remove
   evhora && (evrec.0 = $miscsav.evhora.addfim(este))
   eveste && (evrec.1 = evento.addfim(este))
@@ -174,7 +172,6 @@ func mdono # Objeto muda de dono (arg0 = novo dono)
 # Muda de dono e acerta eventos
   evrec.1.remove, evrec.2.remove, eveste && (evrec.1 = evento.addfim(este))
   r = dono = arg0, idono.remove # Muda o dono atual
-  contr = perso && r.perso ? r : este
   se !r
     ret
   senao perso || s_sala

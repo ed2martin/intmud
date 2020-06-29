@@ -20,8 +20,8 @@ const volmax = config:p_volmax
 const objmax = config:p_objmax
 const objlimite = config:p_objlimite
 const pesomax = 1000000 # Para poder receber itens
-const persobat = este # Personagem usado na batalha; alguns comandos usam
 const persoesc = este # Personagem escolhido; alguns comandos usam
+const persobat = este # Personagem usado na batalha; alguns comandos usam
 const pvidaok = 1 # Para não dizer que o alvo está desmaiado
 const pvida = 1000 # Para não dizer que o alvo está desmaiado
 const msg = sock.msg(arg0) # Mensagem pequena para o jogador
@@ -35,6 +35,7 @@ sav uint32 mortes # Quantas vezes morreu (chamou a função morreu)
 inttempo p_espera # Tempo de espera para o próximo comando
 sav uint8 posicao # Posição do personagem
 const pospadr = 8 # Posição padrão do personagem
+sav uint8 pnumero # Número do personagem ou 0 se não tem dono
 sav listaitem poslugar # Em qual móvel o personagem está sentado/deitado/montado
 sav listaobj persolugar # Quem está montado
 sav listaitem iempu # Arma que que está empunhando
@@ -168,14 +169,24 @@ func fim # Objeto foi apagado
     refvar obj = ind.obj("pn " + txt2(sock.cnome))
     obj ? sock.mudaperso(obj) : sock.reinicia
   fimse
-  refvar d = dono
-  persolugar.limpar, batalhafim, comum_obj:fim
-  dono = nulo, d.perso && d.animalbat
+  refvar contr = dono.perso ? dono : tseguir == 3 ? iseguir.objlista
+  contr.persoesc == este && (contr.persoesc = contr)
+  persolugar.limpar, batalhafim, comum_obj:fim, dono = nulo
+
+func contr # Quem está controlando o personagem
+  ret dono.perso, ref(dono)
+  ret tseguir != 3 || p_animal != 3 || iseguir.objlista.dono != dono, este
+  ret ref(iseguir.objlista)
+
+func persodomador # A quem pertence o personagem
+  ret dono.perso, dono
+  ret (tseguir == 3 ? ref(iseguir.objlista)) ?? este
 
 func mudadono # Coloca personagem em outra sala ou outro personagem
 # arg0 = nova sala ou novo personagem
 # arg1 = quantidade (é ignorado por essa função)
   listaobj l
+  ref contr1 = dono.perso ? dono : tseguir == 3 ? iseguir.objlista
 # Muda de sala
 # Nota: mdono() checa const persopnj, que checa iseguir e tseguir
 # Por isso, é preciso acertar iseguir e tseguir antes de chamar mdono()
@@ -191,12 +202,11 @@ func mudadono # Coloca personagem em outra sala ou outro personagem
   fimse
   atkrec.limpar, mdono(arg0)
   !dono && persolugar.limpar
-# Acerta persoesc e persobat
-  dono.perso && dono.animalbat
-  se donoantes.perso
-    donoantes.persoesc == este && (donoantes.persoesc = donoantes)
-    donoantes.persobat == este && (donoantes.persobat = donoantes)
-    donoantes.animalbat
+  ref contr2 = dono.perso ? dono : tseguir == 3 ? iseguir.objlista
+  se contr1 != contr2
+    pnumero = 0
+    contr1.persoesc == este && (contr1.persoesc = contr1)
+    contr2.acertanumero
   fimse
 # Eventos cmd_mudadono, cmd_saiu e variável donoantes.s_item
   cmd_mudadono
@@ -282,6 +292,7 @@ func mudaobjeto # Muda o objeto desse personagem
   r.p_espera = p_espera
   r.p_proc = p_proc
   r.p_tmove = p_tmove
+  r.pnumero = pnumero
 # Acerta posição no dono
   r.donoantes = donoantes
   r.idono.remove, r.idono = idono.adddepois(r)
@@ -313,10 +324,8 @@ func mudaobjeto # Muda o objeto desse personagem
   epara l.addfim(dentro1, dentro2), l, l.ini.remove
     l.objini.mudaobjdono(arg0, r)
   efim
-# Acerta os animais usados pelo personagem
+# Acerta o animal usado pelo personagem
   dono.persoesc == este && (dono.persoesc = r)
-  dono.persobat == este && (dono.persobat = r)
-  dono.animalbat
 # Gera eventos
   r.recalc = 1
   epara l.addfim(evento), l, l.ini.remove
@@ -335,14 +344,16 @@ func mudadomador # Muda o domador
 # Não tem efeito se estiver no comando Animal (estiver em outro personagem)
   ret dono.perso, nulo
   ref alvo = arg0
+  iseguir.objlista.persoesc == este && (iseguir.objlista.persoesc = iseguir.objlista)
   se alvo
     tseguir = 3, iseguir.remove, iseguir = alvo.lseguir.addfim(este), ajustajogpnj
+    pnumero = 0, alvo.acertanumero
     se !var.z_dono
       var.z_dono = alvo.nome
       var.z_pnivel = pnivel
     fimse
   senao tseguir == 3
-    tseguir = 0, iseguir.remove, ajustajogpnj
+    pnumero = 0, tseguir = 0, iseguir.remove, ajustajogpnj
   fimse
 
 func montar # Monta em arg0 (ou desmonta, se arg0 for nulo)
@@ -558,6 +569,30 @@ func equippos # Retorna as posições aonde pode usar equipamentos
   lin = "t_" + tipo3
   pos = (([lin]:equip1 ?? pos) | txt([lin]:equip2)) & ~txthex([lin]:equip3, 12)
   ret ((equip1 ?? pos) | txt(equip2)) & ~txthex(equip3, 12)
+
+func acertanumero # Acerta os números dos animais que possui (variáveis pnumero)
+  listaobj l
+  listaitem i
+  int32 mask = (2 << config:animal1) - 2 # bits 1 são as posições disponíveis
+  epara i = dentro2.ini, i, i.depois
+    continuar !i.obj.perso
+    mask & intbit(i.obj.pnumero) ? (mask ^= intbit(i.obj.pnumero)) : l.addfim(i.obj)
+  efim
+  epara i = lseguir.ini, i, i.depois
+    continuar !i.obj.perso || i.obj.tseguir != 3
+    mask & intbit(i.obj.pnumero) ? (mask ^= intbit(i.obj.pnumero)) : l.addfim(i.obj)
+  efim
+  ret !l, nulo
+  uint8 num
+  epara i = l.ini, i, i.depois
+    !(mask & 0xFFFF) ? (num += 16)
+    !((mask >> num) & 0xFF) ? (num += 8)
+    !((mask >> num) & 15) ? (num += 4)
+    !((mask >> num) & 3) ? (num += 2)
+    !((mask >> num) & 1) ? num++
+    i.obj.pnumero = num
+    mask ^= intbit(num)
+  efim
 
 func msgvis # Mensagem se o jogador estiver vendo o alvo
   ret $mens.msgvis(arg0, este)

@@ -306,8 +306,8 @@ func ini # Objeto foi criado (arg0=dono, arg1=quantidade, arg2=variáveis de var)
   fimse
   var.limpar("e_")
   comum_obj:ini, cmd_ini(arg0, arg1, arg2, arg3, arg4)
-  arg0 && mudadono(arg0, objtot)
   recalc_exec
+  arg0 && mudadono(arg0, objtot)
 
 func mudadono # Item muda de dono (arg0 = novo dono, arg1 = quantidade)
   ret !ref(arg0) || 0 >= arg1, nulo

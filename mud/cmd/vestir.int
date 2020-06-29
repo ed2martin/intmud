@@ -18,6 +18,7 @@ Para vestir tudo (até 10 objetos) tecle TUDO ao invés do objeto.\n\
 Para saber em que posições pode vestir algo, tecle EQUIP TUDO"
 const m_sem_args = "Vestir o quê?"
 const m_naover = "Você não vê $m."
+const m_longe_a = "$A está longe."
 const m_nao_consegue_p = "Você não consegue vestir $o."
 const m_nao_consegue_a = "$A não consegue vestir $o."
 const m_nivel_p = "Você precisa chegar no nível $m para vestir $o."
@@ -31,7 +32,7 @@ const m_em_uso_p = "Você já está usando $o nessa posição."
 const m_em_uso_a = "$A já está usando $o nessa posição."
 const m_em_cima_p = "Antes você precisa parar de usar $o."
 const m_em_cima_a = "Antes $A precisa parar de usar $o."
-const admordem = "m_ajuda m_sem_args m_naover m_nao_consegue_p\n\
+const admordem = "m_ajuda m_sem_args m_naover m_longe_a m_nao_consegue_p\n\
 m_nao_consegue_a m_nivel_p m_nivel_a m_renascer1 m_renascer2 m_renascer3\n\
 m_posicao_p m_posicao_a m_em_uso_p m_em_uso_a m_em_cima_p m_em_cima_a"
 
@@ -40,6 +41,7 @@ func escr
   refvar perm_msg = $perm_[arg0.jogperm].vestir
   ret perm_msg, $mensjog.msg(perm_msg, arg0)
   refvar alvo = ref(arg0.persoesc) # Quem vai vestir
+  ret alvo.dono != arg0 && alvo.dono != arg0.dono, $mens.mp(m_longe_a, arg0, alvo)
   refvar tipomsg = arg0 == alvo ? "_p" : "_a"
   refvar tipo1 = txte(alvo.tipo1)
   refvar tipo2 = txte(alvo.tipo2)
@@ -236,29 +238,34 @@ const tipo9 = "opc_linha"
 const clas9 = "cmd_vestir"
 const vari9 = "m_em_uso_p"
 #
-const nome9 = "Outro item em cima"
-const tipo9 = "opc_linha"
-const clas9 = "cmd_vestir"
-const vari9 = "m_em_cima_p"
-#
-const titu10 = " * Animal veste"
-#
-const nome10 = "Não consegue"
+const nome10 = "Outro item em cima"
 const tipo10 = "opc_linha"
 const clas10 = "cmd_vestir"
-const vari10 = "m_nao_consegue_a"
+const vari10 = "m_em_cima_p"
 #
-const nome11 = "Posição não existe"
+const titu11 = " * Animal veste"
+#
+const nome11 = "Animal longe"
 const tipo11 = "opc_linha"
 const clas11 = "cmd_vestir"
-const vari11 = "m_posicao_a"
+const vari11 = "m_longe_a"
 #
-const nome12 = "Já tem outro item"
+const nome12 = "Não consegue"
 const tipo12 = "opc_linha"
 const clas12 = "cmd_vestir"
-const vari12 = "m_em_uso_a"
+const vari12 = "m_nao_consegue_a"
 #
-const nome13 = "Outro item em cima"
+const nome13 = "Posição não existe"
 const tipo13 = "opc_linha"
 const clas13 = "cmd_vestir"
-const vari13 = "m_em_cima_a"
+const vari13 = "m_posicao_a"
+#
+const nome14 = "Já tem outro item"
+const tipo14 = "opc_linha"
+const clas14 = "cmd_vestir"
+const vari14 = "m_em_uso_a"
+#
+const nome15 = "Outro item em cima"
+const tipo15 = "opc_linha"
+const clas15 = "cmd_vestir"
+const vari15 = "m_em_cima_a"

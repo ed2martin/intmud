@@ -13,6 +13,7 @@ const ta4 = "\nPermite também soltar algum animal (se desfazer) que você possuir
 const posic = 5
 const m_naover = "Você não vê $m"
 const m_nao_possui = "Você não possui $m."
+# Nota: m_soltaranim1 e m_soltaranim2 são usados também durante a batalha
 const m_soltaranim1 = "Você solta $a."
 const m_soltaranim2 = "$P solta $a."
 const m_animal_solto = "Já possui um animal solto."
@@ -43,9 +44,12 @@ func escr
 # Checa soltar animal
   se !cmdsg && arg1 == intpos(arg1) && int(arg1) && config:animal1 >= arg1
     $mens.mens = arg1
-    refvar r = arg0.animalnum(arg1)
+    refvar r = misc:personum(arg0, arg1)
     ret !r, $mens.mp(m_nao_possui, arg0)
-    ret !arg0.animal2mais, $mens.mp(m_animal_solto, arg0)
+    listaitem i
+    epara i = arg0.lseguir.ini, i, i.depois
+      ret i.obj.tseguir == 3, $mens.mp(m_animal_solto, arg0)
+    efim
     ret soltaranimal(arg0, arg0.dono, r)
   fimse
 # Obtém o objeto de onde soltar
@@ -102,7 +106,7 @@ func soltaranimal
 # arg0 = quem está soltando
 # arg1 = sala destino
 # arg2 = animal
-  ret arg2.p_animal != 2, $mens.mp(m_chama_solta, arg0, arg2)
+  ret arg2.p_animal < 2, $mens.mp(m_chama_solta, arg0, arg2)
   listaobj e
   epara e.addfim(arg0.evento), e, e.ini.remove
     ret e.objini.cmd_soltaranim(arg0, arg1, arg2, arg0), nulo

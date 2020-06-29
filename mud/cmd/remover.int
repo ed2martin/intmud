@@ -11,13 +11,14 @@ Para remover tudo (até 10 objetos) tecle TUDO ao invés do objeto."
 const m_sem_args = "Remover o quê?"
 const m_naover_p = "Você não está usando isso."
 const m_naover_a = "$A não está usando isso."
+const m_longe_a = "$A está longe."
 const m_em_cima_p = "Antes você precisa parar de usar $o."
 const m_em_cima_a = "Antes $a precisa parar de usar $o."
 const m_removeu1_p = "Você removeu $o."
 const m_removeu1_a = "$A removeu $o."
 const m_removeu2_p = "$P removeu $o."
 const m_removeu2_a = "$A removeu $o."
-const admordem = "m_ajuda m_sem_args m_naover_p m_naover_a m_em_cima_p\n\
+const admordem = "m_ajuda m_sem_args m_naover_p m_naover_a m_longe_a m_em_cima_p\n\
 m_em_cima_a m_removeu1_p m_removeu1_a m_removeu2_p m_removeu2_a"
 
 func escr
@@ -25,6 +26,7 @@ func escr
   refvar perm_msg = $perm_[arg0.jogperm].vestir
   ret perm_msg, $mensjog.msg(perm_msg, arg0)
   refvar alvo = ref(arg0.persoesc) ?? arg0 # Quem vai remover
+  ret alvo.dono != arg0 && alvo.dono != arg0.dono, $mens.mp(m_longe_a, arg0, alvo)
   refvar tipomsg = arg0 == alvo ? "_p" : "_a"
 # Preenche a variável vest com o que está vestindo
   txt12 vest # Aonde está vestindo
@@ -118,17 +120,22 @@ const tipo7 = "opc_linha"
 const clas7 = "cmd_remover"
 const vari7 = "m_naover_a"
 #
-const nome8 = "Tem item em cima"
+const nome8 = "Animal longe"
 const tipo8 = "opc_linha"
 const clas8 = "cmd_remover"
-const vari8 = "m_em_cima_a"
+const vari8 = "m_longe_a"
 #
-const nome9 = "Removeu perso"
+const nome9 = "Tem item em cima"
 const tipo9 = "opc_linha"
 const clas9 = "cmd_remover"
-const vari9 = "m_removeu1_a"
+const vari9 = "m_em_cima_a"
 #
-const nome10 = "Removeu outros"
+const nome10 = "Removeu perso"
 const tipo10 = "opc_linha"
 const clas10 = "cmd_remover"
-const vari10 = "m_removeu2_a"
+const vari10 = "m_removeu1_a"
+#
+const nome11 = "Removeu outros"
+const tipo11 = "opc_linha"
+const clas11 = "cmd_remover"
+const vari11 = "m_removeu2_a"

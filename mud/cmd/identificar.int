@@ -82,9 +82,10 @@ func txtident # Adiciona informações de item ou personagem em um textotxt
   txt100 lin
 # Identificar personagem
   se arg1.perso
-    lin = txtcopiamai(arg1.persobat.descnome2, "A")
-    se arg1 != arg1.persobat
-      lin += " de " + arg1.descnome2, arg1 = arg1.persobat
+    refvar persobat = arg1.persobat
+    lin = txtcopiamai(persobat.descnome2, "A")
+    se arg1 != persobat
+      lin += " de " + arg1.descnome2, arg1 = persobat
     fimse
     lin += ", nível " + arg1.pnivel
     arg1.prenascer && (lin += ", R" + arg1.prenascer)

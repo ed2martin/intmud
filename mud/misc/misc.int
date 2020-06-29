@@ -3,7 +3,7 @@ classe misc
 # Deve ser usado como misc:variável ao invés de $misc.variável
 #
 # Versão do MUD, aparece no comando Serv
-const versao = "14/5/2020"
+const versao = "28/6/2020"
 #
 # Objetos obtidos por em misc:separa
 comum txt100 sep1 # Objeto procurado
@@ -226,14 +226,27 @@ func persooutro # Obtém um personagem na sala que não seja o próprio personagem
     ret r != arg0 && r.visivel(arg0) && n.nome(r.var.z_ident ?? r.ident, r.objtot), ref(r)
   efim
 
-func persodentro # Obtém um animal no personagem (no comando Animais)
+func persodentro # Obtém um animal no personagem (no comando Animal)
 # arg0 = personagem, arg1 = número do personagem (o que o usuário digitou)
   ret arg1 != intpos(arg1) || config:animal1 < arg1 || !config:animal1, nulo
-  int8 num = arg1
   listaitem i
   epara i = arg0.dentro2.ini, i, i.depois
-    continuar !i.obj.perso
-    ret num-- == 1, ref(i.obj)
+    ret i.obj.perso && i.obj.pnumero == arg1, ref(i.obj)
+  efim
+  epara i = arg0.lseguir.ini, i, i.depois
+    ret i.obj.perso && i.obj.tseguir == 3 && i.obj.pnumero == arg1, ref(i.obj)
+  efim
+
+func personum # Obtém um personagem a partir do número no comando Animal
+# arg0 = personagem, arg1 = número do personagem (o que o usuário digitou)
+  ret arg1 == "0", arg0
+  ret arg1 != intpos(arg1) || config:animal1 < arg1 || !config:animal1, nulo
+  listaitem i
+  epara i = arg0.dentro2.ini, i, i.depois
+    ret i.obj.perso && i.obj.pnumero == arg1, ref(i.obj)
+  efim
+  epara i = arg0.lseguir.ini, i, i.depois
+    ret i.obj.perso && i.obj.tseguir == 3 && i.obj.pnumero == arg1, ref(i.obj)
   efim
 
 func itemlista # Obtém item ou personagem a partir de uma listaobj
@@ -257,7 +270,7 @@ func persoinfo # Obtém o personagem que o jogador quer consultar a partir de um 
   se !arg1
     ret arg0.persoesc
   senao arg1 == intpos(arg1) && config:animal1 >= arg1
-    r = arg0.animalnum(arg1)
+    r = misc:personum(arg0, arg1)
     !r && arg0.msg("Você não possui animal " + arg1 + ".")
     ret r
   senao !$perm_[arg0.jogperm].i_perso
@@ -278,7 +291,7 @@ func persoinfo # Obtém o personagem que o jogador quer consultar a partir de um 
   fimse
   refvar num = txt2(arg1)
   ret num != intpos(num) || config:animal1 < num, r
-  refvar rr = r.animalnum(num)
+  refvar rr = misc:personum(arg0, num)
   !rr && arg0.msg(txtcopiamai(r.descnome2, "A") + " não possui animal " + num + ".")
   ret rr
 

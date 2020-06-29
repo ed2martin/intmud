@@ -24,7 +24,7 @@ func escr
   ref r
 # Checa animal do comando Animal
   se arg1 == intpos(arg1) && int(arg1) && config:animal1 >= arg1
-    r = arg0.animalnum(arg1)
+    r = misc:personum(arg0, arg1)
     ret !r, $mens.mp(m_nao_possui, arg0)
     ret r.p_soltar == 2, $mens.mp(m_nao_despedir, arg0, r)
     despedir(arg0, nulo, r)
@@ -62,10 +62,10 @@ func despedir
     arg2.mudadono(nulo) # Indica que não tem o animal
   senao
     arg2.mudadono(arg1)
-    arg2.mudadomador
     arg2.z_dono = ""
     arg2.z_pnivel = ""
   fimse
+  arg2.mudadomador
   arg0.recalc = 1 # Acerta personagem
   epara e.addfim(arg0.evento), e, e.ini.remove
     e.objini.cmd_despediuanim(arg0, arg1, arg2, arg0)

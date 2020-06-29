@@ -5,13 +5,12 @@ const txtajuda = config:animal1 && config:animal2 ? txtajuda1 + m_ajuda
 const txtajuda1 = "\b\c3Reserva\b\n\
 Sintaxe: RESERVA\n\
          RESERVA <nome>\n\
-         RESERVA +<número ou nome>\n\
+         RESERVA +<número>\n\
          RESERTA -<nome>\n"
 #
 const m_ajuda = "Sem argumentos mostra os seus animais na reserva.\n\
 Seguido de um nome mostra algumas informações de um animal na reserva.\n\
 Seguido de + e um número coloca na reserva um animal do comando Animal.\n\
-Seguido de + e um nome coloca na reserva um animal solto na sala.\n\
 Seguido de - e um nome retira o animal da reserva."
 const m_lidar_reserva = "Você não sabe como lidar com animais reserva."
 const m_lugar = "Não pode lidar com animais reserva aqui."
@@ -87,8 +86,7 @@ func guardar # Guarda um animal na reserva
 # arg0 = personagem
 # arg1 = nome ou número do animal
   ret arg0.dentro3.total >= config:animal2, $mens.mp(m_reserva_cheio, arg0)
-  ref r = arg0.animalnum(arg1)
-  !r || r == arg0 ? (r = arg0.animal2nome(arg1))
+  ref r = misc:persodentro(arg0, arg1)
   $mens.mens = arg1
   ret !r, $mens.mp(m_sem_animal, arg0)
   ret r.dono != arg0 && r.dono != arg0.dono, $mens.mp(m_outra_sala, arg0)
@@ -99,16 +97,19 @@ func guardar # Guarda um animal na reserva
   se r.dono != arg0
     r.mudadono(arg0)
     r.idono.remove, r.idono = r.dono.dentro3.addfim(r)
+    r.pnumero = 0
     arg0.recalc = 1
     $mens.mens = r.pnivel
     $mens.p(arg0, r)
     $mens.mvis2(m_dasala1, m_dasala2)
   senao
     r.idono.remove, r.idono = r.dono.dentro3.addfim(r)
+    r.pnumero = 0
     arg0.recalc = 1
     $mens.mens = r.pnivel
     $mens.mp(m_guardar, arg0, r)
   fimse
+  arg0.persoesc == r && (arg0.persoesc = arg0)
 
 func retirar # Pega um animal da reserva
 # arg0 = personagem
@@ -117,19 +118,23 @@ func retirar # Pega um animal da reserva
   se !r
     $mens.mens = arg1
     $mens.mp(m_sem_reserva, arg0)
-  senao int(r.p_animal) != 1 && arg0.animalmais
+  senao !arg0.animalmais
+    $mens.mp(m_animal_cheio, arg0)
+  senao int(r.p_animal) != 1
     r.idono.remove, r.idono = r.dono.dentro2.addfim(r)
+    r.pnumero = 0
+    arg0.acertanumero
     arg0.recalc = 1
     $mens.mens = r.pnivel
     $mens.mp(m_pegar, arg0, r)
-  senao int(r.p_animal) != 0 && arg0.animal2mais
+  senao
     r.mudadono(arg0.dono)
+    r.pnumero = 0
+    arg0.acertanumero
     arg0.recalc = 1
     $mens.mens = r.pnivel
     $mens.p(arg0, r)
     $mens.mvis2(m_parasala1, m_parasala2)
-  senao
-    $mens.mp(m_animal_cheio, arg0)
   fimse
 
 

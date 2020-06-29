@@ -10,11 +10,10 @@ const m_sem_animal = "Não possui nenhum animal solto."
 const m_montado = "$O está montad$u em $a."
 const m_nao_tem = "Você não tem $m."
 const m_chama_solta = "Não é possível chamar $a."
-const m_animal_cheio = "Sem espaço para chamar animal."
 const m_entra1 = "Você traz $a de volta."
 const m_entra2 = "$P traz $a de volta."
 const admordem = "m_ajuda m_sem_animal m_montado m_nao_tem\n\
-m_chama_solta m_animal_cheio m_entra1 m_entra2"
+m_chama_solta m_entra1 m_entra2"
 
 func escr
   listaitem i
@@ -23,8 +22,7 @@ func escr
   ret !i, $mens.mp(m_sem_animal, arg0)
   ref r = i.obj
   ret r.persolugar, $mens.mp(m_montado, arg0, r, r.persolugar.objini)
-  ret r.p_animal != 2, $mens.mp(m_chama_solta, arg0, r)
-  ret !arg0.animalmais, $mens.mp(m_animal_cheio, arg0, r)
+  ret r.p_animal < 2, $mens.mp(m_chama_solta, arg0, r)
   chamar(arg0, arg0.dono, r)
 
 func chamar
@@ -88,17 +86,12 @@ const tipo5 = "opc_linha"
 const clas5 = "cmd_chamar"
 const vari5 = "m_chama_solta"
 #
-const nome6 = "Animais cheio"
+const nome6 = "Pegou perso"
 const tipo6 = "opc_linha"
 const clas6 = "cmd_chamar"
-const vari6 = "m_animal_cheio"
+const vari6 = "m_entra1"
 #
-const nome7 = "Pegou perso"
+const nome7 = "Pegou outros"
 const tipo7 = "opc_linha"
 const clas7 = "cmd_chamar"
-const vari7 = "m_entra1"
-#
-const nome8 = "Pegou outros"
-const tipo8 = "opc_linha"
-const clas8 = "cmd_chamar"
-const vari8 = "m_entra2"
+const vari7 = "m_entra2"

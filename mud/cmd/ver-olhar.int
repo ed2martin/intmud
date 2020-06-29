@@ -180,13 +180,14 @@ func escr
 # Nome, nível, situação atual e animal que escolheu
   txt200 t2
   se r1.perso
+    refvar persobat = r1.persobat
     refvar a1 = niveltipo(r1)
     refvar a2 = r1.estadopos
     t2 += (a1 && a2 ? " é " + a1 + ", " + a2 : a1 ? " é " + a1 : a2 ? " " + a2 : "")
-    se r1.persobat && r1.persobat != r1
-      t2 += ".\b\nEscolheu " + txtcopiamai(r1.persobat.nome, "A")
-      refvar b1 = niveltipo(r1.persobat)
-      refvar b2 = r1.persobat.estadopos
+    se persobat && persobat != r1
+      t2 += ".\b\nEscolheu " + txtcopiamai(persobat.nome, "A")
+      refvar b1 = niveltipo(persobat)
+      refvar b2 = persobat.estadopos
       t2 += (b1 && b2 ? " é " + b1 + ", " + b2 : b1 ? " é " + b1 : b2 ? " " + b2 : "")
     fimse
   senao r1.pnivel || r1.renascer

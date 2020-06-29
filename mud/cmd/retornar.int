@@ -38,17 +38,17 @@ func escrhab # Personagem retorna
 # arg0 = personagem
 # arg1 = não usado; apenas para compatibilidade com outras habilidades e magias
 # arg2 = item usado, ou nulo se não usou nenhum item
-  ref r
-  r = sala
+  refvar persobat = arg0.persobat
+  ref r = sala
   !r && (r = $[arg0.var.z_salafim])
   se arg2.item
-    ret !checahab1(arg0.persobat, arg2), nulo
+    ret !checahab1(persobat, arg2), nulo
     ret !r || r == arg0.dono, $mens.p(arg0) + $mens.mvis2(msgerrou1, msgerrou2)
   senao
     ret !r, $mens.mp(msgretorno, arg0)
-    ret !checahab1(arg0.persobat, arg2), nulo
+    ret !checahab1(persobat, arg2), nulo
     ret r == arg0.dono, $mens.p(arg0) + $mens.mvis2(msgerrou1, msgerrou2)
-    custohab1(arg0.persobat)
+    custohab1(persobat)
     $mens.p(arg0) + $mens.mvis2(msgini1, msgini2)
   fimse
   arg0.acertapos(1) # Porque os pontos de vida podem ter mudado
