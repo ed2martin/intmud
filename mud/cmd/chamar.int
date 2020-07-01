@@ -23,38 +23,38 @@ func escr
   ref r = i.obj
   ret r.persolugar, $mens.mp(m_montado, arg0, r, r.persolugar.objini)
   ret r.p_animal < 2, $mens.mp(m_chama_solta, arg0, r)
-  chamar(arg0, arg0.dono, r)
+  chamar(arg0, r)
 
 func chamar
 # arg0 = quem está chamando
-# arg1 = origem (sala aonde está)
-# arg2 = animal
+# arg1 = animal
+  refvar sala = arg0.dono
   listaobj e
   epara e.addfim(arg0.evento), e, e.ini.remove
-    ret e.objini.cmd_chamaranim(arg0, arg1, arg2, arg0), nulo
+    ret e.objini.cmd_chamaranim(arg0, sala, arg1, arg0), nulo
+  efim
+  epara e.addfim(sala.evento), e, e.ini.remove
+    ret e.objini.cmd_chamaranim(arg0, sala, arg1, sala), nulo
   efim
   epara e.addfim(arg1.evento), e, e.ini.remove
-    ret e.objini.cmd_chamaranim(arg0, arg1, arg2, arg1), nulo
+    ret e.objini.cmd_chamaranim(arg0, sala, arg1, arg1), nulo
   efim
-  epara e.addfim(arg2.evento), e, e.ini.remove
-    ret e.objini.cmd_chamaranim(arg0, arg1, arg2, arg2), nulo
-  efim
-  arg2.batalhafim
-  e.addfim1(arg1, arg2.dono)
-  arg2.mudadono(arg0)
-  $mens.p(arg0, arg2)
-  epara e.remove(arg0, arg2), e, e.ini.remove
+  arg1.batalhafim
+  e.addfim1(sala.dono.dentro2, arg1.dono.dentro2)
+  arg1.mudadono(arg0)
+  $mens.p(arg0, arg1)
+  epara e.remove(arg0, arg1), e, e.ini.remove
     $mens.msgvis(m_entra2, e.objini)
   efim
   $mens.msgvis(m_entra1, arg0)
   epara e.addfim(arg0.evento), e, e.ini.remove
-    e.objini.cmd_chamouanim(arg0, arg1, arg2, arg0)
+    e.objini.cmd_chamouanim(arg0, sala, arg1, arg0)
+  efim
+  epara e.addfim(sala.evento), e, e.ini.remove
+    e.objini.cmd_chamouanim(arg0, sala, arg1, sala)
   efim
   epara e.addfim(arg1.evento), e, e.ini.remove
-    e.objini.cmd_chamouanim(arg0, arg1, arg2, arg1)
-  efim
-  epara e.addfim(arg2.evento), e, e.ini.remove
-    e.objini.cmd_chamouanim(arg0, arg1, arg2, arg2)
+    e.objini.cmd_chamouanim(arg0, sala, arg1, arg1)
   efim
 
 
