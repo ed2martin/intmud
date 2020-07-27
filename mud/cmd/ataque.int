@@ -231,6 +231,7 @@ func escrhab # Atacar alguém ou usar habilidade/magia não ofensiva em alguém
   senao
     exechab(p, alvo, intpos(p.var.[nomevar]_ - 1) / 7, p.pnivel, arg2, dir, arg4)
   fimse
+  arg0.p_espera < p.p_espera && (arg0.p_espera = p.p_espera)
 
 func exechabperso # Personagem usa uma habilidade ou magia
 # arg0 = quem está usando a habilidade ou magia

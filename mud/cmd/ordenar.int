@@ -30,8 +30,12 @@ func escr
   $mens.mens = txt2(arg1)
   $mens.p(arg0, r)
   $mens.mvis3(m_ordenar1, m_ordenar2, m_ordenar3)
-  r.teclou(txt2(arg1))
-
+  se r.p_espera
+    r.p_comando = txt2(arg1)
+  senao
+    r.teclou(txt2(arg1))
+  fimse
+  arg0.p_espera < r.p_espera && (arg0.p_espera = r.p_espera)
 
 classe m_cmd_ordenar
 herda comando_menu_cmd

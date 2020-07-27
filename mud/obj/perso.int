@@ -33,6 +33,7 @@ const luztipo = 1 # 1=não é fonte de luz, mas repassa a luz
 sav uint16 pnivel # Nível atual (apenas para mostrar ao jogador)
 sav uint32 mortes # Quantas vezes morreu (chamou a função morreu)
 inttempo p_espera # Tempo de espera para o próximo comando
+txt100 p_comando # Próximo comando (usado no comando Ordenar)
 sav uint8 posicao # Posição do personagem
 const pospadr = 8 # Posição padrão do personagem
 sav uint8 pnumero # Número do personagem ou 0 se não tem dono
@@ -496,7 +497,8 @@ func teclouperm # Processa comando com permissões específicas
   ret obj.escr(este, txt2(arg0), arg1)
 
 func p_espera_exec # Pega o próximo comando
-  sock ? sock.espera_exec : p_proc_exec
+  sock ? sock.espera_exec : p_comando ? teclou(p_comando) : p_proc_exec
+  p_comando = ""
 
 func msgposicao # Envia uma mensagem conforme a posição
 # arg0 = quem recebe a mensagem; se for nulo é o próprio personagem
