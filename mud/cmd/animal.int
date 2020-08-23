@@ -21,10 +21,40 @@ const m_ajuda2 = "Nota: Seus animais $m níveis acima do seu nível não lutam."
 const m_ajuda3 = "Nota: Você precisa estar 1 nível acima do seu animal para ele lutar."
 const m_ajuda4 = "Nota: Você precisa estar $m níveis acima do seu animal para ele lutar."
 const m_sem_animais = "Não possui nenhum animal."
-const m_voce = "Você"
-const m_animais = "Animais"
+const m_animais = "Animais:"
+const m_linhaperso = "$num$esc Você  N$nivel"
+const m_linhaanimal = "$num$esc$lugar $nome  N$nivel$des$obe"
+const m_esc_sim = "*"
+const m_esc_nao = " "
+const m_lugar_perso = ""
+const m_lugar_sala = " (na sala)"
+const m_lugar_longe = " (longe)"
+const m_des_sim = " (desmaiado)"
+const m_des_nao = ""
+const m_obe_sim = ""
+const m_obe_nao = " (não obedece)"
 const admordem = "m_ajudaI m_ajudaR m_ajuda1 m_ajuda2 m_ajuda3 m_ajuda4\n\
-m_sem_animais m_voce m_animais"
+m_sem_animais m_animais m_linhaperso m_linhaanimal m_esc_sim m_esc_nao\n\
+m_lugar_perso m_lugar_sala m_lugar_longe m_des_sim m_des_nao m_obe_sim m_obe_nao"
+#
+ref perso # Objeto do personagem
+ref animal # Objeto do animal
+const t1_num = animal.pnumero
+const t1_nivel = animal.pnivel
+const t1_esc = perso.persoesc == animal ? m_esc_sim : m_esc_nao
+const t1_des = animal.pvidaok ? m_des_nao : m_des_sim
+
+func t1_nome
+  refvar m = animal.descnome2
+  ret txtcopiamai(txtproclin("o\na\num\numa", txt1(m + "x")) < 0 ? m : txt2(m), "A")
+
+func t1_lugar
+  ret animal.dono == perso.dono, m_lugar_sala
+  ret animal.dono == perso ? m_lugar_perso : m_lugar_longe
+
+func t1_obe
+  refvar x = animal.pvidaok && animal.pnivel > perso.pnivel + config:animal_n
+  ret x ? m_obe_nao : m_obe_sim
 
 func txtajuda
   $mens.p(arg0)
@@ -46,7 +76,6 @@ func txtajuda
 
 func escr
   textotxt t
-  txt100 lin
   listaobj l
   listaitem i
 # Obtém os personagens
@@ -57,23 +86,14 @@ func escr
     i.obj.perso && i.obj.tseguir == 3 && l.addfim(i.obj)
   efim
 # Adiciona o próprio personagem
-  t.addfim((arg0.persoesc == arg0 ? "100 0* " : "100 0  ") + m_voce + "  N" + arg0.pnivel)
+  perso = animal = arg0
+  t.addfim("100 " + txtremove(vartroca(m_linhaperso, "$", "t1_"), "d"))
 # Adiciona outros personagens
   epara i = l.ini, i, i.depois
     continuar !i.obj.perso
-    lin = txt(i.obj.pnumero) + (arg0.persoesc == i.obj ? "* " : "  ")
-    se !i.obj.pvidaok
-      lin += "(desmaiado) "
-    senao i.obj.pnivel > arg0.pnivel + config:animal_n
-      lin += "(não obedece) "
-    fimse
-    se i.obj.dono == arg0.dono
-      lin += "(na sala) "
-    senao i.obj.dono != arg0
-      lin += "(longe) "
-    fimse
-    lin += txtcopiamai(i.obj.nome, "A") + "  N" + i.obj.pnivel
-    t.addfim(txt(100 + i.obj.pnumero) + " " + lin)
+    animal = i.obj
+    refvar l1 = txt(i.obj.pnumero + 100) + " "
+    t.addfim(l1 + txtremove(vartroca(m_linhaanimal, "$", "t1_"), "d"))
   efim
 # Mostra os personagens
   se t.linhas == 1
@@ -204,17 +224,71 @@ const tipo13 = "opc_linha"
 const clas13 = "cmd_animal"
 const vari13 = "m_ajuda4"
 #
+const titu14 = " * Comando Animal"
+#
 const nome14 = "Sem animais"
 const tipo14 = "opc_linha"
 const clas14 = "cmd_animal"
 const vari14 = "m_sem_animais"
 #
-const nome15 = "Você"
+const nome15 = "Animais"
 const tipo15 = "opc_linha"
 const clas15 = "cmd_animal"
-const vari15 = "m_voce"
+const vari15 = "m_animais"
 #
-const nome16 = "Animais"
+const nome16 = "O próprio personagem"
 const tipo16 = "opc_linha"
 const clas16 = "cmd_animal"
-const vari16 = "m_animais"
+const vari16 = "m_linhaperso"
+#
+const nome17 = "Outros personagens"
+const tipo17 = "opc_linha"
+const clas17 = "cmd_animal"
+const vari17 = "m_linhaanimal"
+#
+const titu18 = " * Opções"
+#
+const nome18 = "$esc escolhido"
+const tipo18 = "opc_linha"
+const clas18 = "cmd_animal"
+const vari18 = "m_esc_sim"
+#
+const nome19 = "$esc não escolhido"
+const tipo19 = "opc_linha"
+const clas19 = "cmd_animal"
+const vari19 = "m_esc_nao"
+#
+const nome20 = "$lugar no jogador"
+const tipo20 = "opc_linha"
+const clas20 = "cmd_animal"
+const vari20 = "m_lugar_perso"
+#
+const nome21 = "$lugar na mesma sala"
+const tipo21 = "opc_linha"
+const clas21 = "cmd_animal"
+const vari21 = "m_lugar_sala"
+#
+const nome22 = "$lugar em outra sala"
+const tipo22 = "opc_linha"
+const clas22 = "cmd_animal"
+const vari22 = "m_lugar_longe"
+#
+const nome23 = "$des desmaiado"
+const tipo23 = "opc_linha"
+const clas23 = "cmd_animal"
+const vari23 = "m_des_sim"
+#
+const nome24 = "$des não desmaiado"
+const tipo24 = "opc_linha"
+const clas24 = "cmd_animal"
+const vari24 = "m_des_nao"
+#
+const nome25 = "$obe obedece"
+const tipo25 = "opc_linha"
+const clas25 = "cmd_animal"
+const vari25 = "m_obe_sim"
+#
+const nome26 = "$obe não obedece"
+const tipo26 = "opc_linha"
+const clas26 = "cmd_animal"
+const vari26 = "m_obe_nao"

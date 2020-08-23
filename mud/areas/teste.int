@@ -876,7 +876,7 @@ const valor = 50
 const evperso = 1 # Eventos dono perso: Sim
 
 func cmd_atacou
-  se arg2.result == 0 && arg2.arma1 == este
+  se arg2.result == 0 && arg2.arma1 == este && arg1.pvida > 0
     $magia_fogo.exechabperso(arg0, arg1)
   fimse
 
