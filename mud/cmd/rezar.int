@@ -27,4 +27,6 @@ func escr
       continuar !$perm_[item.obj.jogperm].c_rezou || item.obj.perso.var.u_[arg0.nome]
       $mens.msg(config:rezar1msg, item.obj.perso)
     efim
+    refvar m = $adm_rezou.var.historico
+    m = $mens.txt("$R: $m") + (m ? "\n") + txtsublin(m, 0, 29)
   fimse

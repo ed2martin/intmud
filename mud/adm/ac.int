@@ -2,17 +2,26 @@ classe adm_ac
 herda comando_adm
 const objcmd = arg1.c_config & 0x10 ? este
 const txtajuda = "\b\c3Ac\b\n\
-Sintaxe: AC <texto>\n\
+Sintaxe: AC\n\
+         AC <texto>\n\
 Envia mensagem para o canal de administração.\n\
+Digitando apenas AC, mostra as últimas mensagens.\n\
 Você pode bloquear ou não o canal AC com o comando CONFIG, conforme abaixo:\n\
 CONFIG -AC\n\
 CONFIG +AC"
+textovar var
 
 func escr
-  se !arg0.jogconfig.19
+  se !arg1
+    ret !var.historico, $mens.mp("Nenhuma mensagem AC", arg0)
+    refvar t = arg0.sock.txtmais
+    t.limpar
+    t.addfim("\b\c6Últimas mensagens AC:\b")
+    t.addfim(var.historico)
+    arg0.sock.txtmostra
+    ret
+  senao !arg0.jogconfig.19
     arg0.msg("Canal AC está desabilitado.")
-  senao !arg1
-    arg0.msg("Tecle a mensagem após AC.")
   senao
     $misclog.ac("ac " + arg0.nome + ": " + arg1)
     $mens.p(arg0)
@@ -21,4 +30,6 @@ func escr
     epara item.ini("un "), txt1(item.txt) == "un", item.depois
       item.obj.jogconfig.19 && $mens.msg(config:acmsg, item.obj.perso)
     efim
+    refvar m = var.historico
+    m = $mens.txt("$R: $m") + (m ? "\n") + txtsublin(m, 0, 29)
   fimse

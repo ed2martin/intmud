@@ -875,5 +875,9 @@ func p_proc_animal # Escolhe um animal em condições de lutar
   persoesc = pbat
   p_espera = 5
   $mens.p(este, persoesc)
-  $mens.mvis1(persoesc == este ? "$P não escolhe ninguém." : "$P escolhe $b.")
+  se persoesc == este
+    $mens.mvis1($comando_escolhe_animal.m_ninguem2)
+  senao
+    $mens.mvis1($comando_escolhe_animal.m_escolhe2)
+  fimse
   ret 1

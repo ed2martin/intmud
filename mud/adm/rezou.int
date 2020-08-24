@@ -3,10 +3,20 @@ herda comando_adm
 const objcmd = arg1.c_rezou ? este
 const txtajuda = "\b\c3Rezou\b\n\
 Sintaxe: REZOU <jogador> <texto>\n\
-Envia mensagem para o jogador com cópia para todos os administradores."
+Envia mensagem para o jogador com cópia para todos os administradores.\n\
+Digitando apenas Rezou, mostra as últimas mensagens."
+textovar var
 
 func escr
-  se !txt2(arg1)
+  se !arg1
+    ret !var.historico, $mens.mp("Nenhuma mensagem Rezou", arg0)
+    refvar t = arg0.sock.txtmais
+    t.limpar
+    t.addfim("\b\c6Últimas mensagens Rezou:\b")
+    t.addfim(var.historico)
+    arg0.sock.txtmostra
+    ret
+  senao !txt2(arg1)
     ret arg0.msg("Digite REZOU seguido do nome do personagem jogador e a mensagem")
   fimse
   indiceitem item
@@ -20,3 +30,5 @@ func escr
     continuar !$perm_[item.obj.jogperm].c_rezou || item.obj.perso.var.u_[nome]
     $mens.msg(config:rezou1msg, item.obj.perso)
   efim
+  refvar m = var.historico
+  m = $mens.txt("$R para $c: $m") + (m ? "\n") + txtsublin(m, 0, 29)
