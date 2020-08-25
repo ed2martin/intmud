@@ -53,6 +53,20 @@ m_invalido1 m_invalido2 m_invalido3\n\
 m_habmag1 m_habmag2 m_habmag3 m_habmag4 m_habmag5\n\
 m_hab m_magia m_nao_possui m_renasceu m_cancelar"
 
+func acertahab # Acerta cada habilidade ou magia do jogador
+# Nota: só é chamado quando o comando Renascer perde as hab/magias
+# arg0 = personagem
+# arg1 = nome da variável em var; por exmeplo, habilidade Socar é "h_socar"
+# arg2 = variável em var; arg2 = arg0.var[arg1]
+# arg2 contém grau de conhecimento seguido de espaço e quantas veses escolheu
+  arg2 = txt2(arg2) ? intmin("3", txt1(arg2), txt2(arg2)) + " " + txt2(arg2) : ""
+
+func acertasala # Define em que sala o personagem vai após renascer
+# arg0 = personagem
+# arg1 = nova sala
+# Retorna: nova sala ou null se não deve mudar de sala
+  ret arg1
+
 func txtajuda
   ret !config:renascer, nulo
   ret config:renascer < 2, txtajuda1 + m_ajudaI
@@ -263,13 +277,11 @@ func passo4 # Escolha de uma habilidade ou magia
     debug d
     d.ini
     epara lin = v.ini("h_"), txt(lin, 0, 2) == "h_", lin = v.depois(lin)
-      refvar t = v.[lin]
-      t = txt2(t) ? intmin("3", txt1(t), txt2(t)) + " " + txt2(t) : ""
+      acertahab(arg0, lin, v.[lin])
     efim
     d.ini
     epara lin = v.ini("m_"), txt(lin, 0, 2) == "m_", lin = v.depois(lin)
-      refvar t = v.[lin]
-      t = txt2(t) ? intmin("3", txt1(t), txt2(t)) + " " + txt2(t) : ""
+      acertahab(arg0, lin, v.[lin])
     efim
     d.ini
     ret renascer(arg0)
@@ -314,7 +326,7 @@ func renascer
   perso.pvida = perso.pvidamax
   perso.pmana = perso.pmanamax
   perso.pmove = perso.pmovemax
-  ref sala = config:sala_renascer
+  ref sala = acertasala(arg0, config:sala_renascer)
   sala && perso.mudadono(sala)
   ret 0
 
