@@ -137,12 +137,13 @@ Quando um item possui várias portas, o jogador deve escolher em qual entrar.
 const dir_[direção] = nulo
 ref dir_[direção]
 arg0 = personagem que está consultando essa constante (pode ser nulo)
-Sala na direção especificada.
-Se for item, será a sala aonde o item está.
+Sala na direção especificada. Se for item, será a sala aonde o item está.
 Se a sala estiver dentro de um item, procura a sala especificada no mesmo item.
-Se estiver ausente ou for nulo, não há sala nessa direção
+Se estiver ausente ou for nulo, não há sala nessa direção.
 Geralmente é definido dessa forma: const dir_s = $sala1
 As direções válidas são: n s l o ne no se so c b entrar sair
+Nota: Para obter a sala ou o item na direção, usar as funções dirsala, diritem
+e dirsalaitem.
 
 uint8 porta_[direção]
 const portaini_[direção]
@@ -248,6 +249,10 @@ Nota: personagem pode ser nulo se for genérico.
 
 func diritem( direção, personagem )
 Retorna o item em uma direção ou nulo se não for item.
+Nota: personagem pode ser nulo se for genérico.
+
+func dirsalaitem( direção, personagem )
+Retorna a sala ou o item em uma direção ou nulo se não existir.
 Nota: personagem pode ser nulo se for genérico.
 
 func mudaporta( saída, valor, mens1, mens2 )

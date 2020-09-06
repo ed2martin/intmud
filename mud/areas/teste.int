@@ -3350,9 +3350,11 @@ classe s_teste064
 herda b_teste
 const s_titulo = "Sexto andar: Casas de jogadores e salas de doação"
 const s_desc = "Ao norte itens com sala\n\
+Ao sul sala com saídas embaralhadas\n\
 A oeste há um gerenciador de casas e duas casas\n\
 A leste salas de doação"
 const dir_n = $s_teste159
+const dir_s = $s_teste176
 const dir_l = $s_teste122
 const dir_o = $s_teste115
 const dir_b = $s_teste030
@@ -5303,3 +5305,20 @@ func s_reset1 # Realiza o reset
   se p_teste048:objsolto.total < 1
     criar("p_teste048", este, 0, "i_latir=7")
   fimse
+
+
+classe s_teste176
+herda b_teste
+const s_titulo = "Embaralhar saídas"
+const s_desc = "Uma das saídas volta para a sala anterior, as outras são para as salas de\n\
+doação. A cada 10 segundos, as salas para onde as saídas levam são\n\
+embaralhadas. Geralmente as salas vizinhas têm o mesmo título, caso\n\
+contrário o jogador pode descobrir as salas teclando Saídas."
+const s_mudadir = 10
+const dir_n = $s_teste064
+const dir_s = $s_teste122
+const dir_l = $s_teste153
+const dir_o = $s_teste154
+const dir_ne = $s_teste158
+const dir_se = $s_teste156
+const dir_so = $s_teste155

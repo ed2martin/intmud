@@ -192,14 +192,21 @@ bool Instr::FuncNumero(TVariavel * v, int valor)
         VarAtual->setDouble(numero<0 ? -numero : numero);
         return true;
     case 2: // int()
-        return CriarVarInt(DoubleToInt(numero));
+        numero = round(numero);
+        if (numero >= (double)-0x7FFFFFFF && numero <= (double)0x7FFFFFFF)
+            return CriarVarInt((int)numero);
+        if (!CriarVar(InstrDouble))
+            return false;
+        VarAtual->setDouble(numero);
+        return true;
     case 3: // intdiv()
         numero = trunc(numero);
-        if (numero >= 0x7FFFFFFFLL)
-            return CriarVarInt(0x7FFFFFFF);
-        if (numero <= -0x80000000LL)
-            return CriarVarInt(-0x80000000);
-        return CriarVarInt((int)numero);
+        if (numero >= (double)-0x7FFFFFFF && numero <= (double)0x7FFFFFFF)
+            return CriarVarInt((int)numero);
+        if (!CriarVar(InstrDouble))
+            return false;
+        VarAtual->setDouble(numero);
+        return true;
     case 4: // matsin()
         if (!CriarVar(InstrDouble))
             return false;

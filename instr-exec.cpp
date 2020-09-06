@@ -10,6 +10,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <math.h>
 #include <assert.h>
 #include "instr.h"
 #include "variavel.h"
@@ -1391,19 +1392,38 @@ bool Instr::ExecX()
                 if (VarFuncIni(VarAtual-1))
                     break;
                 FuncAtual->expr++;
-                int valor = VarAtual[0].getInt();
-                if (valor)
-                    valor = VarAtual[-1].getInt() % valor;
-                else
-                    valor = 0;
-                ApagarVar(VarAtual);
-                if (VarAtual->tamanho==0 || VarAtual->Tipo()!=varInt)
+                if (VarAtual[0].Tipo() == varInt && VarAtual[-1].Tipo() == varInt)
                 {
+                    int valor = VarAtual[0].getInt();
+                    if (valor)
+                        valor = VarAtual[-1].getInt() % valor;
+                    else
+                        valor = 0;
                     ApagarVar(VarAtual);
-                    if (!CriarVarInt(0))
-                        return RetornoErro(2);
+                    if (VarAtual->tamanho==0 || VarAtual->Tipo()!=varInt)
+                    {
+                        ApagarVar(VarAtual);
+                        if (!CriarVarInt(0))
+                            return RetornoErro(2);
+                    }
+                    VarAtual->setInt(valor);
                 }
-                VarAtual->setInt(valor);
+                else
+                {
+                    double valor = VarAtual[0].getDouble();
+                    if (valor)
+                        valor = fmod(VarAtual[-1].getDouble(), valor);
+                    else
+                        valor = 0;
+                    ApagarVar(VarAtual);
+                    if (VarAtual->tamanho==0 || VarAtual->defvar!=InstrDouble)
+                    {
+                        ApagarVar(VarAtual);
+                        if (!CriarVar(InstrDouble))
+                            return RetornoErro(2);
+                    }
+                    VarAtual->setDouble(valor);
+                }
                 break;
             }
         case exo_add:        // Operador: a+b

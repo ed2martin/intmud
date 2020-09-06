@@ -3,6 +3,7 @@
 2. Funções chamadas somente para o póprio objeto
 3. Eventos incondicionais
 4. Eventos condicionais
+5. Outros eventos
 
 
 1. Funcinamento dos eventos
@@ -687,3 +688,15 @@ func cmd_ident
 arg0 = personagem que quer identificar um item ou personagem
 arg1 = item ou personagem que será identificado
 arg2 = origem do evento: arg0 ou arg1
+
+
+5. Outros eventos
+
+func cmd_dirsala
+arg0 = sala original
+arg1 = sala ou item para onde vai; item significa ir para a sala aonde o item está
+arg2 = direção
+arg3 = personagem, pode ser nulo
+Essa função é chamada para os objetos que estão na listaobj dentrodir da sala,
+para descobrir a sala ou o item em uma direção. Por isso, ela pode mudar arg1
+para ser outra sala ou item, mas não deve enviar nenhuma mensagem.

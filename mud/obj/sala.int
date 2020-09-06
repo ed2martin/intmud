@@ -71,6 +71,7 @@ const objlimite = objmax
 int1 objmudou # Para salvar sala ao salvar a casa
 listaitem s_rastreio # Usado em misc:rastrear: de qual sala veio para essa
 txt10 s_rastrdir # Usado em misc:rastrear: direção para chegar nessa sala
+listaobj dentrodir # Objetos que podem mudar a saída em dirsala e diritem
 #
 uint8 porta_n # Tipo de saída
 uint8 porta_s # Tipo de saída
@@ -110,6 +111,7 @@ s_terreno\n\
 s_atk_move\n\
 s_voltar\n\
 s_som\n\
+s_mudadir\n\
 volmax\n\
 objmax\n\
 evhora\n\
@@ -169,7 +171,10 @@ func ini # Objeto foi criado: inicializa variáveis (arg0=dono, pode ser nulo)
   porta_sair = portaini_sair
   comum_obj:ini, cmd_ini(arg0, arg1, arg2, arg3, arg4)
   arg0 && mdono(arg0) + cmd_mudadono
-  a_reset1, i_reset1
+  s_mudadir1, a_reset1, i_reset1
+
+func fim
+  dentrodir.limpar, comum_obj:fim
 
 func msg # Mensagem para todos da sala
   ret !socktot, nulo
@@ -301,7 +306,7 @@ func tsai2 # Para mostrar as saídas existentes
 func dirsala # Retorna a sala em uma direção ou nulo se não existir
 # arg0 = direção
 # arg1 = personagem, pode ser nulo
-  ref saladest = dir_[arg0](arg1)
+  ref saladest = dentrodir ? dirsalaitem(arg0, arg1) : dir_[arg0](arg1)
   se saladest.item
     ret saladest.dono.s_sala ? saladest.dono
   senao !dono
@@ -315,9 +320,23 @@ func dirsala # Retorna a sala em uma direção ou nulo se não existir
 func diritem # Retorna o item em uma direção ou nulo se não for item
 # arg0 = direção
 # arg1 = personagem, pode ser nulo
-  ref saladest = dir_[arg0](arg1)
+  ref saladest = dentrodir ? dirsalaitem(arg0, arg1) : dir_[arg0](arg1)
   ret saladest.item && saladest.dono.s_sala, saladest
   ret s_entrada && arg0 == "sair" && dono.dono.s_sala, dono
+
+func dirsalaitem # Retorna a sala ou item em uma direção ou nulo se não houver
+# arg0 = direção
+# arg1 = personagem, pode ser nulo
+  ref r = dir_[arg0](arg1)
+  listaobj l
+  epara l.addfim(dentrodir), l, l.ini.remove
+    l.objini.cmd_dirsala(este, r, arg0, arg1)
+  efim
+  ret r
+
+func s_mudadir1 # Acerta opção de embaralhar as saídas da sala
+  refvar r = $sala_mudadir ?? criar("sala_mudadir")
+  intpos(s_mudadir) ? dentrodir.addini1(r) : dentrodir.remove(r)
 
 func mudaporta # Muda estado de uma saída; variável porta_[arg0]
 # arg0 = nome da saída (até duas letras)
@@ -395,3 +414,36 @@ func totalmove # Quantos movimentos consome, conforme o terreno
     ret 6
   casofim
   ret 1
+
+
+classe sala_mudadir
+# Classe responsável por deixar as saídas das salas embaralhadas
+
+func cmd_dirsala
+  prog p
+  se !arg0.var.z_salatempo@ || !arg0.var.z_sala_[arg2] != !p.existe(arg0, "dir_" + arg2)
+    datahora dh
+    dh.agora
+    int32 tp = arg0.s_mudadir
+    #arg0.var.z_salatempo@ = 10 * (intdiv(dh.numtotal / tp) * tp + tp - dh.numtotal)
+    arg0.var.z_salatempo@ = 10 * (tp - dh.numtotal % tp)
+    textotxt t
+    p.existe(arg0, "dir_n") && t.addfim("n")
+    p.existe(arg0, "dir_s") && t.addfim("s")
+    p.existe(arg0, "dir_l") && t.addfim("l")
+    p.existe(arg0, "dir_o") && t.addfim("o")
+    p.existe(arg0, "dir_ne") && t.addfim("ne")
+    p.existe(arg0, "dir_no") && t.addfim("no")
+    p.existe(arg0, "dir_se") && t.addfim("se")
+    p.existe(arg0, "dir_so") && t.addfim("so")
+    t.rand
+    arg0.var.z_sala_n = p.existe(arg0, "dir_n") ? t.remove
+    arg0.var.z_sala_s = p.existe(arg0, "dir_s") ? t.remove
+    arg0.var.z_sala_l = p.existe(arg0, "dir_l") ? t.remove
+    arg0.var.z_sala_o = p.existe(arg0, "dir_o") ? t.remove
+    arg0.var.z_sala_ne = p.existe(arg0, "dir_ne") ? t.remove
+    arg0.var.z_sala_no = p.existe(arg0, "dir_no") ? t.remove
+    arg0.var.z_sala_se = p.existe(arg0, "dir_se") ? t.remove
+    arg0.var.z_sala_so = p.existe(arg0, "dir_so") ? t.remove
+  fimse
+  arg0.var.z_sala_[arg2] && (arg1 = arg0.dir_[arg0.var.z_sala_[arg2]](arg3))
