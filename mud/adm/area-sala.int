@@ -93,7 +93,8 @@ func escr # Criar ·rea
     ret arg0.msg("J· existe a ·rea: " + nome)
   fimse
 # Cria ·rea
-  p.criar("a_" + nome + "\nareas/" + nome + "\nherda area")
+  refvar erro = p.criar("a_" + nome + "\nareas/" + nome + "\nherda area")
+  ret erro, arg0.msg("Nome inv·lido para ·rea: " + nome)
   p.criar("b_" + nome + "\nareas/" + nome + "\nherda sala\nconst s_area=\"" + nome + "\"")
   config:salvar, arg0.msg("\b¡rea criada: " + nome)
   admlog(arg0, "criou ·rea " + nome)

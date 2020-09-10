@@ -141,11 +141,17 @@ bool TVarDataHora::Func(TVariavel * v, const char * nome)
     {
     case 0: // Agora
         {
-            time_t tempoatual;
+            // Nota: localtime() Converte para representação local de tempo
             struct tm * tempolocal;
+#ifdef __WIN32__
+            __time64_t tempoatual;
+            _time64(&tempoatual);
+            tempolocal = _localtime64(&tempoatual);
+#else
+            time_t tempoatual;
             time(&tempoatual);
-            // localtime() Converte para representação local de tempo
-            tempolocal=localtime(&tempoatual);
+            tempolocal = localtime(&tempoatual);
+#endif
             Ano = tempolocal->tm_year + 1900; // Ano começa no 1900
             Mes = tempolocal->tm_mon + 1; // Mês começa no 1
             Dia = tempolocal->tm_mday; // Dia começa no 0

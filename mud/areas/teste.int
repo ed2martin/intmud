@@ -1940,7 +1940,8 @@ func entrou20
     $mens.p(arg0, este)
     $mens.mtodos2("", "$A assopra na direção $d $p e $p sai voando.")
     arg0.msginv("$A assopra na sua direção e você sai voando.")
-    dono.dir_s(arg0) && arg0.mudadono(dono.dir_s(arg0))
+    refvar r = dono.dirsala("s", arg0)
+    r && arg0.mudadono(r)
     $mens.p(arg0)
     $mens.mtodos2("", "$P chegou voando do norte.")
   fimse
@@ -2286,7 +2287,7 @@ func entrou5
   $cmd_falar.msg(este, "Para onde devo ir? Fale uma direção.", $idioma_latir)
 
 func cmd_falou
-  refvar sala = arg0.dono.dir_[arg1](arg0)
+  refvar sala = arg0.dono.dirsala(arg1, arg0)
   se arg2 != $idioma_latir || arg3 < 3 # Se não falou em latir nível básico ou mais...
   senao txtproclin("n\ns\nl\no\nne\nno\nse\nso", arg1) < 0 # Se a direção não existe...
   senao !sala # Se não existe saída nessa direção...
@@ -3627,7 +3628,7 @@ func cmd_salaperso
 func entrou50
   $mens.p(arg0)
   $mens.mtodos1("$P continua deslizando para oeste.")
-  arg0.mudadono(dir_o(arg0))
+  arg0.mudadono(dirsala("o", arg0))
   $mens.p(arg0)
   $mens.mtodos2("", "$P chegou aqui deslizando do leste.")
 
@@ -3804,7 +3805,7 @@ func cmd_salaperso
 func entrou50
   $mens.p(arg0)
   $mens.mtodos1("$P continua deslizando para o sul.")
-  arg0.mudadono(dir_s(arg0))
+  arg0.mudadono(dirsala("s", arg0))
   $mens.p(arg0)
   $mens.mtodos2("", "$P chegou aqui deslizando do norte.")
 

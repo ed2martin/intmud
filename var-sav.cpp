@@ -14,6 +14,7 @@
 #include <time.h>
 #include <sys/stat.h>
 #include <assert.h>
+#include <vector>
 #ifdef __WIN32__
  #include <windows.h>
 #endif
@@ -34,7 +35,7 @@
 
 //#define DEBUG // Mostrar diretórios e arquivos acessados pela função LIMPAR
 
-#define MAX_OBJ 4000 // Número de objetos por arquivo
+#define MAX_OBJ 0xFFFF // Número de objetos por arquivo
 
 bool TVarSav::InicVar = false;
 int TVarSav::HoraReg = 0;
@@ -50,11 +51,17 @@ TVarSavArq * TVarSavArq::Fim = 0;
 void TVarSav::ProcEventos(int tempoespera)
 {
 // Obtém a hora
-    time_t tempoatual=0;
+    // Nota: localtime() Converte para representação local de tempo
     struct tm * tempolocal;
+#ifdef __WIN32__
+    __time64_t tempoatual;
+    _time64(&tempoatual);
+    tempolocal = _localtime64(&tempoatual);
+#else
+    time_t tempoatual;
     time(&tempoatual);
-    // localtime() Converte para representação local de tempo
     tempolocal = localtime(&tempoatual);
+#endif
     Dia = tempolocal->tm_yday+1;
     Hora = tempolocal->tm_hour;
     Min = tempolocal->tm_min;
@@ -177,6 +184,16 @@ bool TVarSav::Func(TVariavel * v, const char * nome)
         Instr::ApagarVar(v);
         return Instr::CriarVarTexto(mens);
     }
+// Gerar senha codificada
+    if (comparaZ(nome, "senhacod")==0)
+    {
+        char mens[256];
+        *mens = 0;
+        if (Instr::VarAtual >= v+1) // 1 ou mais argumentos
+            Senha(mens, v[1].getTxt(), circle_random() % 90 + 33);
+        Instr::ApagarVar(v);
+        return Instr::CriarVarTexto(mens);
+    }
 // Obtém o nome do arquivo
     char arqnome[512]; // Nome do arquivo; nulo se não for válido
     bool escrita = false;
@@ -257,7 +274,15 @@ bool TVarSav::Func(TVariavel * v, const char * nome)
     {
         int x = 0;
         if (escrita)
-            x = Salvar(v, arqnome);
+            x = Salvar(v, arqnome, false);
+        Instr::ApagarVar(v);
+        return Instr::CriarVarInt(x);
+    }
+    if (comparaZ(nome, "salvarcod")==0)
+    {
+        int x = 0;
+        if (escrita)
+            x = Salvar(v, arqnome, true);
         Instr::ApagarVar(v);
         return Instr::CriarVarInt(x);
     }
@@ -336,7 +361,7 @@ bool TVarSav::ObterVar(TVariavel * var, TObjeto * obj, const char * nomevar)
 //----------------------------------------------------------------------------
 int TVarSav::Ler(TVariavel * v, const char * arqnome)
 {
-    unsigned int quantidade = 0xFFFF; // Número máximo de objetos
+    unsigned int quantidade = MAX_OBJ; // Número máximo de objetos
     char mens[8192];
     TArqLer arqler;
     if (Instr::VarAtual >= v+3)
@@ -350,8 +375,7 @@ int TVarSav::Ler(TVariavel * v, const char * arqnome)
 // Prepara variáveis
     TListaObj * listaobj = v[2].end_listaobj + v[2].indice;
     TListaX * listaitem = listaobj->Inicio;
-    TObjeto * bufobj[MAX_OBJ];
-    unsigned int numobj=0;
+    std::vector<TObjeto *> bufobj;
     if (quantidade > MAX_OBJ)
         quantidade = MAX_OBJ;
 // Avança até a lista dos tipos de objetos
@@ -364,12 +388,12 @@ int TVarSav::Ler(TVariavel * v, const char * arqnome)
         //printf("1> %s\n", mens); fflush(stdout);
         if (strcmp(mens, "+++")==0)
             break;
-        if (numobj >= quantidade)
+        if (bufobj.size() >= quantidade)
             continue;
     // Objeto está na lista
         if (listaitem)
         {
-            bufobj[numobj++] = listaitem->Objeto;
+            bufobj.push_back(listaitem->Objeto);
             listaitem = listaitem->ListaDepois;
             continue;
         }
@@ -378,13 +402,13 @@ int TVarSav::Ler(TVariavel * v, const char * arqnome)
     // Classe inválida: não cria objeto
         if (c==0)
         {
-            bufobj[numobj++] = 0;
+            bufobj.push_back(NULL);
             continue;
         }
     // Classe válida: cria objeto e adiciona na lista
-        bufobj[numobj] = TObjeto::Criar(c);
-        listaobj->AddFim(bufobj[numobj]);
-        numobj++;
+        TObjeto * obj = TObjeto::Criar(c);
+        listaobj->AddFim(obj);
+        bufobj.push_back(obj);
     }
 // Lê objetos
     TListaX * listaitem_fim = 0;
@@ -395,8 +419,8 @@ int TVarSav::Ler(TVariavel * v, const char * arqnome)
     char * pmensvar = mensvar; // Aonde adicionar texto
     TVariavel var;
     var.defvar = 0;
-    quantidade = numobj;
-    numobj = 0;
+    quantidade = bufobj.size();
+    unsigned int numobj = 0;
     while (arqler.Linha(mens, sizeof(mens), false)>0)
     {
     // Próximo objeto
@@ -723,7 +747,7 @@ int TVarSav::Ler(TVariavel * v, const char * arqnome)
 }
 
 //----------------------------------------------------------------------------
-int TVarSav::Salvar(TVariavel * v, const char * arqnome)
+int TVarSav::Salvar(TVariavel * v, const char * arqnome, bool senhacod)
 {
     if (*arqnome==0 ||  // Arquivo inválido
             Instr::VarAtual < v+4 || // Menos de 4 argumentos
@@ -742,33 +766,42 @@ int TVarSav::Salvar(TVariavel * v, const char * arqnome)
     if (*senha)
     {
         char mens[256];
-        Senha(mens, senha, circle_random() % 90 + 33);
+        if (senhacod)
+        {
+            char * p = mens;
+            for (; p < mens+sizeof(mens)-1 && *senha; senha++)
+                if (*senha >= 33 && *senha < 128)
+                    *p++ = *senha;
+            *p = 0;
+        }
+        else
+            Senha(mens, senha, circle_random() % 90 + 33);
         fprintf(arq, "senha=%s\n", mens);
     }
 // Anota os tipos de objetos
     TListaObj * listaobj = v[2].end_listaobj + v[2].indice;
-    TObjeto * bufobj[MAX_OBJ];
-    unsigned int numobj=0;
+    std::vector<TObjeto *> bufobj;
     fprintf(arq, "+++\n");
-    for (TListaX * litem = listaobj->Inicio; litem && numobj<MAX_OBJ;)
+    for (TListaX * litem = listaobj->Inicio; litem; litem = litem->ListaDepois)
     {
+        unsigned int total = bufobj.size();
+        if (total >= MAX_OBJ)
+            break;
         TObjeto * obj = litem->Objeto;
     // Checa se objeto já está em bufobj
         unsigned int num = obj->NumeroSav;
-        if (num>=numobj || bufobj[num]!=obj)
+        if (num>=total || bufobj[num]!=obj)
         {
         // Acerta variáveis
-            obj->NumeroSav = numobj;
-            bufobj[numobj++] = obj;
+            obj->NumeroSav = total;
+            bufobj.push_back(obj);
         // Anota no arquivo
             fprintf(arq, "%s\n", obj->Classe->Nome);
         }
-    // Passa para próximo objeto
-        litem = litem->ListaDepois;
     }
 // Anota as variáveis dos objetos
-    unsigned int quantidade = numobj;
-    for (numobj=0; numobj<quantidade; numobj++)
+    unsigned int quantidade = bufobj.size();
+    for (unsigned int numobj=0; numobj<quantidade; numobj++)
     {
         fprintf(arq, "+++\n");
         TClasse * c = bufobj[numobj]->Classe;

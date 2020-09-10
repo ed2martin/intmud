@@ -27,10 +27,15 @@ private:
          *   @return verdadeiro se sucesso, falso se falha (var->defvar=0) */
     static int Ler(TVariavel * v, const char * arqnome);
         ///< Lê um arquivo salvo; chamado internamente por Func()
-        /**< @return Quantidade de objetos lidos */
-    static int Salvar(TVariavel * v, const char * arqnome);
+        /**< @param v Argumentos
+         *   @param arqnome Nome do arquivo
+         *   @return Quantidade de objetos lidos */
+    static int Salvar(TVariavel * v, const char * arqnome, bool senhacod);
         ///< Salva um arquivo; chamado internamente por Func()
-        /**< @return 1 se conseguiu salvar, 0 se não conseguiu */
+        /**< @param v Argumentos
+         *   @param arqnome Nome do arquivo
+         *   @param senhacod Se a senha já está codificada
+         *   @return 1 se conseguiu salvar, 0 se não conseguiu */
     static void Senha(char * senhacodif, const char * senha, char fator);
         ///< Codifica senha
     static bool InicVar;

@@ -174,7 +174,11 @@ bool TVarDir::Func(TVariavel * v, const char * nome)
         tipo = 4;
     if (tipo)
     {
+#ifdef __WIN32__
+        struct __stat64 buf;
+#else
         struct stat buf;
+#endif
         char mens[512];
         int existe = 0; // 0=não existe, 1=não permitido, 2=existe
         if (Instr::VarAtual >= v+1)
@@ -182,7 +186,11 @@ bool TVarDir::Func(TVariavel * v, const char * nome)
             copiastr(mens, v[1].getTxt(), sizeof(mens));
             if (!arqvalido(mens))
                 existe = 1;
+#ifdef __WIN32__
+            else if (_stat64(mens, &buf) >= 0)
+#else
             else if (stat(mens, &buf) >= 0)
+#endif
                 existe = 2;
         }
         Instr::ApagarVar(v);
@@ -206,7 +214,11 @@ bool TVarDir::Func(TVariavel * v, const char * nome)
             Instr::VarAtual->setDouble(existe==2 ? buf.st_size : 0);
             return true;
         }
+#ifdef __WIN32__
+        __time64_t tempoatual;
+#else
         time_t tempoatual;
+#endif
         struct tm * tempolocal;
         if (existe != 2)
             return Instr::CriarVarTexto("");
@@ -215,7 +227,11 @@ bool TVarDir::Func(TVariavel * v, const char * nome)
         else            // atempo
             tempoatual = buf.st_atime;
         // localtime() Converte para representação local de tempo
+#ifdef __WIN32__
+        tempolocal=_localtime64(&tempoatual);
+#else
         tempolocal=localtime(&tempoatual);
+#endif
         sprintf(mens, "%d %d %d %d %d %d",
                 tempolocal->tm_year + 1900, // Ano começa no 1900
                 tempolocal->tm_mon + 1, // Mês começa no 1

@@ -8,7 +8,8 @@ indiceobj cnome # "pn " + nome codificado (usado ao reconectar)
 sav txt20 nome # Nome do personagem
 sav txt40 salanome # Nome da sala
 const msexo = psexo # Sexo do personagem
-txt20 senha # Senha do jogo salvo, ou "" se não estiver salvo
+txt30 senha # Senha do jogo salvo, ou "" se não estiver salvo
+int1 senhacod # 0=senha pura, 1=senha codificada
 sav txt20 jogperm # Permissões do personagem, mesmo que sock.jogperm
 sav txt20 jogarea # Área aonde o personagem tem permissão, mesmo que sock.jogarea
 sav int1 jogconfig.32 # Configurações do personagem, mesmo que sock.jogconfig
@@ -333,6 +334,7 @@ func salvar # Salva o jogo, desde que a senha não seja nula
   fimse
 # Salva o arquivo
   arqsav sav1
+  ret senhacod, sav1.salvarcod("sav1/" + txt2(cnome) + ".sav", lista, tempo, senha)
   ret sav1.salvar("sav1/" + txt2(cnome) + ".sav", lista, tempo, senha)
 
 func dentrocasa # Retorna verdadeiro se o jogador está dentro da própria casa

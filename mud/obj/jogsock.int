@@ -652,6 +652,7 @@ herda comando_comum
 # Entrar no jogo: cria personagem
 
 func passo
+  arqsav sav1
   arg0.passo = ""
   arg0.jogconfig.bits = config:jogconfig # Configurações iniciais
   $jogsock_msg.msgsock(arg0, perso_cfg:ini_iniciando, arg0.nome)
@@ -661,7 +662,9 @@ func passo
   arg0.perso.nome = arg0.nome
   arg0.perso.jogconfig.bits = arg0.jogconfig.bits
   arg0.perso.psexo = arg0.var.j_sexo
-  arg0.perso.senha = arg0.var.j_senha
+  arg0.perso.senha = sav1.senhacod(arg0.var.j_senha)
+  arg0.perso.senhacod = (arg0.perso.senha != "") # Se a senha está codificada
+  !arg0.perso.senhacod && (arg0.perso.senha = arg0.var.j_senha)
   arg0.perso.var.z_email = arg0.var.j_email
   arg0.var.limpar("j_")
   arg0.perso.mudadono(config:salaini)
@@ -755,7 +758,9 @@ func passo
     arg0.mudaperso(criar("jogador"))
     arg0.perso.cnome = "pn " + texto
     arg0.perso.nome = arg0.nome
-    arg0.perso.senha = arg1
+    arg0.perso.senha = sav1.senhacod(arg1)
+    arg0.perso.senhacod = (arg0.perso.senha != "") # Se a senha está codificada
+    !arg0.perso.senhacod && (arg0.perso.senha = arg1)
 # Carrega personagem
     listaobj l1
     l1.addfim(arg0.perso)
@@ -852,7 +857,10 @@ func passo
     $jogsock_msg.msgsock(arg0, perso_cfg:ini_senha_diferente2, arg0.nome)
     arg0.passo = ""
   senao
-    arg0.perso.senha = arg1
+    arqsav sav1
+    arg0.perso.senha = sav1.senhacod(arg1)
+    arg0.perso.senhacod = (arg0.perso.senha != "") # Se a senha está codificada
+    !arg0.perso.senhacod && (arg0.perso.senha = arg1)
     se arg0.perso.salvar
       $jogsock_msg.msgsock(arg0, perso_cfg:ini_salvar_sim, arg0.nome)
     senao

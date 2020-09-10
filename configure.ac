@@ -2,7 +2,7 @@
 # Process this file with autoconf to produce a configure script.
 
 AC_PREREQ(2.61)
-AC_INIT(intmud, 1.13, edx2martin@gmail.com)
+AC_INIT(intmud, 1.14, edx2martin@gmail.com)
 AM_INIT_AUTOMAKE
 AC_CONFIG_SRCDIR([misc.cpp])
 AM_CONFIG_HEADER([config.h])
@@ -50,7 +50,7 @@ AC_SEARCH_LIBS([dlopen], [dl dld], [], [
 ])
 ],[
 AC_MSG_RESULT(yes)
-LIBS="$LIBS -lws2_32 -lwsock32 -lwinmm -lpsapi -mms-bitfields -mwindows -static-libgcc -static-libstdc++"
+LIBS="$LIBS -lws2_32 -lwsock32 -lwinmm -lpsapi -mms-bitfields -mwindows -static -static-libgcc -static-libstdc++"
 ])
 
 dnl from: http://fisheye.globus.org/browse/~raw,r=1.5/GlobusToolkit/ogsa-c/tools/libxml25/configure.in

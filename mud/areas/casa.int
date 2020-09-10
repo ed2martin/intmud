@@ -559,9 +559,9 @@ func andar_exec
     pvida = pvidamax, pmove = pmovemax # Restaura vida e pontos de movimento
     $mens.p(este)
     $mens.mtodos1("$P morde um pedaço de carne.")
-  senao dono.dir_l.dentro1.objini("i_casa002") # Carne à leste
+  senao dono.dirsala("l").dentro1.objini("i_casa002") # Carne à leste
     andar = 20, $cmd_l.escr(este)
-  senao dono.dir_o.dentro1.objini("i_casa002") # Carne à oeste
+  senao dono.dirsala("o").dentro1.objini("i_casa002") # Carne à oeste
     andar = 20, $cmd_o.escr(este)
   senao dono != $s_casa035 # Não está no saguão
     andar = 100, $cmd_s.escr(este)
