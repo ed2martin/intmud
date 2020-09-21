@@ -8,13 +8,17 @@ const m_nao_obedece = "$A não quer obedecer você."
 const m_sem_arma = "Não possui a arma necessária."
 const m_com_arma = "Empunhando uma arma?"
 const m_arma_errada = "Com essa arma?"
+const m_tipovestirsim = "Falta vestir algo."
+const m_tipovestirnao = "Está vestindo algo que impede."
+const m_tipoinvsim = "Falta carregar algo."
+const m_tipoinvnao = "Está carregando algo que impede."
 const m_sem_efeito = "A magia não teve efeito."
 const m_vida = "Pontos de vida insuficientes."
 const m_mana = "Mana insuficiente."
 const m_move = "Vigor insuficiente."
 const admordem = "m_magia_sem m_magia_nao m_desmaiado0 m_desmaiado1\n\
-m_nao_obedece m_sem_arma m_com_arma m_arma_errada m_sem_efeito\n\
-m_vida m_mana m_move"
+m_nao_obedece m_sem_arma m_com_arma m_arma_errada m_tipovestirsim\n\
+m_tipovestirnao m_tipoinvsim m_tipoinvnao m_sem_efeito m_vida m_mana m_move"
 
 
 classe comando_hab
@@ -192,7 +196,19 @@ func checahab2 # Checa se personagem pode usar habilidade/magia e avisa o person
     $mens.mp(comando_hab_cfg:m_arma_errada, contr0, arg0)
     ret
   fimse
-  se arg0.dono.s_semmagia && txt(nomevar, 0, 1) == "m"
+  se txtbith(tipovestirsim) && !txtbith(tipovestirsim & arg0.tipoitemvestir)
+    $mens.mp(comando_hab_cfg:m_tipovestirsim, contr0, arg0)
+    ret
+  senao txtbith(tipovestirnao) && txtbith(tipovestirnao & arg0.tipoitemvestir)
+    $mens.mp(comando_hab_cfg:m_tipovestirnao, contr0, arg0)
+    ret
+  senao txtbith(tipoinvsim) && !txtbith(tipoinvsim & arg0.tipoiteminv)
+    $mens.mp(comando_hab_cfg:m_tipoinvsim, contr0, arg0)
+    ret
+  senao txtbith(tipoinvnao) && txtbith(tipoinvnao & arg0.tipoiteminv)
+    $mens.mp(comando_hab_cfg:m_tipoinvnao, contr0, arg0)
+    ret
+  senao arg0.dono.s_semmagia && txt(nomevar, 0, 1) == "m"
     $mens.mp(comando_hab_cfg:m_sem_efeito, contr0, arg0)
     ret
   senao arg2.item # Usou algum objeto: não tem custo
@@ -243,6 +259,10 @@ func autohab2 # Checa se personagem pode usar habilidade/magia em ataque automát
   fimse
   ret !arg0.pvidaok || arg0.posicao < posic, nulo
   ret contr0 != arg0 && contr0.pnivel + config:animal_n < arg0.pnivel, nulo
+  ret txtbith(tipovestirsim) && !txtbith(tipovestirsim & arg0.tipoitemvestir), nulo
+  ret txtbith(tipovestirnao) && txtbith(tipovestirnao & arg0.tipoitemvestir), nulo
+  ret txtbith(tipoinvsim) && !txtbith(tipoinvsim & arg0.tipoiteminv), nulo
+  ret txtbith(tipoinvnao) && txtbith(tipoinvnao & arg0.tipoiteminv), nulo
   ret contr0.dono.s_semmagia && txt(nomevar, 0, 1) == "m", nulo
   ret arg0.pvida <= arg1 * (c_vida2 - c_vida1) + c_vida1, nulo
   ret arg0.pmana < arg1 * (c_mana2 - c_mana1) + c_mana1, nulo
@@ -309,22 +329,42 @@ const tipo8 = "opc_linha"
 const clas8 = "comando_hab_cfg"
 const vari8 = "m_arma_errada"
 #
-const nome9 = "Não teve efeito"
+const nome9 = "Vestir item"
 const tipo9 = "opc_linha"
 const clas9 = "comando_hab_cfg"
-const vari9 = "m_sem_efeito"
+const vari9 = "m_tipovestirsim"
 #
-const nome10 = "Vida insuficiente"
+const nome10 = "Não vestir item"
 const tipo10 = "opc_linha"
 const clas10 = "comando_hab_cfg"
-const vari10 = "m_vida"
+const vari10 = "m_tipovestirnao"
 #
-const nome11 = "Mana insuficiente"
+const nome11 = "Carregar item"
 const tipo11 = "opc_linha"
 const clas11 = "comando_hab_cfg"
-const vari11 = "m_mana"
+const vari11 = "m_tipoinvsim"
 #
-const nome12 = "Vigor insuficiente"
+const nome12 = "Não carregar item"
 const tipo12 = "opc_linha"
 const clas12 = "comando_hab_cfg"
-const vari12 = "m_move"
+const vari12 = "m_tipoinvnao"
+#
+const nome13 = "Não teve efeito"
+const tipo13 = "opc_linha"
+const clas13 = "comando_hab_cfg"
+const vari13 = "m_sem_efeito"
+#
+const nome14 = "Vida insuficiente"
+const tipo14 = "opc_linha"
+const clas14 = "comando_hab_cfg"
+const vari14 = "m_vida"
+#
+const nome15 = "Mana insuficiente"
+const tipo15 = "opc_linha"
+const clas15 = "comando_hab_cfg"
+const vari15 = "m_mana"
+#
+const nome16 = "Vigor insuficiente"
+const tipo16 = "opc_linha"
+const clas16 = "comando_hab_cfg"
+const vari16 = "m_move"

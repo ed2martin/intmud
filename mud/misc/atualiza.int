@@ -1,4 +1,4 @@
-classe atualiza_534
+classe atualiza_544
 # Atualiza arquivos mud/config/* e mud/areas/* de acordo com novas mudanças
 prog p
 debug dbg
@@ -729,8 +729,8 @@ func ini3_exec
 func ini4_exec
   apagar(este)
 # Checa e muda a versão
-  ret (versao = config:versao) >= 534, nulo
-  p.criar("config", "const versao = 534 # Para atualizar diretórios areas e config")
+  ret (versao = config:versao) >= 544, nulo
+  p.criar("config", "const versao = 544 # Para atualizar diretórios areas e config")
   config:salvar
 # Comando Fim e Dicas aleatórias
   se versao < 457
@@ -912,6 +912,35 @@ func ini4_exec
         movefunc(p.texto, "descpadr", p.texto, "descsalaN")
         sair
       casofim
+    efim
+  fimse
+# Tipos de produtos
+  se versao < 544
+    dbg.ini
+    movefunc("config", "produtos", "config", "item_tipos")
+    c_hex("config", "item_container")
+    c_hex("config", "item_arma")
+    c_hex("config", "item_luz")
+    c_hex("config", "item_vestimenta")
+    c_hex("config", "item_bebida")
+    c_hex("config", "item_comida")
+    c_hex("config", "item_pergaminho")
+    c_hex("config", "item_chave")
+    c_hex("config", "s_doarsim")
+    c_hex("config", "s_doarnao")
+    epara p.iniherdainv("comum_persoitem"), p.lin, p.depois
+      dbg.ini
+      c_hex(p.texto, "tipoitem")
+    efim
+    epara p.iniherdainv("area"), p.lin, p.depois
+      dbg.ini
+      c_hex(p.texto, "s_doarsim")
+      c_hex(p.texto, "s_doarnao")
+    efim
+    epara p.iniherdainv("sala"), p.lin, p.depois
+      dbg.ini
+      c_hex(p.texto, "s_doarsim")
+      c_hex(p.texto, "s_doarnao")
     efim
   fimse
 # Avisa que atualizou arquivos

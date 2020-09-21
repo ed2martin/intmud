@@ -117,6 +117,8 @@ func ajustapeso
   comum_obj:ajustapeso
 
 func mudadono # Item muda de dono (arg0 = novo dono, arg1 = quantidade)
+  dono.perso && ((vestpos ? dono.tipoitemvestir2 : dono.tipoiteminv2) = "")
+  arg0.perso && (arg0.tipoiteminv2 = "")
   mdono(arg0), cmd_mudadono
   ret este
 
@@ -128,6 +130,7 @@ func mudaobjdono # Objeto dono foi substituído por outro
 
 func vestir # Veste o item, arg0=posição
   dono.recalc = 1 # Para recalcular atributos
+  dono.tipoitemvestir2 = dono.tipoiteminv2 = ""
   idono.remove, vestpos = arg0
   se vestpos
     idono = dono.dentro2.addfim(este)
@@ -198,8 +201,8 @@ func recalc_exec # Ajusta variáveis
 func tipoitem2
 # Nota: ao adicionar ou remover algum tipo aqui, acertar também:
 # 1. a classe classe menu_econfig_itens em econfig.int
-# 2. a classe opc_vetorprodutos em menus.int
-  int32 tipo = tipoitem
+# 2. a classe opc_vetoritemtipos em menus.int
+  txt12 tipo = tipoitem
   i_abertoini && (tipo |= config:item_container)
   armatipo && (tipo |= config:item_arma)
   luzitem && (tipo |= config:item_luz)
@@ -209,6 +212,9 @@ func tipoitem2
   f_tipo == 3 && (tipo |= config:item_comida)
   f_tipo == 4 && (tipo |= config:item_pergaminho)
   ret tipo
+
+func tipoitem_mudou # Deve ser chamado quando o tipo de item mudou
+  dono.perso && vestpos < 50 && ((vestpos ? dono.tipoitemvestir2 : dono.tipoiteminv2) = "")
 
 func teclou # Processa comando
 # arg0=comando
@@ -325,10 +331,13 @@ func mudadono # Item muda de dono (arg0 = novo dono, arg1 = quantidade)
       ret r
     fimse
   senao r # Se já existe objeto no destino
+    dono.perso && ((vestpos ? dono.tipoitemvestir2 : dono.tipoiteminv2) = "")
     r.objtot += arg1, r.ajustapeso
     apagar(este), mdono(nulo)
     ret r
   senao # Senão, apenas muda o dono
+    dono.perso && ((vestpos ? dono.tipoitemvestir2 : dono.tipoiteminv2) = "")
+    arg0.perso && (arg0.tipoiteminv2 = "")
     mdono(arg0), cmd_mudadono
     ret este
   fimse
@@ -341,16 +350,20 @@ func vestir # Veste o item, arg0=posição
     refvar r = objproc(dono.dentro1) # Procura objeto que não está vestindo
     se r # Encontrou: aumenta a quantidade
       r.objtot++, r.ajustapeso, apagar(este), mdono(nulo)
+      dono.tipoitemvestir2 = ""
     senao # Não encontrou: move
       vestpos = 0, idono.remove, idono = dono.dentro1.addfim(este)
+      dono.tipoitemvestir2 = dono.tipoiteminv2 = ""
     fimse
   senao objtot <= 1 # Se só tem um objeto
     dono.recalc = 1 # Para recalcular atributos
+    dono.tipoitemvestir2 = dono.tipoiteminv2 = ""
     vestpos = pos
     idono.remove, idono = dono.dentro2.addfim(este)
     pos == 50 && (dono.iempu = idono)
   senao # Tem mais de um objeto, cria objeto e veste
     dono.recalc = 1 # Para recalcular atributos
+    dono.tipoitemvestir2 = ""
     objtot--, ajustapeso
     refvar r = criar(este)
     r.var = var
@@ -403,6 +416,8 @@ func fim # Objeto foi apagado
   persolugar.limpar, comum_obj:fim
 
 func mudadono # Item muda de dono (arg0 = novo dono, arg1 = quantidade)
+  dono.perso && ((vestpos ? dono.tipoitemvestir2 : dono.tipoiteminv2) = "")
+  arg0.perso && (arg0.tipoiteminv2 = "")
   mdono(arg0), cmd_mudadono
   listaobj l
   epara l.addfim(persolugar), l, l.ini.remove
@@ -478,6 +493,7 @@ func luztempo_exec # A luz apagou
 func vestir # Veste o item, arg0=posição
   luzitem == 7 && (recalc = 1) # Para acender ou apagar o item
   dono.recalc = 1 # Para recalcular atributos
+  dono.tipoitemvestir2 = dono.tipoiteminv2 = ""
   idono.remove, vestpos = arg0
   se vestpos
     idono = dono.dentro2.addfim(este)

@@ -721,8 +721,8 @@ func passo # Alterando uma opção de uma lista de opções
   ret passosair(arg0)
 
 
-classe opc_vetorprodutos
-herda opc_vetor
+classe opc_vetoritemtipos
+herda opc_vetorhex
 #
 # Nota: ao adicionar ou remover algum tipo aqui, acertar também:
 # 1. a função tipoitem2 em item.int
@@ -737,8 +737,8 @@ func menu2 # Retorna o texto correspondente a uma opção
   txt512 lin1
   txt512 lin2
   int8 x
-  int32 valor = arg1
-  int32 tipo
+  txt12 valor = arg1
+  txt12 tipo
   [arg0]:i_abertoini && (tipo |= config:item_container)
   [arg0]:armatipo && (tipo |= config:item_arma)
   [arg0]:luzitem && (tipo |= config:item_luz)
@@ -749,8 +749,8 @@ func menu2 # Retorna o texto correspondente a uma opção
   [arg0]:f_tipo == 4 && (tipo |= config:item_pergaminho)
   tipo &= ~valor
   epara t.addfim(arg2), t.linhas, t.remove
-    tipo & 1 ? (lin2 += ", " + x + "-" + t.ini.texto)
-    valor & 1 ? (lin1 += ", " + x + "-" + t.ini.texto)
+    txtbith(tipo & "1") ? (lin2 += ", " + x + "-" + t.ini.texto)
+    txtbith(valor & "1") ? (lin1 += ", " + x + "-" + t.ini.texto)
     x++, valor >>= 1, tipo >>= 1
   efim
   ret lin1 || lin2, "\c6" + txt2(lin1 + " ") + (lin2 ? "(" + txt2(lin2) + ")") + "\b"

@@ -114,7 +114,7 @@ const luzini = -600
 const luztxt = "Uma tocha se apagou"
 const luzfim = 1 # Sem luz item some: Sim
 const luzitem = 6 # Tipo de luz: 6 Tocha (acende com fogo, produz fogo)
-const tipoitem = 256 # Tipo de produto: Fonte de luz
+const tipoitem = "100"
 
 
 classe i_teste007
@@ -124,7 +124,7 @@ const descnome = "uma lanterna"
 const luzitem = 1 # Tipo de luz: 1 Lanterna (acende/apaga, sem fogo)
 const luzini = -6000
 const luztxt = "Uma lanterna apagou."
-const tipoitem = 256 # Tipo de produto: Fonte de luz
+const tipoitem = "100"
 
 
 classe i_teste008
@@ -135,7 +135,7 @@ const msexo = 1 # Sexo: 1 Masculino
 const luzitem = 4 # Tipo de luz: 4 Lampião (acende/apaga, produz fogo)
 const luzini = -3000
 const luztxt = "Um lampião apagou."
-const tipoitem = 256 # Tipo de produto: Fonte de luz
+const tipoitem = "100"
 
 
 classe i_teste009
@@ -143,7 +143,7 @@ herda comum_itemgrupo
 const nome = "palito de fósforo"
 const descnome = "um palito de fósforo"
 const msexo = 1 # Sexo: 1 Masculino
-const tipoitem = 256 # Tipo de produto: Fonte de luz
+const tipoitem = "100"
 
 
 classe i_teste010
@@ -165,7 +165,7 @@ const eveste = 1 # Receber eventos do próprio objeto
 sav uint8 palitos # Quantidade de palitos de fósforo da caixa
 const luzitem = 5 # Tipo de luz: 5 Fósforo (acende uma vez, produz fogo)
 const luztempo = -10 # Quantidade de luz; para indicar que sempre pode acender
-const tipoitem = 256 # Tipo de produto: Fonte de luz
+const tipoitem = "100"
 
 func cmd_ini
   palitos = 20
@@ -200,7 +200,7 @@ const armamax = 120
 const armamin = 70
 const armatipo = 3 # Arma tipo: 1 Lâmina curta
 const pesoobj = 300
-const tipoitem = 3 # Tipo de produto: Possui metal, Arma
+const tipoitem = "3"
 const valor = 50
 
 
@@ -212,7 +212,7 @@ const descpos = "Um colete está jogado aqui."
 const msexo = 1 # Sexo: 1 Masculino
 const nivel = 1
 const pesoobj = 1000
-const tipoitem = 8 # Tipo de produto: Vestimenta
+const tipoitem = "8"
 const valor = 300
 const vestir1 = "40"
 
@@ -803,7 +803,7 @@ const descnome = "uma caixa de fósforo"
 const i_itens = "teste009"
 const i_abertoini = 1 # Container: 1 Sempre aberto
 const luzitem = 5 # Tipo de luz: 5 Fósforo (acende uma vez, produz fogo)
-const tipoitem = 256 # Tipo de produto: Fonte de luz
+const tipoitem = "100"
 const volmax = 20
 const eveste = 1 # Eventos item: Sim
 const luztempo = -10 # Quantidade de luz; para indicar que sempre pode acender
@@ -871,7 +871,7 @@ const armamax = 120
 const armamin = 70
 const armatipo = 3 # Tipo de arma: 3 Lâmina curta
 const pesoobj = 300
-const tipoitem = 3 # Tipo de produto: Possui metal, Arma
+const tipoitem = "3"
 const valor = 50
 const evperso = 1 # Eventos dono perso: Sim
 
@@ -1291,7 +1291,7 @@ teste070 0\n\
 teste071 0"
 const taxacompra = 30
 const taxavenda = 20
-const tipoitem = 3 # Compra produtos: Possui metal, Arma
+const tipoitem = "3"
 
 
 classe p_teste008
@@ -4972,7 +4972,7 @@ classe s_teste155
 herda b_teste
 const s_titulo = "Sala de doação"
 const s_desc = "Aqui ficam as armas doadas."
-const s_doarsim = 2 # Itens doados: 1-Arma
+const s_doarsim = "2"
 const s_item = 0
 const dir_s = $s_teste154
 
@@ -4981,7 +4981,7 @@ classe s_teste156
 herda b_teste
 const s_titulo = "Sala de doação"
 const s_desc = "Itens doados, exceto armas, vêm para cá ou a sala ao sul."
-const s_doarnao = 2 # Itens não doados: 1-Arma
+const s_doarnao = "2"
 const s_item = 0
 const dir_n = $s_teste154
 const dir_s = $s_teste157
@@ -4991,7 +4991,7 @@ classe s_teste157
 herda b_teste
 const s_titulo = "Sala de doação"
 const s_desc = "Itens doados, exceto armas, vêm para cá ou a sala ao norte."
-const s_doarnao = 2 # Itens não doados: 1-Arma
+const s_doarnao = "2"
 const s_item = 0
 const dir_n = $s_teste156
 

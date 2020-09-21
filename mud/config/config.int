@@ -4,7 +4,7 @@ classe config
 # A variável versão é usada na classe atualiza, arquivo mud.int,
 # para atualizar os arquivos mud-a-*.int e mud-b-*.int, porque podem
 # haver mudanças nesses arquivos em versões mais recentes
-const versao = 534 # Para atualizar diretórios areas e config
+const versao = 544 # Para atualizar diretórios areas e config
 #
 # Jogar localmente (na janela do IntMUD)? 0=não, 1=sim
 const modolocal = 1 # Jogar localmente: Sim
@@ -404,8 +404,8 @@ const casamsgaviso = "Há uma nota avisando que a taxa de manutenção da casa está
 # Mensagem bloqueado - ao entrar na casa, se está bloqueada por falta de pagamento
 const casamsgbloq = "A porta foi lacrada por falta de pagamento."
 #
-# Os tipos de produtos (itens) usados nos comandos Vender, Avaliar e Doar
-const produtos = "Possui metal\n\
+# Os tipos de itens usados nos comandos Vender, Avaliar e Doar
+const item_tipos = "Possui metal\n\
 Arma\n\
 Armadura\n\
 Vestimenta\n\
@@ -420,15 +420,15 @@ Container\n\
 Vasilhame\n\
 Comida\nBarco"
 #
-# Que tipos de produtos conforme os tipos de itens
-const item_container = 2048
-const item_arma = 2
-const item_luz = 256
-const item_vestimenta = 8
-const item_bebida = 1024
-const item_comida = 8192
-const item_pergaminho = 64
-const item_chave = 0
+# Tipos de item obtidos de outras variáveis
+const item_container = "800"
+const item_arma = "2"
+const item_luz = "100"
+const item_vestimenta = "8"
+const item_bebida = "400"
+const item_comida = "2000"
+const item_pergaminho = "40"
+const item_chave = "0"
 #
 # Tipos de ataque existentes
 const atknomes = "Contusão\n\
@@ -615,10 +615,10 @@ const s_som = "sala"
 const s_doarsalas = ""
 #
 # Salas: Itens doados que essa sala aceita; se vazio aceita qualquer item
-const s_doarsim = 0
+const s_doarsim = "0"
 #
 # Salas: Itens doados que essa sala não aceita
-const s_doarnao = 0
+const s_doarnao = "0"
 #
 # Salas: Quantidade de movimentos que um ataque de outra sala usa para chegar na sala
 const s_atk_move = 1

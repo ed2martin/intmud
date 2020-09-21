@@ -548,12 +548,8 @@ const clas4 = var.classe1
 const vari4 = "falha2"
 const extr4 = "-1 100"
 #
-const nome5 = "Requer arma"
-const info5 = "Se vazio, a arma é ignorada: ataca sem arma mesmo se estiver empunhando uma"
-const tipo5 = "opc_vetor"
-const clas5 = var.classe1
-const vari5 = "tipoarma"
-const extr5 = config:arma_txt
+const nome5 = "Requer"
+const tipo5 = "menu_hab_requer--"
 #
 const nome6 = "Consome"
 const tipo6 = "menu_hab_custo--"
@@ -641,6 +637,48 @@ const nome8 = "Lutando em pé"
 const tipo8 = "opc_simnao"
 const clas8 = var.classe1
 const vari8 = "a_bat_em_pe"
+
+
+classe menu_hab_requer
+herda comando_menu
+const titulo = "Requer"
+const menufim = var.menufim
+const colunas = 25
+#
+const nome1 = "Arma"
+const info1 = "Se vazio, a arma é ignorada: ataca sem arma mesmo se estiver empunhando uma"
+const tipo1 = "opc_vetor"
+const clas1 = var.classe1
+const vari1 = "tipoarma"
+const extr1 = config:arma_txt
+#
+const nome2 = "Vestir item"
+const info2 = "Se não estiver vazio, precisa vestir um dos itens"
+const tipo2 = "opc_vetorhex"
+const clas2 = var.classe1
+const vari2 = "tipovestirsim"
+const extr2 = config:item_tipos
+#
+const nome3 = "Não vestir item"
+const info3 = "Não pode vestir nenhum dos itens"
+const tipo3 = "opc_vetorhex"
+const clas3 = var.classe1
+const vari3 = "tipovestirnao"
+const extr3 = config:item_tipos
+#
+const nome4 = "Carregar item"
+const info4 = "Se não estiver vazio, precisa ter um dos itens no comando Inv"
+const tipo4 = "opc_vetorhex"
+const clas4 = var.classe1
+const vari4 = "tipoinvsim"
+const extr4 = config:item_tipos
+#
+const nome5 = "Não carregar item"
+const info5 = "Não pode ter nenhum dos itens no comando Inv"
+const tipo5 = "opc_vetorhex"
+const clas5 = var.classe1
+const vari5 = "tipoinvnao"
+const extr5 = config:item_tipos
 
 
 classe menu_hab_custo

@@ -43,6 +43,16 @@ func cabedentro( sala )
 Retorna 1 se o personagem cabe na sala especificada ou 0 se não cabe.
 Essa função checa o volume e a quantidade de personagens na sala.
 
+func tipoiteminv
+Retorna os tipos de item que está carregando (aparecem no comando Inventário).
+É um valor numérico em hexadecimal em que cada bit corresponde a um tipo
+de produto da lista em config:item_tipos, no arquivo config/config.int.
+
+func tipoitemvestir
+Retorna os tipos de item que está vestindo, mas não está empunhando.
+É um valor numérico em hexadecimal em que cada bit corresponde a um tipo
+de produto da lista em config:item_tipos, no arquivo config/config.int.
+
 real expatual
 Quanta experiência possui no nível atual.
 
@@ -354,10 +364,10 @@ const lojachave = 0
 Chaveiro: Se vende chaves e fechaduras para casas da área aonde está
 (0=não, 1=sim).
 
-const tipoitem = 0
+const tipoitem = "0"
 Tipos de produtos que compra.
-É um valor numérico em que cada bit corresponde a um tipo de produto
-da lista em config:produtos, no arquivo config/config.int.
+É um valor numérico em hexadecimal em que cada bit corresponde a um tipo
+de produto da lista em config:item_tipos, no arquivo config/config.int.
 Nota: é muito mais fácil alterar essa constante pela edição online.
 
 const lojaaula = ""

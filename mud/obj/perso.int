@@ -40,6 +40,8 @@ sav uint8 pnumero # Número do personagem ou 0 se não tem dono
 sav listaitem poslugar # Em qual móvel o personagem está sentado/deitado/montado
 sav listaobj persolugar # Quem está montado
 sav listaitem iempu # Arma que que está empunhando
+txt12 tipoiteminv2 # Tipos de item no inventário ou "" se precisa calcular
+txt12 tipoitemvestir2 # Tipos de item vestindo ou "" se precisa calcular
 inttempo p_proc # Para processar comportamento do personagem
 const p_corpo = config:p_corpo
 const p_morreu0 = config:p_morreu0
@@ -181,7 +183,7 @@ func contr # Quem está controlando o personagem
 
 func persodomador # A quem pertence o personagem
   ret dono.perso, dono
-  ret (tseguir == 3 ? ref(iseguir.objlista)) ?? este
+  ret (tseguir == 3 ? ref(iseguir.objlista) : este) ?? este
 
 func mudadono # Coloca personagem em outra sala ou outro personagem
 # arg0 = nova sala ou novo personagem
@@ -384,6 +386,24 @@ func cabedentro # Retorna 1 se personagem cabe em uma sala ou 0 se não cabe
   ret j && j + (arg0.jogtot >> 1) > arg0.s_jog, 0
   ret p && p + (arg0.pnjtot >> 1) > arg0.s_pnj, 0
   ret voltot + arg0.volden <= arg0.volmax
+
+func tipoiteminv
+  ret tipoiteminv2, tipoiteminv2
+  tipoiteminv2 = "0"
+  listaitem i
+  epara i = dentro1.ini, i, i.depois
+    tipoiteminv2 |= i.obj.tipoitem2
+  efim
+  ret tipoiteminv2
+
+func tipoitemvestir
+  ret tipoitemvestir2, tipoitemvestir2
+  tipoitemvestir2 = "0"
+  listaitem i
+  epara i = dentro2.ini, i, i.depois
+    i.obj.item && i.obj.vestpos < 50 && (tipoitemvestir2 |= i.obj.tipoitem2)
+  efim
+  ret tipoitemvestir2
 
 func recalc_exec # Ajusta variáveis
 # Acerta atributos básicos

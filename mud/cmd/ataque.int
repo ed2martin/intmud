@@ -93,6 +93,7 @@ depende\n\
 atkfalha falha1 falha2\n\
 addprecisao\n\
 armamove\n\
+tipovestirsim tipovestirnao tipoinvsim tipoinvnao\n\
 tipoarma\n\
 tipoatk\n\
 tipobonus\n\
@@ -395,8 +396,8 @@ func exechab # Chamado quando personagem usa habilidade ou magia
     $mens.mp(comando_ataque_cfg:m_perso_pacifico, contr0, contr1)
     ret 0
   senao
-    ref p0 = (contr0.tseguir == 3 ? contr0.iseguir.objlista) ?? contr0
-    ref p1 = (contr1.tseguir == 3 ? contr1.iseguir.objlista) ?? contr1
+    ref p0 = (contr0.tseguir == 3 ? contr0.iseguir.objlista : contr0) ?? contr0
+    ref p1 = (contr1.tseguir == 3 ? contr1.iseguir.objlista : contr0) ?? contr1
     se p0.jog && p1.jog && (contr0.dono.s_luta == 1 || contr1.dono.s_luta == 1)
       se arg0 != arg1
         $mens.mp(comando_ataque_cfg:m_jog_pacifico, contr0, contr1)
@@ -448,7 +449,7 @@ func exechab # Chamado quando personagem usa habilidade ou magia
     se contr0.jog && contr0.dono.s_luta < 2 # Sala não permite luta entre jogadores
       i = l.ini
       enquanto i
-        ref p1 = (i.obj.tseguir == 3 ? i.obj.iseguir.objlista) ?? i.obj
+        ref p1 = (i.obj.tseguir == 3 ? i.obj.iseguir.objlista : i.obj) ?? i.obj
         p1.jog ? i.removedepois : i.depois
       efim
     fimse
