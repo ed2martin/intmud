@@ -187,9 +187,18 @@ bool TVarSav::Func(TVariavel * v, const char * nome)
 // Gerar senha codificada
     if (comparaZ(nome, "senhacod")==0)
     {
+        if (Instr::VarAtual > v+1) // Mais de um argumento
+        {
+            char mens2[100];
+            char fator = v[2].getTxt()[0];
+            Senha(mens2, v[1].getTxt(), fator);
+            int result = strcmp(v[2].getTxt(), mens2);
+            Instr::ApagarVar(v);
+            return Instr::CriarVarInt(result == 0);
+        }
         char mens[256];
         *mens = 0;
-        if (Instr::VarAtual >= v+1) // 1 ou mais argumentos
+        if (Instr::VarAtual == v+1) // 1 argumento
             Senha(mens, v[1].getTxt(), circle_random() % 90 + 33);
         Instr::ApagarVar(v);
         return Instr::CriarVarTexto(mens);

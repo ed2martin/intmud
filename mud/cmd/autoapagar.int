@@ -22,15 +22,16 @@ func escr
 func passo
   arg0.passo = este
   arg1 == "\b" && (arg0.tpasso = "1")
+  refvar p = arg0.perso
 # Pergunta se quer apagar o personagem
   se arg0.tpasso == "1"
     se !arg1 || arg1 == "\b"
-      $mens.mp(m_confirma, arg0.perso)
+      $mens.mp(m_confirma, p)
     senao arg1 == "s"
-      $mens.mp(m_senha, arg0.perso)
+      $mens.mp(m_senha, p)
       arg0.tpasso = "2"
     senao
-      $mens.mp(m_cancelar, arg0.perso)
+      $mens.mp(m_cancelar, p)
       arg0.passo = ""
     fimse
     ret 1
@@ -38,19 +39,19 @@ func passo
 # Pede a senha para apagar o personagem
   arqsav sav1
   se !arg1
-    $mens.mp(m_senha, arg0.perso)
+    $mens.mp(m_senha, p)
   senao arg1 == "z"
-    $mens.mp(m_cancelar, arg0.perso)
+    $mens.mp(m_cancelar, p)
     arg0.passo = ""
-  senao arg1 != arg0.perso.senha
-    $mens.mp(m_senha_erro, arg0.perso)
+  senao p.senhacod ? !sav1.senhacod(arg1, p.senha) : (arg1 !== p.senha)
+    $mens.mp(m_senha_erro, p)
     arg0.passo = ""
   senao sav1.apagar("sav1/" + txt2(arg0.cnome) + ".sav")
-    arg0.perso.senha = ""
-    apagar(arg0.perso)
+    p.senha = ""
+    apagar(p)
     $miscsav.apagousav(txt2(arg0.cnome))
   senao
-    $mens.mp(m_erro, arg0.perso)
+    $mens.mp(m_erro, p)
     arg0.passo = ""
   fimse
   ret 1

@@ -662,7 +662,7 @@ func passo
   arg0.perso.nome = arg0.nome
   arg0.perso.jogconfig.bits = arg0.jogconfig.bits
   arg0.perso.psexo = arg0.var.j_sexo
-  arg0.perso.senha = sav1.senhacod(arg0.var.j_senha)
+  arg0.perso.senha = (arg0.var.j_senha ? sav1.senhacod(arg0.var.j_senha) : "")
   arg0.perso.senhacod = (arg0.perso.senha != "") # Se a senha está codificada
   !arg0.perso.senhacod && (arg0.perso.senha = arg0.var.j_senha)
   arg0.perso.var.z_email = arg0.var.j_email
@@ -812,11 +812,15 @@ func passo
   senao arg1 == "z"
     arg0.passo = ""
     arg0.msg("Cancelado")
-  senao arg1 !== arg0.perso.senha
-    $jogsock_msg.msgsock(arg0, perso_cfg:ini_senha_atual2, arg0.nome)
-    arg0.passo = ""
   senao
-    $ini_mudasenha2.passo(arg0)
+    arqsav sav1
+    refvar p = arg0.perso
+    se p.senhacod ? !sav1.senhacod(arg1, p.senha) : (arg1 !== p.senha)
+      $jogsock_msg.msgsock(arg0, perso_cfg:ini_senha_atual2, arg0.nome)
+      arg0.passo = ""
+    senao
+      $ini_mudasenha2.passo(arg0)
+    fimse
   fimse
   ret 1
 

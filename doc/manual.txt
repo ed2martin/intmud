@@ -3478,12 +3478,15 @@ Mesmo que a função salvar, porém deve-se fornecer a senha codificada.
 26.8. senhacod(<senha>)
 Retorna a senha codificada.
 
-26.9. apagar(<nome do arquivo>)
+26.9. senhacod(<senha>, <senha codificada>)
+Retorna 1 se a senha está correta ou 0 se não está.
+
+26.10. apagar(<nome do arquivo>)
 Apaga arquivo.
 Retorna 1 se conseguiu apagar ou arquivo não existia.
 Retorna 0 se não conseguiu apagar.
 
-26.10. limpar(<nome do diretório>)
+26.11. limpar(<nome do diretório>)
 Inicia checagem dos arquivos .sav no diretório especificado; apaga
 arquivos que expiraram. Os arquivos são verificados aos poucos para
 ficar transparente aos usuários.
@@ -3492,7 +3495,7 @@ Exemplo:
 arqsav sav
 sav.limpar(".") # Inicia checagem do diretório atual, em segundo plano
 
-26.11. limpar
+26.12. limpar
 Checa de uma vez todos os diretórios que estiverem sendo checados
 aos poucos, em segundo plano.
 Exemplo:
@@ -3500,7 +3503,7 @@ arqsav sav
 sav.limpar(".") # Inicia checagem do diretório atual
 sav.limpar # Checa todos os arquivos de uma vez
 
-26.12. limpou
+26.13. limpou
 Retorna um texto de uma ou mais linhas.
 A primeira linha é o texto "1" se a função 'limpar' estiver verificando
 arquivos em segundo plano, ou "0" se não estiver.
