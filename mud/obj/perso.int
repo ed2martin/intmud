@@ -401,7 +401,7 @@ func tipoitemvestir
   tipoitemvestir2 = "0"
   listaitem i
   epara i = dentro2.ini, i, i.depois
-    i.obj.item && i.obj.vestpos < 50 && (tipoitemvestir2 |= i.obj.tipoitem2)
+    i.obj.item && (tipoitemvestir2 |= i.obj.tipoitem2)
   efim
   ret tipoitemvestir2
 

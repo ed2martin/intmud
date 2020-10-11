@@ -347,7 +347,7 @@ func rastrearsala # Obtém o caminho para chegar até uma sala
   debug d
   dono.s_rastrdir = ""
   dono.s_rastreio = lista.addfim(dono)
-  epara item = lista.ini, item && total-- && debug.exec >= 1000, item.depois
+  epara item = lista.ini, item && total-- && d.exec >= 1000, item.depois
     epara p.inifunctudo(item.obj, "dir_"), p.lin, p.depois
       continuar pp && int(item.obj.porta_[txt(p.texto, 4)](este)) >= 2
       refvar r = item.obj.dirsala(txt(p.texto, 4), este)

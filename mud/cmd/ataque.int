@@ -397,7 +397,7 @@ func exechab # Chamado quando personagem usa habilidade ou magia
     ret 0
   senao
     ref p0 = (contr0.tseguir == 3 ? contr0.iseguir.objlista : contr0) ?? contr0
-    ref p1 = (contr1.tseguir == 3 ? contr1.iseguir.objlista : contr0) ?? contr1
+    ref p1 = (contr1.tseguir == 3 ? contr1.iseguir.objlista : contr1) ?? contr1
     se p0.jog && p1.jog && (contr0.dono.s_luta == 1 || contr1.dono.s_luta == 1)
       se arg0 != arg1
         $mens.mp(comando_ataque_cfg:m_jog_pacifico, contr0, contr1)
