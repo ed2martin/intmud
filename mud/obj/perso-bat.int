@@ -43,6 +43,7 @@ real deftipo.32 # Defesa contra os diversos tipos de danos
 listaobj atkrec # Quem atacou esse personagem; dá experiência se perder
 listaitem atkenv # Item de atkrec; atkenv.objlista = alvo do personagem
 listaobj atkdiv # Para dividir experiência entre personagens que atacaram
+# Exemplo: jogador com 2 animais que atacaram, atkdiv do jogador tem os 3 personagens
 listaobj atkbat # Para apagar objetos ao iniciar ou terminar uma batalha
 inttempo atktempo # Tempo para completar um turno da batalha
 uint8 atkturno # Turno da batalha, usado para decidir se encerra
@@ -306,6 +307,11 @@ func bat_fim_int # Chamado internamente por batalhafim
 
 func batalhaexp # Dá experiência a quem estiver atacando o personagem
 # arg0 = fator do ganho de experiência
+# Nota:
+# atkrec = lista dos que estão atacando este personagem (vão ganhar experiência)
+# atkdiv de quem está atacando = personagens que atacaram
+# Exemplo, um jogador atacou este personagem usando dois animais
+# Resultado: atkrec tem o jogador e atkdiv do jogador tem os dois animais
   listaobj lider # Líderes de grupos
   listaitem i # Para consultar listas
   ref r
@@ -317,6 +323,7 @@ func batalhaexp # Dá experiência a quem estiver atacando o personagem
     listaitem j
     epara j = r.atkdiv.ini, j, j.obj.pvidaok ? j.depois : j.removedepois
     efim
+    r.iseguir && r.tseguir == 3 && (r = r.iseguir.objlista)
     r.iseguir && r.tseguir == 1 && (r = r.iseguir.objlista)
     r.atkdanos1 = 0, r.atkdanos2 = 1
     lider.addfim(r)
@@ -330,31 +337,33 @@ func batalhaexp # Dá experiência a quem estiver atacando o personagem
   epara i = contr.atkrec.ini, i, i.depois
     r = i.obj
     v1 += r.atkdanos, l.addfim(r.atkdiv)
+    r.iseguir && r.tseguir == 3 && (r = r.iseguir.objlista)
     r.iseguir && r.tseguir == 1 && (r = r.iseguir.objlista)
     r.atkdanos1 += i.obj.atkdanos
     r.atkdanos2 += i.obj.atkdiv.total
+    i.obj.atkenv.objlista == este && i.obj.atkdiv.limpar
   efim
-# Adiciona todos os personagens dos grupos
-# Desde que: não estejam batalhando, estejam na mesma sala, tenham pontos de vida
+# Adiciona os outros personagens dos grupos
+# Desde que: estejam na mesma sala, tenham pontos de vida
 # e este personagem não luta apenas individualmente
   se !p_atk_individual
-    epara nulo, lider, lider.ini.remove
-      refvar p1 = lider.objini
-      se !p1.atkenv && p1.dono == contr.dono && p1.persobat.pvidaok
-        l.addfim(p1)
-        p1.atkdiv.limpar
-        p1.atkdiv.addfim(p1.persobat)
-        p1.atkdanos2++
-      fimse
-      epara i = p1.lseguir.ini, i, i.depois
-        refvar p2 = i.obj
-        se p2.tseguir == 1 && !p2.atkenv && p2.dono == contr.dono && p2.persobat.pvidaok
-          l.addfim(p2)
-          p2.atkdiv.limpar
-          p2.atkdiv.addfim(p2.persobat)
-          p1.atkdanos2++ # Aumenta quantidade de personagens no personagem líder
-        fimse
-      efim
+    listaobj l2 # Obtém todos os personagens dos grupos
+    epara i = lider.ini, i, i.depois
+      i.obj.listagrupo(l2)
+    efim
+    refvar sala = contr.dono # Obtém os personsagens usados na batalha
+    epara i = l2.ini, i, i.removedepois
+      r = i.obj.persobat
+      i.obj.dono == sala && r.pvidaok && l2.addini(r)
+    efim
+    l2.remove # Retira os personagens repetidos (ex. quando estão dono e animal na sala)
+    l2.remove(l) # Retira os personagens que já estão na lista
+    l.addfim(l2) # Adiciona novos personagens
+    epara i = l2.ini, i, i.depois # Acerta quantidade de personagens nos líderes
+      r = i.obj.dono.perso ? i.obj.dono : i.obj
+      r.iseguir && r.tseguir == 3 && (r = r.iseguir.objlista)
+      r.iseguir && r.tseguir == 1 && (r = r.iseguir.objlista)
+      r.atkdanos2++ # Aumenta quantidade de personagens no personagem líder
     efim
   fimse
 # Ganha experiência
@@ -363,17 +372,19 @@ func batalhaexp # Dá experiência a quem estiver atacando o personagem
 v1)
   epara i = l.ini, i, i.depois
     r = i.obj
-    v1 = pnivel - r.pnivel
-    se v1 < 0 # Atacou nível mais baixo
-      v1 = config:atkbexp ? intpos(1 + v1 / config:atkbexp) : 1
-    senao v1 # Atacou nível mais alto
-      v1 = 1 + (config:atkcexp ? intmin(1, v1 / config:atkcexp) * config:atkmaxexp / 100)
+    real2 v2 = pnivel - r.pnivel
+    se v2 < 0 # Atacou nível mais baixo
+      v2 = config:atkbexp ? intpos(1 + v2 / config:atkbexp) : 1
+    senao v2 # Atacou nível mais alto
+      v2 = 1 + (config:atkcexp ? intmin(1, v2 / config:atkcexp) * config:atkmaxexp / 100)
     senao # Mesmo nível
-      v1 = 1
+      v2 = 1
     fimse
-    r.dono.perso && r.var.z_dono != r.dono.descnome && (v1 *= 1.5)
-    r = r.contr, r.iseguir && r.tseguir == 1 && (r = r.iseguir.objlista)
-    i.obj.ganhaexp(v1 * exp1 * p_exp(i.obj) * r.atkdanos1 / r.atkdanos2)
+    r.dono.perso && r.var.z_dono != r.dono.descnome && (v2 *= 1.5)
+    r.dono.perso && (r = r.dono)
+    r.iseguir && r.tseguir == 3 && (r = r.iseguir.objlista)
+    r.iseguir && r.tseguir == 1 && (r = r.iseguir.objlista)
+    i.obj.ganhaexp(v2 * exp1 * p_exp(i.obj) * r.atkdanos1 / r.atkdanos2)
   efim
 
 func ganhaexp # Personagem ganha experiência
