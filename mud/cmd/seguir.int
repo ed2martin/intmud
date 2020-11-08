@@ -22,6 +22,7 @@ func escr
 # Sem argumentos: deixa de seguir
   senao !arg1
     arg0.iseguir.remove
+    arg0.tseguir = 0
     $mensjog.msg(m_ninguem, arg0)
     ret
   fimse
@@ -32,6 +33,7 @@ func escr
 # Segue o personagem
   se r == arg0
     arg0.iseguir.remove
+    arg0.tseguir = 0
     $mensjog.msg(m_ninguem, arg0)
   senao r.p_naoseguir(arg0)
     $mens.mp(m_naoseguir, arg0, r)

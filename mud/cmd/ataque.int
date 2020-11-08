@@ -281,6 +281,7 @@ func exechab # Chamado quando personagem usa habilidade ou magia
     se arg0 != arg1
       refvar tt = txt(nomevar, 0, 1)
       refvar msg = tt == "m" ? "m_mag_auto" : tt == "h" ? "m_hab_auto" : "m_tec_auto"
+      $mens.mens = txt2(txte(nomevar))
       $mens.mp(comando_ataque_cfg:[msg], contr0, arg0)
       ret 0
     fimse
