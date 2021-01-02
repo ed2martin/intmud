@@ -1,3 +1,33 @@
+classe e_armadura_solitária
+herda comum_efeito
+const e_nome = "Armadura Solitária"
+const e_desc = "Não funciona se estiver empunhando ou vestindo uma armadura ou alguma\n\
+coisa de metal."
+const tempo1 = 600
+const tempo2 = 10
+const msgini1 = "Uma armadura surge em sua volta."
+const msgini2 = "Uma armadura surge em volta de $p."
+const msgnulo1 = "Por um instante, uma armadura aparece em volta de $p."
+const msgfim1 = "A armadura em sua volta some."
+const msgfim2 = "A armadura em volta de $p some."
+const m_atribs2 = "*  ... e está protegid$s por uma armadura mágica"
+const evperso = 1 # Eventos perso: Sim
+
+func cmd_recalc2
+# Apaga o objeto se estiver vestindo algum item do tipo 0 (possui metal) ou 2 (armadura)
+# Notas:
+# arg0.tipoitemvestir é o que está vestindo
+# arg0.tipoiteminv é o que está carregando (aparece no comando Inv)
+  se txtbith(intbith("0 2") & arg0.tipoitemvestir)
+    apagar(este)
+  fimse
+
+func recalc2_auto # Altera atributos do personagem
+# Não alterar; função criada automaticamente
+  deftipo.0 *= 0.7 # Tipos Normais
+  deftipo.1 *= 0.7 # Tipos Especiais
+
+
 classe e_cegueira
 herda comum_efeito
 const e_nome = "Cegueira"
@@ -153,6 +183,50 @@ const tempo2 = 40
 const msgini2 = "$P foi envenenad$s."
 const msgfim2 = "$P não está mais envenenad$s."
 const msgreduz2 = "$P sofre com o veneno."
+
+
+classe e_fecha_saída
+herda comum_efeito
+const e_nome = "Fecha Saída"
+const maximo = 10
+const tempo1 = 50
+ref s1 # Primeira sala
+ref s2 # Segunda sala
+txt10 d1 # Direção na primeira sala
+txt10 d2 # Direção na segunda sala
+
+func ini # Cria efeito
+# arg0 = sala que receberá o efeito
+# arg1 = nível de quem usou o efeito
+# arg2 = direção
+  comum_efeito:ini(arg0, arg1) # Coloca efeito na sala
+  ret !dono, nulo # Retorna se efeito não possui dono (será apagado)
+  s1 = arg0
+  d1 = arg2
+  s2 = dono.dir_[arg2]
+  d2 = misc:d2[arg2]
+  s2.dir_[d2] != s1 && (s2 = nulo)
+  s1.dentrodir.addfim(este)
+  s2.dentrodir.addfim(este)
+  $mens.p(s1)
+  $mens.mens = d1
+  $mens.msalatodos1("Saída $M fechou.")
+  $mens.p(s2)
+  $mens.mens = d2
+  $mens.msalatodos1("Saída $M fechou.")
+
+func cmd_dirsala
+  se arg0 == s1 && arg2 == d1 || arg0 == s2 && arg2 == d2
+    arg1 = nulo
+  fimse
+
+func cmd_fim
+  $mens.p(s1)
+  $mens.mens = d1
+  $mens.msalatodos1("Saída $M abriu.")
+  $mens.p(s2)
+  $mens.mens = d2
+  $mens.msalatodos1("Saída $M abriu.")
 
 
 classe e_flutuar

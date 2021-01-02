@@ -1,3 +1,19 @@
+classe magia_armadura_solitária
+herda comando_ataque
+const nomevar = "m_Armadura Solitária"
+const tipoalvo = 6 # Alvo: 6 Qualquer um; não é ataque
+const a_efeito1 = "Armadura Solitária"
+const a_vida1 = 40
+const c_mana1 = 30
+const c_mana2 = 5
+const valor = 100
+const atk1_auto1 = "$P se protege com uma armadura"
+const atk1_perso1 = "$P protege $a com uma armadura"
+const atk1_matou1 = ""
+const atk1_errou1 = "$P tenta proteger $a com uma armadura"
+const atk1_nulo1 = "$P tenta proteger $a com uma armadura"
+
+
 classe magia_cegueira
 herda comando_ataque
 const nomevar = "m_Cegueira"
@@ -162,6 +178,38 @@ func cmd_atacou
   se arg2.result == 0
     arg1.pmana *= 0.6
     arg1.pmove *= 0.6
+  fimse
+
+
+classe magia_fecha_saída
+herda comando_ataque
+const nomevar = "m_Fecha Saída"
+const tipoalvo = 6 # Alvo: 6 Qualquer um; não é ataque
+const msgextra = "Fecha a saída na direção especificada por um tempo.\n\
+Só pode ser usado na área de teste."
+const habsintaxe = "Sintaxe: Lançar Fecha_Saída [direção]"
+
+func escrhab
+  refvar perm = $perm_[arg0.jogperm]
+  refvar m1 = txt1(txte(nomevar)) == "m" ? perm.usar_mag : perm.usar_hab
+  se m1
+    arg0.msg(m1)
+  senao arg0.dono.s_area != "teste"
+    $mens.mp("Você não está na área de testes", arg0)
+  senao !arg1
+    $mens.mp("Fechar saída em qual direção? Tecle Lançar Fecha_saída e a direção.", arg0)
+  senao !arg0.dono.dirsala(arg1, arg0)
+    $mens.mens = arg1
+    $mens.mp("Saída não existe: $m", arg0)
+  senao
+    refvar conhecimento = intpos(arg0.var.[nomevar]_ - 1) / 7
+    ret !checahab2(arg0, conhecimento), nulo
+    custohab2(arg0, conhecimento)
+    $mens.mens = arg1
+    $mens.p(arg0)
+    $mens.mtodos1("$P lança Fecha Saida na direção $M")
+# Cria efeito na sala para fechar a saída na direção especificada
+    criar("e_fecha_saida", arg0.dono, arg0.pnivel, arg1)
   fimse
 
 

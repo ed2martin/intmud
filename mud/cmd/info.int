@@ -570,8 +570,8 @@ func atkdef
 # arg1 = modificador (0=imune, 1=sem modificação)
 # arg2 = texto se imune
   ret arg1 == 0, txt(arg0) + " (" + arg2 + ")"
-  ret arg1 < 1, txt(arg0) + " (-" + int(1000 - arg1 * 1000) / 10 + "% danos)"
-  ret arg1 > 1, txt(arg0) + " (+" + int(arg1 * 1000 - 1000) / 10 + "% danos)"
+  ret arg1 < 1, txt(arg0) + " -" + int(1000 - arg1 * 1000) / 10 + "% danos"
+  ret arg1 > 1, txt(arg0) + " +" + int(arg1 * 1000 - 1000) / 10 + "% danos"
   ret txt(arg0)
 
 

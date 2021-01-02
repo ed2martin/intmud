@@ -14,8 +14,9 @@ ref obj2 # Segundo objeto
 
 Esssa função também pode ser usada com a seguinte sintaxe:
 $mens.p(<sala>)
-Para enviar mensagens para uma área ou para todos do MUD (funções marea1,
-mareaS, mareatodos1, mareatodosS, mmud1, mmudS, mmudtodos1 e mmudtodosS).
+Para enviar mensagens para uma sala, uma área ou todos do MUD, as funções:
+msala1, msalatodos, marea1, mareaS, mareatodos1, mareatodosS, mmud1, mmudS,
+mmudtodos1 e mmudtodosS.
 
 Depois, envia-se uma mensagem com uma das seguintes funções:
 
@@ -45,8 +46,14 @@ Mesmo que mtodos3 e mvis3, porém acrescenta um texto da direção nas mensagens,
 quando o personagem e o alvo não estão na mesma sala.
 Direção é a direção do personagem ao alvo.
 
+$mens.msala1(texto para todos)
+Enviar mensagem para todos que estiverem na sala, mesmo dormindo.
+
+$mens.msalatodos1(texto para todos)
+Mensagem para todos que estiverem acordados na sala.
+
 $mens.marea1(texto para todos)
-Enviar mensagem para todos que estiverem na mesma área, mesmo dormindo
+Enviar mensagem para todos que estiverem na mesma área, mesmo dormindo.
 
 $mens.mareaS(texto para todos)
 Enviar mensagem para todos que estiverem na mesma área mas em outra sala.
@@ -56,13 +63,6 @@ Enviar mensagem para todos que estiverem acordados na mesma área.
 
 $mens.mareatodosS(texto para todos)
 Enviar mensagem para quem está acordado na mesma área mas em outra sala.
-
-$mens.mfalar2(texto para personagem, texto para outros, mensagem, objeto do idioma)
-# Mensagem de personagem falando
-Texto para personagem é algo como "Você falou em $1 '$m'"
-Texto para outros é algo como "$P falou em $1 '$m'"
-Mensagem é o que falou, é o $m nos textos
-Objeto do idioma é algo como $idioma_élfico, ou null se for língua comum
 
 $mens.mmud1(texto para todos)
 Enviar mensagem para todos do MUD, mesmo os que estiverem dormindo.
@@ -98,9 +98,16 @@ Mesmo que msginv e msgvis, porém acrescenta a direção (um texto) na frente da
 mensagem para se o personsagem não estiverem na mesma sala do primeiro
 personagem.
 
+$mens.mfalar2(texto para personagem, texto para outros, mensagem, objeto do idioma)
+Mensagem de personagem falando
+Texto para personagem é algo como "Você falou em $1 '$m'"
+Texto para outros é algo como "$P falou em $1 '$m'"
+Mensagem é o que falou, é o $m nos textos
+Objeto do idioma é algo como $idioma_élfico, ou null se for língua comum
+
 $mens.mp(texto, personagem, alvo, objeto 1, objeto 2)
 Envia mensagem simples para o próprio personagem.
-É equivalente a charmar $mens.p(personagem, alvo, objeto, e em seguida,
+É equivalente a charmar $mens.p(personagem, alvo, objeto), e em seguida,
 $mens.msg(texto, personagem).
 
 Para apenas obter o texto, fazendo as substituições com $, usar a função

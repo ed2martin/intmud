@@ -400,6 +400,22 @@ func mareatodosS # Mensagem para quem está acordado na mesma área mas em outra s
     r.s_area == s.s_area && r != s && msginv(arg0, item.obj.perso)
   efim
 
+func msala1 # Enviar mensagem para todos que estiverem na sala, mesmo dormindo
+# arg0 = mensagem
+  ret !(perso.socktot && arg0), nulo
+  listaobj l0
+  epara l0.addfim(perso.dentro2), l0, l0.ini.remove
+    msg(arg0, l0.objini)
+  efim
+
+func msalatodos1 # Mensagem para todos que estiverem acordados na sala
+# arg0 = mensagem
+  ret !(perso.socktot && arg0), nulo
+  listaobj l0
+  epara l0.addfim(perso.dentro2), l0, l0.ini.remove
+    msginv(arg0, l0.objini)
+  efim
+
 func mfalar2 # Mensagem de personagem falando
 # arg0 = mensagem para personagem
 # arg1 = mensagem para outros

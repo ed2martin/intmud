@@ -42,18 +42,8 @@ func habajuda # Retorna um texto que contém informações
     t.addfim("Requer conhecimentos de: " + txttroca(t.remove(1000), "\n", ", "))
     t.juntar, t.dividelin(40, 75)
   fimse
-  txt512 lin
-  refvar sintaxe = (txt(nomevar, 0, 1) == "m" ? "Lançar " : "") + txts(txt(nomevar, 2))
-  lin = "\c3" + misc:nomevar(nomevar) + "\b\n"
-  se tipoalvo >= 9
-  senao tipoalvo == 7 || tipoalvo == 8
-    lin += "Sintaxe: " + sintaxe
-  senao armamove
-    lin += "Sintaxe: " + sintaxe + " [personagem]\n"
-    lin += "         " + sintaxe + " <direção> [personagem]"
-  senao
-    lin += "Sintaxe: " + sintaxe + " [personagem]"
-  fimse
+  refvar sintaxe = habsintaxe(arg0)
+  txt512 lin = "\c3" + misc:nomevar(nomevar) + "\b" + (sintaxe ? "\n" + sintaxe)
   se tipoalvo < 6
     lin += "\nAtaque do tipo " + txtsublin(config:atknomes, tipoatk, 1)
     lin += ", Força " + ataquemin + (ataquemin != ataquemax ? " a " + ataquemax)
@@ -121,6 +111,21 @@ func habajuda # Retorna um texto que contém informações
     t.addfim("Somente classes/raças: " + txttroca(tipoperso, "\n", ", "))
   fimse
   ret t.remove(1000)
+
+func habsintaxe # Retorna um texto que contém a sintaxe do comando
+# arg0 = objeto do personagem
+  refvar sintaxe = (txt(nomevar, 0, 1) == "m" ? "Lançar " : "") + txts(txt(nomevar, 2))
+  se tipoalvo >= 9
+    ret ""
+  senao tipoalvo == 7 || tipoalvo == 8
+    ret "Sintaxe: " + sintaxe
+  senao armamove
+    refvar lin = "Sintaxe: " + sintaxe + " [personagem]\n"
+    ret lin + "         " + sintaxe + " <direção> [personagem]"
+  senao
+    ret "Sintaxe: " + sintaxe + " [personagem]"
+  fimse
+
 
 func checahab1 # Checa se personagem pode usar habilidade/magia e avisa o personagem
 # arg0 = personagem

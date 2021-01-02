@@ -852,6 +852,7 @@ const armamunicao = 2 # Origem da munição: 2 Itens na arma
 const armafalha = 10
 const armatipo = 8 # Tipo de arma: 8 Revolver
 const i_municao = "teste054"
+const tipoitem = "1" # Tipo de item: 0-Possui metal (1-Arma)
 const volmax = 6
 
 
@@ -1151,6 +1152,18 @@ const i_item_outro1 = "Você usou uma pedra verde em $A."
 const i_item_outro2 = "$P usou uma pedra verde em você."
 const i_item_outro3 = "$P usou uma pedra verde em $A."
 const i_evoluir_p_teste043 = "teste045"
+
+
+classe i_teste077
+herda comum_itemgrupo
+const nome = "armadura de couro"
+const descnome = "uma armadura de couro"
+const tipoitem = "4" # Tipo de item: 2-Armadura (3-Vestimenta)
+const vestir1 = "20" # Aonde vestir: 5-corpo
+
+func recalc2_auto # Altera atributos do personagem
+# Não alterar; função criada automaticamente
+  defnorm += 3
 
 
 classe p_teste001
@@ -2301,6 +2314,14 @@ func cmd_falou
   fimse
 
 
+classe p_teste049
+herda comum_perso
+const nome = "aprendiz de magia"
+const ident = "aprendiz magia"
+const descnome = "Uma aprendiz de magia"
+const lojaaula = "m_Fecha_Saída 4\nm_Armadura_Solitária 4"
+
+
 classe s_teste001
 herda b_teste
 const s_titulo = "Entrada"
@@ -2864,7 +2885,7 @@ func s_reset1 # Realiza o reset
 classe s_teste030
 herda b_teste
 const s_titulo = "Quinto andar: Loja, professores e ponto de retorno"
-const s_desc = "À leste há um vendedor e um professor.\n\
+const s_desc = "À leste há um vendedor, um professor e idioma Latir (cachorro).\n\
 À oeste trata-se do ponto de retorno.\n\
 Ao norte, animais e montaria.\n\
 Ao sul você pode matar um PNJ e pegar itens e dinheiro do corpo dele.\n\
@@ -5212,7 +5233,7 @@ const s_titulo = "Itens vendidos com itens dentro"
 const s_desc = "João o mercenário (a oeste) vende uma aljava com 30 flechas.\n\
 Isso foi feito com trigger. As flechas (item teste052) são criadas\n\
 na função cmd_ini da aljava (item teste071)."
-const dir_l = $s_teste175
+const dir_l = $s_teste177
 const dir_o = $s_teste031
 
 
@@ -5298,7 +5319,7 @@ aprender com Faixa preta, duas salas à leste. Depois disso, tecle idioma\n\
 latir para falar nesse idioma. Teclando apenas idioma, mostra os seus\n\
 idiomas. O cão ensina do nível básico até perito. Ele também vai para\n\
 outra sala se você dizer uma direção em Latir. Exemplo, teclar: falar o"
-const dir_o = $s_teste170
+const dir_o = $s_teste177
 const s_reset = "P 100 teste048 0 0 1 i_latir=7"
 
 func s_reset1 # Realiza o reset
@@ -5323,3 +5344,24 @@ const dir_o = $s_teste154
 const dir_ne = $s_teste158
 const dir_se = $s_teste156
 const dir_so = $s_teste155
+
+
+classe s_teste177
+herda b_teste
+const s_titulo = "Fecha Saída e Armadura Solitária"
+const s_desc = "A magia Fecha Saída fecha uma saída da área de teste por 5 segundos.\n\
+Para usar, tecla-se lançar fecha_saída e a direção.\n\
+Já a magia Armadura Solitária aumenta a defesa em 30% mas não funciona\n\
+se estiver empunhando ou vestindo uma armadura ou alguma coisa de metal.\n\
+Ambas são ensinados aqui. Ambas envolvem um efeito e possuem triggers."
+const dir_l = $s_teste175
+const dir_o = $s_teste170
+const s_reset = "P 100 teste049 0 0 1\nS 100 teste012 3 S\nS 100 teste077 3 S"
+
+func s_reset1 # Realiza o reset
+# Não alterar; função criada automaticamente a partir de s_reset
+  se p_teste049:objsolto.total < 1
+    criar("p_teste049", este, 0)
+  fimse
+  !dentro1.objini("i_teste012") && criar("i_teste012", este, 3)
+  !dentro1.objini("i_teste077") && criar("i_teste077", este, 3)
