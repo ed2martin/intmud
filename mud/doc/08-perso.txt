@@ -81,6 +81,30 @@ Posição do personagem:
 const pospadr = 8
 Posição padrão do personagem.
 
+func descpos
+arg0 = personagem que está consultando essa constante
+Descrição quando está na sala. Apresenta uma mensagem de acordo com a posição
+atual. Internamente, chama uma das constantes/funções descperso, abaixo.
+
+const descperso0 = "$P jaz aqui."
+const descperso1 = "$P está aqui mortalmente ferid$s."
+const descperso2 = "$P está aqui incapacitad$s."
+const descperso3 = "$P está aqui, muito frac$s."
+const descperso4c = "$P dorme aqui."
+const descperso4i = "$P dorme $e $o."
+const descperso5c = "$P descansa aqui."
+const descperso5i = "$P descansa $e $o."
+const descperso6c = "$P está sentad$s."
+const descperso6i = "$P está sentad$s $e $o."
+const descperso6p = "$P está montad$s $e $b."
+const descperso7a = "$P está lutando."
+const descperso7b = "$P está lutando com você."
+const descperso7c = "$P está lutando com $a."
+const descperso8 = "$P está em pé aqui."
+const descpersoN = "$P está aqui."
+arg0 = personagem que está consultando essa constante
+Descrição quando está na sala, por posição. Vide variável posicao.
+
 const sexoini = msexo
 Sexo inicial: 0=feminino, 1=masculino, 2=aleatório
 Aleatório escolhe um quando o personagem é criado.

@@ -1,3 +1,104 @@
+* 11/1/2021 IntMUD 1.14a MUD baseado na revisão 550
+
+   No IntMUD:
+  1. Corrigido bug: Operador % e funções int e intdiv não estavam
+     lidando com números muito grandes
+  2. Corrigido bug na versão compilada para Windows: só estava
+     reconhecendo data atual e data de arquivos até o ano 2038
+  3. Variáveis Arqsav agora permitem ler e salvar até 65535 objetos ao
+     invés de 4000
+  4. Criadas funções Salvarcod e Senhacod em Arqsav
+  5. Versão do programa mudou para 1.14a
+
+   No MUD:
+  1. Corrigido bug em misc:evento e misc:tempo; aparece quando dois
+     jogadores estão na sala teste067 e vão para leste. Quando um volta
+     para oeste outro não recebe as outras mensagens do misc:tempo.
+  2. Corrigido bug: se um jogador usar ataque de área em uma sala que
+     não permite ataque entre jogadores, pode acertar animais de outros
+     jogadores
+  3. Corrigido bug: ao criar um item que agrupa em um personagem que já
+     tem o item, não está agrupando se foi definido "Ataque min" ou
+     "Ataque max" pelo comando Eitem
+  4. Corrigido bug: comando Chamar não estava informando os outros
+     jogadores que o jogador trouxe um animal de volta
+  5. Corrigido bug: comando Ordenar estava permitindo ataques rápidos
+     (sem o tempo de espera após cada ataque)
+  6. Corrigido bug em atk1_usar1, atk1_usar2 e atk1_usar3: para
+     mensagens personalizadas, $mens não estava com os personagens
+     corretos
+  7. Corrigido bug no item teste055 (faca de fogo): podia realizar um
+     ataque mesmo que o alvo já esteja morto
+  8. Corrigido bug: comando Carea estava aceitando nomes com espaço e
+     com acentuação mas não criava a área
+  9. Corrigido bug: se sair de um grupo com o comando Seguir e tiver um
+     animal solto na sala, o comando Grupo dava impressão que o animal
+     solto não pertence mais ao jogador
+ 10. Corrigido: usar a função dirsala(direção) em triggers ao invés de
+     usar dir_[direção] diretamente
+ 11. Teclando apenas AC mostra as últimas mensagens no canal AC
+ 12. Teclando apenas Rezou mostra as últimas mensagens dos comandos
+     Rezar e Rezou
+ 13. Quando um PNJ escolhe um animal, agora a mensagem vem do comando
+     Econfig, 16 Comandos Jogadores, Animal
+ 14. Comando Quem no novo padrão dos menus
+ 15. Adicionado caracter \e (para adicionar espaço no início ou no fim)
+     ao editar textos de menus; está explicado ao teclar adm cores
+ 16. Adicionados submenus "Personagem na sala" e "Jogador imortal na
+     sala" no menu "14 Mensagens" do comando Econfig
+ 17. Comando Estat agora mostra atributos de ataque e de defesa,
+     exemplo: (-20% danos)
+ 18. No comando Estat, tipo, raça e classe agora são pegos das opções
+     Texto do menu do comando Etipo
+ 19. Opção "Descrição sala" do comando Eperso agora é um menu com várias
+     posições
+ 20. Adicionada opção "Descrição com dono" no comando Eperso
+ 21. Quantidade máxima de animais reserva agora pode chegar a 500
+ 22. Animais soltos agora também aparecem no comando Animal
+ 23. Animais que estão no jogador podem ir para a sala automaticamente
+     durante a batalha, se forem do tipo que protege o dono
+ 24. Função animalnum de personagem mudou para função misc:personum
+ 25. Função animal2nome de personagem deixou de existir; usar
+     misc:persodentro no lugar
+ 26. Mudaram as opções de "Lugar após domar" do menu "Domar e montar" do
+     comando Eperso
+ 27. No menu do comando Animal, opções para os mostrar os animais dos
+     personagens mudaram
+ 28. Criada função persodomador, documentada em mud/doc/08-perso.txt
+ 29. Variáveis contr e persobat agora são funções, documentadas em
+     mud/doc/08-perso.txt
+ 30. Funções internas acertahab e acertasala no comando Renascer
+     (classes cmd_renascer em mud/config/cmd.int e h_cmd_renascer em
+     mud/cmd/renascer.int)
+ 31. As senhas agora são guardadas codificadas na memória (teclar "cmd
+     senha" não deve mostrar a senha pura)
+ 32. No comando Esala, opção "31 Embaralhar saídas"
+ 33. Criado evento, cmd_dirsala, documentado em doc/13-eventos.txt
+ 34. Criada função dirsalaitem para salas, documentada em
+     doc/07-salas.txt
+ 35. Criada sala teste176 com exemplo de sala cujas saídas são
+     embaralhadas
+ 36. Função rastrearsala de itens e personagens agora retorna se
+     faltarem menos de 1000 instruções para ser cancelada (debug.exec <
+     1000)
+ 37. Permitido 48 tipos de item ao invés de 31, porque agora estão em
+     variáveis de texto
+ 38. Nos comandos Ehab e Emag, a opção "5 Arma" passa a ser o menu "5
+     Requer", com a opção "1 Arma" e os itens que deve e não deve vestir
+     e/ou carregar
+ 39. No comando Econfig, menu "14 Mensagens", "18 Habilidades e magias",
+     criadas opções "8 Vestir item", "9 Não vestir item", "10 Carregar
+     item" e "11 Não carregar item"
+ 40. Funções Tipoiteminv e Tipoitemvestir para personagens, documentadas
+     em mud/doc/08-perso.txt
+ 41. Documentada variável mudavida em mud/doc/11-hab.txt
+ 42. Criadas magias Fecha Saída (e o efeito Fecha Saída) e Armadura
+     Solitária (e o efeito Armadura Solitária)
+ 43. Criada sala teste177 para explicar as magias Fecha Saida e Armadura
+     Solitária
+ 44. Criadas funções $mens.msala1 e $mens.msalatodos1, documentadas no
+     arquivo doc/03-mensagens.txt e usadas no efeito Fecha Saída
+
 * 17/4/2020 IntMUD 1.13 MUD baseado na revisão 530
 
    No IntMUD:

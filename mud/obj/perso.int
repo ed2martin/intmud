@@ -536,50 +536,50 @@ func descpos
   casovar posicao
   casose "0"
     $mens.p(este)
-    ret $mens.txt(descsala0, arg0)
+    ret $mens.txt(descsala0(arg0), arg0)
   casose "1"
     $mens.p(este)
-    ret $mens.txt(descsala1, arg0)
+    ret $mens.txt(descsala1(arg0), arg0)
   casose "2"
     $mens.p(este)
-    ret $mens.txt(descsala2, arg0)
+    ret $mens.txt(descsala2(arg0), arg0)
   casose "3"
     $mens.p(este)
-    ret $mens.txt(descsala3, arg0)
+    ret $mens.txt(descsala3(arg0), arg0)
   casose "4"
     $mens.p(este, nulo, poslugar.objlista)
-    ret $mens.txt(poslugar.objlista.item ? descsala4i : descsala4c, arg0)
+    ret $mens.txt(poslugar.objlista.item ? descsala4i(arg0) : descsala4c(arg0), arg0)
   casose "5"
     $mens.p(este, nulo, poslugar.objlista)
-    ret $mens.txt(poslugar.objlista.item ? descsala5i : descsala5c, arg0)
+    ret $mens.txt(poslugar.objlista.item ? descsala5i(arg0) : descsala5c(arg0), arg0)
   casose "6"
     se !poslugar
       $mens.p(este)
-      ret $mens.txt(descsala6c, arg0)
+      ret $mens.txt(descsala6c(arg0), arg0)
     senao poslugar.objlista.perso
       $mens.p(este, poslugar.objlista)
-      ret $mens.txt(descsala6p, arg0)
+      ret $mens.txt(descsala6p(arg0), arg0)
     senao
       $mens.p(este, nulo, poslugar.objlista)
-      ret $mens.txt(descsala6i, arg0)
+      ret $mens.txt(descsala6i(arg0), arg0)
     fimse
   casose "7"
     se !atkenv.objlista
       $mens.p(este)
-      ret $mens.txt(descsala7a, arg0)
+      ret $mens.txt(descsala7a(arg0), arg0)
     senao alvo == arg0
       $mens.p(este, arg0)
-      ret $mens.txt(descsala7b, arg0)
+      ret $mens.txt(descsala7b(arg0), arg0)
     senao
       $mens.p(este, atkenv.objlista)
-      ret $mens.txt(descsala7c, arg0)
+      ret $mens.txt(descsala7c(arg0), arg0)
     fimse
   casose "8"
     $mens.p(este)
-    ret $mens.txt(descsala8, arg0)
+    ret $mens.txt(descsala8(arg0), arg0)
   casofim
   $mens.p(este)
-  ret $mens.txt(descsalaN, arg0)
+  ret $mens.txt(descsalaN(arg0), arg0)
 
 func equippos # Retorna as posições aonde pode usar equipamentos
   txt100 lin
