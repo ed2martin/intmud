@@ -169,7 +169,16 @@ int txtRemove(const char * opcoes);
  *  @return Ponteiro para o 0 no final do texto convertido */
 char * txtRemove(char * destino, const char * origem, int tam, int opcoes);
 
-/// Calcula o número do dia a partir de uma data */
+/// Calcula o número do dia a partir de uma data
+/** @param ano Ano de 1900 a 9999
+ *  @param mes Mês de 1 a 12
+ *  @param dia Dia de 1 a 31
+ *  @return O número de dias, ou 0 se data inválida */
+long numdata(int ano, int mes, int dia);
+
+/// Calcula o número do dia a partir de uma data
+/** @param data String contendo dia, mês, ano no formato: aaaammdd
+ *  @return O número de dias, ou 0 se data inválida */
 long numdata(const char *);
 
 bool ClipboardMudar(const char * txt);

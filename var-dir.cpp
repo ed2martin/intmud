@@ -15,6 +15,9 @@
 #include <sys/stat.h>
 #include <time.h>
 #include <errno.h>
+#ifdef __WIN32__
+ #include <windows.h>
+#endif
 #include "var-dir.h"
 #include "variavel.h"
 #include "instr.h"
@@ -151,7 +154,6 @@ bool TVarDir::Func(TVariavel * v, const char * nome)
     }
 
 // Atributos do arquivo
-    int tipo = 0;
     if (comparaZ(nome, "tipo")==0)
     {
     // Sem argumentos: entrada encontrada em abrir()
@@ -164,81 +166,125 @@ bool TVarDir::Func(TVariavel * v, const char * nome)
             return Instr::CriarVarTexto(txt);
         }
    // Com argumento
-        tipo = 1;
-    }
-    else if (comparaZ(nome, "tamanho")==0)
-        tipo = 2;
-    else if (comparaZ(nome, "mtempo")==0)
-        tipo = 3;
-    else if (comparaZ(nome, "atempo")==0)
-        tipo = 4;
-    if (tipo)
-    {
-#ifdef __WIN32__
-        struct __stat64 buf;
-#else
+        if (Instr::VarAtual < v+1)
+        {
+            Instr::ApagarVar(v);
+            return Instr::CriarVarTexto("?");
+        }
         struct stat buf;
-#endif
         char mens[512];
-        int existe = 0; // 0=não existe, 1=não permitido, 2=existe
-        if (Instr::VarAtual >= v+1)
+        copiastr(mens, v[1].getTxt(), sizeof(mens));
+        if (!arqvalido(mens)) // Não permitido
+            mens[0] = '?';
+        else if (stat(mens, &buf) < 0) // Não existe
+            mens[0] = '?';
+        else if (S_ISDIR(buf.st_mode)) // Diretório
+            mens[0] = 'D';
+        else if (S_ISREG(buf.st_mode)) // Arquivo normal
+            mens[0] = 'A';
+        else
+            mens[0] = 'O';
+        mens[1] = 0;
+        Instr::ApagarVar(v);
+        return Instr::CriarVarTexto(mens);
+    }
+    if (comparaZ(nome, "tamanho")==0)
+    {
+        char mens[512];
+        double tam = 0;
+        while (Instr::VarAtual >= v+1)
         {
             copiastr(mens, v[1].getTxt(), sizeof(mens));
             if (!arqvalido(mens))
-                existe = 1;
+                break;
 #ifdef __WIN32__
-            else if (_stat64(mens, &buf) >= 0)
+            HANDLE hFile = CreateFile(mens, // file to open
+                    GENERIC_READ,     // open for reading
+                    FILE_SHARE_READ,  // share for reading
+                    NULL,             // default security
+                    OPEN_EXISTING,    // existing file only
+                    FILE_ATTRIBUTE_NORMAL, // normal file
+                    NULL);            // no attribute template
+            if (hFile == INVALID_HANDLE_VALUE)
+                break;
+            LARGE_INTEGER lFileSize;
+            if (GetFileSizeEx(hFile, &lFileSize))
+                tam = lFileSize.QuadPart;
+            CloseHandle(hFile);
 #else
-            else if (stat(mens, &buf) >= 0)
+            struct stat buf;
+            if (stat(mens, &buf) >= 0)
+                tam = buf.st_size;
 #endif
-                existe = 2;
+            break;
         }
         Instr::ApagarVar(v);
-        if (tipo==1) // Tipo
+        if (!Instr::CriarVar(Instr::InstrDouble))
+            return false;
+        Instr::VarAtual->setDouble(tam);
+        return true;
+    }
+    int tipo = 0;
+    if (comparaZ(nome, "mtempo")==0)
+        tipo = 1;
+    else if (comparaZ(nome, "atempo")==0)
+        tipo = 2;
+    if (tipo)
+    {
+        char mens[512];
+        *mens = 0;
+        while (Instr::VarAtual >= v+1)
         {
-            if (existe != 2) // Não existe ou não permitido
-                mens[0] = '?';
-            else if (S_ISDIR(buf.st_mode)) // Diretório
-                mens[0] = 'D';
-            else if (S_ISREG(buf.st_mode)) // Arquivo normal
-                mens[0] = 'A';
-            else
-                mens[0] = 'O';
-            mens[1] = 0;
-            return Instr::CriarVarTexto(mens);
-        }
-        if (tipo==2) // Tamanho
-        {
-            if (!Instr::CriarVar(Instr::InstrDouble))
-                return false;
-            Instr::VarAtual->setDouble(existe==2 ? buf.st_size : 0);
-            return true;
-        }
+            copiastr(mens, v[1].getTxt(), sizeof(mens));
+            if (!arqvalido(mens))
+                break;
 #ifdef __WIN32__
-        __time64_t tempoatual;
+            FILETIME ftCreate, ftAccess, ftWrite;
+            SYSTEMTIME stUTC, stLocal;
+            HANDLE hFile = CreateFile(mens, // file to open
+                    GENERIC_READ,     // open for reading
+                    FILE_SHARE_READ,  // share for reading
+                    NULL,             // default security
+                    OPEN_EXISTING,    // existing file only
+                    FILE_ATTRIBUTE_NORMAL, // normal file
+                    NULL);            // no attribute template
+            if (hFile == INVALID_HANDLE_VALUE)
+                break;
+            if (GetFileTime(hFile, &ftCreate, &ftAccess, &ftWrite))
+            {
+                if (tipo == 1)
+                    FileTimeToSystemTime(&ftWrite, &stUTC);
+                else
+                    FileTimeToSystemTime(&ftAccess, &stUTC);
+                SystemTimeToTzSpecificLocalTime(NULL, &stUTC, &stLocal);
+                sprintf(mens, "%d %d %d %d %d %d",
+                        stLocal.wYear, stLocal.wMonth, stLocal.wDay,
+                        stLocal.wHour, stLocal.wMinute, stLocal.wSecond);
+            }
+            CloseHandle(hFile);
 #else
-        time_t tempoatual;
+            struct stat buf;
+            if (stat(mens, &buf) < 0)
+                break;
+            time_t tempoatual;
+            struct tm * tempolocal;
+            if (tipo == 1)    // mtempo
+                tempoatual = buf.st_mtime;
+            else            // atempo
+                tempoatual = buf.st_atime;
+            // localtime() Converte para representação local de tempo
+            tempolocal = localtime(&tempoatual);
+            sprintf(mens, "%d %d %d %d %d %d",
+                    tempolocal->tm_year + 1900, // Ano começa no 1900
+                    tempolocal->tm_mon + 1, // Mês começa no 1
+                    tempolocal->tm_mday, // Dia começa no 0
+                    tempolocal->tm_hour,
+                    tempolocal->tm_min,
+                    tempolocal->tm_sec);
 #endif
-        struct tm * tempolocal;
-        if (existe != 2)
-            return Instr::CriarVarTexto("");
-        if (tipo==3)    // mtempo
-            tempoatual = buf.st_mtime;
-        else            // atempo
-            tempoatual = buf.st_atime;
-        // localtime() Converte para representação local de tempo
-#ifdef __WIN32__
-        tempolocal=_localtime64(&tempoatual);
-#else
-        tempolocal=localtime(&tempoatual);
-#endif
-        sprintf(mens, "%d %d %d %d %d %d",
-                tempolocal->tm_year + 1900, // Ano começa no 1900
-                tempolocal->tm_mon + 1, // Mês começa no 1
-                tempolocal->tm_mday, // Dia começa no 0
-                tempolocal->tm_hour,
-                tempolocal->tm_min,
-                tempolocal->tm_sec);
+             break;
+       }
+        Instr::ApagarVar(v);
         return Instr::CriarVarTexto(mens);
     }
 

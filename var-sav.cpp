@@ -39,9 +39,9 @@
 
 bool TVarSav::InicVar = false;
 int TVarSav::HoraReg = 0;
-int TVarSav::Dia = 0;
-int TVarSav::Hora = 0;
-int TVarSav::Min = 0;
+//int TVarSav::Dia = 0;
+//int TVarSav::Hora = 0;
+//int TVarSav::Min = 0;
 int TVarSav::TempoSav=0;
 TVarSavArq * TVarSavArq::Inicio = 0;
 TVarSavArq * TVarSavArq::Fim = 0;
@@ -50,28 +50,23 @@ TVarSavArq * TVarSavArq::Fim = 0;
 // Acerta variáveis
 void TVarSav::ProcEventos(int tempoespera)
 {
-// Obtém a hora
+// Obtém data e hora para o registro
+#ifdef __WIN32__
+    SYSTEMTIME lt = {};
+    GetLocalTime(&lt);
+    int dia = numdata(lt.wYear, lt.wMonth, lt.wDay) - 584389;
+    HoraReg = dia * 1440 + lt.wHour * 60 + lt.wMinute;
+#else
     // Nota: localtime() Converte para representação local de tempo
     struct tm * tempolocal;
-#ifdef __WIN32__
-    __time64_t tempoatual;
-    _time64(&tempoatual);
-    tempolocal = _localtime64(&tempoatual);
-#else
     time_t tempoatual;
     time(&tempoatual);
     tempolocal = localtime(&tempoatual);
+    int dia = numdata(tempolocal->tm_year + 1900, 
+                     tempolocal->tm_mon + 1,
+                     tempolocal->tm_mday) - 584389;
+    HoraReg = dia * 1440 + tempolocal->tm_hour * 60 + tempolocal->tm_min;
 #endif
-    Dia = tempolocal->tm_yday+1;
-    Hora = tempolocal->tm_hour;
-    Min = tempolocal->tm_min;
-// Data e hora para o registro
-    HoraReg = tempolocal->tm_year + 300; // Anos, desde 1900
-                            // Somando 300 para ser múltiplo de 400
-    HoraReg--;
-    HoraReg = HoraReg*365 + HoraReg/4 - HoraReg/100 + HoraReg/400;
-    HoraReg += tempolocal->tm_yday; // Dias completos desde o início do ano
-    HoraReg = HoraReg*1440 + Hora*60 + Min;
     //printf("%d\n", (int)HoraReg); fflush(stdout);
 // Checa arquivos SAV pendentes
     TempoSav += tempoespera;

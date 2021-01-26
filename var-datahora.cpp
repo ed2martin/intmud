@@ -15,6 +15,9 @@
 #include <string.h>
 #include <math.h>
 #include <time.h>
+#ifdef __WIN32__
+ #include <windows.h>
+#endif
 #include "var-datahora.h"
 #include "variavel.h"
 #include "instr.h"
@@ -141,23 +144,28 @@ bool TVarDataHora::Func(TVariavel * v, const char * nome)
     {
     case 0: // Agora
         {
+#ifdef __WIN32__
+            SYSTEMTIME lt = {};
+            GetLocalTime(&lt);
+            Ano = lt.wYear;
+            Mes = lt.wMonth;
+            Dia = lt.wDay;
+            Hora = lt.wHour;
+            Min = lt.wMinute;
+            Seg = lt.wSecond;
+#else
             // Nota: localtime() Converte para representação local de tempo
             struct tm * tempolocal;
-#ifdef __WIN32__
-            __time64_t tempoatual;
-            _time64(&tempoatual);
-            tempolocal = _localtime64(&tempoatual);
-#else
             time_t tempoatual;
             time(&tempoatual);
             tempolocal = localtime(&tempoatual);
-#endif
             Ano = tempolocal->tm_year + 1900; // Ano começa no 1900
             Mes = tempolocal->tm_mon + 1; // Mês começa no 1
             Dia = tempolocal->tm_mday; // Dia começa no 0
             Hora = tempolocal->tm_hour;
             Min = tempolocal->tm_min;
             Seg = tempolocal->tm_sec;
+#endif
             return false;
         }
     case 1: // Ano

@@ -998,8 +998,6 @@ char * txtRemove(char * destino, const char * origem, int tam, int opcoes)
 
 //------------------------------------------------------------------------------
 // Calcula o número do dia a partir de uma data
-// Entrada: string contendo dia, mês, ano no formato: aaaammdd
-// Retorna o número de dias, ou 0 se data inválida
 
 //Regra, conforme o Calendário Gregoriano:
 // Mês:  J  F  M  A  M  J  J  A  S  O  N  D
@@ -1009,7 +1007,15 @@ char * txtRemove(char * destino, const char * origem, int tam, int opcoes)
 // O ano é divisível por 4 e não é divisível por 100
 long numdata(const char * data)
 {
-    int ano,mes,dias;
+    int ano = (data[0]-'0')*1000 + (data[1]-'0')*100 +
+              (data[2]-'0')*10   +  data[3]-'0';
+    int mes = (data[4]-'0')*10   +  data[5]-'0';
+    int dia = (data[6]-'0')*10   +  data[7]-'0';
+    return numdata(ano, mes, dia);
+}
+
+long numdata(int ano, int mes, int dia)
+{
     const int Tmes[]={ 0,  31,  31+28,  31+28+31,// J F M A
                  31+28+31+30,                    // M
                  31+28+31+30+31,                 // J
@@ -1021,22 +1027,18 @@ long numdata(const char * data)
                  31+28+31+30+31+30+31+31+30+31+30 }; // D
 
 // Obtém dia, mês, ano
-    ano = (data[0]-'0')*1000 + (data[1]-'0')*100 +
-          (data[2]-'0')*10   +  data[3]-'0';
-    mes = (data[4]-'0')*10   +  data[5]-'0';
-    dias= (data[6]-'0')*10   +  data[7]-'0';
-    if (dias<=0 || dias>31 || mes<=0 || mes>12 || ano<1900 || ano>9999)
+    if (dia<=0 || dia>31 || mes<=0 || mes>12 || ano<1900 || ano>9999)
         return 0;
 
 // Obtém dias conforme meses decorridos
-    dias+=Tmes[mes-1];
+    dia+=Tmes[mes-1];
     if (mes>2)
-        dias+= (ano%400==0) + (ano%100!=0 && ano%4==0);
+        dia += (ano%400==0) + (ano%100!=0 && ano%4==0);
 
 // Obtém dias conforme anos decorridos
     ano--;
-    dias+=ano*365+ano/4-ano/100+ano/400;
-    return dias;
+    dia += ano*365 + ano/4 - ano/100 + ano/400;
+    return dia;
 }
 
 //------------------------------------------------------------------------------
