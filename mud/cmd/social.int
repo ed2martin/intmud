@@ -45,6 +45,7 @@ func escr_arg # Com algum argumento
   epara p.iniclasse("soc_" + arg1), p.lin, p.depois
     sair arg0.pnivel >= $[p.texto].nivel
   efim
+  $mens.mens = arg1
   ret !p.lin, $mens.mp(m_naoexiste, arg0)
   r = $[p.texto]
   refvar nome = txt2(txte(r)) # Nome do comando

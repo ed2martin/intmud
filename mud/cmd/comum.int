@@ -85,9 +85,14 @@ func negociar_msg # Checa se PNJ pode negociar e obtém o motivo
     arg0.tipo3 && (naotipos |= 4)
   fimse
   se naotipos
-    txt100 lin = naotipos & 1 ? " " + arg0.tipo1
-    naotipos & 2 && (lin += " " + arg0.tipo2)
-    naotipos & 4 && (lin += " " + arg0.tipo3)
+    txt100 lin
+    txt100 nome
+    nome = !arg0.msexo2 ? $t_[arg0.tipo1].nome2 ?? $t_[arg0.tipo1].nome ?? arg0.tipo1
+    naotipos & 1 && nome && (lin += " " + nome)
+    nome = !arg0.msexo2 ? $t_[arg0.tipo2].nome2 ?? $t_[arg0.tipo2].nome ?? arg0.tipo2
+    naotipos & 2 && nome && (lin += " " + nome)
+    nome = !arg0.msexo2 ? $t_[arg0.tipo3].nome2 ?? $t_[arg0.tipo3].nome ?? arg0.tipo3
+    naotipos & 4 && nome && (lin += " " + nome)
     $mens.p(arg1, arg0)
     $mens.mens = txt(lin, 1) ?? config:mens_tu
     ret $mens.txt(arg1.lojanaonegocia, arg0)

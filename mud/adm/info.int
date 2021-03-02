@@ -250,6 +250,7 @@ sav txt20 jogperm
 sav txt20 jogarea
 sav txt40 salanome # Nome da sala
 sav int1 psexo
+const msexo2 = int(var.z_msexo ?? msexo)
 sav uint16 pnivel
 sav uint16 prenascer
 sav txt32 tipo1
@@ -309,9 +310,13 @@ func escr
   t.addfim("Nível:        " + (p.prenascer ? "R" + p.prenascer + " ") + p.pnivel)
   p.var.z_moedas_ && t.addfim("Moedas:       " + p.var.z_moedas_)
   lin = ""
-  p.tipo1 && (lin += ", " + txtcopiamai(p.tipo1, "A"))
-  p.tipo2 && (lin += ", " + txtcopiamai(p.tipo2, "A"))
-  p.tipo3 && (lin += ", " + txtcopiamai(p.tipo3, "A"))
+  txt100 nome
+  nome = !p.msexo2 ? $t_[p.tipo1].nome2 ?? $t_[p.tipo1].nome ?? p.tipo1
+  nome && (lin += ", " + nome)
+  nome = !p.msexo2 ? $t_[p.tipo2].nome2 ?? $t_[p.tipo2].nome ?? p.tipo2
+  nome && (lin += ", " + nome)
+  nome = !p.msexo2 ? $t_[p.tipo3].nome2 ?? $t_[p.tipo3].nome ?? p.tipo3
+  nome && (lin += ", " + nome)
   lin && t.addfim("Raça/classe:  " + txt2(lin))
   p.sock && t.addfim("Conexão:      " + p.sock.info)
   p.cnome && t.addfim("Jogo salvo:   " + txt2(p.cnome))
