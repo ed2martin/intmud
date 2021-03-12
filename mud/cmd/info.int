@@ -587,6 +587,7 @@ sav textovar var # Variáveis criadas sob demanda
 sav txt20 nome # Nome do personagem
 txt100 cnome # Para obter o nome codificado
 sav int1 psexo
+const msexo2 = int(var.z_msexo ?? psexo)
 sav uint16 pnivel
 sav uint16 prenascer
 sav txt32 tipo1
@@ -602,7 +603,7 @@ func escr
   enquanto 1
     refvar nomesav = txts(txtnome(arg1))
     indiceitem item
-    p = indice.obj("pn " + nomesav)
+    p = item.obj("pn " + nomesav)
     sair p
     ret intnome(arg1), arg0.msg("Nome inválido para jogador: " + arg1)
     arqsav sav1
@@ -619,9 +620,13 @@ func escr
   t.addfim(lin + p.nome + (p.var.z_titulo ? ", " + p.var.z_titulo) + "\b")
   t.addfim("Nível:         " + (p.prenascer ? "R" + p.prenascer + " ") + p.pnivel)
   lin = ""
-  p.tipo1 && (lin += ", " + txtcopiamai(p.tipo1, "A"))
-  p.tipo2 && (lin += ", " + txtcopiamai(p.tipo2, "A"))
-  p.tipo3 && (lin += ", " + txtcopiamai(p.tipo3, "A"))
+  txt100 nome
+  nome = !p.msexo2 ? $t_[p.tipo1].nome2 ?? $t_[p.tipo1].nome ?? p.tipo1
+  nome && (lin += ", " + nome)
+  nome = !p.msexo2 ? $t_[p.tipo2].nome2 ?? $t_[p.tipo2].nome ?? p.tipo2
+  nome && (lin += ", " + nome)
+  nome = !p.msexo2 ? $t_[p.tipo3].nome2 ?? $t_[p.tipo3].nome ?? p.tipo3
+  nome && (lin += ", " + nome)
   lin && t.addfim("Raça/classe:   " + txt2(lin))
   lin = "Tempo de jogo: "
   p.tempojogo2 == 1 && (lin += "1 dia ")
