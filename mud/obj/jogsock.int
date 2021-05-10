@@ -351,14 +351,20 @@ func msg # Envia mensagem
     refvar ini = p.txtproc("\d=")
     refvar som = txt(txt1(p.texto(ini, 80)), 2)
     p.mudar("", ini, inttotal(som) + 3)
-    continuar !(jogconfig.13 || jogconfig.14)
     casovar txt1($som_[som].tipo)
     casose "2" # Música contínua
-      continuar msgsom_t == som
-    casose "1" # Música de fundo
+      continuar !(jogconfig.23 || jogconfig.24) || msgsom_t == som
       msgsom_t = arg0
+      p.mudar($som_[som].var.som[jogconfig.24][jogconfig.23] + "\n", 0, 0)
+      sair
+    casose "1" # Música de fundo
+      continuar !(jogconfig.23 || jogconfig.24)
+      msgsom_t = arg0
+      p.mudar($som_[som].var.som[jogconfig.24][jogconfig.23] + "\n", 0, 0)
+      sair
     casose "0" # Efeito
-      p.mudar($som_[som].var.["som" + jogconfig.14 + jogconfig.13] + "\n", 0, 0)
+      continuar !(jogconfig.13 || jogconfig.14)
+      p.mudar($som_[som].var.som[jogconfig.14][jogconfig.13] + "\n", 0, 0)
     casofim
   efim
 # Configuração do jogador
@@ -662,8 +668,8 @@ func passo
   arg0.perso.nome = arg0.nome
   arg0.perso.jogconfig.bits = arg0.jogconfig.bits
   arg0.perso.psexo = arg0.var.j_sexo
-  arg0.perso.senha = (arg0.var.j_senha ? sav1.senhacod(arg0.var.j_senha) : "")
-  arg0.perso.senhacod = (arg0.perso.senha != "") # Se a senha está codificada
+  arg0.perso.senha = arg0.var.j_senha ? sav1.senhacod(arg0.var.j_senha) : ""
+  arg0.perso.senhacod = arg0.perso.senha != "" # Se a senha está codificada
   !arg0.perso.senhacod && (arg0.perso.senha = arg0.var.j_senha)
   arg0.perso.var.z_email = arg0.var.j_email
   arg0.var.limpar("j_")
@@ -759,7 +765,7 @@ func passo
     arg0.perso.cnome = "pn " + texto
     arg0.perso.nome = arg0.nome
     arg0.perso.senha = sav1.senhacod(arg1)
-    arg0.perso.senhacod = (arg0.perso.senha != "") # Se a senha está codificada
+    arg0.perso.senhacod = arg0.perso.senha != "" # Se a senha está codificada
     !arg0.perso.senhacod && (arg0.perso.senha = arg1)
 # Carrega personagem
     listaobj l1
@@ -816,7 +822,7 @@ func passo
   senao
     arqsav sav1
     refvar p = arg0.perso
-    se p.senhacod ? !sav1.senhacod(arg1, p.senha) : (arg1 !== p.senha)
+    se p.senhacod ? !sav1.senhacod(arg1, p.senha) : arg1 !== p.senha
       $jogsock_msg.msgsock(arg0, perso_cfg:ini_senha_atual2, arg0.nome)
       arg0.passo = ""
     senao
@@ -864,7 +870,7 @@ func passo
   senao
     arqsav sav1
     arg0.perso.senha = sav1.senhacod(arg1)
-    arg0.perso.senhacod = (arg0.perso.senha != "") # Se a senha está codificada
+    arg0.perso.senhacod = arg0.perso.senha != "" # Se a senha está codificada
     !arg0.perso.senhacod && (arg0.perso.senha = arg1)
     se arg0.perso.salvar
       $jogsock_msg.msgsock(arg0, perso_cfg:ini_salvar_sim, arg0.nome)

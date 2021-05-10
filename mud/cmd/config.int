@@ -26,6 +26,9 @@ const m_som2 = "Ativa efeitos sonoros via MSP com volume médio\n\
 Nota 1: Para volume máximo, usar CONFIG +SOM1 +SOM2\n\
 Nota 2: É necessário usar um cliente de MUD com suporte a MSP\n\
 (MUD Sound Protocol) e baixar e instalar os sons do MUD"
+const m_musica1 = "Ativa música via MSP com volume baixo"
+const m_musica2 = "Ativa música via MSP com volume médio\n\
+Nota: Para volume máximo, usar CONFIG +MUSICA1 +MUSICA2"
 const m_dicas = "Mostra dicas aleatórias de tempos em tempos"
 const m_imortal = "Não morre em batalha, sempre consegue fugir, enxerga tudo exceto\n\
 cego e no escuro, tranca e destranca tudo, atravessa coisas\n\
@@ -52,7 +55,7 @@ const opc_desc = 0
 const opc_saidas = 1
 const opc_cores = 2
 const opc_acento = 3
-const opc_chat = config:chattipo ? 4
+const opc_chat = $cmd_chat.v_tipo ? 4
 const opc_seguir = 5
 const opc_prompt = 6
 const opc_bprompt = 7
@@ -71,14 +74,16 @@ const opc_ac = arg0 & 0x10 ? 19
 const opc_imortal = arg0 & 1 ? 20
 const opc_admlog = arg0 & 0x20 ? 21
 const opc_cmdlog = arg0 & 0x40 ? 22
+const opc_musica1 = 23
+const opc_musica2 = 24
 #
 # Ordem das opções em AJUDA CONFIG
 const opcoes = "desc saidas cores acento telepatia chat novatos emocao seguir moedas prompt \
-bprompt som1 som2 dicas imortal sala invquem invsala ac admlog cmdlog execlog"
+bprompt som1 som2 musica1 musica2 dicas imortal sala invquem invsala ac admlog cmdlog execlog"
 #
 const admordem = "ajudaini m_desc m_saidas m_cores m_acento m_telepatia m_chat m_novatos\n\
-m_emocao m_seguir m_moedas m_prompt m_bprompt m_som1 m_som2 m_dicas m_imortal\n\
-m_sala m_invquem m_invsala m_ac m_admlog m_cmdlog m_execlog m_config_mudou"
+m_emocao m_seguir m_moedas m_prompt m_bprompt m_som1 m_som2 m_musica1 m_musica2 m_dicas\n\
+m_imortal m_sala m_invquem m_invsala m_ac m_admlog m_cmdlog m_execlog m_config_mudou"
 
 func txtajuda
   refvar perm = $perm_[arg0.jogperm].c_config
@@ -142,13 +147,17 @@ func escr
     ret
   fimse
 # Checa a propriedade SOM
-  se arg0.jogconfig.13 != opc.13 || arg0.jogconfig.14 != opc.14 && arg0.sock.msgsom_t
-    se !opc.13 && !opc.14
+  se arg0.jogconfig.13 != opc.13 || arg0.jogconfig.14 != opc.14
+    !opc.13 && !opc.14 && arg0.sock.msgsock("!!SOUND(off)")
+  fimse
+# Checa a propriedade MUSICA
+  se arg0.jogconfig.23 != opc.23 || arg0.jogconfig.24 != opc.24 && arg0.sock.msgsom_t
+    se !opc.23 && !opc.24
       arg0.sock.msgsock("!!MUSIC(off)")
       arg0.sock.msgsom_t = ""
     senao
       refvar som = arg0.sock.msgsom_t
-      refvar lin = $som_[som].var.["som" + opc.14 + opc.13]
+      refvar lin = $som_[som].var.som[opc.24][opc.23]
       lin && arg0.sock.msgsock(lin)
     fimse
   fimse
@@ -260,76 +269,86 @@ const tipo15 = "opc_texto"
 const clas15 = "cmd_config"
 const vari15 = "m_som2"
 #
-const nome16 = "Config Dicas"
+const nome16 = "Config Musica1"
 const tipo16 = "opc_texto"
 const clas16 = "cmd_config"
-const vari16 = "m_dicas"
+const vari16 = "m_musica1"
 #
-const nome17 = "Config Imortal"
+const nome17 = "Config Musica2"
 const tipo17 = "opc_texto"
 const clas17 = "cmd_config"
-const vari17 = "m_imortal"
+const vari17 = "m_musica2"
 #
-const nome18 = "Sala"
+const nome18 = "Config Dicas"
 const tipo18 = "opc_texto"
 const clas18 = "cmd_config"
-const vari18 = "m_sala"
+const vari18 = "m_dicas"
 #
-const nome19 = "Config Invquem"
+const nome19 = "Config Imortal"
 const tipo19 = "opc_texto"
 const clas19 = "cmd_config"
-const vari19 = "m_invquem"
+const vari19 = "m_imortal"
 #
-const nome20 = "Config Invsala"
+const nome20 = "Sala"
 const tipo20 = "opc_texto"
 const clas20 = "cmd_config"
-const vari20 = "m_invsala"
+const vari20 = "m_sala"
 #
-const nome21 = "Config AC"
+const nome21 = "Config Invquem"
 const tipo21 = "opc_texto"
 const clas21 = "cmd_config"
-const vari21 = "m_ac"
+const vari21 = "m_invquem"
 #
-const nome22 = "Config Admlog"
+const nome22 = "Config Invsala"
 const tipo22 = "opc_texto"
 const clas22 = "cmd_config"
-const vari22 = "m_admlog"
+const vari22 = "m_invsala"
 #
-const nome23 = "Config Cmdlog"
+const nome23 = "Config AC"
 const tipo23 = "opc_texto"
 const clas23 = "cmd_config"
-const vari23 = "m_cmdlog"
+const vari23 = "m_ac"
 #
-const nome24 = "Config Execlog"
+const nome24 = "Config Admlog"
 const tipo24 = "opc_texto"
 const clas24 = "cmd_config"
-const vari24 = "m_execlog"
+const vari24 = "m_admlog"
 #
-const nome25 = "Opção inexistente"
-const tipo25 = "opc_linha"
+const nome25 = "Config Cmdlog"
+const tipo25 = "opc_texto"
 const clas25 = "cmd_config"
-const vari25 = "m_config_invalida"
+const vari25 = "m_cmdlog"
 #
-const nome26 = "Mudou config"
-const tipo26 = "opc_linha"
+const nome26 = "Config Execlog"
+const tipo26 = "opc_texto"
 const clas26 = "cmd_config"
-const vari26 = "m_config_mudou"
+const vari26 = "m_execlog"
 #
-const nome27 = "Pára de seguir"
+const nome27 = "Opção inexistente"
 const tipo27 = "opc_linha"
 const clas27 = "cmd_config"
-const vari27 = "m_parar_seguir"
+const vari27 = "m_config_invalida"
 #
-const nome28 = "Dicas"
-const info28 = "Uma dica por linha"
-const tipo28 = "opc_texto--"
-const clas28 = "config_dicas"
-const vari28 = "texto"
-const exec28 = "miscdicas:atualiza"
+const nome28 = "Mudou config"
+const tipo28 = "opc_linha"
+const clas28 = "cmd_config"
+const vari28 = "m_config_mudou"
 #
-const nome29 = "Tempo entre dicas"
-const info29 = "Em segundos, ou 0 para desativar as dicas"
-const tipo29 = "opc_numero--"
-const clas29 = "config_dicas"
-const vari29 = "tempo"
-const exec29 = "miscdicas:atualiza"
+const nome29 = "Pára de seguir"
+const tipo29 = "opc_linha"
+const clas29 = "cmd_config"
+const vari29 = "m_parar_seguir"
+#
+const nome30 = "Dicas"
+const info30 = "Uma dica por linha"
+const tipo30 = "opc_texto--"
+const clas30 = "config_dicas"
+const vari30 = "texto"
+const exec30 = "miscdicas:atualiza"
+#
+const nome31 = "Tempo entre dicas"
+const info31 = "Em segundos, ou 0 para desativar as dicas"
+const tipo31 = "opc_numero--"
+const clas31 = "config_dicas"
+const vari31 = "tempo"
+const exec31 = "miscdicas:atualiza"
