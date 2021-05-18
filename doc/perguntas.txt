@@ -1,0 +1,218 @@
+Perguntas e respostas sobre o MUD
+
+*** Existe alguma forma de colocar um anúncio de que está sendo seguido?
+
+A conclusão que chegamos é que na vida real, muitas vezes você é seguido
+sem saber que está sendo seguido. Por isso, fica esquisito o jogo anunciar
+que estão seguindo você. Só pelo fato de você caminhar pelo MUD e receber
+mensagens que outra pessoa também está seguindo o mesmo itinerário,
+dá para supor que está sendo seguido.
+
+*** Se o personagem perde a senha de seu personagem, como eu poderia recuperar?
+
+Nesse caso, você precisa editar o arquivo sav do jogador.
+Você pode apagar a linha que contém a senha. É uma linha como essa:
+senha=%Vk-"ZS;7dHo@vZ2fpq<ME4\c)
+Nesse caso, vai conseguir entrar com o personagem independente da
+senha que você digitar. Ou, pode pegar uma senha de outro jogo salvo
+e colocar nesse.
+
+Tem como editar dentro do MUD também, pelo comando ESAV,
+e listar os jogos com LSAV.
+
+*** Como funciona a experiência necessária para subir de nível?
+
+A experiência necessária para subir um nível é o resultado de:
+fator0 + fator1 * nível + fator2 * nível ao quadrado
+
+Vamos supor que você tenha deixado assim:
+Fator 0 = 10
+Fator 1 = 0
+Fator 2 = 0
+
+Nesse caso, a experiência vai ser 10 + 0 * nível + 0 * nível ao quadrado.
+Em outras palavras, não importa em que nível você está, vai ser sempre
+10 pontos para subir um nível.
+
+Agora vamos mudar o fator 1 para 3. Agora, vai precisar de 10 pontos
+de experiência para o nível 0, 13 para o nível 1, 16 para o nível 2, etc.
+
+Um outro teste seria:
+Fator 0 = 0
+Fator 1 = 0
+Fator 2 = 2
+Nesse caso, a fórmula passa a ser 0 + 0 * nível + 2 * nível ao quadrado.
+Ou seja, 2 * nível ao quadrado. Se você estiver no nível 2, vai precisar
+de 8 pontos (2 ao quadrado vezes 2). No nível 3 vai precisar de 18
+(3 ao quadrado vezes 2). No nível 4 vai ser 32.
+
+*** Como é dividida a experiência ao matar um PNJ?
+
+1. Atacar o animal de um PNJ ao invés do próprio PNJ dá 50% mais de experiência.
+2. Ao usar um animal que não foi capturado pelo jogador, o animal ganha 50%
+   mais de experiência.
+3. Personagens desmaiados não ganham experiência, mesmo que tenham lutado.
+4. Se um jogador usar dois personagens, cada um ganha 67% da experiência
+   que ganharia se lutasse sozinho. Se usar 3, cada um ganha metade, se usar 4
+   cada um ganha 40%, etc. A fórmula é multiplicar a experiência por:
+   2 / (número de personagens + 1)
+5. Se dois ou mais jogadores matarem um PNJ, quem tirou mais pontos de vida
+   ganha mais experiência. A quantidade de experiência é proporcional
+   a quantos pontos de vida o jogador tirou.
+6. Quando os jogadores que mataram um PNJ estão agrupados, a experiência
+   é dividida em partes iguais.
+
+Nota: A experiência ganha também pode ser afetada pelo nível do personagem.
+Isso e outras variáveis estão no menu Ataques do comando Econfig.
+
+*** Quais são os alvos de um ataque de área?
+
+Os ataques de área atingem todos os personagens, com exceção de:
+1. Os personagens que estiverem no mesmo grupo não são atingidos.
+2. Em salas que não permitem jogador matar jogador, o ataque de área
+de um jogador não atinge outro jogador.
+
+Divisão dos danos
+Existem dois tipos de ataques de área: um em que os danos são divididos
+entre os personagens alvos e outro que não divide.
+
+*** Como o peso influencia na velocidade e na luta?
+
+A influência da velocidade é somente a quantidade de golpes por segundo.
+Mais velocidade, mais golpes, por isso maior o dano.
+
+Pegar o peso que o personagem está carregando e dividir por 1500.
+Pegar o peso do que o personagem está vestindo e dividir por 3000.
+Isso é o quanto se perde de velocidade.
+
+A mensagem de muito peso ao lutar funciona da seguinte forma:
+Somar o peso do que está carregando com metade do peso do que está
+vestindo e quatro vezes o peso da arma. Se o resultado passar do peso
+que o personagem consegue carregar, está acima do peso e o ataque
+pode perder muita força.
+
+De 0% a 20% acima do peso, perde 4% da força do ataque (os danos do ataque)
+para cada 1% que estiver acima do peso acima.
+Exemplo, 10% acima do peso perde 40% da força do ataque.
+Acima de 20% e abaixo de 40% a força do ataque é dividido por 10.
+De 40% para cima, a força do ataque é dividida por 100.
+
+*** Quais são os valores matemáticos de porcentagem por trás das opções de
+captura: fácil, muito fácil, normal, etc?
+
+Consegue capturar animais com até o dobro do nível especificado.
+Exemplo, se um item captura animais nível 10, pode capturar até o nível 20.
+Captura sem falha animais com metade do nível especificado.
+Exemplo, se um item captura animais nível 10, captura sem falha até o nível 5.
+Se o animal tiver mais de 10% de vida, o nível especificado já cai.
+Se o animal tiver mais de 46% de vida, divide o nível especificado por 10.
+Animal que captura fácil: multiplica o nível nível especificado por 1.5
+Muito fácil: multiplica nível especificado por 2
+Difícil: divide por nível especificado 1.5
+Muito difícil: divide por nível especificado 2
+
+*** Como colocar um personagem no reset de área?
+
+ares
+Reset teste001, tecle O para saber as opções
+i1
+Chances de acontecer, de 0 (nunca) a 100 (sempre), Z cancela
+100
+Entre com o tipo, O mostra as opções, Z cancela
+p
+Entre com o personagem, Z cancela
+teste001
+Entre com o nível mínimo, 0=manter, Z cancela
+0
+Entre com a quantidade máxima, Z cancela
+1
+Entre com a lista de variáveis, N nenhuma, Z cancela
+n
+Reset teste001, tecle O para saber as opções
+i2
+Chances de acontecer, de 0 (nunca) a 100 (sempre), Z cancela
+100
+Entre com o tipo, O mostra as opções, Z cancela
+i
+Entre com o item, Z cancela
+teste002
+Entre com a lista de variáveis, N nenhuma, Z cancela
+n
+Reset teste001, tecle O para saber as opções
+i3
+Chances de acontecer, de 0 (nunca) a 100 (sempre), Z cancela
+100
+Entre com o tipo, O mostra as opções, Z cancela
+e
+Entre com o item, Z cancela
+teste012
+Entre com o lugar, O mostra as opções, Z cancela
+0
+Entre com a lista de variáveis, N nenhuma, Z cancela
+n
+Reset teste001, tecle O para saber as opções
+
+Depois disso, teclando o, aparece algo como:
+Reset teste001
+1.     Perso      teste001(Jardineiro)  N0  Máx 1
+2.     Dar item   teste002(pedra)  1x
+3.     Equipar    teste012(faca)  1x  empunhando
+4. Linha vazia
+Tecle E editar, I inserir ou A apagar, seguido do número da linha
+Z Sair, M seguido de um texto executa comando do MUD
+
+Salvar as alterações:
+z
+Salvar as alterações? Tecle S ou N, ou Z para cancelar
+s
+Retornando ao jogo
+
+Teclando reset, aparecerá na sala um jardineiro empunhando uma faca
+e carregando uma pedra. Se já houver um jardineiro, será necessário
+tirar ele do MUD para o reset trazer outro.
+
+*** Como criar um item com salas dentro, como a barraca da sala teste161?
+
+Criar o item do tipo simples ou completo. A barraca é do tipo simples.
+Depois, editar com o comando Eitem, opção 11 Dentro, depois 4 Salas.
+Digitar os nomes das salas e teclar Z para sair.
+Na barraca, item teste063 da sala teste167, os comandos foram:
+eitem teste063
+11
+4
+teste162
+teste163
+z
+z
+z
+
+É interessante também preeencher as seguintes opções do comando Eitem:
+1. Nome              : barraca
+3. Descrição curta   : uma pequena barraca
+8. Sexo Msg          : <herda> 0 Feminino
+15.Mantém na sala    : 1 Sim
+
+Se o item já estiver em alguma sala no MUD, apagar e criar de novo, porque
+o menu de adicionar ou remover salas não atualiza esses itens.
+No caso da barraca, os itens podem ser apagados teclando:
+aobj i_teste063
+
+Para criar uma entrada para o item, editar pelo menos uma das salas internas
+com o comando Eitem, opção 30 Nome da entrada, e colocar um nome qualquer.
+No caso da barraca, os comandos foram:
+esala teste162
+30
+porta
+z
+
+Se o item tiver mais de uma entrada, porque mais de uma sala interna possui
+"Nome da entrada", o jogador poderá escolher por qual entrada entrar no item.
+
+*** Como usar a função rastrear?
+
+Pode-se testar a função rastrear dessa forma:
+cmd rastrearsala($s_teste001)
+Nesse caso, vai procurar o caminho até a sala teste001.
+Também funciona assim:
+cmd rastrearsala($s_teste001, "p", 100)
+Essa função está documentada no final do arquivo mud/doc/06-comum.txt.

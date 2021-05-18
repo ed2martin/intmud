@@ -389,20 +389,30 @@ func msgsom # Envia mensagem
       i.obj.msgsom(arg0, 1)
     efim
   fimse
-  ret !(jogconfig.13 || jogconfig.14), nulo
 # Controle de banda
   ret msgtot1 >= admbanda:b1, nulo
   msgtot1 += intdiv(msgtot2 += inttotal(arg0) / admbanda:b2)
   msgtot2 -= intdiv(msgtot2)
 # Som
-  casovar txt1($som_[arg0].tipo)
-  casose "2" # Música contínua
-    ret msgsom_t == arg0, nulo
-  casose "1" # Música de fundo
-    msgsom_t = arg0
-  casose "0" # Efeito
-    msgsock($som_[arg0].var.["som" + jogconfig.14 + jogconfig.13])
-  casofim
+  txt200 lin
+  epara lin = arg0, txt1(lin), lin = txt2(lin)
+    refvar som = txt1(lin)
+    casovar txt1($som_[som].tipo)
+    casose "2" # Música contínua
+      continuar !(jogconfig.23 || jogconfig.24) || msgsom_t == som
+      msgsom_t = arg0
+      msgsock($som_[som].var.som[jogconfig.24][jogconfig.23])
+      continuar
+    casose "1" # Música de fundo
+      continuar !(jogconfig.23 || jogconfig.24)
+      msgsom_t = arg0
+      msgsock($som_[som].var.som[jogconfig.24][jogconfig.23])
+      continuar
+    casose "0" # Efeito
+      continuar !(jogconfig.13 || jogconfig.14)
+      msgsock($som_[som].var.som[jogconfig.14][jogconfig.13])
+    casofim
+  efim
 
 func execprompt_exec
   msgprompt
