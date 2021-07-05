@@ -71,6 +71,7 @@ const objlimite = objmax
 int1 objmudou # Para salvar sala ao salvar a casa
 listaitem s_rastreio # Usado em misc:rastrear: de qual sala veio para essa
 txt10 s_rastrdir # Usado em misc:rastrear: direção para chegar nessa sala
+inttempo s_salarand # Para embaralhar as saídas quando necessário
 listaobj dentrodir # Objetos que podem mudar a saída em dirsala e diritem
 #
 uint8 porta_n # Tipo de saída
@@ -336,7 +337,23 @@ func dirsalaitem # Retorna a sala ou item em uma direção ou nulo se não houver
 
 func s_mudadir1 # Acerta opção de embaralhar as saídas da sala
   refvar r = $sala_mudadir ?? criar("sala_mudadir")
-  intpos(s_mudadir) ? dentrodir.addini1(r) : dentrodir.remove(r)
+  se !intpos(s_mudadir)
+    dentrodir.remove(r)
+    s_salarand = 0
+  senao
+    dentrodir.addini1(r)
+    r.rand(este)
+    refvar tempo = s_mudadir * 10
+    s_salarand = tempo - (r.tempo1 + r.tempo2) % tempo
+  fimse
+
+func s_salarand_exec # Embaralha saídas se necessário
+  se socktot || jottot >> 1
+    s_salarand = s_mudadir * 10
+    $sala_mudadir.rand(este)
+    $mens.p(este)
+    $mens.msalatodos1(s_salarandmsg)
+  fimse
 
 func mudaporta # Muda estado de uma saída; variável porta_[arg0]
 # arg0 = nome da saída (até duas letras)
@@ -418,32 +435,42 @@ func totalmove # Quantos movimentos consome, conforme o terreno
 
 classe sala_mudadir
 # Classe responsável por deixar as saídas das salas embaralhadas
+inttempo tempoX # Para atualizar tempo1 e tempo2
+real2 tempo1
+intinc tempo2
+
+func tempoX_exec
+  tempoX = 200000
+  tempo1 += tempo2
+  tempo2 = 0
 
 func cmd_dirsala
   prog p
-  se !arg0.var.z_salatempo@ || !arg0.var.z_sala_[arg2] != !p.existe(arg0, "dir_" + arg2)
-    datahora dh
-    dh.agora
-    int32 tp = arg0.s_mudadir
-    #arg0.var.z_salatempo@ = 10 * (intdiv(dh.numtotal / tp) * tp + tp - dh.numtotal)
-    arg0.var.z_salatempo@ = 10 * (tp - dh.numtotal % tp)
-    textotxt t
-    p.existe(arg0, "dir_n") && t.addfim("n")
-    p.existe(arg0, "dir_s") && t.addfim("s")
-    p.existe(arg0, "dir_l") && t.addfim("l")
-    p.existe(arg0, "dir_o") && t.addfim("o")
-    p.existe(arg0, "dir_ne") && t.addfim("ne")
-    p.existe(arg0, "dir_no") && t.addfim("no")
-    p.existe(arg0, "dir_se") && t.addfim("se")
-    p.existe(arg0, "dir_so") && t.addfim("so")
-    t.rand
-    arg0.var.z_sala_n = p.existe(arg0, "dir_n") ? t.remove
-    arg0.var.z_sala_s = p.existe(arg0, "dir_s") ? t.remove
-    arg0.var.z_sala_l = p.existe(arg0, "dir_l") ? t.remove
-    arg0.var.z_sala_o = p.existe(arg0, "dir_o") ? t.remove
-    arg0.var.z_sala_ne = p.existe(arg0, "dir_ne") ? t.remove
-    arg0.var.z_sala_no = p.existe(arg0, "dir_no") ? t.remove
-    arg0.var.z_sala_se = p.existe(arg0, "dir_se") ? t.remove
-    arg0.var.z_sala_so = p.existe(arg0, "dir_so") ? t.remove
+  se !arg0.s_salarand || !arg0.var.z_sala_[arg2] != !p.existe(arg0, "dir_" + arg2)
+    este.rand(arg0)
+    refvar tempo = arg0.s_mudadir * 10
+    arg0.s_salarand = tempo - (tempo1 + tempo2) % tempo
   fimse
   arg0.var.z_sala_[arg2] && (arg1 = arg0.dir_[arg0.var.z_sala_[arg2]](arg3))
+
+func rand # Embaralha as saídas da sala arg0
+  !tempoX && (tempoX = tempo2 = 100000)
+  prog p
+  textotxt t
+  p.existe(arg0, "dir_n") && t.addfim("n")
+  p.existe(arg0, "dir_s") && t.addfim("s")
+  p.existe(arg0, "dir_l") && t.addfim("l")
+  p.existe(arg0, "dir_o") && t.addfim("o")
+  p.existe(arg0, "dir_ne") && t.addfim("ne")
+  p.existe(arg0, "dir_no") && t.addfim("no")
+  p.existe(arg0, "dir_se") && t.addfim("se")
+  p.existe(arg0, "dir_so") && t.addfim("so")
+  t.rand
+  arg0.var.z_sala_n = p.existe(arg0, "dir_n") ? t.remove
+  arg0.var.z_sala_s = p.existe(arg0, "dir_s") ? t.remove
+  arg0.var.z_sala_l = p.existe(arg0, "dir_l") ? t.remove
+  arg0.var.z_sala_o = p.existe(arg0, "dir_o") ? t.remove
+  arg0.var.z_sala_ne = p.existe(arg0, "dir_ne") ? t.remove
+  arg0.var.z_sala_no = p.existe(arg0, "dir_no") ? t.remove
+  arg0.var.z_sala_se = p.existe(arg0, "dir_se") ? t.remove
+  arg0.var.z_sala_so = p.existe(arg0, "dir_so") ? t.remove
