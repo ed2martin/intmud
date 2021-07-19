@@ -628,21 +628,17 @@ arg4 = tipo de alvo: 0=principal, 1=segundário (em ataques de área)
 É chamada também a função cmd_atacar do objeto que trata do comando.
 
 func cmd_atkenv
+func cmd_atkrec
 arg0 = personagem que vai realizar o ataque
 arg1 = personagem que vai receber o ataque
 arg2 = objeto que trata do comando
 arg3 = danos: os danos que o alvo recebe são multiplicados por esse valor
        Por isso: 1=danos normais, 2=dobro dos danos, 0=imune, etc.
-A origem do evento é sempre arg0
+arg4 = valor adicionado nos danos se o alvo receber algum dano
+arg5 = tipo de ataque: 0=normal, 1=alvo imobilizado (sem esquiva)
+Em cmd_atkenv, a origem do evento é arg0 (quem faz o ataque)
+Em cmd_atkrec, a origem do evento é arg1 (quem recebe o ataque)
 É chamada também a função cmd_atkenv do objeto que trata do comando.
-
-func cmd_atkrec
-arg0 = personagem que vai receber o ataque
-arg1 = personagem que vai realizar o ataque
-arg2 = objeto que trata do comando
-arg3 = danos: os danos que o alvo recebe são multiplicados por esse valor
-       Por isso: 1=danos normais, 2=dobro dos danos, 0=imune, etc.
-A origem do evento é sempre arg0
 
 func cmd_acordar
 arg0 = personagem que está dormindo

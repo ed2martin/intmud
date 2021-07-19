@@ -494,14 +494,36 @@ func exechab # Chamado quando personagem usa habilidade ou magia
   atk /= (2 + $miscfome.f.[arg0.p_sede] + $miscfome.f.[arg0.p_fome]) / 2
 # Coloca os personagens na sala se necessário
   se arg0.dono.perso && arg0.p_animal == 3
-    arg0.mudadono(contr0.dono)
+    refvar sala = contr0.dono
+    arg0.mudadono(sala)
     $mens.p(contr0, arg0)
     $mens.mvis2($cmd_soltar.m_soltaranim1, $cmd_soltar.m_soltaranim2)
+    listaobj e
+    epara e.addfim(contr0.evento), e, e.ini.remove
+      e.objini.cmd_soltouanim(contr0, sala, arg0, contr0)
+    efim
+    epara e.addfim(sala.evento), e, e.ini.remove
+      e.objini.cmd_soltouanim(contr0, sala, arg0, sala)
+    efim
+    epara e.addfim(arg0.evento), e, e.ini.remove
+      e.objini.cmd_soltouanim(contr0, sala, arg0, arg0)
+    efim
   fimse
   se arg1.dono.perso && arg1.p_animal == 3
-    arg1.mudadono(contr1.dono)
+    refvar sala = contr1.dono
+    arg1.mudadono(sala)
     $mens.p(contr1, arg1)
     $mens.mvis2($cmd_soltar.m_soltaranim1, $cmd_soltar.m_soltaranim2)
+    listaobj e
+    epara e.addfim(contr1.evento), e, e.ini.remove
+      e.objini.cmd_soltouanim(contr1, sala, arg1, contr1)
+    efim
+    epara e.addfim(sala.evento), e, e.ini.remove
+      e.objini.cmd_soltouanim(contr1, sala, arg1, sala)
+    efim
+    epara e.addfim(arg1.evento), e, e.ini.remove
+      e.objini.cmd_soltouanim(contr1, sala, arg1, arg1)
+    efim
   fimse
 # Ataca o alvo escolhido
   listaobj e
@@ -676,15 +698,17 @@ func execgolpe # Realiza um ataque e coloca resultado em result e mudavida
 # arg2 = força do ataque (depende de quanto sabe do golpe), 0=não calcular danos
 # tipoatk = tipo de ataque, arma1 = arma usada, arma2 = munição usada
   real2 dano
+  real2 danoadd
+  uint8 danotipo
 # Checa se pode realmente atacar
   result = 4, mudavida = 0, dano = 1
   listaobj l
-  ret cmd_atkenv(arg0, arg1, este, dano), nulo
+  ret cmd_atkenv(arg0, arg1, este, dano, danoadd, danotipo), nulo
   epara l.addfim(arg0.evento), l, l.ini.remove
-    ret l.objini.cmd_atkenv(arg0, arg1, este, dano), nulo
+    ret l.objini.cmd_atkenv(arg0, arg1, este, dano, danoadd, danotipo), nulo
   efim
   epara l.addfim(arg1.evento), l, l.ini.remove
-    ret l.objini.cmd_atkrec(arg0, arg1, este, dano), nulo
+    ret l.objini.cmd_atkrec(arg0, arg1, este, dano, danoadd, danotipo), nulo
   efim
 # Indica que atacou, recebe experiência se vencer
   arg0.batalhaini(arg1)
@@ -704,7 +728,7 @@ func execgolpe # Realiza um ataque e coloca resultado em result e mudavida
   senao arma2 && rand(100) < arma2.var.z_armafalha_
     result = 2
     ret
-  senao result == 20 || arg1.posicao == 4 # Acertou automaticamente
+  senao result == 20 || arg1.posicao == 4 || danotipo == 1 # Acertou automaticamente
   senao result == 1 # Errou o alvo automaticamente
     result = 3
     ret
@@ -780,7 +804,7 @@ func execgolpe # Realiza um ataque e coloca resultado em result e mudavida
     sair
   casofim
 # Atualiza pontos de vida conforme os danos (pelo menos 1 de dano)
-  mudavida = dano < 1 ? -1 : -dano
+  mudavida = -intmax(1, danoadd + dano)
   arg1.pvida += mudavida
 
 func mensinicio # Envia mensagem inicial da habilidade ou magia
