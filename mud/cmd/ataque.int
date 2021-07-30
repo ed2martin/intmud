@@ -465,18 +465,18 @@ func exechab # Chamado quando personagem usa habilidade ou magia
       fimse
     efim
   fimse
-# Força do ataque
+# Modificadores da força do ataque
   real2 atk
   casovar tipoalvo
   casose "2" # Todos dividindo o ataque
   casose "3"
-    atk = (ataquemin + (ataquemax - ataquemin) * arg2) / (l.total + 1)
+    atk = 1 / (l.total + 1)
     sair
   casose "9" # Ataque automático
-    atk = (ataquemin + (ataquemax - ataquemin) * arg2) * config:atkfor / 100
+    atk = config:atkfor / 100
     sair
   casose # Outros ataques
-    atk = ataquemin + (ataquemax - ataquemin) * arg2
+    atk = 1
   casofim
 # Checa a arma usada
   se arma1
@@ -538,7 +538,7 @@ func exechab # Chamado quando personagem usa habilidade ou magia
     arg0.batalhaini(arg1)
     result = 2 # Desvia
   senao
-    execgolpe(arg0, arg1, atk) # Ataca
+    execgolpe(arg0, arg1, arg2, atk) # Ataca
   fimse
   se result != 4
     !result && efeitohab(arg0, arg1, arg2, arg3) # Acertou: aplica os efeitos
@@ -582,7 +582,7 @@ func exechab # Chamado quando personagem usa habilidade ou magia
       arg0.batalhaini(r)
       result = 2 # Desvia
     senao
-      execgolpe(arg0, r, atk) # Ataca
+      execgolpe(arg0, r, arg2, atk) # Ataca
       continuar result == 4
     fimse
     refvar acertou = !result
@@ -695,7 +695,8 @@ func velgolpe # Acerta o tempo de espera conforme o golpe
 func execgolpe # Realiza um ataque e coloca resultado em result e mudavida
 # arg0 = personagem que está atacando
 # arg1 = personagem alvo
-# arg2 = força do ataque (depende de quanto sabe do golpe), 0=não calcular danos
+# arg2 = quanto sabe da habilidade ou magia (0=iniciante até 1=perito)
+# arg3 = modificadores de fome, sede e dividir o ataque, 0=não calcular danos
 # tipoatk = tipo de ataque, arma1 = arma usada, arma2 = munição usada
   real2 dano
   real2 danoadd
@@ -743,6 +744,8 @@ func execgolpe # Realiza um ataque e coloca resultado em result e mudavida
     result = 2
     ret v <= 0, nulo
   fimse
+# Indica que acertou o alvo
+  result = 0
 # Checa bônus ao combinar o tipo de ataque com o tipo de defesa
   dano *= arg0.atktipo.[2 + tipoatk] * arg1.deftipo.[2 + tipoatk]
   se misc:atkesp(tipoatk) # Checa se golpe normal ou especial
@@ -753,11 +756,11 @@ func execgolpe # Realiza um ataque e coloca resultado em result e mudavida
   se !dano # Imune (dano == 0)
     result = 1
     ret
-  senao !arg2 # Ataque tem força 0 (arg2 == 0)
-    result = 0
+  senao !arg3 # Não calcular os danos (arg3 = 0)
     ret
   fimse
-  result = 0, dano *= arg2
+# Checa força do ataque conforme o nível de conhecimento
+  dano *= ataquemin + (ataquemax - ataquemin) * arg2
 # Checa bônus do personagem
   se tipobonus
     refvar tbonus = txte(tipobonus)
@@ -804,7 +807,7 @@ func execgolpe # Realiza um ataque e coloca resultado em result e mudavida
     sair
   casofim
 # Atualiza pontos de vida conforme os danos (pelo menos 1 de dano)
-  mudavida = -intmax(1, danoadd + dano)
+  mudavida = -intmax(1, danoadd + dano * arg3)
   arg1.pvida += mudavida
 
 func mensinicio # Envia mensagem inicial da habilidade ou magia

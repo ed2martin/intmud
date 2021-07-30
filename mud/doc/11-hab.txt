@@ -270,11 +270,14 @@ func velgolpe( personagem, alvo )
 Acerta o tempo de espera conforme o golpe.
 Se baseia na constante vel da hag/magia, que é a velocidade do golpe.
 
-func execgolpe( personagem, alvo, força do ataque )
+func execgolpe( personagem, alvo, quanto sabe, modificadores do ataque )
 Realiza um ataque e coloca resultado em result e mudavida.
-Na força do ataque deve estar incluído o quanto sabe do golpe.
-Se for 0, não calcula os danos.
-Se baseia em tipoatk (tipo de ataque) e arma1 (arma usada).
+O argumento quanto sabe é um número de 0 a 1 que indica quanto sabe da
+habilidade ou magia (0=iniciante até 1=perito).
+O argumento modificadores está relacionado a fome, sede e ataques que são
+divididos entre os alvos. É 1 se não houver modificadores, menor que 1 se
+diminui os danos, maior que 1 se aumenta, 0 não calcula os danos.
+Via de regra, o ataque final é multiplicado por esse argumento.
 
 func mensgolpe( personagem, alvo )
 Envia mensagens de alvo principal de acordo com o resultado do ataque.
