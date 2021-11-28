@@ -236,6 +236,8 @@ textotxt atribs # Atributos do item ou personagem, um atributo por linha
 sav listaitem iseguir # Quem o personagem ou item está seguindo
 sav listaobj lseguir # Quem está seguindo o personagem ou item
 sav uint8 tseguir # 0=apenas seguir, 1=membro de grupo, 2=líder de grupo, 3=animal(pet)
+textotxt rastrearsaladircache # Rotas guardadas na memória
+const rastrearsaladirlinhas = 5 # Número de rotas em rastrearsaladircache
 
 func visivel # Informa se esse objeto está visível (arg0=quem quer ver)
   ret arg0.dono.luzden, !(~(arg0.bitver | 2) & bitinv)
@@ -332,7 +334,10 @@ func listagrupo # Adiciona todos os integrantes do grupo em uma listaobj
 func rastrearsala # Obtém o caminho para chegar até uma sala
 # arg0 = sala para onde quer ir
 # arg1 = um texto que pode ser "" ou ter uma ou mais letras entre:
-# "a" limita à mesma área, "p" não percorre portas fechadas, "d" checa se cabe nas salas
+# "a" limita à mesma área
+# "p" não percorre portas fechadas
+# "d" checa se cabe nas salas
+# "s" retorna as salas da origem ao destino ao invés das direções
 # arg2 = quantidade máxima de salas a verificar, se não for especificado assume 65535
 # Retorna: direções a seguir, separadas por "\n"
 # Se não achar o caminho ou já estiver na sala, retorna ""
@@ -356,15 +361,64 @@ func rastrearsala # Obtém o caminho para chegar até uma sala
       r.s_rastreio = item
       r.s_rastrdir = p.texto
       continuar r != arg0
-      txt100 lin
+      txt512 lin
       lista.ini.remove
-      epara item = lista.fim, item, item = item.obj.s_rastreio
-        lin = txt(item.obj.s_rastrdir, 4) + "\n" + lin
-      efim
-      ret txtsublin(lin, 0, intsublin(lin) - 1)
+      se txtproc(arg1, "s") >= 0
+        epara item = lista.fim, item, item = item.obj.s_rastreio
+          lin = txt(item.obj) + "\n" + lin
+        efim
+        ret txt(dono) + "\n" + txtsublin(lin, 0, intsublin(lin) - 1)
+      senao
+        epara item = lista.fim, item, item = item.obj.s_rastreio
+          lin = txt(item.obj.s_rastrdir, 4) + "\n" + lin
+        efim
+        ret txtsublin(lin, 0, intsublin(lin) - 1)
+      fimse
     efim
   efim
   ret ""
+
+func rastrearsaladir # Obtém a próxima direção para chegar até uma sala
+# Guarda as últimas rotas na memória
+# Os argumentos são os mesmos de rastrear sala
+# Vide também rastrearsaladirlinhas e rastrearsaladircache
+  ret !arg0 || dono == arg0, ""
+  prog p
+  int16 coluna
+# Verifica se está no cache
+  refvar aa = txtproc(arg1, "a") >= 0 ? arg0.s_area
+  refvar pp = txtproc(arg1, "p") >= 0
+  refvar dd = txtproc(arg1, "d") >= 0
+  textopos pos = rastrearsaladircache.ini
+  enquanto 1
+    sair (coluna = pos.txtproc(" " + dono + " ", 0, 1000)) < 0
+    se txtproc(pos.texto(coluna), " " + arg0 + " ") < 0
+      pos.depois
+      continuar
+    fimse
+    refvar sala = txtsub(pos.texto(coluna), 1, 1)
+    epara p.inifunctudo(dono, "dir_"), p.lin, p.depois
+      continuar pp && int(dono.porta_[txt(p.texto, 4)](este)) >= 2
+      refvar r = dono.dirsala(txt(p.texto, 4), este)
+      continuar sala != r || (aa ? aa != r.s_area) || (dd ? !cabedentro(r))
+      pos.linha && rastrearsaladircache.addini(pos.texto) + pos.remove
+      ret txtproc(arg1, "s") < 0 ? txt(p.texto, 4) : sala
+    efim
+    pos.remove
+  efim
+# Procura o caminho
+  refvar caminho = txttroca(rastrearsala(arg0, "s" + arg1, arg2), "\n", " ")
+  ret !caminho, ""
+# Obtém a saída, adiciona no cache se encontrou
+  refvar saladest = txtsub(caminho, 1, 1)
+  epara p.inifunctudo(dono, "dir_"), p.lin, p.depois
+    refvar r = dono.dirsala(txt(p.texto, 4), este)
+    continuar saladest != r
+    rastrearsaladircache.addini(" " + caminho + " ")
+    pos = rastrearsaladircache.ini
+    pos.depois(rastrearsaladirlinhas), pos.remove(1000)
+    ret txtproc(arg1, "s") < 0 ? txt(p.texto, 4) : saladest
+  efim
 
 func desccarga # Obtém texto dos personagens montados
   ret !persolugar, ""

@@ -1166,6 +1166,72 @@ func recalc2_auto # Altera atributos do personagem
   defnorm += 3
 
 
+classe i_teste078
+herda comum_itemperso
+const nome = "ônibus"
+const descnome = "um ônibus"
+const descpos = "Um ônibus moderno está aqui."
+const msexo = 1 # Sexo Msg: 1 Masculino
+const i_seguir = 1 # Pode seguir: Sim
+const i_salas = "teste178"
+const mantersala = 1 # Mantém na sala: Sim
+const volobj = 100
+const rastrearsaladirlinhas = intsub(itinerario) + 2
+const itinerario = "teste179 teste180 teste181 teste180"
+uint8 destino
+inttempo tempo
+const dir_n = "Norte"
+const dir_s = "Sul"
+const dir_l = "Leste"
+const dir_o = "Oeste"
+const dir_c = "Cima"
+const dir_b = "Baixo"
+const dir_ne = "Nordeste"
+const dir_no = "Noroeste"
+const dir_se = "Sudeste"
+const dir_so = "Sudoeste"
+
+func cmd_ini
+  tempo = 10
+
+func tempo_exec
+  tempo = 20
+  refvar dest = $s_[txtsub(itinerario, destino, 1)]
+  se !dest # Não tem sala destino
+    destino = (destino + 1) % intsub(itinerario)
+  senao txt(dest) == dono # Está na sala destino
+    destino = (destino + 1) % intsub(itinerario)
+    tempo = 50
+    mudaportas(1) # Abre a porta
+    msgsalas("As portas se abriram em " + txtcor(dono.descsala(este, 0)) + ".")
+    dono.msg("O ônibus abriu as portas.")
+  senao i_aberto < 2 # Porta aberta, fecha a porta
+    mudaportas(3)
+    msgsalas("As portas se fecharam.")
+    dono.msg("O ônibus fechou as portas.")
+  senao
+    refvar dir = rastrearsaladir(dest, "pd")
+    se dir
+      $cmd_[dir].escr(este, "")
+      msgsalas(dir_[dir])
+    fimse
+  fimse
+
+func msgsalas
+  listaobj l
+  epara l.addfim(dentro2), l, l.ini.remove
+    l.objini.s_sala && l.objini.msg(arg0)
+  efim
+
+func mudaportas
+  i_aberto = arg0
+  listaobj l
+  epara l.addfim(dentro2), l, l.ini.remove
+    continuar !l.objini.s_entrada
+    l.objini.porta_sair = arg0
+  efim
+
+
 classe p_teste001
 herda comum_perso
 const nome = "Jardineiro"
@@ -1194,8 +1260,6 @@ func cmd_darobj # Alguém quer dar algum item
   fimse
 
 func cmd_deuobj # Recebeu um item
-# telatxt t
-# t.msg(">" + arg0 + "/" + arg1 + "/" + arg2 + "\n")
   apagar(arg2) # Apaga o item
   misc:tempo("deupedra", arg0) # Dispara 'deupedra'
 
@@ -2749,8 +2813,10 @@ herda b_teste
 const s_titulo = "Segundo andar: Luz e itens que iluminam"
 const s_desc = "À leste você pode pegar uma lamparina.\n\
 À oeste há uma sala escura, porém visível se houver uma lamparina.\n\
-Ao norte usar item."
+Ao norte, usar item.\n\
+Ao sul, um ônibus que anda pelo MUD automaticamente."
 const dir_n = $s_teste172
+const dir_s = $s_teste179
 const dir_l = $s_teste024
 const dir_o = $s_teste025
 const dir_c = $s_teste026
@@ -4530,6 +4596,7 @@ preço da casa. Isso está definido no comando Econfig.\n\
 Aqui, digite pagar para saber se você deve alguma coisa, e pagar seguido\n\
 do número da taxa para pagar."
 const dir_l = $s_teste115
+const dir_o = $s_teste180
 const s_reset = "P 100 teste027 0 0 1"
 
 func s_reset1 # Realiza o reset
@@ -5342,6 +5409,7 @@ const dir_s = $s_teste122
 const dir_l = $s_teste153
 const dir_o = $s_teste154
 const dir_ne = $s_teste158
+const dir_no = $s_teste181
 const dir_se = $s_teste156
 const dir_so = $s_teste155
 
@@ -5365,3 +5433,46 @@ func s_reset1 # Realiza o reset
   fimse
   !dentro1.objini("i_teste012") && criar("i_teste012", este, 3)
   !dentro1.objini("i_teste077") && criar("i_teste077", este, 3)
+
+
+classe s_teste178
+herda b_teste
+const s_titulo = "Dentro do ônibus"
+const s_desc = "Existe uma dessa sala para cada ônibus. É como a barraca da sala\n\
+teste161. Quando o ônibus se movimenta, vem mensagem dizendo em que\n\
+direção o ônibus andou."
+const s_entrada = "porta"
+
+
+classe s_teste179
+herda b_teste
+const s_titulo = "Parada de ônibus do segundo andar"
+const s_desc = "O ônibus moderno é criado aqui pela função cmd_ini. Dessa forma, só há\n\
+um andando no MUD. Quando ele chega e abre as portas, pode-se entrar\n\
+teclando entrar ônibus. Toda a movimentação é feita no item teste078.\n\
+A constante itinerario contém as salas que ele deve visitar.\n\
+A saída ao sul só existe para o ônibus."
+const dir_n = $s_teste023
+const dir_s = txt(arg0) == "i_teste078" ? $s_teste180 : nulo
+
+func cmd_ini
+  !$i_teste078 && criar("i_teste078", este, 0)
+
+
+classe s_teste180
+herda b_teste
+const s_titulo = "Parada de ônibus das casas"
+const s_desc = "Segunda parada do ônibus moderno, item teste078 criado na sala teste179.\n\
+O ônibus se movimenta de forma eficiente porque ele memoriza os últimos\n\
+caminhos percorridos. A saída ao norte só existe para esse ônibus."
+const dir_l = $s_teste127
+const dir_n = txt(arg0) == "i_teste078" ? $s_teste179 : nulo
+
+
+classe s_teste181
+herda b_teste
+const s_titulo = "Parada de ônibus do labirinto"
+const s_desc = "Terceira parada do ônibus moderno, item teste078 criado na sala teste179.\n\
+Mesmo as saídas da sala a sudeste sendo embaralhadas de tempos em tempos,\n\
+o ônibus consegue andar na direção correta."
+const dir_se = $s_teste176

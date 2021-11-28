@@ -28,8 +28,17 @@ func escr
   fimse
 # Procura o personagem
   $mens.mens = arg1
-  refvar r = misc:persodono(arg0, arg1)
+  listaobj l
+  listaitem i
+  epara i = arg0.dono.dentro2.ini, i, i.depois
+    i.obj.perso && l.addfim(i.obj)
+  efim
+  epara i = arg0.dono.dentro1.ini, i, i.depois
+    i.obj.i_seguir && l.addfim(i.obj)
+  efim
+  refvar r = misc:itemlista(arg0, arg1, l)
   ret !r, $mens.mp(m_naover, arg0)
+  l.limpar
 # Segue o personagem
   se r == arg0
     arg0.iseguir.remove

@@ -65,6 +65,7 @@ func escr # Executa o comando
 func objmover1 # Retorna o objeto que deve se movimentar ou nulo se deve ficar parado
 # Não envia mensagens
 # arg0 = personagem que digitou o comando
+  ret arg0.item, arg0
   ret !arg0.poslugar, arg0.posicao >= 8 ? arg0
   ref obj = arg0.poslugar.objlista # Personagem ou item que vai mover em uma direção
   se !obj.perso # Não é personagem
@@ -79,6 +80,7 @@ func objmover1 # Retorna o objeto que deve se movimentar ou nulo se deve ficar p
 func objmover2 # Retorna o objeto que deve se movimentar ou nulo se deve ficar parado
 # Se não puder se movimentar, envia mensagens
 # arg0 = personagem que digitou o comando
+  ret arg0.item, arg0
   ret !arg0.poslugar, arg0.posicao >= 8 ? arg0 : (arg0.msgposicao : nulo)
   ref obj = arg0.poslugar.objlista # Personagem ou item que vai mover em uma direção
   se !obj.perso # Não é personagem
@@ -142,7 +144,7 @@ func mover # Personagem anda em uma direção
     abriu1 = config:casaabriu1
     abriu2 = config:casaabriu2
     abriu2 && (abriu2 += "\n")
-  senao arg2 && arg2.i_aberto > 2 && !arg0.j_imortal
+  senao arg2 && arg2.i_aberto >= 2 && !arg0.j_imortal
     $mens.mp(comando_mover_cfg:m_itemfechado, p1, nulo, arg2)
     ret 0
   senao !arg0.cabedentro(arg1)
@@ -244,14 +246,23 @@ func mover # Personagem anda em uma direção
     ret 0
   casofim
 # Seguir
+# Nota: não verifica personagens sentados em um item; esses já andam com o item
   listaobj l2
   epara l2.addfim(arg0, arg0.persolugar), l2, l2.ini.remove
     epara l.addfim(l2.objini.lseguir), l, l.ini.remove
       refvar obj = objmover1(l.objini)
       se !obj || obj.dono != s1 || $comando_mover.lseg.possui(obj)
-      senao obj.tseguir == 3
+      senao obj.tseguir == 3 # Animal sempre segue o dono
         mover(obj, arg1, arg2, arg3, obj)
       senao l2.objini.visivel(obj) && s1.visivel(obj)
+        se dir != "entrar"
+          refvar saladest = s1.dirsala(dir, obj)
+          se saladest # Nota: a sala destino pode mudar conforme o personagem
+            $mens.mp(comando_mover_cfg:m_seguir, obj, l2.objini)
+            mover(obj, saladest, arg2, arg3, obj)
+          fimse
+          continuar
+        fimse
         $mens.mp(comando_mover_cfg:m_seguir, obj, l2.objini)
         mover(obj, arg1, arg2, arg3, obj)
       fimse
@@ -587,7 +598,7 @@ func escr # Executa o comando
 # Checa se pode entrar
   se !(dest.s_sala || dest.item && dest.dono.s_sala)
     ret $mens.mp(m_impossivelitem, arg0, nulo, item)
-  senao item.i_aberto > 2 && !arg0.j_imortal
+  senao item.i_aberto >= 2 && !arg0.j_imortal
     ret $mens.mp(comando_mover_cfg:m_itemfechado, arg0, nulo, item)
   fimse
 # Checa se está bêbado

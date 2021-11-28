@@ -211,8 +211,20 @@ Opções é um texto que pode ser "" ou ter uma ou mais letras entre:
 "a" limita à mesma área
 "p" não percorre portas fechadas
 "d" checa se cabe nas salas
+"s" retorna salas da origem ao destino ao invés das direções
 Quantidade de salas é quantas salas deve verificar até chegar na sala
 especificada. Não é necessariamente a distância máxima entre o item ou
 personagem e a sala. Se estiver ausente, assume 65535.
 Retorna: direções a seguir, separadas por "\n"
 Se não achar o caminho ou já estiver na sala, retorna "".
+
+func rastrearsaladir( sala, opções, quantidade de salas )
+Obtém a próxima direção para chegar até uma sala
+Guarda as últimas rotas na memória
+Os argumentos são os mesmos de rastrear sala
+
+textotxt rastrearsaladircache
+Contém as rotas guardadas na memória, para a função rastrearsaladir
+
+const rastrearsaladirlinhas = 5
+Quantidade de rotas que rastrearsaladircache pode guardar
