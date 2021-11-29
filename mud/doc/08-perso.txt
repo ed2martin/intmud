@@ -105,6 +105,20 @@ const descpersoN = "$P está aqui."
 arg0 = personagem que está consultando essa constante
 Descrição quando está na sala, por posição. Vide variável posicao.
 
+func desccond
+arg0 = personagem que está consultando essa constante
+Retorna um texto que contém o estado atual do personagem.
+Internamente, chama uma das constantes/funções desccond, abaixo.
+
+const desccond0 = "desmaiad$s"
+const desccond1 = "está à beira da morte"
+const desccond2 = "está sangrando bastante"
+const desccond3 = "está muito machucad$s"
+const desccond4 = "está bastante machucad$s"
+const desccond5 = "está um pouco machucad$s"
+const desccond6 = "possui algumas escoriações"
+const desccond7 = "está perfeitamente saudável"
+
 const sexoini = msexo
 Sexo inicial: 0=feminino, 1=masculino, 2=aleatório
 Aleatório escolhe um quando o personagem é criado.
@@ -209,9 +223,6 @@ func acertapos(1)
 Acerta posição do personagem, conforme pontos de vida e batalha.
 Para checar se morreu, chamar com: acertapos(1)
 Retorna o corpo do personagem, se ele morreu e ficou o corpo.
-
-func estadopos
-Retorna um texto que contém o estado atual do personagem.
 
 func ganahexp( valor )
 func ganahexp( valor, 1 )

@@ -35,6 +35,16 @@ const descimortal7c = "$P está lutando com $a diante de você."
 const descimortal8 = "$P está em pé aqui diante de você."
 const descimortalN = "$P está aqui diante de você."
 #
+# Condição personagem
+const desccond0 = "está desmaiad$s"
+const desccond1 = "está à beira da morte"
+const desccond2 = "está sangrando bastante"
+const desccond3 = "está muito machucad$s"
+const desccond4 = "está bastante machucad$s"
+const desccond5 = "está um pouco machucad$s"
+const desccond6 = "possui algumas escoriações"
+const desccond7 = "está perfeitamente saudável"
+#
 # Posição personagem
 const posicao0a = "\c9Você está mort$s!!!\b"
 const posicao1a = "\c9Você está muito mal, incapaz de fazer qualquer coisa.\b"
@@ -161,6 +171,7 @@ descperso7a descperso7b descperso7c descperso8 descpersoN\n\
 descimortal0 descimortal1 descimortal2 descimortal3 descimortal4c descimortal4i\n\
 descimortal5c descimortal5i descimortal6c descimortal6i descimortal6p\n\
 descimortal7a descimortal7b descimortal7c descimortal8 descimortalN\n\
+desccond0 desccond1 desccond2 desccond3 desccond4 desccond5 desccond6 desccond7\n\
 posicao0a posicao1a posicao2a posicao3a posicao4a\n\
 posicao5a posicao6a posicao7a posicao8a semluta_a\n\
 posicao0b posicao1b posicao2b posicao3b posicao4b posicao5b\n\
@@ -193,7 +204,7 @@ func iniclasse
   p.criar(txt(arg0, 2) + "\nconfig/perso\nherda " + arg0)
   misccriar:add(txt(arg0, 2))
 
-  
+
 classe m_perso_descperso
 herda comando_menu
 const titulo = "Personagem na sala"
@@ -286,6 +297,53 @@ classe m_perso_descimortal
 herda m_perso_descperso
 const titulo = "Jogador imortal na sala"
 const variavel = "descimortal"
+
+
+classe m_perso_desccond
+herda comando_menu
+const titulo = "Condição personagem"
+const menufim = "menu_econfig_msg"
+const colunas = 28
+#
+const nome1 = "Desmaiado"
+const tipo1 = "opc_linha"
+const clas1 = "perso_cfg"
+const vari1 = "desccond0"
+#
+const nome2 = "À beira da morte"
+const tipo2 = "opc_linha"
+const clas2 = "perso_cfg"
+const vari2 = "desccond1"
+#
+const nome3 = "Sangrando"
+const tipo3 = "opc_linha"
+const clas3 = "perso_cfg"
+const vari3 = "desccond2"
+#
+const nome4 = "Muito machucado"
+const tipo4 = "opc_linha"
+const clas4 = "perso_cfg"
+const vari4 = "desccond3"
+#
+const nome5 = "Bastante machucado"
+const tipo5 = "opc_linha"
+const clas5 = "perso_cfg"
+const vari5 = "desccond4"
+#
+const nome6 = "Machucado"
+const tipo6 = "opc_linha"
+const clas6 = "perso_cfg"
+const vari6 = "desccond5"
+#
+const nome7 = "Escoriações"
+const tipo7 = "opc_linha"
+const clas7 = "perso_cfg"
+const vari7 = "desccond6"
+#
+const nome8 = "Saudável"
+const tipo8 = "opc_linha"
+const clas8 = "perso_cfg"
+const vari8 = "desccond7"
 
 
 classe m_perso_posicao_a

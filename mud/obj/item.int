@@ -286,6 +286,28 @@ func teclouperm # Processa comando com permissões específicas
   ret posicao < obj.posic, msgposicao
   ret obj.escr(este, txt2(arg0), arg1)
 
+func msg # Mensagem para todos das salas internas
+  ret !socktot, nulo
+  listaitem i1
+  listaitem i2
+  epara i1 = dentro2.ini, i1, i1.depois
+    continuar !i1.obj.s_sala || !i1.obj.socktot
+    epara i2 = i1.obj.dentro2.ini, i2, i2.depois
+      i2.obj.msg(arg0)
+    efim
+  efim
+
+func msgtodos # Mensagem para todos das salas internas que estiverem acordados
+  ret !socktot, nulo
+  listaitem i1
+  listaitem i2
+  epara i1 = dentro2.ini, i1, i1.depois
+    continuar !i1.obj.s_sala || !i1.obj.socktot
+    epara i2 = i1.obj.dentro2.ini, i2, i2.depois
+      i2.obj.posicao > 4 && i2.obj.msg(arg0)
+    efim
+  efim
+
 
 classe comum_itemgrupo
 herda comum_item

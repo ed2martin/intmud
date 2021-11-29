@@ -182,12 +182,12 @@ func escr
   se r1.perso
     refvar persobat = r1.persobat
     refvar a1 = niveltipo(r1)
-    refvar a2 = r1.estadopos
+    refvar a2 = r1.desccond(arg0)
     t2 += (a1 && a2 ? " é " + a1 + ", " + a2 : a1 ? " é " + a1 : a2 ? " " + a2 : "")
     se persobat && persobat != r1
       t2 += ".\b\nEscolheu " + txtcopiamai(persobat.nome, "A")
       refvar b1 = niveltipo(persobat)
-      refvar b2 = persobat.estadopos
+      refvar b2 = persobat.desccond(arg0)
       t2 += (b1 && b2 ? " é " + b1 + ", " + b2 : b1 ? " é " + b1 : b2 ? " " + b2 : "")
     fimse
   senao r1.pnivel || r1.renascer

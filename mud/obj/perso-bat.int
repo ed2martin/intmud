@@ -108,24 +108,36 @@ func acertapos # Acerta posição
     fimse
   casofim
 
-func estadopos # Retorna texto que contém o estado atual do personagem
-  ret !pvidamax, "perfeitamente saudável"
-  ret !pvidaok, "está desmaiad" + (msexo2 ? "o" : "a")
+func desccond # Retorna texto que contém o estado atual do personagem
+  se !pvidamax
+    $mens.p(este)
+    ret $mens.txt(desccond7(arg0), arg0)
+  senao !pvidaok
+    $mens.p(este)
+    ret $mens.txt(desccond0(arg0), arg0)
+  fimse
   casovar intpos(intdiv(pvida * 6 / pvidamax))
   casose "0"
-    ret "está à beira da morte"
+    $mens.p(este)
+    ret $mens.txt(desccond1(arg0), arg0)
   casose "1"
-    ret "está sangrando bastante"
+    $mens.p(este)
+    ret $mens.txt(desccond2(arg0), arg0)
   casose "2"
-    ret "está muito machucad" + (msexo2 ? "o" : "a")
+    $mens.p(este)
+    ret $mens.txt(desccond3(arg0), arg0)
   casose "3"
-    ret "está bastante machucad" + (msexo2 ? "o" : "a")
+    $mens.p(este)
+    ret $mens.txt(desccond4(arg0), arg0)
   casose "4"
-    ret "está um pouco machucad" + (msexo2 ? "o" : "a")
+    $mens.p(este)
+    ret $mens.txt(desccond5(arg0), arg0)
   casose "5"
-    ret "possui algumas escoriações"
+    $mens.p(este)
+    ret $mens.txt(desccond6(arg0), arg0)
   casose
-    ret "está perfeitamente saudável"
+    $mens.p(este)
+    ret $mens.txt(desccond7(arg0), arg0)
   casofim
 
 func recalc_exec # Ajusta variáveis, principalmente batalha

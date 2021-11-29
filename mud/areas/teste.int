@@ -1203,25 +1203,19 @@ func tempo_exec
     destino = (destino + 1) % intsub(itinerario)
     tempo = 50
     mudaportas(1) # Abre a porta
-    msgsalas("As portas se abriram em " + txtcor(dono.descsala(este, 0)) + ".")
-    dono.msg("O ônibus abriu as portas.")
+    msgtodos("As portas se abriram em " + txtcor(dono.descsala(este, 0)) + ".")
+    dono.msgtodos("O ônibus abriu as portas.")
   senao i_aberto < 2 # Porta aberta, fecha a porta
     mudaportas(3)
-    msgsalas("As portas se fecharam.")
-    dono.msg("O ônibus fechou as portas.")
+    msgtodos("As portas se fecharam.")
+    dono.msgtodos("O ônibus fechou as portas.")
   senao
     refvar dir = rastrearsaladir(dest, "pd")
     se dir
       $cmd_[dir].escr(este, "")
-      msgsalas(dir_[dir])
+      msgtodos(dir_[dir])
     fimse
   fimse
-
-func msgsalas
-  listaobj l
-  epara l.addfim(dentro2), l, l.ini.remove
-    l.objini.s_sala && l.objini.msg(arg0)
-  efim
 
 func mudaportas
   i_aberto = arg0
