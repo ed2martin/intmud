@@ -109,35 +109,39 @@ func acertapos # Acerta posição
   casofim
 
 func desccond # Retorna texto que contém o estado atual do personagem
-  se !pvidamax
+  casovar !pvidamax ? 6 : !pvidaok ? -1 : intpos(intdiv(pvida * 6 / pvidamax))
+  casose "-1"
     $mens.p(este)
-    ret $mens.txt(desccond7(arg0), arg0)
-  senao !pvidaok
-    $mens.p(este)
-    ret $mens.txt(desccond0(arg0), arg0)
-  fimse
-  casovar intpos(intdiv(pvida * 6 / pvidamax))
+    refvar m1 = desccond0(arg0) ?? $t_[tipo1].desccond0(arg0) ?? $t_[tipo2].desccond0(arg0)
+    ret $mens.txt(m1 ?? $t_[tipo3].desccond0(arg0) ?? perso_cfg:desccond0, arg0)
   casose "0"
     $mens.p(este)
-    ret $mens.txt(desccond1(arg0), arg0)
+    refvar m1 = desccond1(arg0) ?? $t_[tipo1].desccond1(arg0) ?? $t_[tipo2].desccond1(arg0)
+    ret $mens.txt(m1 ?? $t_[tipo3].desccond1(arg0) ?? perso_cfg:desccond1, arg0)
   casose "1"
     $mens.p(este)
-    ret $mens.txt(desccond2(arg0), arg0)
+    refvar m1 = desccond2(arg0) ?? $t_[tipo1].desccond2(arg0) ?? $t_[tipo2].desccond2(arg0)
+    ret $mens.txt(m1 ?? $t_[tipo3].desccond2(arg0) ?? perso_cfg:desccond2, arg0)
   casose "2"
     $mens.p(este)
-    ret $mens.txt(desccond3(arg0), arg0)
+    refvar m1 = desccond3(arg0) ?? $t_[tipo1].desccond3(arg0) ?? $t_[tipo2].desccond3(arg0)
+    ret $mens.txt(m1 ?? $t_[tipo3].desccond3(arg0) ?? perso_cfg:desccond3, arg0)
   casose "3"
     $mens.p(este)
-    ret $mens.txt(desccond4(arg0), arg0)
+    refvar m1 = desccond4(arg0) ?? $t_[tipo1].desccond4(arg0) ?? $t_[tipo2].desccond4(arg0)
+    ret $mens.txt(m1 ?? $t_[tipo3].desccond4(arg0) ?? perso_cfg:desccond4, arg0)
   casose "4"
     $mens.p(este)
-    ret $mens.txt(desccond5(arg0), arg0)
+    refvar m1 = desccond5(arg0) ?? $t_[tipo1].desccond5(arg0) ?? $t_[tipo2].desccond5(arg0)
+    ret $mens.txt(m1 ?? $t_[tipo3].desccond5(arg0) ?? perso_cfg:desccond5, arg0)
   casose "5"
     $mens.p(este)
-    ret $mens.txt(desccond6(arg0), arg0)
+    refvar m1 = desccond6(arg0) ?? $t_[tipo1].desccond6(arg0) ?? $t_[tipo2].desccond6(arg0)
+    ret $mens.txt(m1 ?? $t_[tipo3].desccond6(arg0) ?? perso_cfg:desccond6, arg0)
   casose
     $mens.p(este)
-    ret $mens.txt(desccond7(arg0), arg0)
+    refvar m1 = desccond7(arg0) ?? $t_[tipo1].desccond7(arg0) ?? $t_[tipo2].desccond7(arg0)
+    ret $mens.txt(m1 ?? $t_[tipo3].desccond7(arg0) ?? perso_cfg:desccond7, arg0)
   casofim
 
 func recalc_exec # Ajusta variáveis, principalmente batalha

@@ -71,13 +71,13 @@ func passo
     arg0.perso.teclou(txtremove(txt(arg1, 1), "E"))
   senao nome[arg1] # Editar opção do menu
     arg0.var.opcnome = txtremove(nome[arg1], "ED")
-    arg0.var.opcclasse = clas[arg1]
+    arg0.var.opcclasse = clas[arg1] ?? classe
     arg0.var.opcvar = vari[arg1]
     arg0.var.opcextra = extr[arg1]
     arg0.var.opcpasso = este
     arg0.var.opcvalido_ = txtproc(tipo[arg1], "--") >= 0
     arg0.var.opcexec = exec[arg1]
-    vari[arg1] && arg0.msg(menu2(arg1))
+    vari[arg1] && arg0.msg(menu2(arg1, 1))
     info[arg1] && arg0.msg(info[arg1])
     refvar tipo = txttroca(tipo[arg1], "-", "")
     $[tipo].passo(arg0, "\b")
@@ -91,7 +91,7 @@ func passo
     txt20 opc
     opc = txt(arg1, 1)
     arg0.var.opcnome = txtremove(nome[opc], "ED")
-    arg0.var.opcclasse = clas[opc]
+    arg0.var.opcclasse = clas[opc] ?? classe
     arg0.var.opcvar = vari[opc]
     arg0.var.opcextra = extr[opc]
     arg0.var.opcpasso = este
@@ -108,18 +108,23 @@ func passo
 
 func menu2 # Usado em m_menu para obter o texto de uma opção do menu
 # arg0 = número da opção
+# arg1 = verdadeiro se deve mostrar o texto original ignorando a const nulo)
   txt100 lin = "\b\c2" + arg0 + (txt(arg0, 1) ? "\b." : "\b. ") + nome[arg0]
   refvar maximo = int(colunas)
   inttotal(lin) < maximo && (lin = txt(lin + txtesp(maximo), 0, maximo))
   refvar tipo = txttroca(tipo[arg0], "-", "")
-  ret lin + ": " + $[tipo].menu(clas[arg0], vari[arg0], extr[arg0])
+  refvar classe = clas[arg0] ?? classe
+  ret arg1 || !["nulo" + arg0], lin + ": " + $[tipo].menu(classe, vari[arg0], extr[arg0])
+  prog p
+  ret !p.existe(classe, vari[arg0]), lin + ": <nulo> " + ["nulo" + arg0] + "\b"
+  ret lin + ": " + $[tipo].menu(classe, vari[arg0], extr[arg0])
 
 func menu3 # Usado em m_menu para obter o nome da variável
 # arg0 = número da opção
   txt100 lin = arg0 + (txt(arg0, 1) ? "." : ". ") + nome[arg0]
   refvar maximo = int(colunas) - 4
   inttotal(lin) < maximo && (lin = txt(lin + txtesp(maximo), 0, maximo))
-  ret lin + ": " + clas[arg0] + ":" + vari[arg0]
+  ret lin + ": " + (vari[arg0] ? (clas[arg0] ?? classe) + ":" + vari[arg0] : "")
 
 
 classe comando_classemenu
