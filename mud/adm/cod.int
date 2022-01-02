@@ -1,28 +1,28 @@
 classe adm_cod
-const iniclasse = !$[arg0] && criar(arg0)
-const txtajuda = "\b\c3Comandos de edição do código\b\n\
-  \c2LCL\b       Lista as classes existentes\n\
-  \c2CCL\b       Cria classe\n\
-  \c2ACL\b       Apaga classe\n\
-  \c2ECL\b       Edita uma classe\n\
-  \c2ICL\b       Inicializa uma classe (chama a função iniclasse)\n\
-  \c2RCL\b       Renomeia uma classe\n\
-  \c2AOBJ\b      Apaga todos os objetos de uma classe\n\
-  \c2LHERDA\b    Lista heranças de uma classe\n\
-  \c2EHERDA\b    Edita herança de uma classe\n\
-  \c2LFUNC\b     Lista funções de uma classe\n\
-  \c2LFUNC2\b    Lista todas funções de uma classe, inclusive as herdadas\n\
-  \c2LARQ\b      Lista os arquivos e as classes de cada arquivo\n\
-  \c2MUDLER\b    Recarrega arquivos do MUD que foram alterados\n\
-  \c2MD5CL\b     Calcula o MD5 do texto de uma classe (para saber se mudou)\n\
-  \c2MD5SALVAR\b Calcula o MD5 de diversos arquivos e salva em mud-md5.txt\n\
-  \c2MD5CHECAR\b Verifica se os arquivos listados em mud-md5.txt mudaram"
+herda comando_adm
+const m_ajuda = "-t Comandos de edição do código\n\
+-m LCL Lista as classes existentes\n\
+-m CCL Cria classe\n\
+-m ACL Apaga classe\n\
+-m ECL Edita uma classe\n\
+-m ICL Inicializa uma classe (chama a função iniclasse)\n\
+-m RCL Renomeia uma classe\n\
+-m AOBJ Apaga todos os objetos de uma classe\n\
+-m LHERDA Lista heranças de uma classe\n\
+-m EHERDA Edita herança de uma classe\n\
+-m LFUNC Lista funções de uma classe\n\
+-m LFUNC2 Lista todas funções de uma classe, inclusive as herdadas\n\
+-m LARQ Lista os arquivos e as classes de cada arquivo\n\
+-m MUDLER Recarrega arquivos do MUD que foram alterados\n\
+-m MD5CL Calcula o MD5 do texto de uma classe (para saber se mudou)\n\
+-m MD5SALVAR Calcula o MD5 de diversos arquivos e salva em mud-md5.txt\n\
+-m MD5CHECAR Verifica se os arquivos listados em mud-md5.txt mudaram"
 
 
 classe adm_lcl
 herda comando_adm
-const txtajuda = "\b\c3Lcl\b\n\
-Sintaxe: LCL [nome] [quantidade]\n\
+const m_ajuda = "-tn\
+-s [nome] [quantidade]\n\
 Lista todas as classes que começam com o nome especificado.\n\
 Se o nome for omitido, lista todos os itens.\n\
 Para listar somente as classes que tenham uma certa quantidade mínima\n\
@@ -70,8 +70,8 @@ func escr # Listar classes
 
 classe adm_ccl
 herda comando_adm
-const txtajuda = "\b\c3Ccl\b\n\
-Sintaxe: CCL <nome> [arquivo]\n\
+const m_ajuda = "-t\n\
+-s <nome> [arquivo]\n\
 Cria uma classe. Aquivo é o nome do arquivo sem o .int no final, e a partir\n\
 do diretório aonde está o arquivo mud.int. Se for omitido, cria no arquivo\n\
 mud.int.\n\
@@ -112,7 +112,7 @@ func passo
 
 classe adm_acl
 herda comando_adm
-const txtajuda = "\b\c3Acl\b\nSintaxe: ACL <nome>\nApaga uma classe."
+const m_ajuda = "-t\n-s <nome>\nApaga uma classe."
 
 func escr # Apaga classe
   prog p
@@ -147,8 +147,8 @@ func passo
 
 classe adm_ecl
 herda comando_editor
-const txtajuda = "\b\c3Ecl\b\n\
-Sintaxe: ECL [nome da classe]\n\
+const m_ajuda = "-t\n\
+-s [nome da classe]\n\
 Edita uma classe.\n\
 A primeira linha do texto é ARQ: seguido do nome do arquivo aonde\n\
 a classe está sem o .int no final."
@@ -178,8 +178,8 @@ func passo # Editar função
 
 classe adm_icl
 herda comando_adm
-const txtajuda = "\b\c3Icl\b\n\
-Sintaxe: ICL <nome da classe>\n\
+const m_ajuda = "-t\n\
+-s <nome da classe>\n\
 Inicializa uma classe (chama a função iniclasse da classe).\n\
 Isso é necessário após criar e editar com os comandos ccl e ecl."
 
@@ -197,7 +197,7 @@ func escr # Inicializa uma classe
 
 classe adm_rcl
 herda comando_adm
-const txtajuda = "\b\c3Rcl\b\nSintaxe: RCL <nome> <novo nome>\nRenomeia uma classe."
+const m_ajuda = "-t\n-s <nome> <novo nome>\nRenomeia uma classe."
 
 func escr # Renomeia uma classe
   prog p
@@ -216,9 +216,7 @@ func escr # Renomeia uma classe
 
 classe adm_aobj
 herda comando_adm
-const txtajuda = "\b\c3Aobj\b\n\
-Sintaxe: AOBJ <nome>\n\
-Apaga todos os objetos de uma classe."
+const m_ajuda = "-t\n-s <nome>\nApaga todos os objetos de uma classe."
 
 func escr
   prog p
@@ -244,9 +242,7 @@ func escr
 
 classe adm_lfunc
 herda comando_adm
-const txtajuda = "\b\c3Lfunc\b\n\
-Sintaxe: LFUNC <nome da classe>\n\
-Lista as funções de uma classe."
+const m_ajuda = "-t\n-s <nome da classe>\nLista as funções de uma classe."
 
 func escr # Listar funções
   prog p
@@ -269,8 +265,8 @@ func escr # Listar funções
 
 classe adm_lfunc2
 herda comando_adm
-const txtajuda = "\b\c3Lfunc2\b\n\
-Sintaxe: LFUNC2 <nome da classe>\n\
+const m_ajuda = "-t\n\
+-s <nome da classe>\n\
 Lista todas as funções de uma classe, inclusive as herdadas."
 
 func escr # Listar funções inclusive as herdadas
@@ -294,8 +290,8 @@ func escr # Listar funções inclusive as herdadas
 
 classe adm_larq
 herda comando_adm
-const txtajuda = "\b\c3Larq\b\n\
-Sintaxe: LARQ [prefixo do arquivo]\n\
+const m_ajuda = "-t\n\
+-s [prefixo do arquivo]\n\
 Sem argumentos lista os arquivos que compõem o programa.\n\
 Com um hífen lista as classes do arquivo principal.\n\
 Seguido de um nome lista as classes do arquivo especificado."
@@ -333,9 +329,7 @@ func escr
 
 classe adm_lherda
 herda comando_editor
-const txtajuda = "\b\c3Lherda\b\n\
-Sintaxe: lherda <nome da classe>\n\
-Lista heranças de uma classe."
+const m_ajuda = "-t\n-s <nome da classe>\nLista heranças de uma classe."
 
 func escr
   prog p
@@ -387,8 +381,8 @@ func escr
 
 classe adm_eherda
 herda comando_editor
-const txtajuda = "\b\c3Eherda\b\n\
-Sintaxe: eherda <nome da classe>\n\
+const m_ajuda = "-t\n\
+-s <nome da classe>\n\
 Edita herança de uma classe (uma classe herdada por linha)."
 
 func escr
@@ -451,8 +445,8 @@ func passo
 
 classe adm_md5cl
 herda comando_adm
-const txtajuda = "\b\c3Md5cl\b\n\
-Sintaxe: MD5CL <nome da classe>\n\
+const m_ajuda = "-t\n\
+-s <nome da classe>\n\
 Calcula o MD5 e o SHA1 das linhas que compõem uma classe.\n\
 Quando o conteúdo de uma classe muda, o MD5 e do SHA1 também mudam.\n\
 Dessa forma, consegue-se verificar se duas classes, não necessariamente\n\
@@ -477,8 +471,8 @@ func escr # Listar funções inclusive as herdadas
 
 classe adm_md5salvar
 herda comando_adm
-const txtajuda = "\b\c3Md5salvar\b\n\
-Sintaxe: MD5SALVAR\n\
+const m_ajuda = "-t\n\
+-s\n\
 Calcula o MD5 e o SHA1 de todos os arquivos dos diretórios adm, cmd, misc\n\
 e obj, via Textotxt. O resultado é salvo no arquivo mud-md5.txt e pode ser\n\
 verificado com o comando Md5checar. Quando o conteúdo de um arquivo muda,\n\
@@ -513,8 +507,8 @@ func escr # Listar funções inclusive as herdadas
 
 classe adm_md5checar
 herda comando_adm
-const txtajuda = "\b\c3Md5checar\b\n\
-Sintaxe: MD5CHECAR\n\
+const m_ajuda = "-t\n\
+-s\n\
 Checa o MD5 e o SHA1 dos arquivos listados no arquivo mud-md5.txt.\n\
 Esse arquivo é criado com o comando md5salvar."
 

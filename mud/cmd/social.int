@@ -1,14 +1,15 @@
 classe h_cmd_social
 herda comando_comum
+const classemenu = "m_cmd_social"
 const objnivel = 6
-const txtajuda = txtajuda1 + m_ajuda
-const txtajuda1 = "\b\c3Social\b\nSintaxe: SOCIAL  [nome do comando]\n"
 const posic = 0
 const o1 = $cmd2_socialX
 const o2 = $cmd2_socialY
 const o3 = $cmd2_socialZ
 #
-const m_ajuda = "Sem argumentos, mostra a lista de comandos sociais disponíveis.\n\
+const m_ajuda = "-t\n\
+-s [nome do comando]\n\
+Sem argumentos, mostra a lista de comandos sociais disponíveis.\n\
 Seguido do nome do social mostra as mensagens que o social emitirá.\n\n\
 Os comandos sociais são usados para interpretação entre personagens.\n\
 São comandos que enviam uma mensagem para os personagens na mesma sala,\n\
@@ -189,47 +190,38 @@ herda comando_menu_cmd
 #
 const nome1 = "Ajuda"
 const tipo1 = "opc_texto"
-const clas1 = "cmd_social"
 const vari1 = "m_ajuda"
 #
 const nome2 = "Nenhum comando"
 const tipo2 = "opc_linha"
-const clas2 = "cmd_social"
 const vari2 = "m_lista_vazia"
 #
 const nome3 = "Comandos sociais"
 const tipo3 = "opc_linha"
-const clas3 = "cmd_social"
 const vari3 = "m_lista_soc"
 #
 const nome4 = "Comando não existe"
 const tipo4 = "opc_linha"
-const clas4 = "cmd_social"
 const vari4 = "m_naoexiste"
 #
 const titu5 = "Nos comandos sociais"
 #
 const nome5 = "Sem argumentos"
 const tipo5 = "opc_linha"
-const clas5 = "cmd_social"
 const vari5 = "m_sem_args"
 #
 const nome6 = "Ignorando"
 const tipo6 = "opc_linha"
-const clas6 = "cmd_social"
 const vari6 = "m_ignorar"
 #
 const nome7 = "Ignorado"
 const tipo7 = "opc_linha"
-const clas7 = "cmd_social"
 const vari7 = "m_ignorado"
 #
 const nome8 = "Perso sem condições"
 const tipo8 = "opc_linha"
-const clas8 = "cmd_social"
 const vari8 = "m_condicoes1"
 #
 const nome9 = "Alvo sem condições"
 const tipo9 = "opc_linha"
-const clas9 = "cmd_social"
 const vari9 = "m_condicoes2"

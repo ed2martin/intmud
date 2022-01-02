@@ -1,15 +1,15 @@
 classe h_cmd_atalho
 herda comando_comum
+const classemenu = "m_cmd_atalho"
 const posic = 0
-const txtajuda = txtajuda1 + m_ajuda
-const txtajuda1 = "\b\c3Atalho\b\n\
-Sintaxe: ATALHO\n\
-         ATALHO <nome>\n\
-         ATALHO <nome> <comandos>\n\
-         ATALHO LIMPAR\n\
-         !\n\n"
 #
-const m_ajuda = "O sinal de exclamação repete o último comando que você digitou.\n\n\
+const m_ajuda = "-t\n\
+-s\n\
+-s <nome>\n\
+-s <nome> <comandos>\n\
+-s LIMPAR\n\
+-ss !\n\n\
+O sinal de exclamação repete o último comando que você digitou.\n\n\
 Já o comando ATALHO, permite definir atalhos para os comandos que você usa\n\
 frequentemente. Para criar um atalho, basta teclar a palavra atalho seguido\n\
 de um nome qualquer e o comando. Assim, sempre que você digitar o nome,\n\
@@ -91,51 +91,41 @@ herda comando_menu_cmd
 #
 const nome1 = "Ajuda"
 const tipo1 = "opc_texto"
-const clas1 = "cmd_atalho"
 const vari1 = "m_ajuda"
 #
 const nome2 = "Nenhum atalho"
 const tipo2 = "opc_linha"
-const clas2 = "cmd_atalho"
 const vari2 = "m_nenhum"
 #
 const nome3 = "Não existe"
 const tipo3 = "opc_linha"
-const clas3 = "cmd_atalho"
 const vari3 = "m_nao_existe"
 #
 const nome4 = "Atalho Atalho"
 const tipo4 = "opc_linha"
-const clas4 = "cmd_atalho"
 const vari4 = "m_atalho"
 #
 const nome5 = "Sinal de igual"
 const tipo5 = "opc_linha"
-const clas5 = "cmd_atalho"
 const vari5 = "m_igual"
 #
 const nome6 = "Criou"
 const tipo6 = "opc_linha"
-const clas6 = "cmd_atalho"
 const vari6 = "m_criou"
 #
 const nome7 = "Mudou"
 const tipo7 = "opc_linha"
-const clas7 = "cmd_atalho"
 const vari7 = "m_mudou"
 #
 const nome8 = "Apagou"
 const tipo8 = "opc_linha"
-const clas8 = "cmd_atalho"
 const vari8 = "m_apagou"
 #
 const nome9 = "Apagou todos"
 const tipo9 = "opc_linha"
-const clas9 = "cmd_atalho"
 const vari9 = "m_limpou"
 #
 const nome10 = "Atalhos"
 const info10 = "Quantidade máxima de atalhos (comando Atalho)"
 const tipo10 = "opc_numero"
-const clas10 = "cmd_atalho"
 const vari10 = "v_maximo"

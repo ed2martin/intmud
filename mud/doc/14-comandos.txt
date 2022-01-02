@@ -313,8 +313,17 @@ herda comando_classemenu
 # Título é o nome do menu (aparece antes da lista de opções)
 const titulo = "Comandos dos jogadores"
 
-# Os submenus serão todas as classes que começam com o nome especificado:
-const classe = "h_cmd_"
+# As classes editáveis começam com esse nome especificado.
+# Em cada classe editável, deve exitir uma const classemenu com o nome do menu
+# responsável por editar a classe. Exemplo, para uma classe chamada cmd_abrir,
+# provavelmente há uma linha const classemenu = "m_cmd_abrir"
+const classe = "cmd_"
+
+# Para colocar menu, definir uma const classemenu com o nome do menu responsável
+# por editar essa classe.
+# Exemplo, se a classe cmd_abrir tiver uma linha const classemenu = "m_cmd_abrir"
+# Isso significa que quando o usuário escolher editar a classe cmd_abrir,
+# vai para o menu cuja classe é m_cmd_abrir.
 
 # Nome da classe que contém o menu anterior, ou "" se não houver menu anterior
 # Quando o usuário escolhe sair do menu (teclando Z), vai para esse menu

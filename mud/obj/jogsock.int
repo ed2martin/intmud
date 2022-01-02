@@ -232,13 +232,19 @@ func recebe1 # Função recebe após todos os atalhos
   txt512 com
   casovar txt(arg0, 0, 1)
   casose "."
-    com = "chat " + txt(arg0, 1)
+    prog p
+    p.iniherdainv("h_cmd_chat")
+    $[p.texto].v_tipo && (com = txt(p.texto, 4) + " " + txt(arg0, 1))
     sair
   casose "'"
-    com = "falar " + txt(arg0, 1)
+    prog p
+    p.iniherdainv("h_cmd_falar")
+    p.texto && (com = txt(p.texto, 4) + " " + txt(arg0, 1))
     sair
   casose "="
-    com = "telepatia " + txt(arg0, 1)
+    prog p
+    p.iniherdainv("h_cmd_telepatia")
+    p.texto && (com = txt(p.texto, 4) + " " + txt(arg0, 1))
     sair
   casose
     com = arg0

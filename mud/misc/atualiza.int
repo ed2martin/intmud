@@ -1,4 +1,4 @@
-classe atualiza_544
+classe atualiza_562
 # Atualiza arquivos mud/config/* e mud/areas/* de acordo com novas mudanças
 prog p
 debug dbg
@@ -729,8 +729,8 @@ func ini3_exec
 func ini4_exec
   apagar(este)
 # Checa e muda a versão
-  ret (versao = config:versao) >= 544, nulo
-  p.criar("config", "const versao = 544 # Para atualizar diretórios areas e config")
+  ret (versao = config:versao) >= 562, nulo
+  p.criar("config", "const versao = 562 # Para atualizar diretórios areas e config")
   config:salvar
 # Comando Fim e Dicas aleatórias
   se versao < 457
@@ -943,8 +943,31 @@ func ini4_exec
       c_hex(p.texto, "s_doarnao")
     efim
   fimse
+# Atalhos de comandos
+  se versao < 562
+    dbg.ini
+    criaatalho("cmd_quit", "cmd_sair")
+    criaatalho("cmd_tomar", "cmd_beber")
+    criaatalho("cmd_usar", "cmd_vestir")
+    criaatalho("cmd_e", "cmd_l")
+    criaatalho("cmd_w", "cmd_o")
+    criaatalho("cmd_nw", "cmd_no")
+    criaatalho("cmd_sw", "cmd_so")
+    criaatalho("cmd_cima", "cmd_c")
+    criaatalho("cmd_baixo", "cmd_b")
+    criaatalho("cmd_u", "cmd_c")
+    criaatalho("cmd_d", "cmd_b")
+    movefunc("config", "rezartipo", "cmd_rezar", "v_tipo")
+    movefunc("config", "rezarnivel", "cmd_rezar", "v_nivel")
+    movefunc("config", "rezar1msg", "cmd_rezar", "m_rezar1")
+    movefunc("config", "rezar2msg", "cmd_rezar", "m_rezar2")
+  fimse
 # Avisa que atualizou arquivos
   tela.msg("Diretórios areas e config atualizados\n")
+
+func criaatalho # arg0 = classe do atalho, arg1 = classe do comando
+  ret p.existe(arg0), nulo
+  p.criar(arg0 + "\nconfig/cmd\nherda comando_atalho\nconst comando=\"" + arg1 + "\"")
 
 const perm_autorizar = "perm_autorizar\n\
 config/perm\n\

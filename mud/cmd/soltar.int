@@ -1,15 +1,22 @@
-classe cmd_soltar
+classe comando_soltar
 herda comando_comum
-const txtajuda = config:animal1 ? ta1 + ta2 + ta3 + ta4 : ta1 + ta3
-const ta1 = "\b\c3Soltar\b\n\
-Sintaxe: SOLTAR <objeto>\n\
-         SOLTAR <quantidade> <objeto>\n\
-         SOLTAR <objeto> <container>\n\
-         SOLTAR <quantidade> <objeto> <container>\n"
-const ta2 = "         SOLTAR <número do animal>\n"
-const ta3 = "Solta um objeto no chão ou em um container (uma bolsa, uma estante, etc).\n\
+const txtajuda = txtajuda1(config:animal1 ? m_ajuda2 : m_ajuda1)
+const m_ajuda1 = "-t\n\
+-s <objeto>\n\
+-s <quantidade> <objeto>\n\
+-s <objeto> <container>\n\
+-s <quantidade> <objeto> <container>\n\
+Solta um objeto no chão ou em um container (uma bolsa, uma estante, etc).\n\
 Para soltar tudo (até 10 objetos) tecle TUDO ao invés do objeto."
-const ta4 = "\nPermite também soltar algum animal (se desfazer) que você possuir."
+const m_ajuda2 = "-t\n\
+-s <objeto>\n\
+-s <quantidade> <objeto>\n\
+-s <objeto> <container>\n\
+-s <quantidade> <objeto> <container>\n\
+-s <número do animal>\n\
+Solta um objeto no chão ou em um container (uma bolsa, uma estante, etc).\n\
+Para soltar tudo (até 10 objetos) tecle TUDO ao invés do objeto.\n\
+Permite também soltar algum animal (se desfazer) que você possuir."
 const posic = 5
 const m_naover = "Você não vê $m"
 const m_nao_possui = "Você não possui $m."
@@ -245,12 +252,11 @@ func soltarmoedas
   casofim
 
 
-classe cmd_guardar
-herda cmd_soltar
+classe h_cmd_soltar
+herda comando_soltar
+
+
+classe h_cmd_guardar
+herda comando_soltar
 const cmdsg = 1
-const txtajuda = "\b\c3Guardar\b\n\
-Sintaxe: GUARDAR\n\
-         GUARDAR <objeto> <container>\n\
-         GUARDAR <quantidade> <objeto> <container>\n\
-Coloca um objeto dentro de um container (uma bolsa, uma estante, etc).\n\
-Para guardar tudo (até 10 objetos) tecle TUDO ao invés do objeto."
+const txtajuda = txtajuda1(m_ajuda1)

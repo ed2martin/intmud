@@ -1,11 +1,13 @@
 classe h_cmd_capturar
 herda comando_comum
-const txtajuda = txtajuda1 + m_ajuda
-const txtajuda1 = "\b\c3Capturar\b\nSintaxe: CAPTURAR\n         CAPTURAR <objeto>\n"
+const classemenu = "m_cmd_capturar"
 const posic = 5
 #
 const v_reserva = 1 # Se animais capturados podem ir para a lista de reservas 0=não 1=sim
-const m_ajuda = "Usa um objeto para tentar capturar o animal que está lutando com você.\n\
+const m_ajuda = "-t\n\
+-s\n\
+-s <objeto>\n\
+Usa um objeto para tentar capturar o animal que está lutando com você.\n\
 Se o nome do objeto for omitido, usa o último que você escolheu.\n\
 Nota: a captura pode falhar se o animal achar que não vale a pena entrar\n\
 para a sua equipe. Por isso, é sempre bom enfraquecê-lo antes."
@@ -172,90 +174,72 @@ herda comando_menu_cmd
 const nome1 = "Animais reserva"
 const info1 = "Se animais capturados podem ir para a lista de reservas"
 const tipo1 = "opc_simnao"
-const clas1 = "cmd_capturar"
 const vari1 = "v_reserva"
 #
 const nome2 = "Ajuda"
 const tipo2 = "opc_texto"
-const clas2 = "cmd_capturar"
 const vari2 = "m_ajuda"
 #
 const nome3 = "Sem item"
 const tipo3 = "opc_linha"
-const clas3 = "cmd_capturar"
 const vari3 = "m_sem_item"
 #
 const nome4 = "Item não serve"
 const tipo4 = "opc_linha"
-const clas4 = "cmd_capturar"
 const vari4 = "m_nao_serve"
 #
 const nome5 = "Não vê item"
 const tipo5 = "opc_linha"
-const clas5 = "cmd_capturar"
 const vari5 = "m_naover_item"
 #
 const nome6 = "Escolhe item"
 const tipo6 = "opc_linha"
-const clas6 = "cmd_capturar"
 const vari6 = "m_escolhe"
 #
 const nome7 = "Sem animal"
 const tipo7 = "opc_linha"
-const clas7 = "cmd_capturar"
 const vari7 = "m_sem_animal"
 #
 const nome8 = "Impossível capturar"
 const tipo8 = "opc_linha"
-const clas8 = "cmd_capturar"
 const vari8 = "m_nao_captura"
 #
 const nome9 = "Sem conhecimento"
 const tipo9 = "opc_linha"
-const clas9 = "cmd_capturar"
 const vari9 = "m_hab"
 #
 const nome10 = "Sem espaço"
 const tipo10 = "opc_linha"
-const clas10 = "cmd_capturar"
 const vari10 = "m_sem_espaco"
 #
 const nome11 = "Não capturou: perso"
 const tipo11 = "opc_linha"
-const clas11 = "cmd_capturar"
 const vari11 = "capturar_nao1"
 #
 const nome12 = "Não capturou: outros"
 const tipo12 = "opc_linha"
-const clas12 = "cmd_capturar"
 const vari12 = "capturar_nao2"
 #
 const nome13 = "Capturou: perso"
 const tipo13 = "opc_linha"
-const clas13 = "cmd_capturar"
 const vari13 = "capturar_sim1"
 #
 const nome14 = "Capturou: outros"
 const tipo14 = "opc_linha"
-const clas14 = "cmd_capturar"
 const vari14 = "capturar_sim2"
 #
 const nome15 = "Animal equipe: perso"
 const tipo15 = "opc_linha"
-const clas15 = "cmd_capturar"
 const vari15 = "capturar_equipe1"
 #
 const nome16 = "Animal equipe: outros"
 const tipo16 = "opc_linha"
-const clas16 = "cmd_capturar"
 const vari16 = "capturar_equipe2"
 #
 const nome17 = "Animal reserva: perso"
 const tipo17 = "opc_linha"
-const clas17 = "cmd_capturar"
 const vari17 = "capturar_reserva1"
 #
 const nome18 = "Animal reserva: outros"
 const tipo18 = "opc_linha"
-const clas18 = "cmd_capturar"
 const vari18 = "capturar_reserva2"

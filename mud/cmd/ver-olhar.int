@@ -1,29 +1,13 @@
-classe h_cmd_ver
-herda h_cmd_olhar
-const completo = 0
-const txtajuda1 = "\b\c3Ver\b\nSintaxe: VER\n         VER <personagem ou objeto>\n"
-#
-const m_ajuda = "Olha de relance para o lugar aonde você está ou para um personagem ou\n\
-objeto. É semelhante ao comando olhar, mas dá menos informações."
-const m_naover = "Você não vê $m."
-const m_olhar_auto = ""
-const m_olhar_perso2 = ""
-const m_olhar_perso3 = ""
-const m_olhar_item = ""
-const m_fechado = "Está fechad$u."
-const m_vazio = "Está vazi$u."
-
-
-classe h_cmd_olhar
+classe comando_ver_olhar
 herda comando_comum
+const classemenu = "m_cmd_olhar"
 const completo = 1
-const txtajuda = txtajuda1 + m_ajuda
-const txtajuda1 = "\b\c3Olhar\b\n\
-Sintaxe: OLHAR\n\
-         OLHAR <personagem ou objeto>\n"
 const posic = 5
 #
-const m_ajuda = "Mostra a descrição completa do lugar aonde você está ou informações\n\
+const m_ajuda = "-t\n\
+-s\n\
+-s <personagem ou objeto>\n\
+Mostra a descrição completa do lugar aonde você está ou informações\n\
 sobre um personagem ou um objeto."
 const m_naover = "Você não vê $m."
 const m_olhar_auto = ""
@@ -259,66 +243,78 @@ func nomevolume # Nome do item ou personagem e volume
   ret nome + ")"
 
 
+classe h_cmd_ver
+herda comando_ver_olhar
+const classemenu = "m_cmd_ver"
+const completo = 0
+#
+const m_ajuda = "-t\n\
+-s\n\
+-s <personagem ou objeto>\n\
+Olha de relance para o lugar aonde você está ou para um personagem ou\n\
+objeto. É semelhante ao comando olhar, mas dá menos informações."
+const m_naover = "Você não vê $m."
+const m_olhar_auto = ""
+const m_olhar_perso2 = ""
+const m_olhar_perso3 = ""
+const m_olhar_item = ""
+const m_fechado = "Está fechad$u."
+const m_vazio = "Está vazi$u."
+
+
+classe h_cmd_olhar
+herda comando_ver_olhar
+
+
 classe m_cmd_ver
 herda comando_menu_cmd
 #
 const nome1 = "Ajuda"
 const tipo1 = "opc_texto"
-const clas1 = "cmd_ver"
 const vari1 = "m_ajuda"
 #
 const nome2 = "Sem alvo"
 const tipo2 = "opc_linha"
-const clas2 = "cmd_ver"
 const vari2 = "m_naover"
 #
 const nome2 = "Ver a si mesmo"
 const info2 = "Mensagem quando tenta ver o próprio personagem, ou texto vazio consegue ver"
 const tipo2 = "opc_linha"
-const clas2 = "cmd_ver"
 const vari2 = "m_olhar_auto"
 #
 const nome3 = "Ver perso: alvo"
 const info3 = "Mensagem para o personagem que está sendo visto"
 const tipo3 = "opc_linha"
-const clas3 = "cmd_ver"
 const vari3 = "m_olhar_perso2"
 #
 const nome4 = "Ver perso: outros"
 const info4 = "Mensagem para os outros ao ver um personagem"
 const tipo4 = "opc_linha"
-const clas4 = "cmd_ver"
 const vari4 = "m_olhar_perso3"
 #
 const nome5 = "Ver item"
 const tipo5 = "opc_linha"
-const clas5 = "cmd_ver"
 const vari5 = "m_olhar_item"
 #
 const nome6 = "Fechado"
 const tipo6 = "opc_linha"
-const clas6 = "cmd_ver"
 const vari6 = "m_fechado"
 #
 const nome7 = "Vazio"
 const tipo7 = "opc_linha"
-const clas7 = "cmd_ver"
 const vari7 = "m_vazio"
 #
 const nome8 = "Mostra nível"
 const info8 = "Se deve mostrar o nível do personagem"
 const tipo8 = "opc_simnao"
-const clas8 = "cmd_ver"
 const vari8 = "v_olharnivel"
 #
 const nome9 = "Mostra raça e classe"
 const tipo9 = "opc_simnao"
-const clas9 = "cmd_ver"
 const vari9 = "v_olhartipo"
 #
 const nome10 = "Mostra volume"
 const tipo10 = "opc_simnao"
-const clas10 = "cmd_ver"
 const vari10 = "v_olharvolume"
 
 
@@ -327,75 +323,61 @@ herda comando_menu_cmd
 #
 const nome1 = "Ajuda"
 const tipo1 = "opc_texto"
-const clas1 = "cmd_olhar"
 const vari1 = "m_ajuda"
 #
 const nome2 = "Sem alvo"
 const tipo2 = "opc_linha"
-const clas2 = "cmd_olhar"
 const vari2 = "m_naover"
 #
 const nome2 = "Olhar a si mesmo"
 const info2 = "Mensagem quando tenta ver o próprio personagem, ou texto vazio consegue ver"
 const tipo2 = "opc_linha"
-const clas2 = "cmd_olhar"
 const vari2 = "m_olhar_auto"
 #
 const nome3 = "Olhar perso: alvo"
 const info3 = "Mensagem para o personagem que está sendo visto"
 const tipo3 = "opc_linha"
-const clas3 = "cmd_olhar"
 const vari3 = "m_olhar_perso2"
 #
 const nome4 = "Olhar perso: outros"
 const info4 = "Mensagem para os outros ao ver um personagem"
 const tipo4 = "opc_linha"
-const clas4 = "cmd_olhar"
 const vari4 = "m_olhar_perso3"
 #
 const nome5 = "Olhar item"
 const tipo5 = "opc_linha"
-const clas5 = "cmd_olhar"
 const vari5 = "m_olhar_item"
 #
 const nome6 = "Fechado"
 const tipo6 = "opc_linha"
-const clas6 = "cmd_olhar"
 const vari6 = "m_fechado"
 #
 const nome7 = "Vazio"
 const tipo7 = "opc_linha"
-const clas7 = "cmd_olhar"
 const vari7 = "m_vazio"
 #
 const nome8 = "Está usando"
 const tipo8 = "opc_linha"
-const clas8 = "cmd_olhar"
 const vari8 = "m_usando"
 #
 const nome9 = "Dentro"
 const tipo9 = "opc_linha"
-const clas9 = "cmd_olhar"
 const vari9 = "m_dentro"
 #
 const nome10 = "Sem descrição"
 const info10 = "Quando o item ou personagem não possui descrição extra"
 const tipo10 = "opc_linha"
-const clas10 = "cmd_olhar"
 const vari10 = "m_descextra"
 #
 const nome11 = "Mostra nível"
 const info11 = "Se deve mostrar o nível do personagem"
 const tipo11 = "opc_simnao"
-const clas11 = "cmd_olhar"
 const vari11 = "v_olharnivel"
 #
 const nome12 = "Mostra raça e classe"
 const tipo12 = "opc_simnao"
-const clas12 = "cmd_olhar"
 const vari12 = "v_olhartipo"
 #
 const nome13 = "Mostra volume"
 const tipo13 = "opc_simnao"
-const clas13 = "cmd_olhar"
 const vari13 = "v_olharvolume"

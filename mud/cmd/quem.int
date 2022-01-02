@@ -1,10 +1,9 @@
 classe h_cmd_quem
 herda comando_comum
+const classemenu = "m_cmd_quem"
 const posic = 0
-const txtajuda = txtajuda1 + m_ajuda
-const txtajuda1 = "\b\c3Quem\b\nSintaxe: QUEM\n"
 #
-const m_ajuda = "Mostra quem está conectado no MUD e jogando."
+const m_ajuda = "-t\n-s\nMostra quem está conectado no MUD e jogando."
 const m_imortal1 = "Imortais online: $m"
 const m_imortalN = "Imortais online: $m"
 const m_jogador1 = "Jogadores online: $m"
@@ -144,37 +143,30 @@ herda comando_menu_cmd
 #
 const nome1 = "Ajuda"
 const tipo1 = "opc_texto"
-const clas1 = "cmd_idioma"
 const vari1 = "m_ajuda"
 #
 const nome2 = "Um jogador"
 const tipo2 = "opc_linha"
-const clas2 = "cmd_quem"
 const vari2 = "m_jogador1"
 #
 const nome3 = "Mais de um jogador"
 const tipo3 = "opc_linha"
-const clas3 = "cmd_quem"
 const vari3 = "m_jogadorN"
 #
 const nome4 = "Um imortal"
 const tipo4 = "opc_linha"
-const clas4 = "cmd_quem"
 const vari4 = "m_imortal1"
 #
 const nome5 = "Mais de um imortal"
 const tipo5 = "opc_linha"
-const clas5 = "cmd_quem"
 const vari5 = "m_imortalN"
 #
 const nome6 = "Um outros"
 const tipo6 = "opc_linha"
-const clas6 = "cmd_quem"
 const vari6 = "m_outros1"
 #
 const nome7 = "Mais de um outros"
 const tipo7 = "opc_linha"
-const clas7 = "cmd_quem"
 const vari7 = "m_outrosN"
 #
 const titu8 = " * Cada jogador"
@@ -182,116 +174,97 @@ const titu8 = " * Cada jogador"
 const nome8 = "Jogando"
 const info8 = "Um jogador no jogo"
 const tipo8 = "opc_linha"
-const clas8 = "cmd_quem"
 const vari8 = "m_linhajog"
 #
 const nome9 = "Controlando PNJ"
 const info9 = "Um PNJ sendo controlado por um jogador\n\
 Aparece só para quem pode ver InvQuem"
 const tipo9 = "opc_linha"
-const clas9 = "cmd_quem"
 const vari9 = "m_linhapnj"
 #
 const nome10 = "Criando personagem"
 const info10 = "Um jogador criando um personagem\n\
 Aparece só para quem pode ver InvQuem"
 const tipo10 = "opc_linha"
-const clas10 = "cmd_quem"
 const vari10 = "m_linhaentra"
 #
 const titu11 = " * Opções"
 #
 const nome11 = "Dígitos nível $nivel"
 const tipo11 = "opc_opcao"
-const clas11 = "cmd_quem"
 const vari11 = "v_nivel"
 const extr11 = "Alinhado à esquerda\nAlinhado à direita\n1 a 5 dígitos sem espaço"
 #
 const nome12 = "Antes Renasceu $ren"
 const info12 = "Texto antes de quantas vezes renasceu"
 const tipo12 = "opc_linha"
-const clas12 = "cmd_quem"
 const vari12 = "m_renascer_a"
 #
 const nome13 = "Depois Renasceu $ren"
 const info13 = "Texto depois de quantas vezes renasceu"
 const tipo13 = "opc_linha"
-const clas13 = "cmd_quem"
 const vari13 = "m_renascer_d"
 #
 const nome14 = "Não Renasceu $ren"
 const tipo14 = "opc_linha"
-const clas14 = "cmd_quem"
 const vari14 = "m_renascer_n"
 #
 const nome15 = "Antes Título $titulo"
 const info15 = "Texto antes do título"
 const tipo15 = "opc_linha"
-const clas15 = "cmd_quem"
 const vari15 = "m_titulo_a"
 #
 const nome16 = "Depois Título $titulo"
 const info16 = "Texto depois do título"
 const tipo16 = "opc_linha"
-const clas16 = "cmd_quem"
 const vari16 = "m_titulo_d"
 #
 const nome17 = "Antes Tipos $tipo"
 const info17 = "Texto antes dos tipos (raça, classe e subclasse)"
 const info17 = "Raça, classe e subclasse"
 const tipo17 = "opc_linha"
-const clas17 = "cmd_quem"
 const vari17 = "m_tipo_a"
 #
 const nome18 = "Depois Tipos $tipo"
 const info18 = "Texto depois dos tipos (raça, classe e subclasse)"
 const tipo18 = "opc_linha"
-const clas18 = "cmd_quem"
 const vari18 = "m_tipo_d"
 #
 const nome19 = "Entre Tipos $tipo"
 const info19 = "Texto separando raça, classe e subclasse"
 const tipo19 = "opc_linha"
-const clas19 = "cmd_quem"
 const vari19 = "m_tipo_e"
 #
 const nome20 = "Desconectado $des"
 const tipo20 = "opc_linha"
-const clas20 = "cmd_quem"
 const vari20 = "m_desconectado"
 #
 const nome21 = "Antes Perm $perm"
 const info21 = "Texto antes das permissões"
 const tipo21 = "opc_linha"
-const clas21 = "cmd_quem"
 const vari21 = "m_perm_a"
 #
 const nome22 = "Depois Perm $perm"
 const info22 = "Texto depois das permissões"
 const tipo22 = "opc_linha"
-const clas22 = "cmd_quem"
 const vari22 = "m_perm_d"
 #
 const nome23 = "InvQuem $inv"
 const info23 = "Se está invisível no comando Quem"
 const tipo23 = "opc_linha"
-const clas23 = "cmd_quem"
 const vari23 = "m_inv"
 #
 const nome24 = "Controlando PNJ $pnj"
 const info24 = "Somente se jogador pode ver InvQuem"
 const tipo24 = "opc_linha"
-const clas24 = "cmd_quem"
 const vari24 = "m_pnj"
 #
 const nome25 = "Antes Monit $monit"
 const info25 = "Somente se jogador pode ver InvQuem"
 const tipo25 = "opc_linha"
-const clas25 = "cmd_quem"
 const vari25 = "m_monit_a"
 #
 const nome26 = "Depois Monit $monit"
 const info26 = "Somente se jogador pode ver InvQuem"
 const tipo26 = "opc_linha"
-const clas26 = "cmd_quem"
 const vari26 = "m_monit_d"

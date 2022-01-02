@@ -1,16 +1,16 @@
 classe h_cmd_grupo
 herda comando_comum
+const classemenu = "m_cmd_grupo"
 const posic = 5
-const txtajuda = txtajuda1 + m_ajuda
-const txtajuda1 = "\b\c3Grupo\b\n\
-Sintaxe: GRUPO <personagem>\n\
-         GRUPO +\n\
-         GRUPO -\n\
-         GRUPO\n"
 uint16 nivelmax # Nível máximo para entrar no grupo; vide função nivelgrupo
 uint16 nivelmin # Nível mínimo para entrar no grupo; vide função nivelgrupo
 #
-const m_ajuda = "Permite que dois ou mais jogadores de níveis próximos trabalhem em grupo,\n\
+const m_ajuda = "-t\n\
+-s <personagem>\n\
+-s +\n\
+-s -\n\
+-s\n\
+Permite que dois ou mais jogadores de níveis próximos trabalhem em grupo,\n\
 dividindo a experiência ganha em batalhas.\n\
 Quando alguém do grupo é atacado os outros também entram na luta.\n\
 Os membros do grupo podem ainda conversar entre si com o comando GCHAT.\n\
@@ -180,12 +180,13 @@ func nivelgrupo # Acerta variáveis nivelmin e nivelmax
 
 classe h_cmd_gchat
 herda comando_comum
+const classemenu = "m_cmd_gchat"
 const objnivel = 4
 const posic = 0
-const txtajuda = txtajuda1 + m_ajuda
-const txtajuda1 = "\b\c3GChat\b\n\
-Sintaxe: GCHAT <mensagem>\n"
-const m_ajuda = "Envia uma mensagem para todos os integrantes do seu grupo.\n\
+#
+const m_ajuda = "-t\n\
+-s <mensagem>\n\
+Envia uma mensagem para todos os integrantes do seu grupo.\n\
 Vide também: GRUPO"
 const m_nenhum_grupo = "Você não está em nenhum grupo."
 const m_enviou1 = "(gchat) Você '$m'"
@@ -215,77 +216,62 @@ herda comando_menu_cmd
 #
 const nome1 = "Ajuda"
 const tipo1 = "opc_texto"
-const clas1 = "cmd_grupo"
 const vari1 = "m_ajuda"
 #
 const nome2 = "Diferença de nível"
 const tipo2 = "opc_numero"
-const clas2 = "cmd_grupo"
 const vari2 = "v_nivel"
 #
 const nome3 = "Sem alvo"
 const tipo3 = "opc_linha"
-const clas3 = "cmd_grupo"
 const vari3 = "m_naover"
 #
 const nome4 = "Grupo encerrado"
 const tipo4 = "opc_linha"
-const clas4 = "cmd_grupo"
 const vari4 = "m_encerrado"
 #
 const nome5 = "Nenhum grupo"
 const tipo5 = "opc_linha"
-const clas5 = "cmd_grupo"
 const vari5 = "m_nenhum_grupo"
 #
 const nome6 = "Não é o líder"
 const tipo6 = "opc_linha"
-const clas6 = "cmd_grupo"
 const vari6 = "m_nao_lider"
 #
 const nome7 = "Durante a batalha"
 const tipo7 = "opc_linha"
-const clas7 = "cmd_grupo"
 const vari7 = "m_batalha"
 #
 const nome8 = "Nível abaixo"
 const tipo8 = "opc_linha"
-const clas8 = "cmd_grupo"
 const vari8 = "m_nivel_baixo"
 #
 const nome9 = "Nível acima"
 const tipo9 = "opc_linha"
-const clas9 = "cmd_grupo"
 const vari9 = "m_nivel_alto"
 #
 const nome10 = "Nome do grupo"
 const tipo10 = "opc_linha"
-const clas10 = "cmd_grupo"
 const vari10 = "m_nome_grupo"
 #
 const nome11 = "Não pode adicionar"
 const tipo11 = "opc_linha"
-const clas11 = "cmd_grupo"
 const vari11 = "m_nao_adicionar"
 #
 const nome12 = "Adicionado"
 const tipo12 = "opc_linha"
-const clas12 = "cmd_grupo"
 const vari12 = "m_adicionado"
 #
 const nome13 = "Removido"
 const tipo13 = "opc_linha"
-const clas13 = "cmd_grupo"
 const vari13 = "m_removido"
 #
 const nome14 = "Ninguém adicionado"
 const tipo14 = "opc_linha"
-const clas14 = "cmd_grupo"
 const vari14 = "m_ninguem_adicionado"
 #
 const nome15 = "Animal"
 const tipo15 = "opc_linha"
-const clas15 = "cmd_grupo"
 const vari15 = "m_animal"
 
 
@@ -294,20 +280,16 @@ herda comando_menu_cmd
 #
 const nome1 = "Ajuda"
 const tipo1 = "opc_texto"
-const clas1 = "cmd_gchat"
 const vari1 = "m_ajuda"
 #
 const nome2 = "Nenhum grupo"
 const tipo2 = "opc_linha"
-const clas2 = "cmd_gchat"
 const vari2 = "m_nenhum_grupo"
 #
 const nome3 = "Mensagem perso"
 const tipo3 = "opc_linha"
-const clas3 = "cmd_gchat"
 const vari3 = "m_enviou1"
 #
 const nome4 = "Mensagem outros"
 const tipo4 = "opc_linha"
-const clas4 = "cmd_gchat"
 const vari4 = "m_enviou2"

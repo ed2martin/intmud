@@ -1,8 +1,8 @@
 classe adm_monit
 herda comando_adm
 const objcmd = int(arg1.c_monit) >= 2 ? este
-const txtajuda = "\b\c3Monit\b\n\
-Sintaxe: MONIT [jogador]\n\
+const m_ajuda = "-t\n\
+-s [jogador]\n\
 Monitora um jogador, permitindo ver o que ele lê e escreve.\n\
 Se [jogador] estiver ausente ou for o próprio, deixa de monitorar.\n\
 O principal objetivo é auxiliar outros usuários, por isso quando\n\
@@ -51,8 +51,8 @@ func escr
 classe adm_escr
 herda comando_adm
 const objcmd = int(arg1.c_monit) >= 3 ? este
-const txtajuda = "\b\c3Escr\b\n\
-Sintaxe: ESCR <comando>\n\
+const m_ajuda = "-t\n\
+-s <comando>\n\
 Digita um comando no teclado do usuário sendo monitorado."
 
 func escr

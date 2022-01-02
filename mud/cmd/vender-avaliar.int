@@ -1,23 +1,5 @@
-classe cmd_vender
-herda cmd_avaliar, comum_negociar
-const txtajuda = "\b\c3Vender\b\n\
-Sintaxe: VENDER <nome do objeto>\n\
-         VENDER <quantidade> <nome do objeto>\n\
-         VENDER CASA\n\
-Vende objetos que você está carregando para um vendedor.\n\
-Somente em alguns casos é possível vender mais de um objeto de uma vez.\n\
-Vende também uma casa que você possui."
-const vender = 1
-
-
-classe cmd_avaliar
-herda comando_comum
-const txtajuda = "\b\c3Avaliar\b\n\
-Sintaxe: AVALIAR <nome do objeto>\n\
-         AVALIAR CASA\n\
-Pergunta a um vendedor quanto ele paga por um item que você está carregando\n\
-ou por uma casa que você possui."
-const vender = 0
+classe comando_vender
+herda comando_comum, comum_negociar
 
 func escr
   ret !arg1, arg0.msg(vender ? "Vender o que?" : "Avaliar o que?")
@@ -143,3 +125,25 @@ func evento # Gera evento para arg0 e arg1
   epara l.addfim(arg1.evento), l, l.ini.remove
     ret t = l.objini.cmd_vender(arg0, arg1, arg1), t
   efim
+
+
+classe h_cmd_vender
+herda comando_vender
+const m_ajuda = "-t\n\
+-s <nome do objeto>\n\
+-s <quantidade> <nome do objeto>\n\
+-s CASA\n\
+Vende objetos que você está carregando para um vendedor.\n\
+Somente em alguns casos é possível vender mais de um objeto de uma vez.\n\
+Vende também uma casa que você possui."
+const vender = 1
+
+
+classe h_cmd_avaliar
+herda comando_vender
+const m_ajuda = "-t\n\
+-s <nome do objeto>\n\
+-s CASA\n\
+Pergunta a um vendedor quanto ele paga por um item que você está carregando\n\
+ou por uma casa que você possui."
+const vender = 0

@@ -1,39 +1,39 @@
 classe adm_diag
 herda comando_adm
-const txtajuda = "\b\c3Diag\b\n\
-Sintaxe: DIAG <comando>\n\
+const m_ajuda = "-t\n\
+-s <comando>\n\
 Comandos de diagnóstico para detectar problemas como uso excessivo do\n\
 processador (o comando Serv mostra o uso) e memória.\n\
-\b\c6Diag seguir\b\n\
-Mostra quantos personagens/itens estão seguindo outro personagem/item\n\
-\b\c6Diag eventos\b\n\
-Mostra a quantidade total de eventos e o objeto que recebe mais eventos\n\
-\b\c6Diag dono\b\n\
-Mostra personagens/itens sem dono (não estão em uma sala, um personagem ou\n\
-um item). Em princípio, um personagem ou item nunca deveria ficar sem dono.\n\
-\b\c6Diag limpadono\b\n\
-Apaga personagens/itens sem dono.\n\
-\b\c6Diag perso\b\n\
-Mostra a quantidade de personagens dos jogadores e não jogadores.\n\
-\b\c6Diag limpaperso\b\n\
-Apaga todos os personagens do MUD exceto jogadores e animais de jogadores.\n\
-\b\c6Diag item\b\n\
-Mostra a quantidade de itens em casas, fora de casas e perto dos jogadores.\n\
-\b\c6Diag limpaitem\b\n\
-Apaga todos os itens do MUD exceto em salas de casas ou com jogadores.\n\
-\b\c6Diag sala\b\n\
-Mostra a quantidade de salas de casas, dentro de itens e outras salas.\n\
-\b\c6Diag limpasala\b\n\
-Apaga e recria todas as salas exceto de casas, dentro de itens,\n\
-com jogadores ou com algum animal de jogador.\n\
-\b\c6Diag casa\b\n\
-Mostra casas, salas e jogadores nas casas.\n\
-\b\c6Diag limpacasa\b\n\
-Salva, apaga e cria novamente todas as salas das casas, desde que\n\
-não tenham nenhum jogador ou animal de jogador.\n\
-\b\c6Diag reset\b\n\
-Reinicia o MUD apagando e criando novamente todas as classes e objetos\n\
-exceto adm_diag"
+\b\c2DIAG SEGUIR\b\n\
+  Mostra quantos personagens/itens estão seguindo outro personagem/item\n\
+\b\c2DIAG EVENTOS\b\n\
+  Mostra a quantidade total de eventos e o objeto que recebe mais eventos\n\
+\b\c2DIAG DONO\b\n\
+  Mostra personagens/itens sem dono (não estão em uma sala, um personagem ou\n\
+  um item). Em princípio, um personagem ou item nunca deveria ficar sem dono.\n\
+\b\c2DIAG LIMPADONO\b\n\
+  Apaga personagens/itens sem dono.\n\
+\b\c2DIAG PERSO\b\n\
+  Mostra a quantidade de personagens dos jogadores e não jogadores.\n\
+\b\c2DIAG LIMPAPERSO\b\n\
+  Apaga todos os personagens do MUD exceto jogadores e animais de jogadores.\n\
+\b\c2DIAG ITEM\b\n\
+  Mostra a quantidade de itens em casas, fora de casas e perto dos jogadores.\n\
+\b\c2DIAG LIMPAITEM\b\n\
+  Apaga todos os itens do MUD exceto em salas de casas ou com jogadores.\n\
+\b\c2DIAG SALA\b\n\
+  Mostra a quantidade de salas de casas, dentro de itens e outras salas.\n\
+\b\c2DIAG LIMPASALA\b\n\
+  Apaga e recria todas as salas exceto de casas, dentro de itens,\n\
+  com jogadores ou com algum animal de jogador.\n\
+\b\c2DIAG CASA\b\n\
+  Mostra casas, salas e jogadores nas casas.\n\
+\b\c2DIAG LIMPACASA\b\n\
+  Salva, apaga e cria novamente todas as salas das casas, desde que\n\
+  não tenham nenhum jogador ou animal de jogador.\n\
+\b\c2DIAG RESET\b\n\
+  Reinicia o MUD apagando e criando novamente todas as classes e objetos\n\
+  exceto adm_diag"
 #
 textotxt cria_sala # Lista de salas que serão criadas
 intexec exec_sala # Para criar salas

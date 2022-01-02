@@ -1,10 +1,11 @@
 classe h_cmd_sjog
 herda comando_comum
-const txtajuda = txtajuda1 + m_ajuda
-const txtajuda1 = "\b\c3SJog\b\nSintaxe: SJOG [jogador]\n"
+const classemenu = "m_cmd_sjog"
 const posic = 0
 #
-const m_ajuda = "Esse comando só funciona quando você estiver em uma casa sua.\n\
+const m_ajuda = "-t\n\
+-s [jogador]\n\
+Esse comando só funciona quando você estiver em uma casa sua.\n\
 Permite que um jogador pegue itens da sala ou solte itens. Ou bloqueia,\n\
 se o jogador já tiver permissão. Se não houver nenhum jogador com permissão,\n\
 qualquer um poderá pegar itens da sala.\n\
@@ -51,40 +52,32 @@ herda comando_menu_cmd
 #
 const nome1 = "Ajuda"
 const tipo1 = "opc_texto"
-const clas1 = "cmd_sjog"
 const vari1 = "m_ajuda"
 #
 const nome2 = "Fora da casa"
 const tipo2 = "opc_linha"
-const clas2 = "cmd_sjog"
 const vari2 = "m_fora_casa"
 #
 const nome3 = "Todos têm permissão"
 const tipo3 = "opc_linha"
-const clas3 = "cmd_sjog"
 const vari3 = "m_todos"
 #
 const nome4 = "Alguns têm permissão"
 const tipo4 = "opc_linha"
-const clas4 = "cmd_sjog"
 const vari4 = "m_lista"
 #
 const nome5 = "Número de jogadores"
 const tipo5 = "opc_numero"
-const clas5 = "cmd_sjog"
 const vari5 = "v_limite_jog"
 #
 const nome6 = "Limite de jogadores"
 const tipo6 = "opc_linha"
-const clas6 = "cmd_sjog"
 const vari6 = "m_limite_jog"
 #
 const nome7 = "Deu permissão"
 const tipo7 = "opc_linha"
-const clas7 = "cmd_sjog"
 const vari7 = "m_limite_jog"
 #
 const nome8 = "Removeu permissão"
 const tipo8 = "opc_linha"
-const clas8 = "cmd_sjog"
 const vari8 = "m_perm_remove"

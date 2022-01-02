@@ -1,16 +1,16 @@
 classe adm_casa
-const iniclasse = !$[arg0] && criar(arg0)
-const txtajuda = "\b\c3Comandos de casas\b\n\
-  \c2LCASA\b     Lista casas existentes\n\
-  \c2CCASA\b     Cria uma casa\n\
-  \c2ECASA\b     Edita uma casa\n\
-  \c2ACASA\b     Apaga uma ou mais casas"
+herda comando_adm_ajuda
+const m_ajuda = "-t Comandos de casas\n\
+-m LCASA Lista casas existentes\n\
+-m CCASA Cria uma casa\n\
+-m ECASA Edita uma casa\n\
+-m ACASA Apaga uma ou mais casas"
 
 
 classe adm_lcasa
 herda comando_adm
-const txtajuda = "\b\c3Lcasa\b\n\
-Sintaxe: LCASA [nome]\n\
+const m_ajuda = "-t\n\
+-s [nome]\n\
 Lista as casas que começam com o nome especificado.\n\
 Se o nome for omitido, lista todas as casas."
 
@@ -47,8 +47,8 @@ func escr # Listar casas
 
 classe adm_ccasa
 herda comando_adm
-const txtajuda = "\b\c3Ccasa\b\n\
-Sintaxe: CCASA <nome>\n\
+const m_ajuda = "-t\n\
+-s <nome>\n\
 Cria uma casa. Nome deve ser o nome de uma área ou da casa.\n\
 Nomes de casas são sempre nomes de área seguido de um número de 001 a 999.\n\
 Passos para criar uma casa:\n\
@@ -100,8 +100,8 @@ func escr # Criar casa
 
 classe adm_acasa
 herda comando_adm
-const txtajuda = "\b\c3Acasa\b\n\
-Sintaxe: ACASA <nomes das casas>\n\
+const m_ajuda = "-t\n\
+-s <nomes das casas>\n\
 Apaga uma ou mais casas, com os nomes especificados."
 
 func escr # Apagar casa
@@ -150,9 +150,7 @@ func passo # Confirmar que quer apagar casa
 
 classe adm_ecasa
 herda comando_adm
-const txtajuda = "\b\c3Ecasa\b\n\
-Sintaxe: ECASA <nome>\n\
-Edita a casa com o nome especificado."
+const m_ajuda = "-t\n-s <nome>\nEdita a casa com o nome especificado."
 
 func escr # Editar casa
   txt100 nome
@@ -172,33 +170,29 @@ classe menu_casa
 herda comando_menu
 const titulo = "Casa " + txt(var.classe1, 2)
 const colunas = 25
+const classe = var.classe1
 #
 const nome1 = "Nome"
 const info1 = "Nome para os comandos LISTA e COMPRAR"
 const tipo1 = "opc_linha"
-const clas1 = var.classe1
 const vari1 = "nome"
 #
 const nome2 = "Descrição"
 const info2 = "É mostrado ao teclar LISTAR e o nome da casa"
 const tipo2 = "opc_texto"
-const clas2 = var.classe1
 const vari2 = "desc"
 #
 const nome3 = "Palavras chave"
 const info3 = "Palavras que os jogadores digitam para os comandos COMPRAR e LISTAR"
 const tipo3 = "opc_linha"
-const clas3 = var.classe1
 const vari3 = "ident"
 #
 const nome4 = "Valor da casa"
 const tipo4 = "opc_numero"
-const clas4 = var.classe1
 const vari4 = "valor"
 #
 const nome5 = "Salas"
 const tipo5 = "opc_listasala"
-const clas5 = var.classe1
 const vari5 = "c_salas"
 const extr5 = "20"
 const exec5 = "acerta_mudou"

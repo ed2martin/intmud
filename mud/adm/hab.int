@@ -1,28 +1,28 @@
 classe adm_hab
-const iniclasse = !$[arg0] && criar(arg0)
-const txtajuda = "\b\c3Habilidades, magias e técnicas de itens\b\n\
-  \c2LHAB\b      Lista habilidades existentes\n\
-  \c2LMAG\b      Lista magias existentes\n\
-  \c2LTEC\b      Lista técnicas de itens existentes\n\
-  \c2CHAB\b      Cria uma habilidade\n\
-  \c2CMAG\b      Cria uma magia\n\
-  \c2CTEC\b      Cria uma técnica de item\n\
-  \c2EHAB\b      Edita uma habilidade\n\
-  \c2EMAG\b      Edita uma magia\n\
-  \c2ETEC\b      Edita uma técnica de item\n\
-  \c2AHAB\b      Apaga uma ou mais habilidades\n\
-  \c2AMAG\b      Apaga uma ou mais magias\n\
-  \c2AMAG\b      Apaga uma ou mais técnicas de item\n\
-  \c2DHAB\b      Calcula danos causados por uma habilidade\n\
-  \c2DMAG\b      Calcula danos causados por uma magia\n\
-  \c2DTEC\b      Calcula danos causados por uma técnica de item\n\
+herda comando_adm
+const m_ajuda = "-t Habilidades, magias e técnicas de itens\n\
+-m LHAB Lista habilidades existentes\n\
+-m LMAG Lista magias existentes\n\
+-m LTEC Lista técnicas de itens existentes\n\
+-m CHAB Cria uma habilidade\n\
+-m CMAG Cria uma magia\n\
+-m CTEC Cria uma técnica de item\n\
+-m EHAB Edita uma habilidade\n\
+-m EMAG Edita uma magia\n\
+-m ETEC Edita uma técnica de item\n\
+-m AHAB Apaga uma ou mais habilidades\n\
+-m AMAG Apaga uma ou mais magias\n\
+-m AMAG Apaga uma ou mais técnicas de item\n\
+-m DHAB Calcula danos causados por uma habilidade\n\
+-m DMAG Calcula danos causados por uma magia\n\
+-m DTEC Calcula danos causados por uma técnica de item\n\
 Nota: Técnicas de itens são usadas no comando Item"
 
 
 classe adm_lhab
 herda comando_adm
-const txtajuda = "\b\c3Lhab\b\n\
-Sintaxe: LHAB [nome]\n\
+const m_ajuda = "-t\n\
+-s [nome]\n\
 Lista as habilidades que começam com o nome especificado.\n\
 Se o nome for omitido, lista todas as habilidades."
 #
@@ -65,8 +65,8 @@ func escr
 
 classe adm_lmag
 herda adm_lhab
-const txtajuda = "\b\c3Lmag\b\n\
-Sintaxe: LMAG [nome]\n\
+const m_ajuda = "-t\n\
+-s [nome]\n\
 Lista as magias que começam com o nome especificado.\n\
 Se o nome for omitido, lista todas as magias."
 #
@@ -77,8 +77,8 @@ const lista = "\b\c6Magia, Tipo, Alvo\b\n"
 
 classe adm_ltec
 herda adm_lhab
-const txtajuda = "\b\c3Ltec\b\n\
-Sintaxe: LTEC [nome]\n\
+const m_ajuda = "-t\n\
+-s [nome]\n\
 Lista as técnicas de item que começam com o nome especificado.\n\
 Se o nome for omitido, lista todas as técnicas."
 #
@@ -89,8 +89,8 @@ const lista = "\b\c6Técnica, Tipo, Alvo\b\n"
 
 classe adm_chab
 herda comando_adm
-const txtajuda = "\b\c3Chab\b\n\
-Sintaxe: CHAB <nome>\n\
+const m_ajuda = "-t\n\
+-s <nome>\n\
 Cria uma habilidade com o nome especificado.\n\
 O nome deve ser composto de letras, mas pode ter espaços no meio."
 const tipo = "habilidade"
@@ -169,8 +169,8 @@ func passo # Escolher o tipo de habilidade ou magia
 
 classe adm_cmag
 herda adm_chab
-const txtajuda = "\b\c3Cmag\b\n\
-Sintaxe: CMAG <nome>\n\
+const m_ajuda = "-t\n\
+-s <nome>\n\
 Cria uma magia com o nome especificado.\n\
 O nome deve ser composto de letras, mas pode ter espaços no meio."
 const tipo = "magia"
@@ -199,8 +199,8 @@ func escr
 
 classe adm_ctec
 herda adm_chab
-const txtajuda = "\b\c3Ctec\b\n\
-Sintaxe: CTEC <nome>\n\
+const m_ajuda = "-t\n\
+-s <nome>\n\
 Cria uma técnica de item com o nome especificado.\n\
 O nome deve ser composto de letras, mas pode ter espaços no meio."
 const tipo = "técnica de item"
@@ -229,8 +229,8 @@ func escr
 
 classe adm_ahab
 herda comando_adm
-const txtajuda = "\b\c3Ahab\b\n\
-Sintaxe: AHAB <nomes das habilidades>\n\
+const m_ajuda = "-t\n\
+-s <nomes das habilidades>\n\
 Apaga uma ou mais habilidades, com os nomes especificados.\n\
 Para apagar uma habilidade cujo nome contém espaços no meio, use\n\
 sublinhado no lugar dos espaços. Exemplo, se o nome da magia for\n\
@@ -282,8 +282,8 @@ func passo # Confirmar que quer apagar habilidade
 
 classe adm_amag
 herda comando_adm
-const txtajuda = "\b\c3Amag\b\n\
-Sintaxe: AMAG <nomes das magias>\n\
+const m_ajuda = "-t\n\
+-s <nomes das magias>\n\
 Apaga uma ou mais magias, com os nomes especificados.\n\
 Para apagar uma magia cujo nome contém espaços no meio, use sublinhado\n\
 no lugar dos espaços. Exemplo, se o nome da magia for Curar Cegueira,\n\
@@ -335,8 +335,8 @@ func passo # Confirmar que quer apagar magia
 
 classe adm_atec
 herda comando_adm
-const txtajuda = "\b\c3Atec\b\n\
-Sintaxe: ATEC <nomes das técnicas de item>\n\
+const m_ajuda = "-t\n\
+-s <nomes das técnicas de item>\n\
 Apaga uma ou mais técnicas de item, com os nomes especificados.\n\
 Para apagar uma técnicas de item cujo nome contém espaços no meio, use\n\
 sublinhado no lugar dos espaços. Exemplo, se o nome da técnica de item\n\
@@ -388,8 +388,8 @@ func passo # Confirmar que quer apagar técnica de item
 
 classe adm_ehab
 herda comando_adm
-const txtajuda = "\b\c3Ehab\b\n\
-Sintaxe: EHAB <nome>\n\
+const m_ajuda = "-t\n\
+-s <nome>\n\
 Edita a habilidade com o nome especificado."
 
 func escr
@@ -409,8 +409,8 @@ func escr
 
 classe adm_emag
 herda comando_adm
-const txtajuda = "\b\c3Emag\b\n\
-Sintaxe: EMAG <nome>\n\
+const m_ajuda = "-t\n\
+-s <nome>\n\
 Edita a magia com o nome especificado."
 
 func escr
@@ -430,8 +430,8 @@ func escr
 
 classe adm_etec
 herda comando_adm
-const txtajuda = "\b\c3Etec\b\n\
-Sintaxe: ETEC <nome>\n\
+const m_ajuda = "-t\n\
+-s <nome>\n\
 Edita a técnica de item com o nome especificado."
 
 func escr
@@ -451,9 +451,9 @@ func escr
 
 classe adm_dhab
 herda comando_adm
-const txtajuda = "\b\c3Dhab\b\n\
-Sintaxe: DHAB <habilidade> <alvo>\n\
-         DHAB <personagem> <habilidade> <alvo>\n\
+const m_ajuda = "-t\n\
+-s <habilidade> <alvo>\n\
+-s <personagem> <habilidade> <alvo>\n\
 Calcula os danos que uma habilidade faria no personagem alvo.\n\
 Se for fornecido apenas a habalidade e o alvo, calcula os danos que\n\
 o seu personagem faria."
@@ -504,9 +504,9 @@ func escr
 
 classe adm_dmag
 herda adm_dhab
-const txtajuda = "\b\c3Dmag\b\n\
-Sintaxe: DMAG <magia> <alvo>\n\
-         DMAG <personagem> <magia> <alvo>\n\
+const m_ajuda = "-t\n\
+-s <magia> <alvo>\n\
+-s <personagem> <magia> <alvo>\n\
 Calcula os danos que uma magia faria no personagem alvo.\n\
 Se for fornecido apenas a magia e o alvo, calcula os danos que\n\
 o seu personagem faria."
@@ -517,9 +517,9 @@ const naoataque = "Magia não é ataque: "
 
 classe adm_dtec
 herda adm_dhab
-const txtajuda = "\b\c3Dtec\b\n\
-Sintaxe: DTEC <técnica de item> <alvo>\n\
-         DTEC <personagem> <técnica de item> <alvo>\n\
+const m_ajuda = "-t\n\
+-s <técnica de item> <alvo>\n\
+-s <personagem> <técnica de item> <alvo>\n\
 Calcula os danos que uma técnica de item faria no personagem alvo.\n\
 Se for fornecido apenas a écnica de item e o alvo, calcula os danos que\n\
 o seu personagem faria."
@@ -537,14 +537,12 @@ const tipo2 = "menu_hab_posicao--"
 const nome3 = "Falha iniciante"
 const info3 = "Taxa de falha em porcentagem, de 0 a 100 (100 sempre falha)"
 const tipo3 = "opc_numero"
-const clas3 = var.classe1
 const vari3 = "falha1"
 const extr3 = "-1 100"
 #
 const nome4 = "Falha perito"
 const info4 = "Taxa de falha em porcentagem, de 0 a 100 (100 sempre falha)"
 const tipo4 = "opc_numero"
-const clas4 = var.classe1
 const vari4 = "falha2"
 const extr4 = "-1 100"
 #
@@ -557,37 +555,31 @@ const tipo6 = "menu_hab_custo--"
 const nome7 = "Preço da aula"
 const info7 = "Quantas moedas os personagens cobram para ensinar"
 const tipo7 = "opc_numero"
-const clas7 = var.classe1
 const vari7 = "valor"
 #
 const nome8 = "Pontos de aula"
 const info8 = "Quantos pontos de aula consome por aula"
 const tipo8 = "opc_numero"
-const clas8 = var.classe1
 const vari8 = "aulapontos"
 #
 const nome9 = "Depende de"
 const info9 = "Habilidades, magias e idiomas necessários para aprender esse ataque"
 const tipo9 = "opc_tipodep"
-const clas9 = var.classe1
 const vari9 = "depende"
 #
 const nome10 = "Iniciante nível"
 const info10 = "A partir de que nível pode ter a primeira aula"
 const tipo10 = "opc_numero"
-const clas10 = var.classe1
 const vari10 = "aulaini"
 #
 const nome11 = "Perito nível"
 const info11 = "A partir de que nível pode ter todas as aulas"
 const tipo11 = "opc_numero"
-const clas11 = var.classe1
 const vari11 = "aulafim"
 #
 const nome12 = "Somente tipos"
 const info12 = "Se estiver vazio, todas as classes e raças podem aprender"
 const tipo12 = "opc_tipos"
-const clas12 = var.classe1
 const vari12 = "tipoperso"
 
 
@@ -596,46 +588,39 @@ herda comando_menu
 const titulo = "Posição"
 const menufim = var.menufim
 const colunas = 25
+const classe = var.classe1
 #
 const nome1 = "Dormindo"
 const info1 = "Animal dormindo, quem controla o animal precisa estar acordado"
 const tipo1 = "opc_simnao"
-const clas1 = var.classe1
 const vari1 = "a_dormindo"
 #
 const nome2 = "Descansando"
 const tipo2 = "opc_simnao"
-const clas2 = var.classe1
 const vari2 = "a_descansando"
 #
 const nome3 = "Sentado"
 const tipo3 = "opc_simnao"
-const clas3 = var.classe1
 const vari3 = "a_sentado"
 #
 const nome4 = "Montado"
 const tipo4 = "opc_simnao"
-const clas4 = var.classe1
 const vari4 = "a_montado"
 #
 const nome5 = "Em pé"
 const tipo5 = "opc_simnao"
-const clas5 = var.classe1
 const vari5 = "a_em_pe"
 #
 const nome6 = "Lutando sentado"
 const tipo6 = "opc_simnao"
-const clas6 = var.classe1
 const vari6 = "a_bat_sentado"
 #
 const nome7 = "Lutando nontado"
 const tipo7 = "opc_simnao"
-const clas7 = var.classe1
 const vari7 = "a_bat_montado"
 #
 const nome8 = "Lutando em pé"
 const tipo8 = "opc_simnao"
-const clas8 = var.classe1
 const vari8 = "a_bat_em_pe"
 
 
@@ -644,39 +629,35 @@ herda comando_menu
 const titulo = "Requer"
 const menufim = var.menufim
 const colunas = 25
+const classe = var.classe1
 #
 const nome1 = "Arma"
 const info1 = "Se vazio, a arma é ignorada: ataca sem arma mesmo se estiver empunhando uma"
 const tipo1 = "opc_vetor"
-const clas1 = var.classe1
 const vari1 = "tipoarma"
 const extr1 = config:arma_txt
 #
 const nome2 = "Vestir item"
 const info2 = "Se não estiver vazio, precisa vestir um dos itens"
 const tipo2 = "opc_vetorhex"
-const clas2 = var.classe1
 const vari2 = "tipovestirsim"
 const extr2 = config:item_tipos
 #
 const nome3 = "Não vestir item"
 const info3 = "Não pode vestir nenhum dos itens"
 const tipo3 = "opc_vetorhex"
-const clas3 = var.classe1
 const vari3 = "tipovestirnao"
 const extr3 = config:item_tipos
 #
 const nome4 = "Carregar item"
 const info4 = "Se não estiver vazio, precisa ter um dos itens no comando Inv"
 const tipo4 = "opc_vetorhex"
-const clas4 = var.classe1
 const vari4 = "tipoinvsim"
 const extr4 = config:item_tipos
 #
 const nome5 = "Não carregar item"
 const info5 = "Não pode ter nenhum dos itens no comando Inv"
 const tipo5 = "opc_vetorhex"
-const clas5 = var.classe1
 const vari5 = "tipoinvnao"
 const extr5 = config:item_tipos
 
@@ -686,46 +667,40 @@ herda comando_menu
 const titulo = "Consome"
 const menufim = var.menufim
 const colunas = 25
+const classe = var.classe1
 #
 const nome1 = "Tempo de espera"
 const info1 = "Tempo mínimo que deve esperar, em décimos de segundo"
 const tipo1 = "opc_numero"
-const clas1 = var.classe1
 const vari1 = "c_espera"
 const extr1 = "5 150"
 #
 const nome2 = "Vida iniciante"
 const info2 = "Quantos pontos de vida consome no nível iniciante"
 const tipo2 = "opc_numero"
-const clas2 = var.classe1
 const vari2 = "c_vida1"
 #
 const nome3 = "Vida perito"
 const info3 = "Quantos pontos de vida consome no nível perito"
 const tipo3 = "opc_numero"
-const clas3 = var.classe1
 const vari3 = "c_vida2"
 #
 const nome4 = "Mana iniciante"
 const info4 = "Quantos pontos de mana consome no nível iniciante"
 const tipo4 = "opc_numero"
-const clas4 = var.classe1
 const vari4 = "c_mana1"
 #
 const nome5 = "Mana perito"
 const info5 = "Quantos pontos de mana consome no nível perito"
 const tipo5 = "opc_numero"
-const clas5 = var.classe1
 const vari5 = "c_mana2"
 #
 const nome6 = "Vigor iniciante"
 const info6 = "Quantos pontos de vigor consome no nível iniciante"
 const tipo6 = "opc_numero"
-const clas6 = var.classe1
 const vari6 = "c_move1"
 #
 const nome7 = "Vigor perito"
 const info7 = "Quantos pontos de vigor consome no nível perito"
 const tipo7 = "opc_numero"
-const clas7 = var.classe1
 const vari7 = "c_move2"

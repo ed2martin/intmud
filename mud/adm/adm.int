@@ -1,91 +1,91 @@
 classe adm_
+herda comando_adm_ajuda
 # Edição do código e comandos gerais de administração
-const iniclasse = !$[arg0] && criar(arg0)
-const txtajuda = "\b\c3Páginas de administração\b\n\
+const m_ajuda = "-t Páginas de administração\n\
 Para ler tecle ADM seguido do nome de um tópico ou um comando.\n\
 Os tópicos são:\n\
-  \c2CONFIG\b    Diversas configurações do MUD\n\
-  \c2AREA\b      Áreas\n\
-  \c2SALA\b      Salas\n\
-  \c2ITEM\b      Itens\n\
-  \c2TIPO\b      Tipos de personagens (raças e classes)\n\
-  \c2PERSO\b     Personagens não jogador\n\
-  \c2CASA\b      Casas de jogadores\n\
-  \c2RESET\b     Reset de área ou sala\n\
-  \c2HAB\b       Habilidades, magias e técnicas de itens\n\
-  \c2LIQ\b       Líquidos\n\
-  \c2EFEITO\b    Efeitos e modificadores\n\
-  \c2IDIOMA\b    Idiomas\n\
-  \c2SOCIAL\b    Comandos sociais\n\
-  \c2SOM\b       Sons via MSP\n\
-  \c2COD\b       Edição do código fonte\n\
-  \c2PERM\b      Permissões de jogadores\n\
-  \c2JOG\b       Comandos para jogadores\n\
-  \c2OUTROS\b    Outros comandos\n\
-  \c2NOMES\b     Atribuir nomes a um item ou personagem\n\
-  \c2MENS\b      Mostra os caracteres especiais em mensagens\n\
-  \c2CORES\b     Mostra as cores permitidas em mensagens"
+-m CONFIG Diversas configurações do MUD\n\
+-m AREA\ Áreas\n\
+-m SALA\ Salas\n\
+-m ITEM\ Itens\n\
+-m TIPO\ Tipos de personagens (raças e classes)\n\
+-m PERSO\ Personagens não jogador\n\
+-m CASA Casas de jogadores\n\
+-m RESET Reset de área ou sala\n\
+-m HAB Habilidades, magias e técnicas de itens\n\
+-m LIQ Líquidos\n\
+-m EFEITO Efeitos e modificadores\n\
+-m IDIOMA Idiomas\n\
+-m SOCIAL Comandos sociais\n\
+-m SOM Sons via MSP\n\
+-m COD Edição do código fonte\n\
+-m PERM Permissões de jogadores\n\
+-m JOG Comandos para jogadores\n\
+-m OUTROS Outros comandos\n\
+-m NOMES Atribuir nomes a um item ou personagem\n\
+-m MENS Mostra os caracteres especiais em mensagens\n\
+-m CORES Mostra as cores permitidas em mensagens"
 
 
 classe adm_jog
-const iniclasse = !$[arg0] && criar(arg0)
-const txtajuda = "\c3Comandos para jogadores\b\n\
-  \c2TELE\b      Teletransporta jogador\n\
-  \c2TELEENTRA\b Define mensagem de chegada do Tele\n\
-  \c2TELESAI\b   Define mensagem de saída do Tele\n\
-  \c2AC\b        Envia mensagem para o canal de administração\n\
-  \c2ECHO\b      Envia mensagem para todos\n\
-  \c2SECHO\b     Envia mensagem para uma sala\n\
-  \c2JECHO\b     Envia mensagem para um jogador\n\
-  \c2REZOU\b     Envia mensagem para jogador com cópia para admin\n\
-  \c2BAN\b       Expulsar jogadores ou banir por IP (sem jogo salvo)\n\
-  \c2BAN2\b      Expulsar jogadores ou banir por IP\n\
-  \c2MUDANOME\b  Muda o nome do personagem de um jogador\n\
-  \c2SAVTUDO\b   Salva em arquivo os jogos e as casas pendentes\n\
-  \c2LSAV\b      Mostra os arquivos de jogos salvos\n\
-  \c2ASAV\b      Apaga um arquivo de jogo salvo\n\
-  \c2ESAV\b      Edita um arquivo de jogo salvo\n\
-  \c2MONIT\b     Monitora um jogador\n\
-  \c2ESCR\b      Digita um comando no teclado do jogador\n\
-  \c2IJOG\b      Mostra aonde todos estão ou algumas informações de um jogador"
+herda comando_adm_ajuda
+const m_ajuda = "-t Comandos para jogadores\n\
+-m TELE Teletransporta jogador\n\
+-m TELEENTRA Define mensagem de chegada do Tele\n\
+-m TELESAI Define mensagem de saída do Tele\n\
+-m AC Envia mensagem para o canal de administração\n\
+-m ECHO Envia mensagem para todos\n\
+-m SECHO Envia mensagem para uma sala\n\
+-m JECHO Envia mensagem para um jogador\n\
+-m REZOU Envia mensagem para jogador com cópia para admin\n\
+-m BAN Expulsar jogadores ou banir por IP (sem jogo salvo)\n\
+-m BAN2 Expulsar jogadores ou banir por IP\n\
+-m MUDANOME Muda o nome do personagem de um jogador\n\
+-m SAVTUDO Salva em arquivo os jogos e as casas pendentes\n\
+-m LSAV Mostra os arquivos de jogos salvos\n\
+-m ASAV Apaga um arquivo de jogo salvo\n\
+-m ESAV Edita um arquivo de jogo salvo\n\
+-m MONIT Monitora um jogador\n\
+-m ESCR Digita um comando no teclado do jogador\n\
+-m IJOG Mostra aonde todos estão ou algumas informações de um jogador"
 
 
 classe adm_config
-const iniclasse = !$[arg0] && criar(arg0)
-const txtajuda = "\c3Diversas configurações do MUD\b\n\
-  \c2ECONFIG\b   Edita as configurações do MUD\n\
-  \c2MUDAEXP\b   Muda temporariamente a experiência que personagens ganham\n\
-  \c2COM\b       Comunicação do MUD com os jogadores\n\
-  \c2LOG\b       Ver arquivos de LOG\n\
-  \c2SERV\b      Informações sobre o MUD\n\
-  \c2DIAG\b      Comandos de diagnóstico"
+herda comando_adm_ajuda
+const m_ajuda = "\c3Diversas configurações do MUD\n\
+-m ECONFIG Edita as configurações do MUD\n\
+-m MUDAEXP Muda temporariamente a experiência que personagens ganham\n\
+-m COM Comunicação do MUD com os jogadores\n\
+-m LOG Ver arquivos de LOG\n\
+-m SERV Informações sobre o MUD\n\
+-m DIAG Comandos de diagnóstico"
 
 
 classe adm_outros
-const iniclasse = !$[arg0] && criar(arg0)
-const txtajuda = "\c3Outros comandos\b\n\
-  \c2INFO\b      Informações sobre a sala, personagem ou item\n\
-  \c2IVAR\b      Mostra as variáveis dinâmicas de sala, personagem ou item\n\
-  \c2IOBJ\b      Mostra os objetos de sala, personagem ou item\n\
-  \c2INV\b       Mostra os itens que um personagem da sala está carregando\n\
-  \c2ESTAT\b     Mostra estatísticas de um personagem da sala\n\
-  \c2HIST\b      Mostra o histórico de um personagem da sala\n\
-  \c2IHAB\b      Informa habilidades de um personagem da sala\n\
-  \c2IMAG\b      Informa magias de um personagem da sala\n\
-  \c2IEF\b       Informa efeitos de um personagem da sala\n\
-  \c2MATAR1\b    Apaga um personagem ou item\n\
-  \c2MATAR2\b    Mata instantaneamente um personagem\n\
-  \c2LUGAR\b     Executa um comando como se estivesse em outra sala\n\
-  \c2PNJ\b       Passa a controlar um personagem não jogador\n\
-  \c2CMD\b       Executa um comando do IntMUD no seu personagem\n\
-  \c2CMDP\b      Executa um comando do IntMUD em um personagem da sala\n\
-  \c2CMDJ\b      Executa um comando do IntMUD em um personagem de jogador\n\
-  \c2CMDI\b      Executa um comando do IntMUD em um item seu ou da da sala"
+herda comando_adm_ajuda
+const m_ajuda = "\c3Outros comandos\n\
+-m INFO Informações sobre a sala, personagem ou item\n\
+-m IVAR Mostra as variáveis dinâmicas de sala, personagem ou item\n\
+-m IOBJ Mostra os objetos de sala, personagem ou item\n\
+-m INV Mostra os itens que um personagem da sala está carregando\n\
+-m ESTAT Mostra estatísticas de um personagem da sala\n\
+-m HIST Mostra o histórico de um personagem da sala\n\
+-m IHAB Informa habilidades de um personagem da sala\n\
+-m IMAG Informa magias de um personagem da sala\n\
+-m IEF Informa efeitos de um personagem da sala\n\
+-m MATAR1 Apaga um personagem ou item\n\
+-m MATAR2 Mata instantaneamente um personagem\n\
+-m LUGAR Executa um comando como se estivesse em outra sala\n\
+-m PNJ Passa a controlar um personagem não jogador\n\
+-m CMD Executa um comando do IntMUD no seu personagem\n\
+-m CMDP Executa um comando do IntMUD em um personagem da sala\n\
+-m CMDJ Executa um comando do IntMUD em um personagem de jogador\n\
+-m CMDI Executa um comando do IntMUD em um item seu ou da da sala"
 
 
 classe adm_nomes
-const iniclasse = !$[arg0] && criar(arg0)
-const txtajuda = "\b\c3Atribuir nomes a um item ou personagem específico\b\n\n\
+herda comando_adm_ajuda
+const m_ajuda = "-t Atribuir nomes a um item ou personagem específico\n\n\
 É possível redefinir os nomes e o gênero de um item ou personagem em\n\
 particular, substituindo o que foi definido com os comandos Eitem e Eperso.\n\
 Basta alterar as seguintes variáveis com comandos Cmdi e Cmdp:\n\
@@ -130,8 +130,8 @@ está definido nos comandos Eitem e Eperso (ex. nomeitem baú grande)."
 
 
 classe adm_mens
-const iniclasse = !$[arg0] && criar(arg0)
-const txtajuda = "\b\c3Caracteres especiais em mensagens\b\n\n\
+herda comando_adm_ajuda
+const m_ajuda = "-t Caracteres especiais em mensagens\n\n\
 As seguintes sequências de caracteres têm um significado especial:\n\
  \c2$$\b  Símbolo $\n\
  \c2$P\b  Nome do personagem\n\
@@ -171,8 +171,8 @@ $N1, $K1 e $L1 ao invés de $P, $Q, $A, $B, $O e $N, $K e $L."
 
 
 classe adm_cores
-const iniclasse = !$[arg0] && criar(arg0)
-const txtajuda = "\b\c3Cores em mensagens\b\n\n\
+herda comando_adm_ajuda
+const m_ajuda = "-t Cores em mensagens\n\n\
 É possível definir as cores dos caracteres e do fundo nas mensagens.\n\
 Entretanto, não há suporte a cores no Papovox, nem para os usuários\n\
 que jogarem através de um chat.\n\n\

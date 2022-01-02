@@ -1,496 +1,15 @@
-classe cmd_hab
+classe h_cmd_estat
 herda comando_comum
 const posic = 5
-const txtajuda = "\b\c3Hab\b\n\
-Sintaxe: HAB  [nome da habilidade]\n\
-Sem argumentos mostra as habilidades do seu personagem.\n\
-Seguido de um nome, mostra informações sobre a habilidade.\n\
-Geralmente pode-se usar uma habilidade teclando-se o nome dela."
+const txtajuda = txtajuda1(txttroca(config:animal1 ? m_ajuda2 : m_ajuda1, "$", config:animal1))
 #
-const m_sem_info = "Nenhuma informação sobre a habilidade: $m"
-const m_nenhum = "Nenhuma habilidade."
-const m_lista1 = "Habilidades:"
-const m_lista2 = "Habilidades de $c:"
-
-func escr
-  ref r = arg0.persoesc
-  se arg1
-    ref obj
-    prog p
-    epara p.iniclasse("cmd_" + txt1(arg1)), p.lin, p.depois
-      continuar !r.var.[$[p.texto].nomevar]
-      refvar t1 = $[p.texto].habajuda(r)
-      ret t1, arg0.msg2(t1)
-    efim
-    $mens.mens = arg1
-    ret $mens.mp(m_sem_info, arg0)
-  fimse
-  textotxt h
-  txt100 t1
-  txt100 t2
-  epara t1 = r.var.ini("h_"), t1, t1 = r.var.depois(t1, "h_")
-    t2 = txte(txt(t1, 2)) # , t2 += txtesp(30 - inttotal(t2))
-    t2 += " / " + txtsublin(misc:aulas, r.var.[t1]_, 1)
-    txt2(r.var.[t1]) && (t2 += " R" + txt2(r.var.[t1]))
-    h.addfim(t2)
-  efim
-  ret !h.linhas, $mens.mp(m_nenhum, arg0)
-  $mens.p(arg0, arg0.persoesc)
-  h.addini("\b\c6" + $mens.txt(r == arg0 ? m_lista1 : m_lista2, arg0) + "\b")
-  arg0.msg2(h.remove(1000))
-
-
-classe cmd_magia
-herda comando_comum
-const posic = 5
-const txtajuda = "\b\c3Magia\b\n\
-Sintaxe: MAGIA  [nome da magia]\n\
-Sem argumentos mostra as magias do seu personagem.\n\
-Seguido de um nome, mostra informações sobre a magia.\n\
-Geralmente pode-se usar uma magia teclando-se lançar e o nome dela."
-#
-const m_sem_info = "Nenhuma informação sobre a magia: $m"
-const m_nenhum = "Nenhuma magia."
-const m_lista1 = "Magias:"
-const m_lista2 = "Magias de $c:"
-
-func escr
-  ref r = arg0.persoesc
-  se arg1
-    ref obj
-    prog p
-    epara p.iniclasse("magia_" + txt1(arg1)), p.lin, p.depois
-      continuar !r.var.[$[p.texto].nomevar]
-      refvar t1 = $[p.texto].habajuda(r)
-      ret t1, arg0.msg2(t1)
-    efim
-    $mens.mens = arg1
-    ret $mens.mp(m_sem_info, arg0)
-  fimse
-  textotxt h
-  txt100 t1
-  txt100 t2
-  epara t1 = r.var.ini("m_"), t1, t1 = r.var.depois(t1, "m_")
-    t2 = txte(txt(t1, 2)) # , t2 += txtesp(30 - inttotal(t2))
-    t2 += " / " + txtsublin(misc:aulas, r.var.[t1]_, 1)
-    txt2(r.var.[t1]) && (t2 += " R" + txt2(r.var.[t1]))
-    h.addfim(t2)
-  efim
-  ret !h.linhas, $mens.mp(m_nenhum, arg0)
-  $mens.p(arg0, arg0.persoesc)
-  h.addini("\b\c6" + $mens.txt(r == arg0 ? m_lista1 : m_lista2, arg0) + "\b")
-  arg0.msg2(h.remove(1000))
-
-
-classe cmd_outros
-herda comando_comum
-const posic = 5
-const txtajuda = "\b\c3Outros\b\n\
-Sintaxe: OUTROS\n\
-Mostra itens e habilidades extras. Geralmente são permanentes (não pode-se\n\
-pegar, soltar, dar e vestir)."
-#
-const m_nenhum = "Nenhum item."
-const m_lista1 = "Outros:"
-const m_lista2 = "Outros de $c:"
-
-func escr
-  ref r = arg0.persoesc
-  textotxt h
-  txt100 t1
-  txt100 t2
-  epara t1 = r.var.ini("o_"), t1, t1 = r.var.depois(t1, "o_")
-    t2 = txte(txt(t1, 2)) # , t2 += txtesp(30 - inttotal(t2))
-    se txt(int(r.var.[t1])) == r.var.[t1]
-      t2 += " / " + txtsublin(misc:aulas, r.var.[t1], 1)
-    senao
-      t2 += " / " + r.var.[t1]
-    fimse
-    h.addfim(t2)
-  efim
-  ret !h.linhas, $mens.mp(m_nenhum, arg0)
-  $mens.p(arg0, r)
-  h.addini("\b\c6" + $mens.txt(r == arg0 ? m_lista1 : m_lista2, arg0) + "\b")
-  arg0.msg2(h.remove(1000))
-
-
-classe cmd_inv
-herda comando_comum
-const posic = 5
-const txtajuda = config:animal1 ? txttroca(ta2, "$", config:animal1) : ta1
-const ta1 = "\b\c3Inv\b\n\
-Sintaxe: INV\n\
-Mostra os itens que o seu personagem está carregando."
-const ta2 = "\b\c3Inv\b\n\
-Sintaxe: INV\n\
-         INV <número>\n\
-Mostra os itens que o seu personagem está carregando.\n\
-Seguido de um número de 0 a $ mostra os itens do animal correspondente."
-#
-const m_nada1 = "Você não está carregando nada."
-const m_nada2 = "$A não está carregando nada."
-const m_lista1 = "Você carrega:"
-const m_lista2 = "$A carrega:"
-
-func escr
-  textotxt t
-  listaitem item
-  refvar r = misc:persoinfo(arg0, arg1)
-  ret !r, nulo
-  epara item = r.dentro1.fim, item, item.antes
-    refvar i = item.obj
-    continuar !i.visivel(arg0)
-    refvar nn = txtsublin(i.atribs.ini.textolin(2), 1)
-    t.addfim(txt(i.objtot) + i.atribs.ini.texto + txtcopiamai(i.descnome2, "A") + nn)
-  efim
-  t.juntalin("(", "x)")
-  se t
-    $mens.p(arg0, r)
-    refvar nome = $mens.txt(r == arg0 ? m_lista1 : m_lista2, arg0)
-    arg0.msg2("\b\c6" + nome + "\b\n" + txttroca(t.remove(1000), "\d+", "\n"))
-  senao
-    $mens.mp(r == arg0 ? m_nada1 : m_nada2, arg0, r)
-  fimse
-
-
-classe cmd_equip
-herda comando_comum
-const posic = 5
-const txtajuda = config:animal1 ? txttroca(ta2, "$", config:animal1) : ta1
-const ta1 = "\b\c3Equip\b\n\
-Sintaxe: EQUIP\n\
-         EQUIP TUDO\n\
-Mostra os itens que o seu personagem está vestindo ou usando.\n\
-Digitando EQUIP TUDO, são mostradas também as posições aonde o seu\n\
-personagem pode vestir algo."
-const ta2 = "\b\c3Equip\b\n\
-Sintaxe: EQUIP\n\
-         EQUIP TUDO\n\
-         EQUIP <número>\n\
-Mostra os itens que o seu personagem está vestindo ou usando.\n\
-Digitando EQUIP TUDO, são mostradas também as posições aonde o seu\n\
-personagem pode vestir algo.\n\
-Seguido de um número de 0 a $ mostra os itens do animal correspondente."
-#
-const m_nada1 = "Você não está vestindo/usando nada."
-const m_nada2 = "$A não está vestindo/usando nada."
-const m_lista1 = "Você está equipad$s com:"
-const m_lista2 = "$A está equipad$t com:"
-
-func escr
-  textotxt t
-  listaitem item
-  ref pos.55
-  txt50 nomepos
-# Obtém o personagem
-  refvar r = arg1 == "tudo" ? arg0 : misc:persoinfo(arg0, arg1)
-  ret !r, nulo
-# Preenche pos
-  epara item = r.dentro2.fim, item, item.antes
-    continuar !item.obj.vestpos || !item.obj.visivel(arg0)
-    pos.[item.obj.vestpos] = item.obj
-  efim
-# Mostra as posições
-  txt512 lin
-  refvar lugar = arg1 == "tudo" ? r.equippos : "0"
-  epara lin = config:equip_ordem, lin, lin = txt2(lin)
-    refvar obj = pos.[1 + txt1(lin)]
-    se obj.vestpos && obj.visivel(arg0)
-      nomepos = "\c2(" + misc:equip(obj.vestpos) + ")\b "
-      nomepos += txtesp(23 - inttotal(nomepos)) + obj.atribs.ini.texto(1)
-      t.addfim(nomepos + txtcopiamai(obj.descnome2, "A"))
-    senao (lugar & intbith(1 + txt1(lin))) != "0"
-      nomepos = "\c2(" + misc:equip(1 + txt1(lin)) + ")\b "
-      se nomepos != "\c2(desconhecido)\b "
-        t.addfim(nomepos + txtesp(23 - inttotal(nomepos)) + "nada")
-      fimse
-    fimse
-  efim
-# Envia mensagem
-  se t
-    $mens.p(arg0, r)
-    refvar nome = $mens.txt(r == arg0 ? m_lista1 : m_lista2, arg0)
-    arg0.msg2("\b\c6" + nome + "\b\n" + t.remove(1000))
-  senao
-    $mens.mp(r == arg0 ? m_nada1 : m_nada2, arg0, r)
-  fimse
-
-
-classe cmd_efeito
-herda comando_comum, opc_atribcomum
-const posic = 0
-const txtajuda = "\b\c3Efeito\b\n\
-Sintaxe: EFEITO  [nome do efeito]\n\
-Sem argumentos mostra os efeitos que estão afetando o seu personagem.\n\
-Seguido de um nome, mostra informações sobre o efeito."
-#
-const m_nada1 = "Nenhum efeito afetando você."
-const m_nada2 = "Nenhum efeito afetando $a."
-const m_lista1 = "Efeitos afetando você:"
-const m_lista2 = "Efeitos afetando $a:"
-const m_sem_info = "Nenhuma informação sobre o efeito: $m"
-
-func escr
-  listaitem i
-  ref r = arg0.persoesc
-  se arg1
-    ref obj
-    nomeobj n
-    n.ini(arg1, 1)
-    epara i = r.dentro2.ini, i, i.depois
-      continuar !i.obj.e_nome || !n.nome(i.obj.e_nome)
-      textotxt t
-      txt100 lin = "Efeito " + i.obj.e_nome + ", duração "
-      lin += i.obj.t_duracao ? txt(int(i.obj.t_duracao / 10)) : " indeterminada"
-      t.addfim(lin)
-      atrib_ler(i.obj, "recalc2_auto")
-      atrib_txt(t)
-      i.obj.e_desc && t.addfim(i.obj.e_desc)
-      ret arg0.msg2(t.remove(1000))
-    efim
-    $mens.mens = arg1
-    ret $mens.mp(m_sem_info, arg0)
-  fimse
-  txt100 n
-  r.persoesc != arg0 && (n = " de " + r.nome)
-  textotxt h
-  epara i = r.dentro2.ini, i, i.depois
-    continuar !i.obj.e_nome
-    h.addfim("1 " + i.obj.e_nome + (i.obj.t_duracao ? " (" + int(i.obj.t_duracao / 10) + \
-")"))
-  efim
-  refvar nome = r == arg0 ? "você" : r.nome
-  ret !h.linhas, $mens.mp(r == arg0 ? m_nada1 : m_nada2, arg0, r)
-  $mens.p(arg0, r)
-  h.ordenalin("", "x")
-  h.addini("\b\c6" + $mens.txt(r == arg0 ? m_lista1 : m_lista2, arg0) + "\b")
-  arg0.msg2(h.remove(1000))
-
-
-classe cmd_vida
-herda comando_comum
-const posic = 0
-const txtajuda = config:animal1 ? txttroca(ta2, "$", config:animal1) : ta1
-const ta1 = "\b\c3Vida\b\n\
-Sintaxe: VIDA\n\
-Mostra os pontos de vida, mana, vigor, nível e experiência do seu personagem."
-const ta2 = "\b\c3Vida\b\n\
-Sintaxe: VIDA\n\
-         VIDA <número>\n\
-Mostra os pontos de vida, mana, vigor, nível e experiência do seu personagem.\n\
-Seguido de um número de 0 a $ mostra as informações do animal correspondente."
-
-func escr
-  refvar r = misc:persoinfo(arg0, arg1)
-  ret !r, nulo
-  se r == arg0
-    arg0.msg(vidalin(arg0))
-  senao
-    arg0.msg(txtcopiamai(r.nome, "A") + ": " + vidalin(r))
-  fimse
-
-func vidalin
-  txt100 lin
-  lin = "Vida " + arg0.pvida + "/" + arg0.pvidamax
-  lin += "  Mana " + arg0.pmana + "/" + arg0.pmanamax
-  lin += "  Vigor " + arg0.pmove + "/" + arg0.pmovemax
-  lin += "  Nível " + arg0.pnivel
-  lin += "  Experiência " + arg0.expatual
-  refvar nmax = arg0.pnivelmax
-  (nmax <= 0 || arg0.pnivel < nmax) && (lin += "/" + arg0.expmax)
-  ret lin
-
-
-classe cmd_relatar
-herda comando_comum
-const posic = 5
-const txtajuda = "\b\c3Relatar\b\n\
-Sintaxe: RELATAR\n\
-Mostra as suas estatísticas (vida, mana, movimento e experiência) para\n\
-os outros personagens e jogadores que estiverem na mesma sala."
-
-func escr
-  txt200 lin
-  lin = txt(arg0.nome) + " relata:\n"
-  lin += "Vida " + arg0.pvida + "/" + arg0.pvidamax
-  lin += "  Mana " + arg0.pmana + "/" + arg0.pmanamax
-  lin += "  Vigor " + arg0.pmove + "/" + arg0.pmovemax
-  lin += "  Nível " + arg0.pnivel
-  lin += "  Experiência " + arg0.expatual
-  arg0.dono.msg(lin)
-
-
-classe cmd_moedas
-herda comando_comum
-const txtajuda = "\b\c3Moedas\b\n\
-Sintaxe: MOEDAS\n\
-Mostra quantas moedas você está carregando."
-const posic = 0
-
-func escr
-  txt100 lin
-  txt100 lin2
-  se !arg0.var.z_moedas_
-    lin = "Nenhuma moeda"
-  senao arg0.var.z_moedas_ == 1
-    lin = "Uma moeda"
-  senao arg0.var.z_moedas_ == 2
-    lin = "Duas moedas"
-  senao
-    lin = txtnum(arg0.var.z_moedas_, ".") + " moedas"
-  fimse
-  se arg0.persoesc == arg0 || !arg0.persoesc.var.z_moedas_
-  senao arg0.persoesc.var.z_moedas_ == 1
-    lin2 = " uma moeda"
-  senao arg0.var.z_moedas_ == 2
-    lin2 = " duas moeda"
-  senao
-    lin2 = " " + txtnum(arg0.var.z_moedas_, ".") + " moedas"
-  fimse
-  lin2 && (lin += ", " + txtcopiamai(arg0.persoesc.nome, "A") + lin2)
-  arg0.msg(lin + ".")
-
-
-classe cmd_hora
-herda comando_comum
-const txtajuda = "\b\c3Hora\b\n\
-Sintaxe: HORA\n\
-Mostra a hora atual, no calendário do MUD e no servidor."
-const posic = 0
-
-func escr
-  txt100 t1
-  datahora d
-  d.agora
-  t1 = "  (" + semanamud(misc:dia) + ")"
-  arg0.msg("Hora atual MUD:      " + misc:hora + ":" + misc:min + t1)
-  t1 = "Hora atual servidor: " + d.hora + ":" + d.min
-  arg0.msg(t1 + "  " + d.dia + "/" + d.mes + "/" + d.ano)
-  t1 = "Tempo total de jogo: "
-  arg0.tempojogo2 == 1 && (t1 += "1 dia ")
-  arg0.tempojogo2 > 1 && (t1 += txt(arg0.tempojogo2) + " dias ")
-  t1 += intdiv((864000 - arg0.tempojogo1) / 36000)
-  t1 += ":"
-  t1 += intdiv((864000 - arg0.tempojogo1) / 600) % 60
-  arg0.msg(t1 + " horas")
-  ret !arg0.sock, nulo
-  int32 x
-  x = arg0.sock.tempojogo
-  se x >= 24 * 36000
-    t1 = "Mais de 24 horas"
-  senao
-    t1 = intdiv(x / 36000)
-    t1 += ":" + intdiv(x / 600) % 60 + " horas"
-  fimse
-  arg0.msg("Tempo dessa sessão:  " + t1)
-
-func semanamud
-  casovar arg0
-  casose "0"
-    ret "Domingo"
-  casose "1"
-    ret "Segunda-feira"
-  casose "2"
-    ret "Terça-feira"
-  casose "3"
-    ret "Quarta-feira"
-  casose "4"
-    ret "Quinta-feira"
-  casose "5"
-    ret "Sexta-feira"
-  casose "6"
-    ret "Sábado"
-  casofim
-
-
-classe cmd_onde
-herda comando_comum
-const txtajuda = "\b\c3Onde\b\n\
-Sintaxe: ONDE\n\
-Mostra a área em que você está e os jogadores que estiverem por perto."
-const posic = 0
-
-func escr
-  textotxt t0
-  txt100 area
-  ref r
-  epara r = arg0.dono, r.dono, r = r.dono
-  efim
-  area = r.s_area
-# Checa se pode ver a sala
-  se !r.visivel(arg0)
-    se 1 & arg0.bitver
-      arg0.msg("Está escuro...")
-    senao
-      $mens.mp("Você está ceg$s.", arg0)
-    fimse
-    ret
-  fimse
-# Dados da área
-  t0.addfim("\b\c6Área " + $a_[area].a_nome + ":\b")
-# Lista de personagens dos jogadores
-  indiceitem item
-  epara item.ini("pn "), txt1(item.txt) == "pn", item.depois
-# continuar item.obj.jogconfig.18 && !arg0.jogconfig.18
-    continuar !item.obj.visivel(arg0)
-    epara r = item.obj.dono, r.dono, r = r.dono
-    efim
-    continuar area != r.s_area
-    refvar titulo = item.obj.dono.var.z_titulo
-    t0.addfim(item.obj.nome + "    " + (titulo ? titulo : item.obj.dono.s_titulo(arg0)))
-  efim
-  t0.txtmostra
-  arg0.msg2(t0.remove(1000))
-
-
-classe cmd_saidas
-herda comando_comum
-const posic = 5
-const txtajuda = "\b\c3Saídas\b\n\
-Sintaxe: SAÍDAS\n\
-Mostra as saídas óbvias do lugar onde você está."
-
-func escr
-  se !arg0.dono.visivel(arg0)
-    arg0.msg("Está escuro...")
-    ret
-  fimse
-  textotxt t
-  txt80 dir
-  ref dono = arg0.dono
-  epara dir = misc:listadir, dir, dir = txt2(dir)
-    refvar nome = txt1(dir)
-    refvar sala = dono.dirsala(nome, arg0)
-    continuar !sala || dono.inv_[txt1(dir)](arg0)
-    se int(dono.porta_[nome]) >= 2
-      t.addfim(txt(txtmai(nome) + "       ", 0, 8) + "Está fechado")
-    senao sala.visivel(arg0)
-      t.addfim(txt(txtmai(nome) + "       ", 0, 8) + sala.s_titulo(arg0))
-    senao
-      t.addfim(txt(txtmai(nome) + "       ", 0, 8) + "Está escuro")
-    fimse
-  efim
-  se t.linhas
-    arg0.msg2("\b\c6Saídas óbvias:\b\n" + t.remove(1000))
-  senao
-    arg0.msg("Não há nenhuma saída óbvia.")
-  fimse
-
-
-classe cmd_estat
-herda comando_comum
-const posic = 5
-const txtajuda = config:animal1 ? txttroca(ta2, "$", config:animal1) : ta1
-const ta1 = "\b\c3Estat\b\n\
-Sintaxe: ESTAT\n\
-Mostra as estatísticas e diversas informações sobre o seu personagem."
-const ta2 = "\b\c3Estat\b\n\
-Sintaxe: ESTAT\n\
-         ESTAT <número>\n\
-Mostra as estatísticas e diversas informações sobre o seu personagem ou\n\
-o animal você escolheu.\n\
-Seguido de um número de 0 a $ mostra as estatísticas do animal\n\
-correspondente."
+const m_ajuda1 = "-t\n-s\nMostra as estatísticas e diversas informações sobre o seu personagem."
+const m_ajuda2 = "-t\n\
+-s\n\
+-s <número>\n\
+Mostra as estatísticas e diversas informações sobre o seu personagem\n\
+ou o animal você escolheu. Seguido de um número de 0 a $ mostra\n\
+as estatísticas do animal correspondente."
 
 func escr
   textotxt t
@@ -575,10 +94,10 @@ func atkdef
   ret txt(arg0)
 
 
-classe cmd_infojog
+classe h_cmd_infojog
 herda comando_comum
-const txtajuda = "\b\c3Infojog\b\n\
-Sintaxe: INFOJOG <jogador>\n\
+const m_ajuda = "-t\n\
+-s <jogador>\n\
 Mostra algumas informações de um personagem de jogador, mesmo que\n\
 não esteja online."
 const posic = 0
@@ -642,3 +161,480 @@ func escr
     t.addfim(lin + horas + " horas")
   fimse
   arg0.msg2(t.remove(1000))
+
+
+classe h_cmd_hora
+herda comando_comum
+const m_ajuda = "-t\n-s\nMostra a hora atual, no calendário do MUD e no servidor."
+const posic = 0
+
+func escr
+  txt100 t1
+  datahora d
+  d.agora
+  t1 = "  (" + semanamud(misc:dia) + ")"
+  arg0.msg("Hora atual MUD:      " + misc:hora + ":" + misc:min + t1)
+  t1 = "Hora atual servidor: " + d.hora + ":" + d.min
+  arg0.msg(t1 + "  " + d.dia + "/" + d.mes + "/" + d.ano)
+  t1 = "Tempo total de jogo: "
+  arg0.tempojogo2 == 1 && (t1 += "1 dia ")
+  arg0.tempojogo2 > 1 && (t1 += txt(arg0.tempojogo2) + " dias ")
+  t1 += intdiv((864000 - arg0.tempojogo1) / 36000)
+  t1 += ":"
+  t1 += intdiv((864000 - arg0.tempojogo1) / 600) % 60
+  arg0.msg(t1 + " horas")
+  ret !arg0.sock, nulo
+  int32 x
+  x = arg0.sock.tempojogo
+  se x >= 24 * 36000
+    t1 = "Mais de 24 horas"
+  senao
+    t1 = intdiv(x / 36000)
+    t1 += ":" + intdiv(x / 600) % 60 + " horas"
+  fimse
+  arg0.msg("Tempo dessa sessão:  " + t1)
+
+func semanamud
+  casovar arg0
+  casose "0"
+    ret "Domingo"
+  casose "1"
+    ret "Segunda-feira"
+  casose "2"
+    ret "Terça-feira"
+  casose "3"
+    ret "Quarta-feira"
+  casose "4"
+    ret "Quinta-feira"
+  casose "5"
+    ret "Sexta-feira"
+  casose "6"
+    ret "Sábado"
+  casofim
+
+
+classe h_cmd_onde
+herda comando_comum
+const m_ajuda = "-t\n-s\nMostra a área em que você está e os jogadores que estiverem por perto."
+const posic = 0
+
+func escr
+  textotxt t0
+  txt100 area
+  ref r
+  epara r = arg0.dono, r.dono, r = r.dono
+  efim
+  area = r.s_area
+# Checa se pode ver a sala
+  se !r.visivel(arg0)
+    se 1 & arg0.bitver
+      arg0.msg("Está escuro...")
+    senao
+      $mens.mp("Você está ceg$s.", arg0)
+    fimse
+    ret
+  fimse
+# Dados da área
+  t0.addfim("\b\c6Área " + $a_[area].a_nome + ":\b")
+# Lista de personagens dos jogadores
+  indiceitem item
+  epara item.ini("pn "), txt1(item.txt) == "pn", item.depois
+# continuar item.obj.jogconfig.18 && !arg0.jogconfig.18
+    continuar !item.obj.visivel(arg0)
+    epara r = item.obj.dono, r.dono, r = r.dono
+    efim
+    continuar area != r.s_area
+    refvar titulo = item.obj.dono.var.z_titulo
+    t0.addfim(item.obj.nome + "    " + (titulo ? titulo : item.obj.dono.s_titulo(arg0)))
+  efim
+  t0.txtmostra
+  arg0.msg2(t0.remove(1000))
+
+
+classe h_cmd_saidas
+herda comando_comum
+const posic = 5
+#
+const m_ajuda = "-t\n-s\nMostra as saídas óbvias do lugar onde você está."
+const m_lista = "Saídas óbvias:"
+const m_nenhum = "Não há nenhuma saída óbvia."
+const m_escuro = "Está escuro..."
+const m_dir_fechado = "Está fechado"
+const m_dir_escuro = "Está escuro"
+
+func escr
+  se !arg0.dono.visivel(arg0)
+    $mens.mp(m_escuro, arg0)
+    ret
+  fimse
+  textotxt t
+  txt80 dir
+  ref dono = arg0.dono
+  epara dir = misc:listadir, dir, dir = txt2(dir)
+    refvar nome = txt1(dir)
+    refvar sala = dono.dirsala(nome, arg0)
+    continuar !sala || dono.inv_[txt1(dir)](arg0)
+    se int(dono.porta_[nome]) >= 2
+      t.addfim(txt(txtmai(nome) + "       ", 0, 8) + m_dir_fechado)
+    senao sala.visivel(arg0)
+      t.addfim(txt(txtmai(nome) + "       ", 0, 8) + sala.s_titulo(arg0))
+    senao
+      t.addfim(txt(txtmai(nome) + "       ", 0, 8) + m_dir_escuro)
+    fimse
+  efim
+  se t.linhas
+    arg0.msg2("\b\c6" + m_lista + "\b\n" + t.remove(1000))
+  senao
+    $mens.mp(m_nenhum, arg0)
+  fimse
+
+
+classe h_cmd_moedas
+herda comando_comum
+const m_ajuda = "-t\n-s\nMostra quantas moedas você está carregando."
+const posic = 0
+
+func escr
+  txt100 lin
+  txt100 lin2
+  se !arg0.var.z_moedas_
+    lin = "Nenhuma moeda"
+  senao arg0.var.z_moedas_ == 1
+    lin = "Uma moeda"
+  senao arg0.var.z_moedas_ == 2
+    lin = "Duas moedas"
+  senao
+    lin = txtnum(arg0.var.z_moedas_, ".") + " moedas"
+  fimse
+  se arg0.persoesc == arg0 || !arg0.persoesc.var.z_moedas_
+  senao arg0.persoesc.var.z_moedas_ == 1
+    lin2 = " uma moeda"
+  senao arg0.var.z_moedas_ == 2
+    lin2 = " duas moeda"
+  senao
+    lin2 = " " + txtnum(arg0.var.z_moedas_, ".") + " moedas"
+  fimse
+  lin2 && (lin += ", " + txtcopiamai(arg0.persoesc.nome, "A") + lin2)
+  arg0.msg(lin + ".")
+
+
+classe h_cmd_relatar
+herda comando_comum
+const posic = 5
+const m_ajuda = "-t\n\
+-s\n\
+Mostra as suas estatísticas (vida, mana, movimento e experiência) para\n\
+os outros personagens e jogadores que estiverem na mesma sala."
+
+func escr
+  txt200 lin
+  lin = txt(arg0.nome) + " relata:\n"
+  lin += "Vida " + arg0.pvida + "/" + arg0.pvidamax
+  lin += "  Mana " + arg0.pmana + "/" + arg0.pmanamax
+  lin += "  Vigor " + arg0.pmove + "/" + arg0.pmovemax
+  lin += "  Nível " + arg0.pnivel
+  lin += "  Experiência " + arg0.expatual
+  arg0.dono.msg(lin)
+
+
+classe h_cmd_efeito
+herda comando_comum, opc_atribcomum
+const posic = 0
+#
+const m_ajuda = "-t\n\
+-s [nome do efeito]\n\
+Sem argumentos mostra os efeitos que estão afetando o seu personagem.\n\
+Seguido de um nome, mostra informações sobre o efeito."
+const m_nada1 = "Nenhum efeito afetando você."
+const m_nada2 = "Nenhum efeito afetando $a."
+const m_lista1 = "Efeitos afetando você:"
+const m_lista2 = "Efeitos afetando $a:"
+const m_sem_info = "Nenhuma informação sobre o efeito: $m"
+
+func escr
+  listaitem i
+  ref r = arg0.persoesc
+  se arg1
+    ref obj
+    nomeobj n
+    n.ini(arg1, 1)
+    epara i = r.dentro2.ini, i, i.depois
+      continuar !i.obj.e_nome || !n.nome(i.obj.e_nome)
+      textotxt t
+      txt100 lin = "Efeito " + i.obj.e_nome + ", duração "
+      lin += i.obj.t_duracao ? txt(int(i.obj.t_duracao / 10)) : " indeterminada"
+      t.addfim(lin)
+      atrib_ler(i.obj, "recalc2_auto")
+      atrib_txt(t)
+      i.obj.e_desc && t.addfim(i.obj.e_desc)
+      ret arg0.msg2(t.remove(1000))
+    efim
+    $mens.mens = arg1
+    ret $mens.mp(m_sem_info, arg0)
+  fimse
+  txt100 n
+  r.persoesc != arg0 && (n = " de " + r.nome)
+  textotxt h
+  epara i = r.dentro2.ini, i, i.depois
+    continuar !i.obj.e_nome
+    h.addfim("1 " + i.obj.e_nome + (i.obj.t_duracao ? " (" + int(i.obj.t_duracao / 10) + \
+")"))
+  efim
+  refvar nome = r == arg0 ? "você" : r.nome
+  ret !h.linhas, $mens.mp(r == arg0 ? m_nada1 : m_nada2, arg0, r)
+  $mens.p(arg0, r)
+  h.ordenalin("", "x")
+  h.addini("\b\c6" + $mens.txt(r == arg0 ? m_lista1 : m_lista2, arg0) + "\b")
+  arg0.msg2(h.remove(1000))
+
+
+classe h_cmd_vida
+herda comando_comum
+const posic = 0
+const txtajuda = txtajuda1(txttroca(config:animal1 ? m_ajuda2 : m_ajuda1, "$", config:animal1))
+const m_ajuda1 = "-t\n\
+-s\n\
+Mostra os pontos de vida, mana, vigor, nível e experiência do seu personagem."
+const m_ajuda2 = "-t\n\
+-s\n\
+-s <número>\n\
+Mostra os pontos de vida, mana, vigor, nível e experiência do seu personagem.\n\
+Seguido de um número de 0 a $, mostra as informações do animal correspondente."
+
+func escr
+  refvar r = misc:persoinfo(arg0, arg1)
+  ret !r, nulo
+  se r == arg0
+    arg0.msg(vidalin(arg0))
+  senao
+    arg0.msg(txtcopiamai(r.nome, "A") + ": " + vidalin(r))
+  fimse
+
+func vidalin
+  txt100 lin
+  lin = "Vida " + arg0.pvida + "/" + arg0.pvidamax
+  lin += "  Mana " + arg0.pmana + "/" + arg0.pmanamax
+  lin += "  Vigor " + arg0.pmove + "/" + arg0.pmovemax
+  lin += "  Nível " + arg0.pnivel
+  lin += "  Experiência " + arg0.expatual
+  refvar nmax = arg0.pnivelmax
+  (nmax <= 0 || arg0.pnivel < nmax) && (lin += "/" + arg0.expmax)
+  ret lin
+
+
+classe h_cmd_equip
+herda comando_comum
+const posic = 5
+const txtajuda = txtajuda1(txttroca(config:animal1 ? m_ajuda2 : m_ajuda1, "$", config:animal1))
+#
+const m_ajuda1 = "-t\n\
+-s\n\
+-s TUDO\n\
+Mostra os itens que o seu personagem está vestindo ou usando.\n\
+Sequido da palavra TUDO, são mostradas também as posições aonde o seu\n\
+personagem pode vestir algo."
+const m_ajuda2 = "-t\n\
+-s\n\
+-s TUDO\n\
+-s <número>\n\
+Mostra os itens que o seu personagem está vestindo ou usando.\n\
+Sequido da palavra TUDO, são mostradas também as posições aonde o seu\n\
+personagem pode vestir algo.\n\
+Seguido de um número de 0 a $, mostra os itens do animal correspondente."
+const m_nada1 = "Você não está vestindo/usando nada."
+const m_nada2 = "$A não está vestindo/usando nada."
+const m_lista1 = "Você está equipad$s com:"
+const m_lista2 = "$A está equipad$t com:"
+
+func escr
+  textotxt t
+  listaitem item
+  ref pos.55
+  txt50 nomepos
+# Obtém o personagem
+  refvar r = arg1 == "tudo" ? arg0 : misc:persoinfo(arg0, arg1)
+  ret !r, nulo
+# Preenche pos
+  epara item = r.dentro2.fim, item, item.antes
+    continuar !item.obj.vestpos || !item.obj.visivel(arg0)
+    pos.[item.obj.vestpos] = item.obj
+  efim
+# Mostra as posições
+  txt512 lin
+  refvar lugar = arg1 == "tudo" ? r.equippos : "0"
+  epara lin = config:equip_ordem, lin, lin = txt2(lin)
+    refvar obj = pos.[1 + txt1(lin)]
+    se obj.vestpos && obj.visivel(arg0)
+      nomepos = "\c2(" + misc:equip(obj.vestpos) + ")\b "
+      nomepos += txtesp(23 - inttotal(nomepos)) + obj.atribs.ini.texto(1)
+      t.addfim(nomepos + txtcopiamai(obj.descnome2, "A"))
+    senao lugar & intbith(1 + txt1(lin)) != "0"
+      nomepos = "\c2(" + misc:equip(1 + txt1(lin)) + ")\b "
+      se nomepos != "\c2(desconhecido)\b "
+        t.addfim(nomepos + txtesp(23 - inttotal(nomepos)) + "nada")
+      fimse
+    fimse
+  efim
+# Envia mensagem
+  se t
+    $mens.p(arg0, r)
+    refvar nome = $mens.txt(r == arg0 ? m_lista1 : m_lista2, arg0)
+    arg0.msg2("\b\c6" + nome + "\b\n" + t.remove(1000))
+  senao
+    $mens.mp(r == arg0 ? m_nada1 : m_nada2, arg0, r)
+  fimse
+
+
+classe h_cmd_inv
+herda comando_comum
+const posic = 5
+const txtajuda = txtajuda1(txttroca(config:animal1 ? m_ajuda2 : m_ajuda1, "$", config:animal1))
+#
+const m_ajuda1 = "-t\n\
+-s\n\
+Mostra os itens que o seu personagem está carregando."
+const m_ajuda2 = "-t\n\
+-s\n\
+-s <número>\n\
+Mostra os itens que o seu personagem está carregando.\n\
+Seguido de um número de 0 a $ mostra os itens do animal correspondente."
+const m_nada1 = "Você não está carregando nada."
+const m_nada2 = "$A não está carregando nada."
+const m_lista1 = "Você carrega:"
+const m_lista2 = "$A carrega:"
+
+func escr
+  textotxt t
+  listaitem item
+  refvar r = misc:persoinfo(arg0, arg1)
+  ret !r, nulo
+  epara item = r.dentro1.fim, item, item.antes
+    refvar i = item.obj
+    continuar !i.visivel(arg0)
+    refvar nn = txtsublin(i.atribs.ini.textolin(2), 1)
+    t.addfim(txt(i.objtot) + i.atribs.ini.texto + txtcopiamai(i.descnome2, "A") + nn)
+  efim
+  t.juntalin("(", "x)")
+  se t
+    $mens.p(arg0, r)
+    refvar nome = $mens.txt(r == arg0 ? m_lista1 : m_lista2, arg0)
+    arg0.msg2("\b\c6" + nome + "\b\n" + txttroca(t.remove(1000), "\d+", "\n"))
+  senao
+    $mens.mp(r == arg0 ? m_nada1 : m_nada2, arg0, r)
+  fimse
+
+
+classe h_cmd_hab
+herda comando_comum
+const posic = 5
+#
+const m_ajuda = "-t\n\
+-s [nome da habilidade]\n\
+Sem argumentos mostra as habilidades do seu personagem.\n\
+Seguido de um nome, mostra informações sobre a habilidade.\n\
+Geralmente pode-se usar uma habilidade teclando-se o nome dela."
+const m_sem_info = "Nenhuma informação sobre a habilidade: $m"
+const m_nenhum = "Nenhuma habilidade."
+const m_lista1 = "Habilidades:"
+const m_lista2 = "Habilidades de $c:"
+
+func escr
+  ref r = arg0.persoesc
+  se arg1
+    ref obj
+    prog p
+    epara p.iniclasse("cmd_" + txt1(arg1)), p.lin, p.depois
+      continuar !r.var.[$[p.texto].nomevar]
+      refvar t1 = $[p.texto].habajuda(r)
+      ret t1, arg0.msg2(t1)
+    efim
+    $mens.mens = arg1
+    ret $mens.mp(m_sem_info, arg0)
+  fimse
+  textotxt h
+  txt100 t1
+  txt100 t2
+  epara t1 = r.var.ini("h_"), t1, t1 = r.var.depois(t1, "h_")
+    t2 = txte(txt(t1, 2)) # , t2 += txtesp(30 - inttotal(t2))
+    t2 += " / " + txtsublin(misc:aulas, r.var.[t1]_, 1)
+    txt2(r.var.[t1]) && (t2 += " R" + txt2(r.var.[t1]))
+    h.addfim(t2)
+  efim
+  ret !h.linhas, $mens.mp(m_nenhum, arg0)
+  $mens.p(arg0, arg0.persoesc)
+  h.addini("\b\c6" + $mens.txt(r == arg0 ? m_lista1 : m_lista2, arg0) + "\b")
+  arg0.msg2(h.remove(1000))
+
+
+classe h_cmd_magia
+herda comando_comum
+const posic = 5
+#
+const m_ajuda = "-t\n\
+-s [nome da magia]\n\
+Sem argumentos mostra as magias do seu personagem.\n\
+Seguido de um nome, mostra informações sobre a magia.\n\
+Geralmente pode-se usar uma magia teclando-se lançar e o nome dela."
+const m_sem_info = "Nenhuma informação sobre a magia: $m"
+const m_nenhum = "Nenhuma magia."
+const m_lista1 = "Magias:"
+const m_lista2 = "Magias de $c:"
+
+func escr
+  ref r = arg0.persoesc
+  se arg1
+    ref obj
+    prog p
+    epara p.iniclasse("magia_" + txt1(arg1)), p.lin, p.depois
+      continuar !r.var.[$[p.texto].nomevar]
+      refvar t1 = $[p.texto].habajuda(r)
+      ret t1, arg0.msg2(t1)
+    efim
+    $mens.mens = arg1
+    ret $mens.mp(m_sem_info, arg0)
+  fimse
+  textotxt h
+  txt100 t1
+  txt100 t2
+  epara t1 = r.var.ini("m_"), t1, t1 = r.var.depois(t1, "m_")
+    t2 = txte(txt(t1, 2)) # , t2 += txtesp(30 - inttotal(t2))
+    t2 += " / " + txtsublin(misc:aulas, r.var.[t1]_, 1)
+    txt2(r.var.[t1]) && (t2 += " R" + txt2(r.var.[t1]))
+    h.addfim(t2)
+  efim
+  ret !h.linhas, $mens.mp(m_nenhum, arg0)
+  $mens.p(arg0, arg0.persoesc)
+  h.addini("\b\c6" + $mens.txt(r == arg0 ? m_lista1 : m_lista2, arg0) + "\b")
+  arg0.msg2(h.remove(1000))
+
+
+classe h_cmd_outros
+herda comando_comum
+const posic = 5
+#
+const m_ajuda = "-t\n\
+-s\n\
+Mostra itens e habilidades extras. Geralmente são permanentes (não pode-se\n\
+pegar, soltar, dar e vestir)."
+const m_nenhum = "Nenhum item."
+const m_lista1 = "Outros:"
+const m_lista2 = "Outros de $c:"
+
+func escr
+  ref r = arg0.persoesc
+  textotxt h
+  txt100 t1
+  txt100 t2
+  epara t1 = r.var.ini("o_"), t1, t1 = r.var.depois(t1, "o_")
+    t2 = txte(txt(t1, 2)) # , t2 += txtesp(30 - inttotal(t2))
+    se txt(int(r.var.[t1])) == r.var.[t1]
+      t2 += " / " + txtsublin(misc:aulas, r.var.[t1], 1)
+    senao
+      t2 += " / " + r.var.[t1]
+    fimse
+    h.addfim(t2)
+  efim
+  ret !h.linhas, $mens.mp(m_nenhum, arg0)
+  $mens.p(arg0, r)
+  h.addini("\b\c6" + $mens.txt(r == arg0 ? m_lista1 : m_lista2, arg0) + "\b")
+  arg0.msg2(h.remove(1000))

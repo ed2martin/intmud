@@ -1,25 +1,17 @@
 classe h_cmd_telepatia
 herda comando_comum
+const classemenu = "m_cmd_telepatia"
 const posic = 0
 const objnivel = 4
-const txtajuda = txtajuda1 + m_ajuda_tele
-const txtajuda1 = "\b\c3Telepatia\b\n\
-Sintaxe: TELEPATIA\n\
-         TELEPATIA <personagem> <mensagem>\n\
-         =<personagem> <mensagem>\n"
 #
-const m_ajuda_tele = "Envia uma mensagem telepática (privativa) a outro jogador, independente\n\
+const m_ajuda = "-t\n\
+-s\n\
+-s <personagem> <mensagem>\n\
+-ss =<personagem> <mensagem>\n\
+Envia uma mensagem telepática (privativa) a outro jogador, independente\n\
 da sala em que ele estiver. Digitando apenas Telepatia ou apenas o sinal\n\
 de igual, mostra as últimas mensagens telepáticas.\n\
 Veja também os comandos RESPONDER, CONFIG e IGNORAR."
-#
-const m_ajuda_res = "Mesmo que Telepatia, porém responde para alguém que escreveu para você.\n\
-Primeiro tecle apenas responder, para travar o comando Responder no último\n\
-jogador que escreveu telepaticamente para você. Depois tecle responder\n\
-e a mensagem para enviar mensagens para esse jogador. Se quiser responder\n\
-para outra pessoa, tecle novamente Responder, sem nenhuma mensagem.\n\
-Veja também os comandos TELEPATIA, CONFIG e IGNORAR."
-#
 const m_canal = "Canal Telepatia está desabilitado; para habilitar tecle CONFIG +TELEPATIA"
 const m_hist_vazio = "Nenhuma mensagem telepática."
 const m_hist_lista = "\b\c6Últimas mensagens telepáticas:\b"
@@ -30,17 +22,13 @@ const m_ignorado = "$C está ignorando você."
 const m_desabilitou = "$C desabilitou o canal Telepatia."
 const m_invisivel = "Você está invisível para $c."
 const m_sem_msg = "Escrever o quê?"
-const m_responder_nao = "Você ainda não recebeu uma mensagem telepática."
-const m_responder_vis = "Responderá para: $C"
-const m_responder_inv = "Responderá para alguém."
 const m_enviou = "(+telepatia) $C '$m'"
 const m_recebeu = "(telepatia) $R '$m'"
 const m_enviado = "+$C '$m'"
 const m_recebido = "$R '$m'"
-const admordem = "m_ajuda_tele m_ajuda_res m_canal m_hist_vazio m_hist_lista\n\
+const admordem = "m_ajuda m_canal m_hist_vazio m_hist_lista\n\
 m_jogador m_auto m_ignorar m_ignorado m_desabilitou m_invisivel m_sem_msg\n\
-m_responder_nao m_responder_vis m_responder_inv m_enviou m_recebeu\n\
-m_enviado m_recebido"
+m_enviou m_recebeu m_enviado m_recebido"
 
 func escr
   refvar perm = $perm_[arg0.jogperm]
@@ -89,22 +77,47 @@ func escr
   fimse
 
 
-classe cmd_responder
+classe h_cmd_responder
 herda comando_comum
+const classemenu = "m_cmd_responder"
 const posic = 0
 const objnivel = 4
-const txtajuda = txtajuda1 + $cmd_telepatia.m_ajuda_res
-const txtajuda1 = "\b\c3Responder\b\nSintaxe: RESPONDER [mensagem]\n"
+#
+const m_ajuda = "-t\n\
+-s [mensagem]\n\
+Mesmo que Telepatia, porém responde para alguém que escreveu para você.\n\
+Primeiro tecle apenas responder, para travar o comando Responder no último\n\
+jogador que escreveu telepaticamente para você. Depois tecle responder\n\
+e a mensagem para enviar mensagens para esse jogador. Se quiser responder\n\
+para outra pessoa, tecle novamente Responder, sem nenhuma mensagem.\n\
+Veja também os comandos TELEPATIA, CONFIG e IGNORAR."
+const m_canal = "Canal Telepatia está desabilitado; para habilitar tecle CONFIG +TELEPATIA"
+const m_jogador = "Jogador inexistente ou ausente: $m"
+const m_auto = "Escrever para você mesm$s?"
+const m_ignorar = "Você está ignorando $c."
+const m_ignorado = "$C está ignorando você."
+const m_desabilitou = "$C desabilitou o canal Telepatia."
+const m_invisivel = "Você está invisível para $c."
+const m_responder_nao = "Você ainda não recebeu uma mensagem telepática."
+const m_responder_vis = "Responderá para: $C"
+const m_responder_inv = "Responderá para alguém."
+const m_enviou = "(+telepatia) $C '$m'"
+const m_recebeu = "(telepatia) $R '$m'"
+const m_enviado = "+$C '$m'"
+const m_recebido = "$R '$m'"
+const admordem = "m_ajuda m_canal\n\
+m_jogador m_auto m_ignorar m_ignorado m_desabilitou m_invisivel m_responder_nao\n\
+m_responder_vis m_responder_inv m_enviou m_recebeu m_enviado m_recebido"
 
 func escr
   refvar perm = $perm_[arg0.jogperm]
   se perm.c_telepatia
     ret $mens.mp(perm.c_telepatia, arg0)
   senao !arg0.jogconfig.8
-    ret $mens.mp(cmd_telepatia:m_canal, arg0)
+    ret $mens.mp(m_canal, arg0)
   senao !arg1
     se !arg0.sock.var.z_telepatia
-      ret $mens.mp(cmd_telepatia:m_responder_nao, arg0)
+      ret $mens.mp(m_responder_nao, arg0)
     fimse
     arg0.sock.var.z_responder = arg0.sock.var.z_telepatia
   fimse
@@ -112,128 +125,157 @@ func escr
   item.ini("un " + txts(txtnome(arg0.sock.var.z_responder)))
   refvar perso = item.obj.perso
   se !perso || perso.jogconfig.17 && !(perm.c_config & 4)
-    arg1 && $mens.mp(cmd_telepatia:m_jogador, arg0)
-    !arg1 && $mens.mp(cmd_telepatia:m_responder_inv, arg0)
+    arg1 && $mens.mp(m_jogador, arg0)
+    !arg1 && $mens.mp(m_responder_inv, arg0)
   senao !arg1
-    $mens.mp(cmd_telepatia:m_responder_vis, arg0, perso)
+    $mens.mp(m_responder_vis, arg0, perso)
   senao perso == arg0
-    $mens.mp(cmd_telepatia:m_auto, arg0)
+    $mens.mp(m_auto, arg0)
   senao perso.var.u_[arg0.nome]
-    $mens.mp(cmd_telepatia:m_ignorado, arg0)
+    $mens.mp(m_ignorado, arg0)
   senao arg0.var.u_[perso.nome]
-    $mens.mp(cmd_telepatia:m_ignorar, arg0)
+    $mens.mp(m_ignorar, arg0)
   senao !perso.jogconfig.8
-    $mens.mp(cmd_telepatia:m_desabilitou, arg0)
+    $mens.mp(m_desabilitou, arg0)
   senao arg0.jogconfig.17 && !($perm_[perso.jogperm].c_config & 4)
-    $mens.mp(cmd_telepatia:m_invisivel, arg0)
+    $mens.mp(m_invisivel, arg0)
   senao
     perso.sock.var.z_telepatia = arg0.nome
     $misclog.telepatia("tele " + arg0.nome + " para " + item.obj.nome + ": " + arg1)
     $mens.p(arg0, item.obj)
     $mens.mens = arg1
-    $mens.msg(cmd_telepatia:m_recebeu, perso)
-    $mens.msg(cmd_telepatia:m_enviou, arg0)
+    $mens.msg(m_recebeu, perso)
+    $mens.msg(m_enviou, arg0)
     refvar r = arg0.sock.var.z_hist_telepatia
     refvar e = perso.sock.var.z_hist_telepatia
-    r = $mens.txt(cmd_telepatia:m_enviado, perso) + (r ? "\n") + txtsublin(r, 0, 29)
-    e = $mens.txt(cmd_telepatia:m_recebido, arg0) + (e ? "\n") + txtsublin(e, 0, 29)
+    r = $mens.txt(m_enviado, perso) + (r ? "\n") + txtsublin(r, 0, 29)
+    e = $mens.txt(m_recebido, arg0) + (e ? "\n") + txtsublin(e, 0, 29)
   fimse
 
 
 classe m_cmd_telepatia
 herda comando_menu_cmd
 #
-const nome1 = "Ajuda Telepatia"
+const nome1 = "Ajuda"
 const tipo1 = "opc_texto"
-const clas1 = "cmd_telepatia"
-const vari1 = "m_ajuda_tele"
+const vari1 = "m_ajuda"
 #
-const nome2 = "Ajuda Responder"
-const tipo2 = "opc_texto"
-const clas2 = "cmd_telepatia"
-const vari2 = "m_ajuda_res"
+const nome2 = "Canal desabilitado"
+const tipo2 = "opc_linha"
+const vari2 = "m_canal"
 #
-const nome3 = "Canal desabilitado"
+const nome3 = "Alvo desabilitou"
 const tipo3 = "opc_linha"
-const clas3 = "cmd_telepatia"
-const vari3 = "m_canal"
+const vari3 = "m_desabilitou"
 #
-const nome4 = "Alvo desabilitou"
+const nome4 = "Histórico vazio"
 const tipo4 = "opc_linha"
-const clas4 = "cmd_telepatia"
-const vari4 = "m_desabilitou"
+const vari4 = "m_hist_vazio"
 #
-const nome5 = "Histórico vazio"
+const nome5 = "Histórico"
 const tipo5 = "opc_linha"
-const clas5 = "cmd_telepatia"
-const vari5 = "m_hist_vazio"
+const vari5 = "m_hist_lista"
 #
-const nome6 = "Histórico"
+const nome6 = "Alvo não existe"
 const tipo6 = "opc_linha"
-const clas6 = "cmd_telepatia"
-const vari6 = "m_hist_lista"
+const vari6 = "m_jogador"
 #
-const nome7 = "Alvo não existe"
+const nome7 = "Para si mesmo"
 const tipo7 = "opc_linha"
-const clas7 = "cmd_telepatia"
-const vari7 = "m_jogador"
+const vari7 = "m_auto"
 #
-const nome8 = "Para si mesmo"
+const nome8 = "Ignorando"
 const tipo8 = "opc_linha"
-const clas8 = "cmd_telepatia"
-const vari8 = "m_auto"
+const vari8 = "m_ignorar"
 #
-const nome9 = "Ignorando"
+const nome9 = "Ignorado"
 const tipo9 = "opc_linha"
-const clas9 = "cmd_telepatia"
-const vari9 = "m_ignorar"
+const vari9 = "m_ignorado"
 #
-const nome10 = "Ignorado"
+const nome10 = "Invisível"
 const tipo10 = "opc_linha"
-const clas10 = "cmd_telepatia"
-const vari10 = "m_ignorado"
+const vari10 = "m_invisivel"
 #
-const nome11 = "Invisível"
+const nome11 = "Tele. Sem mensagem"
 const tipo11 = "opc_linha"
-const clas11 = "cmd_telepatia"
-const vari11 = "m_invisivel"
+const vari11 = "m_sem_msg"
 #
-const nome12 = "Tele. Sem mensagem"
+const nome12 = "Enviou mensagem"
 const tipo12 = "opc_linha"
-const clas12 = "cmd_telepatia"
-const vari12 = "m_sem_msg"
+const vari12 = "m_enviou"
 #
-const nome13 = "Resp. Sem mensagem"
+const nome13 = "Recebeu mensagem"
 const tipo13 = "opc_linha"
-const clas13 = "cmd_telepatia"
-const vari13 = "m_responder_nao"
+const vari13 = "m_recebeu"
 #
-const nome14 = "Resp. Alvo visível"
+const nome14 = "Histórico enviado"
 const tipo14 = "opc_linha"
-const clas14 = "cmd_telepatia"
-const vari14 = "m_responder_vis"
+const vari14 = "m_enviado"
 #
-const nome15 = "Resp. Alvo invisível"
+const nome15 = "Histórico recebido"
 const tipo15 = "opc_linha"
-const clas15 = "cmd_telepatia"
-const vari15 = "m_responder_inv"
+const vari15 = "m_recebido"
+
+
+classe m_cmd_responder
+herda comando_menu_cmd
 #
-const nome16 = "Enviou mensagem"
-const tipo16 = "opc_linha"
-const clas16 = "cmd_telepatia"
-const vari16 = "m_enviou"
+const nome1 = "Ajuda"
+const tipo1 = "opc_texto"
+const vari1 = "m_ajuda"
 #
-const nome17 = "Recebeu mensagem"
-const tipo17 = "opc_linha"
-const clas17 = "cmd_telepatia"
-const vari17 = "m_recebeu"
+const nome2 = "Canal desabilitado"
+const tipo2 = "opc_linha"
+const vari2 = "m_canal"
 #
-const nome18 = "Histórico enviado"
-const tipo18 = "opc_linha"
-const clas18 = "cmd_telepatia"
-const vari18 = "m_enviado"
+const nome3 = "Alvo desabilitou"
+const tipo3 = "opc_linha"
+const vari3 = "m_desabilitou"
 #
-const nome19 = "Histórico recebido"
-const tipo19 = "opc_linha"
-const clas19 = "cmd_telepatia"
-const vari19 = "m_recebido"
+const nome4 = "Alvo não existe"
+const tipo4 = "opc_linha"
+const vari4 = "m_jogador"
+#
+const nome5 = "Para si mesmo"
+const tipo5 = "opc_linha"
+const vari5 = "m_auto"
+#
+const nome6 = "Ignorando"
+const tipo6 = "opc_linha"
+const vari6 = "m_ignorar"
+#
+const nome7 = "Ignorado"
+const tipo7 = "opc_linha"
+const vari7 = "m_ignorado"
+#
+const nome8 = "Invisível"
+const tipo8 = "opc_linha"
+const vari8 = "m_invisivel"
+#
+const nome9 = "Resp. Sem mensagem"
+const tipo9 = "opc_linha"
+const vari9 = "m_responder_nao"
+#
+const nome10 = "Resp. Alvo visível"
+const tipo10 = "opc_linha"
+const vari10 = "m_responder_vis"
+#
+const nome11 = "Resp. Alvo invisível"
+const tipo11 = "opc_linha"
+const vari11 = "m_responder_inv"
+#
+const nome12 = "Enviou mensagem"
+const tipo12 = "opc_linha"
+const vari12 = "m_enviou"
+#
+const nome13 = "Recebeu mensagem"
+const tipo13 = "opc_linha"
+const vari13 = "m_recebeu"
+#
+const nome14 = "Histórico enviado"
+const tipo14 = "opc_linha"
+const vari14 = "m_enviado"
+#
+const nome15 = "Histórico recebido"
+const tipo15 = "opc_linha"
+const vari15 = "m_recebido"

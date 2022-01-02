@@ -1,10 +1,11 @@
 classe h_cmd_config
 herda comando_comum
+const classemenu = "m_cmd_config"
 const posic = 0
-const txtajuda1 = "\b\c3Config\b\n\
-Sintaxe: CONFIG +<opção>\n\
-         CONFIG -<opção>"
-const ajudaini = "Altera algumas preferências do seu personagem. Um sinal de + ou de -\n\
+const ajudaini = "-t\n\
+-s +<opção>\n\
+-s -<opção>\n\
+Altera algumas preferências do seu personagem. Um sinal de + ou de -\n\
 seguido de uma opção ativa ou desativa a opção. Para saber as atuais\n\
 preferências, tecle apenas CONFIG, sem parâmetros.\n\n\
 As opções são:"
@@ -55,14 +56,14 @@ const opc_desc = 0
 const opc_saidas = 1
 const opc_cores = 2
 const opc_acento = 3
-const opc_chat = $cmd_chat.v_tipo ? 4
-const opc_seguir = 5
-const opc_prompt = 6
-const opc_bprompt = 7
-const opc_telepatia = 8
-const opc_emocao = $cmd_emocao.v_tipo ? 9
+const opc_chat = comando("h_cmd_chat") ? 4
+const opc_seguir = comando("h_cmd_seguir") ? 5
+const opc_prompt = comando("h_cmd_prompt") ? 6
+const opc_bprompt = comando("h_cmd_bprompt") ? 7
+const opc_telepatia = comando("h_cmd_telepatia") ? 8
+const opc_emocao = comando("h_cmd_emocao") ? 9
 const opc_moedas = 10
-const opc_novatos = $cmd_novatos.v_tipo ? 11
+const opc_novatos = comando("h_cmd_novatos") ? 11
 const opc_dicas = 12
 const opc_som1 = 13
 const opc_som2 = 14
@@ -89,7 +90,6 @@ func txtajuda
   refvar perm = $perm_[arg0.jogperm].c_config
   txt512 lin
   textotxt t
-  t.addfim(txtajuda1)
   t.addfim(ajudaini)
   epara lin = opcoes, lin, lin = txt2(lin)
     refvar nome = txt1(lin)
@@ -97,7 +97,7 @@ func txtajuda
     refvar l = "  \c2" + txtmai(nome) + "\b "
     t.addfim(l + txtesp(15 - inttotal(l)) + txttroca(m_[nome], "\n", "\n            "))
   efim
-  ret t.remove(1000)
+  ret txtajuda1(t.remove(1000))
 
 func escr
   refvar perm = $perm_[arg0.jogperm].c_config
@@ -190,153 +190,129 @@ func escr
   $mens.mens = txt(mudou, 1)
   $mens.mp(m_config_mudou, arg0)
 
+func comando # arg0=classe base, retorna objeto que processa o comando
+  prog p
+  p.iniherdainv(arg0)
+  ret $[p.texto].objcmd
+
 
 classe m_cmd_config
 herda comando_menu_cmd
 #
 const nome1 = "Ajuda"
 const tipo1 = "opc_texto"
-const clas1 = "cmd_config"
 const vari1 = "ajudaini"
 #
 const nome2 = "Config Desc"
 const tipo2 = "opc_texto"
-const clas2 = "cmd_config"
 const vari2 = "m_desc"
 #
 const nome3 = "Config Saídas"
 const tipo3 = "opc_texto"
-const clas3 = "cmd_config"
 const vari3 = "m_saidas"
 #
 const nome4 = "Config Cores"
 const tipo4 = "opc_texto"
-const clas4 = "cmd_config"
 const vari4 = "m_cores"
 #
 const nome5 = "Config Acento"
 const tipo5 = "opc_texto"
-const clas5 = "cmd_config"
 const vari5 = "m_acento"
 #
 const nome6 = "Config Telepatia"
 const tipo6 = "opc_texto"
-const clas6 = "cmd_config"
 const vari6 = "m_telepatia"
 #
 const nome7 = "Config Chat"
 const tipo7 = "opc_texto"
-const clas7 = "cmd_config"
 const vari7 = "m_chat"
 #
 const nome8 = "Config Novatos"
 const tipo8 = "opc_texto"
-const clas8 = "cmd_config"
 const vari8 = "m_novatos"
 #
 const nome9 = "Config Emoção"
 const tipo9 = "opc_texto"
-const clas9 = "cmd_config"
 const vari9 = "m_emocao"
 #
 const nome10 = "Config Seguir"
 const tipo10 = "opc_texto"
-const clas10 = "cmd_config"
 const vari10 = "m_seguir"
 #
 const nome11 = "Config Moedas"
 const tipo11 = "opc_texto"
-const clas11 = "cmd_config"
 const vari11 = "m_moedas"
 #
 const nome12 = "Config Prompt"
 const tipo12 = "opc_texto"
-const clas12 = "cmd_config"
 const vari12 = "m_prompt"
 #
 const nome13 = "Config Bprompt"
 const tipo13 = "opc_texto"
-const clas13 = "cmd_config"
 const vari13 = "m_bprompt"
 #
 const nome14 = "Config Som1"
 const tipo14 = "opc_texto"
-const clas14 = "cmd_config"
 const vari14 = "m_som1"
 #
 const nome15 = "Config Som2"
 const tipo15 = "opc_texto"
-const clas15 = "cmd_config"
 const vari15 = "m_som2"
 #
 const nome16 = "Config Musica1"
 const tipo16 = "opc_texto"
-const clas16 = "cmd_config"
 const vari16 = "m_musica1"
 #
 const nome17 = "Config Musica2"
 const tipo17 = "opc_texto"
-const clas17 = "cmd_config"
 const vari17 = "m_musica2"
 #
 const nome18 = "Config Dicas"
 const tipo18 = "opc_texto"
-const clas18 = "cmd_config"
 const vari18 = "m_dicas"
 #
 const nome19 = "Config Imortal"
 const tipo19 = "opc_texto"
-const clas19 = "cmd_config"
 const vari19 = "m_imortal"
 #
 const nome20 = "Sala"
 const tipo20 = "opc_texto"
-const clas20 = "cmd_config"
 const vari20 = "m_sala"
 #
 const nome21 = "Config Invquem"
 const tipo21 = "opc_texto"
-const clas21 = "cmd_config"
 const vari21 = "m_invquem"
 #
 const nome22 = "Config Invsala"
 const tipo22 = "opc_texto"
-const clas22 = "cmd_config"
 const vari22 = "m_invsala"
 #
 const nome23 = "Config AC"
 const tipo23 = "opc_texto"
-const clas23 = "cmd_config"
 const vari23 = "m_ac"
 #
 const nome24 = "Config Admlog"
 const tipo24 = "opc_texto"
-const clas24 = "cmd_config"
 const vari24 = "m_admlog"
 #
 const nome25 = "Config Cmdlog"
 const tipo25 = "opc_texto"
-const clas25 = "cmd_config"
 const vari25 = "m_cmdlog"
 #
 const nome26 = "Config Execlog"
 const tipo26 = "opc_texto"
-const clas26 = "cmd_config"
 const vari26 = "m_execlog"
 #
 const nome27 = "Opção inexistente"
 const tipo27 = "opc_linha"
-const clas27 = "cmd_config"
 const vari27 = "m_config_invalida"
 #
 const nome28 = "Mudou config"
 const tipo28 = "opc_linha"
-const clas28 = "cmd_config"
 const vari28 = "m_config_mudou"
 #
 const nome29 = "Pára de seguir"
 const tipo29 = "opc_linha"
-const clas29 = "cmd_config"
 const vari29 = "m_parar_seguir"
 #
 const nome30 = "Dicas"

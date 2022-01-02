@@ -135,7 +135,10 @@ const var = sock.var
 # Nas classes que herdadem essa:
 # const titulo = "Título do menu"
 # const menufim = "classe do menu anterior, se houver"
-# const classe = "m_cmd_" # Classes que estão nesse menu
+# const classe = "cmd_" # As classes editáveis começam com esse nome
+# Em cada classe editável, deve exitir uma const classemenu com o nome do menu
+# responsável por editar a classe. Exemplo, para uma classe chamada cmd_abrir,
+# provavelmente há uma linha const classemenu = "m_cmd_abrir"
 
 func passo
   sock = arg0
@@ -154,6 +157,7 @@ func passo
     se inicio
       prog p
       epara p.iniclasse(classe), p.lin, p.depois
+        continuar ![p.texto]:classemenu
         txtmais.addfim(txtcopiamai(txt(p.texto, inicio), "A") + ",")
       efim
       textopos pos
@@ -171,23 +175,20 @@ func passo
     arg0.msg("Retornando ao jogo")
     arg0.passo = ""
     ret 1
+  casose
+    prog p
+    refvar inicio = inttotal(classe)
+    sair !inicio
+    nomeobj n
+    n.ini(arg1, 1)
+    epara p.iniclasse(classe), p.lin, p.depois
+      ref r = $[[p.texto]:classemenu]
+      continuar !r || !n.nome(txt(p.texto, inicio), 1)
+      arg0.var.classe1 = p.texto
+      r.passo(arg0, "\b")
+      ret 1
+    efim
   casofim
-  prog p
-  refvar inicio = inttotal(classe)
-  se !inicio
-    arg0.msg("Opção inválida: " + arg1)
-    ret 1
-  senao p.existe(classe + arg1)
-    $[classe + arg1].passo(arg0, "\b")
-    ret 1
-  fimse
-  nomeobj n
-  n.ini(arg1, 1)
-  epara p.iniclasse(classe), p.lin, p.depois
-    continuar !n.nome(txt(p.texto, inicio), 1)
-    $[p.texto].passo(arg0, "\b")
-    ret 1
-  efim
   arg0.msg("Opção inválida: " + arg1)
   ret 1
 

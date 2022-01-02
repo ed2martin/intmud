@@ -23,11 +23,10 @@ func efeito
 
 classe h_cmd_comer
 herda comando_comebebe
-const txtajuda = txtajuda1 + m_ajuda
-const txtajuda1 = "\b\c3Comer\b\nSintaxe: COMER <objeto>\n"
+const classemenu = "m_cmd_comer"
 const posic = 5
 #
-const m_ajuda = "Tenta comer alguma coisa, geralmente um alimento."
+const m_ajuda = "-t\n-s <objeto>\nTenta comer alguma coisa, geralmente um alimento."
 const m_sem_args = "Comer o quê?"
 const m_naover = "Você não vê $m"
 const m_naoconsegue = "Você não consegue comer $o."
@@ -83,14 +82,15 @@ func comer # Personagem arg0 come item arg1
   ret 1
 
 
-classe h_cmd_beber
+classe comando_beber
 herda comando_comebebe
-const txtajuda = txtajuda1 + m_ajuda
-const txtajuda1 = "\b\c3Beber\b\nSintaxe: BEBER [objeto]\n         TOMAR [objeto]\n"
+const classemenu = "m_cmd_beber"
 const posic = 5
 const totalml = 1
 #
-const m_ajuda = "Tenta beber alguma coisa. Sem argumentos, bebe a primeira fonte\n\
+const m_ajuda = "-t\n\
+-s [objeto]\n\
+Tenta beber alguma coisa. Sem argumentos, bebe a primeira fonte\n\
 que encontrar."
 const m_sem_args = "Beber o quê?"
 const m_naover = "Você não vê $m"
@@ -204,18 +204,17 @@ func beber # Personagem arg0 bebe item arg1, arg2=quantidade (de 0 a 1)
   efim
 
 
-classe cmd_tomar
-herda h_cmd_beber
-const objcmd = $cmd_beber
+classe h_cmd_beber
+herda comando_beber
 
 
 classe h_cmd_provar
-herda h_cmd_beber
-const txtajuda = txtajuda1 + m_ajuda
-const txtajuda1 = "\b\c3Provar\b\nSintaxe: PROVAR [objeto]\n"
+herda comando_beber
 const totalml = 0.1
 #
-const m_ajuda = "Tenta provar alguma coisa (bebe 1 décimo do que beberia teclando Beber).\n\
+const m_ajuda = "-t\n\
+-s [objeto]\n\
+Tenta provar alguma coisa (bebe 1 décimo do que beberia teclando Beber).\n\
 Sem argumentos, prova a primeira fonte que encontrar."
 const m_sem_args = "Provar o quê?"
 
@@ -225,139 +224,108 @@ herda comando_menu_cmd
 #
 const nome1 = "Ajuda"
 const tipo1 = "opc_texto"
-const clas1 = "cmd_comer"
 const vari1 = "m_ajuda"
 #
 const nome2 = "Sem argumentos"
 const tipo2 = "opc_linha"
-const clas2 = "cmd_comer"
 const vari2 = "m_sem_args"
 #
 const nome3 = "Sem alvo"
 const tipo3 = "opc_linha"
-const clas3 = "cmd_comer"
 const vari3 = "m_naover"
 #
 const nome4 = "Não consegue"
 const tipo4 = "opc_linha"
-const clas4 = "cmd_comer"
 const vari4 = "m_naoconsegue"
 #
 const nome5 = "Está cheio"
 const tipo5 = "opc_linha"
-const clas5 = "cmd_comer"
 const vari5 = "m_cheio"
 #
 const nome6 = "Embriagado"
 const tipo6 = "opc_linha"
-const clas6 = "cmd_comer"
 const vari6 = "m_embriaguez"
 #
 const nome7 = "Comer perso"
 const tipo7 = "opc_linha"
-const clas7 = "cmd_comer"
 const vari7 = "m_comer1"
 #
 const nome8 = "Comer outros"
 const tipo8 = "opc_linha"
-const clas8 = "cmd_comer"
 const vari8 = "m_comer1"
 
 
 classe m_cmd_beber
 herda comando_menu_cmd
-const cl = "cmd_beber"
 #
 const nome1 = "Ajuda"
 const tipo1 = "opc_texto"
-const clas1 = cl
 const vari1 = "m_ajuda"
 #
 const nome2 = "Sem argumentos"
 const tipo2 = "opc_linha"
-const clas2 = cl
 const vari2 = "m_sem_args"
 #
 const nome3 = "Sem alvo"
 const tipo3 = "opc_linha"
-const clas3 = cl
 const vari3 = "m_naover"
 #
 const nome4 = "Precisa pegar"
 const tipo4 = "opc_linha"
-const clas4 = cl
 const vari4 = "m_pegar"
 #
 const nome5 = "Item vazio"
 const tipo5 = "opc_linha"
-const clas5 = cl
 const vari5 = "m_vazio"
 #
 const nome6 = "Item fechado"
 const tipo6 = "opc_linha"
-const clas6 = cl
 const vari6 = "m_fechado"
 #
 const nome7 = "Não consegue"
 const tipo7 = "opc_linha"
-const clas7 = cl
 const vari7 = "m_naoconsegue"
 #
 const nome8 = "Está cheio"
 const tipo8 = "opc_linha"
-const clas8 = cl
 const vari8 = "m_cheio"
 #
 const nome9 = "Embriagado"
 const tipo9 = "opc_linha"
-const clas9 = cl
 const vari9 = "m_embriaguez"
 #
 const nome10 = "Bebe fonte perso"
 const tipo10 = "opc_linha"
-const clas10 = cl
 const vari10 = "m_fonte1"
 #
 const nome11 = "Bebe fonte outros"
 const tipo11 = "opc_linha"
-const clas11 = cl
 const vari11 = "m_fonte2"
 #
 const nome12 = "Bebe líquido perso"
 const info12 = "Líquido conhecido; $m=nome do líquido, $1=aspecto, $2=um ou uma, $3=o ou a"
 const tipo12 = "opc_linha"
-const clas12 = cl
 const vari12 = "m_item1c"
 #
 const nome13 = "Bebe líquido outros"
 const info13 = "Líquido conhecido; $m=nome do líquido, $1=aspecto, $2=um ou uma, $3=o ou a"
 const tipo13 = "opc_linha"
-const clas13 = cl
 const vari13 = "m_item2c"
 #
 const nome14 = "Bebe outro líq. perso"
 const info14 = "Líquido desconhecido"
 const tipo14 = "opc_linha"
-const clas14 = cl
 const vari14 = "m_item1d"
 #
 const nome15 = "Bebe outro líq. outros"
 const info15 = "Líquido desconhecido"
 const tipo15 = "opc_linha"
-const clas15 = cl
 const vari15 = "m_item2d"
 #
 const nome16 = "Bebe poção perso"
 const tipo16 = "opc_linha"
-const clas16 = cl
 const vari16 = "m_pocao1"
 #
 const nome17 = "Bebe poção outros"
 const tipo17 = "opc_linha"
-const clas17 = cl
 const vari17 = "m_pocao2"
-
-
-classe m_cmd_provar
-herda m_cmd_beber
-const cl = "cmd_provar"

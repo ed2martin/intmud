@@ -1,16 +1,16 @@
 classe adm_social
-const iniclasse = !$[arg0] && criar(arg0)
-const txtajuda = "\b\c3Comandos sociais\b\n\
-  \c2LSOC\b      Lista comandos sociais existentes\n\
-  \c2CSOC\b      Cria um social\n\
-  \c2ESOC\b      Edita um social\n\
-  \c2ASOC\b      Apaga um social"
+herda comando_adm
+const m_ajuda = "-t Comandos sociais\n\
+-m LSOC Lista comandos sociais existentes\n\
+-m CSOC Cria um social\n\
+-m ESOC Edita um social\n\
+-m ASOC Apaga um social"
 
 
 classe adm_lsoc
 herda comando_adm
-const txtajuda = "\b\c3Lsoc\b\n\
-Sintaxe: LSOC [nome]\n\
+const m_ajuda = "-t\n\
+-s [nome]\n\
 Lista os comandos sociais que começam com o nome especificado.\n\
 Se o nome for omitido, lista todos os comandos sociais."
 
@@ -36,8 +36,8 @@ func escr # Listar sociais
 
 classe adm_csoc
 herda comando_adm
-const txtajuda = "\b\c3Csoc\b\n\
-Sintaxe: CSOC <nome>\n\
+const m_ajuda = "-t\n\
+-s <nome>\n\
 Cria um comando social. Nome pode conter letras e números."
 
 func escr # Criar comando social
@@ -67,9 +67,7 @@ func escr # Criar comando social
 
 classe adm_esoc
 herda comando_adm
-const txtajuda = "\b\c3Esoc\b\n\
-Sintaxe: ESOC <nome>\n\
-Edita o comando social com o nome especificado."
+const m_ajuda = "-t\n-s <nome>\nEdita o comando social com o nome especificado."
 
 func escr # Editar social
   prog p
@@ -85,8 +83,8 @@ func escr # Editar social
 
 classe adm_asoc
 herda comando_adm
-const txtajuda = "\b\c3Asoc\b\n\
-Sintaxe: ASOC <nome do comando social>\n\
+const m_ajuda = "-t\n\
+-s <nome do comando social>\n\
 Apaga o comando social com o nome especificado."
 
 func escr # Apagar social

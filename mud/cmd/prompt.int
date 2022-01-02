@@ -1,19 +1,19 @@
-classe cmd_prompt
+classe comando_prompt
 herda comando_comum
 const posic = 0
-const txtajuda = "\b\c3Prompt\b\n\
-Sintaxe: PROMPT  [texto]\n\
-         BPROMPT [texto]\n\n\
-PROMPT é uma ou mais linhas para indicar a você que o MUD já enviou todas\n\
+const m_ajuda = "-t\n\
+Sintaxe: $1 [texto]\n\
+         $2 [texto]\n\n\
+$1 é uma ou mais linhas para indicar a você que o MUD já enviou todas\n\
 as mensagens pendentes. Com essa opção pode-se personalisar as mensagens,\n\
 inclusive adicionando algumas variáveis, como pontos de vida, hora, etc.\n\n\
-BPROMPT funciona de forma idêntica ao PROMPT, porém corresponde à\n\
+$2 funciona de forma idêntica ao $1, porém corresponde à\n\
 mensagem durante a batalha.\n\
 Sem nenhum texto, essas opções mostram o prompt atual.\n\
-Se o texto for a palavra ini (exemplo: PROMPT INI), o prompt será\n\
+Se o texto for a palavra ini (exemplo: $1 INI), o prompt será\n\
 redefinido para o padrão do MUD.\n\n\
 Nota: para a mensagem de prompt aparecer, deve estar habilitada no\n\
-comando CONFIG.\n\n\
+comando $3.\n\n\
 As seguintes sequências de caracteres têm um significado especial:\n\n\
  \c2%n\b  Nome do seu personagem usado nas batalhas\n\
  \c2%N\b  Nome do seu oponente (se estiver batalhando)\n\
@@ -39,26 +39,83 @@ As seguintes sequências de caracteres têm um significado especial:\n\n\
  \c2%Z\b  O caracter %\n\
  \c2%t\b  O mesmo que um espaço em branco\n\n\
 Exemplos (considerando 30 pontos de vida, 45 de mana e 50 de vigor):\n\n\
-PROMPT %h%m                =  3045\n\
-PROMPT %h %m %v            =  30 45 50\n\
-PROMPT <%hhp %mmn %vmv>    =  <30hp 45mn 50mv>\n\
-PROMPT <%c3%hhp %c2%mmn %c6%vmv%b>  = <\c330hp \c245mn \c650mv\b>  (com cores)\n\n\
+$1 %h%m                =  3045\n\
+$1 %h %m %v            =  30 45 50\n\
+$1 <%hhp %mmn %vmv>    =  <30hp 45mn 50mv>\n\
+$1 <%c3%hhp %c2%mmn %c6%vmv%b>  = <\c330hp \c245mn \c650mv\b>  (com cores)\n\n\
 Veja também: AJUDA CORES"
+const m_prompt = "Prompt:\n$m"
+const m_bprompt = "Prompt de batalha:\n$m"
+const m_novo_prompt = "Prompt alterado para:\n$m"
+const m_novo_bprompt = "Prompt de batalha alterado para:\n$m"
+
+func comando # arg0=classe base, retorna objeto que processa o comando
+  prog p
+  p.iniherdainv(arg0)
+  ret $[p.texto].objcmd
+
+func txtajuda
+  $mens.o_1 = txtmai(txt2(txte(comando("h_cmd_prompt"))))
+  $mens.o_2 = txtmai(txt2(txte(comando("h_cmd_bprompt"))))
+  $mens.o_3 = txtmai(txt2(txte(comando("h_cmd_config"))))
+  $mens.p(este)
+  ret txtajuda1($mens.txt(m_ajuda))
+
+
+classe h_cmd_prompt
+herda comando_prompt
+const classemenu = "m_cmd_prompt"
 
 func escr
-  ret !arg1, arg0.msg("Prompt:\n" + arg0.var.z_prompt)
-  txt100 lin
-  lin = arg1 == "ini" ? config:promptmsg : arg1
-  arg0.var.z_prompt = lin
-  arg0.msg("Prompt alterado para:\n" + lin)
+  se !arg1
+    $mens.mens = arg0.var.z_prompt
+    $mens.mp(m_prompt, arg0)
+  senao
+    txt100 lin
+    lin = arg1 == "ini" ? config:promptmsg : arg1
+    arg0.var.z_prompt = lin
+    $mens.mens = lin
+    $mens.mp(m_novo_prompt, arg0)
+  fimse
 
 
-classe cmd_bprompt
-herda cmd_prompt
+classe h_cmd_bprompt
+herda comando_prompt
+const m_bprompt = comando("h_cmd_prompt").m_bprompt
+const m_novo_bprompt = comando("h_cmd_prompt").m_novo_bprompt
 
 func escr
-  ret !arg1, arg0.msg("Prompt de batalha:\n" + arg0.var.z_bprompt)
-  txt100 lin
-  lin = arg1 == "ini" ? config:bpromptmsg : arg1
-  arg0.var.z_bprompt = lin
-  arg0.msg("Prompt de batalha alterado para:\n" + lin)
+  se !arg1
+    $mens.mens = arg0.var.z_bprompt
+    $mens.mp(m_bprompt, arg0)
+  senao
+    txt100 lin
+    lin = arg1 == "ini" ? config:bpromptmsg : arg1
+    arg0.var.z_bprompt = lin
+    $mens.mens = lin
+    $mens.mp(m_novo_bprompt, arg0)
+  fimse
+
+
+classe m_cmd_prompt
+herda comando_menu_cmd
+#
+const nome1 = "Ajuda"
+const tipo1 = "opc_texto"
+const vari1 = "m_ajuda"
+#
+const nome2 = "Prompt"
+const tipo2 = "opc_linha"
+const vari2 = "m_prompt"
+#
+const nome3 = "Bprompt"
+const tipo3 = "opc_linha"
+const vari3 = "m_bprompt"
+#
+const nome4 = "Novo Prompt"
+const tipo4 = "opc_linha"
+const vari4 = "m_novo_prompt"
+#
+const nome5 = "Novo Bprompt"
+const tipo5 = "opc_linha"
+const vari5 = "m_novo_bprompt"

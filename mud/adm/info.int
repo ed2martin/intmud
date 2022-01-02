@@ -1,8 +1,8 @@
 classe adm_info
 herda comando_adm
 const objcmd = arg1.i_perso ? este
-const txtajuda = "\b\c3Info\b\n\
-Sintaxe: INFO [personagem ou item]\n\
+const m_ajuda = "-t\n\
+-s [personagem ou item]\n\
 Mostra informações sobre um personagem ou item, na sala ou que você carrega.\n\
 Sem argumentos, mostra informações sobre a sala aonde você está."
 
@@ -104,8 +104,8 @@ func nobj # Retorna o nome de um objeto
 classe adm_ivar
 herda adm_info
 const objcmd = arg1.c_ivar ? este
-const txtajuda = "\b\c3Ivar\b\n\
-Sintaxe: IVAR [personagem ou item]\n\
+const m_ajuda = "-t\n\
+-s [personagem ou item]\n\
 Mostra as variáveis criadas dinamicamente de um personagem ou item,\n\
 na sala ou que você carrega. Sem argumentos, mostra as variáveis da\n\
 sala aonde você está."
@@ -126,8 +126,8 @@ func info # Usado por escr
 classe adm_iobj
 herda adm_info
 const objcmd = arg1.c_iobj ? este
-const txtajuda = "\b\c3Iobj\b\n\
-Sintaxe: IOBJ [personagem ou item]\n\
+const m_ajuda = "-t\n\
+-s [personagem ou item]\n\
 Mostra os objetos dentro de um personagem ou item, na sala ou que você\n\
 carrega. Sem argumentos, mostra os objetos da sala aonde você está."
 
@@ -153,8 +153,8 @@ func info # Usado por escr
 classe adm_ihab
 herda comando_adm
 const objcmd = arg1.i_perso ? este
-const txtajuda = "\b\c3Ihab\b\n\
-Sintaxe: IHAB [personagem] [número do animal]\n\
+const m_ajuda = "-t\n\
+-s [personagem] [número do animal]\n\
 Informa as habilidades de um personagem na sala."
 
 func escr
@@ -181,8 +181,8 @@ func escr
 classe adm_imag
 herda comando_adm
 const objcmd = arg1.i_perso ? este
-const txtajuda = "\b\c3Imag\b\n\
-Sintaxe: IMAG [personagem] [número do animal]\n\
+const m_ajuda = "-t\n\
+-s [personagem] [número do animal]\n\
 Informa as magias de um personagem na sala."
 
 func escr
@@ -209,8 +209,8 @@ func escr
 classe adm_ief
 herda comando_adm
 const objcmd = arg1.i_perso ? este
-const txtajuda = "\b\c3Ief\b\n\
-Sintaxe: IEF [personagem] [número do animal]\n\
+const m_ajuda = "-t\n\
+-s [personagem] [número do animal]\n\
 Informa os efeitos afetando um personagem na sala."
 
 func escr
@@ -236,9 +236,8 @@ func escr
 classe adm_ijog
 herda comando_adm
 const objcmd = arg1.i_perso ? este
-const txtajuda = "\b\c3Ijog\b\n\
-Sintaxe: IJOG\n\
-         IJOG <jogador>\n\
+const m_ajuda = "-t\n\
+-s [jogador]\n\
 Mostra algumas informações do jogador: como está conectado, nível, moedas,\n\
 e-mail, sala e jogo salvo. Se não estiver online, procura no jogo salvo.\n\
 Sem argumentos, mostra aonde cada jogador online está."
@@ -352,24 +351,24 @@ func lugar
 
 
 classe adm_inv
-const iniclasse = !$[arg0] && criar(arg0)
-const txtajuda = "\b\c3Inv\b\n\
-Sintaxe: INV [personagem] [número do animal]\n\
+herda comando_adm
+const m_ajuda = "-t\n\
+-s [personagem] [número do animal]\n\
 Mostra os itens que um personagem da sala está carregando."
 
 
 classe adm_estat
-const iniclasse = !$[arg0] && criar(arg0)
-const txtajuda = "\b\c3Estat\b\n\
-Sintaxe: ESTAT [personagem] [número do animal]\n\
+herda comando_adm
+const m_ajuda = "-t\n\
+-s [personagem] [número do animal]\n\
 Mostra estatísticas e diversas informações sobre um personagem da sala."
 
 
 classe adm_hist
 herda comando_adm
 const objcmd = arg1.i_perso ? este
-const txtajuda = "\b\c3Hist\b\n\
-Sintaxe: HIST [personagem] [número do animal]\n\
+const m_ajuda = "-t\n\
+-s [personagem] [número do animal]\n\
 Mostra o histórico de um personagem na mesma sala ou animal desse\n\
 personagem, ou seja, os últimos 10 personagens que ele matou."
 

@@ -1,14 +1,15 @@
 classe h_cmd_chat
 herda comando_comum
+const classemenu = "m_cmd_chat"
 const posic = 0
 const objcmd = v_tipo ? este
 const objnivel = 4
-const txtajuda = v_tipo ? txtajuda1 + m_ajuda1 + (v_tipo == 1 ? "\n" + m_ajuda2)
-const txtajuda1 = "\b\c3Canal Chat\b\n\
-Sintaxe: CHAT <mensagem>\n\
-         .<mensagem>\n"
+const txtajuda = v_tipo ? txtajuda1(m_ajuda1 + (v_tipo == 1 ? "\n" + m_ajuda2))
 #
-const m_ajuda1 = "Envia mensagem para os jogadores que estiverem com o canal CHAT habilitado.\n\
+const m_ajuda1 = "-t\n\
+-s <mensagem>\n\
+-ss .<mensagem>\n\
+Envia mensagem para os jogadores que estiverem com o canal CHAT habilitado.\n\
 Para habilitar ou desabilitar esse canal, use o comando CONFIG."
 const m_ajuda2 = "Nota: quando o jogo é ativado em um chat, mensagens de uma sala do chat\n\
 não irão para as outras salas."
@@ -52,13 +53,15 @@ func escr
 
 classe h_cmd_novatos
 herda comando_comum
+const classemenu = "m_cmd_novatos"
 const posic = 0
 const objcmd = v_tipo ? este
 const objnivel = 4
-const txtajuda = v_tipo ? txtajuda1 + m_ajuda1 + (v_tipo == 1 ? "\n" + m_ajuda2)
-const txtajuda1 = "\b\c3Canal Novatos\b\nSintaxe: NOVATOS <mensagem>\n"
+const txtajuda = v_tipo ? txtajuda1(m_ajuda1 + (v_tipo == 1 ? "\n" + m_ajuda2))
 #
-const m_ajuda1 = "Envia mensagem para os jogadores que estiverem com o canal NOVATOS\n\
+const m_ajuda1 = "-t\n\
+-s <mensagem>\n\
+Envia mensagem para os jogadores que estiverem com o canal NOVATOS\n\
 habilitado. Esse canal é destinado a dúvidas de iniciantes.\n\
 Para habilitar ou desabilitar esse canal, use o comando CONFIG."
 const m_ajuda2 = "Nota: quando o jogo é ativado em um chat, mensagens de uma sala do chat\n\
@@ -106,48 +109,39 @@ herda comando_menu_cmd
 #
 const nome1 = "Comando Chat"
 const tipo1 = "opc_opcao"
-const clas1 = "cmd_chat"
 const vari1 = "v_tipo"
 const extr1 = "Desabilitado\nBots: Somente na mesma sala\nPara todo o MUD"
 #
 const nome2 = "Ajuda"
 const tipo2 = "opc_texto"
-const clas2 = "cmd_chat"
 const vari2 = "m_ajuda1"
 #
 const nome3 = "Ajuda: sala do chat"
 const tipo3 = "opc_texto"
-const clas3 = "cmd_chat"
 const vari3 = "m_ajuda2"
 #
 const nome4 = "Nível mínimo"
 const tipo4 = "opc_numero"
-const clas4 = "cmd_chat"
 const vari4 = "v_nivel"
 #
 const nome5 = "Nível insuficiente"
 const tipo5 = "opc_linha"
-const clas5 = "cmd_chat"
 const vari5 = "m_nivel"
 #
 const nome6 = "Desabilitado"
 const tipo6 = "opc_linha"
-const clas6 = "cmd_chat"
 const vari6 = "m_desab"
 #
 const nome7 = "Sem argumentos"
 const tipo7 = "opc_linha"
-const clas7 = "cmd_chat"
 const vari7 = "m_sem_args"
 #
 const nome8 = "Mensagem perso"
 const tipo8 = "opc_linha"
-const clas8 = "cmd_chat"
 const vari8 = "m_msg1"
 #
 const nome9 = "Mensagem outros"
 const tipo9 = "opc_linha"
-const clas9 = "cmd_chat"
 const vari9 = "m_msg2"
 
 
@@ -156,46 +150,37 @@ herda comando_menu_cmd
 #
 const nome1 = "Comando Novatos"
 const tipo1 = "opc_opcao"
-const clas1 = "cmd_novatos"
 const vari1 = "v_tipo"
 const extr1 = "Desabilitado\nBots: Somente na mesma sala\nPara todo o MUD"
 #
 const nome2 = "Ajuda"
 const tipo2 = "opc_texto"
-const clas2 = "cmd_novatos"
 const vari2 = "m_ajuda1"
 #
 const nome3 = "Ajuda: sala do chat"
 const tipo3 = "opc_texto"
-const clas3 = "cmd_novatos"
 const vari3 = "m_ajuda2"
 #
 const nome4 = "Nível mínimo"
 const tipo4 = "opc_numero"
-const clas4 = "cmd_novatos"
 const vari4 = "v_nivel"
 #
 const nome5 = "Nível insuficiente"
 const tipo5 = "opc_linha"
-const clas5 = "cmd_novatos"
 const vari5 = "m_nivel"
 #
 const nome6 = "Desabilitado"
 const tipo6 = "opc_linha"
-const clas6 = "cmd_novatos"
 const vari6 = "m_desab"
 #
 const nome7 = "Sem argumentos"
 const tipo7 = "opc_linha"
-const clas7 = "cmd_novatos"
 const vari7 = "m_sem_args"
 #
 const nome8 = "Mensagem perso"
 const tipo8 = "opc_linha"
-const clas8 = "cmd_novatos"
 const vari8 = "m_msg1"
 #
 const nome9 = "Mensagem outros"
 const tipo9 = "opc_linha"
-const clas9 = "cmd_novatos"
 const vari9 = "m_msg2"

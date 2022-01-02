@@ -1,11 +1,11 @@
 classe h_cmd_chamar
 herda comando_comum
+const classemenu = "m_cmd_chamar"
 const objcmd = config:animal1 ? este
-const txtajuda = config:animal1 ? txtajuda1 + m_ajuda
-const txtajuda1 = "\b\c3Chamar\b\nSintaxe: CHAMAR\n"
+const txtajuda = config:animal1 ? txtajuda1(m_ajuda)
 const posic = 5
 #
-const m_ajuda = "Chama de volta para o comando Animal um animal seu que está solto."
+const m_ajuda = "-t\n-s\nChama de volta para o comando Animal um animal seu que está solto."
 const m_sem_animal = "Não possui nenhum animal solto."
 const m_montado = "$O está montad$u em $a."
 const m_nao_tem = "Você não tem $m."
@@ -63,35 +63,28 @@ herda comando_menu_cmd
 #
 const nome1 = "Ajuda"
 const tipo1 = "opc_texto"
-const clas1 = "cmd_chamar"
 const vari1 = "m_ajuda"
 #
 const nome2 = "Nenhum animal solto"
 const tipo2 = "opc_linha"
-const clas2 = "cmd_chamar"
 const vari2 = "m_sem_animal"
 #
 const nome3 = "Montado no animal"
 const tipo3 = "opc_linha"
-const clas3 = "cmd_chamar"
 const vari3 = "m_montado"
 #
 const nome4 = "Não tem animal"
 const tipo4 = "opc_linha"
-const clas4 = "cmd_chamar"
 const vari4 = "m_nao_tem"
 #
 const nome5 = "Não chama"
 const tipo5 = "opc_linha"
-const clas5 = "cmd_chamar"
 const vari5 = "m_chama_solta"
 #
 const nome6 = "Pegou perso"
 const tipo6 = "opc_linha"
-const clas6 = "cmd_chamar"
 const vari6 = "m_entra1"
 #
 const nome7 = "Pegou outros"
 const tipo7 = "opc_linha"
-const clas7 = "cmd_chamar"
 const vari7 = "m_entra2"

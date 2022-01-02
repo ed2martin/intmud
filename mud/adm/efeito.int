@@ -1,14 +1,14 @@
 classe adm_efeito
-const iniclasse = !$[arg0] && criar(arg0)
-const txtajuda = "\b\c3Efeitos e modificadores\b\n\
-  \c2LEF\b       Lista efeitos existentes\n\
-  \c2CEF\b       Cria um efeito\n\
-  \c2EEF\b       Edita um efeito\n\
-  \c2AEF\b       Apaga um ou mais efeitos\n\
-  \c2LMOD\b      Lista modificadores existentes\n\
-  \c2CMOD\b      Cria um modificador\n\
-  \c2EMOD\b      Edita um modificador\n\
-  \c2AMOD\b      Apaga um ou mais modificadores\n\
+herda comando_adm
+const m_ajuda = "-t Efeitos e modificadores\n\
+-m LEF Lista efeitos existentes\n\
+-m CEF Cria um efeito\n\
+-m EEF Edita um efeito\n\
+-m AEF Apaga um ou mais efeitos\n\
+-m LMOD Lista modificadores existentes\n\
+-m CMOD Cria um modificador\n\
+-m EMOD Edita um modificador\n\
+-m AMOD Apaga um ou mais modificadores\n\
 Magias e habilidades podem lançar efeitos sobre um personagem.\n\
 Já os modificadores funcionam como efeitos, mas possuem menos opções.\n\
 Porém, itens que agrupam também podem receber modificadores.\n\
@@ -20,8 +20,8 @@ na opção \"Variáveis\" coloca o modificador invisivel."
 
 classe adm_lef
 herda comando_adm
-const txtajuda = "\b\c3Lef\b\n\
-Sintaxe: LEF [nome]\n\
+const m_ajuda = "-t\n\
+-s [nome]\n\
 Lista os efeitos que começam com o nome especificado.\n\
 Se o nome for omitido, lista todos os efeitos."
 
@@ -43,8 +43,8 @@ func escr
 
 classe adm_lmod
 herda comando_adm
-const txtajuda = "\b\c3Lmod\b\n\
-Sintaxe: LMOD [nome]\n\
+const m_ajuda = "-t\n\
+-s [nome]\n\
 Lista os modificadores que começam com o nome especificado.\n\
 Se o nome for omitido, lista todos os modificadores."
 
@@ -66,8 +66,8 @@ func escr
 
 classe adm_cef
 herda comando_adm
-const txtajuda = "\b\c3Cef\b\n\
-Sintaxe: CEF <nome>\n\
+const m_ajuda = "-t\n\
+-s <nome>\n\
 Cria um efeito com o nome especificado.\n\
 O nome deve ser composto de letras, mas pode ter espaços no meio."
 
@@ -99,8 +99,8 @@ func escr
 
 classe adm_cmod
 herda comando_adm
-const txtajuda = "\b\c3Cmod\b\n\
-Sintaxe: CMOD <nome>\n\
+const m_ajuda = "-t\n\
+-s <nome>\n\
 Cria um modificador com o nome especificado.\n\
 O nome deve ser composto de letras, mas pode ter espaços no meio."
 
@@ -132,8 +132,8 @@ func escr
 
 classe adm_aef
 herda comando_adm
-const txtajuda = "\b\c3Aef\b\n\
-Sintaxe: AEF <nomes dos efeitos>\n\
+const m_ajuda = "-t\n\
+-s <nomes dos efeitos>\n\
 Apaga uma ou mais efeitos, com os nomes especificados.\n\
 Para apagar um efeito cujo nome contém espaços no meio, use sublinhado\n\
 no lugar dos espaços. Exemplo, se o nome do efeito for Ver Invisível,\n\
@@ -185,8 +185,8 @@ func passo # Confirmar que quer apagar efeito
 
 classe adm_amod
 herda comando_adm
-const txtajuda = "\b\c3Amod\b\n\
-Sintaxe: AMOD <nomes dos modificadores>\n\
+const m_ajuda = "-t\n\
+-s <nomes dos modificadores>\n\
 Apaga uma ou mais modificadores, com os nomes especificados.\n\
 Para apagar um modificador cujo nome contém espaços no meio, use sublinhado\n\
 no lugar dos espaços. Exemplo, se o nome do modificador for Ver Invisível,\n\
@@ -236,8 +236,8 @@ func passo # Confirmar que quer apagar efeito
 
 classe adm_eef
 herda comando_adm
-const txtajuda = "\b\c3Eef\b\n\
-Sintaxe: EEF <nome>\n\
+const m_ajuda = "-t\n\
+-s <nome>\n\
 Edita o efeito com o nome especificado."
 
 func escr # Editar efeito
@@ -257,8 +257,8 @@ func escr # Editar efeito
 
 classe adm_emod
 herda comando_adm
-const txtajuda = "\b\c3Emod\b\n\
-Sintaxe: EMOD <nome>\n\
+const m_ajuda = "-t\n\
+-s <nome>\n\
 Edita o modificador com o nome especificado."
 
 func escr # Editar modificador
@@ -278,35 +278,31 @@ classe menu_efeito
 herda comando_menu
 const titulo = "Efeito " + txt(var.classe1, 2)
 const colunas = 25
+const classe = var.classe1
 #
 const nome1 = "Nome"
 const info1 = "Nome que aparece no comando Lef"
 const tipo1 = "opc_linha"
-const clas1 = var.classe1
 const vari1 = "e_nome"
 #
 const nome2 = "Descrição"
 const info2 = "Descrição do efeito, para os jogadores"
 const tipo2 = "opc_texto"
-const clas2 = var.classe1
 const vari2 = "e_desc"
 #
 const nome3 = "Descrição interna"
 const info3 = "Uma breve descrição do que faz; aparece apenas no comando Lef"
 const tipo3 = "opc_linha"
-const clas3 = var.classe1
 const vari3 = "desc"
 #
 const nome4 = "Quantidade máx."
 const info4 = "Quantos efeitos desse tipo um personagem pode ter"
 const tipo4 = "opc_numero"
-const clas4 = var.classe1
 const vari4 = "maximo"
 const extr4 = "1 10"
 #
 const nome5 = "Condição"
 const tipo5 = "opc_opcao"
-const clas5 = var.classe1
 const vari5 = "e_condicao"
 const extr5 = "Nenhuma; permanente\n\
 Tem pontos de vida\n\
@@ -317,7 +313,6 @@ const exec5 = "ajustaobj"
 const nome6 = "Condição efeitos"
 const info6 = "Quais efeitos impedem que esse efeito seja criado"
 const tipo6 = "opc_listaefeito"
-const clas6 = var.classe1
 const vari6 = "e_ef_condicao"
 const extr6 = "100"
 const exec6 = "acerta_mudou"
@@ -325,7 +320,6 @@ const exec6 = "acerta_mudou"
 const nome7 = "Anula efeitos"
 const info7 = "Quais efeitos são anulados quando esse efeito é criado"
 const tipo7 = "opc_listaefeito"
-const clas7 = var.classe1
 const vari7 = "e_ef_apaga"
 const extr7 = "100"
 const exec7 = "acerta_mudou"
@@ -333,14 +327,12 @@ const exec7 = "acerta_mudou"
 const nome8 = "Duração"
 const info8 = "Quantos décimos de segundo o efeito dura ou 0 se não expira"
 const tipo8 = "opc_numero"
-const clas8 = var.classe1
 const vari8 = "tempo1"
 const extr8 = "0 1000000"
 #
 const nome9 = "Duração por nível"
 const info9 = "Quantos décimos de segundo dura para cada nível de quem lançou"
 const tipo9 = "opc_numero"
-const clas9 = var.classe1
 const vari9 = "tempo2"
 const extr9 = "0 100000"
 #
@@ -349,64 +341,54 @@ const info10 = "Aparece na frente da descrição do personagem, entre parênteses\n
 Para aparecer em baixo, adicionar um * (asterisco) na frente\n\
 Exemplo: *  ... e está protegid$s por uma luz"
 const tipo10 = "opc_linha"
-const clas10 = var.classe1
 const vari10 = "m_atribs2"
 const exec10 = "atribs_dono"
 #
 const nome11 = "Atrib números"
 const info11 = "Afetam apenas personagens"
 const tipo11 = "opc_atribnum"
-const clas11 = var.classe1
 const vari11 = "recalc2_auto"
 const exec11 = "recalc_dono"
 #
 const nome12 = "Atrib itens"
 const info12 = "Afetam apenas itens"
 const tipo12 = "opc_atribobj"
-const clas12 = var.classe1
 const vari12 = "recalc2_auto"
 const exec12 = "recalc_dono"
 #
 const nome13 = "Atrib sim/não"
 const tipo13 = "opc_atribbit"
-const clas13 = var.classe1
 const vari13 = "recalc2_auto"
 const exec13 = "recalc_dono"
 #
 const nome14 = "Atrib ataque"
 const info14 = "Afetam os danos quando o personagem ataca alguém"
 const tipo14 = "opc_atribatk"
-const clas14 = var.classe1
 const vari14 = "recalc2_auto"
 const exec14 = "recalc_dono"
 #
 const nome15 = "Atrib defesa"
 const info15 = "Afetam os danos quando alguém ataca o personagem"
 const tipo15 = "opc_atribdef"
-const clas15 = var.classe1
 const vari15 = "recalc2_auto"
 const exec15 = "recalc_dono"
 #
 const nome16 = "Tempo reduzir"
 const info16 = "De quantos em quantos décimos de segundo reduz algo"
 const tipo16 = "opc_numero"
-const clas16 = var.classe1
 const vari16 = "r_tempo"
 const extr16 = "0 10000"
 #
 const nome17 = "Reduz vida"
 const tipo17 = "opc_numero"
-const clas17 = var.classe1
 const vari17 = "r_vida"
 #
 const nome18 = "Reduz mana"
 const tipo18 = "opc_numero"
-const clas18 = var.classe1
 const vari18 = "r_mana"
 #
 const nome19 = "Reduz vigor"
 const tipo19 = "opc_numero"
-const clas19 = var.classe1
 const vari19 = "r_move"
 #
 const nome20 = "Mensagens"
@@ -415,14 +397,12 @@ const tipo20 = "menu_efeito_msg--"
 const nome21 = "Eventos hora"
 const info21 = "Se a função cmd_hora é chamada quando a hora MUD mudar (5 minutos)"
 const tipo21 = "opc_simnao"
-const clas21 = var.classe1
 const vari21 = "evhora"
 const exec21 = "ajustaobj"
 #
 const nome22 = "Eventos perso"
 const info22 = "Se recebe eventos do personagem que está com o efeito"
 const tipo22 = "opc_simnao"
-const clas22 = var.classe1
 const vari22 = "evperso"
 const exec22 = "ajustaobj"
 
@@ -432,65 +412,56 @@ herda comando_menu
 const titulo = "Mensagens"
 const menufim = var.menufim
 const colunas = 25
+const classe = var.classe1
 #
 const titu1 = " * Criou"
 #
 const nome1 = "Perso"
 const tipo1 = "opc_linha"
-const clas1 = var.classe1
 const vari1 = "msgini1"
 #
 const nome2 = "Outros"
 const tipo2 = "opc_linha"
-const clas2 = var.classe1
 const vari2 = "msgini2"
 #
 const titu3 = " * Falhou"
 #
 const nome3 = "Perso"
 const tipo3 = "opc_linha"
-const clas3 = var.classe1
 const vari3 = "msgfalhou1"
 #
 const nome4 = "Outros"
 const tipo4 = "opc_linha"
-const clas4 = var.classe1
 const vari4 = "msgfalhou2"
 #
 const titu5 = " * Não teve efeito"
 #
 const nome5 = "Perso"
 const tipo5 = "opc_linha"
-const clas5 = var.classe1
 const vari5 = "msgnulo1"
 #
 const nome6 = "Outros"
 const tipo6 = "opc_linha"
-const clas6 = var.classe1
 const vari6 = "msgnulo2"
 #
 const titu7 = " * Apagou"
 #
 const nome7 = "Perso"
 const tipo7 = "opc_linha"
-const clas7 = var.classe1
 const vari7 = "msgfim1"
 #
 const nome8 = "Outros"
 const tipo8 = "opc_linha"
-const clas8 = var.classe1
 const vari8 = "msgfim2"
 #
 const titu9 = " * Ao reduzir vida/mana/vigor"
 #
 const nome9 = "Perso"
 const tipo9 = "opc_linha"
-const clas9 = var.classe1
 const vari9 = "msgreduz1"
 #
 const nome10 = "Outros"
 const tipo10 = "opc_linha"
-const clas10 = var.classe1
 const vari10 = "msgreduz2"
 
 
@@ -498,17 +469,16 @@ classe menu_modif
 herda comando_menu
 const titulo = "Modificador " + txt(var.classe1, 2)
 const colunas = 25
+const classe = var.classe1
 #
 const nome1 = "Nome"
 const info1 = "Nome que aparece no comando Lmod"
 const tipo1 = "opc_linha"
-const clas1 = var.classe1
 const vari1 = "e_nome"
 #
 const nome2 = "Descrição interna"
 const info2 = "Uma breve descrição do que faz; aparece apenas no comando Lmod"
 const tipo2 = "opc_linha"
-const clas2 = var.classe1
 const vari2 = "desc"
 #
 const nome3 = "Atrib texto"
@@ -516,41 +486,34 @@ const info3 = "Aparece na frente da descrição do personagem, entre parênteses\n\
 Para aparecer em baixo, adicionar um * (asterisco) na frente\n\
 Exemplo: *  ... e está protegid$s por uma luz"
 const tipo3 = "opc_linha"
-const clas3 = var.classe1
 const vari3 = "m_atribs2"
 #
 const nome4 = "Atrib números"
 const info4 = "Afetam apenas personagens"
 const tipo4 = "opc_atribnum"
-const clas4 = var.classe1
 const vari4 = "recalc2_auto"
 #
 const nome5 = "Atrib itens"
 const info5 = "Afetam apenas itens"
 const tipo5 = "opc_atribobj"
-const clas5 = var.classe1
 const vari5 = "recalc2_auto"
 #
 const nome6 = "Atrib sim/não"
 const tipo6 = "opc_atribbit"
-const clas6 = var.classe1
 const vari6 = "recalc2_auto"
 #
 const nome7 = "Atrib ataque"
 const info7 = "Afetam os danos quando o personagem ataca alguém"
 const tipo7 = "opc_atribatk"
-const clas7 = var.classe1
 const vari7 = "recalc2_auto"
 #
 const nome8 = "Atrib defesa"
 const info8 = "Afetam os danos quando alguém ataca o personagem"
 const tipo8 = "opc_atribdef"
-const clas8 = var.classe1
 const vari8 = "recalc2_auto"
 #
 const nome9 = "Atualizar"
 const tipo9 = "opc_modif"
-const clas9 = var.classe1
 const vari9 = "recalc2_auto"
 
 

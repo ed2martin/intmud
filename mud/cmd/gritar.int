@@ -1,11 +1,13 @@
 classe h_cmd_gritar
 herda comando_comum
+const classemenu = "m_cmd_gritar"
 const posic = 5
 const objcmd = v_tipo ? este
-const txtajuda = v_tipo ? txtajuda1 + m_ajuda
-const txtajuda1 = "\b\c3Gritar\b\nSintaxe: GRITAR <mensagem>\n"
+const txtajuda = v_tipo ? txtajuda1(m_ajuda)
 #
-const m_ajuda = "Envia mensagem para todos os personagens que estiverem na mesma área."
+const m_ajuda = "-t\n\
+-s <mensagem>\n\
+Envia mensagem para todos os personagens que estiverem na mesma área."
 const m_sem_args = "Tecle a mensagem após GRITAR."
 const m_nivel = "Para gritar você precisa chegar no nível $m."
 const v_nivel = 0
@@ -64,49 +66,40 @@ herda comando_menu_cmd
 #
 const nome1 = "Comando Gritar"
 const tipo1 = "opc_opcao"
-const clas1 = "cmd_gritar"
 const vari1 = "v_tipo"
 const extr1 = "Desabilitado\nHabilitado"
 #
 const nome2 = "Ajuda"
 const tipo2 = "opc_texto"
-const clas2 = "cmd_gritar"
 const vari2 = "m_ajuda"
 #
 const nome3 = "Sem argumentos"
 const tipo3 = "opc_linha"
-const clas3 = "cmd_gritar"
 const vari3 = "m_sem_args"
 #
 const nome4 = "Nível mínimo"
 const tipo4 = "opc_numero"
-const clas4 = "cmd_gritar"
 const vari4 = "v_nivel"
 #
 const nome5 = "Nível insuficiente"
 const tipo5 = "opc_linha"
-const clas5 = "cmd_gritar"
 const vari5 = "m_nivel"
 #
 const nome6 = "Movimentos gastos"
 const info6 = "Quantos pontos de movimentos o personagem gasta ao gritar"
 const tipo6 = "opc_numero"
-const clas6 = "cmd_gritar"
 const vari6 = "v_move"
 #
 const nome7 = "Move insuficiente"
 const tipo7 = "opc_linha"
-const clas7 = "cmd_gritar"
 const vari7 = "m_move"
 #
 const nome8 = "Gritar: perso"
 const info8 = "Ao teclar gritar e uma mensagem"
 const tipo8 = "opc_linha"
-const clas8 = "cmd_gritar"
 const vari8 = "m_gritar1"
 #
 const nome9 = "Gritar: outros"
 const info9 = "Ao teclar gritar e uma mensagem"
 const tipo9 = "opc_linha"
-const clas9 = "cmd_gritar"
 const vari9 = "m_gritar2"

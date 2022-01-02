@@ -19,21 +19,96 @@ func escr # Processa o comando
 func iniclasse
   ret txt(arg0, 0, 2) != "h_", !$[arg0] && criar(arg0)
   prog p
-  ret p.existe(txt(arg0, 2)), nulo
+  p.iniherdainv(arg0)
+  ret p.lin, nulo
   p.criar(txt(arg0, 2) + "\nconfig/cmd\nherda " + arg0)
   misccriar:add(txt(arg0, 2))
+
+const txtajuda = txtajuda1(m_ajuda)
+
+func txtajuda1 # Prepara um texto de ajuda
+# arg0 = texto original
+  txt20 sintaxe = "Sintaxe: "
+  prog pr
+  textotxt t
+  t.addfim(arg0)
+  textopos p = t.ini
+  enquanto p.lin
+    casovar txt1(txte(p.texto(0, 4)))
+    casose "-t"
+      p.mudar("\b\c3" + (p.texto(3) ?? txtmaimin(txt2(txte(este)))) + "\b")
+      p.depois
+      continuar
+    casose "-s"
+      p.mudar(sintaxe + txtmai(txt2(txte(este))), 0, 2)
+      p.depois
+      sintaxe = "         "
+      continuar
+    casose "-ss"
+      p.mudar(sintaxe, 0, 4)
+      p.depois
+      sintaxe = "         "
+      continuar
+    casose "-h" # Menu classe herdada
+      refvar cl = txt1(p.texto(1))
+      pr.iniherdainv(cl)
+      sair !$[pr.texto]
+      refvar n = txt2(txte(pr.texto))
+      p.mudar("  \c2" + txtmai(n) + "\b" + txtesp(12 - inttotal(n)), 0, inttotal(cl + 4))
+      p.depois
+      continuar
+    casose "-cmd" # Menu classe
+      refvar cl = txt1(p.texto(1))
+      sair !$[cl]
+      refvar n = txt2(txte(cl))
+      p.mudar("  \c2" + txtmai(n) + "\b" + txtesp(12 - inttotal(n)), 0, inttotal(cl + 4))
+      p.depois
+      continuar
+    casose "+h"
+      refvar cl = txt1(p.texto(1))
+      pr.iniherdainv(cl)
+      sair !$[pr.texto].objcmd
+      refvar n = txt2(txte(pr.texto))
+      p.mudar("  \c2" + txtmai(n) + "\b" + txtesp(12 - inttotal(n)), 0, inttotal(cl + 4))
+      p.depois
+      continuar
+    casose "+cmd"
+      refvar cl = txt1(p.texto(1))
+      sair !$[cl].objcmd
+      refvar n = txt2(txte(cl))
+      p.mudar("  \c2" + txtmai(n) + "\b" + txtesp(12 - inttotal(n)), 0, inttotal(cl + 4))
+      p.depois
+      continuar
+    casose "+"
+    casose "-"
+      p.mudar("", 0, 2)
+    casose
+      p.depois
+      continuar
+    casofim
+    p.remove
+  efim
+  ret t.remove(1000)
+
+
+classe comando_atalho
+# Atalhos para comandos dos jogadores
+const comando = "" # Nome da classe "cmd_"
+const iniclasse = !$[arg0] && criar(arg0)
+const objcmd = $[comando].objcmd(arg0)
 
 
 classe comando_menu_cmd
 herda comando_menu
-const titulo = txtcopiamai(txt(este, 6), "A")
+const titulo = txtcopiamai(txt(var.classe1, 4), "A")
 const menufim = "menu_econfig_cmd"
 const colunas = 28
+const classe = var.classe1
 
 
 classe cmd_lancar
 herda comando_comum
-const txtajuda = "\b\c3Lançar\b\nSintaxe: LANÇAR <nome da magia>\nLança uma magia."
+const m_ajuda = "-t\n-s <nome da magia>\nLança uma magia."
 const posic = 0
 const lancamagia = 1 # Para indicar ao personagem que é comando de lançar magia
 # Nota: a função escr aqui é desnecessária

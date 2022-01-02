@@ -1,13 +1,13 @@
 classe h_cmd_senha
 herda comando_comum
+const classemenu = "m_cmd_senha"
 const posic = 5
 const objcmd = este
 const objnivel = 4
-const txtajuda = txtajuda1 + m_ajuda
-const txtajuda1 = "\b\c3Senha\b\n\
-Sintaxe: SALVAR\n"
 #
-const m_ajuda = "Muda a senha do seu personagem e salva em seguida.\n\
+const m_ajuda = "-t\n\
+-s\n\
+Muda a senha do seu personagem e salva em seguida.\n\
 Veja também o comando SALVAR (salva o seu personagem)"
 const m_semsenha = "Seu personagem não possui senha. Tecle SALVAR para salvar o jogo."
 const admordem = "m_ajuda m_semsenha"
@@ -24,14 +24,14 @@ func escr
 
 classe h_cmd_salvar
 herda comando_comum
+const classemenu = "m_cmd_salvar"
 const posic = 5
 const objcmd = este
 const objnivel = 4
-const txtajuda = txtajuda1 + m_ajuda
-const txtajuda1 = "\b\c3Salvar\b\n\
-Sintaxe: SALVAR\n"
 #
-const m_ajuda = "O MUD já salva o seu personagem de tempos em tempos e quando seu personagem\n\
+const m_ajuda = "-t\n\
+-s\n\
+O MUD já salva o seu personagem de tempos em tempos e quando seu personagem\n\
 sai do jogo. Esse comando permite salvar novamente a qualquer momento.\n\
 Se você possui alguma casa, ela também será salva se for necessário.\n\
 Se o personagem nunca foi salvo, será solicitada uma nova senha.\n\
@@ -73,12 +73,10 @@ herda comando_menu_cmd
 #
 const nome1 = "Ajuda"
 const tipo1 = "opc_texto"
-const clas1 = "cmd_senha"
 const vari1 = "m_ajuda"
 #
 const nome2 = "Sem senha"
 const tipo2 = "opc_linha"
-const clas2 = "cmd_senha"
 const vari2 = "m_semsenha"
 
 
@@ -87,25 +85,20 @@ herda comando_menu_cmd
 #
 const nome1 = "Ajuda"
 const tipo1 = "opc_texto"
-const clas1 = "cmd_salvar"
 const vari1 = "m_ajuda"
 #
 const nome2 = "Salvou"
 const tipo2 = "opc_linha"
-const clas2 = "cmd_salvar"
 const vari2 = "m_salvar_sim"
 #
 const nome3 = "Erro ao salvar"
 const tipo3 = "opc_linha"
-const clas3 = "cmd_salvar"
 const vari3 = "m_salvar_nao"
 #
 const nome4 = "Sem jogo salvo"
 const tipo4 = "opc_linha"
-const clas4 = "cmd_salvar"
 const vari4 = "m_jogo_salvo"
 #
 const nome5 = "Nível insuficiente"
 const tipo5 = "opc_linha"
-const clas5 = "cmd_salvar"
 const vari5 = "m_nivel"

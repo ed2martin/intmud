@@ -1,13 +1,14 @@
 classe h_cmd_trocar
 herda comando_comum
+const classemenu = "m_cmd_trocar"
 const objcmd = config:animal1 ? este
-const txtajuda = config:animal1 ? txtajuda1 + m_ajuda
-const txtajuda1 = "\b\c3Trocar\b\n\
-Sintaxe: TROCAR\n\
-         TROCAR <item>\n\
-         TROCAR <número> <número>\n"
+const txtajuda = config:animal1 ? txtajuda1(m_ajuda)
 #
-const m_ajuda = "Sem argumentos pega um item do animal escolhido.\n\
+const m_ajuda = "-t\n\
+-s\n\
+-s <item>\n\
+-s <número> <número>\n\
+Sem argumentos pega um item do animal escolhido.\n\
 Com o nome de um item, dá um item para o animal escolhido.\n\
 Com dois números, troca dois animais de lugar."
 const m_batalha = "Você não consegue trocar durante a batalha."
@@ -108,80 +109,64 @@ herda comando_menu_cmd
 #
 const nome1 = "Ajuda"
 const tipo1 = "opc_texto"
-const clas1 = "cmd_trocar"
 const vari1 = "m_ajuda"
 #
 const nome2 = "Durante a batalha"
 const tipo2 = "opc_linha"
-const clas2 = "cmd_trocar"
 const vari2 = "m_batalha"
 #
 const nome3 = "Escolher animal"
 const tipo3 = "opc_linha"
-const clas3 = "cmd_trocar"
 const vari3 = "m_animal_escolha"
 #
 const nome4 = "Animal sem item"
 const tipo4 = "opc_linha"
-const clas4 = "cmd_trocar"
 const vari4 = "m_animal_sem"
 #
 const nome5 = "Animal cheio"
 const tipo5 = "opc_linha"
-const clas5 = "cmd_trocar"
 const vari5 = "m_perso_cheio"
 #
 const nome6 = "Não vê item"
 const tipo6 = "opc_linha"
-const clas6 = "cmd_trocar"
 const vari6 = "m_naover"
 #
 const nome7 = "Animal longe"
 const tipo7 = "opc_linha"
-const clas7 = "cmd_trocar"
 const vari7 = "m_longe"
 #
 const nome8 = "Perso cheio"
 const tipo8 = "opc_linha"
-const clas8 = "cmd_trocar"
 const vari8 = "m_animal_cheio"
 #
 const nome9 = "Pegar item: perso"
 const tipo9 = "opc_linha"
-const clas9 = "cmd_trocar"
 const vari9 = "m_pegar1"
 #
 const nome10 = "Pegar item: outros"
 const tipo10 = "opc_linha"
-const clas10 = "cmd_trocar"
 const vari10 = "m_pegar2"
 #
 const nome11 = "Pegar/dar item: perso"
 const tipo11 = "opc_linha"
-const clas11 = "cmd_trocar"
 const vari11 = "m_pegar_dar1"
 #
 const nome12 = "Pegar/dar item: outros"
 const tipo12 = "opc_linha"
-const clas12 = "cmd_trocar"
 const vari12 = "m_pegar_dar2"
 #
 const nome13 = "Dar item: perso"
 const tipo13 = "opc_linha"
-const clas13 = "cmd_trocar"
 const vari13 = "m_dar1"
 #
 const nome14 = "Dar item: outros"
 const tipo14 = "opc_linha"
-const clas14 = "cmd_trocar"
 const vari14 = "m_dar2"
 #
 const nome15 = "Sem troca"
 const tipo15 = "opc_linha"
-const clas15 = "cmd_trocar"
 const vari15 = "m_semtroca"
 #
 const nome16 = "Trocar de lugar"
 const tipo16 = "opc_linha"
-const clas16 = "cmd_trocar"
 const vari16 = "m_trocar"

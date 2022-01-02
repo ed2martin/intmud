@@ -1,10 +1,10 @@
 classe adm_som
-const iniclasse = !$[arg0] && criar(arg0)
-const txtajuda = "\c3Sons via MSP (MUD Sound Protocol)\b\n\
-  \c2LSOM\b      Lista sons existentes\n\
-  \c2CSOM\b      Cria um som\n\
-  \c2ESOM\b      Edita um som\n\
-  \c2ASOM\b      Apaga um ou mais sons\n\
+herda comando_adm
+const m_ajuda = "-t Sons via MSP (MUD Sound Protocol)\n\
+-m LSOM Lista sons existentes\n\
+-m CSOM Cria um som\n\
+-m ESOM Edita um som\n\
+-m ASOM Apaga um ou mais sons\n\
 \c2Pré requisitos:\b\n\
   Os jogadores precisam usar um cliente com suporte a MSP, como zMUD,\n\
   Vipmud, Omnimud, etc. Precisam também baixar (de algum site) o pacote\n\
@@ -25,8 +25,8 @@ const txtajuda = "\c3Sons via MSP (MUD Sound Protocol)\b\n\
 
 classe adm_lsom
 herda comando_adm
-const txtajuda = "\b\c3Lsom\b\n\
-Sintaxe: LSOM [nome]\n\
+const m_ajuda = "-t\n\
+-s [nome]\n\
 Lista os sons que começam com o nome especificado.\n\
 Se o nome for omitido, lista todos os sons."
 
@@ -48,8 +48,8 @@ func escr
 
 classe adm_csom
 herda comando_adm
-const txtajuda = "\b\c3Csom\b\n\
-Sintaxe: CSOM <nome>\n\
+const m_ajuda = "-t\n\
+-s <nome>\n\
 Cria um som com o nome especificado.\n\
 O nome deve ser composto de letras, mas pode ter espaços no meio."
 
@@ -78,8 +78,8 @@ func escr
 
 classe adm_asom
 herda comando_adm
-const txtajuda = "\b\c3Asom\b\n\
-Sintaxe: ASOM <nomes dos sons>\n\
+const m_ajuda = "-t\n\
+-s <nomes dos sons>\n\
 Apaga uma ou mais sons, com os nomes especificados.\n\
 Para apagar um som cujo nome contém espaços no meio, use sublinhado\n\
 no lugar dos espaços."
@@ -128,8 +128,8 @@ func passo # Confirmar que quer apagar som
 
 classe adm_esom
 herda comando_adm
-const txtajuda = "\b\c3Esom\b\n\
-Sintaxe: ESOM <nome>\n\
+const m_ajuda = "-t\n\
+-s <nome>\n\
 Edita o som com o nome especificado."
 
 func escr
@@ -149,12 +149,12 @@ classe menu_som
 herda comando_menu
 const titulo = "Som " + txt(var.classe1, 4)
 const colunas = 25
+const classe = var.classe1
 #
 const nome1 = "Tipo"
 const info1 = "Música contínua não interrompe/reinicia a música se o MUD pedir para\n\
 tocar a mesma música de fundo"
 const tipo1 = "opc_opcao"
-const clas1 = var.classe1
 const vari1 = "tipo"
 const extr1 = "Efeito sonoro\nMúsica de fundo\nMúsica contínua"
 const exec1 = "atualiza"
@@ -162,14 +162,12 @@ const exec1 = "atualiza"
 const nome2 = "Arquivo"
 const info2 = "Se for a palavra off, cancela a música ou os efeitos sonoros sendo tocados"
 const tipo2 = "opc_som_arquivo"
-const clas2 = var.classe1
 const vari2 = "arquivo"
 const exec2 = "atualiza"
 #
 const nome3 = "Volume"
 const info3 = "De 0 a 100, sendo 0 mudo e 100 volume máximo"
 const tipo3 = "opc_numero"
-const clas3 = var.classe1
 const vari3 = "volume"
 const extr3 = "0 100"
 const exec3 = "atualiza"
@@ -178,7 +176,6 @@ const nome4 = "Repetições"
 const info4 = "Quantas vezes deve repetir, de 1 a 10, ou -1 para tocar indefinidamente\n\
 Em efeitos sonoros, -1 faz tocar apenas uma vez"
 const tipo4 = "opc_numero"
-const clas4 = var.classe1
 const vari4 = "repete"
 const extr4 = "-1 10"
 const exec4 = "atualiza"

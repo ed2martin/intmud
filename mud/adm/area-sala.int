@@ -1,14 +1,14 @@
 classe adm_area
-const iniclasse = !$[arg0] && criar(arg0)
-const txtajuda = "\b\c3Comandos de áreas\b\n\
-  \c2LAREA\b     Lista áreas existentes\n\
-  \c2CAREA\b     Cria uma área\n\
-  \c2EAREA\b     Edita uma área\n\
-  \c2AAREA\b     Apaga uma área"
+herda comando_adm_ajuda
+const m_ajuda = "-t Comandos de áreas\n\
+-m LAREA Lista áreas existentes\n\
+-m CAREA Cria uma área\n\
+-m EAREA Edita uma área\n\
+-m AAREA Apaga uma área"
 
 
 classe adm_sala
-const iniclasse = !$[arg0] && criar(arg0)
+herda comando_adm_ajuda
 #
 const txt_terreno = "Dentro, lugar fechado - 1mv\n\
 Rua de uma cidade - 2mv\n\
@@ -31,28 +31,28 @@ Luz do sol\nEscuro"
 #
 const txt_porta = "Sem porta\nPorta aberta\nPorta fechada\nPorta trancada"
 #
-const txtajuda = "\b\c3Comandos de salas\b\n\
-  \c2LSALA\b     Lista salas existentes\n\
-  \c2PSALA\b     Pesquisa salas com um determinado título\n\
-  \c2CSALA\b     Cria sala\n\
-  \c2CDIR\b      Cria sala em uma direção\n\
-  \c2ESALA\b     Edita sala\n\
-  \c2ASALA\b     Apaga uma ou mais salas\n\
-  \c2LDESC\b     Lista descrições extras da sala\n\
-  \c2EDESC\b     Edita uma descrição extra da sala\n\
-  \c2ADESC\b     Apaga uma descrição extra da sala\n\
-  \c2LSAI\b      Mostra saídas da sala\n\
-  \c2CSAI\b      Cria saída em uma direção\n\
-  \c2CSAI2\b     Mesmo que CSAI, mas cria também uma saída no sentido contrário\n\
-  \c2ESAI\b      Edita tipo de saída em uma direção\n\
-  \c2ASAI\b      Apaga saída em uma direção"
+const m_ajuda = "-t Comandos de salas\n\
+-m LSALA Lista salas existentes\n\
+-m PSALA Pesquisa salas com um determinado título\n\
+-m CSALA Cria sala\n\
+-m CDIR Cria sala em uma direção\n\
+-m ESALA Edita sala\n\
+-m ASALA Apaga uma ou mais salas\n\
+-m LDESC Lista descrições extras da sala\n\
+-m EDESC Edita uma descrição extra da sala\n\
+-m ADESC Apaga uma descrição extra da sala\n\
+-m LSAI Mostra saídas da sala\n\
+-m CSAI Cria saída em uma direção\n\
+-m CSAI2 Mesmo que CSAI, mas cria também uma saída no sentido contrário\n\
+-m ESAI Edita tipo de saída em uma direção\n\
+-m ASAI Apaga saída em uma direção"
 
 
 classe adm_larea
 herda comando_adm
 const objcmd = arg1.c_larea ? este
-const txtajuda = "\b\c3Larea\b\n\
-Sintaxe: LAREA [nome]\n\
+const m_ajuda = "-t\n\
+-s [nome]\n\
 Lista as áreas que começam com o nome especificado.\n\
 Se o nome for omitido, lista todas as áreas."
 
@@ -72,8 +72,8 @@ func escr # Listar áreas
 
 classe adm_carea
 herda comando_adm
-const txtajuda = "\b\c3Carea\b\n\
-Sintaxe: CAREA <nome>\n\
+const m_ajuda = "-t\n\
+-s <nome>\n\
 Cria uma área com o nome especificado.\n\
 Nota: Nomes de área devem ter de 2 a 16 letras de A a Z."
 
@@ -102,8 +102,8 @@ func escr # Criar área
 
 classe adm_aarea
 herda comando_adm
-const txtajuda = "\b\c3Aarea\b\n\
-Sintaxe: AAREA <nome>\n\
+const m_ajuda = "-t\n\
+-s <nome>\n\
 Apaga a área com o nome especificado, desde que esteja vazia\n\
 (nenhuma sala, personagem, item ou casa)."
 
@@ -144,8 +144,8 @@ func escr # Apagar área
 
 classe adm_earea
 herda comando_adm
-const txtajuda = "\b\c3Earea\b\n\
-Sintaxe: EAREA [nome]\n\
+const m_ajuda = "-t\n\
+-s [nome]\n\
 Edita a área com o nome especificado. Se o nome for omitido, edita a área\n\
 em que você está."
 
@@ -168,8 +168,8 @@ func escr # Editar área
 classe adm_lsala
 herda comando_adm
 const objcmd = arg1.c_lsala ? este
-const txtajuda = "\b\c3Lsala\b\n\
-Sintaxe: LSALA [nome]\n\
+const m_ajuda = "-t\n\
+-s [nome]\n\
 Lista as salas que começam com o nome especificado.\n\
 Se o nome for omitido, lista todas as salas."
 
@@ -208,8 +208,8 @@ func listar # Listar salas
 classe adm_psala
 herda adm_lsala
 const objcmd = arg1.c_lsala ? este
-const txtajuda = "\b\c3Psala\b\n\
-Sintaxe: PSALA [título]\n\
+const m_ajuda = "-t\n\
+-s [título]\n\
 Pesquisa as salas com o título especificado ou parte dele.\n\
 Se o título for omitido, lista todas as salas."
 
@@ -220,8 +220,8 @@ func escr
 classe adm_cdir
 herda comando_adm
 const objcmd = arg1.c_esala ? este
-const txtajuda = "\b\c3Cdir\b\n\
-Sintaxe: CDIR <direção>\n\
+const m_ajuda = "-t\n\
+-s <direção>\n\
 Cria sala na direção especificada. Cria automaticamente uma saída com\n\
 a sala em que você está.\n\
 Exemplo: cdir ne"
@@ -271,8 +271,8 @@ func escr # Criar sala na direção especificada
 classe adm_csala
 herda comando_adm
 const objcmd = arg1.c_esala ? este
-const txtajuda = "\b\c3Csala\b\n\
-Sintaxe: CSALA <nome>\n\
+const m_ajuda = "-t\n\
+-s <nome>\n\
 Cria uma sala. Nome deve ser o nome de uma área ou da sala.\n\
 Nomes de sala são sempre nomes de área seguido de um número de 001 a 999."
 
@@ -319,8 +319,8 @@ func escr # Criar sala
 classe adm_asala
 herda comando_adm
 const objcmd = arg1.c_esala ? este
-const txtajuda = "\b\c3Asala\b\n\
-Sintaxe: ASALA <nomes das salas>\n\
+const m_ajuda = "-t\n\
+-s <nomes das salas>\n\
 Apaga uma ou mais salas, mas não apaga as saídas das outras salas para\n\
 as que forem apagadas."
 
@@ -385,8 +385,8 @@ func infonome
 classe adm_esala
 herda comando_adm
 const objcmd = arg1.c_esala ? este
-const txtajuda = "\b\c3Esala\b\n\
-Sintaxe: ESALA [nome]\n\
+const m_ajuda = "-t\n\
+-s [nome]\n\
 Edita a sala com o nome especificado. Se o nome for omitido, edita a sala\n\
 em que você está."
 
@@ -408,8 +408,8 @@ func escr # Editar sala
 classe adm_ldesc
 herda comando_adm
 const objcmd = arg1.c_esala ? este
-const txtajuda = "\b\c3Ldesc\b\n\
-Sintaxe: LDESC\n\
+const m_ajuda = "-t\n\
+-s\n\
 Lista as descrições extras sala sala aonde você está."
 
 func escr # Listar descrições extras
@@ -432,8 +432,8 @@ func escr # Listar descrições extras
 classe adm_edesc
 herda comando_adm
 const objcmd = arg1.c_esala ? este
-const txtajuda = "\b\c3Edesc\b\n\
-Sintaxe: EDESC <nome da descrição>\n\
+const m_ajuda = "-t\n\
+-s <nome da descrição>\n\
 Edita uma descrição extra da sala aonde você está.\n\
 Para criar descrições somente diurnas ou somente noturnas, acrescentar\n\
 @d ou @n, respectivamente, no final dos nomes das descrições.\n\
@@ -466,8 +466,8 @@ func escr # Editar descrição extra
 classe adm_adesc
 herda comando_adm
 const objcmd = arg1.c_esala ? este
-const txtajuda = "\b\c3Adesc\b\n\
-Sintaxe: ADESC <nome da descrição>\n\
+const m_ajuda = "-t\n\
+-s <nome da descrição>\n\
 Apaga uma descrição extra da sala aonde você está."
 
 func escr # Apagar descrição extra
@@ -654,34 +654,30 @@ classe menu_area
 herda comando_menu, menu_area_sala
 const titulo = "Área " + txt(var.classe2, 2)
 const colunas = 25
+const classe = var.classe2
 #
 const nome1 = "Nome"
 const tipo1 = "opc_linha-"
-const clas1 = var.classe2
 const vari1 = "a_nome"
 #
 const nome2 = "Autor"
 const tipo2 = "opc_linha-"
-const clas2 = var.classe2
 const vari2 = "a_autor"
 #
 const nome3 = "Tempo de reset"
 const info3 = "Tempo aproximado em minutos"
 const tipo3 = "opc_numero"
-const clas3 = var.classe2
 const vari3 = "a_tempo"
 const exec3 = "reset_atualiza"
 #
 const nome4 = "Modo de reset"
 const tipo4 = "opc_opcao"
-const clas4 = var.classe2
 const vari4 = "a_reset"
 const extr4 = "Nunca\nQuando não há jogadores\nNormal"
 #
 const nome5 = "Mensagem de reset"
 const info5 = "Enviada para os jogadores na área quando ocorre reset"
 const tipo5 = "opc_linha"
-const clas5 = var.classe2
 const vari5 = "a_txtreset"
 
 
@@ -689,59 +685,51 @@ classe menu_sala
 herda comando_menu, menu_area_sala
 const titulo = "Sala " + txt(var.classe1, 2)
 const colunas = 25
+const classe = var.classe1
 #
 const nome1 = "Título"
 const tipo1 = "opc_linha"
-const clas1 = var.classe1
 const vari1 = "s_titulo"
 #
 const nome2 = "Descrição"
 const info2 = "Aceita caracteres especiais do personagem; vide adm mens"
 const tipo2 = "opc_texto"
-const clas2 = var.classe1
 const vari2 = "s_desc"
 #
 const nome3 = "Desc de noite"
 const info3 = "Se quiser uma descrição diferente quando etiver de noite"
 const tipo3 = "opc_texto"
-const clas3 = var.classe1
 const vari3 = "s_noite"
 #
 const nome4 = "Desc completa"
 const info4 = "Se quiser substituir a descrição completa, mostrada ao teclar 'olhar'"
 const tipo4 = "opc_texto"
-const clas4 = var.classe1
 const vari4 = "descsala"
 #
 const nome5 = "Ocultar desc"
 const info5 = "Se não deve mostrar descrição ao entrar na sala"
 const tipo5 = "opc_simnao"
-const clas5 = var.classe1
 const vari5 = "s_ocultar"
 #
 const nome31 = "Embaralhar saídas"
 const info31 = "Se maior que 0, a cada quantos segundos muda as salas das direções\n\
 n s l o ne no se so"
 const tipo31 = "opc_numero"
-const clas31 = var.classe1
 const vari31 = "s_mudadir"
 const exec31 = "s_mudadir1"
 #
 const nome32 = "Msg ao embaralhar"
 const tipo32 = "opc_linha"
-const clas32 = var.classe1
 const vari32 = "s_salarandmsg"
 #
 const nome51 = "Eventos hora"
 const info51 = "Se a função cmd_hora é chamada quando a hora MUD mudar (5 minutos)"
 const tipo51 = "opc_simnao"
-const clas51 = var.classe1
 const vari51 = "evhora"
 const exec51 = "ajustaobj"
 #
 const nome52 = "Eventos sala"
 const info52 = "Se recebe eventos da própria sala"
 const tipo52 = "opc_simnao"
-const clas52 = var.classe1
 const vari52 = "eveste"
 const exec52 = "ajustaobj"

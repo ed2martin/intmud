@@ -1,20 +1,20 @@
 classe adm_perso
-const iniclasse = !$[arg0] && criar(arg0)
-const txtajuda = "\b\c3Comandos de personagens não jogador\b\n\
-  \c2LPERSO\b    Lista personagens existentes\n\
-  \c2PPERSO\b    Pesquisa personagens com um determinado nome\n\
-  \c2IPERSO\b    Mostra aonde está um personagem\n\
-  \c2CPERSO\b    Cria um personagem\n\
-  \c2EPERSO\b    Edita um personagem\n\
-  \c2APERSO\b    Apaga um ou mais personagens\n\
-  \c2PEXP\b      Calcula experiência ganha ao vencer um personagem"
+herda comando_adm
+const m_ajuda = "-t Comandos de personagens não jogador\n\
+-m LPERSO Lista personagens existentes\n\
+-m PPERSO Pesquisa personagens com um determinado nome\n\
+-m IPERSO Mostra aonde está um personagem\n\
+-m CPERSO Cria um personagem\n\
+-m EPERSO Edita um personagem\n\
+-m APERSO Apaga um ou mais personagens\n\
+-m PEXP Calcula experiência ganha ao vencer um personagem"
 
 
 classe adm_lperso
 herda comando_adm
 const objcmd = arg1.c_lperso ? este
-const txtajuda = "\b\c3Lperso\b\n\
-Sintaxe: LPERSO [nome]\n\
+const m_ajuda = "-t\n\
+-s [nome]\n\
 Lista os personagens que começam com o nome especificado.\n\
 Se o nome for omitido, lista todos os personagens."
 
@@ -73,8 +73,8 @@ func listar # Listar personagens
 classe adm_pperso
 herda adm_lperso
 const objcmd = arg1.c_lperso ? este
-const txtajuda = "\b\c3Pperso\b\n\
-Sintaxe: PPERSO <nome>\n\
+const m_ajuda = "-t\n\
+-s <nome>\n\
 Pesquisa os personagens com o nome especificado ou parte dele.\n\
 Se o nome for omitido, lista todos os personagens."
 
@@ -85,8 +85,8 @@ func escr
 classe adm_iperso
 herda comando_adm
 const objcmd = arg1.c_iperso ? este
-const txtajuda = "\b\c3Iperso\b\n\
-Sintaxe: IPERSO <nome>\n\
+const m_ajuda = "-t\n\
+-s <nome>\n\
 Mostra aonde está cada personagem do tipo especificado."
 
 func escr # Listar personagens
@@ -124,8 +124,8 @@ func escr # Listar personagens
 classe adm_cperso
 herda comando_adm
 const objcmd = arg1.c_eperso ? este
-const txtajuda = "\b\c3Cperso\b\n\
-Sintaxe: CPERSO <nome>\n\
+const m_ajuda = "-t\n\
+-s <nome>\n\
 Cria um personagem. Nome deve ser o nome de uma área ou do personagem.\n\
 Nomes de personagens são sempre nomes de área seguido de um número de\n\
 001 a 999."
@@ -215,8 +215,8 @@ func passo # Escolher o tipo de personagem ao criar
 classe adm_aperso
 herda comando_adm
 const objcmd = arg1.c_eperso ? este
-const txtajuda = "\b\c3Aperso\b\n\
-Sintaxe: APERSO <nomes dos personagens>\n\
+const m_ajuda = "-t\n\
+-s <nomes dos personagens>\n\
 Apaga uma ou mais personagens, com os nomes especificados."
 
 func escr # Apagar personagem
@@ -280,8 +280,8 @@ func infonome
 classe adm_eperso
 herda comando_adm
 const objcmd = arg1.c_eperso ? este
-const txtajuda = "\b\c3Eperso\b\n\
-Sintaxe: EPERSO <nome>\n\
+const m_ajuda = "-t\n\
+-s <nome>\n\
 Edita o personagem com o nome especificado."
 
 func escr # Editar personagem
@@ -305,9 +305,9 @@ func escr # Editar personagem
 
 classe adm_pexp
 herda comando_adm
-const txtajuda = "\b\c3Pexp\b\n\
-Sintaxe: PEXP <alvo>\n\
-         PEXP <personagem> <alvo>\n\
+const m_ajuda = "-t\n\
+-s <alvo>\n\
+-s <personagem> <alvo>\n\
 Calcula a experiência ganha ao vencer/matar um personagem.\n\
 Se for fornecido apenas o alvo, calcula a experiência que o seu\n\
 personagem ganharia."
@@ -1422,7 +1422,6 @@ const tipo37 = "menu_pdomar--"
 const nome38 = "Dar e soltar"
 const info38 = "Se esse personagem pode ser dado ou solto"
 const tipo38 = "opc_opcao"
-const clas38 = var.classe1
 const vari38 = "p_soltar"
 const extr38 = "Pode-se dar e soltar\nPode-se apenas soltar\nNão se pode dar nem soltar"
 

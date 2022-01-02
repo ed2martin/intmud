@@ -1,6 +1,6 @@
 classe adm_econfig
 herda comando_adm
-const txtajuda = "\b\c3Econfig\b\nSintaxe: ECONFIG\nEdita as configurações do MUD."
+const m_ajuda = "-t\n-s\nEdita as configurações do MUD."
 
 func escr
   arg0.sock.m_menu("menu_econfig")
@@ -10,6 +10,7 @@ classe menu_econfig
 herda comando_menu
 const titulo = "Configurações do MUD"
 const colunas = 35
+const classe = "config"
 #
 const nome1 = "Como ativar o MUD"
 const tipo1 = "menu_econfig_ativar--"
@@ -17,24 +18,20 @@ const tipo1 = "menu_econfig_ativar--"
 const nome2 = "Senha de administração"
 const info2 = "Se vazia, ninguém poderá ser administrador do MUD"
 const tipo2 = "opc_linha--"
-const clas2 = "config"
 const vari2 = "senhaadm"
 #
 const nome3 = "Sala inicial"
 const info3 = "Sala onde os jogadores vão após criar o personagem"
 const tipo3 = "opc_sala--"
-const clas3 = "config"
 const vari3 = "salaini"
 #
 const nome4 = "Sala quando morre"
 const tipo4 = "opc_sala--"
-const clas4 = "config"
 const vari4 = "salafim"
 #
 const nome5 = "Continuar jogo salvo sala"
 const info5 = "Se acontecer do jogador cair em uma sala inexistente"
 const tipo5 = "opc_sala--"
-const clas5 = "config"
 const vari5 = "salasav"
 #
 const nome6 = "Herda"
@@ -47,25 +44,21 @@ const tipo7 = "menu_econfig_salvar--"
 const nome8 = "Atributos dos personagens"
 const info8 = "Valor inicial dos atributos para todos os personagens"
 const tipo8 = "opc_atribcfg--"
-const clas8 = "config"
 const vari8 = "atribcfg"
 #
 const nome9 = "Fome e sede nível"
 const info9 = "A partir de que nível sente fome e sede"
 const tipo9 = "opc_numero--"
-const clas9 = "config"
 const vari9 = "fomeini"
 #
 const nome10 = "Sem fome e sede nível"
 const info10 = "A partir de que nível não sente mais fome e sede"
 const tipo10 = "opc_numero--"
-const clas10 = "config"
 const vari10 = "fomefim"
 #
 const nome11 = "Aulas por nível"
 const info11 = "Quantos pontos de aulas ganha quando sobe de nível"
 const tipo11 = "opc_numero--"
-const clas11 = "config"
 const vari11 = "aulas"
 #
 const nome12 = "Tipos de itens"
@@ -98,7 +91,7 @@ classe menu_econfig_cmd
 herda comando_classemenu
 const titulo = "Comandos Jogadores"
 const menufim = "menu_econfig"
-const classe = "m_cmd_" # Classes que estão nesse menu
+const classe = "cmd_" # Classes que estão nesse menu
 
 
 classe menu_econfig_ativar
@@ -106,90 +99,77 @@ herda comando_menu
 const titulo = "Como ativar o MUD"
 const menufim = "menu_econfig"
 const colunas = 35
+const classe = "config"
 #
 const nome1 = "Jogar localmente"
 const info1 = "Jogar na própria janela que o IntMUD abre\n\
 Terá efeito na próxima vez que o MUD for ativado"
 const tipo1 = "opc_simnao--"
-const clas1 = "config"
 const vari1 = "modolocal"
 #
 const nome2 = "Porta/Bot 1"
 const info2 = "Somente ao ativar o MUD; veja também o comando de admin COM"
 const tipo2 = "opc_com--"
-const clas2 = "config"
 const vari2 = "inicom1"
 #
 const nome3 = "Porta/Bot 2"
 const info3 = "Somente ao ativar o MUD; veja também o comando de admin COM"
 const tipo3 = "opc_com--"
-const clas3 = "config"
 const vari3 = "inicom2"
 #
 const nome4 = "Porta/Bot 3"
 const info4 = "Somente ao ativar o MUD; veja também o comando de admin COM"
 const tipo4 = "opc_com--"
-const clas4 = "config"
 const vari4 = "inicom3"
 #
 const nome5 = "Porta/Bot 4"
 const info5 = "Somente ao ativar o MUD; veja também o comando de admin COM"
 const tipo5 = "opc_com--"
-const clas5 = "config"
 const vari5 = "inicom4"
 #
 const nome6 = "Porta/Bot 5"
 const info6 = "Somente ao ativar o MUD; veja também o comando de admin COM"
 const tipo6 = "opc_com--"
-const clas6 = "config"
 const vari6 = "inicom5"
 #
 const nome7 = "Porta/Bot 6"
 const info7 = "Somente ao ativar o MUD; veja também o comando de admin COM"
 const tipo7 = "opc_com--"
-const clas7 = "config"
 const vari7 = "inicom6"
 #
 const nome8 = "Porta/Bot 7"
 const info8 = "Somente ao ativar o MUD; veja também o comando de admin COM"
 const tipo8 = "opc_com--"
-const clas8 = "config"
 const vari8 = "inicom7"
 #
 const nome9 = "Porta/Bot 8"
 const info9 = "Somente ao ativar o MUD; veja também o comando de admin COM"
 const tipo9 = "opc_com--"
-const clas9 = "config"
 const vari9 = "inicom8"
 #
 const nome10 = "Porta/Bot 9"
 const info10 = "Somente ao ativar o MUD; veja também o comando de admin COM"
 const tipo10 = "opc_com--"
-const clas10 = "config"
 const vari10 = "inicom9"
 #
 const nome11 = "Porta/Bot 10"
 const info11 = "Somente ao ativar o MUD; veja também o comando de admin COM"
 const tipo11 = "opc_com--"
-const clas11 = "config"
 const vari11 = "inicom10"
 #
 const nome12 = "Limite de conexões por IP"
 const tipo12 = "opc_numero--"
-const clas12 = "config"
 const vari12 = "servusr"
 #
 const nome13 = "Tempo entre duas conexões"
 const info13 = "Quantos décimos de segundo para poder conectar-se novamente pelo mesmo IP"
 const tipo13 = "opc_numero--"
-const clas13 = "config"
 const vari13 = "servtempo"
 #
 const nome14 = "Caracteres de uma vez"
 const info14 = "Quantos caracteres cada jogador pode receber de uma vez do MUD.\n\
 Passado esse limite, jogadores começarão a perder mensagens."
 const tipo14 = "opc_numero--"
-const clas14 = "config"
 const vari14 = "banda1"
 const exec14 = "admbanda:atualiza"
 const extr14 = "100 10000"
@@ -198,7 +178,6 @@ const nome15 = "Caracteres por segundo"
 const info15 = "Quantos caracteres por segundo cada jogador pode receber do MUD.\n\
 Passado esse limite, jogadores começarão a perder mensagens."
 const tipo15 = "opc_numero--"
-const clas15 = "config"
 const vari15 = "banda2"
 const exec15 = "admbanda:atualiza"
 const extr15 = "100 10000"
@@ -209,11 +188,11 @@ herda comando_menu
 const titulo = "Criar e salvar personagem"
 const menufim = "menu_econfig"
 const colunas = 35
+const classe = "config"
 #
 const nome1 = "Nomes proibidos"
 const info1 = "Nomes não permitidos para personagens dos jogadores, uma linha por nome"
 const tipo1 = "opc_texto--"
-const clas1 = "config"
 const vari1 = "nomesnao"
 const exec1 = "admnomesnao:atualiza"
 #
@@ -221,14 +200,12 @@ const nome2 = "E-mail"
 const info2 = "Para saber o e-mail de um jogador, abra o arquivo sav do jogo salvo\n\
 e procure por uma linha que contém o texto z_email"
 const tipo2 = "opc_opcao--"
-const clas2 = "config"
 const vari2 = "email"
 const extr2 = "Não pede\nOpcional\nObrigatório"
 #
 const nome3 = "Config"
 const info3 = "Opções ativas do comando CONFIG quando um jogador cria um personagem"
 const tipo3 = "opc_vetor--"
-const clas3 = "config"
 const vari3 = "jogconfig"
 const extr3 = "desc\n\
 saidas\n\
@@ -246,13 +223,11 @@ novatos\ndicas"
 const nome4 = "Prompt"
 const info4 = "Prompt ao criar personagem; vide comando Prompt"
 const tipo4 = "opc_linha--"
-const clas4 = "config"
 const vari4 = "promptmsg"
 #
 const nome5 = "BPrompt"
 const info5 = "BPrompt ao criar personagem; vide comando BPrompt"
 const tipo5 = "opc_linha--"
-const clas5 = "config"
 const vari5 = "bpromptmsg"
 #
 const nome6 = "Autorizar personagens"
@@ -260,25 +235,21 @@ const info6 = "Se sim, após criar personagem, ele fica no grupo de permissões Au
 Autorizar significa usar o comando MPERM para mudar a permissão para Jog\n\
 Para definir o que esses jogadores podem fazer, tecle EPERM AUTORIZAR"
 const tipo6 = "opc_simnao--"
-const clas6 = "config"
 const vari6 = "autorizar"
 #
 const nome7 = "Salvar a partir do nível"
 const info7 = "Abaixo desse nível, só pode salvar quem já tem jogo salvo\n\
 Se for um número acima de 65535, quem não tem jogo salvo não salva"
 const tipo7 = "opc_numero--"
-const clas7 = "config"
 const vari7 = "salvarnivel"
 #
 const nome8 = "Salvar ao criar"
 const tipo8 = "opc_simnao--"
-const clas8 = "config"
 const vari8 = "salvacria"
 #
 const nome9 = "Veterano a partir do nível"
 const info9 = "A partir de que nível um jogador é considerado veterano"
 const tipo9 = "opc_numero--"
-const clas9 = "config"
 const vari9 = "nivelveterano"
 const extr9 = "0 65535"
 #
@@ -286,7 +257,6 @@ const nome10 = "Dias salvar iniciante"
 const info10 = "Quantos dias personagens de iniciantes ficam salvos\n\
 Essa opção é atualizada quando um jogo é salvo"
 const tipo10 = "opc_numero--"
-const clas10 = "config"
 const vari10 = "salvainiciante"
 const extr10 = "1 10000"
 #
@@ -294,7 +264,6 @@ const nome11 = "Dias salvar veterano"
 const info11 = "Quantos dias personagens de veteranos ficam salvos\n\
 Essa opção é atualizada quando um jogo é salvo"
 const tipo11 = "opc_numero--"
-const clas11 = "config"
 const vari11 = "salvaveterano"
 const extr11 = "1 10000"
 
@@ -304,59 +273,51 @@ herda comando_menu
 const titulo = "Tipos de itens"
 const menufim = "menu_econfig"
 const colunas = 35
+const classe = "config"
 #
 const nome1 = "Tipos de itens"
 const info1 = "Tipos de itens usados nos comandos Vender, Avaliar e Doar"
 const tipo1 = "opc_txtopcao--"
-const clas1 = "config"
 const vari1 = "item_tipos"
 const extr1 = "1 48"
 #
 const nome2 = "Container é"
 const tipo2 = "opc_vetorhex--"
-const clas2 = "config"
 const vari2 = "item_container"
 const extr2 = config:item_tipos
 #
 const nome3 = "Arma é"
 const tipo3 = "opc_vetorhex--"
-const clas3 = "config"
 const vari3 = "item_arma"
 const extr3 = config:item_tipos
 #
 const nome4 = "Fonte de luz é"
 const tipo4 = "opc_vetorhex--"
-const clas4 = "config"
 const vari4 = "item_luz"
 const extr4 = config:item_tipos
 #
 const nome5 = "Chave é"
 const tipo5 = "opc_vetorhex--"
-const clas5 = "config"
 const vari5 = "item_chave"
 const extr5 = config:item_tipos
 #
 const nome6 = "Vestimenta é"
 const tipo6 = "opc_vetorhex--"
-const clas6 = "config"
 const vari6 = "item_vestimenta"
 const extr6 = config:item_tipos
 #
 const nome7 = "Bebida é"
 const tipo7 = "opc_vetorhex--"
-const clas7 = "config"
 const vari7 = "item_bebida"
 const extr7 = config:item_tipos
 #
 const nome8 = "Comida é"
 const tipo8 = "opc_vetorhex--"
-const clas8 = "config"
 const vari8 = "item_comida"
 const extr8 = config:item_tipos
 #
 const nome9 = "Pergaminho é"
 const tipo9 = "opc_vetorhex--"
-const clas9 = "config"
 const vari9 = "item_pergaminho"
 const extr9 = config:item_tipos
 #
@@ -370,11 +331,11 @@ herda comando_menu
 const titulo = "Arquivos de log"
 const menufim = "menu_econfig"
 const colunas = 35
+const classe = "config"
 #
 const nome1 = "Entrou e saiu"
 const info1 = "Usuários que entraram e saíram"
 const tipo1 = "opc_opcao--"
-const clas1 = "config"
 const vari1 = "l_entrou"
 const extr1 = "Não grava\nGrava"
 const exec1 = "misclog:atualiza_exec"
@@ -382,7 +343,6 @@ const exec1 = "misclog:atualiza_exec"
 const nome2 = "Admlog"
 const info2 = "Canal Admlog: Comandos que alteram o MUD"
 const tipo2 = "opc_opcao--"
-const clas2 = "config"
 const vari2 = "l_admlog"
 const extr2 = "Não grava\nGrava"
 const exec2 = "misclog:atualiza_exec"
@@ -392,7 +352,6 @@ const info3 = "Canal Cmdlog: Alguns comandos de administração\n\
 cmd, cmdj, cmdp, cmdi, monit, escr, apagarsav, mudanome, ban\n\
 teleportar jogadores"
 const tipo3 = "opc_opcao--"
-const clas3 = "config"
 const vari3 = "l_cmdlog"
 const extr3 = "Não grava\nGrava"
 const exec3 = "misclog:atualiza_exec"
@@ -400,7 +359,6 @@ const exec3 = "misclog:atualiza_exec"
 const nome4 = "Canais dos jogadores"
 const info4 = "Canais públicos: chat e novatos"
 const tipo4 = "opc_opcao--"
-const clas4 = "config"
 const vari4 = "l_jogchat"
 const extr4 = "Não grava\nGrava"
 const exec4 = "misclog:atualiza_exec"
@@ -408,49 +366,42 @@ const exec4 = "misclog:atualiza_exec"
 const nome5 = "Conversa com admin"
 const info5 = "Comandos Rezar, Rezou, Echo, JEcho e SEcho"
 const tipo5 = "opc_opcao--"
-const clas5 = "config"
 const vari5 = "l_rezou"
 const extr5 = "Não grava\nGrava"
 const exec5 = "misclog:atualiza_exec"
 #
 const nome6 = "Mortes (jogadores)"
 const tipo6 = "opc_opcao--"
-const clas6 = "config"
 const vari6 = "l_mortes"
 const extr6 = "Não grava\nGrava"
 const exec6 = "misclog:atualiza_exec"
 #
 const nome7 = "Canal Bug"
 const tipo7 = "opc_opcao--"
-const clas7 = "config"
 const vari7 = "l_bug"
 const extr7 = "Não grava\nGrava"
 const exec7 = "misclog:atualiza_exec"
 #
 const nome8 = "Canal Ideia"
 const tipo8 = "opc_opcao--"
-const clas8 = "config"
 const vari8 = "l_ideia"
 const extr8 = "Não grava\nGrava"
 const exec8 = "misclog:atualiza_exec"
 #
 const nome9 = "Canal AC"
 const tipo9 = "opc_opcao--"
-const clas9 = "config"
 const vari9 = "l_ac"
 const extr9 = "Não grava\nGrava"
 const exec9 = "misclog:atualiza_exec"
 #
 const nome10 = "Falar e Gritar"
 const tipo10 = "opc_opcao--"
-const clas10 = "config"
 const vari10 = "l_falar"
 const extr10 = "Não grava\nGrava"
 const exec10 = "misclog:atualiza_exec"
 #
 const nome11 = "Telepatia e Sussurrar"
 const tipo11 = "opc_opcao--"
-const clas11 = "config"
 const vari11 = "l_telepatia"
 const extr11 = "Não grava\nGrava"
 const exec11 = "misclog:atualiza_exec"
@@ -460,7 +411,6 @@ const info12 = "Os arquivos de log ficam no diretório log.\n\
 Essa opção define se o MUD deve criar um arquivo novo a cada dia,\n\
 a cada 5 dias, a cada mês, etc. O MUD não apaga arquivos de log."
 const tipo12 = "opc_opcao--"
-const clas12 = "config"
 const vari12 = "logtempo"
 const extr12 = "Um por dia\nUm a cada 5 dias\nUm a cada 10 dias\nUm por mês"
 const exec12 = "misclog:atualiza_exec"
@@ -533,48 +483,79 @@ const nome20 = "Habilidades e magias comuns"
 const tipo20 = "menu_comando_ataque--"
 
 
+classe menu_econfig_adm
+herda comando_menu
+const titulo = "Comandos Admin"
+const menufim = "menu_econfig"
+const colunas = 35
+const classe = "config"
+#
+const nome1 = "Comando Echo"
+const tipo1 = "opc_linha--"
+const vari1 = "echomsg"
+#
+const nome2 = "Comando SEcho"
+const tipo2 = "opc_linha--"
+const vari2 = "sechomsg"
+#
+const nome3 = "Comando JEcho"
+const tipo3 = "opc_linha--"
+const vari3 = "jecho1msg"
+#
+const nome4 = "Enviou mensagem JEcho"
+const tipo4 = "opc_linha--"
+const vari4 = "jecho2msg"
+#
+const nome5 = "Canal Rezou"
+const tipo5 = "opc_linha--"
+const vari5 = "rezou1msg"
+#
+const nome6 = "Comando Rezou"
+const tipo6 = "opc_linha--"
+const vari6 = "rezou2msg"
+#
+const nome7 = "Canal AC"
+const tipo7 = "opc_linha--"
+const vari7 = "acmsg"
+
+
 classe menu_econfig_msgjogo
 herda comando_menu
 const titulo = "Mensagens do jogo"
 const menufim = "menu_econfig_msg"
 const colunas = 35
+const classe = "config"
 #
 const nome1 = "Apresentação"
 const info1 = "Primeira mensagem que o jogador recebe ao entrar no MUD"
 const tipo1 = "opc_texto--"
-const clas1 = "config"
 const vari1 = "apres"
 #
 const nome2 = "Apresentação banido com ban"
 const info2 = "Primeira mensagem que um jogador com IP banido recebe ao entrar no MUD\n\
 Esses jogadores não podem criar novos personagens"
 const tipo2 = "opc_texto--"
-const clas2 = "config"
 const vari2 = "apresban"
 #
 const nome3 = "Apresentação banido com ban2"
 const info3 = "Primeira mensagem que um jogador com IP banido recebe ao entrar no MUD\n\
 Esses jogadores não podem entrar no jogo"
 const tipo3 = "opc_texto--"
-const clas3 = "config"
 const vari3 = "apresban2"
 #
 const nome4 = "Você/Tu"
 const info4 = "Usado em $P, $Q, $A, $B, $O, $N"
 const tipo4 = "opc_linha--"
-const clas4 = "config"
 const vari4 = "mens_tu"
 #
 const nome5 = "Você/Ti"
 const info5 = "Usado em $P1, $Q1, $A1, $B1, $O1, $N1"
 const tipo5 = "opc_linha--"
-const clas5 = "config"
 const vari5 = "mens_ti"
 #
 const nome6 = "Sala perigosa por perto"
 const info6 = "Aparece após título e descrição da sala. Se estiver vazio, não aparece."
 const tipo6 = "opc_linha--"
-const clas6 = "config"
 const vari6 = "perigomsg"
 
 
@@ -583,61 +564,54 @@ herda comando_menu
 const titulo = "Mensagens entra e sai"
 const menufim = "menu_econfig_msg"
 const colunas = 35
+const classe = "config"
 #
 const nome1 = "Jogador entrou, admin"
 const info1 = "Mensagem de jogador entrando, para administradores\n\
 $P Personagem, $C Conexão, $N Nível, $M Moedas, $$ símbolo $"
 const tipo1 = "opc_linha--"
-const clas1 = "config"
 const vari1 = "entrou_msgadm"
 #
 const nome2 = "Jogador entrou, outros"
 const info2 = "Mensagem de jogador entrando, para jogadores\n\
 $P Personagem, $C Conexão, $N Nível, $M Moedas, $$ símbolo $"
 const tipo2 = "opc_linha--"
-const clas2 = "config"
 const vari2 = "entrou_msgjog"
 #
 const nome3 = "Jogador saiu, admin"
 const info3 = "Mensagem de jogador saindo, para administradores\n\
 $P Personagem, $C Conexão, $$ símbolo $"
 const tipo3 = "opc_linha--"
-const clas3 = "config"
 const vari3 = "saiu_msgadm"
 #
 const nome4 = "Jogador saiu, outros"
 const info4 = "Mensagem de jogador saindo, para jogadores\n\
 $P Personagem, $C Conexão, $$ símbolo $"
 const tipo4 = "opc_linha--"
-const clas4 = "config"
 const vari4 = "saiu_msgjog"
 #
 const nome5 = "Criando personagem"
 const info5 = "Mensagem quando está criando personagem, para administradores\n\
 $P Personagem, $C Conexão, $$ símbolo $"
 const tipo5 = "opc_linha--"
-const clas5 = "config"
 const vari5 = "criar_msgadm"
 #
 const nome6 = "Desistiu de criar"
 const info6 = "Mensagem quando desistiu de criando personagem, para administradores\n\
 $P Personagem, $C Conexão, $$ símbolo $"
 const tipo6 = "opc_linha--"
-const clas6 = "config"
 const vari6 = "naocriar_msgadm"
 #
 const nome7 = "Criou personagem, admin"
 const info7 = "Mensagem quando criou personagem, para administradores\n\
 $P Personagem, $C Conexão, $N Nível, $M Moedas, $$ símbolo $"
 const tipo7 = "opc_linha--"
-const clas7 = "config"
 const vari7 = "criou_msgadm"
 #
 const nome8 = "Criou personagem, jog"
 const info8 = "Mensagem quando criou personagem, para jogadores\n\
 $P Personagem, $C Conexão, $N Nível, $M Moedas, $$ símbolo $"
 const tipo8 = "opc_linha--"
-const clas8 = "config"
 const vari8 = "criou_msgjog"
 
 
@@ -646,125 +620,102 @@ herda comando_menu
 const titulo = "Mensagens por hora"
 const menufim = "menu_econfig_msg"
 const colunas = 35
+const classe = "config"
 #
 const nome1 = "1 horas"
 const tipo1 = "opc_linha"
-const clas1 = "config"
 const vari1 = "horamsg1"
 #
 const nome2 = "2 hora"
 const tipo2 = "opc_linha"
-const clas2 = "config"
 const vari2 = "horamsg2"
 #
 const nome3 = "3 horas"
 const tipo3 = "opc_linha"
-const clas3 = "config"
 const vari3 = "horamsg3"
 #
 const nome4 = "4 horas"
 const tipo4 = "opc_linha"
-const clas4 = "config"
 const vari4 = "horamsg4"
 #
 const nome5 = "5 horas"
 const tipo5 = "opc_linha"
-const clas5 = "config"
 const vari5 = "horamsg5"
 #
 const nome6 = "6 horas"
 const tipo6 = "opc_linha"
-const clas6 = "config"
 const vari6 = "horamsg6"
 #
 const nome7 = "7 horas"
 const tipo7 = "opc_linha"
-const clas7 = "config"
 const vari7 = "horamsg7"
 #
 const nome8 = "8 horas"
 const tipo8 = "opc_linha"
-const clas8 = "config"
 const vari8 = "horamsg8"
 #
 const nome9 = "9 horas"
 const tipo9 = "opc_linha"
-const clas9 = "config"
 const vari9 = "horamsg9"
 #
 const nome10 = "10 horas"
 const tipo10 = "opc_linha"
-const clas10 = "config"
 const vari10 = "horamsg10"
 #
 const nome11 = "11 horas"
 const tipo11 = "opc_linha"
-const clas11 = "config"
 const vari11 = "horamsg11"
 #
 const nome12 = "12 horas"
 const tipo12 = "opc_linha"
-const clas12 = "config"
 const vari12 = "horamsg12"
 #
 const nome13 = "13 horas"
 const tipo13 = "opc_linha"
-const clas13 = "config"
 const vari13 = "horamsg13"
 #
 const nome14 = "14 horas"
 const tipo14 = "opc_linha"
-const clas14 = "config"
 const vari14 = "horamsg14"
 #
 const nome15 = "15 horas"
 const tipo15 = "opc_linha"
-const clas15 = "config"
 const vari15 = "horamsg15"
 #
 const nome16 = "16 horas"
 const tipo16 = "opc_linha"
-const clas16 = "config"
 const vari16 = "horamsg16"
 #
 const nome17 = "17 horas"
 const tipo17 = "opc_linha"
-const clas17 = "config"
 const vari17 = "horamsg17"
 #
 const nome18 = "18 horas"
 const tipo18 = "opc_linha"
-const clas18 = "config"
 const vari18 = "horamsg18"
 #
 const nome19 = "19 horas"
 const tipo19 = "opc_linha"
-const clas19 = "config"
 const vari19 = "horamsg19"
 #
 const nome20 = "20 horas"
 const tipo20 = "opc_linha"
-const clas20 = "config"
 const vari20 = "horamsg20"
 #
 const nome21 = "21 horas"
 const tipo21 = "opc_linha"
-const clas21 = "config"
 const vari21 = "horamsg21"
 #
 const nome22 = "22 horas"
 const tipo22 = "opc_linha"
-const clas22 = "config"
 const vari22 = "horamsg22"
 #
 const nome23 = "23 horas"
 const tipo23 = "opc_linha"
-const clas23 = "config"
 const vari23 = "horamsg23"
 #
 const nome24 = "0 horas"
 const tipo24 = "opc_linha"
-const clas24 = "config"
 const vari24 = "horamsg0"
 
 
@@ -773,31 +724,28 @@ herda comando_menu
 const titulo = "Ataques"
 const menufim = "menu_econfig"
 const colunas = 35
+const classe = "config"
 #
 const nome1 = "Experiência nível 0"
 const info1 = "Experiência ganha ao matar personagens do nível 0"
 const tipo1 = "opc_numero--"
-const clas1 = "config"
 const vari1 = "atkexp0"
 #
 const nome2 = "Experiência por nível"
 const info2 = "A experiência ganha ao matar personagens do nível 1 em diante é:\n\
 Experiência por nível * Nível do personagem + Experiência nível zero"
 const tipo2 = "opc_numero--"
-const clas2 = "config"
 const vari2 = "atkexp1"
 #
 const nome3 = "Experiência ao morrer"
 const info3 = "Quanta experiência o personagem perde ao morrer, em porcentagem\n\
 De 0 a 100, sendo que 100 perde tudo e 0 não perde experiência"
 const tipo3 = "opc_numero--"
-const clas3 = "config"
 const vari3 = "atkmorreuexp"
 const extr3 = "0 100"
 #
 const nome4 = "Ao matar um jogador"
 const tipo4 = "opc_opcao--"
-const clas4 = "config"
 const vari4 = "atkmatoutipo"
 const extr4 = "Ganha experiência como ao matar PNJ\n\
 Ganha experiência que o jogador perdeu\n\
@@ -807,7 +755,6 @@ const nome5 = "Quantidade de experiência"
 const info5 = "Quantidade da opção ao matar um jogador, em porcentagem\n\
 De 0 a 100, sendo que 0 não ganha nem perde e 100 ganha/perde tudo"
 const tipo5 = "opc_numero--"
-const clas5 = "config"
 const vari5 = "atkmatouexp"
 const extr5 = "0 100"
 #
@@ -816,7 +763,6 @@ const info6 = "Se essa opção não for 0, nas lutas com personagens abaixo do seu 
 quanto maior a diferença entre os níveis, menor a experiência ganha.\n\
 Quando a diferença chegar nesse valor, você não ganha experiência."
 const tipo6 = "opc_numero--"
-const clas6 = "config"
 const vari6 = "atkbexp"
 #
 const nome7 = "Exp nível acima"
@@ -825,7 +771,6 @@ quanto maior a diferença entre os níveis, maior a experiência ganha.\n\
 No entanto, quando a diferença entre níveis passar desse valor, a taxa\n\
 de experiência será fixa, definida pela opção \"Exp máxima acima\"."
 const tipo7 = "opc_numero--"
-const clas7 = "config"
 const vari7 = "atkcexp"
 #
 const nome8 = "Exp máxima acima"
@@ -834,14 +779,12 @@ experiência ganha quando a diferença entre os níveis chegar ou passar\n\
 do que está definido na opção \"Exp máxima acima\". Em porcentagem.\n\
 Exemplo, 0 não tem bônus, 50 ganha 50% a mais, 100 ganha o dobro."
 const tipo8 = "opc_numero--"
-const clas8 = "config"
 const vari8 = "atkmaxexp"
 #
 const nome9 = "Exp alvos secundários"
 const info9 = "Se ganha-se experiência matando alvos secundários\n\
 (com ataques que acertam vários personagens ao mesmo tempo)"
 const tipo9 = "opc_simnao--"
-const clas9 = "config"
 const vari9 = "atkexpsecundario"
 #
 const nome10 = "Turno ataque manual"
@@ -849,40 +792,34 @@ const info10 = "Em décimos de segundo; tempo máximo após digitar um comando que 
 Personagens esperam menos tempo quando a velocidade do personagem\n\
 vezes velocidade do golpe dividido por 70 superar a velocidade do alvo"
 const tipo10 = "opc_numero--"
-const clas10 = "config"
 const vari10 = "atkmtempo"
 const extr10 = "10 200"
 #
 const nome11 = "Turno ataque automático"
 const info11 = "Em décimos de segundo; tempo para chegar a primeira mensagem"
 const tipo11 = "opc_numero--"
-const clas11 = "config"
 const vari11 = "atktempo"
 const extr11 = "10 200"
 #
 const nome12 = "Força do ataque automático"
 const tipo12 = "opc_numero--"
-const clas12 = "config"
 const vari12 = "atkfor"
 const extr12 = "1 100"
 #
 const nome13 = "Tipos de ataques"
 const tipo13 = "opc_txtopcao--"
-const clas13 = "config"
 const vari13 = "atknomes"
 const extr13 = "1 30"
 #
 const nome14 = "Ataques especiais"
 const info14 = "Os tipos de ataque que usam ataque e defesa especial"
 const tipo14 = "opc_vetor--"
-const clas14 = "config"
 const vari14 = "atkespecial"
 const extr14 = config:atknomes
 #
 const nome15 = "Tipos de armas"
 const info15 = "Habilidades usadas em ataques automáticos com arma"
 const tipo15 = "opc_txtopcao--"
-const clas15 = "config"
 const vari15 = "arma_txt"
 const extr15 = "1 30 1"
 #
@@ -890,19 +827,16 @@ const nome16 = "Ataque automático sem arma"
 const info16 = "Habilidade usada em ataques automáticos sem arma, se não for definida\n\
 no próprio personagem (se for PNJ) ou na raça ou classe (se for jogador)"
 const tipo16 = "opc_linha--"
-const clas16 = "config"
 const vari16 = "atk_txt"
 #
 const nome17 = "Habilidade de esquiva"
 const info17 = "Cada aula nessa habilidade aumenta a evasão do personagem"
 const tipo17 = "opc_linha--"
-const clas17 = "config"
 const vari17 = "atk_evasao1"
 #
 const nome18 = "Evasão por aula"
 const info18 = "Quantos pontos de evasão por aula de esquiva"
 const tipo18 = "opc_numero--"
-const clas18 = "config"
 const vari18 = "atk_evasao2"
 const extr18 = "0 1000"
 const exec18 = "admrecalc:exec"
@@ -913,34 +847,29 @@ esse número for menor que o nível do animal\n\
 Nota 1: É permitido números negativos\n\
 Nota 2: Veja o resultado teclando ajuda animal"
 const tipo19 = "opc_numero--"
-const clas19 = "config"
 const vari19 = "animal_n"
 #
 const nome20 = "Exp máxima fator 0"
 const info20 = "A experiência para subir um nível é o resultado de:\n\
 fator0 + fator1 * nível + fator2 * nível ao quadrado"
 const tipo20 = "opc_numreal--"
-const clas20 = "config"
 const vari20 = "expmax0"
 #
 const nome21 = "Exp máxima fator 1"
 const info21 = "A experiência para subir um nível é o resultado de:\n\
 fator0 + fator1 * nível + fator2 * nível ao quadrado"
 const tipo21 = "opc_numreal--"
-const clas21 = "config"
 const vari21 = "expmax1"
 #
 const nome22 = "Exp máxima fator 2"
 const info22 = "A experiência para subir um nível é o resultado de:\n\
 fator0 + fator1 * nível + fator2 * nível ao quadrado"
 const tipo22 = "opc_numreal--"
-const clas22 = "config"
 const vari22 = "expmax2"
 #
 const nome23 = "Exp máxima cada nível"
 const info23 = "Permite definir a experiência para subir um nível em níveis específicos"
 const tipo23 = "opc_nivel--"
-const clas23 = "config"
 const vari23 = "expmax_"
 
 
@@ -949,87 +878,75 @@ herda comando_menu
 const titulo = "Casas"
 const menufim = "menu_econfig"
 const colunas = 35
+const classe = "config"
 #
 const nome1 = "Casas por jogador"
 const info1 = "Quantas casas um jogador pode ter (sendo uma casa por área)"
 const tipo1 = "opc_numero--"
-const clas1 = "config"
 const vari1 = "casajog"
 const extr1 = "0 100"
 #
 const nome2 = "Comprar casas nível"
 const info2 = "Nível mínimo para comprar uma casa"
 const tipo2 = "opc_numero--"
-const clas2 = "config"
 const vari2 = "casanivel"
 #
 const nome3 = "Valor cópia da chave"
 const info3 = "Para fazer uma cópia da chave da casa do jogador"
 const tipo3 = "opc_numero--"
-const clas3 = "config"
 const vari3 = "casachave"
 #
 const nome4 = "Valor trocar fechadura"
 const tipo4 = "opc_numero--"
-const clas4 = "config"
 const vari4 = "casafechadura"
 #
 const nome5 = "Taxa de manutenção"
 const info5 = "Valor da taxa de manutenção da casa, em porcentagem (100=preço da casa)"
 const tipo5 = "opc_numreal--"
-const clas5 = "config"
 const vari5 = "casataxa"
 #
 const nome6 = "Dias manutenção"
 const info6 = "De quantos em quantos dias precisa pagar a taxa de manutenção da casa"
 const tipo6 = "opc_numero--"
-const clas6 = "config"
 const vari6 = "casatempotaxa"
 const exec6 = "casa_taxa:atualiza"
 #
 const nome7 = "Dias avisar"
 const info7 = "Quantos dias sem pagar a taxa avisa sobre o atraso"
 const tipo7 = "opc_numero--"
-const clas7 = "config"
 const vari7 = "casatempoaviso"
 const exec7 = "casa_taxa:atualiza"
 #
 const nome8 = "Dias bloquear"
 const info8 = "Quantos dias sem pagar a taxa bloqueia a casa"
 const tipo8 = "opc_numero--"
-const clas8 = "config"
 const vari8 = "casatempobloq"
 const exec8 = "casa_taxa:atualiza"
 #
 const nome9 = "Dias perder"
 const info9 = "Quantos dias sem pagar a taxa perde a casa"
 const tipo9 = "opc_numero--"
-const clas9 = "config"
 const vari9 = "casatempoperder"
 const exec9 = "casa_taxa:atualiza"
 #
 const nome10 = "Msg perso - abriu casa"
 const info10 = "Quando tem a chave e atravessa a porta fechada"
 const tipo10 = "opc_linha--"
-const clas10 = "config"
 const vari10 = "casaabriu1"
 #
 const nome11 = "Msg outros - abriu casa"
 const info11 = "Quando tem a chave e atravessa a porta fechada"
 const tipo11 = "opc_linha--"
-const clas11 = "config"
 const vari11 = "casaabriu2"
 #
 const nome12 = "Msg aviso"
 const info12 = "Ao entrar na casa, se o pagamento da taxa está atrasado"
 const tipo12 = "opc_linha--"
-const clas12 = "config"
 const vari12 = "casamsgaviso"
 #
 const nome13 = "Msg bloqueado"
 const info13 = "Ao entrar na casa, se está bloqueada por falta de pagamento"
 const tipo13 = "opc_linha--"
-const clas13 = "config"
 const vari13 = "casamsgbloq"
 
 
@@ -1038,10 +955,10 @@ herda comando_menu
 const titulo = "Vestir itens"
 const menufim = "menu_econfig"
 const colunas = 35
+const classe = "config"
 #
 const nome1 = "Nomes das posições"
 const tipo1 = "opc_txtopcao--"
-const clas1 = "config"
 const vari1 = "equip_txt"
 const extr1 = "0 48"
 #
@@ -1049,269 +966,218 @@ const nome2 = "Ordem das posições"
 const info2 = "Em que ordem as posições são mostradas no comando equip\n\
 A posição 49 corresponde à arma sendo empunhada"
 const tipo2 = "opc_linha--"
-const clas2 = "config"
 const vari2 = "equip_ordem"
 #
 const nome3 = "Mensagens ao vestir"
 const tipo3 = "opc_txtopcao--"
-const clas3 = "config"
 const vari3 = "equip_vestir"
 const extr3 = "0 48"
 #
 const nome4 = "Mensagens perso vestir"
 const info4 = "Mensagem para o próprio personagem; se ausente pega de Mensagens ao vestir"
 const tipo4 = "opc_txtopcao--"
-const clas4 = "config"
 const vari4 = "equip_perso"
 const extr4 = "0 48"
 #
 const nome5 = menu_econfig_vestir:sobre(0)
 const tipo5 = "opc_vetorhex--"
-const clas5 = "config"
 const vari5 = "vestir0"
 const extr5 = config:equip_txt
 const nome6 = menu_econfig_vestir:sobre(1)
 const tipo6 = "opc_vetorhex--"
-const clas6 = "config"
 const vari6 = "vestir1"
 const extr6 = config:equip_txt
 const nome7 = menu_econfig_vestir:sobre(2)
 const tipo7 = "opc_vetorhex--"
-const clas7 = "config"
 const vari7 = "vestir2"
 const extr7 = config:equip_txt
 const nome8 = menu_econfig_vestir:sobre(3)
 const tipo8 = "opc_vetorhex--"
-const clas8 = "config"
 const vari8 = "vestir3"
 const extr8 = config:equip_txt
 const nome9 = menu_econfig_vestir:sobre(4)
 const tipo9 = "opc_vetorhex--"
-const clas9 = "config"
 const vari9 = "vestir4"
 const extr9 = config:equip_txt
 #
 const nome10 = menu_econfig_vestir:sobre(5)
 const tipo10 = "opc_vetorhex--"
-const clas10 = "config"
 const vari10 = "vestir5"
 const extr10 = config:equip_txt
 const nome11 = menu_econfig_vestir:sobre(6)
 const tipo11 = "opc_vetorhex--"
-const clas11 = "config"
 const vari11 = "vestir6"
 const extr11 = config:equip_txt
 const nome12 = menu_econfig_vestir:sobre(7)
 const tipo12 = "opc_vetorhex--"
-const clas12 = "config"
 const vari12 = "vestir7"
 const extr12 = config:equip_txt
 const nome13 = menu_econfig_vestir:sobre(8)
 const tipo13 = "opc_vetorhex--"
-const clas13 = "config"
 const vari13 = "vestir8"
 const extr13 = config:equip_txt
 const nome14 = menu_econfig_vestir:sobre(9)
 const tipo14 = "opc_vetorhex--"
-const clas14 = "config"
 const vari14 = "vestir9"
 const extr14 = config:equip_txt
 #
 const nome15 = menu_econfig_vestir:sobre(10)
 const tipo15 = "opc_vetorhex--"
-const clas15 = "config"
 const vari15 = "vestir10"
 const extr15 = config:equip_txt
 const nome16 = menu_econfig_vestir:sobre(11)
 const tipo16 = "opc_vetorhex--"
-const clas16 = "config"
 const vari16 = "vestir11"
 const extr16 = config:equip_txt
 const nome17 = menu_econfig_vestir:sobre(12)
 const tipo17 = "opc_vetorhex--"
-const clas17 = "config"
 const vari17 = "vestir12"
 const extr17 = config:equip_txt
 const nome18 = menu_econfig_vestir:sobre(13)
 const tipo18 = "opc_vetorhex--"
-const clas18 = "config"
 const vari18 = "vestir13"
 const extr18 = config:equip_txt
 const nome19 = menu_econfig_vestir:sobre(14)
 const tipo19 = "opc_vetorhex--"
-const clas19 = "config"
 const vari19 = "vestir14"
 const extr19 = config:equip_txt
 #
 const nome20 = menu_econfig_vestir:sobre(15)
 const tipo20 = "opc_vetorhex--"
-const clas20 = "config"
 const vari20 = "vestir15"
 const extr20 = config:equip_txt
 const nome21 = menu_econfig_vestir:sobre(16)
 const tipo21 = "opc_vetorhex--"
-const clas21 = "config"
 const vari21 = "vestir16"
 const extr21 = config:equip_txt
 const nome22 = menu_econfig_vestir:sobre(17)
 const tipo22 = "opc_vetorhex--"
-const clas22 = "config"
 const vari22 = "vestir17"
 const extr22 = config:equip_txt
 const nome23 = menu_econfig_vestir:sobre(18)
 const tipo23 = "opc_vetorhex--"
-const clas23 = "config"
 const vari23 = "vestir18"
 const extr23 = config:equip_txt
 const nome24 = menu_econfig_vestir:sobre(19)
 const tipo24 = "opc_vetorhex--"
-const clas24 = "config"
 const vari24 = "vestir19"
 const extr24 = config:equip_txt
 #
 const nome25 = menu_econfig_vestir:sobre(20)
 const tipo25 = "opc_vetorhex--"
-const clas25 = "config"
 const vari25 = "vestir20"
 const extr25 = config:equip_txt
 const nome26 = menu_econfig_vestir:sobre(21)
 const tipo26 = "opc_vetorhex--"
-const clas26 = "config"
 const vari26 = "vestir21"
 const extr26 = config:equip_txt
 const nome27 = menu_econfig_vestir:sobre(22)
 const tipo27 = "opc_vetorhex--"
-const clas27 = "config"
 const vari27 = "vestir22"
 const extr27 = config:equip_txt
 const nome28 = menu_econfig_vestir:sobre(23)
 const tipo28 = "opc_vetorhex--"
-const clas28 = "config"
 const vari28 = "vestir23"
 const extr28 = config:equip_txt
 const nome29 = menu_econfig_vestir:sobre(24)
 const tipo29 = "opc_vetorhex--"
-const clas29 = "config"
 const vari29 = "vestir24"
 const extr29 = config:equip_txt
 #
 const nome30 = menu_econfig_vestir:sobre(25)
 const tipo30 = "opc_vetorhex--"
-const clas30 = "config"
 const vari30 = "vestir25"
 const extr30 = config:equip_txt
 const nome31 = menu_econfig_vestir:sobre(26)
 const tipo31 = "opc_vetorhex--"
-const clas31 = "config"
 const vari31 = "vestir26"
 const extr31 = config:equip_txt
 const nome32 = menu_econfig_vestir:sobre(27)
 const tipo32 = "opc_vetorhex--"
-const clas32 = "config"
 const vari32 = "vestir27"
 const extr32 = config:equip_txt
 const nome33 = menu_econfig_vestir:sobre(28)
 const tipo33 = "opc_vetorhex--"
-const clas33 = "config"
 const vari33 = "vestir28"
 const extr33 = config:equip_txt
 const nome34 = menu_econfig_vestir:sobre(29)
 const tipo34 = "opc_vetorhex--"
-const clas34 = "config"
 const vari34 = "vestir29"
 const extr34 = config:equip_txt
 #
 const nome35 = menu_econfig_vestir:sobre(30)
 const tipo35 = "opc_vetorhex--"
-const clas35 = "config"
 const vari35 = "vestir30"
 const extr35 = config:equip_txt
 const nome36 = menu_econfig_vestir:sobre(31)
 const tipo36 = "opc_vetorhex--"
-const clas36 = "config"
 const vari36 = "vestir31"
 const extr36 = config:equip_txt
 const nome37 = menu_econfig_vestir:sobre(32)
 const tipo37 = "opc_vetorhex--"
-const clas37 = "config"
 const vari37 = "vestir32"
 const extr37 = config:equip_txt
 const nome38 = menu_econfig_vestir:sobre(33)
 const tipo38 = "opc_vetorhex--"
-const clas38 = "config"
 const vari38 = "vestir33"
 const extr38 = config:equip_txt
 const nome39 = menu_econfig_vestir:sobre(34)
 const tipo39 = "opc_vetorhex--"
-const clas39 = "config"
 const vari39 = "vestir34"
 const extr39 = config:equip_txt
 #
 const nome40 = menu_econfig_vestir:sobre(35)
 const tipo40 = "opc_vetorhex--"
-const clas40 = "config"
 const vari40 = "vestir35"
 const extr40 = config:equip_txt
 const nome41 = menu_econfig_vestir:sobre(36)
 const tipo41 = "opc_vetorhex--"
-const clas41 = "config"
 const vari41 = "vestir36"
 const extr41 = config:equip_txt
 const nome42 = menu_econfig_vestir:sobre(37)
 const tipo42 = "opc_vetorhex--"
-const clas42 = "config"
 const vari42 = "vestir37"
 const extr42 = config:equip_txt
 const nome43 = menu_econfig_vestir:sobre(38)
 const tipo43 = "opc_vetorhex--"
-const clas43 = "config"
 const vari43 = "vestir38"
 const extr43 = config:equip_txt
 const nome44 = menu_econfig_vestir:sobre(39)
 const tipo44 = "opc_vetorhex--"
-const clas44 = "config"
 const vari44 = "vestir39"
 const extr44 = config:equip_txt
 #
 const nome45 = menu_econfig_vestir:sobre(40)
 const tipo45 = "opc_vetorhex--"
-const clas45 = "config"
 const vari45 = "vestir40"
 const extr45 = config:equip_txt
 const nome46 = menu_econfig_vestir:sobre(41)
 const tipo46 = "opc_vetorhex--"
-const clas46 = "config"
 const vari46 = "vestir41"
 const extr46 = config:equip_txt
 const nome47 = menu_econfig_vestir:sobre(42)
 const tipo47 = "opc_vetorhex--"
-const clas47 = "config"
 const vari47 = "vestir42"
 const extr47 = config:equip_txt
 const nome48 = menu_econfig_vestir:sobre(43)
 const tipo48 = "opc_vetorhex--"
-const clas48 = "config"
 const vari48 = "vestir43"
 const extr48 = config:equip_txt
 const nome49 = menu_econfig_vestir:sobre(44)
 const tipo49 = "opc_vetorhex--"
-const clas49 = "config"
 const vari49 = "vestir44"
 const extr49 = config:equip_txt
 #
 const nome50 = menu_econfig_vestir:sobre(45)
 const tipo50 = "opc_vetorhex--"
-const clas50 = "config"
 const vari50 = "vestir45"
 const extr50 = config:equip_txt
 const nome51 = menu_econfig_vestir:sobre(46)
 const tipo51 = "opc_vetorhex--"
-const clas51 = "config"
 const vari51 = "vestir46"
 const extr51 = config:equip_txt
 const nome52 = menu_econfig_vestir:sobre(47)
 const tipo52 = "opc_vetorhex--"
-const clas52 = "config"
 const vari52 = "vestir47"
 const extr52 = config:equip_txt
 #
@@ -1342,67 +1208,58 @@ herda comando_menu
 const titulo = "Herda Áreas"
 const menufim = "menu_econfig_herda"
 const colunas = 35
+const classe = "config"
 #
 const nome1 = "Volume dentro"
 const tipo1 = "opc_numero--"
-const clas1 = "config"
 const vari1 = "s_volmax"
 #
 const nome2 = "Objetos máximo"
 const info2 = "Inclui objetos dentro de outros objetos que estão na sala"
 const tipo2 = "opc_numero--"
-const clas2 = "config"
 const vari2 = "s_objmax"
 #
 const nome3 = "Movimentos ataque"
 const info3 = "Quantidade de movimentos que um ataque de outra sala usa para checar nessa"
 const tipo3 = "opc_numero--"
-const clas3 = "config"
 const vari3 = "s_atk_move"
 #
 const nome4 = "Recuperação"
 const info4 = "Taxa de recuperação de vida, mana e movimentos\n\
 Quanto maior, mais recupera; 0 não recupera"
 const tipo4 = "opc_numero--"
-const clas4 = "config"
 const vari4 = "s_recup"
 #
 const nome5 = "PNJs na sala"
 const info5 = "Quantidade máxima de PNJs na sala; não afeta o reset"
 const tipo5 = "opc_numero--"
-const clas5 = "config"
 const vari5 = "s_pnj"
 #
 const nome6 = "Jogadores na sala"
 const info6 = "Quantidade máxima de jogadores na sala"
 const tipo6 = "opc_numero--"
-const clas6 = "config"
 const vari6 = "s_jog"
 #
 const nome7 = "Som da sala"
 const info7 = "Nome do som tocado ao entrar na sala; vide adm som"
 const tipo7 = "opc_linha--"
-const clas7 = "config"
 const vari7 = "s_som"
 #
 const nome8 = "Salas de doação"
 const info8 = "Para que salas os itens doados vão"
 const tipo8 = "opc_listasala--"
-const clas8 = "config"
 const vari8 = "s_doarsalas"
 const extr8 = "20"
 #
 const nome9 = "Itens doados"
 const info9 = "Itens doados que essa sala aceita; se vazio aceita qualquer item"
 const tipo9 = "opc_vetorhex--"
-const clas9 = "config"
 const vari9 = "s_doarsim"
 const extr9 = config:item_tipos
 #
 const nome10 = "Itens não doados"
 const info10 = "Itens doados que essa sala não aceita"
 const tipo10 = "opc_vetorhex--"
-const clas10 = "config"
 const vari10 = "s_doarnao"
 const extr10 = config:item_tipos
 
@@ -1412,15 +1269,14 @@ herda comando_menu
 const titulo = "Herda Itens"
 const menufim = "menu_econfig_herda"
 const colunas = 35
+const classe = "config"
 #
 const nome1 = "Volume"
 const tipo1 = "opc_numero--"
-const clas1 = "config"
 const vari1 = "i_volmax"
 #
 const nome2 = "Objetos máximo"
 const tipo2 = "opc_numero--"
-const clas2 = "config"
 const vari2 = "i_objmax"
 
 
@@ -1429,27 +1285,24 @@ herda comando_menu
 const titulo = "Herda Personagens"
 const menufim = "menu_econfig_herda"
 const colunas = 35
+const classe = "config"
 #
 const nome1 = "Volume dentro"
 const tipo1 = "opc_numero--"
-const clas1 = "config"
 const vari1 = "p_volmax"
 #
 const nome2 = "Objetos inventário"
 const info2 = "Quantos itens pode ter no inventário"
 const tipo2 = "opc_numero--"
-const clas2 = "config"
 const vari2 = "p_objmax"
 #
 const nome3 = "Objetos máximo"
 const info3 = "Inclui objetos dentro de outros objetos que estão no personagem"
 const tipo3 = "opc_numero"
-const clas3 = "config"
 const vari3 = "p_objlimite"
 #
 const nome4 = "Corpo"
 const tipo4 = "opc_opcao--"
-const clas4 = "config"
 const vari4 = "p_corpo"
 const extr4 = "Não deixa corpo\n\
 Deixa corpo vazio\n\
@@ -1459,52 +1312,44 @@ Deixa corpo com itens e moedas, depois vão para sala"
 const nome5 = "Experiência"
 const info5 = "Quanta experiência dá quando morre, em porcentagem"
 const tipo5 = "opc_numero--"
-const clas5 = "config"
 const vari5 = "p_exp"
 #
 const nome6 = "Morreu perso"
 const info6 = "Mensagem para o próprio personagem"
 const tipo6 = "opc_linha--"
-const clas6 = "config"
 const vari6 = "p_morreu0"
 #
 const nome7 = "Morreu outros"
 const info7 = "Mensagem quando não tem dono"
 const tipo7 = "opc_linha--"
-const clas7 = "config"
 const vari7 = "p_morreu1"
 #
 const nome8 = "Desmaiou"
 const info8 = "Mensagem quando pertence a outro personagem"
 const tipo8 = "opc_linha--"
-const clas8 = "config"
 const vari8 = "p_morreu2"
 #
 const nome9 = "Tempo move"
 const info9 = "Tempo médio em décimos de segundo para ir para outra sala"
 const tipo9 = "opc_numero--"
-const clas9 = "config"
 const vari9 = "p_movervel"
 const extr9 = "5 1000"
 #
 const nome10 = "Tempo lembra"
 const info10 = "Por quanto tempo se lembra dos jogadores que atacaram, em minutos"
 const tipo10 = "opc_numero--"
-const clas10 = "config"
 const vari10 = "p_lembra"
 const extr10 = "0 1747" # Valor máximo de inttempo dividido por 600
 #
 const nome11 = "Tempo persegue"
 const info11 = "Tempo médio em décimos de segundo para ir para outra sala"
 const tipo11 = "opc_numero--"
-const clas11 = "config"
 const vari11 = "p_perseguevel"
 const extr11 = "5 1000"
 #
 const nome12 = "Alvo dos ataques"
 const info12 = "Como o personagem escolhe quem atacar, quando está lutando com vários"
 const tipo12 = "opc_opcao--"
-const clas12 = "config"
 const vari12 = "p_atk_alvo"
 const extr12 = "Não muda\nAleatório\nPersonagem de menor nível"
 
@@ -1514,52 +1359,45 @@ herda comando_menu
 const titulo = "Herda Ataques"
 const menufim = "menu_econfig_herda"
 const colunas = 35
+const classe = "config"
 #
 const nome1 = "Pontos de aula"
 const info1 = "Quantos pontos de aula consome por aula"
 const tipo1 = "opc_numero--"
-const clas1 = "config"
 const vari1 = "a_aulapontos"
 #
 const nome2 = "Força iniciante"
 const tipo2 = "opc_numero--"
-const clas2 = "config"
 const vari2 = "a_ataquemin"
 #
 const nome3 = "Força perito"
 const tipo3 = "opc_numero--"
-const clas3 = "config"
 const vari3 = "a_ataquemax"
 #
 const nome4 = "Fator mínimo"
 const info4 = "Fator é um número aleatório de fator mínimo a fator máximo"
 const tipo4 = "opc_numero--"
-const clas4 = "config"
 const vari4 = "a_fatormin"
 #
 const nome5 = "Fator máximo"
 const info5 = "Fator é um número aleatório de fator mínimo a fator máximo"
 const tipo5 = "opc_numero--"
-const clas5 = "config"
 const vari5 = "a_fatormax"
 #
 const nome6 = "Danos diferença de nível"
 const info6 = "Se a diferença de nível entre os personagens influencia nos danos"
 const tipo6 = "opc_opcao--"
-const clas6 = "config"
 const vari6 = "atknivel"
 const extr6 = "Não\nSomente sem arma\nSim"
 #
 const nome7 = "Velocidade"
 const info7 = "Em porcentagem"
 const tipo7 = "opc_numero--"
-const clas7 = "config"
 const vari7 = "a_vel"
 #
 const nome8 = "Consome / Espera"
 const info8 = "Tempo mínimo que deve esperar, em décimos de segundo"
 const tipo8 = "opc_numero--"
-const clas8 = "config"
 const vari8 = "atkespera"
 const extr8 = "2 100"
 

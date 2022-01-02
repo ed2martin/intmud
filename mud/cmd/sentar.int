@@ -1,10 +1,9 @@
 classe h_cmd_levantar
 herda comando_comum
+const classemenu = "m_cmd_levantar"
 const posic = 5
-const txtajuda = txtajuda1 + m_ajuda
-const txtajuda1 = "\b\c3Levantar\b\nSintaxe: LEVANTAR\n"
 #
-const m_ajuda = "Fica em pé."
+const m_ajuda = "-t\n-s\nFica em pé."
 const m_em_pe = "\c9Você já está em pé.\b"
 const m_montado = "\c9Você está montad$s $e $a.\b"
 const m_levantou1 = "Você levantou-se."
@@ -40,11 +39,12 @@ func escr
 
 classe h_cmd_sentar
 herda comando_comum
+const classemenu = "m_cmd_sentar"
 const posic = 5
-const txtajuda = txtajuda1 + m_ajuda
-const txtajuda1 = "\b\c3Sentar\b\nSintaxe: SENTAR [objeto]\n"
 #
-const m_ajuda = "Senta-se no chão. Com o nome de um objeto, tenta sentar no objeto."
+const m_ajuda = "-t\n\
+-s [objeto]\n\
+Senta-se no chão. Com o nome de um objeto, tenta sentar no objeto."
 const m_sentado = "\c9Você já está sentad$s.\b"
 const m_levantar = "\c9Talvez você deva se levantar primeiro.\b"
 const m_item_nao = "Não é possível sentar $e $o."
@@ -126,11 +126,12 @@ func escr
 
 classe h_cmd_descansar
 herda comando_comum
+const classemenu = "m_cmd_descansar"
 const posic = 5
-const txtajuda = txtajuda1 + m_ajuda
-const txtajuda1 = "\b\c3Descansar\b\nSintaxe: DESCANSAR [objeto]\n"
 #
-const m_ajuda = "Descansa no chão. Com o nome de um objeto, tenta descansar no objeto."
+const m_ajuda = "-t\n\
+-s [objeto]\n\
+Descansa no chão. Com o nome de um objeto, tenta descansar no objeto."
 const m_descansando = "\c9Você já está descansando.\b"
 const m_levantar = "\c9Talvez você deva se levantar primeiro.\b"
 const m_item_nao = "Não é possível descansar $e $o."
@@ -215,27 +216,22 @@ herda comando_menu_cmd
 #
 const nome1 = "Ajuda"
 const tipo1 = "opc_texto"
-const clas1 = "cmd_levantar"
 const vari1 = "m_ajuda"
 #
 const nome2 = "Está em pé"
 const tipo2 = "opc_linha"
-const clas2 = "cmd_levantar"
 const vari2 = "m_em_pe"
 #
 const nome3 = "Montado"
 const tipo3 = "opc_linha"
-const clas3 = "cmd_levantar"
 const vari3 = "m_montado"
 #
 const nome4 = "Levantou perso"
 const tipo4 = "opc_linha"
-const clas4 = "cmd_levantar"
 const vari4 = "m_levantou1"
 #
 const nome5 = "Levantou outros"
 const tipo5 = "opc_linha"
-const clas5 = "cmd_levantar"
 const vari5 = "m_levantou2"
 
 
@@ -244,57 +240,46 @@ herda comando_menu_cmd
 #
 const nome1 = "Ajuda"
 const tipo1 = "opc_texto"
-const clas1 = "cmd_sentar"
 const vari1 = "m_ajuda"
 #
 const nome2 = "Sem alvo"
 const tipo2 = "opc_linha"
-const clas2 = "cmd_sentar"
 const vari2 = "m_naover"
 #
 const nome3 = "Você carregando"
 const tipo3 = "opc_linha"
-const clas3 = "cmd_montar"
 const vari3 = "m_carregando"
 #
 const nome4 = "Sentado"
 const tipo4 = "opc_linha"
-const clas4 = "cmd_sentar"
 const vari4 = "m_sentado"
 #
 const nome5 = "Levantar"
 const tipo5 = "opc_linha"
-const clas5 = "cmd_sentar"
 const vari5 = "m_levantar"
 #
 const nome6 = "Não é possível"
 const tipo6 = "opc_linha"
-const clas6 = "cmd_sentar"
 const vari6 = "m_item_nao"
 #
 const nome7 = "Item cheio"
 const tipo7 = "opc_linha"
-const clas7 = "cmd_sentar"
 const vari7 = "m_item_cheio"
 #
 const nome8 = "Sentou chão perso"
 const tipo8 = "opc_linha"
-const clas8 = "cmd_sentar"
 const vari8 = "m_sentou_chao1"
 #
 const nome9 = "Sentou chão outros"
 const tipo9 = "opc_linha"
-const clas9 = "cmd_sentar"
 const vari9 = "m_sentou_chao2"
 #
 const nome10 = "Sentou item perso"
 const tipo10 = "opc_linha"
-const clas10 = "cmd_sentar"
 const vari10 = "m_sentou_item1"
 #
 const nome11 = "Sentou item outros"
 const tipo11 = "opc_linha"
-const clas11 = "cmd_sentar"
 const vari11 = "m_sentou_item2"
 
 
@@ -303,55 +288,44 @@ herda comando_menu_cmd
 #
 const nome1 = "Ajuda"
 const tipo1 = "opc_texto"
-const clas1 = "cmd_descansar"
 const vari1 = "m_ajuda"
 #
 const nome2 = "Sem alvo"
 const tipo2 = "opc_linha"
-const clas2 = "cmd_descansar"
 const vari2 = "m_naover"
 #
 const nome3 = "Você carregando"
 const tipo3 = "opc_linha"
-const clas3 = "cmd_montar"
 const vari3 = "m_carregando"
 #
 const nome4 = "Descansando"
 const tipo4 = "opc_linha"
-const clas4 = "cmd_descansar"
 const vari4 = "m_descansando"
 #
 const nome5 = "Levantar"
 const tipo5 = "opc_linha"
-const clas5 = "cmd_descansar"
 const vari5 = "m_levantar"
 #
 const nome6 = "Não é possível"
 const tipo6 = "opc_linha"
-const clas6 = "cmd_descansar"
 const vari6 = "m_item_nao"
 #
 const nome7 = "Item cheio"
 const tipo7 = "opc_linha"
-const clas7 = "cmd_descansar"
 const vari7 = "m_item_cheio"
 #
 const nome8 = "Descansou chão perso"
 const tipo8 = "opc_linha"
-const clas8 = "cmd_descansar"
 const vari8 = "m_descansou_chao1"
 #
 const nome9 = "Descansou chão outros"
 const tipo9 = "opc_linha"
-const clas9 = "cmd_descansar"
 const vari9 = "m_descansou_chao2"
 #
 const nome10 = "Descansou item perso"
 const tipo10 = "opc_linha"
-const clas10 = "cmd_descansar"
 const vari10 = "m_descansou_item1"
 #
 const nome11 = "Descansou item outros"
 const tipo11 = "opc_linha"
-const clas11 = "cmd_descansar"
 const vari11 = "m_descansou_item2"

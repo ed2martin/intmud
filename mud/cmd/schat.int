@@ -1,14 +1,16 @@
 classe h_cmd_schat
 herda comando_comum
+const classemenu = "m_cmd_schat"
 const posic = 0
 const objcmd = v_tipo ? este
 const objnivel = 4
-const txtajuda = v_tipo ? txtajuda1 + m_ajuda1 + (v_tipo == 1 ? "\n" + m_ajuda2)
-const txtajuda1 = "\b\c3Schat\b\nSintaxe: SCHAT <comando social>\n"
+const txtajuda = v_tipo ? txtajuda1(m_ajuda1 + (v_tipo == 1 ? "\n" + m_ajuda2))
 #
 const v_tipo = 2
 const v_visivel = 1
-const m_ajuda1 = "Executa um comando social no canal CHAT. Para saber quais comandos sociais\n\
+const m_ajuda1 = "-t\n\
+-s <comando social>\n\
+Executa um comando social no canal CHAT. Para saber quais comandos sociais\n\
 existem, basta teclar Social. Para habilitar ou desabilitar o canal CHAT,\n\
 use o comando CONFIG."
 const m_ajuda2 = "Nota: quando o jogo é ativado em um chat, mensagens de uma sala do chat\n\
@@ -144,87 +146,70 @@ herda comando_menu_cmd
 #
 const nome1 = "Comando Schat"
 const tipo1 = "opc_opcao"
-const clas1 = "cmd_schat"
 const vari1 = "v_tipo"
 const extr1 = "Desabilitado\nBots: Somente na mesma sala\nPara todo o MUD"
 #
 const nome2 = "Visível"
 const tipo2 = "opc_opcao"
-const clas2 = "cmd_schat"
 const vari2 = "v_visivel"
 const extr2 = "Pode aparecer alguém e alguma coisa\nPersonagens/itens sempre visíveis"
 #
 const nome3 = "Ajuda"
 const tipo3 = "opc_texto"
-const clas3 = "cmd_schat"
 const vari3 = "m_ajuda1"
 #
 const nome4 = "Ajuda: sala do chat"
 const tipo4 = "opc_texto"
-const clas4 = "cmd_schat"
 const vari4 = "m_ajuda2"
 #
 const nome5 = "Nível mínimo"
 const tipo5 = "opc_numero"
-const clas5 = "cmd_schat"
 const vari5 = "v_nivel"
 #
 const nome6 = "Nível insuficiente"
 const tipo6 = "opc_linha"
-const clas6 = "cmd_schat"
 const vari6 = "m_nivel"
 #
 const nome7 = "Desabilitado"
 const tipo7 = "opc_linha"
-const clas7 = "cmd_schat"
 const vari7 = "m_desab"
 #
 const nome8 = "Sem argumentos"
 const tipo8 = "opc_linha"
-const clas8 = "cmd_schat"
 const vari8 = "m_sem_args"
 #
 const nome9 = "Sem comando social"
 const tipo9 = "opc_linha"
-const clas9 = "cmd_schat"
 const vari9 = "m_sem_social"
 #
 const nome10 = "Argumentos Schat"
 const tipo10 = "opc_linha"
-const clas10 = "cmd_schat"
 const vari10 = "m_sem_schat"
 #
 const nome11 = "Ignorando"
 const tipo11 = "opc_linha"
-const clas11 = "cmd_schat"
 const vari11 = "m_ignorar"
 #
 const nome12 = "Ignorado"
 const tipo12 = "opc_linha"
-const clas12 = "cmd_schat"
 const vari12 = "m_ignorado"
 #
 const nome13 = "Perso sem condições"
 const tipo13 = "opc_linha"
-const clas13 = "cmd_schat"
 const vari13 = "m_condicoes1"
 #
 const nome14 = "Alvo sem condições"
 const tipo14 = "opc_linha"
-const clas14 = "cmd_schat"
 const vari14 = "m_condicoes2"
 #
 const nome15 = "Mensagem perso"
 const tipo15 = "opc_linha"
-const clas15 = "cmd_schat"
 const vari15 = "m_msg1"
 #
 const nome16 = "Mensagem alvo"
 const tipo16 = "opc_linha"
-const clas16 = "cmd_schat"
 const vari16 = "m_msg2"
 #
 const nome17 = "Mensagem outros"
 const tipo17 = "opc_linha"
-const clas17 = "cmd_schat"
 const vari17 = "m_msg3"

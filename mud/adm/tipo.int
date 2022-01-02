@@ -1,17 +1,17 @@
 classe adm_tipo
-const iniclasse = !$[arg0] && criar(arg0)
-const txtajuda = "\b\c3Comandos para tipos de personagens (raças e classes)\b\n\
-  \c2LTIPO\b     Lista tipos de personagens\n\
-  \c2CTIPO\b     Cria um tipo de personagem\n\
-  \c2ETIPO\b     Edita um tipo de personagem\n\
-  \c2ATIPO\b     Apaga um tipo de personagem\n\
-  \c2TRES\b      Edita comandos do reset de tipo"
+herda comando_adm
+const m_ajuda = "-t Comandos para tipos de personagens (raças e classes)\n\
+-m LTIPO Lista tipos de personagens\n\
+-m CTIPO Cria um tipo de personagem\n\
+-m ETIPO Edita um tipo de personagem\n\
+-m ATIPO Apaga um tipo de personagem\n\
+-m TRES Edita comandos do reset de tipo"
 
 
 classe adm_ltipo
 herda comando_adm
-const txtajuda = "\b\c3Ltipo\b\n\
-Sintaxe: LTIPO [nome]\n\
+const m_ajuda = "-t\n\
+-s [nome]\n\
 Lista os tipos de personagens que começam com o nome especificado.\n\
 Se o nome for omitido, lista todos os personagens.\n\
 Nota: tipos de personagens são raça e classe."
@@ -53,8 +53,8 @@ func escr
 
 classe adm_ctipo
 herda comando_adm
-const txtajuda = "\b\c3Ctipo\b\n\
-Sintaxe: CTIPO <nome>\n\
+const m_ajuda = "-t\n\
+-s <nome>\n\
 Cria um tipo de personagem com o nome especificado.\n\
 O nome deve ser composto de letras, mas pode ter espaços no meio.\n\
 Nota: tipos de personagens são raça e classe."
@@ -86,8 +86,8 @@ func escr
 
 classe adm_atipo
 herda comando_adm
-const txtajuda = "\b\c3Atipo\b\n\
-Sintaxe: ATIPO <nome>\n\
+const m_ajuda = "-t\n\
+-s <nome>\n\
 Apaga o tipo de personagem com o nome especificado.\n\
 Nota: tipos de personagens são raça e classe."
 
@@ -121,8 +121,8 @@ func passo # Confirmar que quer apagar tipo
 
 classe adm_etipo
 herda comando_adm
-const txtajuda = "\b\c3Etipo\b\n\
-Sintaxe: ETIPO <nome>\n\
+const m_ajuda = "-t\n\
+-s <nome>\n\
 Edita o tipo de personagem com o nome especificado.\n\
 Nota: tipos de personagens são raça e classe."
 

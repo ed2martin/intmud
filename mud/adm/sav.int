@@ -1,7 +1,7 @@
 classe adm_lsav
 herda comando_adm
-const txtajuda = "\b\c3Lsav\b\n\
-Sintaxe: LSAV\n\
+const m_ajuda = "-t\n\
+-s\n\
 Mostra os arquivos de jogos salvos. Estão no diretório sav1."
 
 func escr
@@ -29,9 +29,7 @@ func escr
 
 classe adm_asav
 herda comando_adm
-const txtajuda = "\b\c3Asav\b\n\
-Sintaxe: ASAV <nome do arquivo>\n\
-Apaga um arquivo de jogo salvo."
+const m_ajuda = "-t\n-s <nome do arquivo>\nApaga um arquivo de jogo salvo."
 
 func escr
   arqdir dir
@@ -67,8 +65,8 @@ func passo
 
 classe adm_esav
 herda comando_adm, comando_editor
-const txtajuda = "\b\c3Esav\b\n\
-Sintaxe: ESAV <nome do arquivo>\n\
+const m_ajuda = "-t\n\
+-s <nome do arquivo>\n\
 Edita um arquivo de jogo salvo na forma de texto.\n\
 Nota: não editar enquanto o jogador estiver no jogo, porque o personagem\n\
 é salvo de tempos em tempos."

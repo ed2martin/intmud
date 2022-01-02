@@ -1,10 +1,11 @@
 classe h_cmd_item
 herda comando_comum
-const txtajuda = txtajuda1 + m_ajuda
-const txtajuda1 = "\b\c3Item\b\nSintaxe: ITEM <item> <alvo>\n"
+const classemenu = "m_cmd_item"
 const posic = 4
 #
-const m_ajuda = "Usa um item em um personagem. Somente em itens que contém habilidades."
+const m_ajuda = "-t\n\
+-s <item> <alvo>\n\
+Usa um item em um personagem. Somente em itens que contém habilidades."
 const m_sem_args = "Usar que item?"
 const m_naover = "Você não vê $m."
 const m_sem_hab = "Item $o não pode ser usado em $m."
@@ -97,79 +98,64 @@ herda comando_menu_cmd
 #
 const nome1 = "Ajuda"
 const tipo1 = "opc_texto"
-const clas1 = "cmd_item"
 const vari1 = "m_ajuda"
 #
 const nome2 = "Sem argumentos"
 const tipo2 = "opc_linha"
-const clas2 = "cmd_item"
 const vari2 = "m_sem_args"
 #
 const nome3 = "Sem item"
 const tipo3 = "opc_linha"
-const clas3 = "cmd_item"
 const vari3 = "m_naover"
 #
 const nome4 = "Não pertence"
 const tipo4 = "opc_linha"
-const clas4 = "cmd_item"
 const vari4 = "m_naopertence"
 #
 const nome5 = "Não foi possível"
 const tipo5 = "opc_linha"
-const clas5 = "cmd_item"
 const vari5 = "m_naoevolui"
 #
 const nome6 = "Nível insuficiente"
 const tipo6 = "opc_linha"
-const clas6 = "cmd_item"
 const vari6 = "m_nivel"
 #
 const nome7 = "Renascer 1 vez"
 const tipo7 = "opc_linha"
-const clas7 = "cmd_item"
 const vari7 = "m_renascer1"
 #
 const nome8 = "Renascer 2 vezes"
 const tipo8 = "opc_linha"
-const clas8 = "cmd_item"
 const vari8 = "m_renascer2"
 #
 const nome9 = "Renascer mais vezes"
 const tipo9 = "opc_linha"
-const clas9 = "cmd_item"
 const vari9 = "m_renascer3"
 #
 const nome10 = "Animal evolui"
 const tipo10 = "opc_linha"
-const clas10 = "cmd_item"
 const vari10 = "m_evoluir1"
 #
 const titu11 = " * Usou item em si mesmo"
 #
 const nome11 = "Msg perso"
 const tipo11 = "opc_linha"
-const clas11 = "cmd_item"
 const vari11 = "m_item_auto1"
 #
 const nome12 = "Msg outros"
 const tipo12 = "opc_linha"
-const clas12 = "cmd_item"
 const vari12 = "m_item_auto2"
 #
 const titu13 = " * Usou item em outros"
 #
 const nome13 = "Msg perso"
 const tipo13 = "opc_linha"
-const clas13 = "cmd_item"
 const vari13 = "m_item_outro1"
 #
 const nome14 = "Msg alvo"
 const tipo14 = "opc_linha"
-const clas14 = "cmd_item"
 const vari14 = "m_item_outro2"
 #
 const nome15 = "Msg outros"
 const tipo15 = "opc_linha"
-const clas15 = "cmd_item"
 const vari15 = "m_item_outro3"

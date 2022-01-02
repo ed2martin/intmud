@@ -1,14 +1,14 @@
 classe h_cmd_doar
 herda comando_comum
+const classemenu = "m_cmd_doar"
 const posic = 5
-const txtajuda = txtajuda1 + m_ajuda
-const txtajuda1 = "\b\c3Doar\b\n\
-Sintaxe: DOAR <objeto>\n\
-         DOAR <quantidade> <objeto>\n"
 int8 achou # Quantos itens achou
 txt100 erro # Mensagem de erro
 #
-const m_ajuda = "Doa um objeto que você está carregando."
+const m_ajuda = "-t\n\
+-s <objeto>\n\
+-s <quantidade> <objeto>\n\
+Doa um objeto que você está carregando."
 const m_naover = "Você não vê $m"
 const m_nao_doar = "Não é possível doar $o"
 const m_nao_vazio = "$O não está vazi$u."
@@ -120,40 +120,32 @@ herda comando_menu_cmd
 #
 const nome1 = "Ajuda"
 const tipo1 = "opc_texto"
-const clas1 = "cmd_doar"
 const vari1 = "m_ajuda"
 #
 const nome2 = "Alvo não existe"
 const tipo2 = "opc_linha"
-const clas2 = "cmd_doar"
 const vari2 = "m_naover"
 #
 const nome3 = "Não pode"
 const tipo3 = "opc_linha"
-const clas3 = "cmd_doar"
 const vari3 = "m_nao_doar"
 #
 const nome4 = "Não vazio"
 const tipo4 = "opc_linha"
-const clas4 = "cmd_doar"
 const vari4 = "m_nao_vazio"
 #
 const nome5 = "Doa um perso"
 const tipo5 = "opc_linha"
-const clas5 = "cmd_doar"
 const vari5 = "m_doar_um1"
 #
 const nome6 = "Doa um outros"
 const tipo6 = "opc_linha"
-const clas6 = "cmd_doar"
 const vari6 = "m_doar_um2"
 #
 const nome7 = "Doa vários perso"
 const tipo7 = "opc_linha"
-const clas7 = "cmd_doar"
 const vari7 = "m_doar_mais1"
 #
 const nome8 = "Doa vários outros"
 const tipo8 = "opc_linha"
-const clas8 = "cmd_doar"
 const vari8 = "m_doar_mais2"

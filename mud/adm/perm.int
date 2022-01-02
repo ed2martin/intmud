@@ -1,17 +1,17 @@
 classe adm_perm
-const iniclasse = !$[arg0] && criar(arg0)
-const txtajuda = "\b\c3Comandos para permissões de jogadores\b\n\
-  \c2LPERM\b     Lista grupos de permissões\n\
-  \c2CPERM\b     Cria um grupo de permissões\n\
-  \c2EPERM\b     Edita um grupo de permissões\n\
-  \c2APERM\b     Apaga um grupo de permissões\n\
-  \c2MPERM\b     Define o grupo de permissões de um jogador"
+herda comando_adm
+const m_ajuda = "-t Comandos para permissões de jogadores\n\
+-m LPERM Lista grupos de permissões\n\
+-m CPERM Cria um grupo de permissões\n\
+-m EPERM Edita um grupo de permissões\n\
+-m APERM Apaga um grupo de permissões\n\
+-m MPERM Define o grupo de permissões de um jogador"
 
 
 classe adm_lperm
 herda comando_adm
-const txtajuda = "\b\c3Lperm\b\n\
-Sintaxe: LPERM [nome]\n\
+const m_ajuda = "-t\n\
+-s [nome]\n\
 Lista os grupos de permissões que começam com o nome especificado.\n\
 Se o nome for omitido, lista todos os grupos de permissões."
 
@@ -45,8 +45,8 @@ func escr
 
 classe adm_cperm
 herda comando_adm
-const txtajuda = "\b\c3Cperm\b\n\
-Sintaxe: CPERM <nome>\n\
+const m_ajuda = "-t\n\
+-s <nome>\n\
 Cria um grupo de permissões com o nome especificado.\n\
 O nome deve ser composto de letras, mas pode ter espaços no meio."
 
@@ -76,8 +76,8 @@ func escr
 
 classe adm_aperm
 herda comando_adm
-const txtajuda = "\b\c3Aperm\b\n\
-Sintaxe: APERM <nome>\n\
+const m_ajuda = "-t\n\
+-s <nome>\n\
 Apaga o grupo de permissões com o nome especificado."
 
 func escr
@@ -117,10 +117,10 @@ func passo # Confirmar que quer apagar grupo de permissões
 classe adm_mperm
 herda comando_adm
 const objcmd = arg0.jogperm == "admin" || $perm_[arg0.jogperm].c_mperm ? este
-const txtajuda = "\b\c3Mperm\b\n\
-Sintaxe: MPERM <jogador> <permissão>\n\
-         MPERM <jogador> <permissão> <área>\n\
-         MPERM <jogador> <permissão> -\n\
+const m_ajuda = "-t\n\
+-s <jogador> <permissão>\n\
+-s <jogador> <permissão> <área>\n\
+-s <jogador> <permissão> -\n\
 Muda o grupo de permissões de um jogador.\n\
 Somente usuários com permissão admin podem mudar a área aonde o jogador\n\
 tem permissão (a sintaxe que contém a área). Para não ter permissão para\n\
@@ -238,8 +238,8 @@ func checaperm # Checa se pode mudar o grupo de permissões
 
 classe adm_eperm
 herda comando_adm
-const txtajuda = "\b\c3Eperm\b\n\
-Sintaxe: EPERM <nome>\n\
+const m_ajuda = "-t\n\
+-s <nome>\n\
 Edita o grupo de permissões com o nome especificado."
 
 func escr
@@ -261,11 +261,11 @@ classe menu_perm_admin
 herda comando_menu
 const titulo = "Grupo de permissões admin (administração)"
 const colunas = 25
+const classe = var.classe1
 #
 const nome1 = "Texto comando Quem"
 const info1 = "Aparece para jogadores que não possuem Config +InvQuem"
 const tipo1 = "opc_linha"
-const clas1 = var.classe1
 const vari1 = "nomequem"
 #
 const nome2 = "Texto Atrib"
@@ -273,7 +273,6 @@ const info2 = "Aparece na frente da descrição do personagem, entre parênteses\n\
 Para aparecer em baixo, adicionar um * (asterisco) na frente\n\
 Exemplo: *  ... e está protegid$s por uma luz"
 const tipo2 = "opc_linha"
-const clas2 = var.classe1
 const vari2 = "m_atribs"
 const exec2 = "jogrecalc"
 #
@@ -281,49 +280,43 @@ const nome3 = "Dias salvar"
 const info3 = "Quantos dias personagens ficam salvos; se 0 pega do comando Econfig\n\
 Essa opção é atualizada quando um jogo é salvo"
 const tipo3 = "opc_numero"
-const clas3 = var.classe1
 const vari3 = "salvardias"
 const extr3 = "0 10000"
 #
 const nome4 = "Fome/sede"
 const info4 = "Se pode sentir fome e sede (se não for imortal)"
 const tipo4 = "opc_simnao"
-const clas4 = var.classe1
 const vari4 = "fome"
 #
 const nome5 = "Ganhou permissão"
 const info5 = "Mensagem quando o jogador muda para esse grupo"
 const tipo5 = "opc_linha"
-const clas5 = var.classe1
 const vari5 = "entroumsg"
 #
 const nome6 = "Perdeu permissão"
 const info6 = "Mensagem quando o jogador deixa de ser desse grupo"
 const tipo6 = "opc_linha"
-const clas6 = var.classe1
 const vari6 = "saiumsg"
 #
 const nome7 = "Sala Tele"
 const info7 = "Para qual sala vai ao teclar Tele sem argumentos"
 const tipo7 = "opc_sala"
-const clas7 = var.classe1
 const vari7 = "c_salatele"
 #
 const nome8 = "Atalhos admin"
 const info8 = "Atalhos para comandos de administração"
 const tipo8 = "opc_perm_atalhos--"
-const clas8 = var.classe1
 
 
 classe menu_perm
 herda comando_menu
 const titulo = "Grupo de permissões " + txt(var.classe1, 5)
 const colunas = 25
+const classe = var.classe1
 #
 const nome1 = "Texto comando Quem"
 const info1 = "Aparece para jogadores que não possuem Config +InvQuem"
 const tipo1 = "opc_linha"
-const clas1 = var.classe1
 const vari1 = "nomequem"
 #
 const nome2 = "Texto Atrib"
@@ -331,7 +324,6 @@ const info2 = "Aparece na frente da descrição do personagem, entre parênteses\n\
 Para aparecer em baixo, adicionar um * (asterisco) na frente\n\
 Exemplo: *  ... e está protegid$s por uma luz"
 const tipo2 = "opc_linha"
-const clas2 = var.classe1
 const vari2 = "m_atribs"
 const exec2 = "jogrecalc"
 #
@@ -339,21 +331,18 @@ const nome3 = "Dias salvar"
 const info3 = "Quantos dias personagens ficam salvos; se 0 pega do comando Econfig\n\
 Essa opção é atualizada quando um jogo é salvo"
 const tipo3 = "opc_numero"
-const clas3 = var.classe1
 const vari3 = "salvardias"
 const extr3 = "0 10000"
 #
 const nome4 = "Fome/sede"
 const info4 = "Se pode sentir fome e sede (se não for imortal)"
 const tipo4 = "opc_simnao"
-const clas4 = var.classe1
 const vari4 = "fome"
 #
 const nome5 = "Config"
 const info5 = "Opções extras do comando Config\n\
 Invquem e InvSala permitem ver usuários com Config +InvQuem e +InvSala"
 const tipo5 = "opc_vetor"
-const clas5 = var.classe1
 const vari5 = "c_config"
 const extr5 = "imortal\nsala\ninvquem\ninvsala\nac\nadmlog\ncmdlog\nexeclog"
 const exec5 = "jogrecalc"
@@ -361,26 +350,22 @@ const exec5 = "jogrecalc"
 const nome6 = "Jogador entrando"
 const info6 = "Como deve avisar quando alguém entrar no MUD ou sair"
 const tipo6 = "opc_opcao"
-const clas6 = var.classe1
 const vari6 = "i_entrando"
 const extr6 = "Não informar\nInformar o nome\nInformações completas"
 #
 const nome7 = "Mensagem Admin"
 const info7 = "Se é informado quando alguém digita a senha de administração"
 const tipo7 = "opc_simnao"
-const clas7 = var.classe1
 const vari7 = "i_admin"
 #
 const nome8 = "Ganhou permissão"
 const info8 = "Mensagem quando o jogador muda para esse grupo"
 const tipo8 = "opc_linha"
-const clas8 = var.classe1
 const vari8 = "entroumsg"
 #
 const nome9 = "Perdeu permissão"
 const info9 = "Mensagem quando o jogador deixa de ser desse grupo"
 const tipo9 = "opc_linha"
-const clas9 = var.classe1
 const vari9 = "saiumsg"
 #
 const nome10 = "Comandos jogador"
@@ -395,7 +380,6 @@ const tipo12 = "menu_perm_editor--"
 const nome13 = "Atalhos admin"
 const info13 = "Atalhos para comandos de administração"
 const tipo13 = "opc_perm_atalhos--"
-const clas13 = var.classe1
 #
 const nome14 = "Outros comandos"
 const tipo14 = "opc_ajuda--"
@@ -416,106 +400,90 @@ herda comando_menu
 const titulo = "Comandos de jogador de " + txt(var.classe1, 5)
 const menufim = "menu_perm"
 const colunas = 25
+const classe = var.classe1
 #
 const nome1 = "Salvar"
 const info1 = "Mensagem quando tenta salvar; se vazio o personagem pode ser salvo"
 const tipo1 = "opc_linha"
-const clas1 = var.classe1
 const vari1 = "c_salvar"
 #
 const nome2 = "Chat"
 const info2 = "Mensagem quando tenta escrever; se vazio se pode escrever"
 const tipo2 = "opc_linha"
-const clas2 = var.classe1
 const vari2 = "c_chat"
 #
 const nome3 = "Novatos"
 const info3 = "Mensagem quando tenta escrever; se vazio se pode escrever"
 const tipo3 = "opc_linha"
-const clas3 = var.classe1
 const vari3 = "c_novatos"
 #
 const nome4 = "Gritar"
 const info4 = "Mensagem quando tenta gritar; se vazio se pode gritar"
 const tipo4 = "opc_linha"
-const clas4 = var.classe1
 const vari4 = "c_gritar"
 #
 const nome5 = "Falar,Sussurrar"
 const info5 = "Mensagem quando tenta falar/sussurrar; se vazio se pode falar"
 const tipo5 = "opc_linha"
-const clas5 = var.classe1
 const vari5 = "c_falar"
 #
 const nome6 = "Sociais e Emoção"
 const info6 = "Mensagem quando tenta usar sociais/emoção; se vazio se pode"
 const tipo6 = "opc_linha"
-const clas6 = var.classe1
 const vari6 = "c_social"
 #
 const nome7 = "Telepatia"
 const info7 = "Mensagem quando tenta usar telepatia; se vazio se pode escrever"
 const tipo7 = "opc_linha"
-const clas7 = var.classe1
 const vari7 = "c_telepatia"
 #
 const nome8 = "Rezar"
 const info8 = "Mensagem quando tenta rezar; se vazio se pode rezar"
 const tipo8 = "opc_linha"
-const clas8 = var.classe1
 const vari8 = "c_rezar"
 #
 const nome9 = "Bug"
 const info9 = "Mensagem quando tenta usar comando Bug; se vazio se pode usar"
 const tipo9 = "opc_linha"
-const clas9 = var.classe1
 const vari9 = "c_bug"
 #
 const nome10 = "Ideia"
 const info10 = "Mensagem quando tenta usar comando Ideia; se vazio se pode usar"
 const tipo10 = "opc_linha"
-const clas10 = var.classe1
 const vari10 = "c_ideia"
 #
 const nome11 = "Andar"
 const info11 = "Mensagem quando tenta andar (N S L O etc.); se vazio se pode andar"
 const tipo11 = "opc_linha"
-const clas11 = var.classe1
 const vari11 = "andar"
 #
 const nome12 = "Pegar/soltar/dar"
 const info12 = "Mensagem quando tenta pegar/soltar/dar/capturar; se vazio consegue"
 const tipo12 = "opc_linha"
-const clas12 = var.classe1
 const vari12 = "item"
 #
 const nome13 = "Vestir/remover"
 const info13 = "Mensagem quando tenta vestir/empunhar/remover itens; se vazio consegue"
 const tipo13 = "opc_linha"
-const clas13 = var.classe1
 const vari13 = "vestir"
 #
 const nome14 = "Abrir/fechar"
 const info14 = "Mensagem quando tenta abrir/fechar/trancar/destrancar; se vazio consegue"
 const tipo14 = "opc_linha"
-const clas14 = var.classe1
 const vari14 = "abrir"
 #
 const nome15 = "Habilidades"
 const info15 = "Mensagem quando tenta usar habilidades; se vazio consegue"
 const tipo15 = "opc_linha"
-const clas15 = var.classe1
 const vari15 = "usar_hab"
 #
 const nome16 = "Magias"
 const info16 = "Mensagem quando tenta usar magias; se vazio consegue"
 const tipo16 = "opc_linha"
-const clas16 = var.classe1
 const vari16 = "usar_mag"
 #
 const nome17 = "Pode lutar"
 const tipo17 = "opc_simnao"
-const clas17 = var.classe1
 const vari17 = "batalha"
 
 
@@ -524,72 +492,62 @@ herda comando_menu
 const titulo = "Comandos de administração de " + txt(var.classe1, 5)
 const menufim = "menu_perm"
 const colunas = 25
+const classe = var.classe1
 #
 const nome1 = "Adm"
 const info1 = "Consultar a ajuda dos comandos de administração"
 const tipo1 = "opc_simnao"
-const clas1 = var.classe1
 const vari1 = "c_adm"
 #
 const nome2 = "Serv"
 const info2 = "Mostra informações sobre o estado atual do MUD"
 const tipo2 = "opc_simnao"
-const clas2 = var.classe1
 const vari2 = "c_serv"
 #
 const nome3 = "Rezou,Bug,Ideia"
 const info3 = "Recebe mensagens de Rezar,Bug,Ideia e pode responder com Rezou"
 const tipo3 = "opc_simnao"
-const clas3 = var.classe1
 const vari3 = "c_rezou"
 #
 const nome4 = "Echo,SEcho,JEcho"
 const tipo4 = "opc_simnao"
-const clas4 = var.classe1
 const vari4 = "c_echo"
 #
 const nome5 = "Ban"
 const tipo5 = "opc_simnao"
-const clas5 = var.classe1
 const vari5 = "c_ban"
 #
 const nome6 = "Tele,Lugar"
 const info6 = "A opção \"1 Tele na área de edição\" só permite teletransportar entre\n\
 salas da área de edição ou uma sala da área de edição e a \"Sala Tele\""
 const tipo6 = "opc_opcao"
-const clas6 = var.classe1
 const vari6 = "c_tele"
 const extr6 = "Não\nTele na área de edição\nSomente o próprio personagem\nQualquer um"
 #
 const nome7 = "Sala Tele"
 const info7 = "Para qual sala vai ao teclar Tele sem argumentos"
 const tipo7 = "opc_sala"
-const clas7 = var.classe1
 const vari7 = "c_salatele"
 #
 const nome8 = "PNJ"
 const tipo8 = "opc_simnao"
-const clas8 = var.classe1
 const vari8 = "c_pnj"
 const exec8 = "jogpnj"
 #
 const nome9 = "Monit"
 const info9 = "O comando ESCR não funciona para se um não Admin estiver monitorando um Admin"
 const tipo9 = "opc_opcao"
-const clas9 = var.classe1
 const vari9 = "c_monit"
 const extr9 = "Não\nSaber quem está monitorando\nMonitorar\nMonitorar e escrever"
 const exec9 = "jogmonit"
 #
 const nome10 = "Matar1,Matar2"
 const tipo10 = "opc_simnao"
-const clas10 = var.classe1
 const vari10 = "c_matar"
 #
 const nome11 = "Log"
 const info11 = "Quais arquivos pode ver com o comando Log"
 const tipo11 = "opc_vetor"
-const clas11 = var.classe1
 const vari11 = "c_log"
 const extr11 = "entrou\n\
 admlog\n\
@@ -608,23 +566,19 @@ const info12 = "Cada linha deve ter a permissão atual seguido de espaço e a nova
 Exemplo, para poder autorizar jogadores coloque uma linha: autorizar jog\n\
 Autorizar jogadores significa mudar a permissão de autorizar para jog"
 const tipo12 = "opc_texto"
-const clas12 = var.classe1
 const vari12 = "c_mperm"
 #
 const nome13 = "Ivar"
 const tipo13 = "opc_simnao"
-const clas13 = var.classe1
 const vari13 = "c_ivar"
 #
 const nome14 = "Iobj"
 const tipo14 = "opc_simnao"
-const clas14 = var.classe1
 const vari14 = "c_iobj"
 #
 const nome15 = "Informações perso"
 const info15 = "Informações extras com: INFO, INV, ESTAT, HIST, IHAB, IMAG, IEF, IJOG"
 const tipo15 = "opc_simnao"
-const clas15 = var.classe1
 const vari15 = "i_perso"
 
 
@@ -633,21 +587,19 @@ herda comando_menu
 const titulo = "Comandos de edição de " + txt(var.classe1, 5)
 const menufim = "menu_perm"
 const colunas = 25
+const classe = var.classe1
 #
 const nome1 = "Larea"
 const tipo1 = "opc_simnao"
-const clas1 = var.classe1
 const vari1 = "c_larea"
 #
 const nome2 = "Lsala,Psala"
 const tipo2 = "opc_opcao"
-const clas2 = var.classe1
 const vari2 = "c_lsala"
 const extr2 = "Não\nÁrea onde tem permissão\nTudo"
 #
 const nome3 = "Lsai"
 const tipo3 = "opc_opcao"
-const clas3 = var.classe1
 const vari3 = "c_lsai"
 const extr3 = "Não\nÁrea onde tem permissão\nTudo"
 #
@@ -655,65 +607,55 @@ const nome4 = "Editar sala/saídas"
 const info4 = "Comandos Cdir Csala Esala Asala Ldesc Edesc Adesc Csai Csai2 Esai Asai\n\
 Csai e Csai2 só criam saídas para salas que aparecem com Lsala"
 const tipo4 = "opc_opcao"
-const clas4 = var.classe1
 const vari4 = "c_esala"
 const extr4 = "Não\nÁrea onde tem permissão\nTudo"
 #
 const nome5 = "Lperso,Pperso"
 const tipo5 = "opc_opcao"
-const clas5 = var.classe1
 const vari5 = "c_lperso"
 const extr5 = "Não\nÁrea onde tem permissão\nTudo"
 #
 const nome6 = "Iperso"
 const tipo6 = "opc_opcao"
-const clas6 = var.classe1
 const vari6 = "c_iperso"
 const extr6 = "Não\nÁrea onde tem permissão\nTudo"
 #
 const nome7 = "Editar perso"
 const info7 = "Comandos Cperso Eperso Aperso"
 const tipo7 = "opc_opcao"
-const clas7 = var.classe1
 const vari7 = "c_eperso"
 const extr7 = "Não\nÁrea onde tem permissão\nTudo"
 #
 const nome8 = "Litem,Pitem"
 const tipo8 = "opc_opcao"
-const clas8 = var.classe1
 const vari8 = "c_litem"
 const extr8 = "Não\nÁrea onde tem permissão\nTudo"
 #
 const nome9 = "Iitem"
 const tipo9 = "opc_opcao"
-const clas9 = var.classe1
 const vari9 = "c_iitem"
 const extr9 = "Não\nÁrea onde tem permissão\nTudo"
 #
 const nome10 = "Editar item"
 const info10 = "Comandos Citem Eitem Aitem"
 const tipo10 = "opc_opcao"
-const clas10 = var.classe1
 const vari10 = "c_eitem"
 const extr10 = "Não\nÁrea onde tem permissão\nTudo"
 #
 const nome11 = "Lres"
 const tipo11 = "opc_opcao"
-const clas11 = var.classe1
 const vari11 = "c_lres"
 const extr11 = "Não\nÁrea onde tem permissão\nTudo"
 #
 const nome12 = "Ares"
 const info12 = "Só pode adicionar personagens e itens que aparecem com Lperso e Litem"
 const tipo12 = "opc_opcao"
-const clas12 = var.classe1
 const vari12 = "c_ares"
 const extr12 = "Não\nÁrea onde tem permissão\nTudo"
 #
 const nome13 = "Sres"
 const info13 = "Só pode adicionar personagens e itens que aparecem com Lperso e Litem"
 const tipo13 = "opc_opcao"
-const clas13 = var.classe1
 const vari13 = "c_sres"
 const extr13 = "Não\nÁrea onde tem permissão\nTudo"
 

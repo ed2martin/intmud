@@ -1,11 +1,17 @@
-classe cmd_nivel
+classe h_cmd_nivel
 herda comando_comum
-const txtajuda = "\b\c3Nível\b\n\
-Sintaxe: NIVEL [nível]\n\
+const classemenu = "m_cmd_nivel"
+const posic = 0
+const m_ajuda = "-t\n\
+-s [nível]\n\
 Mostra a quantidade de experiência necessária para os próximos níveis.\n\
 Digitando Nivel seguido de um número, mostra a experiência necessária\n\
 a partir desse nível."
-const posic = 0
+const m_nao_existe = "Nível não existe: $m"
+const m_maximo = "O nível máximo é $m."
+const m_exp_nivel = "\b\c6Experiência necessária, nível $1:\b"
+const m_exp_niveis = "\b\c6Experiência necessária, níveis $1 a $2:\b"
+const admordem = "m_ajuda m_nao_existe m_maximo m_exp_nivel m_exp_niveis"
 
 func escr
   uint16 nivel = arg1
@@ -13,22 +19,46 @@ func escr
   se !arg1
     nivel = arg0.pnivel
   senao txt(nivel) != arg1
-    ret arg0.msg("Nível não existe: " + arg1)
+    $mens.mens = arg1
+    ret $mens.mp(m_nao_existe, arg0)
   senao nivel > nmax
-    ret arg0.msg("\bO nível máximo é " + nmax + ".")
+    $mens.mens = nmax
+    ret $mens.mp(m_maximo, arg0)
   fimse
   se nmax > nivel + 5
     nmax = nivel + 5
   fimse
   textotxt t0
-  se nmax == nivel
-    t0.addfim("\b\c6Experiência necessária, nível " + nivel + ":\b")
-  senao
-    t0.addfim("\b\c6Experiência necessária, níveis " + nivel + " a " + nmax + ":\b")
-  fimse
+  $mens.o_1 = nivel
+  $mens.o_2 = nmax
+  t0.addfim($mens.txt(nmax == nivel ? m_exp_nivel : m_exp_niveis, arg0))
   enquanto 1
     refvar exp = arg0.expmax(nivel, arg0.prenascer)
     t0.addfim(txtfim("    " + nivel, 5) + ":  " + txtnum(exp, ".") + " exp")
     sair nivel++ >= nmax
   efim
   arg0.msg(t0.remove(1000))
+
+
+classe m_cmd_nivel
+herda comando_menu_cmd
+#
+const nome1 = "Ajuda"
+const tipo1 = "opc_texto"
+const vari1 = "m_ajuda"
+#
+const nome2 = "Nível não existe"
+const tipo2 = "opc_linha"
+const vari2 = "m_nao_existe"
+#
+const nome3 = "Nível máximo"
+const tipo3 = "opc_linha"
+const vari3 = "m_maximo"
+#
+const nome4 = "Exp nível"
+const tipo4 = "opc_linha"
+const vari4 = "m_exp_nivel"
+#
+const nome5 = "Exp níveis"
+const tipo5 = "opc_linha"
+const vari5 = "m_exp_niveis"

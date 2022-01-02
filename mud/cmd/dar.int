@@ -1,15 +1,13 @@
-classe cmd_dar
+classe h_cmd_dar
 herda comando_comum
 const posic = 5
-const txtajuda = config:animal1 ? ta2 + m_ajuda2 : ta1 + m_ajuda1
-const ta1 = "\b\c3Dar\b\n\
-Sintaxe: DAR <objeto> <personagem>\n"
-const ta2 = "\b\c3Dar\b\n\
-Sintaxe: DAR <objeto> <personagem>\n\
-         DAR <número do animal> <personagem>\n"
+const txtajuda = txtajuda1(config:animal1 ? m_ajuda2 : m_ajuda1)
 #
-const m_ajuda1 = "Dá um objeto para outro personagem."
-const m_ajuda2 = "Dá um objeto ou animal para outro personagem."
+const m_ajuda1 = "-t\n-s <objeto> <personagem>\nDá um objeto para outro personagem."
+const m_ajuda2 = "-t\n\
+-s <objeto> <personagem>\n\
+-s <número do animal> <personagem>\n\
+Dá um objeto ou animal para outro personagem."
 const m_nao_possui = "Você não possui $m."
 const m_nao_dar = "Não é possível dar esse animal."
 const m_sem_alvo = "Dar $m para quem?"

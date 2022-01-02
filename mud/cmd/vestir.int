@@ -1,19 +1,13 @@
-classe cmd_usar
-herda h_cmd_vestir
-const objcmd = $cmd_vestir
-
-
 classe h_cmd_vestir
 herda comando_comum
+const classemenu = "m_cmd_vestir"
 const posic = 5
 txt12 lugar # Posições aonde quer vestir
 txt12 vest # Posições aonde está vestindo alguma coisa
-const txtajuda = txtajuda1 + m_ajuda
-const txtajuda1 = "\b\c3Vestir\b\n\
-Sintaxe: VESTIR <objeto> [posição]\n\
-         USAR <objeto> [posição]\n"
 #
-const m_ajuda = "Seu personagem veste ou usa um objeto que está carregando.\n\
+const m_ajuda = "-t\n\
+-s <objeto> [posição]\n\
+Seu personagem veste ou usa um objeto que está carregando.\n\
 Para vestir tudo (até 10 objetos) tecle TUDO ao invés do objeto.\n\
 Para saber em que posições pode vestir algo, tecle EQUIP TUDO"
 const m_sem_args = "Vestir o quê?"
@@ -193,79 +187,64 @@ herda comando_menu_cmd
 #
 const nome1 = "Ajuda"
 const tipo1 = "opc_texto"
-const clas1 = "cmd_vestir"
 const vari1 = "m_ajuda"
 #
 const nome2 = "Sem argumentos"
 const tipo2 = "opc_linha"
-const clas2 = "cmd_vestir"
 const vari2 = "m_sem_args"
 #
 const nome3 = "Sem alvo"
 const tipo3 = "opc_linha"
-const clas3 = "cmd_vestir"
 const vari3 = "m_naover"
 #
 const nome4 = "Renascer 1 vez"
 const tipo4 = "opc_linha"
-const clas4 = "cmd_vestir"
 const vari4 = "m_renascer1"
 #
 const nome5 = "Renascer 2 vezes"
 const tipo5 = "opc_linha"
-const clas5 = "cmd_vestir"
 const vari5 = "m_renascer2"
 #
 const nome6 = "Renascer mais vezes"
 const tipo6 = "opc_linha"
-const clas6 = "cmd_vestir"
 const vari6 = "m_renascer3"
 #
 const titu7 = " * Personagem veste"
 #
 const nome7 = "Não consegue"
 const tipo7 = "opc_linha"
-const clas7 = "cmd_vestir"
 const vari7 = "m_nao_consegue_p"
 #
 const nome8 = "Posição não existe"
 const tipo8 = "opc_linha"
-const clas8 = "cmd_vestir"
 const vari8 = "m_posicao_p"
 #
 const nome9 = "Já tem outro item"
 const tipo9 = "opc_linha"
-const clas9 = "cmd_vestir"
 const vari9 = "m_em_uso_p"
 #
 const nome10 = "Outro item em cima"
 const tipo10 = "opc_linha"
-const clas10 = "cmd_vestir"
 const vari10 = "m_em_cima_p"
 #
 const titu11 = " * Animal veste"
 #
 const nome11 = "Animal longe"
 const tipo11 = "opc_linha"
-const clas11 = "cmd_vestir"
 const vari11 = "m_longe_a"
 #
 const nome12 = "Não consegue"
 const tipo12 = "opc_linha"
-const clas12 = "cmd_vestir"
 const vari12 = "m_nao_consegue_a"
 #
 const nome13 = "Posição não existe"
 const tipo13 = "opc_linha"
-const clas13 = "cmd_vestir"
 const vari13 = "m_posicao_a"
 #
 const nome14 = "Já tem outro item"
 const tipo14 = "opc_linha"
-const clas14 = "cmd_vestir"
 const vari14 = "m_em_uso_a"
 #
 const nome15 = "Outro item em cima"
 const tipo15 = "opc_linha"
-const clas15 = "cmd_vestir"
 const vari15 = "m_em_cima_a"

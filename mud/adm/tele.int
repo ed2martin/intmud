@@ -1,10 +1,10 @@
 classe adm_tele
 herda comando_adm
 const objcmd = arg1.c_tele ? este
-const txtajuda = "\b\c3Tele\b\n\
-Sintaxe: TELE\n\
-         TELE <sala ou jogador>\n\
-         TELE <jogador> <sala>\n\
+const m_ajuda = "-t\n\
+-s\n\
+-s <sala ou jogador>\n\
+-s <jogador> <sala>\n\
 Com um argumento, você se transporta para uma sala ou para aonde o\n\
 jogador está. Com dois argumentos, transporta um jogador para uma sala.\n\
 Sem argumentos, você se transporta para a sala definida no comando EPerm."
@@ -77,8 +77,8 @@ func escr # Ir para uma sala específica
 
 classe adm_teleentra
 herda comando_adm
-const txtajuda = "\b\c3TeleEntra\b\n\
-Sintaxe: TELEENTRA [texto]\n\
+const m_ajuda = "-t\n\
+-s [texto]\n\
 Define a mensagem quando você se transporta usando o comando Tele.\n\
 Sem argumentos, muda para a mensagem padrão, que é:\n\
 $P aparece de um redemoinho de fumaça.\n\
@@ -98,8 +98,8 @@ func escr
 
 classe adm_telesai
 herda comando_adm
-const txtajuda = "\b\c3TeleSai\b\n\
-Sintaxe: TELESAI [texto]\n\
+const m_ajuda = "-t\n\
+-s [texto]\n\
 Define a mensagem quando você se transporta usando o comando Tele.\n\
 Sem argumentos, muda para a mensagem padrão, que é:\n\
 $P some em um redemoinho de fumaça.\n\

@@ -1,7 +1,7 @@
 classe adm_lsai
 herda comando_adm
 const objcmd = arg1.c_lsai ? este
-const txtajuda = "\b\c3Lsai\b\nSintaxe: LSAI\nMostra as saídas da sala aonde você está."
+const m_ajuda = "-t\n-s\nMostra as saídas da sala aonde você está."
 
 func escr # Listar saídas
   se !arg0.dono
@@ -27,9 +27,7 @@ func escr # Listar saídas
 classe adm_asai
 herda comando_adm
 const objcmd = arg1.c_esala ? este
-const txtajuda = "\b\c3Asai\b\n\
-Sintaxe: ASAI <direção>\n\
-Apaga a saída na direção especificada."
+const m_ajuda = "-t\n-s <direção>\nApaga a saída na direção especificada."
 
 func escr # Apagar saída
   prog p
@@ -64,9 +62,9 @@ func escr # Apagar saída
 classe adm_csai
 herda comando_adm
 const objcmd = arg1.c_esala ? este
-const txtajuda = "\b\c3Csai\b\n\
-Sintaxe: CSAI <direção> <sala>\n\
-         CSAI <direção> item <item>\n\
+const m_ajuda = "-t\n\
+-s <direção> <sala>\n\
+-s <direção> item <item>\n\
 Cria uma saída na sala aonde você está, na direção especificada.\n\
 Saída para um item vai sempre para a sala aonde o item está.\n\
 Exemplo, se quiser que a saída para o norte vá para a sala teste001, tecle:\n\
@@ -120,8 +118,8 @@ func escr1
 classe adm_csai2
 herda adm_csai
 const objcmd = arg1.c_esala ? este
-const txtajuda = "\b\c3Csai2\b\n\
-Sintaxe: CSAI2 <direção> <sala>\n\
+const m_ajuda = "-t\n\
+-s <direção> <sala>\n\
 Cria uma saída na sala aonde você está, na direção especificada, e cria\n\
 também uma saída no sentido contrário, da outra sala para essa."
 const completo = 1 # Criar saída nos dois sentidos
@@ -130,8 +128,8 @@ const completo = 1 # Criar saída nos dois sentidos
 classe adm_esai
 herda comando_adm
 const objcmd = arg1.c_esala ? este
-const txtajuda = "\b\c3Esai\b\n\
-Sintaxe: ESAI <direção>\n\
+const m_ajuda = "-t\n\
+-s <direção>\n\
 Edita a saída na direção especificada."
 
 func escr # Editar saída
@@ -204,31 +202,27 @@ classe menu_saida
 herda comando_menu
 const titulo = "Saída " + txtmai(var.saida1) + " de " + txt(var.classe1, 2)
 const colunas = 25
+const classe = var.classe1
 #
 const nome1 = "Estado inicial"
 const tipo1 = "opc_saiinicio"
-const clas1 = var.classe1
 const vari1 = "portaini_" + var.saida1
 const extr1 = adm_sala:txt_porta
 #
 const nome2 = "Estado atual"
 const tipo2 = "opc_saiagora--"
-const clas2 = var.classe1
 const vari2 = "porta_" + var.saida1
 #
 const nome3 = "Invisível"
 const tipo3 = "opc_simnao"
-const clas3 = var.classe1
 const vari3 = "inv_" + var.saida1
 #
 const nome4 = "Fecha ao passar"
 const tipo4 = "opc_simnao"
-const clas4 = var.classe1
 const vari4 = "fecha_" + var.saida1
 #
 const nome5 = "Trancar"
 const tipo5 = "opc_opcao"
-const clas5 = var.classe1
 const vari5 = "tranc_" + var.saida1
 const extr5 = "Não pode ser trancado\nPode ser trancado\nTranca ao fechar"
 #
@@ -236,58 +230,48 @@ const nome6 = "Fechadura"
 const info6 = "Código da chave que tranca e destranca a porta\n\
 Se for o nome de uma casa (vide comando lcasa), a chave da casa também serve"
 const tipo6 = "opc_linha"
-const clas6 = var.classe1
 const vari6 = "fechadura_" + var.saida1
 #
 const nome7 = "Come chave"
 const info7 = "Se o personagem perde a chave ao abrir a porta"
 const tipo7 = "opc_simnao"
-const clas7 = var.classe1
 const vari7 = "comechave_" + var.saida1
 #
 const nome8 = "Voar"
 const info8 = "Se é preciso estar voando ou flutuando"
 const tipo8 = "opc_simnao"
-const clas8 = var.classe1
 const vari8 = "voar_" + var.saida1
 #
 const nome9 = "Sem fuga"
 const info9 = "Se não existe a possibilidade de fugir de uma luta nessa direção"
 const tipo9 = "opc_simnao"
-const clas9 = var.classe1
 const vari9 = "fugir_" + var.saida1
 #
 const nome10 = "Nome da porta"
 const tipo10 = "opc_linha"
-const clas10 = var.classe1
 const vari10 = "portanome_" + var.saida1
 #
 const nome11 = "Artigo porta"
 const tipo11 = "opc_opcao"
-const clas11 = var.classe1
 const vari11 = "portaartigo_" + var.saida1
 const extr11 = "a (porta)\nas (portas)\no (portão)\nos (portões)"
 #
 const nome12 = "Som abriu"
 const info12 = "Para quem recebe a mensagem do personagem entrando na sala"
 const tipo12 = "opc_linha"
-const clas12 = var.classe1
 const vari12 = "som_abrir_" + var.saida1
 #
 const nome13 = "Som fechou"
 const info13 = "Para quem recebe a mensagem do personagem entrando na sala"
 const tipo13 = "opc_linha"
-const clas13 = var.classe1
 const vari13 = "som_fechar_" + var.saida1
 #
 const nome14 = "Som trancou"
 const info14 = "Para quem recebe a mensagem do personagem entrando na sala"
 const tipo14 = "opc_linha"
-const clas14 = var.classe1
 const vari14 = "som_tranc_" + var.saida1
 #
 const nome15 = "Som destrancou"
 const info15 = "Para quem recebe a mensagem do personagem entrando na sala"
 const tipo15 = "opc_linha"
-const clas15 = var.classe1
 const vari15 = "som_destr_" + var.saida1

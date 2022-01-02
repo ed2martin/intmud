@@ -617,46 +617,6 @@ func escr # Executa o comando
   fimse
 
 
-classe cmd_e
-herda comando_comum
-const objcmd = $cmd_l.objcmd(arg0)
-
-
-classe cmd_w
-herda comando_comum
-const objcmd = $cmd_o.objcmd(arg0)
-
-
-classe cmd_nw
-herda comando_comum
-const objcmd = $cmd_no.objcmd(arg0)
-
-
-classe cmd_sw
-herda comando_comum
-const objcmd = $cmd_so.objcmd(arg0)
-
-
-classe cmd_cima
-herda comando_comum
-const objcmd = $cmd_c.objcmd(arg0)
-
-
-classe cmd_baixo
-herda comando_comum
-const objcmd = $cmd_b.objcmd(arg0)
-
-
-classe cmd_u
-herda comando_comum
-const objcmd = $cmd_c.objcmd(arg0)
-
-
-classe cmd_d
-herda comando_comum
-const objcmd = $cmd_b.objcmd(arg0)
-
-
 classe menu_mover
 herda comando_menu
 const titulo = "Andar pelo jogo"
@@ -711,66 +671,55 @@ herda comando_menu
 const titulo = "Todas as direções"
 const menufim = "menu_mover"
 const colunas = 28
+const classe = "comando_mover_cfg"
 #
 const nome1 = "Impossível"
 const tipo1 = "opc_linha"
-const clas1 = "comando_mover_cfg"
 const vari1 = "m_impossivel"
 #
 const nome2 = "Porta fechada"
 const tipo2 = "opc_linha"
-const clas2 = "comando_mover_cfg"
 const vari2 = "m_portafechada"
 #
 const nome3 = "Item fechado"
 const tipo3 = "opc_linha"
-const clas3 = "comando_mover_cfg"
 const vari3 = "m_itemfechado"
 #
 const nome4 = "Sem espaço"
 const tipo4 = "opc_linha"
-const clas4 = "comando_mover_cfg"
 const vari4 = "m_espaco"
 #
 const nome5 = "Precisa flutuar"
 const tipo5 = "opc_linha"
-const clas5 = "comando_mover_cfg"
 const vari5 = "m_flutuando"
 #
 const nome6 = "Você cansado"
 const tipo6 = "opc_linha"
-const clas6 = "comando_mover_cfg"
 const vari6 = "m_cansado"
 #
 const nome7 = "Animal cansado"
 const tipo7 = "opc_linha"
-const clas7 = "comando_mover_cfg"
 const vari7 = "m_animcansado"
 #
 const nome8 = "Seguir"
 const tipo8 = "opc_linha"
-const clas8 = "comando_mover_cfg"
 const vari8 = "m_seguir"
 #
 const nome9 = "Animal não obede"
 const info9 = "Quando está montado em um animal"
 const tipo9 = "opc_linha"
-const clas9 = "comando_mover_cfg"
 const vari9 = "m_ignorar"
 #
 const nome10 = "Está escuro"
 const tipo10 = "opc_linha"
-const clas10 = "comando_mover_cfg"
 const vari10 = "m_escuro"
 #
 const nome11 = "Está cego"
 const tipo11 = "opc_linha"
-const clas11 = "comando_mover_cfg"
 const vari11 = "m_cego"
 #
 const nome12 = "Não está acordado"
 const tipo12 = "opc_linha"
-const clas12 = "comando_mover_cfg"
 const vari12 = "m_dormindo"
 
 
@@ -782,125 +731,115 @@ const colunas = 28
 #
 const nome1 = "Chegou andando"
 const tipo1 = "opc_linha"
-const clas1 = n_classe
 const vari1 = "m_entra1"
 #
 const nome2 = "Chegou flutuando"
 const tipo2 = "opc_linha"
-const clas2 = n_classe
 const vari2 = "m_entra2"
 #
 const nome3 = "Chegou voando"
 const tipo3 = "opc_linha"
-const clas3 = n_classe
 const vari3 = "m_entra3"
 #
 const nome4 = "Chegou cambaleando"
 const tipo4 = "opc_linha"
-const clas4 = n_classe
 const vari4 = "m_entra4"
 #
 const nome5 = "Saiu andando"
 const tipo5 = "opc_linha"
-const clas5 = n_classe
 const vari5 = "m_sai1"
 #
 const nome6 = "Saiu flutuando"
 const tipo6 = "opc_linha"
-const clas6 = n_classe
 const vari6 = "m_sai2"
 #
 const nome7 = "Saiu voando"
 const tipo7 = "opc_linha"
-const clas7 = n_classe
 const vari7 = "m_sai3"
 #
 const nome8 = "Saiu cambaleando"
 const tipo8 = "opc_linha"
-const clas8 = n_classe
 const vari8 = "m_sai4"
 #
 const nome9 = "Fugir perso"
 const tipo9 = "opc_linha"
-const clas9 = n_classe
 const vari9 = "m_fugir1"
 #
 const nome10 = "Fugir outros"
 const tipo10 = "opc_linha"
-const clas10 = n_classe
 const vari10 = "m_fugir2"
 
 
 classe menu_mover_n
 herda menu_mover_comum
 const titulo = "Norte"
-const n_classe = "cmd_n"
+const classe = "cmd_n"
 
 
 classe menu_mover_s
 herda menu_mover_comum
 const titulo = "Sul"
-const n_classe = "cmd_s"
+const classe = "cmd_s"
 
 
 classe menu_mover_l
 herda menu_mover_comum
 const titulo = "Leste"
-const n_classe = "cmd_l"
+const classe = "cmd_l"
 
 
 classe menu_mover_o
 herda menu_mover_comum
 const titulo = "Oeste"
-const n_classe = "cmd_o"
+const classe = "cmd_o"
 
 
 classe menu_mover_c
 herda menu_mover_comum
 const titulo = "Cima"
-const n_classe = "cmd_c"
+const classe = "cmd_c"
 
 
 classe menu_mover_b
 herda menu_mover_comum
 const titulo = "Baixo"
-const n_classe = "cmd_b"
+const classe = "cmd_b"
 
 
 classe menu_mover_ne
 herda menu_mover_comum
 const titulo = "Nordeste"
-const n_classe = "cmd_ne"
+const classe = "cmd_ne"
 
 
 classe menu_mover_no
 herda menu_mover_comum
 const titulo = "Noroeste"
-const n_classe = "cmd_no"
+const classe = "cmd_no"
 
 
 classe menu_mover_se
 herda menu_mover_comum
 const titulo = "Sudeste"
-const n_classe = "cmd_se"
+const classe = "cmd_se"
 
 
 classe menu_mover_so
 herda menu_mover_comum
 const titulo = "Sudoeste"
-const n_classe = "cmd_so"
+const classe = "cmd_so"
 
 
 classe menu_mover_sair
 herda menu_mover_comum
 const titulo = "Sair"
-const n_classe = "cmd_sair"
+const classe = "cmd_sair"
 
 
 classe menu_mover_entrar
 herda menu_mover_comum
 const titulo = "Entrar"
-const n_classe = "cmd_entrar"
+const classe = "cmd_entrar"
 
 
 classe menu_mover_item
@@ -908,73 +847,60 @@ herda comando_menu
 const titulo = "Entrar/sair item"
 const menufim = "menu_mover"
 const colunas = 28
+const classe = "cmd_entrar"
 #
 const nome1 = "Entrou andando"
 const tipo1 = "opc_linha"
-const clas1 = "cmd_entrar"
 const vari1 = "m_entraitem1"
 #
 const nome2 = "Entrou flutuando"
 const tipo2 = "opc_linha"
-const clas2 = "cmd_entrar"
 const vari2 = "m_entraitem2"
 #
 const nome3 = "Entrou voando"
 const tipo3 = "opc_linha"
-const clas3 = "cmd_entrar"
 const vari3 = "m_entraitem3"
 #
 const nome4 = "Entrou cambaleando"
 const tipo4 = "opc_linha"
-const clas4 = "cmd_entrar"
 const vari4 = "m_entraitem4"
 #
 const nome5 = "Saiu andando"
 const tipo5 = "opc_linha"
-const clas5 = "cmd_entrar"
 const vari5 = "m_saiitem1"
 #
 const nome6 = "Saiu flutuando"
 const tipo6 = "opc_linha"
-const clas6 = "cmd_entrar"
 const vari6 = "m_saiitem2"
 #
 const nome7 = "Saiu voando"
 const tipo7 = "opc_linha"
-const clas7 = "cmd_entrar"
 const vari7 = "m_saiitem3"
 #
 const nome8 = "Saiu cambaleando"
 const tipo8 = "opc_linha"
-const clas8 = "cmd_entrar"
 const vari8 = "m_saiitem4"
 #
 const nome9 = "Sem alvo"
 const tipo9 = "opc_linha"
-const clas9 = "cmd_entrar"
 const vari9 = "m_naover"
 #
 const nome10 = "Impossível item"
 const tipo10 = "opc_linha"
-const clas10 = "cmd_entrar"
 const vari10 = "m_impossivelitem"
 #
 const nome11 = "Impossível porta"
 const tipo11 = "opc_linha"
-const clas11 = "cmd_entrar"
 const vari11 = "m_impossivelporta"
 #
 const nome12 = "Porta fechada"
 const tipo12 = "opc_linha"
-const clas12 = "cmd_entrar"
 const vari12 = "m_fechadoporta"
 #
 const nome13 = "Entradas"
 const tipo13 = "opc_linha"
-const clas13 = "cmd_entrar"
 const vari13 = "m_entradas"
 #
 const nome14 = "Embriagado"
 const tipo14 = "opc_linha"
-const clas14 = "cmd_entrar"
 const vari14 = "m_embriaguez"

@@ -1,9 +1,11 @@
 classe h_cmd_sussurrar
 herda comando_comum
+const classemenu = "m_cmd_sussurrar"
 const posic = 5
-const txtajuda = "\b\c3Sussurrar\b\nSintaxe: SUSSURRAR <personagem> <mensagem>\n" + m_ajuda
 #
-const m_ajuda = "Sussurra uma mensagem para um personagem que está na mesma sala.\n\
+const m_ajuda = "-t\n\
+-s <personagem> <mensagem>\n\
+Sussurra uma mensagem para um personagem que está na mesma sala.\n\
 A mensagem é enviada reservadamente para o personagem escolhido.\n\
 Os outros apenas ficam sabendo que você sussurrou alguma coisa."
 #
@@ -64,55 +66,45 @@ herda comando_menu_cmd
 #
 const nome1 = "Ajuda"
 const tipo1 = "opc_texto"
-const clas1 = "cmd_sussurrar"
 const vari1 = "m_ajuda"
 #
 const nome2 = "Sem argumentos"
 const tipo2 = "opc_linha"
-const clas2 = "cmd_sussurrar"
 const vari2 = "m_sem_args"
 #
 const nome3 = "Está ignorando"
 const tipo3 = "opc_linha"
-const clas3 = "cmd_sussurrar"
 const vari3 = "m_ignorar"
 #
 const nome4 = "Sendo ignorado"
 const tipo4 = "opc_linha"
-const clas4 = "cmd_sussurrar"
 const vari4 = "m_ignorou"
 #
 const nome5 = "Sem alvo"
 const tipo5 = "opc_linha"
-const clas5 = "cmd_sussurrar"
 const vari5 = "m_naover"
 #
 const nome6 = "Para si mesmo: perso"
 const info6 = "Mensagem para o personagem: sussurrou para si mesmo"
 const tipo6 = "opc_linha"
-const clas6 = "cmd_sussurrar"
 const vari6 = "m_perso1"
 #
 const nome7 = "Para si mesmo: outros"
 const info7 = "Mensagem para os outros: sussurrou para si mesmo"
 const tipo7 = "opc_linha"
-const clas7 = "cmd_sussurrar"
 const vari7 = "m_perso2"
 #
 const nome8 = "Sussurrou: perso"
 const info8 = "Mensagem para o personagem: sussurrou"
 const tipo8 = "opc_linha"
-const clas8 = "cmd_sussurrar"
 const vari8 = "m_msg1"
 #
 const nome9 = "Sussurrou: alvo"
 const info9 = "Mensagem para o alvo: sussurrou"
 const tipo9 = "opc_linha"
-const clas9 = "cmd_sussurrar"
 const vari9 = "m_msg2"
 #
 const nome10 = "Sussurrou: outros"
 const info10 = "Mensagem para os outros: sussurrou"
 const tipo10 = "opc_linha"
-const clas10 = "cmd_sussurrar"
 const vari10 = "m_msg3"

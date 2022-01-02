@@ -2,10 +2,10 @@ classe menu_hab_ataque
 herda menu_hab_comum
 const titulo = "Hab " + txt(var.classe1, 4)
 const colunas = 25
+const classe = var.classe1
 #
 const nome1 = "Alvo"
 const tipo1 = "opc_opcao"
-const clas1 = var.classe1
 const vari1 = "tipoalvo"
 const extr1 = "Qualquer um; ataque\n\
 Exceto o personagem; ataque\n\
@@ -24,14 +24,12 @@ const tipo13 = "menu_ataque_alvo--"
 #
 const nome14 = "Munição"
 const tipo14 = "opc_opcao"
-const clas14 = var.classe1
 const vari14 = "tipomunicao"
 const extr14 = "Não usa\nUsa mas não perde\nUsa e perde uma munição"
 #
 const nome15 = "Munição sem arma"
 const info15 = "Que munição do inventário deve usar quando não usar uma arma"
 const tipo15 = "opc_listaitem"
-const clas15 = var.classe1
 const vari15 = "itemmunicao"
 #
 const nome16 = "Ataque"
@@ -42,7 +40,6 @@ const titu17 = " * Textos"
 const nome17 = "Informações"
 const info17 = "Informações extras"
 const tipo17 = "opc_texto"
-const clas17 = var.classe1
 const vari17 = "msgextra"
 #
 const nome18 = "Mensagens 1"
@@ -97,47 +94,41 @@ herda comando_menu
 const titulo = "Afeta o alvo"
 const menufim = var.menufim
 const colunas = 25
+const classe = var.classe1
 #
 const nome1 = "Condição"
 const tipo1 = "opc_opcao"
-const clas1 = var.classe1
 const vari1 = "a_cond"
 const extr1 = "Um ou mais pontos de vida\nNenhum ponto de vida\nNenhuma condição"
 #
 const nome2 = "Vida"
 const info2 = "Quantos pontos de vida ganha"
 const tipo2 = "opc_numero"
-const clas2 = var.classe1
 const vari2 = "a_vida1"
 #
 const nome3 = "Vida por nível"
 const info3 = "Quantos pontos de vida ganha a cada nível"
 const tipo3 = "opc_numero"
-const clas3 = var.classe1
 const vari3 = "a_vida2"
 #
 const nome4 = "Mana"
 const info4 = "Quantos pontos de mana ganha"
 const tipo4 = "opc_numero"
-const clas4 = var.classe1
 const vari4 = "a_mana1"
 #
 const nome5 = "Mana por nível"
 const info5 = "Quantos pontos de mana ganha a cada nível"
 const tipo5 = "opc_numero"
-const clas5 = var.classe1
 const vari5 = "a_mana2"
 #
 const nome6 = "Vigor"
 const info6 = "Quantos pontos de vigor ganha"
 const tipo6 = "opc_numero"
-const clas6 = var.classe1
 const vari6 = "a_move1"
 #
 const nome7 = "Vigor por nível"
 const info7 = "Quantos pontos de vigor ganha a cada nível"
 const tipo7 = "opc_numero"
-const clas7 = var.classe1
 const vari7 = "a_move2"
 #
 const nome8 = "Nota vida/mana/vigor"
@@ -148,46 +139,39 @@ Eles podem diminuir em até 50% (iniciante) ou aumentar em até 50% (perito)."
 const nome9 = "Efeito 1"
 const info9 = "Nome do efeito"
 const tipo9 = "opc_linha"
-const clas9 = var.classe1
 const vari9 = "a_efeito1"
 #
 const nome10 = "Precisão 1"
 const info10 = "Probabilidade de criar o efeito, 100=não falha"
 const tipo10 = "opc_numero"
-const clas10 = var.classe1
 const vari10 = "a_prob1"
 const extr10 = "0 100"
 #
 const nome11 = "Efeito 2"
 const info11 = "Nome do efeito"
 const tipo11 = "opc_linha"
-const clas11 = var.classe1
 const vari11 = "a_efeito2"
 #
 const nome12 = "Precisão 2"
 const info12 = "Probabilidade de criar o efeito, 100=não falha"
 const tipo12 = "opc_numero"
-const clas12 = var.classe1
 const vari12 = "a_prob2"
 const extr12 = "0 100"
 #
 const nome13 = "Efeito 3"
 const info13 = "Nome do efeito"
 const tipo13 = "opc_linha"
-const clas13 = var.classe1
 const vari13 = "a_efeito3"
 #
 const nome14 = "Precisão 3"
 const info14 = "Probabilidade de criar o efeito, 100=não falha"
 const tipo14 = "opc_numero"
-const clas14 = var.classe1
 const vari14 = "a_prob3"
 const extr14 = "0 100"
 #
 const nome15 = "Remover efeitos"
 const info15 = "Efeitos que serão removidos; uma linha por efeito"
 const tipo15 = "opc_texto"
-const clas15 = var.classe1
 const vari15 = "a_remove"
 
 
@@ -196,6 +180,7 @@ herda comando_menu
 const titulo = "Ataque"
 const menufim = var.menufim
 const colunas = 25
+const classe = var.classe1
 #
 const nome1 = "Fórmula"
 const tipo1 = "opc_ajuda--"
@@ -208,96 +193,80 @@ Nota: quando o personagem está com fome e/ou com sede, o ataque é mais fraco"
 #
 const nome2 = "Tipo"
 const tipo2 = "opc_opcao"
-const clas2 = var.classe1
 const vari2 = "tipoatk"
 const extr2 = config:atknomes
 #
 const nome3 = "Força iniciante"
 const tipo3 = "opc_numero"
-const clas3 = var.classe1
 const vari3 = "ataquemin"
 #
 const nome4 = "Força perito"
 const tipo4 = "opc_numero"
-const clas4 = var.classe1
 const vari4 = "ataquemax"
 #
 const nome5 = "Fator mínimo"
 const info5 = "Fator é um número aleatório de fator mínimo a fator máximo"
 const tipo5 = "opc_numero"
-const clas5 = var.classe1
 const vari5 = "fatormin"
 #
 const nome6 = "Fator máximo"
 const info6 = "Fator é um número aleatório de fator mínimo a fator máximo"
 const tipo6 = "opc_numero"
-const clas6 = var.classe1
 const vari6 = "fatormax"
 #
 const nome7 = "Ataque1"
 const tipo7 = "opc_numero"
-const clas7 = var.classe1
 const vari7 = "ataque1"
 #
 const nome8 = "Somar perso"
 const info8 = "Se deve somar o ataque do personagem em ataque1"
 const tipo8 = "opc_simnao"
-const clas8 = var.classe1
 const vari8 = "ataque1perso"
 #
 const nome9 = "Somar arma"
 const info9 = "Se deve somar o ataque da arma em ataque1"
 const tipo9 = "opc_simnao"
-const clas9 = var.classe1
 const vari9 = "ataque1arma"
 #
 const nome10 = "Somar munição"
 const info10 = "Se deve somar o ataque da munição em ataque1"
 const tipo10 = "opc_simnao"
-const clas10 = var.classe1
 const vari10 = "ataque1municao"
 #
 const nome11 = "Ataque2"
 const info11 = "Se 0, ataque2 é o ataque do personagem"
 const tipo11 = "opc_numero"
-const clas11 = var.classe1
 const vari11 = "ataque2"
 #
 const nome12 = "Bônus"
 const info12 = "Quais raças e classes atacam com mais força"
 const tipo12 = "opc_tipos"
-const clas12 = var.classe1
 const vari12 = "tipobonus"
 #
 const nome13 = "Danos dif. nível"
 const info13 = "Se a diferença de nível entre os personagens influencia nos danos"
 const tipo13 = "opc_opcao"
-const clas13 = var.classe1
 const vari13 = "atknivel"
 const extr13 = "Não\nSomente sem arma\nSim"
 #
 const nome14 = "Pode falhar"
 const info14 = "Se falha da arma, embriaguez, precisão e evasão podem fazer o ataque falha"
 const tipo14 = "opc_simnao"
-const clas14 = var.classe1
 const vari14 = "atkfalha"
 #
 const nome15 = "Velocidade"
 const info15 = "Em porcentagem"
 const tipo15 = "opc_numero"
-const clas15 = var.classe1
 const vari15 = "vel"
 #
 const nome16 = "Precisão perso"
 const info16 = "Quanta precisão o personagem ganha durante o ataque"
 const tipo16 = "opc_numero"
-const clas16 = var.classe1
 const vari16 = "addprecisao"
 #
 const nome17 = "Alcance sem arma"
 const info17 = "Alcance em pontos de movimento, para percorrer salas em uma direção"
 const tipo17 = "opc_numero"
-const clas17 = var.classe1
 const vari17 = "armamove"
 
 
@@ -306,114 +275,98 @@ herda comando_menu
 const titulo = "Mensagens 1"
 const menufim = var.menufim
 const colunas = 25
+const classe = var.classe1
 const n_variavel = "atk1"
 #
 const titu1 = " * Ao usar, exceto poções comidas etc"
 #
 const nome1 = "Perso"
 const tipo1 = "opc_linha"
-const clas1 = var.classe1
 const vari1 = n_variavel + "_usar1"
 #
 const nome2 = "Alvo"
 const info2 = "Se vazio, pega mensagem da opção 1"
 const tipo2 = "opc_linha"
-const clas2 = var.classe1
 const vari2 = n_variavel + "_usar2"
 #
 const nome3 = "Outros"
 const info3 = "Se vazio, pega mensagem da opção 1"
 const tipo3 = "opc_linha"
-const clas3 = var.classe1
 const vari3 = n_variavel + "_usar3"
 #
 const titu4 = " * Acertou em si mesmo"
 #
 const nome4 = "Perso"
 const tipo4 = "opc_linha"
-const clas4 = var.classe1
 const vari4 = n_variavel + "_auto1"
 #
 const nome5 = "Outros"
 const info5 = "Se vazio, pega mensagem da opção 4"
 const tipo5 = "opc_linha"
-const clas5 = var.classe1
 const vari5 = n_variavel + "_auto2"
 #
 const titu6 = " * Acertou outro personagem"
 #
 const nome6 = "Perso"
 const tipo6 = "opc_linha"
-const clas6 = var.classe1
 const vari6 = n_variavel + "_perso1"
 #
 const nome7 = "Alvo"
 const info7 = "Se vazio, pega mensagem da opção 6"
 const tipo7 = "opc_linha"
-const clas7 = var.classe1
 const vari7 = n_variavel + "_perso2"
 #
 const nome8 = "Outros"
 const info8 = "Se vazio, pega mensagem da opção 6"
 const tipo8 = "opc_linha"
-const clas8 = var.classe1
 const vari8 = n_variavel + "_perso3"
 #
 const titu9 = " * Matou o alvo"
 #
 const nome9 = "Perso"
 const tipo9 = "opc_linha"
-const clas9 = var.classe1
 const vari9 = n_variavel + "_matou1"
 #
 const nome10 = "Alvo"
 const info10 = "Se vazio, pega mensagem da opção 9"
 const tipo10 = "opc_linha"
-const clas10 = var.classe1
 const vari10 = n_variavel + "_matou2"
 #
 const nome11 = "Outros"
 const info11 = "Se vazio, pega mensagem da opção 9"
 const tipo11 = "opc_linha"
-const clas11 = var.classe1
 const vari11 = n_variavel + "_matou3"
 #
 const titu12 = " * Errou o alvo"
 #
 const nome12 = "Perso"
 const tipo12 = "opc_linha"
-const clas12 = var.classe1
 const vari12 = n_variavel + "_errou1"
 #
 const nome13 = "Alvo"
 const info13 = "Se vazio, pega mensagem da opção 12"
 const tipo13 = "opc_linha"
-const clas13 = var.classe1
 const vari13 = n_variavel + "_errou2"
 #
 const nome14 = "Outros"
 const info14 = "Se vazio, pega mensagem da opção 12"
 const tipo14 = "opc_linha"
-const clas14 = var.classe1
 const vari14 = n_variavel + "_errou3"
 #
 const titu15 = " * Não teve efeito"
 #
 const nome15 = "Perso"
 const tipo15 = "opc_linha"
-const clas15 = var.classe1
 const vari15 = n_variavel + "_nulo1"
 #
 const nome16 = "Alvo"
 const info16 = "Se vazio, pega mensagem da opção 15"
 const tipo16 = "opc_linha"
-const clas16 = var.classe1
 const vari16 = n_variavel + "_nulo2"
 #
 const nome17 = "Outros"
 const info17 = "Se vazio, pega mensagem da opção 15"
 const tipo17 = "opc_linha"
-const clas17 = var.classe1
 const vari17 = n_variavel + "_nulo3"
 #
 const titu18 = " * O alvo esquivou (opcional)"
@@ -421,19 +374,16 @@ const titu18 = " * O alvo esquivou (opcional)"
 const nome18 = "Perso"
 const info18 = "Quando não há mensagens de esquiva, pega de Errou o alvo"
 const tipo18 = "opc_linha"
-const clas18 = var.classe1
 const vari18 = n_variavel + "_esquivou1"
 #
 const nome19 = "Alvo"
 const info19 = "Se vazio, pega mensagem da opção 18"
 const tipo19 = "opc_linha"
-const clas19 = var.classe1
 const vari19 = n_variavel + "_esquivou2"
 #
 const nome20 = "Outros"
 const info20 = "Se vazio, pega mensagem da opção 18"
 const tipo20 = "opc_linha"
-const clas20 = var.classe1
 const vari20 = n_variavel + "_esquivou3"
 
 

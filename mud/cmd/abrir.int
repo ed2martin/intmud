@@ -1,10 +1,9 @@
 classe h_cmd_abrir
 herda comando_comum
+const classemenu = "m_cmd_abrir"
 const posic = 5
-const txtajuda = txtajuda1 + m_ajuda
-const txtajuda1 = "\b\c3Abrir\b\nSintaxe: ABRIR <objeto ou direção>\n"
 #
-const m_ajuda = "Abre um objeto ou uma porta."
+const m_ajuda = "-t\n-s <objeto ou direção>\nAbre um objeto ou uma porta."
 const m_sem_args = "Abrir o quê?"
 const m_naover = "Você não vê $m."
 const m_item_aberto = "$O já está abert$u."
@@ -99,11 +98,10 @@ func escrdir # Abrir uma porta
 
 classe h_cmd_fechar
 herda comando_comum
+const classemenu = "m_cmd_fechar"
 const posic = 5
-const txtajuda = txtajuda1 + m_ajuda
-const txtajuda1 = "\b\c3Fechar\b\nSintaxe: FECHAR <objeto ou direção>\n"
 #
-const m_ajuda = "Fecha um objeto ou uma porta."
+const m_ajuda = "-t\n-s <objeto ou direção>\nFecha um objeto ou uma porta."
 const m_sem_args = "fechar o quê?"
 const m_naover = "Você não vê $m."
 const m_item_fechado = "$O já está fechad$u."
@@ -205,69 +203,56 @@ herda comando_menu_cmd
 #
 const nome1 = "Ajuda"
 const tipo1 = "opc_texto"
-const clas1 = "cmd_abrir"
 const vari1 = "m_ajuda"
 #
 const nome2 = "Sem argumentos"
 const tipo2 = "opc_linha"
-const clas2 = "cmd_abrir"
 const vari2 = "m_sem_args"
 #
 const nome3 = "Sem alvo"
 const tipo3 = "opc_linha"
-const clas3 = "cmd_abrir"
 const vari3 = "m_naover"
 #
 const nome4 = "Item aberto"
 const tipo4 = "opc_linha"
-const clas4 = "cmd_abrir"
 const vari4 = "m_item_aberto"
 #
 const nome5 = "Item trancado"
 const tipo5 = "opc_linha"
-const clas5 = "cmd_abrir"
 const vari5 = "m_item_trancado"
 #
 const nome6 = "Não é possível"
 const tipo6 = "opc_linha"
-const clas6 = "cmd_abrir"
 const vari6 = "m_item_nao"
 #
 const nome7 = "Abriu item perso"
 const tipo7 = "opc_linha"
-const clas7 = "cmd_abrir"
 const vari7 = "m_item_abriu1"
 #
 const nome8 = "Abriu item outros"
 const tipo8 = "opc_linha"
-const clas8 = "cmd_abrir"
 const vari8 = "m_item_abriu2"
 #
 const nome9 = "Sem porta"
 const tipo9 = "opc_linha"
-const clas9 = "cmd_abrir"
 const vari9 = "m_porta_sem"
 #
 const nome10 = "Porta aberta"
 const info10 = mens_porta:info
 const tipo10 = "opc_linha"
-const clas10 = "cmd_abrir"
 const vari10 = "m_porta_aberta"
 #
 const nome11 = "Porta trancada"
 const info11 = mens_porta:info
 const tipo11 = "opc_linha"
-const clas11 = "cmd_abrir"
 const vari11 = "m_porta_trancada"
 #
 const nome12 = "Abriu porta perso"
 const tipo12 = "opc_linha"
-const clas12 = "cmd_abrir"
 const vari12 = "m_porta_abriu1"
 #
 const nome13 = "Abriu porta outros"
 const tipo13 = "opc_linha"
-const clas13 = "cmd_abrir"
 const vari13 = "m_porta_abriu2"
 
 
@@ -276,56 +261,45 @@ herda comando_menu_cmd
 #
 const nome1 = "Ajuda"
 const tipo1 = "opc_texto"
-const clas1 = "cmd_fechar"
 const vari1 = "m_ajuda"
 #
 const nome2 = "Sem argumentos"
 const tipo2 = "opc_linha"
-const clas2 = "cmd_fechar"
 const vari2 = "m_sem_args"
 #
 const nome3 = "Sem alvo"
 const tipo3 = "opc_linha"
-const clas3 = "cmd_fechar"
 const vari3 = "m_naover"
 #
 const nome4 = "Item fechado"
 const tipo4 = "opc_linha"
-const clas4 = "cmd_fechar"
 const vari4 = "m_item_fechado"
 #
 const nome5 = "Não é possível"
 const tipo5 = "opc_linha"
-const clas5 = "cmd_fechar"
 const vari5 = "m_item_nao"
 #
 const nome6 = "Fechou item perso"
 const tipo6 = "opc_linha"
-const clas6 = "cmd_fechar"
 const vari6 = "m_item_fechou1"
 #
 const nome7 = "Fechou item outros"
 const tipo7 = "opc_linha"
-const clas7 = "cmd_fechar"
 const vari7 = "m_item_fechou2"
 #
 const nome8 = "Sem porta"
 const tipo8 = "opc_linha"
-const clas8 = "cmd_fechar"
 const vari8 = "m_porta_sem"
 #
 const nome9 = "Porta fechada"
 const info9 = mens_porta:info
 const tipo9 = "opc_linha"
-const clas9 = "cmd_fechar"
 const vari9 = "m_porta_fechada"
 #
 const nome10 = "Fechou porta perso"
 const tipo10 = "opc_linha"
-const clas10 = "cmd_fechar"
 const vari10 = "m_porta_fechou1"
 #
 const nome11 = "Fechou porta outros"
 const tipo11 = "opc_linha"
-const clas11 = "cmd_fechar"
 const vari11 = "m_porta_fechou2"

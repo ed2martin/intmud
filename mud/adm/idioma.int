@@ -1,16 +1,16 @@
 classe adm_idioma
-const iniclasse = !$[arg0] && criar(arg0)
-const txtajuda = "\c3Idiomas\b\n\
-  \c2LIDIOMA\b   Lista idiomas existentes\n\
-  \c2CIDIOMA\b   Cria um idioma\n\
-  \c2EIDIOMA\b   Edita um idioma\n\
-  \c2AIDIOMA\b   Apaga um ou mais idiomas"
+herda comando_adm
+const m_ajuda = "-t Idiomas\n\
+-m LIDIOMA Lista idiomas existentes\n\
+-m CIDIOMA Cria um idioma\n\
+-m EIDIOMA Edita um idioma\n\
+-m AIDIOMA Apaga um ou mais idiomas"
 
 
 classe adm_lidioma
 herda comando_adm
-const txtajuda = "\b\c3Lidioma\b\n\
-Sintaxe: LIDIOMA [nome]\n\
+const m_ajuda = "-t\n\
+-s [nome]\n\
 Lista os idiomas que começam com o nome especificado.\n\
 Se o nome for omitido, lista todos os idiomas."
 
@@ -31,8 +31,8 @@ func escr
 
 classe adm_cidioma
 herda comando_adm
-const txtajuda = "\b\c3Cidioma\b\n\
-Sintaxe: CIDIOMA <nome>\n\
+const m_ajuda = "-t\n\
+-s <nome>\n\
 Cria um idioma com o nome especificado.\n\
 O nome deve ser composto de letras, mas pode ter espaços no meio."
 
@@ -65,8 +65,8 @@ func escr
 
 classe adm_aidioma
 herda comando_adm
-const txtajuda = "\b\c3Aidioma\b\n\
-Sintaxe: AIDIOMA <nomes dos idiomas>\n\
+const m_ajuda = "-t\n\
+-s <nomes dos idiomas>\n\
 Apaga uma ou mais idiomas, com os nomes especificados.\n\
 Para apagar um idioma cujo nome contém espaços no meio, use sublinhado\n\
 no lugar dos espaços."
@@ -115,8 +115,8 @@ func passo # Confirmar que quer apagar idioma
 
 classe adm_eidioma
 herda comando_adm
-const txtajuda = "\b\c3Eidioma\b\n\
-Sintaxe: EIDIOMA <nome>\n\
+const m_ajuda = "-t\n\
+-s <nome>\n\
 Edita o idioma com o nome especificado."
 
 func escr
@@ -272,27 +272,24 @@ classe menu_idioma
 herda comando_menu
 const titulo = "Idioma " + txt(var.classe1, 7)
 const colunas = 25
+const classe = var.classe1
 #
 const nome1 = "Falar em"
 const info1 = "Para mensagens como \"Falou em xyz\""
 const tipo1 = "opc_linha"
-const clas1 = var.classe1
 const vari1 = "falar"
 #
 const nome2 = "Msg não conhece"
 const info2 = "Ao usar o comando falar, para quem não conhece o idioma"
 const tipo2 = "opc_linha"
-const clas2 = var.classe1
 const vari2 = "naoconhece"
 #
 const nome3 = "Trocar palavras 1"
 const tipo3 = "opc_idioma"
-const clas3 = var.classe1
 const vari3 = "troca1_"
 #
 const nome4 = "Trocar palavras 2"
 const tipo4 = "opc_idioma"
-const clas4 = var.classe1
 const vari4 = "troca2_"
 
 

@@ -13,14 +13,14 @@ herda comando_adm
 # D <porcentagem> <direção> <novo estado>
 # F <porcentagem>
 #
-const txtajuda = "\b\c3Reset\b\n\
-  \c2LRES\b      Lista salas que possuem reset\n\
-  \c2ARES\b      Edita comandos do reset de área\n\
-  \c2SRES\b      Edita comandos do reset de sala\n\
-  \c2IRES\b      Edita comandos do reset inicial (quando a sala é criada)\n\
-  \c2TRES\b      Edita comandos do reset de tipo (raça ou classe)\n\
-  \c2CRES\b      Refaz funções do reset a partir das constantes do reset\n\
-  \c2RESET\b     Executa reset de área\n\n\
+const m_ajuda = "-t\n\
+-m LRES Lista salas que possuem reset\n\
+-m ARES Edita comandos do reset de área\n\
+-m SRES Edita comandos do reset de sala\n\
+-m IRES Edita comandos do reset inicial (quando a sala é criada)\n\
+-m TRES Edita comandos do reset de tipo (raça ou classe)\n\
+-m CRES Refaz funções do reset a partir das constantes do reset\n\
+-m RESET Executa reset de área\n\n\
 O reset em si é uma sequência de comandos, entre os seguintes:\n\
 P Criar personagem\n\
 A Criar animal no personagem\n\
@@ -61,8 +61,8 @@ func escr # Executa reset
 classe adm_lres
 herda comando_adm
 const objcmd = arg1.c_lres ? este
-const txtajuda = "\b\c3Lres\b\n\
-Sintaxe: LRES [nome]\n\
+const m_ajuda = "-t\n\
+-s [nome]\n\
 Lista todas as salas que começam com o nome especificado e possuem algum\n\
 comando de reset (sres e/ou ares). Sem argumentos, lista todas as salas\n\
 que possuem algum comando de reset."
@@ -96,8 +96,8 @@ func escr # Listar salas com reset
 classe adm_ares
 herda comando_adm
 const objcmd = arg1.c_ares ? este
-const txtajuda = "\b\c3Ares\b\n\
-Sintaxe: ARES [nome da sala]\n\
+const m_ajuda = "-t\n\
+-s [nome da sala]\n\
 Reset de área. Edita os comandos executados quando ocorre o reset da área.\n\
 Se o nome for omitido, será a sala em que você está.\n\
 Para que o reset de área aconteça, é necessário também editar a área, com\n\
@@ -129,8 +129,8 @@ func escr
 
 classe adm_sres
 herda adm_ares
-const txtajuda = "\b\c3Sres\b\n\
-Sintaxe: SRES [nome da sala]\n\
+const m_ajuda = "-t\n\
+-s [nome da sala]\n\
 Reset de sala. Edita os comandos executados quando algum jogador entra\n\
 na sala. Se o nome for omitido, será a sala em que você está.\n\
 Nota: Esse comando criada a constante s_reset e a função s_reset1 na sala."
@@ -140,8 +140,8 @@ const opcvar = "s_reset"
 
 classe adm_ires
 herda adm_ares
-const txtajuda = "\b\c3Ires\b\n\
-Sintaxe: SRES [nome da sala]\n\
+const m_ajuda = "-t\n\
+-s [nome da sala]\n\
 Reset de sala em um item. Edita os comandos executados quando a sala\n\
 é criada dentro de um item.\n\
 Nota: Esse comando criada a constante i_reset e a função i_reset1 na sala."
@@ -151,8 +151,8 @@ const opcvar = "i_reset"
 
 classe adm_tres
 herda comando_adm
-const txtajuda = "\b\c3Tres\b\n\
-Sintaxe: TRES [nome do tipo]\n\
+const m_ajuda = "-t\n\
+-s [nome do tipo]\n\
 Reset de tipo (raça ou classe). Edita os comandos executados quando algum\n\
 jogador cria um personagem do tipo especificado.\n\
 Nota: Esse comando criada a constante t_reset e a função t_reset1 no tipo.\n\
@@ -173,8 +173,8 @@ func escr
 
 classe adm_cres
 herda comando_adm
-const txtajuda = "\b\c3Cres\b\n\
-Sintaxe: CRES [nome da sala ou da área]\n\
+const m_ajuda = "-t\n\
+-s [nome da sala ou da área]\n\
 Refaz as funções de reset (a_reset1 e s_reset1) a partir da constantes\n\
 a_reset e s_reset. Isso é útil se o reset for mudado sem usar os comandos\n\
 ARES e SRES."
