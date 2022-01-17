@@ -175,7 +175,15 @@ func ini # Objeto foi criado: inicializa variáveis (arg0=dono, pode ser nulo)
   s_mudadir1, a_reset1, i_reset1
 
 func fim
-  dentrodir.limpar, comum_obj:fim
+  listaobj l
+  prog p
+  l.addfim(dentro2), dentrodir.limpar, comum_obj:fim
+  epara nulo, l, l.ini.remove
+    continuar !(l.objini.jog || l.objini.temdomador)
+    p.iniherdainv("b_" + s_area)
+    p.texto == este && p.depois
+    l.objini.mudadono(ref(s_voltar(l.objini)) ?? $[p.texto] ?? config:salasav)
+  efim
 
 func msg # Mensagem para todos da sala
   ret !socktot, nulo

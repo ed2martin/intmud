@@ -15,6 +15,7 @@ const proto2 = "#bot "
 
 func ini
 # arg0 contém 4 textos separados por espaço: endereço, porta, sala, senha
+# arg1 = usuário que digitou o comando, ou nulo se não houver
   conectando = 100
   conexao1 = "cn " + txt1(arg0)
   conexao2 = proto1 + txtsub(arg0, 0, 3)
@@ -25,7 +26,9 @@ func ini
     ini_conec(txt1(arg0), txtsub(arg0, 1, 1))
   senao !conec.eventoip(txt1(arg0))
     apagar(este), conexao2 = ""
-    msg("Endereço inválido")
+    msg("Endereço inválido", arg1)
+  senao
+    arg1.msg("Conectando em " + txtsub(arg0, 0, 2))
   fimse
 
 func conec_eventoip # Resolveu endereço a conectar

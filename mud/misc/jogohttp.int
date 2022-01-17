@@ -8,30 +8,32 @@ func ini
 # arg0 contém 3 textos separados por espaço: tipo, endereço, porta
 # Tipo deve ser "http"
 # Se o endereço for "*", abre a porta em todos os endereços
+# arg1 = usuário que digitou o comando, ou nulo se não houver
   conexao1 = "cn " + txtsub(arg0, 2)
   conexao2 = arg0
   refvar ender = txtsub(arg0, 1, 1)
   refvar t1 = servidor.abrir(ender == "*" ? "" : ender, txtsub(arg0, 2))
   se t1 != "1"
-    msg("Não foi possível abrir a porta")
+    msg("Não foi possível abrir a porta", arg1)
     apagar(este), conexao2 = ""
     ret
   fimse
-  msg("Esperando conexões")
+  msg("Esperando conexões", arg1)
 
 func fim
   conexao2 && msg("Conexão encerrada")
 
-func msg
-  se !config:modolocal
-    telatxt tela
-    tela.msg("Serv " + conexao2 + ": " + arg0 + "\n")
-  fimse
+func msg # Envia mensagem
+# arg0 = mensagem, arg1 = usuário (opcional)
+  arg1.msg(arg0 + ": " + conexao2)
   indiceitem item
   refvar m = "\b\d1(com) " + conexao2 + ": " + arg0 + "\b"
   epara item.ini("un "), txt1(item.txt) == "un", item.depois
     item.obj.jogconfig.21 && item.obj.msg(m)
   efim
+
+func msgfim # Envia mensagem para arg0 dizendo conexão fechada
+  arg0.msg("Conexão encerrada: " + conexao2)
 
 func servidor_socket # Conectado: cria objeto
   criar("jogohttp_ini", arg0, este)

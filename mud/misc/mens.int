@@ -1,6 +1,6 @@
 classe mens_tabela
 # Usado em mens e mensjog
-const o_@ = "$"
+const o_@g = "$"
 const o_d = arg0 === "D" ? "\da" : "\db"
 const o_e = arg0 === "E" ? "\dc" : "\dd"
 const o_f = arg0 === "F" ? "\de" : "\df"
@@ -85,160 +85,151 @@ func p # Define os personagens
 
 func mp # Atalho para função p seguido da função msg
   se arg1.sock
-    r = perso = arg1, alvo = arg2, obj1 = arg3, obj2 = arg4
-    refvar t = vartroca(txttroca(arg0, "$$", "$@"), "$", "o_")
-    arg1.msg(vartrocacod(t, "\d", "x_"))
+    perso = arg1, alvo = arg2, obj1 = arg3, obj2 = arg4
+    r = arg1.dono.perso && arg1.perso ? arg1.dono : arg1
+    r.msg(vartrocacod(vartrocacod(arg0, "$", "o_"), "\d", "x_"))
   fimse
 
 func txt # Prepara e retorna mensagem
 # arg0=mensagem, arg1=a quem se destina a mensagem
   r = arg1
-  refvar t = vartroca(txttroca(arg0, "$$", "$@"), "$", "o_")
-  ret vartrocacod(t, "\d", "x_")
+  ret vartrocacod(vartrocacod(arg0, "$", "o_"), "\d", "x_")
 
 func msg # Envia mensagem para um personagem
 # arg0=mensagem, arg1=a quem se destina a mensagem
   se arg1.sock
-    r = arg1
-    refvar t = vartroca(txttroca(arg0, "$$", "$@"), "$", "o_")
-    arg1.msg(vartrocacod(t, "\d", "x_"))
+    r = arg1.dono.perso && arg1.perso ? arg1.dono : arg1
+    r.msg(vartrocacod(vartrocacod(arg0, "$", "o_"), "\d", "x_"))
   fimse
 
 func msgvis # Envia mensagem se estiver acordado e vendo personagem perso
 # arg0=mensagem, arg1=a quem se destina a mensagem
   se arg1.sock && arg1.posicao > 4 && perso.visivel(arg1)
-    r = arg1
-    refvar t = vartroca(txttroca(arg0, "$$", "$@"), "$", "o_")
-    arg1.msg(vartrocacod(t, "\d", "x_"))
+    r = arg1.dono.perso && arg1.perso ? arg1.dono : arg1
+    r.msg(vartrocacod(vartrocacod(arg0, "$", "o_"), "\d", "x_"))
   fimse
 
 func msgsomvis # Envia mensagem/som se estiver acordado e vendo personagem perso
 # arg0=mensagem, arg1=nome do som, arg2=a quem se destina a mensagem
   se arg2.sock && arg2.posicao > 4 && perso.visivel(arg2)
-    r = arg2
-    refvar t = vartroca(txttroca(arg0, "$$", "$@"), "$", "o_")
-    arg2.msgsom(arg1)
-    arg2.msg(vartrocacod(t, "\d", "x_"))
+    r = arg1.dono.perso && arg1.perso ? arg1.dono : arg1
+    r.msgsom(arg1)
+    r.msg(vartrocacod(vartrocacod(arg0, "$", "o_"), "\d", "x_"))
   fimse
 
 func msgvisdir # Envia mensagem estiver acordado e vendo personagem perso
 # arg0=mensagem, arg1=a quem se destina a mensagem
 # arg2=mensagem da direção, quando arg1 e perso não estiverem na mesma sala
   se arg1.sock && arg1.posicao > 4 && perso.visivel(arg1)
-    r = arg1
-    refvar dono = perso.contr.dono
-    refvar t = vartroca(txttroca(arg0, "$$", "$@"), "$", "o_")
-    refvar dir = (arg1.contr.dono ?? dono) != dono ? arg2
-    arg1.msg(txt(dir) + vartrocacod(t, "\d", "x_"))
+    r = arg1.dono.perso && arg1.perso ? arg1.dono : arg1
+    refvar dono = perso.dono.perso ? perso.dono.dono : perso.dono
+    refvar dir = r.dono != dono ? arg2
+    r.msg(txt(dir) + vartrocacod(vartrocacod(arg0, "$", "o_"), "\d", "x_"))
   fimse
 
 func msginv # Envia mensagem se estiver acordado
 # arg0=mensagem, arg1=a quem se destina a mensagem
   se arg1.sock && arg1.posicao > 4
-    r = arg1
-    refvar t = vartroca(txttroca(arg0, "$$", "$@"), "$", "o_")
-    arg1.msg(vartrocacod(t, "\d", "x_"))
+    r = arg1.dono.perso && arg1.perso ? arg1.dono : arg1
+    r.msg(vartrocacod(vartrocacod(arg0, "$", "o_"), "\d", "x_"))
   fimse
 
 func msgsominv # Envia mensagem/som se estiver acordado
 # arg0=mensagem, arg1=nome do som, arg2=a quem se destina a mensagem
   se arg2.sock && arg2.posicao > 4
-    r = arg2
-    refvar t = vartroca(txttroca(arg0, "$$", "$@"), "$", "o_")
-    arg2.msgsom(arg1)
-    arg2.msg(vartrocacod(t, "\d", "x_"))
+    r = arg2.dono.perso ? arg2.dono : arg2
+    r.msgsom(arg1)
+    r.msg(vartrocacod(vartrocacod(arg0, "$", "o_"), "\d", "x_"))
   fimse
 
 func msginvdir # Envia mensagem se estiver acordado
 # arg0=mensagem, arg1=a quem se destina a mensagem
 # arg2=mensagem da direção, quando arg1 e perso não estiverem na mesma sala
   se arg1.sock && arg1.posicao > 4
-    r = arg1
-    refvar dono = perso.contr.dono
-    refvar t = vartroca(txttroca(arg0, "$$", "$@"), "$", "o_")
-    refvar dir = (arg1.contr.dono ?? dono) != dono ? arg2
-    arg1.msg(txt(dir) + vartrocacod(t, "\d", "x_"))
+    r = arg1.dono.perso && arg1.perso ? arg1.dono : arg1
+    refvar dono = perso.dono.perso ? perso.dono.dono : perso.dono
+    refvar dir = r.dono != dono ? arg2
+    r.msg(txt(dir) + vartrocacod(vartrocacod(arg0, "$", "o_"), "\d", "x_"))
   fimse
 
 func mtodos1 # Mensagem só para quem estiver acordado
 # arg0 = mensagem para todos
-  refvar contr = perso.contr
-  ret !(contr.dono.socktot && arg0), nulo
+  refvar dono = perso.dono.perso ? perso.dono.dono : perso.dono
+  ret !(dono.socktot && arg0), nulo
   listaobj l0
-  epara l0.addfim(contr.dono.dentro2), l0, l0.ini.remove
+  epara l0.addfim(dono.dentro2), l0, l0.ini.remove
     msginv(arg0, l0.objini)
   efim
 
 func mtodos2 # Mensagem só para quem estiver acordado
 # arg0 = mensagem para personagem, arg1 = mensagem para outros
-  refvar contr = perso.contr
-  ret !contr.dono.socktot, nulo
-  arg0 && msginv(arg0, contr)
+  refvar dono = perso.dono.perso ? perso.dono.dono : perso.dono
+  ret !dono.socktot, nulo
+  arg0 && msginv(arg0, perso)
   ret !arg1, nulo
   listaobj l0
-  l0.addfim(contr.dono.dentro2)
-  epara l0.remove(contr), l0, l0.ini.remove
+  l0.addfim(dono.dentro2)
+  epara l0.remove(perso), l0, l0.ini.remove
     msginv(arg1, l0.objini)
   efim
 
 func mtodos3 # Mensagem só para quem estiver acordado
 # arg0,arg1,arg2 = mensagens para personagem, alvo e outros
-  refvar persocontr = perso.contr
-  refvar alvocontr = alvo.contr
-  ret !persocontr.dono.socktot, nulo
-  arg0 && msginv(arg0, persocontr)
-  arg1 && persocontr != alvocontr && msginv(arg1, alvocontr)
+  refvar dono = perso.dono.perso ? perso.dono.dono : perso.dono
+  ret !dono.socktot, nulo
+  arg0 && msginv(arg0, perso)
+  arg1 && perso != alvo && msginv(arg1, alvo)
   ret !arg2, nulo
   listaobj l0
-  l0.addfim(persocontr.dono.dentro2)
-  epara l0.remove(persocontr, alvocontr), l0, l0.ini.remove
+  l0.addfim(dono.dentro2)
+  epara l0.remove(perso, alvo), l0, l0.ini.remove
     msginv(arg2, l0.objini)
   efim
 
 func mtodos1som # Mensagem e som só para quem estiver acordado
 # arg0 = mensagem para todos, arg1=nome do som
-  refvar contr = perso.contr
-  ret !(contr.dono.socktot && arg0), nulo
+  refvar dono = perso.dono.perso ? perso.dono.dono : perso.dono
+  ret !(dono.socktot && arg0), nulo
   listaobj l0
-  epara l0.addfim(contr.dono.dentro2), l0, l0.ini.remove
+  epara l0.addfim(dono.dentro2), l0, l0.ini.remove
     msgsominv(arg0, arg1, l0.objini)
   efim
 
 func mtodos2som # Mesmo que mtodos1som, porém não envia mensagem para o personagem
 # arg0 = mensagem para todos, arg1=nome do som
-  refvar contr = perso.contr
-  ret !(contr.dono.socktot && arg0), nulo
+  refvar dono = perso.dono.perso ? perso.dono.dono : perso.dono
+  ret !(dono.socktot && arg0), nulo
   listaobj l0
-  l0.addfim(contr.dono.dentro2)
-  epara l0.remove(contr), l0, l0.ini.remove
+  l0.addfim(dono.dentro2)
+  epara l0.remove(perso), l0, l0.ini.remove
     msgsominv(arg0, arg1, l0.objini)
   efim
 
 func mtodos3dir # Mensagem só para quem estiver acordado
 # arg0,arg1,arg2 = mensagens para personagem, alvo e outros
 # arg3 = direção do personagem ao alvo, quando não estão na mesma sala
-  refvar persocontr = perso.contr
-  refvar alvocontr = alvo.contr
-  ret (alvocontr.dono ?? persocontr.dono) == persocontr.dono, mtodos3(arg0, arg1, arg2)
-  ret !(persocontr.dono.socktot || alvocontr.dono.socktot), nulo
+  refvar persodono = perso.dono.perso ? perso.dono.dono : perso.dono
+  refvar alvodono = alvo.dono.perso ? alvo.dono.dono : alvo.dono
+  ret !alvodono || alvodono == persodono, mtodos3(arg0, arg1, arg2)
+  ret !(persodono.socktot || alvodono.socktot), nulo
   refvar t1 = txt(misc:d3[arg3])
   refvar t2 = txt(misc:d4[arg3])
-  arg0 && msginv(t1 + arg0, persocontr)
-  arg1 && persocontr != alvocontr && msginv(t2 + arg1, alvocontr)
+  arg0 && msginv(t1 + arg0, perso)
+  arg1 && persodono != alvodono && msginv(t2 + arg1, alvo)
   ret !arg2, nulo
   listaobj l0
-  l0.addfim(persocontr.dono.dentro2)
+  l0.addfim(persodono.dentro2)
   epara l0.remove(persocontr), l0, l0.ini.remove
     msginv(t1 + arg2, l0.objini)
   efim
-  l0.addfim(alvocontr.dono.dentro2)
+  l0.addfim(alvodono.dentro2)
   epara l0.remove(alvocontr), l0, l0.ini.remove
     msginv(t2 + arg2, l0.objini)
   efim
 
 func mvis1 # Mensagem só para quem pode ver o personagem e estiver acordado
 # arg0 = mensagem para todos
-  refvar contr = perso.contr
+  refvar contr = perso.dono.perso ? perso.dono : perso
   ret !(contr.dono.socktot && arg0), nulo
   msginv(arg0, contr)
   listaobj l0
@@ -249,7 +240,7 @@ func mvis1 # Mensagem só para quem pode ver o personagem e estiver acordado
 
 func mvis2 # Mensagem só para quem pode ver o personagem e estiver acordado
 # arg0 = mensagem para personagem, arg1 = mensagem para outros
-  refvar contr = perso.contr
+  refvar contr = perso.dono.perso ? perso.dono : perso
   ret !contr.dono.socktot, nulo
   arg0 && msginv(arg0, contr)
   ret !arg1, nulo
@@ -261,21 +252,20 @@ func mvis2 # Mensagem só para quem pode ver o personagem e estiver acordado
 
 func mvis3 # Mensagem só para quem pode ver o personagem e estiver acordado
 # arg0,arg1,arg2 = mensagens para personagem, alvo e outros
-  refvar persocontr = perso.contr
-  refvar alvocontr = alvo.contr
-  ret !persocontr.dono.socktot, nulo
-  arg0 && msginv(arg0, persocontr)
-  arg1 && persocontr != alvocontr && msgvis(arg1, alvocontr)
+  refvar dono = perso.dono.perso ? perso.dono.dono : perso.dono
+  ret !dono.socktot, nulo
+  arg0 && msginv(arg0, perso)
+  arg1 && perso != alvo && msginv(arg1, alvo)
   ret !arg2, nulo
   listaobj l0
-  l0.addfim(persocontr.dono.dentro2)
-  epara l0.remove(persocontr, alvocontr), l0, l0.ini.remove
+  l0.addfim(dono.dentro2)
+  epara l0.remove(perso, alvo), l0, l0.ini.remove
     msgvis(arg2, l0.objini)
   efim
 
 func mvis1som # Mensagem e som só para quem pode ver o personagem e estiver acordado
 # arg0 = mensagem para todos, arg1=nome do som
-  refvar persocontr = perso.contr
+  refvar persocontr = perso.dono.perso ? perso.dono : perso
   ret !(persocontr.dono.socktot && arg0), nulo
   listaobj l0
   epara l0.addfim(persocontr.dono.dentro2), l0, l0.ini.remove
@@ -284,7 +274,7 @@ func mvis1som # Mensagem e som só para quem pode ver o personagem e estiver acor
 
 func mvis2som # Mesmo que mvis1som, porém não envia mensagem para o personagem
 # arg0 = mensagem para todos, arg1=nome do som
-  refvar persocontr = perso.contr
+  refvar persocontr = perso.dono.perso ? perso.dono : perso
   ret !(persocontr.dono.socktot && arg0), nulo
   listaobj l0
   l0.addfim(persocontr.dono.dentro2)
@@ -295,21 +285,21 @@ func mvis2som # Mesmo que mvis1som, porém não envia mensagem para o personagem
 func mvis3dir # Mensagem só para quem pode ver o personagem e estiver acordado
 # arg0,arg1,arg2 = mensagens para personagem, alvo e outros
 # arg3 = direção do personagem ao alvo, quando não estão na mesma sala
-  refvar persocontr = perso.contr
-  refvar alvocontr = alvo.contr
-  ret (alvocontr.dono ?? persocontr.dono) == persocontr.dono, mvis3(arg0, arg1, arg2)
-  ret !(persocontr.dono.socktot || alvocontr.dono.socktot), nulo
+  refvar persodono = perso.dono.perso ? perso.dono.dono : perso.dono
+  refvar alvodono = alvo.dono.perso ? alvo.dono.dono : alvo.dono
+  ret !alvodono || alvodono == persodono, mtodos3(arg0, arg1, arg2)
+  ret !(persodono.socktot || alvodono.socktot), nulo
   refvar t1 = txt(misc:d3[arg3])
   refvar t2 = txt(misc:d4[arg3])
-  arg0 && msgvis(t1 + arg0, persocontr)
-  arg1 && persocontr != alvocontr && msgvis(t2 + arg1, alvocontr)
+  arg0 && msginv(t1 + arg0, perso)
+  arg1 && persodono != alvodono && msginv(t2 + arg1, alvo)
   ret !arg2, nulo
   listaobj l0
-  l0.addfim(persocontr.dono.dentro2)
+  l0.addfim(persodono.dentro2)
   epara l0.remove(persocontr), l0, l0.ini.remove
     msgvis(t1 + arg2, l0.objini)
   efim
-  l0.addfim(alvocontr.dono.dentro2)
+  l0.addfim(alvodono.dentro2)
   epara l0.remove(alvocontr), l0, l0.ini.remove
     msgvis(t2 + arg2, l0.objini)
   efim
@@ -421,14 +411,14 @@ func mfalar2 # Mensagem de personagem falando
 # arg1 = mensagem para outros
 # arg2 = o que o personagem falou ($m nas mensagens)
 # arg3 = objeto que trata do idioma ($1 nas mensagens) ou null se língua comum
-  refvar contr = perso.contr
+  refvar contr = perso.dono.perso ? perso.dono : perso
   ret !contr.dono.socktot, nulo
   refvar m1 = $miscbebida.msgperso(arg2, contr.p_bebida)
   uint8 sabe1 = !arg3 ? 100 : contr.var.[arg3.nomevar] * 17 # Quanto conhece
   o_1 = arg3.falar
   se arg0
     mens = sabe1 < 100 ? arg3.converte(m1, sabe1) : m1
-    msginv((!sabe1 ? arg3.naoconhece) ?? arg0, contr)
+    msginv(!sabe1 ? arg3.naoconhece ?? arg0, contr)
   fimse
   ret !arg1, nulo
   listaobj l0
@@ -436,19 +426,17 @@ func mfalar2 # Mensagem de personagem falando
   epara l0.remove(contr), l0, l0.ini.remove
     refvar sabe2 = !arg3 ? 100 : intmin(sabe1, l0.objini.var.[arg3.nomevar] * 17)
     mens = sabe2 < 100 ? arg3.converte(m1, sabe2) : m1
-    msginv((!sabe2 ? arg3.naoconhece) ?? arg1, l0.objini)
+    msginv(!sabe2 ? arg3.naoconhece ?? arg1, l0.objini)
   efim
 
 func mens_min # Usado internamente
 # arg0 = personagem, arg1 = mensagem de tu/ti
-  refvar contr = arg0.contr
-  se arg0 == contr && (arg0.tseguir != 3 || !arg0.iseguir) || arg0.descdono == 1
+  refvar c = arg0.perso ? arg0.persodomador ?? arg0
+  se arg0 == c || arg0.descdono == 1
     ret r == arg0, arg1
     ret arg0.visivel(r), arg0.descnome2
     ret arg0.perso ? "alguém" : "alguma coisa"
-  fimse
-  refvar c = arg0 != contr ? contr : arg0.iseguir.objlista
-  se r == c
+  senao r == c
     refvar i = txtproclin("o\na\num\numa", txt1(arg0.descnome2 + "x")) < 0
     ret (arg0.msexo2 ? "seu " : "sua ") + (i ? arg0.descnome2 : txt2(arg0.descnome2))
   senao arg0.descdono || txtproclin("o\na\num\numa", txt1(arg0.descnome2 + "x")) < 0
@@ -462,14 +450,12 @@ func mens_min # Usado internamente
 
 func mens_mai # Usado internamente
 # arg0 = personagem, arg1 = mensagem de tu/ti
-  refvar contr = arg0.contr
-  se arg0 == contr && (arg0.tseguir != 3 || !arg0.iseguir) || arg0.descdono == 1
+  refvar c = arg0.perso ? arg0.persodomador ?? arg0
+  se arg0 == c || arg0.descdono == 1
     ret r == arg0, txtcopiamai(arg1, "A")
     ret arg0.visivel(r), txtcopiamai(arg0.descnome2, "A")
     ret arg0.perso ? "Alguém" : "Alguma coisa"
-  fimse
-  refvar c = arg0 != contr ? contr : arg0.iseguir.objlista
-  se r == c
+  senao r == c
     refvar i = txtproclin("o\na\num\numa", txt1(arg0.descnome2 + "x")) < 0
     ret (arg0.msexo2 ? "Seu " : "Sua ") + (i ? arg0.descnome2 : txt2(arg0.descnome2))
   senao arg0.descdono || txtproclin("o\na\num\numa", txt1(arg0.descnome2 + "x")) < 0
@@ -580,24 +566,30 @@ herda mens
 
 func mens_min # Usado internamente
 # arg0 = personagem, arg1 = mensagem de tu/ti
-  refvar contr = arg0.contr
-  se arg0 == contr
-    ret r == arg0, txtcopiamai(arg1, "a")
-    ret arg0.descnome2
+  refvar c = arg0.perso ? arg0.persodomador ?? arg0
+  se arg0 == c || arg0.descdono == 1
+    ret r == arg0 ? arg1 : arg0.descnome2
+  senao r == c
+    refvar i = txtproclin("o\na\num\numa", txt1(arg0.descnome2 + "x")) < 0
+    ret (arg0.msexo2 ? "seu " : "sua ") + (i ? arg0.descnome2 : txt2(arg0.descnome2))
+  senao arg0.descdono || txtproclin("o\na\num\numa", txt1(arg0.descnome2 + "x")) < 0
+    ret arg0.descnome2 + " de " + c.descnome2
   senao
-    ret r == contr, (arg0.msexo2 ? "seu " : "sua ") + arg0.nome
-    ret arg0.descnome2 + " de " + contr.descnome2
+    ret txt2(arg0.descnome2) + " de " + c.descnome2
   fimse
 
 func mens_mai # Usado internamente
 # arg0 = personagem, arg1 = mensagem de tu/ti
-  refvar contr = arg0.contr
-  se arg0 == contr
-    ret r == arg0, txtcopiamai(arg1, "A")
-    ret txtcopiamai(arg0.descnome2, "A")
+  refvar c = arg0.perso ? arg0.persodomador ?? arg0
+  se arg0 == c || arg0.descdono == 1
+    ret r == arg0 ? txtcopiamai(arg1, "A") : txtcopiamai(arg0.descnome2, "A")
+  senao r == c
+    refvar i = txtproclin("o\na\num\numa", txt1(arg0.descnome2 + "x")) < 0
+    ret (arg0.msexo2 ? "Seu " : "Sua ") + (i ? arg0.descnome2 : txt2(arg0.descnome2))
+  senao arg0.descdono || txtproclin("o\na\num\numa", txt1(arg0.descnome2 + "x")) < 0
+    ret txtcopiamai(arg0.descnome2, "A") + " de " + c.descnome2
   senao
-    ret r == contr, (arg0.msexo2 ? "Seu " : "Sua ") + arg0.nome
-    ret txtcopiamai(arg0.descnome2, "A") + " de " + contr.descnome2
+    ret txtcopiamai(txt2(arg0.descnome2), "A") + " de " + c.descnome2
   fimse
 
 func o_q # Nome do personagem sem citar o dono
@@ -642,14 +634,12 @@ const iniclasse = !$[arg0] && criar(arg0)
 func txt # Prepara e retorna mensagem
 # arg0=mensagem, arg1=a quem se destina a mensagem
   perso = arg1
-  refvar t = vartroca(txttroca(arg0, "$$", "$@"), "$", "o_")
-  ret vartrocacod(t, "\d", "x_")
+  ret vartrocacod(vartrocacod(arg0, "$", "o_"), "\d", "x_")
 
 func msg # Envia mensagem
 # arg0=mensagem, arg1=a quem se destina a mensagem
   perso = arg1
-  refvar t = vartroca(txttroca(arg0, "$$", "$@"), "$", "o_")
-  arg1.msg(vartrocacod(t, "\d", "x_"))
+  arg1.msg(vartrocacod(vartrocacod(arg0, "$", "o_"), "\d", "x_"))
 
 const o_1 = ""
 const o_2 = ""

@@ -729,7 +729,7 @@ func execgolpe # Realiza um ataque e coloca resultado em result e mudavida
   senao arma2 && rand(100) < arma2.var.z_armafalha_
     result = 2
     ret
-  senao result == 20 || arg1.posicao == 4 || danotipo == 1 # Acertou automaticamente
+  senao result == 20 || arg1.posicao <= 4 || danotipo == 1 # Acertou automaticamente
   senao result == 1 # Errou o alvo automaticamente
     result = 3
     ret

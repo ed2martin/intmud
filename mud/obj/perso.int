@@ -183,7 +183,10 @@ func contr # Quem está controlando o personagem
 
 func persodomador # A quem pertence o personagem
   ret dono.perso, dono
-  ret (tseguir == 3 ? ref(iseguir.objlista) : este) ?? este
+  ret (tseguir == 3 ? ref(iseguir.objlista)) ?? este
+
+func temdomador # Retorna verdadeiro se pertence a outro personagem
+  ret dono.perso || (tseguir == 3 && ref(iseguir.objlista))
 
 func mudadono # Coloca personagem em outra sala ou outro personagem
 # arg0 = nova sala ou novo personagem
