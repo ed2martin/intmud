@@ -1,6 +1,7 @@
 classe h_cmd_montar
 herda comando_comum
-const classemenu = "m_cmd_montar"
+const objmenu = $m_cmd_montar
+const objtipo = 2 # Pode renomear
 const posic = 5
 #
 const m_ajuda = "-t\n\
@@ -126,7 +127,8 @@ func montar
 
 classe h_cmd_desmontar
 herda comando_comum
-const classemenu = "m_cmd_desmontar"
+const objmenu = $m_cmd_desmontar
+const objtipo = 2 # Pode renomear
 const posic = 5
 const txtajuda = txtajuda1 + m_ajuda
 const txtajuda1 = "\b\c3Desontar\b\nSintaxe: DESMONTAR\n"

@@ -1,22 +1,23 @@
 classe h_cmd_animal
 herda comando_comum
-const classemenu = "m_cmd_animal"
+const objmenu = $m_cmd_animal
+const objtipo = 2 # Pode renomear
 const objcmd = config:animal1 ? este
 const posic = 0
 #
-const m_ajudaI = "-t\n+h_cmd_capturar Pega o animal que está lutando com você\n\
-+h_cmd_despedir Se despede (desfaz) de um animal seu\n\
-+h_cmd_montar Monta em um personagem\n\
-+h_cmd_desmontar Desmonta de um personagem\n\
-+h_cmd_evoluir Faz um personagem seu evoluir"
-const m_ajudaA = "+h_cmd_animal Mostra animais que você possui\n\
-+h_cmd_reserva Manuseio de animais reserva\n\
-+h_cmd_dar Dá animal a outro personagem\n\
-+h_cmd_chamar Traz animal seu da sala para o comando Animal\n\
-+h_cmd_soltar Traz animal seu do comando Animal para a sala\n\
+const m_ajudaI = "-t\n-h_cmd_capturar Pega o animal que está lutando com você\n\
+-h_cmd_despedir Se despede (desfaz) de um animal seu\n\
+-h_cmd_montar Monta em um personagem\n\
+-h_cmd_desmontar Desmonta de um personagem\n\
+-h_cmd_evoluir Faz um personagem seu evoluir"
+const m_ajudaA = "-h_cmd_animal Mostra animais que você possui\n\
+-h_cmd_reserva Manuseio de animais reserva\n\
+-h_cmd_dar Dá animal a outro personagem\n\
+-h_cmd_chamar Traz animal seu da sala para o comando Animal\n\
+-h_cmd_soltar Traz animal seu do comando Animal para a sala\n\
   \c20\b            Não escolhe nenhum animal para batalha\n\
   \c21\b a \c2$m\b        Escolhe um animal seu, de 1 a $m\n\
-+h_cmd_trocar Dá itens para um animal e troca animais de lugar"
+-h_cmd_trocar Dá itens para um animal e troca animais de lugar"
 const m_ajuda1 = "Nota: Seus animais acima do seu nível não lutam."
 const m_ajuda2 = "Nota: Seus animais $m níveis acima do seu nível não lutam."
 const m_ajuda3 = "Nota: Você precisa estar 1 nível acima do seu animal para ele lutar."

@@ -1,6 +1,7 @@
 classe h_cmd_ajuda
 herda comando_comum
-const classemenu = "m_cmd_ajuda"
+const objmenu = $m_cmd_ajuda
+const objtipo = 2 # Pode renomear
 const posic = 0
 const txtajuda = txtajuda1(m_ajuda1 + ($perm_[arg0.jogperm].c_adm ? "\n" + m_ajuda2))
 #
@@ -13,7 +14,7 @@ Os tópicos são:\n\
 -h_cmd_objeto Manuseio de objetos\n\
 -h_cmd_animal Manuseio de animais\n\
 -h_cmd_combate Lutas com outros personagens\n\
-+h_cmd_grupo Jogando em grupo\n\
+-h_cmd_grupo Jogando em grupo\n\
 -h_cmd_lojas Lojas e professores\n\
 -h_cmd_nomes Digitando nomes de objetos e personagens\n\
 -h_cmd_jog Outros comandos para jogadores\n\
@@ -44,9 +45,9 @@ func escr
 
 
 classe h_cmd_movimenta
-herda comando_comum
-const classemenu = "m_cmd_ajuda_jog"
-const objcmd = nulo # É só página de ajuda
+herda comando_comum_ajuda
+const objmenu = $m_cmd_ajuda_jog
+const objtipo = 2 # Pode renomear
 #
 const m_ajuda = "-t 3Movimentação\n\
 Você pode mover seu personagem para as seguintes direções:\n\
@@ -69,95 +70,95 @@ Depois, para voltar a caminhar, deverá ficar em pé (digitando LEVANTAR)."
 
 
 classe h_cmd_comunica
-herda comando_comum
-const classemenu = "m_cmd_ajuda_jog"
-const objcmd = nulo # É só página de ajuda
+herda comando_comum_ajuda
+const objmenu = $m_cmd_ajuda_jog
+const objtipo = 2 # Pode renomear
 #
 const m_ajuda = "-t Comunicação\n\
-+h_cmd_novatos Envia mensagem para os jogadores com o canal NOVATOS habilitado\n\
-+h_cmd_chat Envia mensagem para os jogadores com o canal CHAT habilitado\n\
-+h_cmd_schat Comandos \"sociais\" no canal CHAT\n\
-+h_cmd_gchat Envia uma mensagem para os jogadores do seu grupo\n\
-+h_cmd_telepatia Envia mensagem privativa para um jogador\n\
-+h_cmd_responder Responde mensagem privativa de um jogador\n\
-+h_cmd_gritar Envia mensagem para os personagens na mesma área\n\
-+h_cmd_falar Envia mensagem para os personagens na mesma sala\n\
-+h_cmd_sussurrar Sussurra uma mensagem para um personagem na mesma sala\n\
-+h_cmd_social Comandos \"sociais\" - para interpretação entre personagens\n\
-+h_cmd_emocao Demonstra emoções do seu personagem\n\
-+h_cmd_ignorar Ignora um jogador\n\
-+h_cmd_rezar Envia mensagem para os administradores que estiverem no jogo\n\
-+h_cmd_bug Envia mensagem para informar sobre bugs (erros) no jogo\n\
-+h_cmd_ideia Envia mensagem sobre ideias para o jogo"
+-h_cmd_novatos Envia mensagem para os jogadores com o canal NOVATOS habilitado\n\
+-h_cmd_chat Envia mensagem para os jogadores com o canal CHAT habilitado\n\
+-h_cmd_schat Comandos \"sociais\" no canal CHAT\n\
+-h_cmd_gchat Envia uma mensagem para os jogadores do seu grupo\n\
+-h_cmd_telepatia Envia mensagem privativa para um jogador\n\
+-h_cmd_responder Responde mensagem privativa de um jogador\n\
+-h_cmd_gritar Envia mensagem para os personagens na mesma área\n\
+-h_cmd_falar Envia mensagem para os personagens na mesma sala\n\
+-h_cmd_sussurrar Sussurra uma mensagem para um personagem na mesma sala\n\
+-h_cmd_social Comandos \"sociais\" - para interpretação entre personagens\n\
+-h_cmd_emocao Demonstra emoções do seu personagem\n\
+-h_cmd_ignorar Ignora um jogador\n\
+-h_cmd_rezar Envia mensagem para os administradores que estiverem no jogo\n\
+-h_cmd_bug Envia mensagem para informar sobre bugs (erros) no jogo\n\
+-h_cmd_ideia Envia mensagem sobre ideias para o jogo"
 
 
 classe h_cmd_info
-herda comando_comum
-const classemenu = "m_cmd_ajuda_jog"
-const objcmd = nulo # É só página de ajuda
+herda comando_comum_ajuda
+const objmenu = $m_cmd_ajuda_jog
+const objtipo = 2 # Pode renomear
 #
 const m_ajuda = "-t Informações\n\
-+h_cmd_vida Pontos de vida, mana, vigor, nível e experiência\n\
-+h_cmd_relatar Relata vida, mana, vigor, experiência para os outros\n\
-+h_cmd_moedas Quantas moedas está carregando\n\
-+h_cmd_estat Estatísticas e outras informações do seu personagem\n\
-+h_cmd_nivel Quantidade de experiência para os próximos nívis\n\
-+h_cmd_olhar Descrição de onde você está ou de um objeto ou personagem\n\
-+h_cmd_ver Descrição resumida de onde você está, objeto ou personagem\n\
-+h_cmd_hora A hora atual: real e no MUD\n\
-+h_cmd_inv Os objetos que você está carregando\n\
-+h_cmd_equip Os objetos equipando você ou que você está vestindo\n\
-+h_cmd_quem Os usuários que estão jogando no momento\n\
-+h_cmd_onde A área em que está e os jogadores visíveis na mesma área\n\
-+h_cmd_saidas Mostra as saídas óbvias de onde você está\n\
-+h_cmd_hab As habilidades do seu personagem\n\
-+h_cmd_magia As magias do seu personagem\n\
-+h_cmd_idioma Idiomas que o seu personagem conhece\n\
-+h_cmd_outros Outras habilidades e itens do seu personagem\n\
-+h_cmd_efeito Os efeitos que estão afetando o seu personagem\n\
-+h_cmd_infojog Informações sobre outros jogadores"
+-h_cmd_vida Pontos de vida, mana, vigor, nível e experiência\n\
+-h_cmd_relatar Relata vida, mana, vigor, experiência para os outros\n\
+-h_cmd_moedas Quantas moedas está carregando\n\
+-h_cmd_estat Estatísticas e outras informações do seu personagem\n\
+-h_cmd_nivel Quantidade de experiência para os próximos nívis\n\
+-h_cmd_olhar Descrição de onde você está ou de um objeto ou personagem\n\
+-h_cmd_ver Descrição resumida de onde você está, objeto ou personagem\n\
+-h_cmd_hora A hora atual: real e no MUD\n\
+-h_cmd_inv Os objetos que você está carregando\n\
+-h_cmd_equip Os objetos equipando você ou que você está vestindo\n\
+-h_cmd_quem Os usuários que estão jogando no momento\n\
+-h_cmd_onde A área em que está e os jogadores visíveis na mesma área\n\
+-h_cmd_saidas Mostra as saídas óbvias de onde você está\n\
+-h_cmd_hab As habilidades do seu personagem\n\
+-h_cmd_magia As magias do seu personagem\n\
+-h_cmd_idioma Idiomas que o seu personagem conhece\n\
+-h_cmd_outros Outras habilidades e itens do seu personagem\n\
+-h_cmd_efeito Os efeitos que estão afetando o seu personagem\n\
+-h_cmd_infojog Informações sobre outros jogadores"
 
 
 classe h_cmd_objeto
-herda comando_comum
-const classemenu = "m_cmd_ajuda_jog"
-const objcmd = nulo # É só página de ajuda
+herda comando_comum_ajuda
+const objmenu = $m_cmd_ajuda_jog
+const objtipo = 2 # Pode renomear
 #
 const m_ajuda = "-t Objetos\n\
-+h_cmd_pegar Pega um objeto, do chão ou de dentro de outro objeto\n\
-+h_cmd_soltar Solta um objeto no chão ou coloca dentro de outro\n\
-+h_cmd_guardar Coloca um objeto dentro de outro\n\
-+h_cmd_dar Dá um objeto a outro personagem\n\
-+h_cmd_vestir Veste um objeto, ou usa como arma (se for arma)\n\
-+h_cmd_remover Deixa de vestir ou usar um objeto\n\
-+h_cmd_carregar Carrega a arma sendo empunhada com um objeto\n\
-+h_cmd_descarregar Descarrega a arma sendo empunhada\n\
-+h_cmd_abrir Abre um objeto (exemplo, uma bolsa ou um baú)\n\
-+h_cmd_fechar Fecha um objeto\n\
-+h_cmd_trancar Tranca um objeto\n\
-+h_cmd_destrancar Destranca um objeto\n\
-+h_cmd_acender Acende um objeto\n\
-+h_cmd_apagar Apaga um objeto\n\
-+h_cmd_beber Bebe um objeto (exemplo, uma poção ou uma garrafa)\n\
-+h_cmd_provar Prova um objeto (bebe 1 décimo do que beberia normalmente)\n\
-+h_cmd_comer Come um objeto (um alimento)\n\
-+h_cmd_recitar Recita um objeto (um pergaminho)\n\
-+h_cmd_item Usa um objeto"
+-h_cmd_pegar Pega um objeto, do chão ou de dentro de outro objeto\n\
+-h_cmd_soltar Solta um objeto no chão ou coloca dentro de outro\n\
+-h_cmd_guardar Coloca um objeto dentro de outro\n\
+-h_cmd_dar Dá um objeto a outro personagem\n\
+-h_cmd_vestir Veste um objeto, ou usa como arma (se for arma)\n\
+-h_cmd_remover Deixa de vestir ou usar um objeto\n\
+-h_cmd_carregar Carrega a arma sendo empunhada com um objeto\n\
+-h_cmd_descarregar Descarrega a arma sendo empunhada\n\
+-h_cmd_abrir Abre um objeto (exemplo, uma bolsa ou um baú)\n\
+-h_cmd_fechar Fecha um objeto\n\
+-h_cmd_trancar Tranca um objeto\n\
+-h_cmd_destrancar Destranca um objeto\n\
+-h_cmd_acender Acende um objeto\n\
+-h_cmd_apagar Apaga um objeto\n\
+-h_cmd_beber Bebe um objeto (exemplo, uma poção ou uma garrafa)\n\
+-h_cmd_provar Prova um objeto (bebe 1 décimo do que beberia normalmente)\n\
+-h_cmd_comer Come um objeto (um alimento)\n\
+-h_cmd_recitar Recita um objeto (um pergaminho)\n\
+-h_cmd_item Usa um objeto"
 
 
 classe h_cmd_lojas
-herda comando_comum
-const classemenu = "m_cmd_ajuda_jog"
-const objcmd = nulo # É só página de ajuda
+herda comando_comum_ajuda
+const objmenu = $m_cmd_ajuda_jog
+const objtipo = 2 # Pode renomear
 #
 const m_ajuda = "-t Lojas e professores\n\
-+h_cmd_lista Lista de produtos sendo vendidos e informações sobre um produto\n\
-+h_cmd_comprar Compra um produto\n\
-+h_cmd_vender Vende alguma coisa\n\
-+h_cmd_avaliar Para saber quanto pagam por algum item que você possui\n\
-+h_cmd_pagar Para pagar a taxa de manutenção da casa, caso você possua uma\n\
-+h_cmd_aulas Lista de cursos sendo ministrados e informações sobre um curso\n\
-+h_cmd_aprender Aprende alguma coisa que está sendo ensinada\n\
+-h_cmd_lista Lista de produtos sendo vendidos e informações sobre um produto\n\
+-h_cmd_comprar Compra um produto\n\
+-h_cmd_vender Vende alguma coisa\n\
+-h_cmd_avaliar Para saber quanto pagam por algum item que você possui\n\
+-h_cmd_pagar Para pagar a taxa de manutenção da casa, caso você possua uma\n\
+-h_cmd_aulas Lista de cursos sendo ministrados e informações sobre um curso\n\
+-h_cmd_aprender Aprende alguma coisa que está sendo ensinada\n\
 Nota:\n\
 Os comandos para comprar e vender itens também permitem comprar e vender\n\
 casas, comprar uma chave para sua casa e trocar a fechadura, caso você\n\
@@ -165,9 +166,9 @@ perca a chave."
 
 
 classe h_cmd_nomes
-herda comando_comum
-const classemenu = "m_cmd_ajuda_jog"
-const objcmd = nulo # É só página de ajuda
+herda comando_comum_ajuda
+const objmenu = $m_cmd_ajuda_jog
+const objtipo = 2 # Pode renomear
 #
 const m_ajuda = "-t Nomes\n\
 Diversos comandos requerem que digite o nome de um personagem ou objeto.\n\
@@ -199,9 +200,9 @@ o comando (ou teclar um sinal de exclamação) até pegar todos."
 
 
 classe h_cmd_combate
-herda comando_comum
-const classemenu = "m_cmd_combate"
-const objcmd = nulo # É só página de ajuda
+herda comando_comum_ajuda
+const objmenu = $m_cmd_combate
+const objtipo = 2 # Pode renomear
 
 func txtajuda
   prog p
@@ -230,32 +231,32 @@ const admordem = "m_ajuda1 m_ajuda2 m_ajuda3 m_ajuda4"
 
 
 classe h_cmd_jog
-herda comando_comum
-const classemenu = "m_cmd_ajuda_jog"
-const objcmd = nulo # É só página de ajuda
+herda comando_comum_ajuda
+const objmenu = $m_cmd_ajuda_jog
+const objtipo = 2 # Pode renomear
 #
 const m_ajuda = "-t Outros comandos para jogadores\n\
-+h_cmd_config Opções de configuração\n\
-+h_cmd_prompt Mensagens do prompt\n\
+-h_cmd_config Opções de configuração\n\
+-h_cmd_prompt Mensagens do prompt\n\
 -h_cmd_cores Cores no prompt\n\
-+h_cmd_atalho Criando atalhos para os comandos mais usados\n\
-+h_cmd_salvar Salva o seu personagem\n\
-+h_cmd_senha Muda a senha do seu personagem\n\
-+h_cmd_fim Sai do MUD, retirando também o seu personagem\n\
-+h_cmd_autoapagar Apaga o seu personagem definitivamente\n\
-+h_cmd_renascer Seu personagem renasce, após atingir o nível máximo\n\
-+h_cmd_ptitulo Muda o título do seu personagem, mostrado no comando QUEM\n\
-+h_cmd_pdesc Muda a descrição do seu personagem, mostrada no comando OLHAR\n\
-+h_cmd_mdesc Muda a descrição do seu personagem para mulheres\n\
-+h_cmd_stitulo Muda o título da sala, desde que você esteja na sua casa\n\
-+h_cmd_sdesc Muda a descrição da sala, desde que você esteja na sua casa\n\
-+h_cmd_sjog Define quem pode pegar itens de uma sala da sua casa"
+-h_cmd_atalho Criando atalhos para os comandos mais usados\n\
+-h_cmd_salvar Salva o seu personagem\n\
+-h_cmd_senha Muda a senha do seu personagem\n\
+-h_cmd_fim Sai do MUD, retirando também o seu personagem\n\
+-h_cmd_autoapagar Apaga o seu personagem definitivamente\n\
+-h_cmd_renascer Seu personagem renasce, após atingir o nível máximo\n\
+-h_cmd_ptitulo Muda o título do seu personagem, mostrado no comando QUEM\n\
+-h_cmd_pdesc Muda a descrição do seu personagem, mostrada no comando OLHAR\n\
+-h_cmd_mdesc Muda a descrição do seu personagem para mulheres\n\
+-h_cmd_stitulo Muda o título da sala, desde que você esteja na sua casa\n\
+-h_cmd_sdesc Muda a descrição da sala, desde que você esteja na sua casa\n\
+-h_cmd_sjog Define quem pode pegar itens de uma sala da sua casa"
 
 
 classe h_cmd_cores
-herda comando_comum
-const classemenu = "m_cmd_ajuda_jog"
-const objcmd = nulo # É só página de ajuda
+herda comando_comum_ajuda
+const objmenu = $m_cmd_ajuda_jog
+const objtipo = 2 # Pode renomear
 #
 const m_ajuda = "-t Cores no prompt\n\n\
 É possível definir as cores dos caracteres e do fundo no prompt.\n\
@@ -284,9 +285,9 @@ Veja também: PROMPT"
 
 
 classe h_cmd_diversos
-herda comando_comum
-const classemenu = "m_cmd_diversos"
-const objcmd = nulo # É só página de ajuda
+herda comando_comum_ajuda
+const objmenu = $m_cmd_diversos
+const objtipo = 2 # Pode renomear
 #
 const m_titulo = "-t Diversos comandos"
 const m_nenhum = "Nenhum comando definido aqui"

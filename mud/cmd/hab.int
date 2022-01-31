@@ -1,7 +1,5 @@
 classe h_comando_hab_cfg
 herda comando_comum
-const m_magia_sem = "Lançar que magia?"
-const m_magia_nao = "Você não possui a magia $m."
 const m_desmaiado0 = "Você está desmaiad$s."
 const m_desmaiado1 = "$A está desmaiad$t."
 const m_nao_obedece = "$A não quer obedecer você."
@@ -16,8 +14,8 @@ const m_sem_efeito = "A magia não teve efeito."
 const m_vida = "Pontos de vida insuficientes."
 const m_mana = "Mana insuficiente."
 const m_move = "Vigor insuficiente."
-const admordem = "m_magia_sem m_magia_nao m_desmaiado0 m_desmaiado1\n\
-m_nao_obedece m_sem_arma m_com_arma m_arma_errada m_tipovestirsim\n\
+const admordem = "m_desmaiado0 m_desmaiado1 m_nao_obedece\n\
+m_sem_arma m_com_arma m_arma_errada m_tipovestirsim\n\
 m_tipovestirnao m_tipoinvsim m_tipoinvnao m_sem_efeito m_vida m_mana m_move"
 
 
@@ -114,7 +112,10 @@ func habajuda # Retorna um texto que contém informações
 
 func habsintaxe # Retorna um texto que contém a sintaxe do comando
 # arg0 = objeto do personagem
-  refvar sintaxe = (txt(nomevar, 0, 1) == "m" ? "Lançar " : "") + txts(txt(nomevar, 2))
+  prog p
+  p.iniherdainv("h_cmd_lancar")
+  refvar lancar = txt(nomevar, 0, 1) == "m" ? txtcopiamai(txt(p.texto, 4), "A") + " " : ""
+  refvar sintaxe = lancar + txts(txt(nomevar, 2))
   se tipoalvo >= 9
     ret ""
   senao tipoalvo == 7 || tipoalvo == 8
@@ -125,7 +126,6 @@ func habsintaxe # Retorna um texto que contém a sintaxe do comando
   senao
     ret "Sintaxe: " + sintaxe + " [personagem]"
   fimse
-
 
 func checahab1 # Checa se personagem pode usar habilidade/magia e avisa o personagem
 # arg0 = personagem
@@ -295,66 +295,58 @@ const menufim = "menu_econfig_msg"
 const colunas = 35
 const classe = "comando_hab_cfg"
 #
-const nome1 = "Faltou nome da magia"
+const nome1 = "Perso desmaiado"
 const tipo1 = "opc_linha"
-const vari1 = "m_magia_sem"
+const vari1 = "m_desmaiado0"
 #
-const nome2 = "Magia desconhecida"
+const nome2 = "Animal desmaiado"
 const tipo2 = "opc_linha"
-const vari2 = "m_magia_nao"
+const vari2 = "m_desmaiado1"
 #
-const nome3 = "Perso desmaiado"
+const nome3 = "Animal não obedece"
 const tipo3 = "opc_linha"
-const vari3 = "m_desmaiado0"
+const vari3 = "m_nao_obedece"
 #
-const nome4 = "Animal desmaiado"
+const nome4 = "Sem arma"
 const tipo4 = "opc_linha"
-const vari4 = "m_desmaiado1"
+const vari4 = "m_sem_arma"
 #
-const nome5 = "Animal não obedece"
+const nome5 = "Com arma"
 const tipo5 = "opc_linha"
-const vari5 = "m_nao_obedece"
+const vari5 = "m_com_arma"
 #
-const nome6 = "Sem arma"
+const nome6 = "Arma errada"
 const tipo6 = "opc_linha"
-const vari6 = "m_sem_arma"
+const vari6 = "m_arma_errada"
 #
-const nome7 = "Com arma"
+const nome7 = "Vestir item"
 const tipo7 = "opc_linha"
-const vari7 = "m_com_arma"
+const vari7 = "m_tipovestirsim"
 #
-const nome8 = "Arma errada"
+const nome8 = "Não vestir item"
 const tipo8 = "opc_linha"
-const vari8 = "m_arma_errada"
+const vari8 = "m_tipovestirnao"
 #
-const nome9 = "Vestir item"
+const nome9 = "Carregar item"
 const tipo9 = "opc_linha"
-const vari9 = "m_tipovestirsim"
+const vari9 = "m_tipoinvsim"
 #
-const nome10 = "Não vestir item"
+const nome10 = "Não carregar item"
 const tipo10 = "opc_linha"
-const vari10 = "m_tipovestirnao"
+const vari10 = "m_tipoinvnao"
 #
-const nome11 = "Carregar item"
+const nome11 = "Não teve efeito"
 const tipo11 = "opc_linha"
-const vari11 = "m_tipoinvsim"
+const vari11 = "m_sem_efeito"
 #
-const nome12 = "Não carregar item"
+const nome12 = "Vida insuficiente"
 const tipo12 = "opc_linha"
-const vari12 = "m_tipoinvnao"
+const vari12 = "m_vida"
 #
-const nome13 = "Não teve efeito"
+const nome13 = "Mana insuficiente"
 const tipo13 = "opc_linha"
-const vari13 = "m_sem_efeito"
+const vari13 = "m_mana"
 #
-const nome14 = "Vida insuficiente"
+const nome14 = "Vigor insuficiente"
 const tipo14 = "opc_linha"
-const vari14 = "m_vida"
-#
-const nome15 = "Mana insuficiente"
-const tipo15 = "opc_linha"
-const vari15 = "m_mana"
-#
-const nome16 = "Vigor insuficiente"
-const tipo16 = "opc_linha"
-const vari16 = "m_move"
+const vari14 = "m_move"

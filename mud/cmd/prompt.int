@@ -1,5 +1,6 @@
 classe comando_prompt
 herda comando_comum
+const objtipo = 2 # Pode renomear
 const posic = 0
 const m_ajuda = "-t\n\
 Sintaxe: $1 [texto]\n\
@@ -64,7 +65,7 @@ func txtajuda
 
 classe h_cmd_prompt
 herda comando_prompt
-const classemenu = "m_cmd_prompt"
+const objmenu = $m_cmd_prompt
 
 func escr
   se !arg1

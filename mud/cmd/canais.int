@@ -1,9 +1,10 @@
 classe h_cmd_chat
 herda comando_comum
-const classemenu = "m_cmd_chat"
-const posic = 0
+const objmenu = $m_cmd_chat
+const objtipo = 2 # Pode renomear
 const objcmd = v_tipo ? este
 const objnivel = 4
+const posic = 0
 const txtajuda = v_tipo ? txtajuda1(m_ajuda1 + (v_tipo == 1 ? "\n" + m_ajuda2))
 #
 const m_ajuda1 = "-t\n\
@@ -53,10 +54,11 @@ func escr
 
 classe h_cmd_novatos
 herda comando_comum
-const classemenu = "m_cmd_novatos"
-const posic = 0
+const objmenu = $m_cmd_novatos
+const objtipo = 2 # Pode renomear
 const objcmd = v_tipo ? este
 const objnivel = 4
+const posic = 0
 const txtajuda = v_tipo ? txtajuda1(m_ajuda1 + (v_tipo == 1 ? "\n" + m_ajuda2))
 #
 const m_ajuda1 = "-t\n\

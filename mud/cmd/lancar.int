@@ -1,0 +1,58 @@
+classe h_cmd_lançar
+herda comando_comum
+const objmenu = $m_cmd_lancar
+const objtipo = 2 # Pode renomear
+const posic = 0
+#
+const m_ajuda = "-t\n-s <nome da magia>\nLança uma magia."
+const m_magia_sem = "Lançar que magia?"
+const m_magia_nao = "Você não possui a magia $m."
+const admordem = "m_ajuda m_magia_sem m_magia_nao"
+
+func escr
+  txt200 lin = txtremove(arg1, "EMDSA")
+  ref obj = ref($magia_[txt1(lin)].objcmd(arg0))
+  se !obj && lin
+    uint8 nivel1 = 255
+    ref obj1
+    nomeobj n
+    n.ini("1000 magia_" + txt1(lin), 1000)
+    epara p.iniclasse("magia_" + txt1(txte(lin))), p.lin, p.depois
+      continuar !(obj1 = $[p.texto].objcmd(arg0, arg2)) || !n.nome(obj1)
+      continuar nivel1 <= obj1.objnivel(arg0, arg2)
+      obj = obj1, nivel1 = obj1.objnivel(arg0, arg2)
+      sair !nivel1
+    efim
+  fimse
+# Magia: Gera eventos
+  listaobj l
+  epara l.addfim(arg0.evento), l, l.ini.remove
+    ret l.objini.cmd_escr(arg0, txt(este, 4) + arg1, obj), nulo
+  efim
+# Magia: Executa comando
+  se !lin
+    $mens.mp(m_magia_sem, arg0)
+  senao !obj
+    $mens.mens = lin
+    $mens.mp(m_magia_nao, arg0)
+  senao posicao < obj.posic
+    msgposicao
+  senao
+    obj.escr(arg0, txt2(lin), arg2)
+  fimse
+
+
+classe m_cmd_lancar
+herda comando_menu_cmd
+#
+const nome1 = "Ajuda"
+const tipo1 = "opc_texto"
+const vari1 = "m_ajuda"
+#
+const nome2 = "Faltou nome da magia"
+const tipo2 = "opc_linha"
+const vari2 = "m_magia_sem"
+#
+const nome3 = "Magia desconhecida"
+const tipo3 = "opc_linha"
+const vari3 = "m_magia_nao"

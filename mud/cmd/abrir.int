@@ -1,6 +1,7 @@
 classe h_cmd_abrir
 herda comando_comum
-const classemenu = "m_cmd_abrir"
+const objmenu = $m_cmd_abrir
+const objtipo = 2 # Pode renomear
 const posic = 5
 #
 const m_ajuda = "-t\n-s <objeto ou direção>\nAbre um objeto ou uma porta."
@@ -98,7 +99,8 @@ func escrdir # Abrir uma porta
 
 classe h_cmd_fechar
 herda comando_comum
-const classemenu = "m_cmd_fechar"
+const objmenu = $m_cmd_fechar
+const objtipo = 2 # Pode renomear
 const posic = 5
 #
 const m_ajuda = "-t\n-s <objeto ou direção>\nFecha um objeto ou uma porta."

@@ -474,41 +474,6 @@ func teclouperm # Processa comando com permissões específicas
     efim
     sair
   efim
-# Checa se é magia
-  se obj.lancamagia
-    txt200 lin
-    lin = txtremove(txt2(arg0), "EMDSA")
-    obj = ref($magia_[txt1(lin)].objcmd(este))
-    se !obj && lin
-      uint8 nivel1 = 255
-      ref obj1
-      nomeobj n
-      n.ini("1000 magia_" + txt1(lin), 1000)
-      epara p.iniclasse("magia_" + txt1(txte(lin))), p.lin, p.depois
-        continuar !(obj1 = $[p.texto].objcmd(este, arg1)) || !n.nome(obj1)
-        continuar nivel1 <= obj1.objnivel(este, arg1)
-        obj = obj1, nivel1 = obj1.objnivel(este, arg1)
-        sair !nivel1
-      efim
-    fimse
-# Magia: Gera eventos
-    listaobj l
-    epara l.addfim(este.evento), l, l.ini.remove
-      ret l.objini.cmd_escr(este, arg0, obj), nulo
-    efim
-# Magia: Executa comando
-    se !lin
-      $mens.mp(comando_hab_cfg:m_magia_sem, este)
-    senao !obj
-      $mens.mens = lin
-      $mens.mp(comando_hab_cfg:m_magia_nao, este)
-    senao posicao < obj.posic
-      msgposicao
-    senao
-      obj.escr(este, txt2(lin), arg1)
-    fimse
-    ret
-  fimse
 # Gera eventos
   listaobj l
   epara l.addfim(este.evento), l, l.ini.remove

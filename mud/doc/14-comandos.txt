@@ -308,20 +308,20 @@ admlog(arg0, "mudou " + arg0.var.opcclasse + ":" + arg0.var.opcvar + " " + arg0.
 5. Criação de menus de comandos
 
 clase menu_econfig_cmd
-herda comando_classemenu
+herda comando_objmenu
 
 # Título é o nome do menu (aparece antes da lista de opções)
 const titulo = "Comandos dos jogadores"
 
 # As classes editáveis começam com esse nome especificado.
-# Em cada classe editável, deve exitir uma const classemenu com o nome do menu
+# Em cada classe editável, deve exitir uma const objmenu com o objeto do menu
 # responsável por editar a classe. Exemplo, para uma classe chamada cmd_abrir,
-# provavelmente há uma linha const classemenu = "m_cmd_abrir"
+# provavelmente há uma linha const objmenu = $m_cmd_abrir
 const classe = "cmd_"
 
-# Para colocar menu, definir uma const classemenu com o nome do menu responsável
+# Para colocar menu, definir uma const objmenu com o objeto do menu responsável
 # por editar essa classe.
-# Exemplo, se a classe cmd_abrir tiver uma linha const classemenu = "m_cmd_abrir"
+# Exemplo, se a classe cmd_abrir tiver uma linha const objmenu = $m_cmd_abrir
 # Isso significa que quando o usuário escolher editar a classe cmd_abrir,
 # vai para o menu cuja classe é m_cmd_abrir.
 

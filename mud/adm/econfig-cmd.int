@@ -1,0 +1,203 @@
+classe menu_econfig_nomecmd
+herda comando_menu
+const titulo = "Nomes dos comandos"
+const menufim = "menu_econfig"
+const colunas = 35
+const classe = "config"
+#
+const nome1 = "Comandos renomeáveis"
+const tipo1 = "opc_nomecmd_mostrar1"
+const extr1 = "2"
+#
+const nome2 = "Comandos não renomeáveis"
+const tipo2 = "opc_nomecmd_mostrar1"
+const extr2 = "1"
+#
+const nome3 = "Atalhos"
+const tipo3 = "opc_nomecmd_mostrar2"
+#
+const nome4 = "Renomear comando ou atalho"
+const tipo4 = "opc_nomecmd_renomear"
+#
+const nome5 = "Criar ou mudar atalho"
+const tipo5 = "opc_nomecmd_criar"
+#
+const nome6 = "Apagar atalho"
+const tipo6 = "opc_nomecmd_apagar"
+
+
+classe opc_nomecmd_mostrar1
+herda comando_adm
+
+func menu
+  prog p
+  int16 total
+  epara p.iniclasse("cmd_"), p.lin, p.depois
+    [p.texto]:objtipo == arg2 && total++
+  efim
+  ret txt(total) + " comandos"
+
+func passo
+  refvar opc = arg0.var.opcextra
+  refvar txtmais = arg0.txtmais
+  prog p
+  txtmais.limpar
+  epara p.iniclasse("cmd_"), p.lin, p.depois
+    [p.texto]:objtipo == opc && txtmais.addfim(txtcopiamai(txt(p.texto, 4), "A") + ",")
+  efim
+  textopos pos
+  pos = txtmais.fim, pos.antes, pos.mudar("", inttotal(pos.texto) - 1, 1)
+  txtmais.juntar
+  txtmais.dividelin(50, 70)
+  txtmais.addini("\b" + arg0.var.opcnome)
+  arg0.txtmostra
+  ret passosair(arg0)
+
+
+classe opc_nomecmd_mostrar2
+herda comando_adm
+
+func menu
+  prog p
+  int16 total
+  epara p.iniclasse("cmd_"), p.lin, p.depois
+    [p.texto]:objtipo == 3 && total++
+  efim
+  ret total == 1 ? "1 atalho" : txt(total) + " atalhos"
+
+func passo
+  refvar txtmais = arg0.txtmais
+  prog p
+  txtmais.limpar
+  epara p.iniclasse("cmd_"), p.lin, p.depois
+    continuar [p.texto]:objtipo != 3
+    refvar t1 = txtcopiamai(txt([p.texto]:comando, 4), "A")
+    txtmais.addfim(txtcopiamai(txt(p.texto, 4), "A") + " = " + t1 + ",")
+  efim
+  textopos pos
+  pos = txtmais.fim, pos.antes, pos.mudar("", inttotal(pos.texto) - 1, 1)
+  txtmais.juntar
+  txtmais.dividelin(50, 70)
+  txtmais.addini("\bAtalho = comando")
+  arg0.txtmostra
+  ret passosair(arg0)
+
+
+classe opc_nomecmd_renomear
+herda comando_adm
+const menu = ""
+
+func passo
+  se arg1 == "\b"
+    arg0.passo = este
+    arg0.tpasso = 0
+  senao arg1 == "z"
+    arg0.var.opclin = ""
+    ret passosair(arg0)
+  fimse
+  ret passo[arg0.tpasso](arg0, arg1)
+
+func passo0 # Entre com o comando
+  prog p
+  se arg1 == "" || arg1 == "\b"
+    arg0.msg("Entre com o comando que será renomeado, Z cancela")
+  senao !p.existe("cmd_" + arg1)
+    arg0.msg("Comando não existe, entre com outro, Z cancela")
+  senao int($cmd_[arg1].objtipo) < 2
+    arg0.msg("Comando não pode ser renomeado, entre com outro, Z cancela")
+  senao
+    arg0.var.opclin = arg1
+    arg0.tpasso = "1"
+    passo1(arg0, "")
+  fimse
+  ret 1
+
+func passo1 # Entre com o novo nome
+  refvar nome1 = arg0.var.opclin
+  txt80 nome2 = txte(txtremove(arg1, "EMDSA"))
+  prog p
+  se arg1 == "" || arg1 == "\b"
+    arg0.msg("Entre com o novo nome, Z cancela")
+  senao txtproc(txtsepara("X" + nome2, "O+DOL,DOL+O"), " ") >= 0
+    arg0.msg("Nome inválido para comando, entre com outro, Z cancela")
+  senao p.existe("cmd_" + nome2)
+    arg0.msg("Comando já existe, entre com outro, Z cancela")
+  senao
+    p.renomear("cmd_" + nome1, "cmd_" + nome2)
+    epara p.iniclasse("cmd_"), p.lin, p.depois
+      continuar [p.texto]:objtipo != 3 || [p.texto]:comando != "cmd_" + nome1
+      p.criar(p.texto, "const comando = \"cmd_" + nome2 + "\"")
+    efim
+    config:salvar
+    arg0.msg("Comando " + nome1 + " renomeado para: " + nome2)
+    admlog(arg0, "renomeou_cmd: " + nome1 + " para " + nome2)
+    arg0.var.opclin = ""
+    ret passosair(arg0)
+  fimse
+  ret 1
+
+
+classe opc_nomecmd_criar
+herda opc_nomecmd_renomear
+
+func passo0 # Entre com o atalho
+  prog p
+  txt80 nome1 = txte(txtremove(arg1, "EMDSA"))
+  se arg1 == "" || arg1 == "\b"
+    arg0.msg("Entre com o atalho que será criado, Z cancela")
+  senao p.existe("cmd_" + arg1) && int($cmd_[arg1].objtipo) != 3
+    arg0.msg("Comando não é atalho, entre com outro, Z cancela")
+  senao txtproc(txtsepara("X" + nome1, "O+DOL,DOL+O"), " ") >= 0
+    arg0.msg("Nome inválido para atalho, entre com outro, Z cancela")
+  senao
+    arg0.var.opclin = nome1
+    arg0.tpasso = "1"
+    passo1(arg0, "")
+  fimse
+  ret 1
+
+func passo1 # Atalho para qual comando
+  prog p
+  se arg1 == "" || arg1 == "\b"
+    arg0.msg("Entre com o comando, Z cancela")
+  senao !p.existe("cmd_" + arg1)
+    arg0.msg("Comando não existe, entre com outro, Z cancela")
+  senao int($cmd_[arg1].objtipo) >= 3
+    arg0.msg("Não é possível criar atalho para atalho, entre com outro, Z cancela")
+  senao int($cmd_[arg1].objtipo) < 1
+    arg0.msg("Não é possível criar atalho para esse comando, entre com outro, Z cancela")
+  senao !p.existe("cmd_" + arg1, "objcmd")
+    arg0.msg("Comando é texto de ajuda, entre com outro, Z cancela")
+  senao
+    refvar nome1 = arg0.var.opclin
+    p.criar("cmd_" + nome1 + "\nconfig/cmd\nherda comando_atalho\nconst comando=\"cmd_" + arg1 + \
+"\"")
+    config:salvar
+    arg0.msg("Criado atalho " + nome1 + " para " + arg1)
+    admlog(arg0, "criou_atalho: " + nome1 + " para " + arg1)
+    arg0.var.opclin = ""
+    ret passosair(arg0)
+  fimse
+  ret 1
+
+
+classe opc_nomecmd_apagar
+herda opc_nomecmd_renomear
+
+func passo0 # Entre com o atalho
+  prog p
+  se arg1 == "" || arg1 == "\b"
+    arg0.msg("Entre com o atalho que será apagado, Z cancela")
+  senao !p.existe("cmd_" + arg1)
+    arg0.msg("Atalho não existe, entre com outro, Z cancela")
+  senao int($cmd_[arg1].objtipo) != 3
+    arg0.msg("Comando não é atalho, entre com outro, Z cancela")
+  senao
+    p.apagar("cmd_" + arg1)
+    config:salvar
+    refvar nome2 = txt($cmd_[arg1].comando, 4)
+    arg0.msg("Apagado atalho " + arg1 + " para " + nome2)
+    admlog(arg0, "apagou_atalho: " + arg1 + " para " + nome2)
+    ret passosair(arg0)
+  fimse
+  ret 1

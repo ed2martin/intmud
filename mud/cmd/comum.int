@@ -1,20 +1,11 @@
-classe comando_comum
-# Comandos para os jogadores
-#
-const posic = 8 # Posição mínima para usar o comando
-#
-const objcmd = este # Objeto que processa o comando, ou nulo se não existe
-# arg0 = objeto do personagem
-# arg1 = objeto perm com as permissões do personagem: $perm_[arg0.jogperm]
-#
-const objnivel = 0 # Prioridade do comando (0=maior prioridade)
-# arg0 = objeto do personagem
-# arg1 = objeto perm com as permissões do personagem: $perm_[arg0.jogperm]
+classe comando_comum_ajuda
+# Comando para os jogadores que contém somente páginas de ajuda
 
-func escr # Processa o comando
-# arg0 = objeto do personagem
-# arg1 = texto digitado após o nome do comando
-# arg2 = objeto perm com as permissões do personagem: $perm_[arg0.jogperm]
+const objtipo = 0 # Tipo de comando
+# 0 = não pode ser renomeado ou criar atalho para esse comando
+# 1 = não pode ser renomeado mas pode criar atalho
+# 2 = pode ser renomeado e criar atalho
+# 3 = atalho para comando
 
 func iniclasse
   ret txt(arg0, 0, 2) != "h_", !$[arg0] && criar(arg0)
@@ -52,34 +43,18 @@ func txtajuda1 # Prepara um texto de ajuda
     casose "-h" # Menu classe herdada
       refvar cl = txt1(p.texto(1))
       pr.iniherdainv(cl)
-      sair !$[pr.texto]
+      sair pr.existe(pr.texto, "objcmd") ? !$[pr.texto].objcmd : !$[pr.texto]
       refvar n = txt2(txte(pr.texto))
       p.mudar("  \c2" + txtmai(n) + "\b" + txtesp(12 - inttotal(n)), 0, inttotal(cl + 4))
       p.depois
       continuar
     casose "-cmd" # Menu classe
       refvar cl = txt1(p.texto(1))
-      sair !$[cl]
+      sair pr.existe(cl, "objcmd") ? !$[cl].objcmd : !$[cl]
       refvar n = txt2(txte(cl))
       p.mudar("  \c2" + txtmai(n) + "\b" + txtesp(12 - inttotal(n)), 0, inttotal(cl + 4))
       p.depois
       continuar
-    casose "+h"
-      refvar cl = txt1(p.texto(1))
-      pr.iniherdainv(cl)
-      sair !$[pr.texto].objcmd
-      refvar n = txt2(txte(pr.texto))
-      p.mudar("  \c2" + txtmai(n) + "\b" + txtesp(12 - inttotal(n)), 0, inttotal(cl + 4))
-      p.depois
-      continuar
-    casose "+cmd"
-      refvar cl = txt1(p.texto(1))
-      sair !$[cl].objcmd
-      refvar n = txt2(txte(cl))
-      p.mudar("  \c2" + txtmai(n) + "\b" + txtesp(12 - inttotal(n)), 0, inttotal(cl + 4))
-      p.depois
-      continuar
-    casose "+"
     casose "-"
       p.mudar("", 0, 2)
     casose
@@ -91,10 +66,31 @@ func txtajuda1 # Prepara um texto de ajuda
   ret t.remove(1000)
 
 
+classe comando_comum
+herda comando_comum_ajuda
+# Comandos para os jogadores
+#
+const posic = 8 # Posição mínima para usar o comando
+#
+const objcmd = este # Objeto que processa o comando, ou nulo se não existe
+# arg0 = objeto do personagem
+# arg1 = objeto perm com as permissões do personagem: $perm_[arg0.jogperm]
+#
+const objnivel = 0 # Prioridade do comando (0=maior prioridade)
+# arg0 = objeto do personagem
+# arg1 = objeto perm com as permissões do personagem: $perm_[arg0.jogperm]
+
+func escr # Processa o comando
+# arg0 = objeto do personagem
+# arg1 = texto digitado após o nome do comando
+# arg2 = objeto perm com as permissões do personagem: $perm_[arg0.jogperm]
+
+
 classe comando_atalho
 # Atalhos para comandos dos jogadores
 const comando = "" # Nome da classe "cmd_"
 const iniclasse = !$[arg0] && criar(arg0)
+const objtipo = 3 # Atalho para comando
 const objcmd = $[comando].objcmd(arg0)
 
 
@@ -104,14 +100,6 @@ const titulo = txtcopiamai(txt(var.classe1, 4), "A")
 const menufim = "menu_econfig_cmd"
 const colunas = 28
 const classe = var.classe1
-
-
-classe cmd_lancar
-herda comando_comum
-const m_ajuda = "-t\n-s <nome da magia>\nLança uma magia."
-const posic = 0
-const lancamagia = 1 # Para indicar ao personagem que é comando de lançar magia
-# Nota: a função escr aqui é desnecessária
 
 
 classe comum_negociar

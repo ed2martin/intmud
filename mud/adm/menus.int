@@ -127,7 +127,7 @@ func menu3 # Usado em m_menu para obter o nome da variável
   ret lin + ": " + (vari[arg0] ? (clas[arg0] ?? classe) + ":" + vari[arg0] : "")
 
 
-classe comando_classemenu
+classe comando_objmenu
 herda comando_adm
 const menu = "<menu>"
 ref sock # Objeto jogsock do jogador
@@ -136,9 +136,9 @@ const var = sock.var
 # const titulo = "Título do menu"
 # const menufim = "classe do menu anterior, se houver"
 # const classe = "cmd_" # As classes editáveis começam com esse nome
-# Em cada classe editável, deve exitir uma const classemenu com o nome do menu
+# Em cada classe editável, deve exitir uma const objmenu com o objeto do menu
 # responsável por editar a classe. Exemplo, para uma classe chamada cmd_abrir,
-# provavelmente há uma linha const classemenu = "m_cmd_abrir"
+# provavelmente há uma linha const objmenu = $m_cmd_abrir
 
 func passo
   sock = arg0
@@ -157,7 +157,7 @@ func passo
     se inicio
       prog p
       epara p.iniclasse(classe), p.lin, p.depois
-        continuar ![p.texto]:classemenu
+        continuar !$[p.texto].objmenu
         txtmais.addfim(txtcopiamai(txt(p.texto, inicio), "A") + ",")
       efim
       textopos pos
@@ -182,7 +182,7 @@ func passo
     nomeobj n
     n.ini(arg1, 1)
     epara p.iniclasse(classe), p.lin, p.depois
-      ref r = $[[p.texto]:classemenu]
+      ref r = $[p.texto].objmenu
       continuar !r || !n.nome(txt(p.texto, inicio), 1)
       arg0.var.classe1 = p.texto
       r.passo(arg0, "\b")

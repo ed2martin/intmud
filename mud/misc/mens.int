@@ -112,7 +112,7 @@ func msgvis # Envia mensagem se estiver acordado e vendo personagem perso
 func msgsomvis # Envia mensagem/som se estiver acordado e vendo personagem perso
 # arg0=mensagem, arg1=nome do som, arg2=a quem se destina a mensagem
   se arg2.sock && arg2.posicao > 4 && perso.visivel(arg2)
-    r = arg1.dono.perso && arg1.perso ? arg1.dono : arg1
+    r = arg2.dono.perso && arg2.perso ? arg2.dono : arg2
     r.msgsom(arg1)
     r.msg(vartrocacod(vartrocacod(arg0, "$", "o_"), "\d", "x_"))
   fimse
@@ -137,7 +137,7 @@ func msginv # Envia mensagem se estiver acordado
 func msgsominv # Envia mensagem/som se estiver acordado
 # arg0=mensagem, arg1=nome do som, arg2=a quem se destina a mensagem
   se arg2.sock && arg2.posicao > 4
-    r = arg2.dono.perso ? arg2.dono : arg2
+    r = arg2.dono.perso && arg2.perso ? arg2.dono : arg2
     r.msgsom(arg1)
     r.msg(vartrocacod(vartrocacod(arg0, "$", "o_"), "\d", "x_"))
   fimse
