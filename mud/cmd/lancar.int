@@ -12,6 +12,7 @@ const admordem = "m_ajuda m_magia_sem m_magia_nao"
 func escr
   txt200 lin = txtremove(arg1, "EMDSA")
   ref obj = ref($magia_[txt1(lin)].objcmd(arg0))
+  prog p
   se !obj && lin
     uint8 nivel1 = 255
     ref obj1
@@ -24,11 +25,6 @@ func escr
       sair !nivel1
     efim
   fimse
-# Magia: Gera eventos
-  listaobj l
-  epara l.addfim(arg0.evento), l, l.ini.remove
-    ret l.objini.cmd_escr(arg0, txt(este, 4) + arg1, obj), nulo
-  efim
 # Magia: Executa comando
   se !lin
     $mens.mp(m_magia_sem, arg0)
