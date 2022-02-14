@@ -1,43 +1,35 @@
 classe comando_soltar
 herda comando_comum
 const objtipo = 2 # Pode renomear
-const txtajuda = txtajuda1(config:animal1 ? m_ajuda2 : m_ajuda1)
-const m_ajuda1 = "-t\n\
--s <objeto>\n\
--s <quantidade> <objeto>\n\
--s <objeto> <container>\n\
--s <quantidade> <objeto> <container>\n\
-Solta um objeto no chão ou em um container (uma bolsa, uma estante, etc).\n\
-Para soltar tudo (até 10 objetos) tecle TUDO ao invés do objeto."
-const m_ajuda2 = "-t\n\
--s <objeto>\n\
--s <quantidade> <objeto>\n\
--s <objeto> <container>\n\
--s <quantidade> <objeto> <container>\n\
--s <número do animal>\n\
-Solta um objeto no chão ou em um container (uma bolsa, uma estante, etc).\n\
-Para soltar tudo (até 10 objetos) tecle TUDO ao invés do objeto.\n\
-Permite também soltar algum animal (se desfazer) que você possuir."
 const posic = 5
-const m_naover = "Você não vê $m"
+#
+const m_naover = "Você não vê $m."
 const m_nao_possui = "Você não possui $m."
+const m_sem_destino = "Guardar onde?"
+const m_moedas_nao = "Não é possível colocar moedas em $o."
 # Nota: m_soltaranim1 e m_soltaranim2 são usados também durante a batalha
-const m_soltaranim1 = "Você solta $a."
-const m_soltaranim2 = "$P solta $a."
 const m_animal_solto = "Já possui um animal solto."
 const m_chama_solta = "Não é possível soltar $a."
 const m_naosolta = "Você não consegue soltar itens aqui."
 const m_semperm_soltar = "Melhor não soltar nada aqui."
 const m_nao_container = "$O não é container."
 const m_fechado = "$O está fechad$u."
+const m_item_auto = "Não é possível colocar $o dentro del$x mesm$u."
+const m_item_outro = "Não é possível colocar $o em $a."
+const m_sala_cheia = "Você não consegue soltar tanta coisa aqui."
+const m_item_cheio = "Não consegue colocar mais nada $e $a."
+const m_soltar_anim1 = "Você solta $a."
+const m_soltar_anim2 = "$P solta $a."
+const m_soltar_sala1 = "Você solta $o."
+const m_soltar_sala2 = "$P solta $o."
+const m_soltar_item1 = "Você coloca $o $e $a."
+const m_soltar_item2 = "$P coloca $o $e $a."
 #
 const cmdsg = 0 # 0=comando soltar, 1=comando guardar
 uint32 total # Quantidade de itens do mesmo tipo
-txt20 mens # Parte da mensagem
-txt80 mens2 # Outra parte da mensagem
-int8 achou # Quantos itens achou
-txt100 erro # Mensagem de erro
-int8 soltar # Se pode soltar itens
+int8 soltar # -1=coloca em outro item, 0=solta na sala, 1=não pode, 2=destrói ao soltar
+const txtitens = total <= 1 ? arg0 : txttroca(arg0, "$o", "$1x $o")
+const txtmoedas = txttroca(arg0, "$o", "$1")
 
 func escr
   ref item # Item aonde está soltando os itens
@@ -63,17 +55,16 @@ func escr
 # Obtém o objeto de onde soltar
   misc:separa(arg1) # Separa nome do objeto do nome do alvo
   se !misc:sep2 # Se não tem alvo, o alvo é a sala
-    ret cmdsg, arg0.msg("Guardar aonde?")
+    ret cmdsg, $mens.mp(m_sem_destino, arg0)
     item = sala = arg0.dono
-    soltar = sala.s_soltar(arg0)
-    mens = ""
+    soltar = intpos(sala.s_soltartipo(arg0))
     se soltar == 1
       ret $mens.mp(m_naosolta, arg0, nulo, item)
     senao sala.var.ini("u_") && !sala.var.u_[arg0.nome]_
       ret $mens.mp(m_semperm_soltar, arg0, nulo, item)
     fimse
   senao
-    soltar = 0
+    soltar = -1
     item = misc:itemtudo(arg0, misc:sep2) # Procura o alvo para o personagem arg0
     sala = item.item ? item.i_salapegar
     se !item
@@ -87,28 +78,30 @@ func escr
       ret $mens.mp(m_fechado, arg0, nulo, item)
     fimse
     !sala && (sala = item)
-    mens = " $e $a"
   fimse
-# Solta os itens
   nomeobj n # Para reconhecer os itens
   n.ini(misc:sep1, misc:objmax, misc:tudo)
-  achou = 0, erro = "Você não vê isso."
-  epara l.addfim(arg0.dentro1), l, l.ini.remove
-    refvar ll = l.objini
-    continuar !ll.visivel(arg0) || !n.nome(ll.var.z_ident ?? ll.ident, ll.objtot)
+# Solta os itens
+  int8 achou # Quantos itens achou
+  txt100 erro # Mensagem de erro
+  epara l.addfim(arg0.dentro1), l && achou < 10, l.ini.remove
+    refvar obj = l.objini
+    continuar !obj.visivel(arg0) || !n.nome(obj.var.z_ident ?? obj.ident, obj.objtot)
     total = n # Quantidade de itens
-    soltarobj(arg0, item, sala, ll)
-    sair achou >= 10
+    refvar erro1 = soltarobj(arg0, item, sala, obj)
+    erro1 ? (erro = erro1) : achou++
   efim
   ret achou, nulo
 # Solta moedas
   se arg0.var.z_moedas_ && sala.visivel(arg0) && n.nome("moedas", arg0.var.z_moedas_)
-    ret sala.i_itens, $mens.mp("Não é possível colocar moedas em $o.", arg0, nulo, sala)
+    ret sala.i_itens, $mens.mp(m_moedas_nao, arg0, nulo, sala)
     total = n
     ret soltarmoedas(arg0, sala)
   fimse
 # Não encontrou o item
-  arg0.msg(erro)
+  ret erro, arg0.msg(erro)
+  $mens.mens = misc:sep1
+  $mens.mp(m_naover, arg0)
 
 func soltaranimal
 # arg0 = quem está soltando
@@ -127,7 +120,7 @@ func soltaranimal
   efim
   arg2.mudadono(arg1)
   $mens.p(arg0, arg2)
-  $mens.mvis2(m_soltaranim1, m_soltaranim2)
+  $mens.mvis2(m_soltar_anim1, m_soltar_anim2)
   epara e.addfim(arg0.evento), e, e.ini.remove
     e.objini.cmd_soltouanim(arg0, arg1, arg2, arg0)
   efim
@@ -144,36 +137,17 @@ func soltarobj
 # arg2 = objeto que representa o conteúdo interno de arg1
 # arg3 = item que quer soltar
 # total = quantidade de itens
-# Faz achou++ se soltou o item
-# Coloca mensagem de erro na variável erro se não conseguiu pegar
+# Retorna mensagem de erro ou nulo se conseguiu pegar
   se arg3 == arg1 || arg3 == arg2 # Soltar o objeto dentro dele mesmo
-    se arg1.msexo2
-      erro = "Não é possível colocar " + arg1.descnome2 + " dentro dele mesmo."
-    senao
-      erro = "Não é possível colocar " + arg1.descnome2 + " dentro dela mesma."
-    fimse
-    ret
+    $mens.p(arg0, arg1, arg3)
+    ret $mens.txt(m_item_auto, arg0)
   senao arg2.i_itens && txtproclin(arg1.i_itens, txt(arg3, 2)) < 0
-    erro = "Não é possível colocar " + arg3.descnome2 + " em " + arg1.descnome2 + "."
-    ret
+    $mens.p(arg0, arg1, arg3)
+    ret $mens.txt(m_item_outro, arg0)
   senao arg3.cabedentro(arg2) < total
-    se !arg1.item
-      erro = "Não consegue soltar tanta coisa aqui."
-      ret
-    fimse
-    erro = arg1.descnome2 + "."
-    casovar txtmin(txt1(erro))
-    casose "o"
-    casose "a"
-    casose "os"
-    casose "as"
-      erro = "Não consegue colocar mais nada n" + txtcopiamai(erro, "aa")
-      ret
-    casofim
-    erro = "Não consegue colocar mais nada em " + erro
-    ret
+    $mens.p(arg0, arg1, arg3)
+    ret $mens.txt(arg1.item ? m_item_cheio : m_sala_cheia, arg0)
   fimse
-  achou++
   listaobj e
   epara e.addfim(arg0.evento), e, e.ini.remove
     ret e.objini.cmd_soltarobj(arg0, arg1, arg3, total, arg0), nulo
@@ -185,26 +159,18 @@ func soltarobj
     ret e.objini.cmd_soltarobj(arg0, arg1, arg3, total, arg3), nulo
   efim
   $mens.p(arg0, arg1, arg3)
-  mens2 = mens ? "$P coloca " : "$P solta "
-  mens2 += total <= 1 ? "$o" : txt(total) + "x $o"
+  $mens.o_1 = total
   ref r = arg3
-  casovar soltar
-  casose "2"
-    $mens.mvis1(mens2 + mens + ", que afunda em seguida.")
-    arg3.apagar(total)
-    sair
-  casose "3"
-    $mens.mvis1(mens2 + mens + ", que cai e some da sua vista.")
-    arg3.apagar(total)
-    sair
-  casose "4"
-    $mens.mvis1(mens2 + mens + ", que se desintegra em seguida.")
-    arg3.apagar(total)
-    sair
-  casose
-    $mens.mvis1(mens2 + mens + ".")
-    r = arg3.mudadono(arg2, total)
-  casofim
+  soltar >= 2 ? arg3.apagar(total) : (r = arg3.mudadono(arg2, total))
+  se soltar < 0
+    refvar m1 = txtitens(arg1.i_soltouitem1 ?? m_soltar_item1)
+    refvar m2 = txtitens(arg1.i_soltouitem2 ?? m_soltar_item2)
+    $mens.mvis2(m1, m2)
+  senao
+    refvar m1 = txtitens(arg1.s_soltarmsg1 ?? m_soltar_sala1)
+    refvar m2 = txtitens(arg1.s_soltarmsg2 ?? m_soltar_sala2)
+    $mens.mvis2(m1, m2)
+  fimse
   epara e.addfim(arg0.evento), e, e.ini.remove
     e.objini.cmd_soltouobj(arg0, arg1, r, total, arg0)
   efim
@@ -230,34 +196,58 @@ func soltarmoedas
   arg0.var.z_moedas_ < 0 && (arg0.var.z_moedas = "")
   arg0.p_espera += 2
   $mens.p(arg0, arg1)
-  mens2 = mens ? "$P coloca " : "$P solta "
-  se total == 1
-    mens2 += "uma moeda"
-  senao total == 2
-    mens2 += "duas moedas"
-  senao
-    mens2 += txt(total) + " moedas"
-  fimse
-  casovar soltar
-  casose "2"
-    ret $mens.mvis1(mens2 + mens + ", que afunda em seguida.")
-  casose "3"
-    ret $mens.mvis1(mens2 + mens + ", que cai e some da sua vista.")
-    ret
-  casose "4"
-    ret $mens.mvis1(mens2 + mens + ", que se desintegra em seguida.")
-  casose
-    $mens.mvis1(mens2 + mens + ".")
+  $mens.o_1 = total == 1 ? "uma moeda" : total == 2 ? "duas moedas" : txt(total) + " moedas"
+  se soltar < 2
     arg1.var.z_moedas_ += total
     arg1.objmudou = 1
-  casofim
+  fimse
+  se soltar < 0
+    refvar m1 = txtmoedas(arg1.i_soltouitem1 ?? m_soltar_item1)
+    refvar m2 = txtmoedas(arg1.i_soltouitem2 ?? m_soltar_item2)
+    $mens.mvis2(m1, m2)
+  senao
+    refvar m1 = txtmoedas(arg1.s_soltarmsg1 ?? m_soltar_sala1)
+    refvar m2 = txtmoedas(arg1.s_soltarmsg2 ?? m_soltar_sala2)
+    $mens.mvis2(m1, m2)
+  fimse
 
 
 classe h_cmd_soltar
 herda comando_soltar
+const txtajuda = txtajuda1(config:animal1 ? m_ajuda2 : m_ajuda1)
+const m_ajuda1 = "-t\n\
+-s <objeto>\n\
+-s <quantidade> <objeto>\n\
+-s <objeto> <container>\n\
+-s <quantidade> <objeto> <container>\n\
+Solta um objeto no chão ou em um container (uma bolsa, uma estante, etc).\n\
+Para soltar tudo (até 10 objetos) tecle TUDO ao invés do objeto."
+const m_ajuda2 = "-t\n\
+-s <objeto>\n\
+-s <quantidade> <objeto>\n\
+-s <objeto> <container>\n\
+-s <quantidade> <objeto> <container>\n\
+-s <número do animal>\n\
+Solta um objeto no chão ou em um container (uma bolsa, uma estante, etc).\n\
+Para soltar tudo (até 10 objetos) tecle TUDO ao invés do objeto.\n\
+Permite também soltar algum animal (se desfazer) que você possuir."
+const admordem = "m_ajuda1 m_ajuda2 m_naover m_nao_possui m_sem_destino\n\
+m_moedas_nao m_animal_solto m_chama_solta m_naosolta m_semperm_soltar\n\
+m_nao_container m_fechado m_item_auto m_item_outro m_sala_cheia m_item_cheio\n\
+m_soltar_anim1 m_soltar_anim2 m_soltar_sala1 m_soltar_sala2\n\
+m_soltar_item1 m_soltar_item2"
 
 
 classe h_cmd_guardar
 herda comando_soltar
 const cmdsg = 1
-const txtajuda = txtajuda1(m_ajuda1)
+const m_ajuda = "-t\n\
+-s <objeto> <container>\n\
+-s <quantidade> <objeto> <container>\n\
+Guarda um objeto em um container (uma bolsa, uma estante, etc).\n\
+Para soltar tudo (até 10 objetos) tecle TUDO ao invés do objeto."
+const admordem = "m_ajuda m_naover m_nao_possui m_sem_destino\n\
+m_moedas_nao m_animal_solto m_chama_solta m_naosolta m_semperm_soltar\n\
+m_nao_container m_fechado m_item_auto m_item_outro m_sala_cheia m_item_cheio\n\
+m_soltar_anim1 m_soltar_anim2 m_soltar_sala1 m_soltar_sala2\n\
+m_soltar_item1 m_soltar_item2"

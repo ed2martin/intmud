@@ -77,7 +77,7 @@ func passo
     arg0.var.opcpasso = este
     arg0.var.opcvalido_ = txtproc(tipo[arg1], "--") >= 0
     arg0.var.opcexec = exec[arg1]
-    vari[arg1] && arg0.msg(menu2(arg1, 1))
+    vari[arg1] && arg0.msg(menu2(arg1))
     info[arg1] && arg0.msg(info[arg1])
     refvar tipo = txttroca(tipo[arg1], "-", "")
     $[tipo].passo(arg0, "\b")
@@ -108,13 +108,11 @@ func passo
 
 func menu2 # Usado em m_menu para obter o texto de uma opção do menu
 # arg0 = número da opção
-# arg1 = verdadeiro se deve mostrar o texto original ignorando a const nulo)
   txt100 lin = "\b\c2" + arg0 + (txt(arg0, 1) ? "\b." : "\b. ") + nome[arg0]
   refvar maximo = int(colunas)
   inttotal(lin) < maximo && (lin = txt(lin + txtesp(maximo), 0, maximo))
   refvar tipo = txttroca(tipo[arg0], "-", "")
   refvar classe = clas[arg0] ?? classe
-  ret arg1 || !["nulo" + arg0], lin + ": " + $[tipo].menu(classe, vari[arg0], extr[arg0])
   prog p
   ret !p.existe(classe, vari[arg0]), lin + ": <nulo> " + ["nulo" + arg0] + "\b"
   ret lin + ": " + $[tipo].menu(classe, vari[arg0], extr[arg0])

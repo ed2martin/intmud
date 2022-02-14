@@ -12,28 +12,29 @@ Dá um objeto ou animal para outro personagem."
 const m_nao_possui = "Você não possui $m."
 const m_nao_dar = "Não é possível dar esse animal."
 const m_sem_alvo = "Dar $m para quem?"
-const m_naover = "Você não vê $m"
+const m_naover = "Você não vê $m."
 const m_nao_pode = "Não é possível dar nada para $a."
-const m_nao_jogador = "$A não é jogador."
-const m_outro_dono = "$O não pertence a você."
-const m_espaco_animal = "$A não tem espaço para receber $o."
 const m_auto = "Dar para você mesm$s?"
 const m_muitos_itens = "$A não consegue carregar tanta coisa."
 const m_muito_peso = "É pesado demais para $a."
-const m_dar_animal1 = "Você dá $o para $a."
-const m_dar_animal2 = "$P dá $o para você."
-const m_dar_animal3 = "$P dá $o para $a."
+const m_nao_jogador = "$A não é jogador."
+const m_outro_dono = "$O não pertence a você."
+const m_espaco_animal = "$A não tem espaço para receber $o."
 const m_dar_item1 = "Você dá $o para $a."
 const m_dar_item2 = "$P dá $o para você."
 const m_dar_item3 = "$P dá $o para $a."
-const m_dar_itens1 = "Você dá $mx $o para $a."
-const m_dar_itens2 = "$P dá $mx $o para você."
-const m_dar_itens3 = "$P dá $mx $o para $a."
+const m_dar_animal1 = "Você dá $o para $a."
+const m_dar_animal2 = "$P dá $o para você."
+const m_dar_animal3 = "$P dá $o para $a."
+const admordem = "m_ajuda1 m_ajuda2 m_nao_possui m_nao_dar m_sem_alvo m_naover\n\
+m_nao_pode m_auto m_muitos_itens m_muito_peso m_nao_jogador m_outro_dono\n\
+m_espaco_animal m_dar_item1 m_dar_item2 m_dar_item3\n\
+m_dar_animal1 m_dar_animal2 m_dar_animal3"
 #
 ref sala # Para quem dar os itens
 uint32 total # Quantidade de itens do mesmo tipo
-int8 achou # Quantos itens achou
-txt100 erro # Mensagem de erro
+const txtitens = total <= 1 ? arg0 : txttroca(arg0, "$o", "$1x $o")
+const txtmoedas = txttroca(arg0, "$o", "$1")
 
 func escr
   refvar perm_msg = $perm_[arg0.jogperm].item
@@ -75,13 +76,14 @@ func escr
   nomeobj n # Para reconhecer os itens
   n.ini(misc:sep1, misc:objmax, misc:tudo)
 # Dá os itens
-  achou = 0, erro = m_naover
-  epara l.addfim(arg0.dentro1), l, l.ini.remove
-    ref ll = l.objini
-    continuar !ll.visivel(arg0) || !n.nome(ll.var.z_ident ?? ll.ident, ll.objtot)
+  int8 achou # Quantos itens achou
+  txt100 erro # Mensagem de erro
+  epara l.addfim(arg0.dentro1), l && achou < 10, l.ini.remove
+    refvar obj = l.objini
+    continuar !obj.visivel(arg0) || !n.nome(obj.var.z_ident ?? obj.ident, obj.objtot)
     total = n # Quantidade de itens
-    darobj(arg0, sala, ll)
-    sair achou >= 10
+    refvar erro1 = darobj(arg0, sala, obj)
+    erro1 ? (erro = erro1) : achou++
   efim
   ret achou, nulo
 # Dá moedas
@@ -90,8 +92,9 @@ func escr
     ret darmoedas(arg0, sala)
   fimse
 # Não encontrou o item
+  ret erro, arg0.msg(erro)
   $mens.mens = misc:sep1
-  $mens.mp(erro, arg0, sala)
+  $mens.mp(m_naover, arg0)
 
 func daranimal
 # arg0=quem está dando, arg1=destino, arg2=animal
@@ -130,17 +133,18 @@ func daranimal
   efim
 
 func darobj
-# arg0=personagem, arg1=para quem dar, arg2=item que quer dar, total=quantidade de itens
-# Faz achou+=1 se soltou o item
-# Coloca mensagem de erro na variável erro se não conseguiu dar
+# arg0 = personagem
+# arg1 = para quem dar
+# arg2 = item que quer dar
+# total = quantidade de itens
+# Retorna mensagem de erro ou nulo se conseguiu pegar
   se arg2.cabedentro(arg1) < total
-    erro = m_muitos_itens
-    ret
+    $mens.p(arg0, arg1, arg2)
+    ret $mens.txt(m_muitos_itens, arg0)
   senao arg1.pesoden - arg1.pesoveste + arg2.pesotot * total / arg2.objtot > arg1.pesomax
-    erro = m_muito_peso
-    ret
+    $mens.p(arg0, arg1, arg2)
+    ret $mens.txt(m_muito_peso, arg0)
   fimse
-  achou++
   listaobj e
   epara e.addfim(arg0.evento), e, e.ini.remove
     ret e.objini.cmd_darobj(arg0, arg1, arg2, total, arg0), nulo
@@ -152,12 +156,8 @@ func darobj
     ret e.objini.cmd_darobj(arg0, arg1, arg2, total, arg2), nulo
   efim
   $mens.p(arg0, arg1, arg2)
-  $mens.mens = total
-  se total <= 1
-    $mens.mvis3(m_dar_item1, m_dar_item2, m_dar_item3)
-  senao
-    $mens.mvis3(m_dar_itens1, m_dar_itens2, m_dar_itens3)
-  fimse
+  $mens.o_1 = total
+  $mens.mvis3(txtitens(m_dar_item1), txtitens(m_dar_item2), txtitens(m_dar_item3))
   refvar r = arg2.mudadono(arg1, total)
   epara e.addfim(arg0.evento), e, e.ini.remove
     e.objini.cmd_deuobj(arg0, arg1, r, total, arg0)
@@ -180,10 +180,5 @@ func darmoedas
   arg0.var.z_moedas_ -= total
   arg0.var.z_moedas_ < 0 && arg0.var.z_moedas = ""
   $mens.p(arg0, arg1)
-  se total == 1
-    $mens.mvis1("$P dá uma moeda para $a.")
-  senao total == 2
-    $mens.mvis1("$P dá duas moedas para $a.")
-  senao
-    $mens.mvis1("$P dá " + total + " moedas para $a.")
-  fimse
+  $mens.o_1 = total == 1 ? "uma moeda" : total == 2 ? "duas moedas" : txt(total) + " moedas"
+  $mens.mvis3(txtmoedas(m_dar_item1), txtmoedas(m_dar_item2), txtmoedas(m_dar_item3))

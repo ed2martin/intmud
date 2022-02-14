@@ -408,9 +408,7 @@ func escr # Editar sala
 classe adm_ldesc
 herda comando_adm
 const objcmd = arg1.c_esala ? este
-const m_ajuda = "-t\n\
--s\n\
-Lista as descrições extras sala sala aonde você está."
+const m_ajuda = "-t\n-s\nLista as descrições extras sala sala aonde você está."
 
 func escr # Listar descrições extras
   prog p
@@ -601,53 +599,82 @@ const vari22 = "s_jog"
 const nome23 = "Soltar itens"
 const tipo23 = "opc_opcao"
 const clas23 = var.classe1
-const vari23 = "s_soltar"
-const extr23 = "Permitido\nNão permitido\nDestrói afundando\nDestrói caindo\nDesintegra"
+const vari23 = "s_soltartipo"
+const extr23 = "Permitido\nNão permitido\nDestrói"
 #
-const nome24 = "Volume dentro"
-const tipo24 = "opc_numero"
+const nome24 = "Msg perso soltar"
+const tipo24 = "opc_linha"
 const clas24 = var.classe1
-const vari24 = "volmax"
+const vari24 = "s_soltarmsg1"
+const nulo24 = "\c3" + fnulo("h_cmd_soltar", "m_soltar_sala1")
 #
-const nome25 = "Objetos máximo"
-const info25 = "Inclui objetos dentro de outros objetos que estão na sala"
-const tipo25 = "opc_numero"
+const nome25 = "Msg outros soltar"
+const tipo25 = "opc_linha"
 const clas25 = var.classe1
-const vari25 = "objmax"
+const vari25 = "s_soltarmsg2"
+const nulo25 = "\c3" + fnulo("h_cmd_soltar", "m_soltar_sala2")
 #
-const nome26 = "Som da sala"
-const info26 = "Nome do som tocado ao entrar na sala; vide adm som"
+const nome26 = "Msg perso pegar"
 const tipo26 = "opc_linha"
 const clas26 = var.classe1
-const vari26 = "s_som"
+const vari26 = "s_pegarmsg1"
+const nulo26 = "\c3" + fnulo("h_cmd_pegar", "m_pegar_sala1")
 #
-const nome27 = "Salas de doação"
-const info27 = "Para que salas os itens doados vão"
-const tipo27 = "opc_listasala"
+const nome27 = "Msg outros pegar"
+const tipo27 = "opc_linha"
 const clas27 = var.classe1
-const vari27 = "s_doarsalas"
-const extr27 = "20"
+const vari27 = "s_pegarmsg2"
+const nulo27 = "\c3" + fnulo("h_cmd_pegar", "m_pegar_sala2")
 #
-const nome28 = "Itens doados"
-const info28 = "Itens doados que essa sala aceita; se vazio aceita qualquer item"
-const tipo28 = "opc_vetorhex"
+const nome28 = "Volume dentro"
+const tipo28 = "opc_numero"
 const clas28 = var.classe1
-const vari28 = "s_doarsim"
-const extr28 = config:item_tipos
+const vari28 = "volmax"
 #
-const nome29 = "Itens não doados"
-const info29 = "Itens doados que essa sala não aceita"
-const tipo29 = "opc_vetorhex"
+const nome29 = "Objetos máximo"
+const info29 = "Inclui objetos dentro de outros objetos que estão na sala"
+const tipo29 = "opc_numero"
 const clas29 = var.classe1
-const vari29 = "s_doarnao"
-const extr29 = config:item_tipos
+const vari29 = "objmax"
 #
-const nome30 = "Nome da entrada"
-const info30 = "Nome da porta correspondente a essa sala, quando ela pertence a um item\n\
-Se definido, pode-se entrar no item por essa sala, e sair sai do item"
+const nome30 = "Som da sala"
+const info30 = "Nome do som tocado ao entrar na sala; vide adm som"
 const tipo30 = "opc_linha"
 const clas30 = var.classe1
-const vari30 = "s_entrada"
+const vari30 = "s_som"
+#
+const nome31 = "Salas de doação"
+const info31 = "Para que salas os itens doados vão"
+const tipo31 = "opc_listasala"
+const clas31 = var.classe1
+const vari31 = "s_doarsalas"
+const extr31 = "20"
+#
+const nome32 = "Itens doados"
+const info32 = "Itens doados que essa sala aceita; se vazio aceita qualquer item"
+const tipo32 = "opc_vetorhex"
+const clas32 = var.classe1
+const vari32 = "s_doarsim"
+const extr32 = config:item_tipos
+#
+const nome33 = "Itens não doados"
+const info33 = "Itens doados que essa sala não aceita"
+const tipo33 = "opc_vetorhex"
+const clas33 = var.classe1
+const vari33 = "s_doarnao"
+const extr33 = config:item_tipos
+#
+const nome34 = "Nome da entrada"
+const info34 = "Nome da porta correspondente a essa sala, quando ela pertence a um item\n\
+Se definido, pode-se entrar no item por essa sala, e sair sai do item"
+const tipo34 = "opc_linha"
+const clas34 = var.classe1
+const vari34 = "s_entrada"
+
+func fnulo
+  prog p
+  p.iniherdainv(arg0)
+  ret txt(p.lin ? $[p.texto].[arg1])
 
 
 classe menu_area
@@ -711,16 +738,16 @@ const info5 = "Se não deve mostrar descrição ao entrar na sala"
 const tipo5 = "opc_simnao"
 const vari5 = "s_ocultar"
 #
-const nome31 = "Embaralhar saídas"
-const info31 = "Se maior que 0, a cada quantos segundos muda as salas das direções\n\
+const nome35 = "Embaralhar saídas"
+const info35 = "Se maior que 0, a cada quantos segundos muda as salas das direções\n\
 n s l o ne no se so"
-const tipo31 = "opc_numero"
-const vari31 = "s_mudadir"
-const exec31 = "s_mudadir1"
+const tipo35 = "opc_numero"
+const vari35 = "s_mudadir"
+const exec35 = "s_mudadir1"
 #
-const nome32 = "Msg ao embaralhar"
-const tipo32 = "opc_linha"
-const vari32 = "s_salarandmsg"
+const nome36 = "Msg ao embaralhar"
+const tipo36 = "opc_linha"
+const vari36 = "s_salarandmsg"
 #
 const nome51 = "Eventos hora"
 const info51 = "Se a função cmd_hora é chamada quando a hora MUD mudar (5 minutos)"

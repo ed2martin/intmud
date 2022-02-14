@@ -74,9 +74,7 @@ func escr
 classe adm_iitem
 herda comando_adm
 const objcmd = arg1.c_iitem ? este
-const m_ajuda = "-t\n\
--s <nome>\n\
-Mostra aonde está cada item do tipo especificado."
+const m_ajuda = "-t\n-s <nome>\nMostra aonde está cada item do tipo especificado."
 
 func escr # Listar personagens
   prog p
@@ -345,6 +343,36 @@ const vari19 = "i_saiitem3"
 const nome20 = "Saiu cambaleando"
 const tipo20 = "opc_linha"
 const vari20 = "i_saiitem4"
+#
+const nome21 = "Olhar dentro"
+const tipo21 = "opc_linha"
+const vari21 = "i_olhardentro"
+const nulo21 = "\c3" + fnulo("h_cmd_olhar", "m_dentro")
+#
+const nome22 = "Pegou item perso"
+const tipo22 = "opc_linha"
+const vari22 = "i_pegouitem1"
+const nulo22 = "\c3" + fnulo("h_cmd_pegar", "m_pegar_item1")
+#
+const nome23 = "Pegou item outros"
+const tipo23 = "opc_linha"
+const vari23 = "i_pegouitem2"
+const nulo23 = "\c3" + fnulo("h_cmd_pegar", "m_pegar_item2")
+#
+const nome24 = "Soltou item perso"
+const tipo24 = "opc_linha"
+const vari24 = "i_soltouitem1"
+const nulo24 = "\c3" + fnulo("h_cmd_soltar", "m_soltar_item1")
+#
+const nome25 = "Soltou item outros"
+const tipo25 = "opc_linha"
+const vari25 = "i_soltouitem2"
+const nulo25 = "\c3" + fnulo("h_cmd_soltar", "m_soltar_item2")
+
+func fnulo
+  prog p
+  p.iniherdainv(arg0)
+  ret txt(p.lin ? $[p.texto].[arg1])
 
 
 classe menu_identro1

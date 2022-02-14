@@ -1,6 +1,8 @@
 classe h_cmd_pegar
 herda comando_comum
 const objtipo = 2 # Pode renomear
+const posic = 5
+#
 const m_ajuda = "-t\n\
 -s <objeto>\n\
 -s <quantidade> <objeto>\n\
@@ -8,11 +10,31 @@ const m_ajuda = "-t\n\
 -s <quantidade> <objeto> <container>\n\
 Pega um objeto do chão ou de um container (uma bolsa, uma estante, etc).\n\
 Para pegar tudo (até 10 objetos) tecle TUDO ao invés do objeto."
-const posic = 5
+const m_naover = "Você não vê $m."
+const m_semperm_pegar = "Melhor não pegar nada daqui."
+const m_nao_container = "$O não é container."
+const m_fechado = "$O está fechad$u."
+const m_item_dormindo = "Você não consegue pegar porque tem alguém dormindo $e $a."
+const m_item_descansando = "Você não consegue pegar porque tem alguém descansando $e $a."
+const m_item_sentado = "Você não consegue pegar porque tem alguém sentado $e $a."
+const m_item_emcima = "Você não consegue pegar porque tem alguém em cima de $a."
+const m_item_sala = "Você não consegue pegar isso."
+const m_muitos_itens = "Você não consegue carregar tanta coisa."
+const m_item_pesado = "$O pesad$u demais."
+const m_muito_peso = "Você não consegue carregar tanto peso."
+const m_pegar_sala1 = "Você pega $o."
+const m_pegar_sala2 = "$P pega $o."
+const m_pegar_item1 = "Você pega $o $d $a."
+const m_pegar_item2 = "$P pega $o $d $a."
+const admordem = "m_ajuda m_naover m_semperm_pegar m_nao_container m_fechado\n\
+m_item_dormindo m_item_descansando m_item_sentado m_item_emcima m_item_sala\n\
+m_muitos_itens m_item_pesado m_muito_peso m_pegar_sala1 m_pegar_sala2\n\
+m_pegar_item1 m_pegar_item2"
 #
 uint32 total # Quantidade de itens do mesmo tipo
-txt20 mens # Parte da mensagem
-int8 achou # Quantos itens achou
+int8 pegar # 0=pega da sala, 1=pega de outro item
+const txtitens = total <= 1 ? arg0 : txttroca(arg0, "$o", "$1x $o")
+const txtmoedas = txttroca(arg0, "$o", "$1")
 
 func escr
   ref item # Item aonde está soltando os itens
@@ -28,35 +50,38 @@ func escr
 # Obtém o objeto de onde pegar
   misc:separa(arg1) # Separa nome do objeto do nome do alvo
   se !misc:sep2 # Se não tem alvo, o alvo é a sala
+    pegar = 0
     item = sala = arg0.dono
-    mens = "."
     se sala.var.ini("u_") && !sala.var.u_[arg0.nome]_
-      ret arg0.msg("Melhor não pegar nada daqui.")
+      ret $mens.mp(m_semperm_pegar, arg0, nulo, item)
     fimse
   senao
+    pegar = 1
     item = misc:itemtudo(arg0, misc:sep2) # Procura o alvo para o personagem arg0
     sala = item.item ? item.i_salapegar
     se !item
-      ret arg0.msg("Você não vê " + misc:sep2 + ".")
+      $mens.mens = misc:sep2
+      ret $mens.mp(m_naover, arg0)
     senao item.dono.s_sala && item.dono.var.ini("u_") && !item.dono.var.u_[arg0.nome]_
-      ret arg0.msg("Melhor não pegar nada daqui.")
+      ret $mens.mp(m_semperm_pegar, arg0, nulo, item)
     senao !item.i_aberto && !sala
-      ret $mens.mp("$O não é container.", arg0, nulo, item)
+      ret $mens.mp(m_nao_container, arg0, nulo, item)
     senao item.i_aberto > 2 && !arg0.j_imortal
-      ret $mens.mp("$O está fechad$u.", arg0, nulo, item)
+      ret $mens.mp(m_fechado, arg0, nulo, item)
     fimse
     !sala && (sala = item)
-    mens = " $d $a."
   fimse
-# Pega os itens
   nomeobj n # Para reconhecer os itens
   n.ini(misc:sep1, misc:objmax, misc:tudo)
-  achou = 0, erro = "Você não vê isso."
+# Pega os itens
+  int8 achou # Quantos itens achou
+  txt100 erro # Mensagem de erro
   epara l.addfim(sala.dentro1), l && achou < 10, l.ini.remove
-    continuar !l.objini.visivel(arg0) || !n.nome(l.objini.ident, l.objini.objtot)
+    refvar obj = l.objini
+    continuar !obj.visivel(arg0) || !n.nome(obj.var.z_ident ?? obj.ident, obj.objtot)
     total = n # Quantidade de itens
-    refvar erro1 = pegarobj(arg0, item, sala, l.objini)
-    erro1 && (erro = erro1)
+    refvar erro1 = pegarobj(arg0, item, sala, obj)
+    erro1 ? (erro = erro1) : achou++
   efim
   ret achou, nulo
 # Pega moedas
@@ -65,7 +90,9 @@ func escr
     ret pegarmoedas(arg0, sala)
   fimse
 # Não encontrou o item
-  arg0.msg(erro)
+  ret erro, arg0.msg(erro)
+  $mens.mens = misc:sep1
+  $mens.mp(m_naover, arg0)
 
 func pegarobj
 # arg0 = personagem
@@ -73,33 +100,35 @@ func pegarobj
 # arg2 = objeto que representa o conteúdo interno de arg1
 # arg3 = item que quer pegar
 # total = quantidade de itens
-# Faz achou++ se pegou o item
 # Retorna mensagem de erro ou nulo se conseguiu pegar
   ret arg3.i_pegar, arg3.i_pegar
+  $mens.m(arg0, arg1, arg3)
   listaitem i
   epara i = arg3.dentro2.ini, i, i.depois
-    ret i.obj.s_sala, "Você não consegue pegar isso."
+    continuar !i.obj.s_sala
+    $mens.p(arg0, arg1, arg3)
+    ret $mens.txt(m_item_sala, arg0)
   efim
   se arg3.persolugar
+    $mens.p(arg0, arg1, arg3)
     casovar arg3.persolugar.objini.posicao
     casose "4"
-      ret "Você não consegue pegar porque tem alguém dormindo em cima."
+      ret $mens.txt(m_item_dormindo, arg0)
     casose "5"
-      ret "Você não consegue pegar porque tem alguém descansando em cima."
+      ret $mens.txt(m_item_descansando, arg0)
     casose "6"
-      ret "Você não consegue pegar porque tem alguém sentado em cima."
+      ret $mens.txt(m_item_sentado, arg0)
     casofim
-    ret "Você não consegue pegar porque tem alguém em cima."
+    ret $mens.txt(m_item_emcima, arg0)
   senao arg3.cabedentro(arg0) < total
-    ret "Você não consegue carregar tanta coisa."
+    $mens.p(arg0, arg1, arg3)
+    ret $mens.txt(m_muitos_itens, arg0)
   senao arg0 == arg2.dono
   senao arg0.pesoden - arg0.pesoveste + arg3.pesotot * total / arg3.objtot > arg0.pesomax
-    se arg3.pesotot > arg3.objtot * arg0.pesomax
-      ret "Isso é pesado demais."
-    fimse
-    ret "Você não consegue carregar tanto peso."
+    $mens.p(arg0, arg1, arg3)
+    ret arg3.pesotot > arg3.objtot * arg0.pesomax, $mens.txt(m_item_pesado, arg0)
+    ret $mens.txt(m_muito_peso, arg0)
   fimse
-  achou++
   listaobj e
   epara e.addfim(arg0.evento), e, e.ini.remove
     ret e.objini.cmd_pegarobj(arg0, arg1, arg3, total, arg0), nulo
@@ -111,10 +140,15 @@ func pegarobj
     ret e.objini.cmd_pegarobj(arg0, arg1, arg3, total, arg3), nulo
   efim
   $mens.p(arg0, arg1, arg3)
-  se total <= 1
-    $mens.mvis1("$P pega $o" + mens)
+  $mens.o_1 = total
+  se pegar
+    refvar m1 = txtitens(arg1.i_pegouitem1 ?? m_pegar_item1)
+    refvar m2 = txtitens(arg1.i_pegouitem2 ?? m_pegar_item2)
+    $mens.mvis2(m1, m2)
   senao
-    $mens.mvis1("$P pega " + total + "x $o" + mens)
+    refvar m1 = txtitens(arg1.s_pegarmsg1 ?? m_pegar_sala1)
+    refvar m2 = txtitens(arg1.s_pegarmsg2 ?? m_pegar_sala2)
+    $mens.mvis2(m1, m2)
   fimse
   refvar r = arg3.mudadono(arg0, total)
   epara e.addfim(arg0.evento), e, e.ini.remove
@@ -144,10 +178,11 @@ func pegarmoedas
   arg0.p_espera += 2
   arg1.objmudou = 1
   $mens.p(arg0, arg1)
-  se total == 1
-    $mens.mvis1("$P pega uma moeda" + mens)
-  senao total == 2
-    $mens.mvis1("$P pega duas moedas" + mens)
+  $mens.o_1 = total == 1 ? "uma moeda" : total == 2 ? "duas moedas" : txt(total) + " moedas"
+  se pegar
+    refvar m1 = txtmoedas(arg1.i_pegouitem1 ?? m_pegar_item1)
+    refvar m2 = txtmoedas(arg1.i_pegouitem2 ?? m_pegar_item2)
+    $mens.mvis2(m1, m2)
   senao
-    $mens.mvis1("$P pega " + total + " moedas" + mens)
+    $mens.mvis2(txtmoedas(m_pegar_sala1), txtmoedas(m_pegar_sala2))
   fimse

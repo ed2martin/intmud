@@ -1,4 +1,4 @@
-classe atualiza_565
+classe atualiza_566
 # Atualiza arquivos mud/config/* e mud/areas/* de acordo com novas mudanças
 prog p
 debug dbg
@@ -729,8 +729,8 @@ func ini3_exec
 func ini4_exec
   apagar(este)
 # Checa e muda a versão
-  ret (versao = config:versao) >= 565, nulo
-  p.criar("config", "const versao = 565 # Para atualizar diretórios areas e config")
+  ret (versao = config:versao) >= 566, nulo
+  p.criar("config", "const versao = 566 # Para atualizar diretórios areas e config")
   config:salvar
 # Comando Fim e Dicas aleatórias
   se versao < 457
@@ -970,6 +970,33 @@ func ini4_exec
 # Atalho Quit
   se versao < 565
     p.criar("cmd_quit\nconfig/cmd\nherda comando_atalho\nconst comando=\"cmd_fim\"")
+  fimse
+# Opção "Soltar itens" das salas
+  se versao < 566
+    epara p.iniherdainv("sala"), p.lin, p.depois
+      dbg.ini
+      continuar !p.existe(p.texto, "s_soltar")
+      p.apagar(p.texto, "s_soltar")
+      casovar [p.texto]:s_soltar
+      casose "1"
+        p.criar(p.texto, "const s_soltartipo = 1")
+        sair
+      casose "2"
+        p.criar(p.texto, "const s_soltartipo = 2")
+        p.criar(p.texto, "const s_soltarmsg1 = \"Você solta $o, que afunda em seguida.\"")
+        p.criar(p.texto, "const s_soltarmsg2 = \"$P solta $o, que afunda em seguida.\"")
+        sair
+      casose "3"
+        p.criar(p.texto, "const s_soltartipo = 2")
+        p.criar(p.texto, "const s_soltarmsg1 = \"Você solta $o, que cai e some da sua vista.\"")
+        p.criar(p.texto, "const s_soltarmsg2 = \"$P solta $o, que cai e some da sua vista.\"")
+        sair
+      casose "4"
+        p.criar(p.texto, "const s_soltartipo = 2")
+        p.criar(p.texto, "const s_soltarmsg1 = \"Você solta $o, que se desintegra em seguida.\"")
+        p.criar(p.texto, "const s_soltarmsg2 = \"$P solta $o, que se desintegra em seguida.\"")
+      casofim
+    efim
   fimse
 # Avisa que atualizou arquivos
   tela.msg("Diretórios areas e config atualizados\n")
