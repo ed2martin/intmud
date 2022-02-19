@@ -35,7 +35,7 @@ func menu
   epara p.iniclasse("cmd_"), p.lin, p.depois
     [p.texto]:objtipo == arg2 && total++
   efim
-  ret txt(total) + " comandos"
+  ret "\c6" + txt(total) + " comandos"
 
 func passo
   refvar opc = arg0.var.opcextra
@@ -63,7 +63,7 @@ func menu
   epara p.iniclasse("cmd_"), p.lin, p.depois
     [p.texto]:objtipo == 3 && total++
   efim
-  ret total == 1 ? "1 atalho" : txt(total) + " atalhos"
+  ret "\c6" + (total == 1 ? "1 atalho" : txt(total) + " atalhos")
 
 func passo
   refvar txtmais = arg0.txtmais

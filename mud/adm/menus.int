@@ -113,6 +113,7 @@ func menu2 # Usado em m_menu para obter o texto de uma opção do menu
   inttotal(lin) < maximo && (lin = txt(lin + txtesp(maximo), 0, maximo))
   refvar tipo = txttroca(tipo[arg0], "-", "")
   refvar classe = clas[arg0] ?? classe
+  ret !["nulo" + arg0], lin + ": " + $[tipo].menu(classe, vari[arg0], extr[arg0])
   prog p
   ret !p.existe(classe, vari[arg0]), lin + ": <nulo> " + ["nulo" + arg0] + "\b"
   ret lin + ": " + $[tipo].menu(classe, vari[arg0], extr[arg0])

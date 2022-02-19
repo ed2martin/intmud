@@ -1,5 +1,6 @@
 classe h_cmd_pegar
 herda comando_comum
+const objmenu = $m_cmd_pegar
 const objtipo = 2 # Pode renomear
 const posic = 5
 #
@@ -17,10 +18,10 @@ const m_fechado = "$O está fechad$u."
 const m_item_dormindo = "Você não consegue pegar porque tem alguém dormindo $e $a."
 const m_item_descansando = "Você não consegue pegar porque tem alguém descansando $e $a."
 const m_item_sentado = "Você não consegue pegar porque tem alguém sentado $e $a."
-const m_item_emcima = "Você não consegue pegar porque tem alguém em cima de $a."
+const m_item_emcima = "Você não consegue pegar porque tem alguém em cima $d $a."
 const m_item_sala = "Você não consegue pegar isso."
 const m_muitos_itens = "Você não consegue carregar tanta coisa."
-const m_item_pesado = "$O pesad$u demais."
+const m_item_pesado = "$O é pesad$u demais."
 const m_muito_peso = "Você não consegue carregar tanto peso."
 const m_pegar_sala1 = "Você pega $o."
 const m_pegar_sala2 = "$P pega $o."
@@ -186,3 +187,75 @@ func pegarmoedas
   senao
     $mens.mvis2(txtmoedas(m_pegar_sala1), txtmoedas(m_pegar_sala2))
   fimse
+
+
+classe m_cmd_pegar
+herda comando_menu_cmd
+#
+const nome1 = "Ajuda"
+const tipo1 = "opc_texto"
+const vari1 = "m_ajuda"
+#
+const nome2 = "Sem alvo"
+const tipo2 = "opc_linha"
+const vari2 = "m_naover"
+#
+const nome3 = "Sem permissão"
+const tipo3 = "opc_linha"
+const vari3 = "m_semperm_pegar"
+#
+const nome4 = "Não é container"
+const tipo4 = "opc_linha"
+const vari4 = "m_nao_container"
+#
+const nome5 = "Está fechado"
+const tipo5 = "opc_linha"
+const vari5 = "m_fechado"
+#
+const nome6 = "Alguém dormindo"
+const tipo6 = "opc_linha"
+const vari6 = "m_item_dormindo"
+#
+const nome7 = "Alguém descansando"
+const tipo7 = "opc_linha"
+const vari7 = "m_item_descansando"
+#
+const nome8 = "Alguém sentado"
+const tipo8 = "opc_linha"
+const vari8 = "m_item_sentado"
+#
+const nome9 = "Alguém em cima"
+const tipo9 = "opc_linha"
+const vari9 = "m_item_emcima"
+#
+const nome10 = "Item tem salas dentro"
+const tipo10 = "opc_linha"
+const vari10 = "m_item_sala"
+#
+const nome11 = "Muitos itens"
+const tipo11 = "opc_linha"
+const vari11 = "m_muitos_itens"
+#
+const nome12 = "Item pesado"
+const tipo12 = "opc_linha"
+const vari12 = "m_item_pesado"
+#
+const nome13 = "Muito peso"
+const tipo13 = "opc_linha"
+const vari13 = "m_muito_peso"
+#
+const nome14 = "Pegar da sala perso"
+const tipo14 = "opc_linha"
+const vari14 = "m_pegar_sala1"
+#
+const nome15 = "Pegar da sala outros"
+const tipo15 = "opc_linha"
+const vari15 = "m_pegar_sala2"
+#
+const nome16 = "Pegar de item perso"
+const tipo16 = "opc_linha"
+const vari16 = "m_pegar_item1"
+#
+const nome17 = "Pegar de item outros"
+const tipo17 = "opc_linha"
+const vari17 = "m_pegar_item2"

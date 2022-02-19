@@ -1,5 +1,6 @@
 classe h_cmd_dar
 herda comando_comum
+const objmenu = $m_cmd_dar
 const objtipo = 2 # Pode renomear
 const posic = 5
 const txtajuda = txtajuda1(config:animal1 ? m_ajuda2 : m_ajuda1)
@@ -9,9 +10,10 @@ const m_ajuda2 = "-t\n\
 -s <objeto> <personagem>\n\
 -s <número do animal> <personagem>\n\
 Dá um objeto ou animal para outro personagem."
+const m_sem_args = "Dar itens para quem?"
 const m_nao_possui = "Você não possui $m."
 const m_nao_dar = "Não é possível dar esse animal."
-const m_sem_alvo = "Dar $m para quem?"
+const m_para_quem = "Dar $m para quem?"
 const m_naover = "Você não vê $m."
 const m_nao_pode = "Não é possível dar nada para $a."
 const m_auto = "Dar para você mesm$s?"
@@ -26,9 +28,9 @@ const m_dar_item3 = "$P dá $o para $a."
 const m_dar_animal1 = "Você dá $o para $a."
 const m_dar_animal2 = "$P dá $o para você."
 const m_dar_animal3 = "$P dá $o para $a."
-const admordem = "m_ajuda1 m_ajuda2 m_nao_possui m_nao_dar m_sem_alvo m_naover\n\
-m_nao_pode m_auto m_muitos_itens m_muito_peso m_nao_jogador m_outro_dono\n\
-m_espaco_animal m_dar_item1 m_dar_item2 m_dar_item3\n\
+const admordem = "m_ajuda1 m_ajuda2 m_sem_args m_nao_possui m_nao_dar\n\
+m_para_quem m_naover m_nao_pode m_auto m_muitos_itens m_muito_peso\n\
+m_nao_jogador m_outro_dono m_espaco_animal m_dar_item1 m_dar_item2 m_dar_item3\n\
 m_dar_animal1 m_dar_animal2 m_dar_animal3"
 #
 ref sala # Para quem dar os itens
@@ -53,7 +55,7 @@ func escr
       ret $mens.mp(m_nao_dar, arg0)
     senao !txt2(arg1)
       $mens.mens = arg1
-      ret $mens.mp(m_sem_alvo, arg0)
+      ret $mens.mp(m_para_quem, arg0)
     fimse
     refvar alvo = misc:persooutro(arg0, txt2(arg1))
     ret alvo, daranimal(arg0, alvo, r)
@@ -63,7 +65,7 @@ func escr
   fimse
 # Obtém para quem dar
   misc:separa(arg1) # Separa nome do objeto do nome do alvo
-  ret !misc:sep2, arg0.msg("Dar itens para quem?")
+  ret !misc:sep2, $mens.mp(m_sem_args, arg0)
   sala = misc:persodono(arg0, misc:sep2) # Procura o alvo para o personagem arg0
   se !sala
     $mens.mens = misc:sep2
@@ -182,3 +184,87 @@ func darmoedas
   $mens.p(arg0, arg1)
   $mens.o_1 = total == 1 ? "uma moeda" : total == 2 ? "duas moedas" : txt(total) + " moedas"
   $mens.mvis3(txtmoedas(m_dar_item1), txtmoedas(m_dar_item2), txtmoedas(m_dar_item3))
+
+
+classe m_cmd_dar
+herda comando_menu_cmd
+#
+const nome1 = "Ajuda sem animal"
+const tipo1 = "opc_texto"
+const vari1 = "m_ajuda1"
+#
+const nome2 = "Ajuda com animal"
+const tipo2 = "opc_texto"
+const vari2 = "m_ajuda2"
+#
+const nome3 = "Sem argumentos"
+const tipo3 = "opc_linha"
+const vari3 = "m_sem_args"
+#
+const nome4 = "Não possui"
+const tipo4 = "opc_linha"
+const vari4 = "m_nao_possui"
+#
+const nome5 = "Não dar animal"
+const tipo5 = "opc_linha"
+const vari5 = "m_nao_dar"
+#
+const nome6 = "Dar para quem"
+const tipo6 = "opc_linha"
+const vari6 = "m_para_quem"
+#
+const nome7 = "Sem alvo"
+const tipo7 = "opc_linha"
+const vari7 = "m_naover"
+#
+const nome8 = "Não pode"
+const tipo8 = "opc_linha"
+const vari8 = "m_nao_pode"
+#
+const nome9 = "Para você mesmo"
+const tipo9 = "opc_linha"
+const vari9 = "m_auto"
+#
+const nome10 = "Muitos itens"
+const tipo10 = "opc_linha"
+const vari10 = "m_muitos_itens"
+#
+const nome11 = "Muito peso"
+const tipo11 = "opc_linha"
+const vari11 = "m_muito_peso"
+#
+const nome12 = "Alvo não é jogador"
+const tipo12 = "opc_linha"
+const vari12 = "m_nao_jogador"
+#
+const nome13 = "Animal de outro"
+const tipo13 = "opc_linha"
+const vari13 = "m_outro_dono"
+#
+const nome14 = "Muitos animais"
+const tipo14 = "opc_linha"
+const vari14 = "m_espaco_animal"
+#
+const nome15 = "Dar item perso"
+const tipo15 = "opc_linha"
+const vari15 = "m_dar_item1"
+#
+const nome16 = "Dar item alvo"
+const tipo16 = "opc_linha"
+const vari16 = "m_dar_item2"
+#
+const nome17 = "Dar item outros"
+const tipo17 = "opc_linha"
+const vari17 = "m_dar_item3"
+#
+const nome18 = "Dar animal perso"
+const tipo18 = "opc_linha"
+const vari18 = "m_dar_animal1"
+#
+const nome19 = "Dar animal alvo"
+const tipo19 = "opc_linha"
+const vari19 = "m_dar_animal2"
+#
+const nome20 = "Dar animal outros"
+const tipo20 = "opc_linha"
+const vari20 = "m_dar_animal3"
