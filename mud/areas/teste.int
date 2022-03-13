@@ -1226,6 +1226,56 @@ func mudaportas
   efim
 
 
+classe i_teste079
+herda comum_item
+const nome = "mesa"
+const descnome = "uma mesa"
+const i_pegar = "É uma mesa de mármore, presa no chão."
+const i_aberto = 1 # Container: 1 Sempre aberto
+const i_olhardentro = "Em cima da mesa você vê:"
+const i_olharvazio = "Não há nada em cima."
+const i_pegouitem1 = "Você pega $o de cima $d $a."
+const i_pegouitem2 = "$P pega $o de cima $d $a."
+const i_soltouitem1 = "Você coloca $o em cima $d $a."
+const i_soltouitem2 = "$P coloca $o em cima $d $a."
+
+
+classe i_teste080
+herda comum_item
+const nome = "macieira"
+const descnome = "uma macieira"
+const i_pegar = "Arrancar a macieira do chão?"
+const i_aberto = 1 # Container: 1 Sempre aberto
+const i_olhardentro = "Nos galhos você vê:"
+const i_olharvazio = "Não há nada nos galhos."
+const i_pegouitem1 = "Você colhe $o $d $a."
+const i_pegouitem2 = "$P colhe $o $d $a."
+const objmax = 0
+inttempo tempo
+
+func cmd_ini
+  tempo = 1
+
+func tempo_exec
+  tempo = 100 # Em décimos de segundo
+  itemtotal < 4 && criar("i_teste081", este, 1)
+
+func itemtotal # Retorna a quantidade de itens dentro
+  int32 total
+  listaitem i
+  epara i = dentro1.ini, i, i.depois
+    total += i.obj.objtot
+  efim
+  ret total
+
+
+classe i_teste081
+herda comum_itemgrupo
+const nome = "maçã"
+const descnome = "uma maçã"
+const f_fome = 10
+
+
 classe p_teste001
 herda comum_perso
 const nome = "Jardineiro"
@@ -2411,15 +2461,15 @@ herda b_teste
 const s_titulo = "Portaria"
 const s_desc = "Cada andar desse pequeno edifício trata de um assunto.\n\
 A leste há um pequeno jardim.\n\
-A sudeste você pode mudar de nível.\n\
+Ao sul você pode o seu nível e conseguir animais.\n\
 As salas ao sul mostram diversos recursos do MUD.\n\
 A oeste há explicações sobre o comando de administração CMD e derivados."
 const dir_n = $s_teste001
+const dir_s = $s_teste015
 const dir_l = $s_teste003
 const dir_o = $s_teste033
 const dir_c = $s_teste014
 const dir_b = $s_teste067
-const dir_se = $s_teste015
 const s_reset = "S 100 teste036 0 S\nS 100 teste041 0 S"
 
 func s_reset1 # Realiza o reset
@@ -2634,11 +2684,12 @@ herda b_teste
 const s_titulo = "Mudança de nível"
 const s_desc = "Aqui você pode mudar o nível do seu personagem.\n\
 Tecle A ou AA para aumentar 1 ou 10 níveis\n\
-Tecle D ou DD para diminuir 1 ou 10 níveis"
+Tecle D ou DD para diminuir 1 ou 10 níveis\n\
+À leste você pode conseguir animais."
 const eveste = 1 # Eventos sala: Sim
 const dir_l = $s_teste065
 const dir_o = $s_teste014
-const dir_no = $s_teste002
+const dir_n = $s_teste002
 
 func cmd_salaperso # Personagem chegou
   se arg0.jog
@@ -3439,6 +3490,7 @@ const dir_n = $s_teste159
 const dir_s = $s_teste176
 const dir_l = $s_teste122
 const dir_o = $s_teste115
+const dir_c = $s_teste182
 const dir_b = $s_teste030
 
 
@@ -5470,3 +5522,54 @@ const s_desc = "Terceira parada do ônibus moderno, item teste078 criado na sala 
 Mesmo as saídas da sala a sudeste sendo embaralhadas de tempos em tempos,\n\
 o ônibus consegue andar na direção correta."
 const dir_se = $s_teste176
+
+
+classe s_teste182
+herda b_teste
+const s_titulo = "Sétimo andar"
+const s_desc = "Ao norte mesa, árvore com frutas e itens que somem ao soltar"
+const dir_n = $s_teste183
+const dir_b = $s_teste064
+
+
+classe s_teste183
+herda b_teste
+const s_titulo = "Ponte de madeira"
+const s_desc = "Ao soltar itens aqui, eles caem e somem da sua vista.\n\
+O que acontece na verdade é que os itens são destruídos.\n\
+São opções do comando Esala."
+const s_soltartipo = 2 # Soltar itens: 2 Destrói
+const s_soltarmsg1 = "Você solta $o, que cai e some da sua vista."
+const s_soltarmsg2 = "$P solta $o, que cai e some da sua vista."
+const dir_n = $s_teste184
+const dir_s = $s_teste182
+
+
+classe s_teste184
+herda b_teste
+const s_titulo = "Mesa"
+const s_desc = "A mesa é como uma caixa, em que se pode colocar coisas dentro, mas com\n\
+as mensagens de pegar, soltar e olhar mudadas (via comando Eitem),\n\
+tem-se a impressão que itens são colocados em cima da mesa."
+const dir_n = $s_teste185
+const dir_s = $s_teste183
+const s_reset = "S 100 teste079 1 S"
+
+func s_reset1 # Realiza o reset
+# Não alterar; função criada automaticamente a partir de s_reset
+  !dentro1.objini("i_teste079") && criar("i_teste079", este, 1)
+
+
+classe s_teste185
+herda b_teste
+const s_titulo = "Macieira"
+const s_desc = "Aqui há uma árvore com algumas maçãs. A cada 10 segundos a árvore ganha uma\n\
+maçã até chegar a quatro. Pode-se colher mas não é possível colocar nada\n\
+na árvore. Colher é feito no comando Eitem, aparecer maçãs na macieira é\n\
+com programação, no item teste080."
+const dir_s = $s_teste184
+const s_reset = "S 100 teste080 1 S"
+
+func s_reset1 # Realiza o reset
+# Não alterar; função criada automaticamente a partir de s_reset
+  !dentro1.objini("i_teste080") && criar("i_teste080", este, 1)

@@ -171,7 +171,7 @@ func passo # Escolher o tipo de item ao criar
     arg0.txtmais.limpar
     arg0.txtmais.addfim("S Simples")
     arg0.txtmais.addfim("G Agrupa vários em um objeto para economizar memória")
-    arg0.txtmais.addfim("C Completo (luz, mobília, container)")
+    arg0.txtmais.addfim("C Completo (luz, mobília, container que pode ser fechado)")
     arg0.txtmostra
     ret 1
   casose "s"
@@ -349,25 +349,30 @@ const tipo21 = "opc_linha"
 const vari21 = "i_olhardentro"
 const nulo21 = "\c3" + fnulo("h_cmd_olhar", "m_dentro")
 #
-const nome22 = "Pegou item perso"
+const nome22 = "Está vazio"
 const tipo22 = "opc_linha"
-const vari22 = "i_pegouitem1"
-const nulo22 = "\c3" + fnulo("h_cmd_pegar", "m_pegar_item1")
+const vari22 = "i_olharvazio"
+const nulo22 = "\c3" + fnulo("h_cmd_olhar", "m_vazio")
 #
-const nome23 = "Pegou item outros"
+const nome23 = "Pegou item perso"
 const tipo23 = "opc_linha"
-const vari23 = "i_pegouitem2"
-const nulo23 = "\c3" + fnulo("h_cmd_pegar", "m_pegar_item2")
+const vari23 = "i_pegouitem1"
+const nulo23 = "\c3" + fnulo("h_cmd_pegar", "m_pegar_item1")
 #
-const nome24 = "Soltou item perso"
+const nome24 = "Pegou item outros"
 const tipo24 = "opc_linha"
-const vari24 = "i_soltouitem1"
-const nulo24 = "\c3" + fnulo("h_cmd_soltar", "m_soltar_item1")
+const vari24 = "i_pegouitem2"
+const nulo24 = "\c3" + fnulo("h_cmd_pegar", "m_pegar_item2")
 #
-const nome25 = "Soltou item outros"
+const nome25 = "Soltou item perso"
 const tipo25 = "opc_linha"
-const vari25 = "i_soltouitem2"
-const nulo25 = "\c3" + fnulo("h_cmd_soltar", "m_soltar_item2")
+const vari25 = "i_soltouitem1"
+const nulo25 = "\c3" + fnulo("h_cmd_soltar", "m_soltar_item1")
+#
+const nome26 = "Soltou item outros"
+const tipo26 = "opc_linha"
+const vari26 = "i_soltouitem2"
+const nulo26 = "\c3" + fnulo("h_cmd_soltar", "m_soltar_item2")
 
 func fnulo
   prog p
@@ -405,6 +410,12 @@ const info8 = "Somente esses itens podem ser colocados dentro\n\
 Se vazio, pode-se colocar moedas e qualquer item dentro"
 const tipo8 = "opc_listaitem"
 const vari8 = "i_itens"
+#
+const nome9 = "Container"
+const tipo9 = "opc_opcao"
+const vari9 = "i_aberto"
+const exec9 = "recalc_exec"
+const extr9 = "Não\nSempre aberto"
 
 
 classe menu_identro3

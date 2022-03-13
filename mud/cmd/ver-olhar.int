@@ -154,7 +154,7 @@ func escr
       t.addfim(txt(item.obj.objtot) + " " + txtcopiamai(item.obj.descnome2, "A"))
     efim
     se !t.linhas
-      t.addini($mens.txt(m_vazio, arg0))
+      t.addini($mens.txt(r2.i_olharvazio ?? m_vazio, arg0))
     senao completo
       t.juntalin("(", "x)")
       t.addini($mens.txt(r2.i_olhardentro ?? m_dentro, arg0))
@@ -259,8 +259,6 @@ const m_olhar_auto = ""
 const m_olhar_perso2 = ""
 const m_olhar_perso3 = ""
 const m_olhar_item = ""
-const m_fechado = "Está fechad$u."
-const m_vazio = "Está vazi$u."
 
 
 classe h_cmd_olhar

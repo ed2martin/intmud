@@ -1,3 +1,73 @@
+* 13/3/2022 IntMUD 1.14a MUD baseado na revisão 568
+
+   No MUD:
+  1. Corrigido bug: ao digitar o nome de um comando social que não
+     existe, o MUD não diz o que o usuário digitou
+  2. Corrigido bug: os comandos Ijog e Infojog não estavam pegando o
+     texto definido no comando Etipo para classes e raças
+  3. Corrigido bug: as mensagens de "não negocio com" não estavam
+     pegando o texto definido no comando Etipo para classes e raças
+  4. Corrigido bug: opção Config +Chat não estava funcionando
+  5. Corrigido bug: as opções "Falha iniciante" e "Falha perito" não
+     estavam funcionando corretamente de ataque
+  6. Corrigido bug: não estava mostrando algumas opções nos comandos
+     "config" e "ajuda comunica"
+  7. Corrigido bug ao soltar animal em batalha: não estava gerando
+     evento cmd_soltouanim
+  8. Ao apagar uma sala aonde está um jogador, o jogador era tirado do
+     MUD. Agora vai para outra sala.
+  9. Criadas opções Config +Musica1 +Musica2 para habilitar música de
+     fundo independente dos efeitos sonoros
+ 10. Adicionados os nomes femininos para os tipos Anão, Humano e Elfo
+ 11. Em menus em que se digita o nome do som, é possível colocar dois ou
+     mais sons, separados por espaço.
+ 12. Adicionada opção no comando Esala: a mensagem ao embaralhar as
+     saídas
+ 13. Os eventos cmd_atkenv e cmd_atkrec agora podem adicionar valores
+     aos danos de batalha e decidir se tem esquiva
+ 14. Adicionado arquivo doc/perguntas.txt com algumas perguntas e
+     respostas sobre o MUD
+ 15. Mudaram os argumentos da função execgolpe, documentada no arquivo
+     mud/doc/11-hab.txt
+ 16. Criado ônibus que anda, item teste078, e paradas de ônibus, salas
+     teste179, teste180 e teste181
+ 17. Criada opção "30 Pode seguir" no comando eitem: se o comando Seguir
+     reconhece o item
+ 18. Função rastrearsala agora tem opção "s" que significa retornar as
+     salas ao invés das direções
+ 19. Criada função rastrearsaladir, para rastrear guardando as últimas
+     rotas na memória
+ 20. Criadas funções msg e msgtodos para itens com salas internas
+ 21. Criado menu "17 Renomear comandos" do comando Econfig
+ 22. Criada opção "11 Condição personagem" no menu "14 Mensagens" do
+     comando Econfig
+ 23. Comandos Dar, Pegar, Soltar, Nivel, Responder, Rezar, Prompt e
+     Lançar agora estão na opção "16 Comandos Jogadores" do comando
+     Econfig
+ 24. Criado menu "22 Condição personagem" no comando Etipo
+ 25. Criada opção "6 Descrição condição" no comando Eperso
+ 26. Opção "23 Soltar itens" do comando Esala agora só tem "0 Permitido,
+     1 Não permitido, 2 Destrói"
+ 27. Criadas opções "24 Msg perso soltar", "25 Msg outros soltar", "26
+     Msg perso pegar" e "27 Msg outros pegar" no comando Esala
+ 28. Criadas opções "Olhar dentro", "Está vazio", "Pegou item" e "Soltou
+     item" no menu "11 Dentro" do comando Eitem
+ 29. No comando Eitem, itens do tipo simples agora podem ser containers
+     do tipo sempre aberto
+ 30. Exemplos de mesa, árvore e sala em que ao soltar itens, eles caem,
+     salas teste183 a teste185
+ 31. Comandos Emocao, Rezar, Bug e Ideia agora vêm habilitados por
+     padrão
+ 32. A sintaxe dos comandos agora faz parte dos textos de ajuda dos
+     comandos (editável pela opção na opção "16 Comandos Jogadores" do
+     comando Econfig)
+ 33. Função estadopos dos personagens mudou de nome para desccond
+ 34. Criada função temdomador para personagens, vide arquivo
+     mud/doc/08-perso.txt
+ 35. Constantes "nulo" e "classe" ao criar menus, vide arquivo
+     mud/doc/14-comandos.txt
+ 36. Código dos menus ficou menor com o uso da const classe
+
 * 25/1/2021 IntMUD 1.14b MUD baseado na revisão 550
 
   Única mudança: O programa volta a funcionar no Windows XP.
