@@ -114,25 +114,27 @@ func mover # Personagem anda em uma direção
   debug dbg
   dbg.ini
   $comando_mover.lseg.addfim(arg0)
-# Verifica se pode mover e acerta textos de abriu1 e abrius
+# Verifica se pode mover e acerta textos de abriu1 e abriu2
   abriu1 = abriu2 = ""
   se !arg1.s_sala
     $mens.mp(comando_mover_cfg:m_impossivel, p1)
     ret 0
-  senao !arg2 && s1.porta_[dir] & 3 >= 2 && !arg0.j_imortal
+  senao !arg0.j_imortal && (arg2 ? arg2.i_aberto >= 3 : s1.porta_[dir] & 3 >= 2)
     ret !s1.socktot, 0
-    refvar casa = $c_[s1.fechadura_[dir](p1)]
+    refvar casa = $c_[arg2 ? arg2.i_fechadura(p1) : s1.fechadura_[dir](p1)]
     refvar cod = casa.chave
-    se !cod
-      p1.msg($mens_porta.mens(comando_mover_cfg:m_portafechada, s1, dir))
-      ret 0
-    fimse
     listaitem i
-    epara i = arg0.dentro1.ini, i, i.depois
-      sair cod == i.obj.i_chave && i.obj.visivel(arg0)
-    efim
+    se cod
+      epara i = arg0.dentro1.ini, i, i.depois
+        sair cod == i.obj.i_chave && i.obj.visivel(arg0)
+      efim
+    fimse
     se !i
-      p1.msg($mens_porta.mens(comando_mover_cfg:m_portafechada, s1, dir))
+      se arg2
+        $mens.mp(comando_mover_cfg:m_itemfechado, p1, nulo, arg2)
+      senao
+        p1.msg($mens_porta.mens(comando_mover_cfg:m_portafechada, s1, dir))
+      fimse
       ret 0
     fimse
     casovar casa.infotaxa
@@ -145,9 +147,6 @@ func mover # Personagem anda em uma direção
     abriu1 = config:casaabriu1
     abriu2 = config:casaabriu2
     abriu2 && (abriu2 += "\n")
-  senao arg2 && arg2.i_aberto >= 2 && !arg0.j_imortal
-    $mens.mp(comando_mover_cfg:m_itemfechado, p1, nulo, arg2)
-    ret 0
   senao !arg0.cabedentro(arg1)
     $mens.mp(comando_mover_cfg:m_espaco, p1)
     ret 0
@@ -599,8 +598,6 @@ func escr # Executa o comando
 # Checa se pode entrar
   se !(dest.s_sala || dest.item && dest.dono.s_sala)
     ret $mens.mp(m_impossivelitem, arg0, nulo, item)
-  senao item.i_aberto >= 2 && !arg0.j_imortal
-    ret $mens.mp(comando_mover_cfg:m_itemfechado, arg0, nulo, item)
   fimse
 # Checa se está bêbado
   se arg0.jog && rand($miscfome.bebedir, $miscfome.cheio) <= arg0.p_bebida

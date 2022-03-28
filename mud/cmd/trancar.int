@@ -58,10 +58,12 @@ func escrobj # Trancar um item
   casofim
   ret !r.i_tranc, $mens.mp(m_item_naotranca, arg0, nulo, r)
 # Procura a chave
-  ref chave
-  se r.i_fechadura && !arg0.j_imortal
+  txt100 cod # Código da fechadura
+  ref chave # Chave que abre a fechadura
+  cod = r.i_fechadura(arg0), $c_[cod] && (cod = $c_[cod].chave)
+  se cod && !arg0.j_imortal
     epara i = arg0.dentro1.ini, i, i.depois
-      sair r.i_fechadura == i.obj.i_chave && i.obj.visivel(arg0)
+      sair cod == i.obj.i_chave && i.obj.visivel(arg0)
     efim
     ret !i, $mens.mp(m_item_chave, arg0, nulo, r)
     chave = i.obj
@@ -108,9 +110,7 @@ func escrdir # Trancar uma porta
   txt100 cod # Código da fechadura
   ref chave # Chave que abre a fechadura
   cod = arg0.dono.fechadura_[arg1](arg0), $c_[cod] && (cod = $c_[cod].chave)
-  mporta = arg0.dono.portanome_[arg1]
-  !mporta && (mporta = $cmd_[arg1].m_porta)
-  !mporta && (mporta = "uma porta")
+  mporta = arg0.dono.portanome_[arg1] ?? $cmd_[arg1].m_porta ?? "uma porta"
   se cod && !arg0.j_imortal
     listaitem i
     epara i = arg0.dentro1.ini, i, i.depois
@@ -205,11 +205,13 @@ func escrobj # Destrancar um item
   casose "5"
   casofim
 # Procura a chave
-  ref chave
-  se r.i_fechadura && !arg0.j_imortal
+  txt100 cod # Código da fechadura
+  ref chave # Chave que abre a fechadura
+  cod = r.i_fechadura(arg0), $c_[cod] && (cod = $c_[cod].chave)
+  se cod && !arg0.j_imortal
     listaitem i
     epara i = arg0.dentro1.ini, i, i.depois
-      sair r.i_fechadura == i.obj.i_chave && i.obj.visivel(arg0)
+      sair cod == i.obj.i_chave && i.obj.visivel(arg0)
     efim
     ret !i, $mens.mp(m_item_chave, arg0, nulo, r)
     chave = i.obj
@@ -258,9 +260,7 @@ func escrdir # Destrancar uma porta
   txt100 cod # Código da fechadura
   ref chave # Chave que abre a fechadura
   cod = arg0.dono.fechadura_[arg1](arg0), $c_[cod] && (cod = $c_[cod].chave)
-  mporta = arg0.dono.portanome_[arg1]
-  !mporta && (mporta = $cmd_[arg1].m_porta)
-  !mporta && (mporta = "uma porta")
+  mporta = arg0.dono.portanome_[arg1] ?? $cmd_[arg1].m_porta ?? "uma porta"
   se cod && !arg0.j_imortal
     listaitem i
     epara i = arg0.dentro1.ini, i, i.depois
