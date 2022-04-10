@@ -189,21 +189,25 @@ func mover # Personagem anda em uma direção
   senao arg0.p_bebida >= $miscfome.bebedir - rand(20) # Cambaleando não anda em silêncio
     abriu1 && $mens.mp(abriu1, p1, nulo, arg2)
     msgsair(arg0, arg2, abriu2 + (arg2.i_entraitem4 ?? m_sai4), 1)
+    arg2.i_entraitem0 && $mens.msg(arg2.i_entraitem0, arg0)
     arg0.mudadono(arg1)
     msgentrar(arg0, arg3, arg3.i_saiitem4 ?? m_entra4)
   senao arg0.bitinv & 48 # Voando ou voando alto
     abriu1 && $mens.mp(abriu1, p1, nulo, arg2)
     msgsair(arg0, arg2, abriu2 + (arg2.i_entraitem3 ?? m_sai3))
+    arg2.i_entraitem0 && $mens.msg(arg2.i_entraitem0, arg0)
     arg0.mudadono(arg1)
     msgentrar(arg0, arg3, arg3.i_saiitem3 ?? m_entra3)
   senao arg0.bitver & 0x200 # Flutuando
     abriu1 && $mens.mp(abriu1, p1, nulo, arg2)
     msgsair(arg0, arg2, abriu2 + (arg2.i_entraitem2 ?? m_sai2))
+    arg2.i_entraitem0 && $mens.msg(arg2.i_entraitem0, arg0)
     arg0.mudadono(arg1)
     msgentrar(arg0, arg3, arg3.i_saiitem2 ?? m_entra2)
   senao # Não está voando nem flutuando
     abriu1 && $mens.mp(abriu1, p1, nulo, arg2)
     msgsair(arg0, arg2, abriu2 + (arg2.i_entraitem1 ?? m_sai1))
+    arg2.i_entraitem0 && $mens.msg(arg2.i_entraitem0, arg0)
     arg0.mudadono(arg1)
     msgentrar(arg0, arg3, arg3.i_saiitem1 ?? m_entra1)
   fimse

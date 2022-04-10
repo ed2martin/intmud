@@ -656,7 +656,7 @@ func p_proc_mover # Personagem tenta se movimentar em uma direção aleatória
     t.addfim(p.texto)
   efim
   epara t.rand, t.linhas, t.remove
-    ref sala = r.[t.ini.texto](este)
+    ref sala = r.dirsala(t.ini.texto(4), este)
     continuar !sala || !cabedentro(sala) || p_mover == 1 && sala.s_area != r.s_area
     $cmd_[txt(t.ini.texto, 4)].escr(este)
     p_tmove = rand(70, 130) * p_movervel / 100, p_proc = p_tmove + 1

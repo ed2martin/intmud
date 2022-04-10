@@ -309,75 +309,6 @@ const info3 = "Para qual sala do MUD vai ao entrar no item\n\
 Para ir para a sala aonde um item está, escreva item e o nome do item"
 const tipo3 = "opc_salaitem"
 const vari3 = "i_salaentrar"
-#
-const titu13 = " * Mensagens"
-#
-const nome13 = "Entrou andando"
-const tipo13 = "opc_linha"
-const vari13 = "i_entraitem1"
-#
-const nome14 = "Entrou flutuando"
-const tipo14 = "opc_linha"
-const vari14 = "i_entraitem2"
-#
-const nome15 = "Entrou voando"
-const tipo15 = "opc_linha"
-const vari15 = "i_entraitem3"
-#
-const nome16 = "Entrou cambaleando"
-const tipo16 = "opc_linha"
-const vari16 = "i_entraitem4"
-#
-const nome17 = "Saiu andando"
-const tipo17 = "opc_linha"
-const vari17 = "i_saiitem1"
-#
-const nome18 = "Saiu flutuando"
-const tipo18 = "opc_linha"
-const vari18 = "i_saiitem2"
-#
-const nome19 = "Saiu voando"
-const tipo19 = "opc_linha"
-const vari19 = "i_saiitem3"
-#
-const nome20 = "Saiu cambaleando"
-const tipo20 = "opc_linha"
-const vari20 = "i_saiitem4"
-#
-const nome21 = "Olhar dentro"
-const tipo21 = "opc_linha"
-const vari21 = "i_olhardentro"
-const nulo21 = "\c3" + fnulo("h_cmd_olhar", "m_dentro")
-#
-const nome22 = "Está vazio"
-const tipo22 = "opc_linha"
-const vari22 = "i_olharvazio"
-const nulo22 = "\c3" + fnulo("h_cmd_olhar", "m_vazio")
-#
-const nome23 = "Pegou item perso"
-const tipo23 = "opc_linha"
-const vari23 = "i_pegouitem1"
-const nulo23 = "\c3" + fnulo("h_cmd_pegar", "m_pegar_item1")
-#
-const nome24 = "Pegou item outros"
-const tipo24 = "opc_linha"
-const vari24 = "i_pegouitem2"
-const nulo24 = "\c3" + fnulo("h_cmd_pegar", "m_pegar_item2")
-#
-const nome25 = "Soltou item perso"
-const tipo25 = "opc_linha"
-const vari25 = "i_soltouitem1"
-const nulo25 = "\c3" + fnulo("h_cmd_soltar", "m_soltar_item1")
-#
-const nome26 = "Soltou item outros"
-const tipo26 = "opc_linha"
-const vari26 = "i_soltouitem2"
-const nulo26 = "\c3" + fnulo("h_cmd_soltar", "m_soltar_item2")
-
-func fnulo
-  prog p
-  p.iniherdainv(arg0)
-  ret txt(p.lin ? $[p.texto].[arg1])
 
 
 classe menu_identro1
@@ -638,30 +569,102 @@ const extr15 = "0 65535"
 
 classe menu_isom
 herda comando_menu
-const titulo = "Sons"
+const titulo = "Sons e mensagens"
 const menufim = var.menufim
 const colunas = 25
 const classe = var.classe1
 #
-const nome1 = "Empunhou"
+const nome1 = "Som empunhou"
 const info1 = "Ao empunhar esse item"
 const tipo1 = "opc_linha"
 const vari1 = "i_som_emp1"
 #
-const nome2 = "Removeu empunhar"
+const nome2 = "Som removeu"
 const info2 = "Ao deixar de empunhar esse item"
 const tipo2 = "opc_linha"
 const vari2 = "i_som_emp0"
 #
-const nome3 = "Vestiu"
+const nome3 = "Som vestiu"
 const info3 = "Ao vestir esse item"
 const tipo3 = "opc_linha"
 const vari3 = "i_som_vest1"
 #
-const nome4 = "Removeu vestir"
+const nome4 = "Som removeu vestir"
 const info4 = "Ao deixar de vestir esse item"
 const tipo4 = "opc_linha"
 const vari4 = "i_som_vest0"
+#
+const nome5 = "Entrou perso"
+const info5 = "Mensagem para o personagem que entrou"
+const tipo5 = "opc_linha"
+const vari5 = "i_entraitem0"
+#
+const nome6 = "Entrou andando"
+const tipo6 = "opc_linha"
+const vari6 = "i_entraitem1"
+#
+const nome7 = "Entrou flutuando"
+const tipo7 = "opc_linha"
+const vari7 = "i_entraitem2"
+#
+const nome8 = "Entrou voando"
+const tipo8 = "opc_linha"
+const vari8 = "i_entraitem3"
+#
+const nome9 = "Entrou cambaleando"
+const tipo9 = "opc_linha"
+const vari9 = "i_entraitem4"
+#
+const nome10 = "Saiu andando"
+const tipo10 = "opc_linha"
+const vari10 = "i_saiitem1"
+#
+const nome11 = "Saiu flutuando"
+const tipo11 = "opc_linha"
+const vari11 = "i_saiitem2"
+#
+const nome12 = "Saiu voando"
+const tipo12 = "opc_linha"
+const vari12 = "i_saiitem3"
+#
+const nome13 = "Saiu cambaleando"
+const tipo13 = "opc_linha"
+const vari13 = "i_saiitem4"
+#
+const nome14 = "Olhar dentro"
+const tipo14 = "opc_linha"
+const vari14 = "i_olhardentro"
+const nulo14 = "\c3" + fnulo("h_cmd_olhar", "m_dentro")
+#
+const nome15 = "Está vazio"
+const tipo15 = "opc_linha"
+const vari15 = "i_olharvazio"
+const nulo15 = "\c3" + fnulo("h_cmd_olhar", "m_vazio")
+#
+const nome16 = "Pegou item perso"
+const tipo16 = "opc_linha"
+const vari16 = "i_pegouitem1"
+const nulo16 = "\c3" + fnulo("h_cmd_pegar", "m_pegar_item1")
+#
+const nome17 = "Pegou item outros"
+const tipo17 = "opc_linha"
+const vari17 = "i_pegouitem2"
+const nulo17 = "\c3" + fnulo("h_cmd_pegar", "m_pegar_item2")
+#
+const nome18 = "Soltou item perso"
+const tipo18 = "opc_linha"
+const vari18 = "i_soltouitem1"
+const nulo18 = "\c3" + fnulo("h_cmd_soltar", "m_soltar_item1")
+#
+const nome19 = "Soltou item outros"
+const tipo19 = "opc_linha"
+const vari19 = "i_soltouitem2"
+const nulo19 = "\c3" + fnulo("h_cmd_soltar", "m_soltar_item2")
+
+func fnulo
+  prog p
+  p.iniherdainv(arg0)
+  ret txt(p.lin ? $[p.texto].[arg1])
 
 
 classe menu_iatribs
@@ -912,7 +915,7 @@ const info22 = "Raças e classes que não podem usar esse item"
 const tipo22 = "opc_tipos"
 const vari22 = "vestirnao"
 #
-const nome23 = "Sons"
+const nome23 = "Sons e mensagens"
 const tipo23 = "menu_isom--"
 #
 const nome24 = "Atributos"

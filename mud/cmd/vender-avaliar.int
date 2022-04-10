@@ -73,7 +73,7 @@ func exec # Avalia ou vende um item
   l.addfim(arg0.dono.dentro2)
   epara l.remove(arg0), l, l.ini.remove
     refvar p = ref(l.objini) # Personagem que está sendo verificado
-    continuar !(arg1.tipoitem2 & p.tipoitem) # Checa se tem interesse
+    continuar (arg1.tipoitem2 & p.tipoitem) == "0" # Checa se tem interesse
     lin = negociar_msg(arg0, p)
     continuar lin == "\b"
     ret lin, arg0.msg(lin)
