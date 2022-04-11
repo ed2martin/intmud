@@ -9,6 +9,9 @@ telatxt = 1
 # 0=ignorar, 1=permitir apenas FimSe sem Se, 2=checar tudo
 err = 1
 
+# Permitir executar ffplay seguido de um texto qualquer
+arqexec = ffplay *
+
 classe _serv
 # Lista de endereços mais usados
 const inter = "t intervox.nce.ufrj.br 1963"
@@ -23,6 +26,7 @@ const lo = "t localhost 1963"
 const t2t = "t t2tmud.org 9999"
 const t2s = "s t2tmud.org 444"
 
+
 classe tela
 telatxt tela
 socket sock
@@ -33,6 +37,17 @@ int8 passo # Passo, ao conectar; depende do protocolo
 const msg = tela.msg(arg0)
 textotxt hist_texto
 textopos hist_pos
+arqexec msp_ffplay # Para verificar se o programa ffplay pode ser executado
+int8 msp_ativo # 0=precisa verificar ffplay, 1=desativado, 2=ativado
+txt100 msp_diretorio # Aonde estão os sons
+txt200 msp_musica_txt # Nome do som usado como música de fundo
+uint16 msp_musica_rep # Número de repetições
+intdec msp_musica_esp # Para cancelar se a duração da música for menos de 1 segundo
+arqexec msp_musica_exec # ffplay reproduzindo a música de fundo
+txt200 msp_som_txt.10 # Nome do som usado como efeito sonoro
+uint16 msp_som_rep.10 # Número de repetições
+arqexec msp_som_exec.10 # ffplay reproduzindo o efeito sonoro
+arqdir msp_arqdir
 
 func iniclasse
   criar(arg0)
@@ -45,15 +60,17 @@ func ini
   fimse
 
 func inic_exec # Mensagem de abertura
-  msg("Para conectar como Telnet, digite t endereço porta\n")
-  msg("Para conectar como Telnet seguro, digite s endereço porta\n")
-  msg("Para conectar como Papovox, digite p endereço porta\n")
-  msg("Exemplo: t intervox.nce.ufrj.br 1963\n")
-  msg("Teclas PGUP e PGDN permitem acessar o histórico do que foi digitado\n")
   msg("F1 mostra os endereços predefinidos\n")
   msg("F2 ativa/desativa eco das mensagens enviadas\n")
   msg("F3 desconecta\n")
   msg("F4 encerra o programa\n")
+  msg("Teclas PGUP e PGDN permitem acessar o histórico do que foi digitado\n")
+  msg("Para conectar como Telnet, digite t endereço porta\n")
+  msg("Para conectar como Telnet seguro, digite s endereço porta\n")
+  msg("Para conectar como Papovox, digite p endereço porta\n")
+  msg("Exemplo: t intervox.nce.ufrj.br 1963\n")
+  msg("Para tocar sons do MUD (MSP) via ffplay, digitar o nome do diretório\n")
+  msg("aonde estão os arquivos sonoros após o número da porta\n")
 
 func tela_tecla # Usuário pressionou uma tecla
   casovar arg0
@@ -111,25 +128,43 @@ func tecla_F3
     sock.fechar
     msg("\d1Desconectado\b\n")
     inic = 2
+    sock_musica("off")
+    sock_som("off")
   senao
     msg("\d1Já está desconectado\b\n")
   fimse
   ret 1
 
 func tecla_F4
+  sock_musica("off")
+  sock_som("off")
   terminar
 
 func tela_msg # Usuário digitou alguma coisa
   hist_texto.addfim(arg0)
   hist_texto.remove(hist_texto.linhas - 50)
   hist_pos = hist_texto.fim
-  txt80 linha
   casovar sock.proto
   casose "0" # Desconectado
     ret arg0 == "", nulo
     passo = 0
-    linha = _serv:[arg0]
-    !linha && (linha = txtremove(arg0, "ED"))
+    txt200 linha = _serv:[arg0] ?? txtremove(arg0, "ED")
+    se txtsub(linha, 3) # Tem som
+      se !msp_ativo
+        refvar msg1 = msp_ffplay.abrir("ffplay -version")
+        se msg1
+          msg("\d1Erro ao chamar o programa ffplay: " + msg1 + "\b\n")
+          msg("Para reproduzir sons, é necessário instalar o programa ffplay\n")
+          msg("Na versão Windows, colocar o ffplay.exe no mesmo diretório deste programa\n")
+          ret
+        fimse
+      fimse
+      msg("\d1Som ativado\b\n")
+      msp_ativo = 2
+      msp_diretorio = txtsub(linha, 3)
+    senao  # Não tem som
+      msp_ativo == 2 && (msp_ativo = 1)
+    fimse
     se txt1(linha) == "s"
       proto = 1
       txt100 erro
@@ -178,9 +213,18 @@ func sock_con # Conectou
 func sock_fechou # Conexão foi encerrada
   msg("\d1Conexão foi encerrada\b\n")
   inic = 5
+  sock_musica("off")
+  sock_som("off")
 
 func sock_msg # Recebeu uma mensagem
-  ret !arg1, msg(arg0)
+  se !arg1
+    ret msg(arg0)
+  senao msp_ativo != 2
+  senao txt(arg0, 0, 8) == "!!MUSIC(" && txtfim(arg0, 1) == ")"
+    ret sock_musica(txt(arg0, 8, inttotal(arg0) - 9))
+  senao txt(arg0, 0, 8) == "!!SOUND(" && txtfim(arg0, 1) == ")"
+    ret sock_som(txt(arg0, 8, inttotal(arg0) - 9))
+  fimse
   msg(arg0 + "\n")
   se proto == 2 && passo == 0 # Papovox; recebeu primeira mensagem
     passo = 1, sock.msg("papovox\n")
@@ -188,3 +232,82 @@ func sock_msg # Recebeu uma mensagem
     passo = 2, sock.proto = 5
     msg("\d1Papovox conectado\b\n")
   fimse
+
+func sock_musica # Tocar uma música de fundo
+# arg0 = argumentos do comando !!MUSIC
+  se arg0 == "off" || !txt1(arg0)
+    msp_musica_exec.fechar
+    ret
+  fimse
+  refvar arq1 = txt1(arg0)
+  refvar arq2 = msp_arqdir.barra(msp_diretorio + "/" + arq1)
+  ret txtproc("/\\-", txt(arq1, 0, 1)) >= 0 || txtproc(arq1, "..") >= 0, nulo
+  uint16 pos
+  int8 volume = 100
+  int8 repeticoes = 1
+  int8 continuar = 0
+  epara pos = intsub(arg0) - 1, pos >= 1, pos--
+    refvar t = txtsub(arg0, pos, 1)
+    txt(t, 0, 2) == "v=" && (volume = txt(t, 2))
+    txt(t, 0, 2) == "l=" && (repeticoes = txt(t, 2))
+    txt(t, 0, 2) == "c=" && (continuar = txt(t, 2))
+  efim
+  msp_musica_rep = repeticoes
+  se !continuar || txtsub(msp_musica_txt, 5, 1) != arq2 || !msp_musica_exec.aberto
+    msp_musica_txt = "ffplay -autoexit -hide_banner -nodisp -nostats "
+    msp_musica_txt += arq2 + " -af volume=" + volume / 100
+    msp_musica_esp = 10
+    msp_musica_exec.fechar
+    msp_musica_exec.abrir(msp_musica_txt)
+  fimse
+  # msg("MÚSICA: " + arq2 + "\n")
+  # msg("volume " + volume + " rep " + repeticoes + " cont " + continuar + "\n")
+
+func msp_musica_exec_fechou
+  ret msp_musica_esp || msp_musica_rep == 1, nulo
+  msp_musica_rep--
+  msp_musica_esp = 10
+  msp_musica_exec.abrir(msp_musica_txt)
+
+func sock_som # Tocar uma música de fundo
+# arg0 = argumentos do comando !!MUSIC
+  se arg0 == "off" || !txt1(arg0)
+    msp_som_exec.0.fechar
+    msp_som_exec.1.fechar
+    msp_som_exec.2.fechar
+    msp_som_exec.3.fechar
+    msp_som_exec.4.fechar
+    msp_som_exec.5.fechar
+    msp_som_exec.6.fechar
+    msp_som_exec.7.fechar
+    msp_som_exec.8.fechar
+    msp_som_exec.9.fechar
+    ret
+  fimse
+  refvar arq1 = txt1(arg0)
+  refvar arq2 = msp_arqdir.barra(msp_diretorio + "/" + arq1)
+  ret txtproc("/\\-", txt(arq1, 0, 1)) >= 0 || txtproc(arq1, "..") >= 0, nulo
+  uint16 pos
+  int8 volume = 100
+  int8 repeticoes = 1
+  epara pos = intsub(arg0) - 1, pos >= 1, pos--
+    refvar t = txtsub(arg0, pos, 1)
+    txt(t, 0, 2) == "v=" && (volume = txt(t, 2))
+    txt(t, 0, 2) == "l=" && (repeticoes = txt(t, 2))
+  efim
+  epara pos = 0, pos < 10, pos++
+    sair !msp_som_exec.[pos].aberto
+  efim
+  se pos < 10
+    msp_som_rep.[pos] = (repeticoes < 10 ? repeticoes : 10)
+    msp_som_txt.[pos] = "ffplay -autoexit -hide_banner -nodisp -nostats "
+    msp_som_txt.[pos] += arq2 + " -af volume=" + volume / 100
+    msp_som_exec.[pos].abrir(msp_som_txt.[pos])
+  fimse
+  # msg("SOM: " + arq2 + "\n")
+  # msg("volume " + volume + " rep " + repeticoes + " cont " + continuar + "\n")
+
+func msp_som_exec_fechou
+  ret msp_som_rep.[arg1] <= 1, nulo
+  msp_som_rep.[arg1]--
+  msp_som_exec.[arg1].abrir(msp_som_txt.[arg1])
