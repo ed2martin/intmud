@@ -27,6 +27,74 @@ const t2t = "t t2tmud.org 9999"
 const t2s = "s t2tmud.org 444"
 
 
+classe jogoserv
+# Portas abertas para receber conexões de usuários
+serv servidor # Para receber conexões
+int8 aberto
+
+func iniclasse
+  criar(arg0)
+
+func abrir
+  se aberto
+    ret "Porta 1963 já está aberta"
+  senao !servidor.abrir("127.0.0.1", 1963)
+    ret "Não foi possível abrir a porta 1963"
+  fimse
+  aberto = 1
+  ret "Porta 1963 aberta em localhost"
+
+func servidor_socket # Conectado: cria objeto
+  criar("jogousr", arg0)
+
+
+classe jogousr
+socket j_sock # Usuário conectado
+inttempo j_tempo # Para encerrar conexão após um tempo ou entrar via Papovox
+uint8 j_passo # 0=Conectando, 1=Entrando via Papovox, 2=Papovox, 3=Telnet
+
+func ini # Objeto foi criado
+# arg0 = socket
+  j_sock = arg0
+  j_sock.msg("+OK Para Telnet pressione ENTER\n")
+  j_tempo = 100 # 10 segundos depois desconecta
+
+func j_tempo_exec # Tempo esgotado
+  se j_passo == 1
+    j_sock.msg("+Ok Conectado via Papovox\n")
+    j_passo = 2
+  senao
+    apagar(este)
+    j_sock.msg("-Tempo esgotado\n")
+  fimse
+
+func j_sock_fechou # Conexão fechou
+  apagar(este)
+
+func j_sock_msg # Recebeu mensagem do usuário, arg0=mensagem
+  se j_passo # Conectado
+    $tela.tela_msg(arg0)
+  senao arg0 != "" # Papovox sempre fornece um nome
+    j_sock.msg("+OK Entrando via Papovox\n")
+    j_sock.proto = 5 # Papovox (sem cores)
+    j_passo = 1
+    j_tempo = 10
+  senao # Nome vazio: é Telnet
+    j_sock.msg("-OK Conectado via Telnet\n")
+    j_sock.proto = 3 # Telnet, pode receber mensagens incompletas
+    j_sock.cores = 3 # Cores ao enviar e receber
+    j_passo = 3
+    j_tempo = 0
+  fimse
+
+func msgpuro
+  j_passo == 2 && j_sock.msg(txtcor(arg0))
+  j_passo == 3 && j_sock.msg(arg0)
+
+func novalinha
+  j_passo == 3 && j_sock.msg("\n")
+
+
 classe tela
 telatxt tela
 socket sock
@@ -34,7 +102,6 @@ inttempo inic
 int1 eco
 int8 proto # 0=Telnet, 1=Telnet seguro, 2=Papovox
 int8 passo # Passo, ao conectar; depende do protocolo
-const msg = tela.msg(arg0)
 textotxt hist_texto
 textopos hist_pos
 arqexec msp_ffplay # Para verificar se o programa ffplay pode ser executado
@@ -49,28 +116,41 @@ uint16 msp_som_rep.10 # Número de repetições
 arqexec msp_som_exec.10 # ffplay reproduzindo o efeito sonoro
 arqdir msp_arqdir
 
+func msgpuro # Envia mensagem que não passa para a próxima linha
+  tela.msg(arg0)
+  ref r
+  epara r = $jogousr, r, r = objdepois(r)
+    r.msgpuro(arg0)
+  efim
+
+func msglin # Envia mensagem que passa para a próxima linha
+  tela.msg(arg0 + "\n")
+  ref r
+  epara r = $jogousr, r, r = objdepois(r)
+    r.msgpuro(arg0 + "\n")
+  efim
+
+func novalinha # Passa para a próxima linha se o cursor não está no início da linha
+  ret tela.posx == 0, nulo
+  tela.msg("\n")
+  ref r
+  epara r = $jogousr, r, r = objdepois(r)
+    r.novalinha
+  efim
+
 func iniclasse
   criar(arg0)
 
 func ini
   inic = 2
-  msg("Telnet\n")
+  msglin("Telnet")
   se tela.proto == 0
     terminar
   fimse
 
 func inic_exec # Mensagem de abertura
-  msg("F1 mostra os endereços predefinidos\n")
-  msg("F2 ativa/desativa eco das mensagens enviadas\n")
-  msg("F3 desconecta\n")
-  msg("F4 encerra o programa\n")
-  msg("Teclas PGUP e PGDN permitem acessar o histórico do que foi digitado\n")
-  msg("Para conectar como Telnet, digite t endereço porta\n")
-  msg("Para conectar como Telnet seguro, digite s endereço porta\n")
-  msg("Para conectar como Papovox, digite p endereço porta\n")
-  msg("Exemplo: t intervox.nce.ufrj.br 1963\n")
-  msg("Para tocar sons do MUD (MSP) via ffplay, digitar o nome do diretório\n")
-  msg("aonde estão os arquivos sonoros após o número da porta\n")
+  msglin("F1 mostra as opções")
+  msglin("F4 encerra o programa")
 
 func tela_tecla # Usuário pressionou uma tecla
   casovar arg0
@@ -99,39 +179,48 @@ func tela_tecla # Usuário pressionou uma tecla
   ret tecla_[arg0]
 
 func tecla_F1
+  msglin("Teclas:")
+  msglin("F2 mostra os endereços predefinidos")
+  msglin("F3 ativa/desativa eco das mensagens enviadas")
+  msglin("F4 encerra o programa")
+  msglin("F5 desconecta")
+  msglin("F8 abre porta 1963 no endereço localhost (permite acessar esse programa")
+  msglin("por qualquer Telnet ou Papovox que estiver rodando na mesma máquina)")
+  msglin("PGUP e PGDN permitem acessar o histórico do que foi digitado")
+  msglin("Comandos:")
+  msglin("Para conectar como Telnet, digite t endereço porta")
+  msglin("Para conectar como Telnet seguro, digite s endereço porta")
+  msglin("Para conectar como Papovox, digite p endereço porta")
+  msglin("Exemplo: t intervox.nce.ufrj.br 1963")
+  msglin("Para tocar sons do MUD (MSP) via ffplay, digitar o nome do diretório")
+  msglin("aonde estão os arquivos sonoros após o número da porta")
+  msglin("Exemplo: t intervox.nce.ufrj.br 1963 sons")
+  msglin("No Windows: colocar o ffplay.exe no mesmo diretório do telnet.int")
+  msglin("No Linux: instalar o pacote ffmpeg, ele contém o ffplay")
+  msglin("Para mudar a lista de endereços predefinidos, abrir o arquivo telnet.int")
+  msglin("em um editor de texto e editar a classe _serv")
+  msglin("Depois fechar e abrir este programa para a nova lista ter efeito")
+
+func tecla_F2
   prog p
   se sock.proto == 0
-    msg("Atalhos:\n")
+    msglin("Atalhos:")
     p.inifunc("_serv")
     enquanto p.lin
-      msg("\c6" + p.texto + "\b = " + _serv:[p.texto] + "\n")
+      msglin("\c6" + p.texto + "\b = " + _serv:[p.texto])
       p.depois
     efim
-    msg("Digite um atalho ou o endereço seguido de espaço e porta\n")
+    msglin("Digite um atalho ou o endereço seguido de espaço e porta")
     ret 1
   fimse
 
-func tecla_F2
-  eco = 1 - eco
-  se tela.posx
-    msg("\n")
-  fimse
-  se eco
-    msg("\d1Eco ativado\b\n")
-  senao
-    msg("\d1Eco desativado\b\n")
-  fimse
-  ret 1
-
 func tecla_F3
-  se sock.proto
-    sock.fechar
-    msg("\d1Desconectado\b\n")
-    inic = 2
-    sock_musica("off")
-    sock_som("off")
+  eco = 1 - eco
+  novalinha
+  se eco
+    msglin("\d1Eco ativado\b")
   senao
-    msg("\d1Já está desconectado\b\n")
+    msglin("\d1Eco desativado\b")
   fimse
   ret 1
 
@@ -139,6 +228,23 @@ func tecla_F4
   sock_musica("off")
   sock_som("off")
   terminar
+
+func tecla_F5
+  novalinha
+  se sock.proto
+    sock.fechar
+    msglin("\d1Desconectado\b")
+    inic = 2
+    sock_musica("off")
+    sock_som("off")
+  senao
+    msglin("\d1Já está desconectado\b")
+  fimse
+  ret 1
+
+func tecla_f8
+  novalinha
+  msglin("\d1" + $jogoserv.abrir + "\b")
 
 func tela_msg # Usuário digitou alguma coisa
   hist_texto.addfim(arg0)
@@ -153,13 +259,13 @@ func tela_msg # Usuário digitou alguma coisa
       se !msp_ativo
         refvar msg1 = msp_ffplay.abrir("ffplay -version")
         se msg1
-          msg("\d1Erro ao chamar o programa ffplay: " + msg1 + "\b\n")
-          msg("Para reproduzir sons, é necessário instalar o programa ffplay\n")
-          msg("Na versão Windows, colocar o ffplay.exe no mesmo diretório deste programa\n")
+          msglin("\d1Erro ao chamar o programa ffplay: " + msg1 + "\b")
+          msglin("Para reproduzir sons, é necessário instalar o programa ffplay")
+          msglin("Na versão Windows, colocar o ffplay.exe no mesmo diretório deste programa")
           ret
         fimse
       fimse
-      msg("\d1Som ativado\b\n")
+      msglin("\d1Som ativado\b")
       msp_ativo = 2
       msp_diretorio = txtsub(linha, 3)
     senao  # Não tem som
@@ -169,68 +275,68 @@ func tela_msg # Usuário digitou alguma coisa
       proto = 1
       txt100 erro
       se (erro = sock.inissl) != ""
-        msg("\d4Erro ao carregar biblioteca OpenSSL: " + erro + "\b\n")
+        msglin("\d4Erro ao carregar biblioteca OpenSSL: " + erro + "\b")
       senao !sock.abrirssl(txtsub(linha, 1, 1), txtsub(linha, 2, 1))
-        msg("\d1Erro ao conectar em " + txt2(linha) + "\b\n")
-        msg("\d1Endereço inválido?\b\n")
+        msglin("\d1Erro ao conectar em " + txt2(linha) + "\b")
+        msglin("\d1Endereço inválido?\b")
       senao
-        msg("\d1Conectando em " + txt2(linha) + "\b\n")
+        msglin("\d1Conectando em " + txt2(linha) + "\b")
       fimse
       ret
     senao txt1(linha) == "t" || txt1(linha) == "p"
       proto = (txt1(linha) == "t" ? 0 : 2)
       se !sock.abrir(txtsub(linha, 1, 1), txtsub(linha, 2, 1))
-        msg("\d1Erro ao conectar em " + txt2(linha) + "\b\n")
-        msg("\d1Endereço inválido?\b\n")
+        msglin("\d1Erro ao conectar em " + txt2(linha) + "\b")
+        msglin("\d1Endereço inválido?\b")
       senao
-        msg("\d1Conectando em " + txt2(linha) + "\b\n")
+        msglin("\d1Conectando em " + txt2(linha) + "\b")
       fimse
     senao
-      msg("Tecle t, s ou p, seguido de endereço e porta")
+      msglin("Tecle t, s ou p, seguido de endereço e porta")
     fimse
     ret
   casose "1" # Conectando
-    msg("\d1Conexão em progresso\b\n")
+    msglin("\d1Conexão em progresso\b")
     ret
   casose # Conectado
-    ret proto == 2 && passo != 2, msg("Ativando Papovox; aguarde\n")
+    ret proto == 2 && passo != 2, msglin("Ativando Papovox; aguarde")
     sock.msg(arg0 + "\n")
-    eco && msg("\d4>>" + arg0 + "\b\n")
+    eco && msglin("\d4>" + arg0 + "\b")
     ret
   casofim
 
 func sock_err # Erro ao conectar
-  msg("\d1Erro: " + arg0 + "\b\n")
+  msglin("\d1Erro: " + arg0 + "\b")
 
 func sock_con # Conectou
-  msg("\d1Conectado\b\n")
+  msglin("\d1Conectado\b")
   sock.cores = 1 # Cores somente ao receber
   se proto == 1
-    msg("Assinatura SHA1 = " + sock.txtsha1 + "\n")
-    msg("Assinatura MD5 = " + sock.txtmd5 + "\n")
+    msglin("Assinatura SHA1 = " + sock.txtsha1)
+    msglin("Assinatura MD5 = " + sock.txtmd5)
   fimse
 
 func sock_fechou # Conexão foi encerrada
-  msg("\d1Conexão foi encerrada\b\n")
+  msglin("\d1Conexão foi encerrada\b")
   inic = 5
   sock_musica("off")
   sock_som("off")
 
 func sock_msg # Recebeu uma mensagem
   se !arg1
-    ret msg(arg0)
+    ret msgpuro(arg0)
   senao msp_ativo != 2
   senao txt(arg0, 0, 8) == "!!MUSIC(" && txtfim(arg0, 1) == ")"
     ret sock_musica(txt(arg0, 8, inttotal(arg0) - 9))
   senao txt(arg0, 0, 8) == "!!SOUND(" && txtfim(arg0, 1) == ")"
     ret sock_som(txt(arg0, 8, inttotal(arg0) - 9))
   fimse
-  msg(arg0 + "\n")
+  msglin(arg0)
   se proto == 2 && passo == 0 # Papovox; recebeu primeira mensagem
     passo = 1, sock.msg("papovox\n")
   senao proto == 2 && passo == 1 # Papovox; recebeu segunda mensagem
     passo = 2, sock.proto = 5
-    msg("\d1Papovox conectado\b\n")
+    msglin("\d1Papovox conectado\b")
   fimse
 
 func sock_musica # Tocar uma música de fundo
@@ -260,8 +366,8 @@ func sock_musica # Tocar uma música de fundo
     msp_musica_exec.fechar
     msp_musica_exec.abrir(msp_musica_txt)
   fimse
-  # msg("MÚSICA: " + arq2 + "\n")
-  # msg("volume " + volume + " rep " + repeticoes + " cont " + continuar + "\n")
+  # msglin("MÚSICA: " + arq2)
+  # msglin("volume " + volume + " rep " + repeticoes + " cont " + continuar)
 
 func msp_musica_exec_fechou
   ret msp_musica_esp || msp_musica_rep == 1, nulo
@@ -304,8 +410,8 @@ func sock_som # Tocar uma música de fundo
     msp_som_txt.[pos] += arq2 + " -af volume=" + volume / 100
     msp_som_exec.[pos].abrir(msp_som_txt.[pos])
   fimse
-  # msg("SOM: " + arq2 + "\n")
-  # msg("volume " + volume + " rep " + repeticoes + " cont " + continuar + "\n")
+  # msglin("SOM: " + arq2)
+  # msglin("volume " + volume + " rep " + repeticoes + " cont " + continuar)
 
 func msp_som_exec_fechou
   ret msp_som_rep.[arg1] <= 1, nulo
