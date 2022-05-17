@@ -125,6 +125,13 @@ func menu3 # Usado em m_menu para obter o nome da variável
   inttotal(lin) < maximo && (lin = txt(lin + txtesp(maximo), 0, maximo))
   ret lin + ": " + (vari[arg0] ? (clas[arg0] ?? classe) + ":" + vari[arg0] : "")
 
+func txtnulo # Retorna uma variável/função/constante da classe derivada
+# arg0 = nome da classe base (ex. h_cmd_abrir)
+# arg1 = nome da constante
+  prog p
+  p.iniherdainv(arg0)
+  ret txt(p.lin ? $[p.texto].[arg1])
+
 
 classe comando_objmenu
 herda comando_adm

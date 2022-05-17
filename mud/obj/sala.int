@@ -88,9 +88,9 @@ uint8 porta_entrar # Tipo de saída
 uint8 porta_sair # Tipo de saída
 #
 # Ordem que deve organizar as constantes:
-const admordem = "s_titulo\n\
-s_desc\n\
-s_noite\n\
+const admordem = sala:admordem1 + sala:admordem2
+const admordem1 = "s_area\n\
+s_titulo s_desc s_noite\n\
 s_doarsalas s_doarsim s_doarnao\n\
 s_entrada\n\
 s_falar\n\
@@ -118,42 +118,83 @@ volmax\n\
 objmax\n\
 evhora\n\
 eveste\n\
-dir_n portaini_n portanome_n portaartigo_n fechadura_n\n\
-comechave_n fugir_n inv_n fecha_n tranc_n voar_n\n\
-som_abrir_n som_fechar_n som_tranc_n som_destr_n\n\
-dir_s portaini_s portanome_s portaartigo_s fechadura_s\n\
-comechave_s fugir_s inv_s fecha_s tranc_s voar_s\n\
-som_abrir_s som_fechar_s som_tranc_s som_destr_s\n\
-dir_l portaini_l portanome_l portaartigo_l fechadura_l\n\
-comechave_l fugir_l inv_l fecha_l tranc_l voar_l\n\
-som_abrir_l som_fechar_l som_tranc_l som_destr_l\n\
-dir_o portaini_o portanome_o portaartigo_o fechadura_o\n\
-comechave_o fugir_o inv_o fecha_o tranc_o voar_o\n\
-som_abrir_o som_fechar_o som_tranc_o som_destr_o\n\
-dir_c portaini_c portanome_c portaartigo_c fechadura_c\n\
-comechave_c fugir_c inv_c fecha_c tranc_c voar_c\n\
-som_abrir_c som_fechar_c som_tranc_c som_destr_c\n\
-dir_b portaini_b portanome_b portaartigo_b fechadura_b\n\
-comechave_b fugir_b inv_b fecha_b tranc_b voar_b\n\
-som_abrir_b som_fechar_b som_tranc_b som_destr_b\n\
-dir_ne portaini_ne portanome_ne portaartigo_ne fechadura_ne\n\
-comechave_ne fugir_ne inv_ne fecha_ne tranc_ne voar_ne\n\
-som_abrir_ne som_fechar_ne som_tranc_ne som_destr_ne\n\
-dir_no portaini_no portanome_no portaartigo_no fechadura_no\n\
-comechave_no fugir_no inv_no fecha_no tranc_no voar_no\n\
-som_abrir_no som_fechar_no som_tranc_no som_destr_no\n\
-dir_se portaini_se portanome_se portaartigo_se fechadura_se\n\
-comechave_se fugir_se inv_se fecha_se tranc_se voar_se\n\
-som_abrir_se som_fechar_se som_tranc_se som_destr_se\n\
-dir_so portaini_so portanome_so portaartigo_so fechadura_so\n\
-comechave_so fugir_so inv_so fecha_so tranc_so voar_so\n\
-som_abrir_so som_fechar_so som_tranc_so som_destr_so\n\
-dir_entrar portaini_entrar portanome_entrar portaartigo_entrar fechadura_entrar\n\
-comechave_entrar fugir_entrar inv_entrar fecha_entrar tranc_entrar voar_entrar\n\
-som_abrir_entrar som_fechar_entrar som_tranc_entrar som_destr_entrar\n\
-dir_sair portaini_sair portanome_sair portaartigo_sair fechadura_sair\n\
-comechave_sair fugir_sair inv_sair fecha_sair tranc_sair voar_sair\n\
-som_abrir_sair som_fechar_sair som_tranc_sair som_destr_sair\n\
+dir_n dir_s dir_l dir_o dir_c dir_b dir_ne dir_no dir_se dir_so dir_entrar dir_sair\n\
+portaini_n portaini_s portaini_l portaini_o portaini_c portaini_b\n\
+portaini_ne portaini_no portaini_se portaini_so portaini_entrar portaini_sair\n\
+portanome_n portanome_s portanome_l portanome_o portanome_c portanome_b\n\
+portanome_ne portanome_no portanome_se portanome_so portanome_entrar portanome_sair\n\
+portaartigo_n portaartigo_s portaartigo_l portaartigo_o portaartigo_c portaartigo_b\n\
+portaartigo_ne portaartigo_no portaartigo_se portaartigo_so\n\
+portaartigo_entrar portaartigo_sair\n\
+fechadura_n fechadura_s fechadura_l fechadura_o fechadura_c fechadura_b\n\
+fechadura_ne fechadura_no fechadura_se fechadura_so fechadura_entrar fechadura_sair\n\
+comechave_n comechave_s comechave_l comechave_o comechave_c comechave_b\n\
+comechave_ne comechave_no comechave_se comechave_so comechave_entrar comechave_sair\n\
+fugir_n fugir_s fugir_l fugir_o fugir_c fugir_b\n\
+fugir_ne fugir_no fugir_se fugir_so fugir_entrar fugir_sair\n\
+inv_n inv_s inv_l inv_o inv_c inv_b inv_ne inv_no inv_se inv_so inv_entrar inv_sair\n\
+fecha_n fecha_s fecha_l fecha_o fecha_c fecha_b\n\
+fecha_ne fecha_no fecha_se fecha_so fecha_entrar fecha_sair\n\
+tranc_n tranc_s tranc_l tranc_o tranc_c tranc_b\n\
+tranc_ne tranc_no tranc_se tranc_so tranc_entrar tranc_sair\n\
+voar_n voar_s voar_l voar_o voar_c voar_b\n\
+voar_ne voar_no voar_se voar_so voar_entrar voar_sair"
+const admordem2 = "som_abrir_n som_abrir_s som_abrir_l som_abrir_o som_abrir_c som_abrir_b\n\
+som_abrir_ne som_abrir_no som_abrir_se som_abrir_so som_abrir_entrar som_abrir_sair\n\
+som_fechar_n som_fechar_s som_fechar_l som_fechar_o som_fechar_c som_fechar_b\n\
+som_fechar_ne som_fechar_no som_fechar_se som_fechar_so som_fechar_entrar som_fechar_sair\n\
+som_tranc_n som_tranc_s som_tranc_l som_tranc_o som_tranc_c som_tranc_b\n\
+som_tranc_ne som_tranc_no som_tranc_se som_tranc_so som_tranc_entrar som_tranc_sair\n\
+som_destr_n som_destr_s som_destr_l som_destr_o som_destr_c som_destr_b\n\
+som_destr_ne som_destr_no som_destr_se som_destr_so som_destr_entrar som_destr_sair\n\
+msg_abrir1_n msg_abrir2_n msg_abrir3_n\n\
+msg_abrir1_s msg_abrir2_s msg_abrir3_s\n\
+msg_abrir1_l msg_abrir2_l msg_abrir3_l\n\
+msg_abrir1_o msg_abrir2_o msg_abrir3_o\n\
+msg_abrir1_c msg_abrir2_c msg_abrir3_c\n\
+msg_abrir1_b msg_abrir2_b msg_abrir3_b\n\
+msg_abrir1_ne msg_abrir2_ne msg_abrir3_ne\n\
+msg_abrir1_no msg_abrir2_no msg_abrir3_no\n\
+msg_abrir1_se msg_abrir2_se msg_abrir3_se\n\
+msg_abrir1_so msg_abrir2_so msg_abrir3_so\n\
+msg_abrir1_entrar msg_abrir2_entrar msg_abrir3_entrar\n\
+msg_abrir1_sair msg_abrir2_sair msg_abrir3_sair\n\
+msg_fechar1_n msg_fechar2_n msg_fechar3_n\n\
+msg_fechar1_s msg_fechar2_s msg_fechar3_s\n\
+msg_fechar1_l msg_fechar2_l msg_fechar3_l\n\
+msg_fechar1_o msg_fechar2_o msg_fechar3_o\n\
+msg_fechar1_c msg_fechar2_c msg_fechar3_c\n\
+msg_fechar1_b msg_fechar2_b msg_fechar3_b\n\
+msg_fechar1_ne msg_fechar2_ne msg_fechar3_ne\n\
+msg_fechar1_no msg_fechar2_no msg_fechar3_no\n\
+msg_fechar1_se msg_fechar2_se msg_fechar3_se\n\
+msg_fechar1_so msg_fechar2_so msg_fechar3_so\n\
+msg_fechar1_entrar msg_fechar2_entrar msg_fechar3_entrar\n\
+msg_fechar1_sair msg_fechar2_sair msg_fechar3_sair\n\
+msg_tranc1_n msg_tranc2_n msg_tranc3_n\n\
+msg_tranc1_s msg_tranc2_s msg_tranc3_s\n\
+msg_tranc1_l msg_tranc2_l msg_tranc3_l\n\
+msg_tranc1_o msg_tranc2_o msg_tranc3_o\n\
+msg_tranc1_c msg_tranc2_c msg_tranc3_c\n\
+msg_tranc1_b msg_tranc2_b msg_tranc3_b\n\
+msg_tranc1_ne msg_tranc2_ne msg_tranc3_ne\n\
+msg_tranc1_no msg_tranc2_no msg_tranc3_no\n\
+msg_tranc1_se msg_tranc2_se msg_tranc3_se\n\
+msg_tranc1_so msg_tranc2_so msg_tranc3_so\n\
+msg_tranc1_entrar msg_tranc2_entrar msg_tranc3_entrar\n\
+msg_tranc1_sair msg_tranc2_sair msg_tranc3_sair\n\
+msg_destr1_n msg_destr2_n msg_destr3_n\n\
+msg_destr1_s msg_destr2_s msg_destr3_s\n\
+msg_destr1_l msg_destr2_l msg_destr3_l\n\
+msg_destr1_o msg_destr2_o msg_destr3_o\n\
+msg_destr1_c msg_destr2_c msg_destr3_c\n\
+msg_destr1_b msg_destr2_b msg_destr3_b\n\
+msg_destr1_ne msg_destr2_ne msg_destr3_ne\n\
+msg_destr1_no msg_destr2_no msg_destr3_no\n\
+msg_destr1_se msg_destr2_se msg_destr3_se\n\
+msg_destr1_so msg_destr2_so msg_destr3_so\n\
+msg_destr1_entrar msg_destr2_entrar msg_destr3_entrar\n\
+msg_destr1_sair msg_destr2_sair msg_destr3_sair\n\
 a_reset i_reset s_reset"
 const iniclasse = !$[arg0] && criar(arg0)
 
@@ -364,53 +405,185 @@ func s_salarand_exec # Embaralha saídas se necessário
     $mens.msalatodos1(s_salarandmsg)
   fimse
 
-func mudaporta # Muda estado de uma saída; variável porta_[arg0]
-# arg0 = nome da saída (até duas letras)
+const mudaporta = mudaporta0(arg0, arg1) # Chamado pelos resets de sala e de área
+
+func mudaporta0 # Muda estado de uma saída sem enviar mensagem; variável porta_[arg0]
+# arg0 = direção da saída
 # arg1 = novo valor
-# arg2 = mensagem enviada para a própria sala, da mesma forma que $mens.mtodos1
-# arg3 = mensagem enviada para a sala vizinha, da mesma forma que $mens.mtodos1
-# arg4 = mensagem para o personagem $mens.perso, se nulo ou vazio assume arg2
-# Nas mensagens: $m=nome da porta, $1=abriu ou abriram, $2=fechou ou fecharam
 # Retorna: 0=saída inexistente, 1=saída foi alterada
   ref r = dir_[arg0]
   ret !r.s_sala, 0 # Retorna se a saída não é uma sala
   refvar nome = misc:d2[arg0]
   se r.dir_[nome] == este && r.porta_[nome] == porta_[arg0]
     r.porta_[nome] = arg1
-    se arg3 && r.socktot
-      refvar som = arg1 < 2 ? r.som_abrir_[nome] : r.som_fechar_[nome]
-      txt200 mporta = r.portanome_[nome]
-      !mporta && !(mporta = $cmd_[nome].m_porta) && (mporta = "uma porta")
-      $mens.mens = mporta
-      se r.portaartigo_[nome] & 1
-        $mens.o_1 = "abriram", $mens.o_2 = "fecharam"
-      senao
-        $mens.o_1 = "abriu", $mens.o_2 = "fechou"
-      fimse
-      listaobj l
-      epara l.addfim(r.dentro2), l, l.ini.remove
-        $mens.msgsominv(arg3, som, l.objini)
-      efim
-    fimse
   fimse
   porta_[arg0] = arg1
-  se arg2 && socktot
-    refvar som = arg1 < 2 ? som_abrir_[arg0] : som_fechar_[arg0]
-    txt100 mporta = portanome_[arg0]
-    !mporta && !(mporta = $cmd_[arg0].m_porta) && (mporta = "uma porta")
-    $mens.mens = mporta
-    se portaartigo_[arg0] & 1
-      $mens.o_1 = "abriram", $mens.o_2 = "fecharam"
-    senao
-      $mens.o_1 = "abriu", $mens.o_2 = "fechou"
-    fimse
-    listaobj l
-    refvar perso = arg4 ? $mens.perso
-    epara l.addfim(dentro2), l, l.ini.remove
-      $mens.msgsominv(l.objini == perso ? arg4 : arg2, som, l.objini)
-    efim
-  fimse
   ret 1
+
+func mudaporta2 # Muda estado de uma saída; variável porta_[arg0]
+# arg0 = direção da saída
+# arg1 = novo valor
+# arg2 = mensagem enviada para a própria sala, da mesma forma que $mens.mtodos1
+# arg3 = mensagem enviada para a sala vizinha, da mesma forma que $mens.mtodos1
+# Nas mensagens: $m=nome da porta
+# Retorna: 0=saída inexistente, 1=saída foi alterada
+  ref r = dir_[arg0]
+  ret !r.s_sala, 0 # Retorna se a saída não é uma sala
+  refvar nome = misc:d2[arg0]
+  se r.dir_[nome] == este && r.porta_[nome] == porta_[arg0]
+    se !r.socktot
+    senao arg1 < 2 && r.porta_[nome] >= 2 # Abriu
+      r.mensporta1(nome, 0, arg3)
+    senao arg1 >= 2 && r.porta_[nome] < 2 # Fechou
+      r.mensporta1(nome, 1, arg3)
+    senao arg1 == 3 && r.porta_[nome] == 2 # Trancou
+      r.mensporta1(nome, 2, arg3)
+    senao arg1 == 2 && r.porta_[nome] == 3 # Destrancou
+      r.mensporta1(nome, 3, arg3)
+    fimse
+    r.porta_[nome] = arg1
+  fimse
+  se !socktot
+  senao arg1 < 2 && porta_[arg0] >= 2 # Abriu
+    mensporta1(arg0, 0, arg2)
+  senao arg1 >= 2 && porta_[arg0] < 2 # Fechou
+    mensporta1(arg0, 1, arg2)
+  senao arg1 == 3 && porta_[arg0] == 2 # Trancou
+    mensporta1(arg0, 2, arg2)
+  senao arg1 == 2 && porta_[arg0] == 3 # Destrancou
+    mensporta1(arg0, 3, arg2)
+  fimse
+  porta_[arg0] = arg1
+  ret 1
+
+func mudaporta3 # Muda estado de uma saída (por um personagem); variável porta_[arg0]
+# arg0 = direção da saída
+# arg1 = novo valor
+# arg2 = mensagem para o personagem $mens.perso
+# arg3 = mensagem enviada para a própria sala, da mesma forma que $mens.mtodos1
+# arg4 = mensagem enviada para a sala vizinha, da mesma forma que $mens.mtodos1
+# Nas mensagens: $m=nome da porta, $p=nome do personagem
+# Retorna: 0=saída inexistente, 1=saída foi alterada
+  ref r = dir_[arg0]
+  ret !r.s_sala, 0 # Retorna se a saída não é uma sala
+  refvar nome = misc:d2[arg0]
+  se r.dir_[nome] == este && r.porta_[nome] == porta_[arg0]
+    se !r.socktot
+    senao arg1 < 2 && r.porta_[nome] >= 2 # Abriu
+      r.mensporta1(nome, 0, arg4)
+    senao arg1 >= 2 && r.porta_[nome] < 2 # Fechou
+      r.mensporta1(nome, 1, arg4)
+    senao arg1 == 3 && r.porta_[nome] == 2 # Trancou
+      r.mensporta1(nome, 2, arg4)
+    senao arg1 == 2 && r.porta_[nome] == 3 # Destrancou
+      r.mensporta1(nome, 3, arg4)
+    fimse
+    r.porta_[nome] = arg1
+  fimse
+  se !socktot
+  senao arg1 < 2 && porta_[arg0] >= 2 # Abriu
+    mensporta2(arg0, 0, arg2, arg3)
+  senao arg1 >= 2 && porta_[arg0] < 2 # Fechou
+    mensporta2(arg0, 1, arg2, arg3)
+  senao arg1 == 3 && porta_[arg0] == 2 # Trancou
+    mensporta2(arg0, 2, arg2, arg3)
+  senao arg1 == 2 && porta_[arg0] == 3 # Destrancou
+    mensporta2(arg0, 3, arg2, arg3)
+  fimse
+  porta_[arg0] = arg1
+  ret 1
+
+func mensporta1 # Envia mensagem sobre porta abrindo/fechando
+# arg0 = direção da saída
+# arg1 = ação: 0=abrir, 1=fechar, 2=trancar, 3=destrancar
+# arg2 = mensagem para a sala, pode ser nulo
+  listaobj l
+  prog p
+  refvar tipo = portaartigo_[arg0] & 1 ? 4 : 3
+  $mens.mens = portanome_[arg0] ?? $cmd_[arg0].m_porta ?? "uma porta"
+  casovar arg1
+  casose "0"
+    p.iniherdainv("h_cmd_abrir")
+    refvar s1 = som_abrir_[arg0]
+    refvar m1 = arg2 ?? msg_abrir3_[arg0] ?? $[p.texto].m_porta_abriu[tipo]
+    sair !m1
+    epara l.addfim(dentro2), l, l.ini.remove
+      $mens.msgsominv(m1, s1, l.objini)
+    efim
+    sair
+  casose "1"
+    p.iniherdainv("h_cmd_fechar")
+    refvar s1 = som_fechar_[arg0]
+    refvar m1 = arg2 ?? msg_fechar3_[arg0] ?? $[p.texto].m_porta_fechou[tipo]
+    sair !m1
+    epara l.addfim(dentro2), l, l.ini.remove
+      $mens.msgsominv(m1, s1, l.objini)
+    efim
+    sair
+  casose "2"
+    p.iniherdainv("h_cmd_trancar")
+    refvar s1 = r.som_tranc_[arg0]
+    refvar m1 = arg2 ?? msg_tranc3_[arg0]
+    sair !m1
+    epara l.addfim(dentro2), l, l.ini.remove
+      $mens.msgsominv(m1, s1, l.objini)
+    efim
+    sair
+  casose "3"
+    p.iniherdainv("h_cmd_destrancar")
+    refvar s1 = r.som_destr_[arg0]
+    refvar m1 = arg2 ?? msg_destr3_[arg0]
+    sair !m1
+    epara l.addfim(dentro2), l, l.ini.remove
+      $mens.msgsominv(m1, s1, l.objini)
+    efim
+  casofim
+
+func mensporta2 # Envia mensagem sobre alguém abrindo/fechando uma porta
+# arg0 = direção da saída
+# arg1 = ação: 0=abrir, 1=fechar, 2=trancar, 3=destrancar
+# arg2 = mensagem para o personagem $mens.perso, pode ser nulo
+# arg3 = mensagem para os outros personagens, pode ser nulo
+  listaobj l
+  prog p
+  $mens.mens = portanome_[arg0] ?? $cmd_[arg0].m_porta ?? "uma porta"
+  casovar arg1
+  casose "0"
+    p.iniherdainv("h_cmd_abrir")
+    refvar s1 = som_abrir_[arg0]
+    refvar m1 = arg2 ?? msg_abrir1_[arg0] ?? $[p.texto].m_porta_abriu1
+    refvar m2 = arg3 ?? msg_abrir2_[arg0] ?? $[p.texto].m_porta_abriu2
+    epara l.addfim(dentro2), l, l.ini.remove
+      $mens.msgsominv(l.objini == perso ? m1 : m2, s1, l.objini)
+    efim
+    sair
+  casose "1"
+    p.iniherdainv("h_cmd_fechar")
+    refvar s1 = som_fechar_[arg0]
+    refvar m1 = arg2 ?? msg_fechar1_[arg0] ?? $[p.texto].m_porta_fechou1
+    refvar m2 = arg3 ?? msg_fechar2_[arg0] ?? $[p.texto].m_porta_fechou2
+    epara l.addfim(dentro2), l, l.ini.remove
+      $mens.msgsominv(l.objini == perso ? m1 : m2, s1, l.objini)
+    efim
+    sair
+  casose "2"
+    p.iniherdainv("h_cmd_trancar")
+    refvar s1 = r.som_tranc_[arg0]
+    refvar m1 = arg2 ?? msg_tranc1_[arg0] ?? $[p.texto].m_porta_trancou1
+    refvar m2 = arg3 ?? msg_tranc2_[arg0] ?? $[p.texto].m_porta_trancou2
+    epara l.addfim(dentro2), l, l.ini.remove
+      $mens.msgsominv(l.objini == perso ? m1 : m2, s1, l.objini)
+    efim
+    sair
+  casose "3"
+    p.iniherdainv("h_cmd_destrancar")
+    refvar s1 = r.som_destr_[arg0]
+    refvar m1 = arg2 ?? msg_destr1_[arg0] ?? $[p.texto].m_porta_destrancou1
+    refvar m2 = arg3 ?? msg_destr2_[arg0] ?? $[p.texto].m_porta_destrancou2
+    epara l.addfim(dentro2), l, l.ini.remove
+      $mens.msgsominv(l.objini == perso ? m1 : m2, s1, l.objini)
+    efim
+  casofim
 
 func totalmove # Quantos movimentos consome, conforme o terreno
   casovar int(s_terreno)

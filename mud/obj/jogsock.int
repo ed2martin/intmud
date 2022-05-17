@@ -325,10 +325,14 @@ func txtmostra # Mostra próximo bloco de txtmais
 # Via bot, o chat corta a mensagem em aproximadamente 10 linhas
 # Conectado diretamente, até 2048 bytes; 20 linhas é uma margem segura
   refvar lin = txt1(info) == "b" ? 10 : 20
-  se txtmais.linhas <= lin
+  textopos pos = txtmais.ini
+  epara pos.depois(lin), pos.linha > 1 && pos.byte >= 2000, pos.antes
+  efim
+  se !pos.lin
     msg(txtmais.remove(lin))
   senao
-    msg(txtmais.remove(lin - 1) + "\nTecle M para mais")
+    pos.linha >= lin && pos.antes
+    msg(txtmais.remove(pos.linha) + "\nTecle M para mais")
   fimse
 
 func msg # Envia mensagem

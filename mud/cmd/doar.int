@@ -57,7 +57,9 @@ func doarobj
   p = t.ini
   enquanto p.lin
     refvar s = $s_[p.texto]
-    se !s || tipo & s.s_doarnao || s.s_doarsim && !(tipo & s.s_doarsim)
+    se !s || (tipo & s.s_doarnao) != "0"
+      p.remove
+    senao s.s_doarsim && s.s_doarsim != "0" && (tipo & s.s_doarsim) == "0"
       p.remove
     senao
       p.depois

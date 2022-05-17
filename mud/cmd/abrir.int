@@ -17,9 +17,11 @@ const m_porta_aberta = "$P já est$o abert$a." # Conforme mens_porta:info
 const m_porta_trancada = "$P est$o trancad$a." # Conforme mens_porta:info
 const m_porta_abriu1 = "Você abriu $m."
 const m_porta_abriu2 = "$P abriu $m."
+const m_porta_abriu3 = "$M abriu."
+const m_porta_abriu4 = "$M Abriram."
 const admordem = "m_ajuda m_sem_args m_naover m_item_aberto m_item_trancado\n\
 m_item_nao m_item_abriu1 m_item_abriu2 m_porta_sem m_porta_aberta m_porta_trancada\n\
-m_porta_abriu1 m_porta_abriu2"
+m_porta_abriu1 m_porta_abriu2 m_porta_abriu3 m_porta_abriu4"
 
 func escr
   refvar perm_msg = $perm_[arg0.jogperm].abrir
@@ -58,7 +60,7 @@ func escrobj # Abrir um item
 # Abre o item
   r.i_aberto = 2
   $mens.p(arg0, r)
-  $mens.mtodos2(m_item_abriu1, m_item_abriu2)
+  $mens.mtodos2(r.i_abriuitem1 ?? m_item_abriu1, r.i_abriuitem2 ?? m_item_abriu2)
   epara l.addfim(arg0.evento), l, l.ini.remove
     l.objini.cmd_abriuobj(arg0, r, arg0)
   efim
@@ -88,7 +90,7 @@ func escrdir # Abrir uma porta
   efim
 # Abre a porta
   $mens.p(arg0)
-  arg0.dono.mudaporta(arg1, 1, m_porta_abriu2, "$M se $1.", m_porta_abriu1) # Abre a porta
+  arg0.dono.mudaporta3(arg1, 1) # Abre a porta
   epara l.addfim(arg0.evento), l, l.ini.remove
     l.objini.cmd_abriudir(arg0, arg0.dono, arg1, arg0)
   efim
@@ -114,9 +116,11 @@ const m_porta_sem = "Não há porta nessa direção."
 const m_porta_fechada = "$P já est$o fechad$a." # Conforme mens_porta:info
 const m_porta_fechou1 = "Você fechou $m."
 const m_porta_fechou2 = "$P fechou $m."
+const m_porta_fechou3 = "$M fechou."
+const m_porta_fechou4 = "$M fecharam."
 const admordem = "m_ajuda m_sem_args m_naover m_item_fechado m_item_nao\n\
 m_item_fechou1 m_item_fechou2 m_porta_sem m_porta_fechada m_porta_fechou1\n\
-m_porta_fechou2"
+m_porta_fechou2 m_porta_fechou3 m_porta_fechou4"
 
 func escr
   refvar perm_msg = $perm_[arg0.jogperm].abrir
@@ -154,7 +158,7 @@ func escrobj # Fechar um item
 # Fecha o item
   r.i_aberto = r.i_tranc == 2 ? 4 : 3
   $mens.p(arg0, r)
-  $mens.mtodos2(m_item_fechou1, m_item_fechou2)
+  $mens.mtodos2(r.i_fechouitem1 ?? m_item_fechou1, r.i_fechouitem2 ?? m_item_fechou2)
   epara l.addfim(arg0.evento), l, l.ini.remove
     l.objini.cmd_fechouobj(arg0, r, arg0)
   efim
@@ -188,9 +192,9 @@ func escrdir # Fechar uma porta
 # Fecha a porta
   $mens.p(arg0)
   se arg0.dono.tranc_[arg1](arg0) == 2
-    arg0.dono.mudaporta(arg1, 3, m_porta_fechou2, "$M se $2.", m_porta_fechou1) # Tranca
+    arg0.dono.mudaporta3(arg1, 3) # Tranca
   senao
-    arg0.dono.mudaporta(arg1, 2, m_porta_fechou2, "$M se $2.", m_porta_fechou1) # Fecha
+    arg0.dono.mudaporta3(arg1, 2) # Fecha
   fimse
   epara l.addfim(arg0.evento), l, l.ini.remove
     l.objini.cmd_fechoudir(arg0, arg0.dono, arg1, arg0)
@@ -256,7 +260,14 @@ const vari12 = "m_porta_abriu1"
 const nome13 = "Abriu porta outros"
 const tipo13 = "opc_linha"
 const vari13 = "m_porta_abriu2"
-
+#
+const nome14 = "Abriu no singular"
+const tipo14 = "opc_linha"
+const vari14 = "m_porta_abriu3"
+#
+const nome15 = "Abriu no plural"
+const tipo15 = "opc_linha"
+const vari15 = "m_porta_abriu4"
 
 classe m_cmd_fechar
 herda comando_menu_cmd
@@ -305,3 +316,11 @@ const vari10 = "m_porta_fechou1"
 const nome11 = "Fechou porta outros"
 const tipo11 = "opc_linha"
 const vari11 = "m_porta_fechou2"
+#
+const nome12 = "Fechou no singular"
+const tipo12 = "opc_linha"
+const vari12 = "m_porta_fechou3"
+#
+const nome13 = "Fechou no plural"
+const tipo13 = "opc_linha"
+const vari13 = "m_porta_fechou4"

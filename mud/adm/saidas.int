@@ -45,14 +45,31 @@ func escr # Apagar saída
     int8 x
     x = p.apagar(arg0.dono, "dir_" + dir)
     x += p.apagar(arg0.dono, "portaini_" + dir)
+    x += p.apagar(arg0.dono, "portanome_" + dir)
+    x += p.apagar(arg0.dono, "portaartigo_" + dir)
+    x += p.apagar(arg0.dono, "voar_" + dir)
+    x += p.apagar(arg0.dono, "fugir_" + dir)
     x += p.apagar(arg0.dono, "inv_" + dir)
+    x += p.apagar(arg0.dono, "fecha_" + dir)
     x += p.apagar(arg0.dono, "tranc_" + dir)
     x += p.apagar(arg0.dono, "fechadura_" + dir)
     x += p.apagar(arg0.dono, "comechave_" + dir)
-    x += p.apagar(arg0.dono, "voar_" + dir)
-    x += p.apagar(arg0.dono, "fugir_" + dir)
-    x += p.apagar(arg0.dono, "portanome_" + dir)
-    x += p.apagar(arg0.dono, "portaartigo_" + dir)
+    x += p.apagar(arg0.dono, "som_abrir_" + dir)
+    x += p.apagar(arg0.dono, "som_fechar_" + dir)
+    x += p.apagar(arg0.dono, "som_tranc_" + dir)
+    x += p.apagar(arg0.dono, "som_destr_" + dir)
+    x += p.apagar(arg0.dono, "msg_abrir1_" + dir)
+    x += p.apagar(arg0.dono, "msg_abrir2_" + dir)
+    x += p.apagar(arg0.dono, "msg_abrir3_" + dir)
+    x += p.apagar(arg0.dono, "msg_fechar1_" + dir)
+    x += p.apagar(arg0.dono, "msg_fechar2_" + dir)
+    x += p.apagar(arg0.dono, "msg_fechar3_" + dir)
+    x += p.apagar(arg0.dono, "msg_tranc1_" + dir)
+    x += p.apagar(arg0.dono, "msg_tranc2_" + dir)
+    x += p.apagar(arg0.dono, "msg_tranc3_" + dir)
+    x += p.apagar(arg0.dono, "msg_destr1_" + dir)
+    x += p.apagar(arg0.dono, "msg_destr2_" + dir)
+    x += p.apagar(arg0.dono, "msg_destr3_" + dir)
     ret !x, arg0.msg("\bSaída não existe: " + arg1)
     config:salvar, arg0.msg("\bSaída apagada: " + dir)
     admlog(arg0, "apagou saída " + dir + " de " + txt(arg0.dono, 2))
@@ -250,6 +267,7 @@ const vari9 = "fugir_" + var.saida1
 const nome10 = "Nome da porta"
 const tipo10 = "opc_linha"
 const vari10 = "portanome_" + var.saida1
+const nulo10 = "\c3" + txtnulo("h_cmd_" + var.saida1, "m_porta")
 #
 const nome11 = "Artigo porta"
 const tipo11 = "opc_opcao"
@@ -275,3 +293,76 @@ const nome15 = "Som destrancou"
 const info15 = "Para quem recebe a mensagem do personagem entrando na sala"
 const tipo15 = "opc_linha"
 const vari15 = "som_destr_" + var.saida1
+#
+const nome16 = "Mensagens"
+const tipo16 = "menu_saida_msg--"
+
+
+classe menu_saida_msg
+herda comando_menu
+const titulo = "Mensagens " + txtmai(var.saida1) + " de " + txt(var.classe1, 2)
+const colunas = 25
+const classe = var.classe1
+const menufim = "menu_saida"
+#
+const nome1 = "Abriu perso"
+const tipo1 = "opc_linha"
+const vari1 = "msg_abrir1_" + var.saida1
+const nulo1 = "\c3" + txtnulo("h_cmd_abrir", "m_porta_abriu1")
+#
+const nome2 = "Abriu outros"
+const tipo2 = "opc_linha"
+const vari2 = "msg_abrir2_" + var.saida1
+const nulo2 = "\c3" + txtnulo("h_cmd_abrir", "m_porta_abriu2")
+#
+const nome3 = "Abriu"
+const tipo3 = "opc_linha"
+const vari3 = "msg_abrir3_" + var.saida1
+const nulo3 = "\c3" + txtnulo2("h_cmd_abrir", "m_porta_abriu")
+#
+const nome4 = "Fechou perso"
+const tipo4 = "opc_linha"
+const vari4 = "msg_fechar1_" + var.saida1
+const nulo4 = "\c3" + txtnulo("h_cmd_fechar", "m_porta_fechou1")
+#
+const nome5 = "Fechou outros"
+const tipo5 = "opc_linha"
+const vari5 = "msg_fechar2_" + var.saida1
+const nulo5 = "\c3" + txtnulo("h_cmd_fechar", "m_porta_fechou2")
+#
+const nome6 = "Fechou"
+const tipo6 = "opc_linha"
+const vari6 = "msg_fechar3_" + var.saida1
+const nulo6 = "\c3" + txtnulo2("h_cmd_fechar", "m_porta_fechou")
+#
+const nome7 = "Trancou perso"
+const tipo7 = "opc_linha"
+const vari7 = "msg_tranc1_" + var.saida1
+const nulo7 = "\c3" + txtnulo("h_cmd_trancar", "m_porta_trancou1")
+#
+const nome8 = "Trancou outros"
+const tipo8 = "opc_linha"
+const vari8 = "msg_tranc2_" + var.saida1
+const nulo8 = "\c3" + txtnulo("h_cmd_trancar", "m_porta_trancou2")
+#
+const nome9 = "Trancou"
+const tipo9 = "opc_linha"
+const vari9 = "msg_tranc3_" + var.saida1
+#
+const nome10 = "Destrancou perso"
+const tipo10 = "opc_linha"
+const vari10 = "msg_destr1_" + var.saida1
+const nulo10 = "\c3" + txtnulo("h_cmd_destrancar", "m_porta_destrancou1")
+#
+const nome11 = "Destrancou outros"
+const tipo11 = "opc_linha"
+const vari11 = "msg_destr2_" + var.saida1
+const nulo11 = "\c3" + txtnulo("h_cmd_destrancar", "m_porta_destrancou2")
+#
+const nome12 = "Destrancou"
+const tipo12 = "opc_linha"
+const vari12 = "msg_destr3_" + var.saida1
+
+func txtnulo2
+  refvar tipo = [var.classe1]:portaartigo_[var.saida1] & 1
+  ret txtnulo(arg0, arg1 + (tipo ? 4 : 3))

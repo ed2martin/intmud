@@ -79,7 +79,7 @@ func escrobj # Trancar um item
 # Tranca o item
   r.i_aberto = 4
   $mens.p(arg0, r)
-  $mens.mtodos2(m_item_trancou1, m_item_trancou2)
+  $mens.mtodos2(r.i_trancouitem1 ?? m_item_trancou1, r.i_trancouitem2 ?? m_item_trancou2)
   epara l.addfim(arg0.evento), l, l.ini.remove
     l.objini.cmd_trancouobj(arg0, r, chave, arg0)
   efim
@@ -129,16 +129,8 @@ func escrdir # Trancar uma porta
     ret l.objini.cmd_trancardir(arg0, arg0.dono, arg1, chave, arg0.dono), nulo
   efim
 # Tranca a porta
-  arg0.dono.mudaporta(arg1, 3) # Tranca a porta
-  se arg0.dono.socktot
-    refvar som = arg0.dono.som_tranc_[arg1]
-    $mens.p(arg0)
-    $mens.mens = mporta
-    epara l.addfim(arg0.dono.dentro2), l, l.ini.remove
-      refvar msg1 = arg0 == l.objini ? m_porta_trancou1 : m_porta_trancou2
-      $mens.msgsominv(msg1, som, l.objini)
-    efim
-  fimse
+  $mens.p(arg0)
+  arg0.dono.mudaporta3(arg1, 3) # Tranca a porta
   epara l.addfim(arg0.evento), l, l.ini.remove
     l.objini.cmd_trancoudir(arg0, arg0.dono, arg1, chave, arg0)
   efim
@@ -228,7 +220,9 @@ func escrobj # Destrancar um item
   r.i_comechave && chave.apagar(1)
   r.i_aberto = 3
   $mens.p(arg0, r)
-  $mens.mtodos2(m_item_destrancou1, m_item_destrancou2)
+  refvar m1 = r.i_destrancouitem1 ?? m_item_destrancou1
+  refvar m2 = r.i_destrancouitem2 ?? m_item_destrancou2
+  $mens.mtodos2(m1, m2)
   epara l.addfim(arg0.evento), l, l.ini.remove
     l.objini.cmd_destrancouobj(arg0, r, chave, arg0)
   efim
@@ -288,17 +282,9 @@ func escrdir # Destrancar uma porta
     ret l.objini.cmd_destrancardir(arg0, arg0.dono, arg1, chave, arg0.dono), nulo
   efim
 # Destranca a porta
+  $mens.p(arg0)
   arg0.dono.comechave_[arg1] && chave.apagar(1)
-  arg0.dono.mudaporta(arg1, 2) # Destranca a porta
-  se arg0.dono.socktot
-    refvar som = arg0.dono.som_destr_[arg1]
-    $mens.p(arg0)
-    $mens.mens = mporta
-    epara l.addfim(arg0.dono.dentro2), l, l.ini.remove
-      refvar msg1 = arg0 == l.objini ? m_porta_destrancou1 : m_porta_destrancou2
-      $mens.msgsominv(msg1, som, l.objini)
-    efim
-  fimse
+  arg0.dono.mudaporta3(arg1, 2) # Destranca a porta
   epara l.addfim(arg0.evento), l, l.ini.remove
     l.objini.cmd_destrancoudir(arg0, arg0.dono, arg1, chave, arg0)
   efim

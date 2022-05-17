@@ -149,7 +149,7 @@ uint8 porta_[direção]
 const portaini_[direção]
 Especifica o tipo de saída em determinada direção.
 Porta é o valor atual, geralmente definido dessa forma: uint8 porta_s
-PortaIni é o valor inicial, geralmente definido dessa forma: const porta_s = 2
+PortaIni é o valor inicial, geralmente definido dessa forma: const portaini_s = 2
 0 = Não há porta
 1 = Está aberto
 2 = Está fechado
@@ -255,13 +255,36 @@ func dirsalaitem( direção, personagem )
 Retorna a sala ou o item em uma direção ou nulo se não existir.
 Nota: personagem pode ser nulo se for genérico.
 
-func mudaporta( saída, valor, mens1, mens2 )
-Muda estado de uma saída; variável porta_[arg0]
-Saída é nome da saída (até duas letras)
+func mudaporta( saída, valor )
+Chamado pelos resets de sala e de área para mudar o estado de uma saída.
+Saída é a direção da saída
 Novo valor, vide porta_[direção]
-Mens1 = mensagem enviada para a própria sala, da mesma forma que $mens.mtodos1
-Mens2 = mensagem enviada para a sala vizinha, da mesma forma que $mens.mtodos1
+
+func mudaporta0( saída, valor )
+Muda estado de uma saída (variável porta_[arg0]) sem enviar mensagem
+Saída é a direção da saída
+Novo valor, vide porta_[direção]
+Retorna: 0=saída inexistente, 1=saída foi alterada
+
+func mudaporta2( saída, valor, mens1, mens2 )
+Muda estado de uma saída (variável porta_[arg0]) sem açào de um personagem
+Saída é a direção da saída
+Novo valor, vide porta_[direção]
+Mens1 é a mensagem enviada para a própria sala
+Mens2 é a mensagem enviada para a sala vizinha
+Mens1 e mens2 seguem o padrão de $mens.mtodos2; se "", assumem o texto padrão
 Nas mensagens, "$m" é o nome da porta
+Retorna: 0=saída inexistente, 1=saída foi alterada
+
+func mudaporta3( saída, valor, mens1, mens2, mens3 )
+Muda estado de uma saída (variável porta_[arg0]) pelo personagem $mens.perso
+Saída é a direção da saída
+Novo valor, vide porta_[direção]
+Mens1 é a mensagem enviada para o próprio personagem
+Mens2 é a mensagem enviada para a própria sala, exceto para o personagem
+Mens3 é a mensagem enviada para a sala vizinha
+Mens1 a mens3 seguem o padrão de $mens.mtodos3; se "", assumem o texto padrão
+Nas mensagens, "$m" é o nome da porta e "$p" é o personagem
 Retorna: 0=saída inexistente, 1=saída foi alterada
 
 func msg( mensagem )

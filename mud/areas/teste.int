@@ -1283,6 +1283,32 @@ const descnome = "uma maçã"
 const f_fome = 10
 
 
+classe i_teste082
+herda comum_itemperso
+const nome = "caixa"
+const descnome = "uma caixa"
+const i_pegar = "A caixa está presa no chão."
+const i_abertoini = 2 # Container: 2 Inicialmente aberto
+const i_tranc = 1 # Trancar: 1 Pode ser trancado
+const i_abriuitem1 = "Você aperta um botão e $a abre."
+const i_abriuitem2 = "$P aperta um botão e $a abre."
+const i_fechouitem1 = "Você aperta um botão e $a fecha."
+const i_fechouitem2 = "$P aperta um botão e $a fecha."
+const i_trancouitem1 = "Você vira uma manivela e $a tranca."
+const i_trancouitem2 = "$P vira uma manivela e $a tranca."
+const i_destrancouitem1 = "Você vira uma manivela e $a destranca."
+const i_destrancouitem2 = "$P vira uma manivela e $a destranca."
+
+
+classe i_teste083
+herda comum_itemperso
+const nome = "estante"
+const descnome = "uma estante"
+const i_pegar = "É uma estante embutida na parede."
+const i_abertoini = 2 # Container: 2 Inicialmente aberto
+const i_tranc = 1 # Trancar: 1 Pode ser trancado
+
+
 classe p_teste001
 herda comum_perso
 const nome = "Jardineiro"
@@ -1714,14 +1740,14 @@ func cmd_deuobj # Recebeu um item
     ret
   casose "2"
     arg0.var.j_teste019 = "" # Apaga a variável
-    dono.mudaporta("n", 1) # Abre a porta da sala (o "dono" do personagem)
+    dono.mudaporta0("n", 1) # Abre a porta da sala (o "dono" do personagem)
     misc:tempo("fechaporta", este) # Dispara funções 'fechaporta'
     $mens.p(este)
     $mens.mtodos1("$P faz um gesto e a porta ao norte se abre.")
   casofim
 
 func fechaporta80
-  dono.mudaporta("n", 3, "A porta ao norte fechou.", "A porta ao sul fechou.")
+  dono.mudaporta2("n", 3, "A porta ao norte fechou.", "A porta ao sul fechou.")
 # Outra forma de fechar e trancar a porta é:
 # dono.porta_n = 3 # Fecha e tranca a porta da sala (o "dono" do personagem)
 # $mens.p(este)
@@ -5558,8 +5584,22 @@ const s_titulo = "Mesa"
 const s_desc = "A mesa é como uma caixa, em que se pode colocar coisas dentro, mas com\n\
 as mensagens de pegar, soltar e olhar mudadas (via comando Eitem),\n\
 tem-se a impressão que itens são colocados em cima da mesa."
-const dir_n = $s_teste185
+const dir_n = $s_teste186
 const dir_s = $s_teste183
+const portaini_n = 1 # Estado inicial: 1 Porta aberta
+const tranc_n = 1 # Trancar: 1 Pode ser trancado
+const msg_abrir1_n = "Você abre a porta ao norte com violência."
+const msg_abrir2_n = "$P abre a porta ao norte com violência."
+const msg_abrir3_n = "A porta ao norte abre com uma pancada."
+const msg_fechar1_n = "Você fecha a porta ao norte com um chute."
+const msg_fechar2_n = "$P fecha a porta ao norte com um chute."
+const msg_fechar3_n = "A porta ao norte fecha com violência."
+const msg_tranc1_n = "Você faz um gesto com as mãos e a porta ao norte tranca."
+const msg_tranc2_n = "$P faz um gesto com as mãos e a porta ao norte tranca."
+const msg_tranc3_n = "Você ouve o barulho da porta ao norte trancar."
+const msg_destr1_n = "Você faz um gesto com as mãos e a porta ao norte destranca."
+const msg_destr2_n = "$P faz um gesto com as mãos e a porta ao norte destranca."
+const msg_destr3_n = "Você ouve o barulho da porta ao norte destrancar."
 const s_reset = "S 100 teste079 1 S"
 
 func s_reset1 # Realiza o reset
@@ -5574,9 +5614,58 @@ const s_desc = "Aqui há uma árvore com algumas maçãs. A cada 10 segundos a árvor
 maçã até chegar a quatro. Pode-se colher mas não é possível colocar nada\n\
 na árvore. Colher é feito no comando Eitem, aparecer maçãs na macieira é\n\
 com programação, no item teste080."
-const dir_s = $s_teste184
+const dir_s = $s_teste186
+const portaini_s = 1 # Estado inicial: 1 Porta aberta
+const tranc_s = 1 # Trancar: 1 Pode ser trancado
 const s_reset = "S 100 teste080 1 S"
 
 func s_reset1 # Realiza o reset
 # Não alterar; função criada automaticamente a partir de s_reset
   !dentro1.objini("i_teste080") && criar("i_teste080", este, 1)
+
+
+classe s_teste186
+herda b_teste
+const s_titulo = "Abrir Fechar Trancar Destrancar"
+const s_desc = "A caixa e a porta ao sul têm frases personalizadas (via comandos Eitem e\n\
+Esai) ao abrir, fechar, trancar e destrancar. Já a estante e a porta\n\
+ao norte não têm. Falando fechar (teclando falar fechar) nesta sala,\n\
+as saídas ao norte e ao sul são fechadas, porém destrancadas."
+const dir_n = $s_teste185
+const dir_s = $s_teste184
+const portaini_n = 1 # Estado inicial: 1 Porta aberta
+const portaini_s = 1 # Estado inicial: 1 Porta aberta
+const tranc_n = 1 # Trancar: 1 Pode ser trancado
+const tranc_s = 1 # Trancar: 1 Pode ser trancado
+const msg_abrir1_s = "Você abre a porta ao sul com um chute."
+const msg_abrir2_s = "$P abre a porta ao sul com um chute."
+const msg_abrir3_s = "A porta ao sul abre com uma pancada."
+const msg_fechar1_s = "Você bate a porta ao sul."
+const msg_fechar2_s = "$P bate a porta ao sul."
+const msg_fechar3_s = "A porta ao sul fecha com violência."
+const msg_tranc1_s = "Você estrala os dedos e a porta ao sul tranca."
+const msg_tranc2_s = "$P estrala os dedos e a porta ao sul tranca."
+const msg_tranc3_s = "Você ouve o barulho da porta ao sul trancar."
+const msg_destr1_s = "Você estrala os dedos e a porta ao sul destranca."
+const msg_destr2_s = "$P estrala os dedos e a porta ao sul destranca."
+const msg_destr3_s = "Você ouve o barulho da porta ao sul destrancar."
+const s_reset = "S 100 teste082 1 S\nS 100 teste083 1 S"
+
+func s_reset1 # Realiza o reset
+# Não alterar; função criada automaticamente a partir de s_reset
+  !dentro1.objini("i_teste082") && criar("i_teste082", este, 1)
+  !dentro1.objini("i_teste083") && criar("i_teste083", este, 1)
+
+func cmd_salaperso # Personagem chegou
+  ret !arg0.jog, nulo # Retorna se não for jogador
+  misc:evento(arg0) # Receber eventos do personagem
+
+func cmd_falou
+  se arg1 == "fechar"
+    se porta_n == 1
+      mudaporta2("n", 2)
+    fimse
+    se porta_s == 1
+      mudaporta2("s", 2, "O vento bateu a porta sul.", "O vento bateu a porta norte.")
+    fimse
+  fimse

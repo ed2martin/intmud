@@ -606,25 +606,25 @@ const nome24 = "Msg perso soltar"
 const tipo24 = "opc_linha"
 const clas24 = var.classe1
 const vari24 = "s_soltarmsg1"
-const nulo24 = "\c3" + fnulo("h_cmd_soltar", "m_soltar_sala1")
+const nulo24 = "\c3" + txtnulo("h_cmd_soltar", "m_soltar_sala1")
 #
 const nome25 = "Msg outros soltar"
 const tipo25 = "opc_linha"
 const clas25 = var.classe1
 const vari25 = "s_soltarmsg2"
-const nulo25 = "\c3" + fnulo("h_cmd_soltar", "m_soltar_sala2")
+const nulo25 = "\c3" + txtnulo("h_cmd_soltar", "m_soltar_sala2")
 #
 const nome26 = "Msg perso pegar"
 const tipo26 = "opc_linha"
 const clas26 = var.classe1
 const vari26 = "s_pegarmsg1"
-const nulo26 = "\c3" + fnulo("h_cmd_pegar", "m_pegar_sala1")
+const nulo26 = "\c3" + txtnulo("h_cmd_pegar", "m_pegar_sala1")
 #
 const nome27 = "Msg outros pegar"
 const tipo27 = "opc_linha"
 const clas27 = var.classe1
 const vari27 = "s_pegarmsg2"
-const nulo27 = "\c3" + fnulo("h_cmd_pegar", "m_pegar_sala2")
+const nulo27 = "\c3" + txtnulo("h_cmd_pegar", "m_pegar_sala2")
 #
 const nome28 = "Volume dentro"
 const tipo28 = "opc_numero"
@@ -670,11 +670,6 @@ Se definido, pode-se entrar no item por essa sala, e sair sai do item"
 const tipo34 = "opc_linha"
 const clas34 = var.classe1
 const vari34 = "s_entrada"
-
-func fnulo
-  prog p
-  p.iniherdainv(arg0)
-  ret txt(p.lin ? $[p.texto].[arg1])
 
 
 classe menu_area
