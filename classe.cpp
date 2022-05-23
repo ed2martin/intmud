@@ -250,7 +250,7 @@ void TClasse::MudaNome(const char * novonome)
         txtherda[1] = tamherda >> 8;
         assert(tamherda <= sizeof(txtherda));
         /*{
-          char mens[4096];
+          char mens[BUF_MENS];
           if (!mudounome)
             printf("Classe %s não herda %s diretamente\n", cl->Nome, Nome);
           else if (Instr::Decod(mens, txtherda, sizeof(mens)))
@@ -807,7 +807,7 @@ void TClasse::AcertaComandos(char * comandos)
     for (char * p = comandos; p[0] || p[1]; p+=Num16(p))
     {
         int pos = p-comandos;
-        char mens[4096];
+        char mens[BUF_MENS];
         if (Instr::Decod(mens, p, sizeof(mens)))
         {
             printf("%4d  ", pos);
@@ -1184,7 +1184,7 @@ void TClasse::LimpaInstr()
         printf(">>>> %s\n", cl->Nome);
         for (const char * p = cl->Comandos; Num16(p); p+=Num16(p))
         {
-            char mens[2048];
+            char mens[BUF_MENS];
             assert(Instr::Decod(mens, p, sizeof(mens)));
             printf(">  %s\n", mens);
         }
@@ -1506,7 +1506,7 @@ int TClasse::AcertaVar(bool acertaderiv)
             if (((valor & 0x400000)==0) == (passo==0))
                 continue;
             int tam = TVariavel::Tamanho(InstrVar[x]);
-            char mens[500];
+            char mens[BUF_MENS];
             if (!Instr::Decod(mens, InstrVar[x], sizeof(mens)))
                 strcpy(mens, "-----");
             printf("  %s  %d",
@@ -1715,7 +1715,7 @@ int TClasse::AcertaVar(bool acertaderiv)
     for (int x=0; x<indclasse; x++)
     {
         int param = 0;
-        char mens[2048];
+        char mens[BUF_MENS];
         printf("  %s  ", x<indobjeto ? "objeto" : "classe");
         switch (al[x].comando)
         {

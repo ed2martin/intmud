@@ -601,7 +601,7 @@ bool Instr::ExecX()
         // Mostra o que vai executar
 #ifdef DEBUG_INSTR
             {
-                char mens[4096];
+                char mens[BUF_MENS];
                 printf(">>> %d %d  ",
                        static_cast<int>(DadosFim-DadosTopo),
                        static_cast<int>(VarFim-VarAtual));
@@ -759,7 +759,7 @@ bool Instr::ExecX()
         case ex_coment:
 #ifdef DEBUG_INSTR
             {
-                char mens[4096];
+                char mens[BUF_MENS];
                 if (Instr::Decod(mens, FuncAtual->linha, sizeof(mens)))
                     printf("Exec_arg: %s\n", mens);
                 else

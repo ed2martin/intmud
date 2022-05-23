@@ -850,7 +850,7 @@ void Inicializa(const char * arg)
         }
         for (const char * p = obj->Comandos; Num16(p); p+=Num16(p))
         {
-            char mens[4096];
+            char mens[BUF_MENS];
             int total = Num16(p);
             putchar('-');
             for (int x=0; x<total; x++)

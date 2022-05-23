@@ -224,14 +224,18 @@ void TArqMapa::SalvarArq(bool tudo)
                     linhas=tipo;
                 }
         // Obtém texto correspondente à instrução
-                char mens[8192];
-                int espaco = (p[2]!=Instr::cComent ? indent : 0) * ParamIndent;
-                if (espaco>40)
-                    espaco=40;
-                int r = Instr::Decod(mens+4096+espaco, p, 4096-espaco);
+                char mens[BUF_MENS + BUF_MENS/2];
+                char * o = mens + sizeof(mens) - BUF_MENS;
+                int r = Instr::Decod(o, p, BUF_MENS);
                 assert(r!=0);
+                int espaco = (p[2]!=Instr::cComent ? indent : 0) * ParamIndent;
                 if (espaco)
-                    memset(mens+4096, ' ', espaco);
+                {
+                    if (espaco>40)
+                        espaco=40;
+                    o -= espaco;
+                    memset(o, ' ', espaco);
+                }
         // Divide em linhas
                 char barran = 0;
                 switch (p[2])
@@ -242,10 +246,9 @@ void TArqMapa::SalvarArq(bool tudo)
                 case Instr::cConstExpr:
                 case Instr::cConstVar:  if (ParamN < 2) break;
                 case Instr::cConstTxt:  if (ParamN < 1) break;
-                    if ((int)strlen(mens+4096) >= ParamLinha-10)
+                    if ((int)strlen(o) >= ParamLinha-10)
                         barran = 'n';
                 }
-                const char * o = mens+4096;
                 char * d = mens;
                 char * dfim = d+ParamLinha-10;
                 while (*o)

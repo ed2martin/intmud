@@ -209,7 +209,7 @@ bool TVarDebug::Func(TVariavel * v, const char * nome)
 #if 0
         for (const char * p = VarAtual->end_char; Num16(p); p+=Num16(p))
         {
-            char mens[4096];
+            char mens[BUF_MENS];
             int total = Num16(p);
             putchar('-');
             for (int x=0; x<total; x++)
@@ -392,7 +392,7 @@ void TVarDebug::Exec()
     VarAtual->endvar = FuncAtual->este;
 
 // Argumento: linha
-    char mens[4096];
+    char mens[BUF_MENS];
     Instr::Decod(mens, linha, sizeof(mens));
     if (!CriarVarTexto(mens))
         return;

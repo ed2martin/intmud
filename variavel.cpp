@@ -286,7 +286,7 @@ void TVariavel::Redim(TClasse * c, TObjeto * o, unsigned int antes, unsigned int
         printf("Variável criada  (%d a %d) end=%p", antes, depois-1, endvar);
     else
         printf("Variável apagada (%d a %d) end=%p", depois, antes-1, endvar);
-    char mens[4096];
+    char mens[BUF_MENS];
     if (Instr::Decod(mens, defvar, sizeof(mens)))
         printf(" def=%p %s\n", defvar, mens);
     else
@@ -521,7 +521,7 @@ void TVariavel::MoverEnd(void * destino, TClasse * classe, TObjeto * objeto)
 #ifdef DEBUG_MOVER
     printf("Variável movida (0 a %d) de %p para %p",
            vetor-1, endvar, destino);
-    char mens1[4096];
+    char mens1[BUF_MENS];
     if (Instr::Decod(mens1, defvar, sizeof(mens1)))
         printf(" def=%p %s\n", defvar, mens1);
     else
@@ -689,7 +689,7 @@ void TVariavel::MoverDef()
         vetor++;
 #ifdef DEBUG_MOVER
     printf("Variável mudou def (0 a %d) end=%p", vetor-1, endvar);
-    char mens1[4096];
+    char mens1[BUF_MENS];
     if (Instr::Decod(mens1, defvar, sizeof(mens1)))
         printf(" def=%p %s\n", defvar, mens1);
     else

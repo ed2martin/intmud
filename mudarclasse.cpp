@@ -44,7 +44,7 @@ void TMudarAux::AddBloco(const char * ender, int tamanho)
     puts("Bloco");
     while (tamanho>0)
     {
-        char mens[4096];
+        char mens[BUF_MENS];
         Instr::Decod(mens, ender, sizeof(mens));
         printf(">>>%s\n", mens);
         tamanho -= Num16(ender), ender += Num16(ender);
@@ -421,7 +421,7 @@ bool TMudarClasse::ExecPasso()
         printf("Alterando %s\n", cl->Nome);
         for (const char * p = instr; Num16(p); p+=Num16(p))
         {
-            char mens[2048];
+            char mens[BUF_MENS];
             assert(Instr::Decod(mens, p, sizeof(mens)));
             printf("  %s\n", mens);
         }
