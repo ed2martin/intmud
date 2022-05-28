@@ -50,6 +50,7 @@ TSslSetFd            SslSetFd = 0;
 TSslMethodV2         SslMethodV2 = 0;
 TSslMethodV3         SslMethodV3 = 0;
 TSslMethodTLSV1      SslMethodTLSV1 = 0;
+TSslMethodTLSV12     SslMethodTLSV12 = 0;
 TSslMethodV23        SslMethodV23 = 0;
 TSslNew              SslNew = 0;
 TSslFree             SslFree = 0;
@@ -108,13 +109,9 @@ const char * AbreSSL()
         return "Erro ao carregar libeay32.dll";
     }
 #else
-    ssl_handle1 = dlopen("libssl.so.1.0.0", RTLD_LAZY);
-    if (ssl_handle1 == 0)
-        ssl_handle1 = dlopen("libssl.so", RTLD_LAZY);
+    ssl_handle1 = dlopen("libssl.so", RTLD_LAZY);
     if (ssl_handle1 == 0)
         return "Erro ao carregar libssl.so";
-    ssl_handle2 = dlopen("libcrypto.so.1.0.0", RTLD_LAZY);
-    if (ssl_handle2 == 0)
     ssl_handle2 = dlopen("libcrypto.so", RTLD_LAZY);
     if (ssl_handle2 == 0)
     {
@@ -133,6 +130,7 @@ const char * AbreSSL()
     SslMethodV2         = (TSslMethodV2)   GETPROC(ssl_handle1, "SSLv2_method");
     SslMethodV3         = (TSslMethodV3)   GETPROC(ssl_handle1, "SSLv3_method");
     SslMethodTLSV1      = (TSslMethodTLSV1)GETPROC(ssl_handle1, "TLSv1_method");
+    SslMethodTLSV12     = (TSslMethodTLSV12)GETPROC(ssl_handle1, "TLSv1_2_method");
     SslMethodV23        = (TSslMethodV23)  GETPROC(ssl_handle1, "SSLv23_method");
     SslNew              = (TSslNew)        GETPROC(ssl_handle1, "SSL_new");
     SslFree             = (TSslFree)       GETPROC(ssl_handle1, "SSL_free");
@@ -153,13 +151,13 @@ const char * AbreSSL()
 
     const char * erro = 0;
     if (!SslGetError)         erro = "SSL_get_error não foi encontrado";
-    if (!SslLibraryInit)      erro = "SSL_library_init não foi encontrado";
-    if (!SslLoadErrorStrings) erro = "SSL_load_error_strings não foi encontrado";
+    //if (!SslLibraryInit)      erro = "SSL_library_init não foi encontrado";
+    //if (!SslLoadErrorStrings) erro = "SSL_load_error_strings não foi encontrado";
     if (!SslCtxNew)           erro = "SSL_CTX_new não foi encontrado";
     if (!SslCtxFree)          erro = "SSL_CTX_free não foi encontrado";
     if (!SslSetFd)            erro = "SSL_set_fd não foi encontrado";
-    if (!SslMethodV2 && !SslMethodV23 && !SslMethodV3)
-        erro = "SSLv2_method/SSLv3_method não foi encontrado";
+    if (!SslMethodV2 && !SslMethodV23 && !SslMethodV3 && !SslMethodTLSV12)
+        erro = "SSLv2_method/SSLv3_method/TLSv1_2_method não foi encontrado";
     if (!SslMethodTLSV1)      erro = "TLSv1_method não foi encontrado";
     if (!SslNew)              erro = "SSL_new não foi encontrado";
     if (!SslFree)             erro = "SSL_free não foi encontrado";
@@ -172,7 +170,7 @@ const char * AbreSSL()
     if (!SslPending)          erro = "SSL_pending não foi encontrado";
     if (!SslPrivateKeyFile)   erro = "SSL_CTX_use_PrivateKey_file";
     if (!SslCertificateFile)  erro = "SSL_CTX_use_certificate_file";
-    if (!OPENSSLaddallalgorithms) erro = "OPENSSL_add_all_algorithms_noconf não foi encontrado";
+    //if (!OPENSSLaddallalgorithms) erro = "OPENSSL_add_all_algorithms_noconf não foi encontrado";
     if (!SslGetPeerCertificate) erro = "SSL_get_peer_certificate";
     if (!SslX509free)         erro = "X509_free";
     if (!SslX509d2i)          erro = "d2i_X509";
@@ -188,16 +186,21 @@ const char * AbreSSL()
     //    FechaSSL();
     //    return "Erro ao inicializar OpenSSL (SSL_library_init)";
     //}
-    SslLibraryInit();
-    SslLoadErrorStrings();
-    OPENSSLaddallalgorithms();
+    if (SslLibraryInit)
+        SslLibraryInit();
+    if (SslLoadErrorStrings)
+        SslLoadErrorStrings();
+    if (OPENSSLaddallalgorithms)
+        OPENSSLaddallalgorithms();
     //RAND_screen();
 
-    if (ssl_metodo == 0)
+    if (ssl_metodo == 0 && SslMethodV23)
         ssl_metodo = SslMethodV23();
-    if (ssl_metodo == 0)
+    if (ssl_metodo == 0 && SslMethodV3)
         ssl_metodo = SslMethodV3();
-    if (ssl_metodo == 0)
+    if (ssl_metodo == 0 && SslMethodTLSV12)
+        ssl_metodo = SslMethodTLSV12();
+    if (ssl_metodo == 0 && SslMethodV2)
         ssl_metodo = SslMethodV2();
     return 0;
 }
