@@ -297,11 +297,7 @@ func descsala # Retorna descrição da sala
     refvar titulo = txt(var.z_titulo ?? s_titulo(arg0))
     titulo && t.addfim("\b\c6" + titulo + "\b")
     se arg1 & 1
-      se var.z_desc
-        t.addfim(var.z_desc)
-      senao
-        t.addfim($mensjog.txt(misc:luz ? s_desc(arg0) : s_noite(arg0), arg0))
-      fimse
+      t.addfim(var.z_desc ?? $mensjog.txt(misc:luz ? s_desc(arg0) : s_noite(arg0), arg0))
     fimse
     arg1 & 2 && t.addfim(txtsai(arg0))
     arg1 & 4 && var.z_moedas && t.addfim("Aqui há " + misc:txtmoedas(var.z_moedas) + ".")

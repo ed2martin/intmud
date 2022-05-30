@@ -33,7 +33,10 @@ func escr
   ref r1
 # Descrição da sala
   se !arg1
-    refvar cfg = (completo ? 7 : 6) + (arg0.jogconfig.16 ? 8)
+    int8 cfg = completo ? 7 : 6
+    se arg0.jogconfig.16 && int($[arg2].c_lsala) && $[arg2].c_config & 2
+      ($[arg2].c_lsala > 1 || arg0.jogarea == arg0.dono.s_area) && (cfg |= 8)
+    fimse
     arg0.msg2(arg0.dono.descsala(arg0, cfg))
     ret
   fimse
@@ -168,12 +171,12 @@ func escr
     refvar persobat = r1.persobat
     refvar a1 = niveltipo(r1)
     refvar a2 = r1.desccond(arg0)
-    t2 += (a1 && a2 ? " é " + a1 + ", " + a2 : a1 ? " é " + a1 : a2 ? " " + a2 : "")
+    t2 += a1 && a2 ? " é " + a1 + ", " + a2 : a1 ? " é " + a1 : a2 ? " " + a2 : ""
     se persobat && persobat != r1
       t2 += ".\b\nEscolheu " + txtcopiamai(persobat.nome, "A")
       refvar b1 = niveltipo(persobat)
       refvar b2 = persobat.desccond(arg0)
-      t2 += (b1 && b2 ? " é " + b1 + ", " + b2 : b1 ? " é " + b1 : b2 ? " " + b2 : "")
+      t2 += b1 && b2 ? " é " + b1 + ", " + b2 : b1 ? " é " + b1 : b2 ? " " + b2 : ""
     fimse
   senao r1.pnivel || r1.renascer
     t2 += " é um objeto do nível " + r1.pnivel

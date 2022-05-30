@@ -266,7 +266,10 @@ func mudadono # Coloca personagem em outra sala ou outro personagem
   senao
     dono.t_item = 0
     msgsom(dono.s_som)
-    refvar cfg = (jogconfig.bits & 3 | (dono.s_morre ? 5 : 4)) | (jogconfig.16 ? 8)
+    int8 cfg = jogconfig.bits & 3 | (dono.s_morre ? 5 : 4)
+    se jogconfig.16 && int($perm_[jogperm].c_lsala) && $perm_[jogperm].c_config & 2
+      ($perm_[jogperm].c_lsala > 1 || jogarea == dono.s_area) && (cfg |= 8)
+    fimse
     l.addfim(persolugar, poslugar.objlista, poslugar.objlista.persolugar)
     msg2(dono.descsala(este, cfg, l))
   fimse
