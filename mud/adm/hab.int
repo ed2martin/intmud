@@ -15,8 +15,10 @@ const m_ajuda = "-t Habilidades, magias e técnicas de itens\n\
 -m AMAG Apaga uma ou mais técnicas de item\n\
 -m DHAB Calcula danos causados por uma habilidade\n\
 -m DMAG Calcula danos causados por uma magia\n\
--m DTEC Calcula danos causados por uma técnica de item\n\
-Nota: Técnicas de itens são usadas no comando Item"
+-m DMAG1 Calcula danos causados pela primeira magia de um item\n\
+-m DMAG2 Calcula danos causados pela segunda magia de um item\n\
+-m DMAG3 Calcula danos causados pela terceira magia de um item\n\
+-m DITEM Calcula danos causados pelo comando Item (usando técnica de item)"
 
 
 classe adm_lhab
@@ -388,9 +390,7 @@ func passo # Confirmar que quer apagar técnica de item
 
 classe adm_ehab
 herda comando_adm
-const m_ajuda = "-t\n\
--s <nome>\n\
-Edita a habilidade com o nome especificado."
+const m_ajuda = "-t\n-s <nome>\nEdita a habilidade com o nome especificado."
 
 func escr
   prog p
@@ -409,9 +409,7 @@ func escr
 
 classe adm_emag
 herda comando_adm
-const m_ajuda = "-t\n\
--s <nome>\n\
-Edita a magia com o nome especificado."
+const m_ajuda = "-t\n-s <nome>\nEdita a magia com o nome especificado."
 
 func escr
   prog p
@@ -430,9 +428,7 @@ func escr
 
 classe adm_etec
 herda comando_adm
-const m_ajuda = "-t\n\
--s <nome>\n\
-Edita a técnica de item com o nome especificado."
+const m_ajuda = "-t\n-s <nome>\nEdita a técnica de item com o nome especificado."
 
 func escr
   prog p
@@ -455,7 +451,7 @@ const m_ajuda = "-t\n\
 -s <habilidade> <alvo>\n\
 -s <personagem> <habilidade> <alvo>\n\
 Calcula os danos que uma habilidade faria no personagem alvo.\n\
-Se for fornecido apenas a habalidade e o alvo, calcula os danos que\n\
+Se for fornecido apenas a habilidade e o alvo, calcula os danos que\n\
 o seu personagem faria."
 const prefixo = "cmd_"
 const naoencontrado = "Habilidade não encontrada: "
@@ -467,21 +463,20 @@ func escr
   ref alvo
   ref obj
   se intsub(arg1) < 2
-    ret arg0.msg(txtmaimin(txt(este, 4)) + " requer 2 ou 3 argumentos")
-  senao intsub(arg1) >= 3
+    ret arg0.msg(txtmaimin(txt2(txte(este))) + " requer pelo menos 2 argumentos")
+  senao intsub(arg1) == 2
+    perso = arg0
+    nome = txt1(arg1)
+    alvo = misc:persodono(arg0, txt2(arg1))
+    ret !alvo, arg0.msg("Alvo não existe: " + txt2(arg1))
+  senao
     perso = misc:persodono(arg0, txt1(arg1))
     nome = txtsub(arg1, 1, 1)
     alvo = misc:persodono(arg0, txtsub(arg1, 2))
     ret !perso, arg0.msg("Personagem não existe: " + txt1(arg1))
     ret !alvo, arg0.msg("Alvo não existe: " + txtsub(arg1, 2))
-  senao
-    perso = arg0
-    nome = txt1(arg1)
-    alvo = misc:persodono(arg0, txt2(arg1))
-    ret !alvo, arg0.msg("Alvo não existe: " + txt2(arg1))
   fimse
   enquanto 1
-    refvar perm = $perm_[jogperm]
     obj = $[prefixo + nome] # Checa comando exato
     sair obj.cmdmenu
     refvar tam = inttotal(prefixo)
@@ -498,7 +493,7 @@ func escr
   ret obj.cmdmenu != "ataque", arg0.msg(naoataque + txt(obj.nomevar, 2))
   ret obj.tipoalvo > 5 && obj.tipoalvo < 9, arg0.msg(naoataque + txt(obj.nomevar, 2))
   textotxt t
-  obj.danosgolpe(perso, alvo, t)
+  obj.danosgolpe(perso, alvo, t, perso.pnivel, nulo)
   arg0.msg2(t.remove(1000))
 
 
@@ -515,16 +510,91 @@ const naoencontrado = "Magia não encontrada: "
 const naoataque = "Magia não é ataque: "
 
 
-classe adm_dtec
-herda adm_dhab
+classe adm_dmag1
+herda comando_adm
 const m_ajuda = "-t\n\
--s <técnica de item> <alvo>\n\
--s <personagem> <técnica de item> <alvo>\n\
-Calcula os danos que uma técnica de item faria no personagem alvo.\n\
-Se for fornecido apenas a écnica de item e o alvo, calcula os danos que\n\
-o seu personagem faria."
+-s <item> <alvo>\n\
+-s <personagem> <item> <alvo>\n\
+Calcula os danos que uma magia faria no personagem alvo.\n\
+Usa a primeira magia do comando Comer, Beber ou Recitar do item.\n\
+Se o persoangem for omitodo, calcula os danos que o seu personagem faria."
+const prefixo = "magia_"
+const nometec = "f_magia1"
+const niveltec = "f_nivel1"
+const naoencontrado = "Item não tem primeira magia: "
+const naoataque = "Primeira magia não é ataque: "
+
+func escr
+  ref item
+  ref perso
+  ref alvo
+  ref obj
+  se intsub(arg1) < 2
+    ret arg0.msg(txtmaimin(txt2(txte(este))) + " requer pelo menos 2 argumentos")
+  senao intsub(arg1) == 2
+    perso = arg0
+    item = misc:itemtudo(perso, txt1(arg1))
+    alvo = misc:persodono(arg0, txt2(arg1))
+    ret !item, arg0.msg("Item não existe: " + txt1(arg1))
+    ret !alvo, arg0.msg("Alvo não existe: " + txt2(arg1))
+  senao
+    perso = misc:persodono(arg0, txt1(arg1))
+    item = misc:itemtudo(perso, txtsub(arg1, 1, 1))
+    alvo = misc:persodono(arg0, txtsub(arg1, 2))
+    ret !perso, arg0.msg("Personagem não existe: " + txt1(arg1))
+    ret !item, arg0.msg("Item não existe: " + txtsub(arg1, 1, 1))
+    ret !alvo, arg0.msg("Alvo não existe: " + txtsub(arg1, 2))
+  fimse
+  obj = $[prefixo + item.[nometec]] # Checa comando exato
+  ret !obj, arg0.msg(naoencontrado + item.descnome2)
+  ret obj.cmdmenu != "ataque", arg0.msg(naoataque + txt(obj.nomevar, 2))
+  ret obj.tipoalvo > 5 && obj.tipoalvo < 9, arg0.msg(naoataque + txt(obj.nomevar, 2))
+  textotxt t
+  obj.danosgolpe(perso, alvo, t, int(item.[niveltec]), item)
+  arg0.msg2(t.remove(1000))
+
+
+classe adm_dmag2
+herda adm_dmag1
+const m_ajuda = "-t\n\
+-s <item> <alvo>\n\
+-s <personagem> <item> <alvo>\n\
+Calcula os danos que uma magia faria no personagem alvo.\n\
+Usa a segunda magia do comando Comer, Beber ou Recitar do item.\n\
+Se o persoangem for omitodo, calcula os danos que o seu personagem faria."
+const prefixo = "magia_"
+const nometec = "f_magia2"
+const niveltec = "f_nivel2"
+const naoencontrado = "Item não tem segunda magia: "
+const naoataque = "Segunda magia não é ataque: "
+
+
+classe adm_dmag3
+herda adm_dmag1
+const m_ajuda = "-t\n\
+-s <item> <alvo>\n\
+-s <personagem> <item> <alvo>\n\
+Calcula os danos que uma magia faria no personagem alvo.\n\
+Usa a terceira magia do comando Comer, Beber ou Recitar do item.\n\
+Se o persoangem for omitodo, calcula os danos que o seu personagem faria."
+const prefixo = "magia_"
+const nometec = "f_magia3"
+const niveltec = "f_nivel3"
+const naoencontrado = "Item não tem terceira magia: "
+const naoataque = "Terceira magia não é ataque: "
+
+
+classe adm_ditem
+herda adm_dmag1
+const m_ajuda = "-t\n\
+-s <item> <alvo>\n\
+-s <personagem> <item> <alvo>\n\
+Calcula os danos que o comando Item faria no personagem alvo.\n\
+Se o persoangem for omitodo, calcula os danos que o seu personagem faria."
 const prefixo = "tecnica_"
-const naoencontrado = "Técnica de item não encontrada: "
+const nometec = "i_item_tecnica"
+const niveltec = "i_item_nivel"
+const naoencontrado = "Item não tem técnica de item: "
 const naoataque = "Técnica de item não é ataque: "
 
 

@@ -49,7 +49,10 @@ const ataque1 = 0
 const ataque1perso = 1
 const ataque1arma = 1
 const ataque1municao = 1
-const ataque2 = 0
+const ataque1item = 0
+const ataque2 = config:a_ataque2
+const ataque2perso = config:a_ataque2perso
+const ataque2nivel = config:a_ataque2nivel
 const atknivel = config:atknivel
 const atkfalha = 1
 const vel = config:a_vel # Velocidade do golpe, 100 significa 100%
@@ -86,8 +89,8 @@ c_mana1 c_mana2\n\
 c_move1 c_move2\n\
 ataquemin ataquemax\n\
 fatormin fatormax\n\
-ataque1 ataque1perso ataque1arma ataque1municao\n\
-ataque2 atknivel\n\
+ataque1 ataque1perso ataque1arma ataque1municao ataque1item\n\
+ataque2 ataque2perso ataque2nivel atknivel\n\
 aulaini aulafim aulapontos\n\
 depende\n\
 atkfalha falha1 falha2\n\
@@ -538,7 +541,7 @@ func exechab # Chamado quando personagem usa habilidade ou magia
     arg0.batalhaini(arg1)
     result = 2 # Desvia
   senao
-    execgolpe(arg0, arg1, arg2, atk) # Ataca
+    execgolpe(arg0, arg1, arg2, arg3, arg4, atk) # Ataca
   fimse
   se result != 4
     !result && efeitohab(arg0, arg1, arg2, arg3) # Acertou: aplica os efeitos
@@ -582,7 +585,7 @@ func exechab # Chamado quando personagem usa habilidade ou magia
       arg0.batalhaini(r)
       result = 2 # Desvia
     senao
-      execgolpe(arg0, r, arg2, atk) # Ataca
+      execgolpe(arg0, r, arg2, arg3, arg4, atk) # Ataca
       continuar result == 4
     fimse
     refvar acertou = !result
@@ -696,7 +699,9 @@ func execgolpe # Realiza um ataque e coloca resultado em result e mudavida
 # arg0 = personagem que está atacando
 # arg1 = personagem alvo
 # arg2 = quanto sabe da habilidade ou magia (0=iniciante até 1=perito)
-# arg3 = modificadores de fome, sede e dividir o ataque, 0=não calcular danos
+# arg3 = nível da habilidade ou magia (=nível do personagem)
+# arg4 = item usado (exemplo, um pergaminho), ou nulo se não usou nenhum item
+# arg5 = modificadores de fome, sede e dividir o ataque, 0=não calcular danos
 # tipoatk = tipo de ataque, arma1 = arma usada, arma2 = munição usada
   real2 dano
   real2 danoadd
@@ -756,7 +761,7 @@ func execgolpe # Realiza um ataque e coloca resultado em result e mudavida
   se !dano # Imune (dano == 0)
     result = 1
     ret
-  senao !arg3 # Não calcular os danos (arg3 = 0)
+  senao !arg5 # Não calcular os danos (arg5 = 0)
     ret
   fimse
 # Checa força do ataque conforme o nível de conhecimento
@@ -773,14 +778,17 @@ func execgolpe # Realiza um ataque e coloca resultado em result e mudavida
     fimse
   fimse
 # Calcula dano de acordo com ataques do personagem, da arma e da munição
-  refvar arma = ataque1arma ? rand(arma1.var.z_armamin_, arma1.var.z_armamax_)
-  refvar muni = ataque1municao ? rand(arma2.var.z_armamin_, arma2.var.z_armamax_)
+  refvar arma = ataque1arma * rand(arma1.var.z_armamin_, arma1.var.z_armamax_)
+  refvar muni = ataque1municao * rand(arma2.var.z_armamin_, arma2.var.z_armamax_)
+  refvar item = ataque1item * rand(arg4.var.z_armamin_, arg4.var.z_armamax_)
   se misc:atkesp(tipoatk) # Checa se golpe normal ou especial
-    dano *= ataque1 + (ataque1perso ? arg0.atkesp) + arma + muni
-    dano *= (ataque2 ?? arg0.atkesp) / (arg1.defesp * rand(fatormin, fatormax))
+    dano *= ataque1 + ataque1perso * arg0.atkesp + arma + muni + item
+    dano *= ataque2 + ataque2perso * arg0.atkesp + ataque2nivel * arg3
+    dano /= arg1.defesp * rand(fatormin, fatormax)
   senao
-    dano *= ataque1 + (ataque1perso ? arg0.atknorm) + arma + muni
-    dano *= (ataque2 ?? arg0.atknorm) / (arg1.defnorm * rand(fatormin, fatormax))
+    dano *= ataque1 + ataque1perso * arg0.atknorm + arma + muni + item
+    dano *= ataque2 + ataque2perso * arg0.atknorm + ataque2nivel * arg3
+    dano /= arg1.defnorm * rand(fatormin, fatormax)
   fimse
 # Diferença de nível
   se atknivel >= (arma1 ? 2 : 1)
@@ -807,7 +815,7 @@ func execgolpe # Realiza um ataque e coloca resultado em result e mudavida
     sair
   casofim
 # Atualiza pontos de vida conforme os danos (pelo menos 1 de dano)
-  mudavida = -intmax(1, danoadd + dano * arg3)
+  mudavida = -intmax(1, danoadd + dano * arg5)
   arg1.pvida += mudavida
 
 func mensinicio # Envia mensagem inicial da habilidade ou magia
