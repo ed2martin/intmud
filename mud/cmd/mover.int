@@ -57,8 +57,7 @@ func escr # Executa o comando
   fimse
 # Fecha a porta
   se sala.fecha_[dir1] && sala.porta_[dir1] < 2 && $comando_mover.andou
-    refvar m = sala.porta_[dir1] < 2 ? "$M se $2."
-    sala.mudaporta(dir1, sala.tranc_[dir1](obj) == 2 ? 3 : 2, m, m)
+    sala.mudaporta2(dir1, sala.tranc_[dir1](obj) == 2 ? 3 : 2)
   fimse
 # Próximo comando
   arg1 && arg0.sock.comandos.addini(arg1 + "\n" + arg0.sock.perm)

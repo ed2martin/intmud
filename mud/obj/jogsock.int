@@ -364,12 +364,12 @@ func msg # Envia mensagem
     casovar txt1($som_[som].tipo)
     casose "2" # Música contínua
       continuar !(jogconfig.23 || jogconfig.24) || msgsom_t == som
-      msgsom_t = arg0
+      msgsom_t = som
       p.mudar($som_[som].var.som[jogconfig.24][jogconfig.23] + "\n", 0, 0)
       sair
     casose "1" # Música de fundo
       continuar !(jogconfig.23 || jogconfig.24)
-      msgsom_t = arg0
+      msgsom_t = som
       p.mudar($som_[som].var.som[jogconfig.24][jogconfig.23] + "\n", 0, 0)
       sair
     casose "0" # Efeito
@@ -410,12 +410,12 @@ func msgsom # Envia mensagem
     casovar txt1($som_[som].tipo)
     casose "2" # Música contínua
       continuar !(jogconfig.23 || jogconfig.24) || msgsom_t == som
-      msgsom_t = arg0
+      msgsom_t = som
       msgsock($som_[som].var.som[jogconfig.24][jogconfig.23])
       continuar
     casose "1" # Música de fundo
       continuar !(jogconfig.23 || jogconfig.24)
-      msgsom_t = arg0
+      msgsom_t = som
       msgsock($som_[som].var.som[jogconfig.24][jogconfig.23])
       continuar
     casose "0" # Efeito
