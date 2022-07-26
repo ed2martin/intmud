@@ -31,10 +31,8 @@ const m_fugir2 = "$P fugiu."
 const dir = ""
 listaobj lseg # Para não seguir ciclicamente
 int8 andou # Se conseguiu andar (deve fechar a porta)
-txt300 abriu1 # Mensagem, se abriu a porta da casa
-txt300 abriu2
-const admordem = "m_entra1 m_entra2 m_entra3 m_entra4 m_sai1 m_sai2 m_sai3 m_sai4\n\
-m_fugir1 m_fugir2"
+const admordem = "m_porta m_sai1 m_sai2 m_sai3 m_sai4 m_fugir1 m_fugir2\n\
+m_entra1 m_entra2 m_entra3 m_entra4"
 
 func escr # Executa o comando
 # arg0 = personagem
@@ -114,7 +112,8 @@ func mover # Personagem anda em uma direção
   dbg.ini
   $comando_mover.lseg.addfim(arg0)
 # Verifica se pode mover e acerta textos de abriu1 e abriu2
-  abriu1 = abriu2 = ""
+  txt300 abriu1 # Mensagem, se abriu a porta da casa
+  txt300 abriu2
   se !arg1.s_sala
     $mens.mp(comando_mover_cfg:m_impossivel, p1)
     ret 0
@@ -145,7 +144,6 @@ func mover # Personagem anda em uma direção
     casofim
     abriu1 = config:casaabriu1
     abriu2 = config:casaabriu2
-    abriu2 && (abriu2 += "\n")
   senao !arg0.cabedentro(arg1)
     $mens.mp(comando_mover_cfg:m_espaco, p1)
     ret 0
@@ -186,29 +184,37 @@ func mover # Personagem anda em uma direção
   se !(s1.socktot || arg1.socktot) # Não tem jogador por perto
     arg0.mudadono(arg1)
   senao arg0.p_bebida >= $miscfome.bebedir - rand(20) # Cambaleando não anda em silêncio
-    abriu1 && $mens.mp(abriu1, p1, nulo, arg2)
-    msgsair(arg0, arg2, abriu2 + (arg2.i_entraitem4 ?? m_sai4), 1)
+    refvar m1 = (!arg2 ? s1.msg_sai0_[dir])
+    (abriu1 || m1) && $mens.mp(abriu1 + (abriu1 && m1 ? "\n") + m1, p1, nulo, arg2)
+    refvar m2 = ((arg2 ? arg2.i_entraitem4 : s1.msg_sai4_[dir]) ?? m_sai4)
+    msgsair(arg0, arg2, abriu2 + (abriu2 ? "\n") + m2, 1)
     arg2.i_entraitem0 && $mens.msg(arg2.i_entraitem0, arg0)
     arg0.mudadono(arg1)
-    msgentrar(arg0, arg3, arg3.i_saiitem4 ?? m_entra4)
+    msgentrar(arg0, arg3, (arg3 ? arg3.i_saiitem4 : s1.msg_entra4_[dir]) ?? m_entra4)
   senao arg0.bitinv & 48 # Voando ou voando alto
-    abriu1 && $mens.mp(abriu1, p1, nulo, arg2)
-    msgsair(arg0, arg2, abriu2 + (arg2.i_entraitem3 ?? m_sai3))
+    refvar m1 = (!arg2 ? s1.msg_sai0_[dir])
+    (abriu1 || m1) && $mens.mp(abriu1 + (abriu1 && m1 ? "\n") + m1, p1, nulo, arg2)
+    refvar m2 =((arg2 ? arg2.i_entraitem3 : s1.msg_sai3_[dir]) ?? m_sai3)
+    msgsair(arg0, arg2, abriu2 + (abriu2 ? "\n") + m2, 1)
     arg2.i_entraitem0 && $mens.msg(arg2.i_entraitem0, arg0)
     arg0.mudadono(arg1)
-    msgentrar(arg0, arg3, arg3.i_saiitem3 ?? m_entra3)
+    msgentrar(arg0, arg3, (arg3 ? arg3.i_saiitem3 : s1.msg_entra3_[dir]) ?? m_entra3)
   senao arg0.bitver & 0x200 # Flutuando
-    abriu1 && $mens.mp(abriu1, p1, nulo, arg2)
-    msgsair(arg0, arg2, abriu2 + (arg2.i_entraitem2 ?? m_sai2))
+    refvar m1 = (!arg2 ? s1.msg_sai0_[dir])
+    (abriu1 || m1) && $mens.mp(abriu1 + (abriu1 && m1 ? "\n") + m1, p1, nulo, arg2)
+    refvar m2 = ((arg2 ? arg2.i_entraitem2 : s1.msg_sai2_[dir]) ?? m_sai2)
+    msgsair(arg0, arg2, abriu2 + (abriu2 ? "\n") + m2, 1)
     arg2.i_entraitem0 && $mens.msg(arg2.i_entraitem0, arg0)
     arg0.mudadono(arg1)
-    msgentrar(arg0, arg3, arg3.i_saiitem2 ?? m_entra2)
+    msgentrar(arg0, arg3, (arg3 ? arg3.i_saiitem2 : arg0.s1.msg_entra2_[dir]) ?? m_entra2)
   senao # Não está voando nem flutuando
-    abriu1 && $mens.mp(abriu1, p1, nulo, arg2)
-    msgsair(arg0, arg2, abriu2 + (arg2.i_entraitem1 ?? m_sai1))
+    refvar m1 = (!arg2 ? s1.msg_sai0_[dir])
+    (abriu1 || m1) && $mens.mp(abriu1 + (abriu1 && m1 ? "\n") + m1, p1, nulo, arg2)
+    refvar m2 = ((arg2 ? arg2.i_entraitem1 : s1.msg_sai1_[dir]) ?? m_sai1)
+    msgsair(arg0, arg2, abriu2 + (abriu2 ? "\n") + m2, 1)
     arg2.i_entraitem0 && $mens.msg(arg2.i_entraitem0, arg0)
     arg0.mudadono(arg1)
-    msgentrar(arg0, arg3, arg3.i_saiitem1 ?? m_entra1)
+    msgentrar(arg0, arg3, (arg3 ? arg3.i_saiitem1 : s1.msg_entra1_[dir]) ?? m_entra1)
   fimse
 # Eventos depois
   epara l.addfim(arg0.evento), l, l.ini.remove
@@ -344,210 +350,211 @@ func fugir # Foge nessa direção
   perso.batalhafim
   $mens.mens = ""
   $mens.mp(m_fugir1, perso)
+  refvar mentra = arg0.dono.msg_entra1_[dir] ?? m_entra1
   msgsair(perso, nulo, m_fugir2, 1)
   perso.mudadono(r)
-  msgentrar(perso, nulo, m_entra1, 1)
+  msgentrar(perso, nulo, mentra, 1)
 
 
 classe h_cmd_n
 herda comando_mover
-const m_entra1 = "$P chegou do sul$m."
-const m_entra2 = "$P flutuou do sul$m."
-const m_entra3 = "$P voou do sul$m."
-const m_entra4 = "$P chegou do sul cambaleando."
 const m_sai1 = "$P foi para o norte$m."
 const m_sai2 = "$P flutuou para o norte$m."
 const m_sai3 = "$P voou para o norte$m."
 const m_sai4 = "$P foi para o norte cambaleando."
 const m_fugir1 = "Você fugiu para o norte."
 const m_fugir2 = "$P fugiu para o norte$m."
+const m_entra1 = "$P chegou do sul$m."
+const m_entra2 = "$P flutuou do sul$m."
+const m_entra3 = "$P voou do sul$m."
+const m_entra4 = "$P chegou do sul cambaleando."
 const m_porta = "a porta norte"
 const dir = "n"
 
 
 classe h_cmd_s
 herda comando_mover
-const m_entra1 = "$P chegou do norte$m."
-const m_entra2 = "$P flutuou do norte$m."
-const m_entra3 = "$P voou do norte$m."
-const m_entra4 = "$P chegou do norte cambaleando."
 const m_sai1 = "$P foi para o sul$m."
 const m_sai2 = "$P flutuou para o sul$m."
 const m_sai3 = "$P voou para o sul$m."
 const m_sai4 = "$P foi para o sul cambaleando."
 const m_fugir1 = "Você fugiu para o sul."
 const m_fugir2 = "$P fugiu para o sul$m."
+const m_entra1 = "$P chegou do norte$m."
+const m_entra2 = "$P flutuou do norte$m."
+const m_entra3 = "$P voou do norte$m."
+const m_entra4 = "$P chegou do norte cambaleando."
 const m_porta = "a porta sul"
 const dir = "s"
 
 
 classe h_cmd_l
 herda comando_mover
-const m_entra1 = "$P chegou do oeste$m."
-const m_entra2 = "$P flutuou do oeste$m."
-const m_entra3 = "$P voou do oeste$m."
-const m_entra4 = "$P chegou do oeste cambaleando."
 const m_sai1 = "$P foi para leste$m."
 const m_sai2 = "$P flutuou para leste$m."
 const m_sai3 = "$P voou para leste$m."
 const m_sai4 = "$P foi para leste cambaleando."
 const m_fugir1 = "Você fugiu para leste."
 const m_fugir2 = "$P fugiu para leste$m."
+const m_entra1 = "$P chegou do oeste$m."
+const m_entra2 = "$P flutuou do oeste$m."
+const m_entra3 = "$P voou do oeste$m."
+const m_entra4 = "$P chegou do oeste cambaleando."
 const m_porta = "a porta leste"
 const dir = "l"
 
 
 classe h_cmd_o
 herda comando_mover
-const m_entra1 = "$P chegou do leste$m."
-const m_entra2 = "$P flutuou do leste$m."
-const m_entra3 = "$P voou do leste$m."
-const m_entra4 = "$P chegou do leste cambaleando."
 const m_sai1 = "$P foi para oeste$m."
 const m_sai2 = "$P flutuou para oeste$m."
 const m_sai3 = "$P voou para oeste$m."
 const m_sai4 = "$P foi para oeste cambaleando."
 const m_fugir1 = "Você fugiu para oeste."
 const m_fugir2 = "$P fugiu para oeste$m."
+const m_entra1 = "$P chegou do leste$m."
+const m_entra2 = "$P flutuou do leste$m."
+const m_entra3 = "$P voou do leste$m."
+const m_entra4 = "$P chegou do leste cambaleando."
 const m_porta = "a porta oeste"
 const dir = "o"
 
 
 classe h_cmd_c
 herda comando_mover
-const m_entra1 = "$P chegou de baixo$m."
-const m_entra2 = "$P flutuou de baixo$m."
-const m_entra3 = "$P voou de baixo$m."
-const m_entra4 = "$P chegou de baixo cambaleando."
 const m_sai1 = "$P subiu$m."
 const m_sai2 = "$P flutuou para cima$m."
 const m_sai3 = "$P voou para cima$m."
 const m_sai4 = "$P subiu cambaleando."
 const m_fugir1 = "Você fugiu para cima."
 const m_fugir2 = "$P fugiu para cima$m."
+const m_entra1 = "$P chegou de baixo$m."
+const m_entra2 = "$P flutuou de baixo$m."
+const m_entra3 = "$P voou de baixo$m."
+const m_entra4 = "$P chegou de baixo cambaleando."
 const m_porta = "a passagem para cima"
 const dir = "c"
 
 
 classe h_cmd_b
 herda comando_mover
-const m_entra1 = "$P chegou de cima$m."
-const m_entra2 = "$P flutuou de cima$m."
-const m_entra3 = "$P voou de cima$m."
-const m_entra4 = "$P chegou de cima cambaleando."
 const m_sai1 = "$P desceu$m."
 const m_sai2 = "$P flutuou para baixo$m."
 const m_sai3 = "$P voou para baixo$m."
 const m_sai4 = "$P desceu cambaleando."
 const m_fugir1 = "Você fugiu para baixo."
 const m_fugir2 = "$P fugiu para baixo$m."
+const m_entra1 = "$P chegou de cima$m."
+const m_entra2 = "$P flutuou de cima$m."
+const m_entra3 = "$P voou de cima$m."
+const m_entra4 = "$P chegou de cima cambaleando."
 const m_porta = "a passagem para baixo"
 const dir = "b"
 
 
 classe h_cmd_ne
 herda comando_mover
-const m_entra1 = "$P chegou do sudoeste$m."
-const m_entra2 = "$P flutuou do sudoeste$m."
-const m_entra3 = "$P voou do sudoeste$m."
-const m_entra4 = "$P chegou do sudoeste cambaleando."
 const m_sai1 = "$P foi para o nordeste$m."
 const m_sai2 = "$P flutuou para o nordeste$m."
 const m_sai3 = "$P voou para o nordeste$m."
 const m_sai4 = "$P foi para o nordeste cambaleando."
 const m_fugir1 = "Você fugiu para o nordeste."
 const m_fugir2 = "$P fugiu para o nordeste$m."
+const m_entra1 = "$P chegou do sudoeste$m."
+const m_entra2 = "$P flutuou do sudoeste$m."
+const m_entra3 = "$P voou do sudoeste$m."
+const m_entra4 = "$P chegou do sudoeste cambaleando."
 const m_porta = "a porta nordeste"
 const dir = "ne"
 
 
 classe h_cmd_no
 herda comando_mover
-const m_entra1 = "$P chegou do sudeste$m."
-const m_entra2 = "$P flutuou do sudeste$m."
-const m_entra3 = "$P voou do sudeste$m."
-const m_entra4 = "$P chegou do sudeste cambaleando."
 const m_sai1 = "$P foi para o noroeste$m."
 const m_sai2 = "$P flutuou para o noroeste$m."
 const m_sai3 = "$P voou para o noroeste$m."
 const m_sai4 = "$P foi para o noroeste cambaleando."
 const m_fugir1 = "Você fugiu para o noroeste."
 const m_fugir2 = "$P fugiu para o noroeste$m."
+const m_entra1 = "$P chegou do sudeste$m."
+const m_entra2 = "$P flutuou do sudeste$m."
+const m_entra3 = "$P voou do sudeste$m."
+const m_entra4 = "$P chegou do sudeste cambaleando."
 const m_porta = "a porta noroeste"
 const dir = "no"
 
 
 classe h_cmd_se
 herda comando_mover
-const m_entra1 = "$P chegou do noroeste$m."
-const m_entra2 = "$P flutuou do noroeste$m."
-const m_entra3 = "$P voou do noroeste$m."
-const m_entra4 = "$P chegou do noroeste cambaleando."
 const m_sai1 = "$P foi para o sudeste$m."
 const m_sai2 = "$P flutuou para o sudeste$m."
 const m_sai3 = "$P voou para o sudeste$m."
 const m_sai4 = "$P foi para o sudeste cambaleando."
 const m_fugir1 = "Você fugiu para o sudeste."
 const m_fugir2 = "$P fugiu para o sudeste$m."
+const m_entra1 = "$P chegou do noroeste$m."
+const m_entra2 = "$P flutuou do noroeste$m."
+const m_entra3 = "$P voou do noroeste$m."
+const m_entra4 = "$P chegou do noroeste cambaleando."
 const m_porta = "a porta sudeste"
 const dir = "se"
 
 
 classe h_cmd_so
 herda comando_mover
-const m_entra1 = "$P chegou do nordeste$m."
-const m_entra2 = "$P flutuou do nordeste$m."
-const m_entra3 = "$P voou do nordeste$m."
-const m_entra4 = "$P chegou do nordeste cambaleando."
 const m_sai1 = "$P foi para o sudoeste$m."
 const m_sai2 = "$P flutuou para o sudoeste$m."
 const m_sai3 = "$P voou para o sudoeste$m."
 const m_sai4 = "$P foi para o sudoeste cambaleando."
 const m_fugir1 = "Você fugiu para o sudoeste."
 const m_fugir2 = "$P fugiu para o sudoeste$m."
+const m_entra1 = "$P chegou do nordeste$m."
+const m_entra2 = "$P flutuou do nordeste$m."
+const m_entra3 = "$P voou do nordeste$m."
+const m_entra4 = "$P chegou do nordeste cambaleando."
 const m_porta = "a porta sudoeste"
 const dir = "so"
 
 
 classe h_cmd_sair
 herda comando_mover
-const m_entra1 = "$P chegou de dentro$m."
-const m_entra2 = "$P flutuou de dentro$m."
-const m_entra3 = "$P voou de dentro$m."
-const m_entra4 = "$P chegou de dentro cambaleando."
 const m_sai1 = "$P saiu$m."
 const m_sai2 = "$P flutuou para fora$m."
 const m_sai3 = "$P voou para fora$m."
 const m_sai4 = "$P saiu cambaleando."
 const m_fugir1 = "Você fugiu para fora."
 const m_fugir2 = "$P fugiu para fora$m."
+const m_entra1 = "$P chegou de dentro$m."
+const m_entra2 = "$P flutuou de dentro$m."
+const m_entra3 = "$P voou de dentro$m."
+const m_entra4 = "$P chegou de dentro cambaleando."
 const m_porta = "fora"
 const dir = "sair"
 
 
 classe h_cmd_entrar
 herda comando_mover
-const m_entra1 = "$P entrou aqui$m."
-const m_entra2 = "$P flutuou de fora$m."
-const m_entra3 = "$P voou de fora$m."
-const m_entra4 = "$P entrou aqui cambaleando."
 const m_sai1 = "$P entrou$m."
 const m_sai2 = "$P entrou flutuando$m."
 const m_sai3 = "$P entrou voando$m."
 const m_sai4 = "$P entrou cambaleando."
 const m_fugir1 = "Você fugiu entrando."
 const m_fugir2 = "$P fugiu entrando$m."
+const m_entra1 = "$P entrou aqui$m."
+const m_entra2 = "$P flutuou de fora$m."
+const m_entra3 = "$P voou de fora$m."
+const m_entra4 = "$P entrou aqui cambaleando."
 const m_porta = "dentro"
 const dir = "entrar"
 #
-const m_entraitem1 = "$P entrou $e $o$m."
-const m_entraitem2 = "$P flutuou para $o fora$m."
-const m_entraitem3 = "$P voou para $o$m."
-const m_entraitem4 = "$P entrou $e $o cambaleando."
 const m_saiitem1 = "$P saiu $d $o$m."
 const m_saiitem2 = "$P flutuou $d $o$m."
 const m_saiitem3 = "$P voou $d $o$m."
 const m_saiitem4 = "$P saiu $d $o cambaleando."
+const m_entraitem1 = "$P entrou $e $o$m."
+const m_entraitem2 = "$P flutuou para $o fora$m."
+const m_entraitem3 = "$P voou para $o$m."
+const m_entraitem4 = "$P entrou $e $o cambaleando."
 const m_naover = "Você não vê $m."
 const m_impossivelitem = "Não é possível entrar $e $o."
 const m_impossivelporta = "Não é possível entrar $e $o por $M."
@@ -734,45 +741,49 @@ const nome1 = "Nome da porta"
 const tipo1 = "opc_linha"
 const vari1 = "m_porta"
 #
-const nome2 = "Chegou andando"
+const titu2 = " * Na sala origem"
+#
+const nome2 = "Saiu andando"
 const tipo2 = "opc_linha"
-const vari2 = "m_entra1"
+const vari2 = "m_sai1"
 #
-const nome3 = "Chegou flutuando"
+const nome3 = "Saiu flutuando"
 const tipo3 = "opc_linha"
-const vari3 = "m_entra2"
+const vari3 = "m_sai2"
 #
-const nome4 = "Chegou voando"
+const nome4 = "Saiu voando"
 const tipo4 = "opc_linha"
-const vari4 = "m_entra3"
+const vari4 = "m_sai3"
 #
-const nome5 = "Chegou cambaleando"
+const nome5 = "Saiu cambaleando"
 const tipo5 = "opc_linha"
-const vari5 = "m_entra4"
+const vari5 = "m_sai4"
 #
-const nome6 = "Saiu andando"
+const nome6 = "Fugir perso"
 const tipo6 = "opc_linha"
-const vari6 = "m_sai1"
+const vari6 = "m_fugir1"
 #
-const nome7 = "Saiu flutuando"
+const nome7 = "Fugir outros"
 const tipo7 = "opc_linha"
-const vari7 = "m_sai2"
+const vari7 = "m_fugir2"
 #
-const nome8 = "Saiu voando"
+const titu8 = " * Na sala destino"
+#
+const nome8 = "Chegou andando"
 const tipo8 = "opc_linha"
-const vari8 = "m_sai3"
+const vari8 = "m_entra1"
 #
-const nome9 = "Saiu cambaleando"
+const nome9 = "Chegou flutuando"
 const tipo9 = "opc_linha"
-const vari9 = "m_sai4"
+const vari9 = "m_entra2"
 #
-const nome10 = "Fugir perso"
+const nome10 = "Chegou voando"
 const tipo10 = "opc_linha"
-const vari10 = "m_fugir1"
+const vari10 = "m_entra3"
 #
-const nome11 = "Fugir outros"
+const nome11 = "Chegou cambaleando"
 const tipo11 = "opc_linha"
-const vari11 = "m_fugir2"
+const vari11 = "m_entra4"
 
 
 classe menu_mover_n

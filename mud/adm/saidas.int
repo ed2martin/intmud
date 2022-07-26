@@ -294,13 +294,74 @@ const info15 = "Para quem recebe a mensagem do personagem entrando na sala"
 const tipo15 = "opc_linha"
 const vari15 = "som_destr_" + var.saida1
 #
-const nome16 = "Mensagens"
-const tipo16 = "menu_saida_msg--"
+const nome16 = "Msg andar"
+const tipo16 = "menu_saida_andar--"
+#
+const nome17 = "Msg abrir fechar"
+const tipo17 = "menu_saida_abrir--"
 
 
-classe menu_saida_msg
+classe menu_saida_andar
 herda comando_menu
-const titulo = "Mensagens " + txtmai(var.saida1) + " de " + txt(var.classe1, 2)
+const titulo = "Mensagens andar " + txtmai(var.saida1) + " de " + txt(var.classe1, 2)
+const colunas = 25
+const classe = var.classe1
+const menufim = "menu_saida"
+#
+const nome1 = "Perso"
+const info1 = "Mensagem para o personagem que entrou"
+const tipo1 = "opc_linha"
+const vari1 = "msg_sai0_" + var.saida1
+const nulo1 = "\c3" + txtnulo("h_cmd_" + var.saida1, "m_entra0")
+#
+const titu2 = " * Na sala origem"
+#
+const nome2 = "Saiu andando"
+const tipo2 = "opc_linha"
+const vari2 = "msg_sai1_" + var.saida1
+const nulo2 = "\c3" + txtnulo("h_cmd_" + var.saida1, "m_sai1")
+#
+const nome3 = "Saiu flutuando"
+const tipo3 = "opc_linha"
+const vari3 = "msg_sai2_" + var.saida1
+const nulo3 = "\c3" + txtnulo("h_cmd_" + var.saida1, "m_sai2")
+#
+const nome4 = "Saiu voando"
+const tipo4 = "opc_linha"
+const vari4 = "msg_sai3_" + var.saida1
+const nulo4 = "\c3" + txtnulo("h_cmd_" + var.saida1, "m_sai3")
+#
+const nome5 = "Saiu cambaleando"
+const tipo5 = "opc_linha"
+const vari5 = "msg_sai4_" + var.saida1
+const nulo5 = "\c3" + txtnulo("h_cmd_" + var.saida1, "m_sai4")
+#
+const titu6 = " * Na sala destino"
+#
+const nome6 = "Entrou cambaleando"
+const tipo6 = "opc_linha"
+const vari6 = "msg_entra4_" + var.saida1
+const nulo6 = "\c3" + txtnulo("h_cmd_" + var.saida1, "m_entra4")
+#
+const nome7 = "Entrou andando"
+const tipo7 = "opc_linha"
+const vari7 = "msg_entra1_" + var.saida1
+const nulo7 = "\c3" + txtnulo("h_cmd_" + var.saida1, "m_entra1")
+#
+const nome8 = "Entrou flutuando"
+const tipo8 = "opc_linha"
+const vari8 = "msg_entra2_" + var.saida1
+const nulo8 = "\c3" + txtnulo("h_cmd_" + var.saida1, "m_entra2")
+#
+const nome9 = "Entrou voando"
+const tipo9 = "opc_linha"
+const vari9 = "msg_entra3_" + var.saida1
+const nulo9 = "\c3" + txtnulo("h_cmd_" + var.saida1, "m_entra3")
+
+
+classe menu_saida_abrir
+herda comando_menu
+const titulo = "Mensagens abrir " + txtmai(var.saida1) + " de " + txt(var.classe1, 2)
 const colunas = 25
 const classe = var.classe1
 const menufim = "menu_saida"
