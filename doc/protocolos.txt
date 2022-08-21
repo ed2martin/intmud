@@ -28,18 +28,6 @@ Somente após \c:
     B = amarelo             F = branco intenso
 
 
-*** Cores no protocolo Telnet
-
-ESC [
-Seguido de números, separados por ';'
-Termina com um m
-    ESC=0x1B
-    0 = cores padrão
-    1 = ativa negrito
-    3x = cor de frente = x
-    4x = cor de fundo = x
-
-
 *** Cores no protocolo do IRC
 
 Definição de cores:
@@ -71,7 +59,7 @@ Referências:
     http://www.mirc.co.uk/help/color.txt
 
 
-*** Comandos de terminal usados em telatxt
+*** Comandos de terminal usados em Telatxt
 
 Escape sequences to move the cursor
 
@@ -127,6 +115,26 @@ Esc [ N @
 
 Referência:
     http://www.xemacs.org/Documentation/21.5/html/term_1.html
+
+
+*** Mensagens no protocolo Telnet
+
+Os caracateres especiais, em nexadecimal, são:
+FF FB 01 = Echo off (não deve ecoar na tela o que o usuário digita)
+FF FC 01 = Echo on (deve ecoar na tela o que o usuário digita)
+FF F9 = Go ahead (usado por alguns clientes de MUD para identificar o prompt)
+07 = Bipe
+FF FF = Caracter FF
+
+As cores são Esc (caracter 1B) seguido de '[' e números separados por ';'.
+Termina com um 'm'.
+Os números são:
+"0" = cores padrão (sem negrito, sublinhado ou texto piscando)
+"1" = ativar negrito
+"4" = ativar sublinhado
+"5" = ativar texto piscando
+"30" a "3F" = cor de frente, de 0 a F
+"40" a "47" = cor de fundo, de 0 a 7
 
 
 *** Mensagens de texto no protocolo Papovox
