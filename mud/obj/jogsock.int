@@ -42,6 +42,8 @@ listaobj lmonit # Lista de quem está monitorando esse jogador
 listaitem imonit # Um item de lmonit
 txt512 peditor # Texto sendo procurado, opção P do editor
 textotxt transf # Área de transferência do editor
+const msgtroca_v = ""
+const msgtroca_v@_ = ", "
 
 func ini
   jogconfig.bits = 12 # Cores(8) + acentuação(4)
@@ -380,13 +382,13 @@ func msg # Envia mensagem
 # Configuração do jogador
   casovar jogconfig.bits & 12
   casose "0" # -CORES -ACENTO
-    ret msgsock(txtremove(t.remove(1000), "C7"))
+    ret msgsock(txtremove(vartrocacod(t.remove(1000), "\d", "msgtroca_"), "C7"))
   casose "4" # +CORES -ACENTO
-    ret msgsock(txtremove(t.remove(1000), "7"))
+    ret msgsock(txtremove(vartrocacod(t.remove(1000), "\d", "msgtroca_"), "7"))
   casose "8" # -CORES +ACENTO
-    ret msgsock(txtremove(t.remove(1000), "C"))
+    ret msgsock(txtremove(vartrocacod(t.remove(1000), "\d", "msgtroca_"), "C"))
   casose "12" # +CORES +ACENTO
-    ret msgsock(t.remove(1000))
+    ret msgsock(vartrocacod(t.remove(1000), "\d", "msgtroca_"))
   casofim
 
 func msgsom # Envia mensagem

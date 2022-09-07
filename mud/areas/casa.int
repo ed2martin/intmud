@@ -258,12 +258,14 @@ const nome = "boneco de papel"
 const descnome = "um boneco de papel"
 const descver = "Parece ser muito frágil, pois é feito de papel."
 const descsala8 = "Um boneco de papel está se mexendo."
-const msexo = 1 # Sexo Msg: 1 Masculino
+const msexo = 1
+const sexoini = 2
 const p_agressivo = arg0.pnivel <= 4 ? 2 : 1 # Agressivo para jogadores até nível 4
 
 func recalc1_auto # Altera atributos do personagem
 # Não alterar; função criada automaticamente
   pvidamax += -20
+
 
 
 classe p_casa002
@@ -273,6 +275,7 @@ const descnome = "um boneco de papel"
 const descver = "Parece ser muito frágil, pois é feito de papel."
 const descsala8 = "Um boneco de papel está se mexendo."
 const msexo = 1
+const sexoini = 2
 ref alvo # Quem esse personagem deve atacar
 
 func cmd_ini # Personagem criado: anota o alvo
@@ -300,6 +303,7 @@ const descnome = "um boneco de papelão"
 const descver = "Parece frágil, pois é feito de papelão."
 const descsala8 = "Um boneco de papelão está se mexendo."
 const msexo = 1
+const sexoini = 2
 const p_exp = 0
 const eveste = 1 # Receber eventos do próprio objeto
 ref alvo # Quem esse personagem deve atacar
@@ -339,8 +343,8 @@ herda comum_persobat
 const nome = "menina"
 const descnome = "uma menina"
 const descsala8 = "Uma menina está sentada aqui, dobrando papéis."
-const msexo = 0
 const descver = "Debaixo do braço carrega diversas artes feitas dobrando-se papéis."
+const sexoini = 0
 const eveste = 1 # Receber eventos do próprio objeto
 const evsala = 1 # Receber eventos do dono se o dono for sala
 const inivar = "e_apagar=50"
@@ -408,7 +412,7 @@ herda comum_perso
 const nome = "menino"
 const descnome = "um menino"
 const descsala8 = "Um menino está aqui brincando."
-const msexo = 1
+const sexoini = 1
 const nivel = 4
 const evsala = 1 # Receber eventos do dono se o dono for sala
 
@@ -428,7 +432,7 @@ herda comum_perso
 const nome = "senhora"
 const descnome = "uma senhora"
 const descsala8 = "Uma senhora brinca com cartas, sentada em uma poltrona."
-const msexo = 0
+const sexoini = 0
 const nivel = 8
 const evsala = 1 # Receber eventos do dono se o dono for sala
 
@@ -453,6 +457,7 @@ const nome = "bife"
 const descnome = "um bife"
 const descsala8 = "Um bife está flutuando aqui."
 const msexo = 1
+const sexoini = 2
 const p_agressivo = 1 # Agressivo: 1 Se atacarem
 const p_exp = arg0.pnivel < 10 ? 100 # Dá experiência até o nível 10
 const p_morreu1 = "Um bife caiu no chão, imóvel."
@@ -470,6 +475,7 @@ const nome = "alface"
 const descnome = "um pé de alface"
 const descsala8 = "Um pé de alface está flutuando aqui."
 const msexo = 1
+const sexoini = 2
 const p_mover = 1
 const p_agressivo = 1 # Agressivo: 1 Se atacarem
 const inivar = "h_arremessar=2"
@@ -488,6 +494,7 @@ const nome = "banana"
 const descnome = "uma banana"
 const descsala8 = "Uma banana está flutuando aqui."
 const msexo = 0
+const sexoini = 2
 const p_agressivo = 1 # Agressivo: 1 Se atacarem
 const p_exp = arg0.pnivel < 10 ? 100 # Dá experiência até o nível 10
 const p_morreu1 = "$P se partiu."
@@ -501,6 +508,7 @@ const nome = "pião"
 const descnome = "um pião"
 const descsala8 = "Um pião está girando aqui."
 const msexo = 1
+const sexoini = 2
 const p_agressivo = 1 # Agressivo: 1 Se atacarem
 const p_exp = arg0.pnivel < 10 ? 100 # Dá experiência até o nível 10
 const p_morreu1 = "$P virou pó de madeira."
@@ -513,7 +521,7 @@ herda comum_persobat
 const nome = "boneca"
 const descnome = "uma boneca"
 const descsala8 = "Uma boneca está parada aqui."
-const msexo = 0
+const sexoini = 0
 const p_mover = 1
 const p_agressivo = 1 # Agressivo: 1 Se atacarem
 const inivar = "h_arremessar=2"
@@ -527,8 +535,9 @@ const nome = "folha de alface"
 const ident = "folha alface"
 const descnome = "uma folha de alface"
 const descsala8 = "Uma folha de alface balança no ar."
-const ident = "folha alface"
 const msexo = 0
+const sexoini = 2
+const ident = "folha alface"
 const pesoobj = 50
 const p_mover = 1
 const p_agressivo = 2 # Agressivo: 2 Sim
@@ -543,6 +552,7 @@ const nome = "cachorro"
 const descnome = "um cachorro"
 const descsala8 = "Um cachorro faminto está à procura de comida."
 const msexo = 1
+const sexoini = 2
 const pesoobj = 40000
 const volobj = 100
 const p_morreu1 = "Um cachorro dá seu último suspiro e cai, morto."
@@ -586,6 +596,8 @@ const pesoobj = 45000
 const nome = "zumbi"
 const descnome = "um zumbi" + nomealvo
 const descsala8 = "Um fétido zumbi vaga sem rumo por aqui."
+const msexo = 1
+const sexoini = 2
 const volobj = 2000
 const p_mover = 2 # Movimentar: 2 Qualquer lugar
 const p_morreu1 = "$P se partiu em vários pedaços."
@@ -634,7 +646,7 @@ func recalc1_auto # Altera atributos do personagem
 classe p_casa015
 herda comum_perso
 const nome = "Ivone"
-const msexo = 1
+const sexoini = 0
 const nivel = 10
 const pospadr = 5 # Posição padrão: 5 Descansando
 const p_recebe = 1 # Se pode receber itens de outros personagens

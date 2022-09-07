@@ -126,12 +126,25 @@ const ident = nome
 Nomes que o jogador digita para ações com o personagem ou item.
 Exemplo: ao pegar um item ou atacar um personagem.
 
+const identfem = ident
+Somente personagens: nomes que o jogador digita para ações com o personagem.
+Se ausente, assume ident.
+
+func ident2
+Retorna nomes que o jogador digita para ações com o personagem ou item.
+Pode ser ident, identfem ou nome.
+
 const descnome = nome
 Descrição curta. É a descrição usada na maioria dos comandos.
 Exemplos: "uma bola", "Joaquim" e "um ladrão"
 
+const descnomefem = descnome
+Somente personagens: descrição curta se for feminino. Se ausente, assume
+descnome.
+
 func descnome2
-Retorna a descrição curta de var.z_descnome ou de descnome.
+Retorna a descrição curta. Pode ser var.z_descnome, descnome, descnomefem
+ou nome.
 
 const descver = ""
 arg0 = personagem que está consultando essa constante
@@ -150,7 +163,7 @@ etc) porque elas já são mostradas automaticamente.
 
 const msexo = 0
 Usado nas mensagens com o personagem ou item.
-0=feminino, 1=masculino
+0=feminino, 1=masculino, 2=variável psexo (somente personagens)
 
 func msexo2
 Retorna o gênero de var.z_msexo ou de msexo.

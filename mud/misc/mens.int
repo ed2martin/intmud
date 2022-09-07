@@ -429,43 +429,66 @@ func mfalar2 # Mensagem de personagem falando
     msginv(!sabe2 ? arg3.naoconhece ?? arg1, l0.objini)
   efim
 
-func mens_min # Usado internamente
-# arg0 = personagem, arg1 = mensagem de tu/ti
-  refvar c = arg0.perso ? arg0.persodomador ?? arg0
-  se arg0 == c || arg0.descdono == 1
-    ret r == arg0, arg1
-    ret arg0.visivel(r), arg0.descnome2
-    ret arg0.perso ? "alguém" : "alguma coisa"
-  senao r == c
-    refvar i = txtproclin("o\na\num\numa", txt1(arg0.descnome2 + "x")) < 0
-    ret (arg0.msexo2 ? "seu " : "sua ") + (i ? arg0.descnome2 : txt2(arg0.descnome2))
-  senao arg0.descdono || txtproclin("o\na\num\numa", txt1(arg0.descnome2 + "x")) < 0
-    ret c.visivel(r), arg0.descnome2 + " de " + c.descnome2
-    ret arg0.visivel(r), arg0.descnome2 + " de alguém"
-  senao
-    ret c.visivel(r), txt2(arg0.descnome2) + " de " + c.descnome2
-    ret arg0.visivel(r), txt2(arg0.descnome2) + " de alguém"
-  fimse
-  ret arg0.perso ? "alguém" : "alguma coisa"
+func persomsg # Usado internamente, arg0 = mensagem de tu/ti
+  ret r == perso, arg0
+  ret !perso.visivel(r), perso.perso ? "alguém" : "alguma coisa"
+  ret !perso.temdomador, perso.descnome2
+  ret vartrocacod(perso.persodomador == r ? perso.descdono1 : perso.descdono2, "$", "perso_")
 
-func mens_mai # Usado internamente
-# arg0 = personagem, arg1 = mensagem de tu/ti
-  refvar c = arg0.perso ? arg0.persodomador ?? arg0
-  se arg0 == c || arg0.descdono == 1
-    ret r == arg0, txtcopiamai(arg1, "A")
-    ret arg0.visivel(r), txtcopiamai(arg0.descnome2, "A")
-    ret arg0.perso ? "Alguém" : "Alguma coisa"
-  senao r == c
-    refvar i = txtproclin("o\na\num\numa", txt1(arg0.descnome2 + "x")) < 0
-    ret (arg0.msexo2 ? "Seu " : "Sua ") + (i ? arg0.descnome2 : txt2(arg0.descnome2))
-  senao arg0.descdono || txtproclin("o\na\num\numa", txt1(arg0.descnome2 + "x")) < 0
-    ret c.visivel(r), txtcopiamai(arg0.descnome2, "A") + " de " + c.descnome2
-    ret arg0.visivel(r), txtcopiamai(arg0.descnome2, "A") + " de alguém"
-  senao
-    ret c.visivel(r), txtcopiamai(txt2(arg0.descnome2), "A") + " de " + c.descnome2
-    ret arg0.visivel(r), txtcopiamai(txt2(arg0.descnome2), "A") + " de alguém"
-  fimse
-  ret arg0.perso ? "Alguém" : "Alguma coisa"
+func alvomsg # Usado internamente, arg0 = mensagem de tu/ti
+  ret r == alvo, arg0
+  ret !alvo.visivel(r), alvo.perso ? "alguém" : "alguma coisa"
+  ret !alvo.temdomador, alvo.descnome2
+  ret vartrocacod(alvo.persodomador == r ? alvo.descdono1 : alvo.descdono2, "$", "alvo_")
+
+func obj1msg # Usado internamente, arg0 = mensagem de tu/ti
+  ret r == obj1, arg0
+  ret !obj1.visivel(r), obj1.perso ? "alguém" : "alguma coisa"
+  ret !obj1.temdomador, obj1.descnome2
+  ret vartrocacod(obj1.persodomador == r ? obj1.descdono1 : obj1.descdono2, "$", "obj1_")
+
+func obj2msg # Usado internamente, arg0 = mensagem de tu/ti
+  ret r == obj2, arg0
+  ret !obj2.visivel(r), obj2.perso ? "alguém" : "alguma coisa"
+  ret !obj2.temdomador, obj2.descnome2
+  ret vartrocacod(obj2.persodomador == r ? obj2.descdono1 : obj2.descdono2, "$", "obj2_")
+
+const perso_p = perso.descnome2
+const alvo_p = alvo.descnome2
+const obj1_p = obj1.descnome2
+const obj2_p = obj2.descnome2
+const perso_d = perso.persodomador.visivel(r) ? perso.persodomador.descnome2 : "alguém"
+const alvo_d = alvo.persodomador.visivel(r) ? alvo.persodomador.descnome2 : "alguém"
+const obj1_d = obj1.persodomador.visivel(r) ? obj1.persodomador.descnome2 : "alguém"
+const obj2_d = obj2.persodomador.visivel(r) ? obj2.persodomador.descnome2 : "alguém"
+const perso_s = perso.msexo2 ? "sua" : "seu"
+const alvo_s = alvo.msexo2 ? "sua" : "seu"
+const obj1_s = obj1.msexo2 ? "sua" : "seu"
+const obj2_s = obj2.msexo2 ? "sua" : "seu"
+const perso_t = perso.msexo2 ? "tua" : "teu"
+const alvo_t = alvo.msexo2 ? "tua" : "teu"
+const obj1_t = obj1.msexo2 ? "tua" : "teu"
+const obj2_t = obj2.msexo2 ? "tua" : "teu"
+const perso_@g = "$"
+const alvo_@g = "$"
+const obj1_@g = "$"
+const obj2_@g = "$"
+
+func perso_q
+  refvar d = perso.descnome2
+  ret txtproclin("o\na\num\numa", txt1(d + "x")) < 0 ? d : txt2(d)
+
+func alvo_q
+  refvar d = alvo.descnome2
+  ret txtproclin("o\na\num\numa", txt1(d + "x")) < 0 ? d : txt2(d)
+
+func obj1_q
+  refvar d = obj1.descnome2
+  ret txtproclin("o\na\num\numa", txt1(d + "x")) < 0 ? d : txt2(d)
+
+func obj2_q
+  refvar d = obj2.descnome2
+  ret txtproclin("o\na\num\numa", txt1(d + "x")) < 0 ? d : txt2(d)
 
 const o_h = txtcopiamai(perso.msexo2 ? "um" : "uma", arg0)
 const o_i = txtcopiamai(alvo.msexo2 ? "um" : "uma", arg0)
@@ -477,14 +500,14 @@ const o_u = txtcopiamai(obj1.msexo2 ? "o" : "a", arg0)
 const o_v = txtcopiamai(perso.msexo2 ? "e" : "a", arg0)
 const o_w = txtcopiamai(alvo.msexo2 ? "e" : "a", arg0)
 const o_x = txtcopiamai(obj1.msexo2 ? "e" : "a", arg0)
-const o_p = [arg0 === "P" ? "mens_mai" : "mens_min"](perso, config:mens_tu)
-const o_a = [arg0 === "A" ? "mens_mai" : "mens_min"](alvo, config:mens_tu)
-const o_k = [arg0 === "K" ? "mens_mai" : "mens_min"](obj1, config:mens_tu)
-const o_l = [arg0 === "L" ? "mens_mai" : "mens_min"](obj2, config:mens_tu)
-const o_p1 = [arg0 === "P1" ? "mens_mai" : "mens_min"](perso, config:mens_ti)
-const o_a1 = [arg0 === "A1" ? "mens_mai" : "mens_min"](alvo, config:mens_ti)
-const o_k1 = [arg0 === "K1" ? "mens_mai" : "mens_min"](obj1, config:mens_ti)
-const o_l1 = [arg0 === "L1" ? "mens_mai" : "mens_min"](obj2, config:mens_ti)
+const o_p =  txtcopiamai(persomsg(config:mens_tu), arg0 === "P" ? "A" : "")
+const o_a =  txtcopiamai(alvomsg(config:mens_tu), arg0 === "A" ? "A" : "")
+const o_k =  txtcopiamai(obj1msg(config:mens_tu), arg0 === "K" ? "A" : "")
+const o_l =  txtcopiamai(obj2msg(config:mens_tu), arg0 === "L" ? "A" : "")
+const o_p1 = txtcopiamai(persomsg(perso, config:mens_ti), arg0 === "P1" ? "A" : "")
+const o_a1 = txtcopiamai(alvomsg(config:mens_ti), arg0 === "A1" ? "A" : "")
+const o_k1 = txtcopiamai(obj1msg(config:mens_ti), arg0 === "K1" ? "A" : "")
+const o_l1 = txtcopiamai(obj2msg(config:mens_ti), arg0 === "L1" ? "A" : "")
 
 func o_q # Nome do personagem sem citar o dono
   se r == perso
@@ -564,33 +587,30 @@ herda mens
 # Mesmo que a classe mens, porém considera-se os personagens e itens
 # sempre visíveis (não mostra "alguém" ou "alguma coisa")
 
-func mens_min # Usado internamente
-# arg0 = personagem, arg1 = mensagem de tu/ti
-  refvar c = arg0.perso ? arg0.persodomador ?? arg0
-  se arg0 == c || arg0.descdono == 1
-    ret r == arg0 ? arg1 : arg0.descnome2
-  senao r == c
-    refvar i = txtproclin("o\na\num\numa", txt1(arg0.descnome2 + "x")) < 0
-    ret (arg0.msexo2 ? "seu " : "sua ") + (i ? arg0.descnome2 : txt2(arg0.descnome2))
-  senao arg0.descdono || txtproclin("o\na\num\numa", txt1(arg0.descnome2 + "x")) < 0
-    ret arg0.descnome2 + " de " + c.descnome2
-  senao
-    ret txt2(arg0.descnome2) + " de " + c.descnome2
-  fimse
+func persomsg # Usado internamente, arg0 = mensagem de tu/ti
+  ret r == perso, arg0
+  ret !perso.temdomador, perso.descnome2
+  ret vartrocacod(perso.persodomador == r ? perso.descdono1 : perso.descdono2, "$", "perso_")
 
-func mens_mai # Usado internamente
-# arg0 = personagem, arg1 = mensagem de tu/ti
-  refvar c = arg0.perso ? arg0.persodomador ?? arg0
-  se arg0 == c || arg0.descdono == 1
-    ret r == arg0 ? txtcopiamai(arg1, "A") : txtcopiamai(arg0.descnome2, "A")
-  senao r == c
-    refvar i = txtproclin("o\na\num\numa", txt1(arg0.descnome2 + "x")) < 0
-    ret (arg0.msexo2 ? "Seu " : "Sua ") + (i ? arg0.descnome2 : txt2(arg0.descnome2))
-  senao arg0.descdono || txtproclin("o\na\num\numa", txt1(arg0.descnome2 + "x")) < 0
-    ret txtcopiamai(arg0.descnome2, "A") + " de " + c.descnome2
-  senao
-    ret txtcopiamai(txt2(arg0.descnome2), "A") + " de " + c.descnome2
-  fimse
+func alvomsg # Usado internamente, arg0 = mensagem de tu/ti
+  ret r == alvo, arg0
+  ret !alvo.temdomador, alvo.descnome2
+  ret vartrocacod(alvo.persodomador == r ? alvo.descdono1 : alvo.descdono2, "$", "alvo_")
+
+func obj1msg # Usado internamente, arg0 = mensagem de tu/ti
+  ret r == obj1, arg0
+  ret !obj1.temdomador, obj1.descnome2
+  ret vartrocacod(obj1.persodomador == r ? obj1.descdono1 : obj1.descdono2, "$", "obj1_")
+
+func obj2msg # Usado internamente, arg0 = mensagem de tu/ti
+  ret r == obj2, arg0
+  ret !obj2.temdomador, obj2.descnome2
+  ret vartrocacod(obj2.persodomador == r ? obj2.descdono1 : obj2.descdono2, "$", "obj2_")
+
+const perso_d = perso.persodomador.descnome2
+const alvo_d = alvo.persodomador.descnome2
+const obj1_d = obj1.persodomador.descnome2
+const obj2_d = obj2.persodomador.descnome2
 
 func o_q # Nome do personagem sem citar o dono
   ret r == perso, txtcopiamai(config:mens_tu, arg0)

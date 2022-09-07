@@ -1313,7 +1313,7 @@ classe p_teste001
 herda comum_perso
 const nome = "Jardineiro"
 const descsala8 = "Um jardineiro está sentado aqui."
-const msexo = 1 # Sexo Msg: 1 Masculino
+const sexoini = 1
 const pesoobj = 80000
 const p_recebe = 1 # Se pode receber itens de outros personagens
 const eveste = 1 # Receber eventos do próprio objeto
@@ -1366,7 +1366,7 @@ herda comum_persobat
 const nome = "cão"
 const descnome = "um cão"
 const descver = "Mamífero da família dos canídeos."
-const descsala8 = "Um cão late para você."
+const descsala8 = "$P late para você."
 const msexo = 1 # Sexo Msg: 1 Masculino
 const sexoini = 2 # Sexo Perso: 2 Aleatório
 const pesoobj = 30100
@@ -1381,7 +1381,7 @@ herda comum_persobat
 const nome = "morcego"
 const descnome = "um morcego"
 const descver = "Mamífero da ordem dos quirópteros"
-const descsala8 = "Um morcego está voando."
+const descsala8 = "$P está voando."
 const msexo = 1 # 0=feminino, 1=masculino
 const sexoini = 2 # Sexo Perso: 2 Aleatório
 const pesoobj = 30500
@@ -1399,7 +1399,7 @@ func recalc1_auto # Altera atributos do personagem
 classe p_teste005
 herda comum_persoanimal
 const nome = "Lixeiro"
-const msexo = 1 # Sexo: 1 Masculino
+const sexoini = 1
 const pesoobj = 75300
 const volobj = 1000
 const nivel = 8
@@ -1412,6 +1412,7 @@ herda comum_persobat
 const nome = "geléia"
 const descnome = "uma geléia"
 const msexo = 0 # Sexo: 0 Feminino
+const sexoini = 2 # Sexo Perso: 2 Aleatório
 const pesoobj = 10000
 const nivel = 3
 const tipo1 = "água" # Inclui também os atributos na classe tipo_agua
@@ -1427,8 +1428,8 @@ func cmd_recalc1 # Recalcula variáveis do personagem
 
 classe p_teste007
 herda comum_perso
-const nome = "João o mercenário"
-const msexo = 1 # Sexo: 1 Masculino
+const nome = "João, o mercenário\dv"
+const sexoini = 1
 const tipo1 = "Humano"
 const lojaitem = "teste012 3\n\
 teste013 0\n\
@@ -1451,7 +1452,7 @@ const tipoitem = "3"
 classe p_teste008
 herda comum_perso
 const nome = "Faixa preta"
-const msexo = 1 # Sexo: 1 Masculino
+const sexoini = 1
 const tipo1 = "Humano"
 const lojaaula = "h_Chutar 3\n\
 h_Voadora 7\n\
@@ -1486,7 +1487,7 @@ const taxaaula = 50
 classe p_teste009
 herda comum_perso
 const nome = "Perito"
-const msexo = 1 # Sexo: 1 Masculino
+const sexoini = 1
 const tipo1 = "Anão"
 const lojaaula = "h_Varinha 8\n\
 h_Cajado 8\n\
@@ -1505,7 +1506,7 @@ const lojanao = ""
 classe p_teste010
 herda comum_perso
 const nome = "Prefeito"
-const msexo = 1 # Sexo: 1 Masculino
+const sexoini = 1
 const tipo1 = "Elfo"
 const evsala = 1 # Eventos em sala: Sim
 
@@ -1533,7 +1534,8 @@ func cmd_falou
 
 classe p_teste011
 herda comum_persobat
-const msexo = 1 # Sexo: 1 Masculino
+const msexo = 1
+const sexoini = 2
 const nome = "camundongo gigante"
 const descnome = "um camundongo gigante"
 const p_corpo = 2 # Quando morre: 2 Deixa corpo com itens e moedas
@@ -1546,8 +1548,9 @@ func recalc1_auto # Altera atributos do personagem
 classe p_teste012
 herda comum_perso
 const nome = "Adestradora de animais raros"
-const descsala8 = "Adestradora de animais raros está aqui, esperando por clientes."
 const ident = "adestradora"
+const descsala8 = "$P está aqui, esperando por clientes."
+const sexoini = 0
 const evsala = 1 # Receber eventos do dono se o dono for sala
 
 func cmd_chegou # Alguém chegou na mesma sala
@@ -1587,6 +1590,7 @@ func cmd_falou
 classe p_teste013
 herda comum_persobat
 const nome = "Duende branca"
+const sexoini = 0
 const equip1 = "40026"
 const equip2 = "10"
 
@@ -1594,14 +1598,14 @@ const equip2 = "10"
 classe p_teste014
 herda comum_persobat
 const nome = "Duende negro"
-const msexo = 1 # Sexo Msg: 1 Masculino
+const sexoini = 1
 
 
 classe p_teste015
 herda comum_perso
 const evsala = 1 # Eventos em sala: Sim
 const nome = "marceneiro"
-const msexo = 1 # Sexo Msg: 1 Masculino
+const sexoini = 1
 
 func cmd_chegou
   ret !arg0.jog, nulo # Retorna se não for jogador
@@ -1611,9 +1615,11 @@ func cmd_chegou
 classe p_teste016
 herda comum_perso
 const nome = "rato"
-const descnome = "um rato de laboratório"
-const descsala8 = "Um rato de laboratório vaga sem rumo."
 const ident = "rato laboratório"
+const descnome = "um rato de laboratório"
+const descsala8 = "$P vaga sem rumo."
+const msexo = 1
+const sexoini = 2
 const evsala = 1 # Eventos em sala: Sim
 
 func cmd_chegou
@@ -1629,8 +1635,8 @@ classe p_teste017
 herda comum_persobat
 const nome = "guarda"
 const descnome = "um guarda"
-const descsala8 = "Um guarda está em pé, vigiando este lugar."
-const msexo = 1 # Sexo Msg: 1 Masculino
+const descsala8 = "$P está em pé, vigiando este lugar."
+const sexoini = 1
 const nivel = 100
 const evsala = 1 # Eventos em sala: Sim
 
@@ -1669,6 +1675,7 @@ func cmd_soltouobj # Chamado quando um personagem soltou algum item
 classe p_teste018
 herda comum_perso
 const nome = "Carolina"
+const sexoini = 0
 const p_recebe = 1 # Recebe itens: Sim
 const eveste = 1 # Eventos perso: Sim
 
@@ -1697,7 +1704,7 @@ func darchave50
 classe p_teste019
 herda comum_perso
 const nome = "João"
-const msexo = 1 # Sexo Msg: 1 Masculino
+const sexoini = 1
 const p_recebe = 1 # Recebe itens: Sim
 const eveste = 1 # Eventos perso: Sim
 const evsala = 1 # Receber eventos do dono se o dono for sala
@@ -1757,7 +1764,7 @@ func fechaporta80
 classe p_teste020
 herda comum_perso
 const nome = "Maria"
-const msexo = 0 # Sexo Msg: 0 Feminino
+const sexoini = 0
 const p_recebe = 1 # Recebe itens: Sim
 const eveste = 1 # Eventos perso: Sim
 const evsala = 1 # Receber eventos do dono se o dono for sala
@@ -1828,7 +1835,7 @@ classe p_teste021
 herda comum_perso
 const nome = "ajudante"
 const descnome = "um ajudante"
-const msexo = 1 # Sexo Msg: 1 Masculino
+const sexoini = 1
 
 func seguirjog # Função chamada pela sala
 # arg0 = personagem que o ajudante deve seguir e observar
@@ -1868,7 +1875,7 @@ herda comum_perso
 const nome = "aprendiz do fogo"
 const descsala8 = "Um aprendiz do fogo está brincando com uma pequena chama."
 const ident = "aprendiz fogo"
-const msexo = 1 # Sexo Msg: 1 Masculino
+const sexoini = 1
 const lojaaula = "m_Chama_Protetora 5\nh_Chute_Élfico 5"
 const inivar = "e_chama_protetora=-100"
 
@@ -1877,8 +1884,8 @@ classe p_teste023
 herda comum_persobat
 const nome = "moleque"
 const descnome = "um moleque"
-const descsala8 = "Um moleque está encarando você."
-const msexo = 1 # Sexo Msg: 1 Masculino
+const descsala8 = "$P está encarando você."
+const sexoini = 1
 const evsala = 1 # Eventos em sala: Sim
 
 func cmd_chegou
@@ -1917,8 +1924,8 @@ func cmd_falou # Jogador falou alguma coisa
 classe p_teste024
 herda comum_perso
 const nome = "Úrsula"
-const descsala8 = "Úrsula está tentando acender alguma coisa, sem sucesso."
-const msexo = 1 # 0=feminino, 1=masculino
+const descsala8 = "$P está tentando acender alguma coisa, sem sucesso."
+const sexoini = 0
 const pesoobj = 80000
 const p_recebe = 1 # Se pode receber itens de outros personagens
 const eveste = 1 # Receber eventos do próprio objeto
@@ -1959,7 +1966,7 @@ func cmd_deuobj # Recebeu um item
 classe p_teste025
 herda comum_perso
 const nome = "Corretor de imóveis"
-const msexo = 1 # Sexo Msg: 1 Masculino
+const sexoini = 1
 const taxacompra = 20
 const lojainv = 1 # Produtos inv: Sim
 const lojacasa = "teste"
@@ -1970,7 +1977,7 @@ classe p_teste026
 herda comum_perso
 const nome = "garoto"
 const descnome = "um garoto"
-const msexo = 1 # Sexo Msg: 1 Masculino
+const sexoini = 1
 const inivar = "e_apagar=50"
 inttempo tempo
 
@@ -1995,7 +2002,7 @@ classe p_teste027
 herda comum_perso
 const nome = "cobrador de taxas"
 const descnome = "um cobrador de taxas"
-const msexo = 1 # Sexo Msg: 1 Masculino
+const sexoini = 1
 const taxacasa = "teste"
 
 
@@ -2003,6 +2010,7 @@ classe p_teste028
 herda comum_perso
 const nome = "curandeira"
 const descnome = "uma curandeira"
+const sexoini = 0
 const nivel = 5
 const inivar = "m_Curar=8"
 const eveste = 1 # Eventos perso: Sim
@@ -2019,7 +2027,7 @@ classe p_teste029
 herda comum_perso
 const nome = "instrutor"
 const descnome = "o instrutor de facas"
-const msexo = 1 # Sexo Msg: 1 Masculino
+const sexoini = 1
 const evsala = 1 # Eventos em sala: Sim
 
 func cmd_chegou # Chegou na sala
@@ -2049,6 +2057,7 @@ classe p_teste030
 herda comum_persobat
 const nome = "gosma"
 const descnome = "uma gosma"
+const sexoini = 0
 const eveste = 1 # Eventos perso: Sim
 
 func cmd_atkrec
@@ -2062,6 +2071,7 @@ classe p_teste031
 herda comum_persobat
 const nome = "boneca"
 const descnome = "uma boneca"
+const sexoini = 0
 const eveste = 1 # Eventos perso: Sim
 
 func cmd_atkrec
@@ -2076,7 +2086,7 @@ classe p_teste032
 herda comum_perso
 const nome = "lobo mau"
 const descnome = "lobo mau"
-const msexo = 1 # Sexo Msg: 1 Masculino
+const sexoini = 1
 const evsala = 1 # Eventos dono sala: Sim
 
 func cmd_chegou
@@ -2117,7 +2127,7 @@ func info20
 classe p_teste033
 herda comum_perso
 const nome = "Telepata"
-const msexo = 1 # Sexo Msg: 1 Masculino
+const sexoini = 1
 const evsala = 1 # Eventos dono sala: Sim
 
 func cmd_chegou
@@ -2133,13 +2143,13 @@ func entrou10
   senao # Nesse caso, misc:hora é um número de 12 a 17
     $mens.mens = "Boa tarde!"
   fimse
-  arg0.msginv(config:telepatia2) # Pega a mensagem da configuração
+  $mens.msginv($cmd_telepatia.m_enviou, arg0) # Pega a mensagem da configuração
 
 
 classe p_teste034
 herda comum_perso
 const nome = "afiador de facas"
-const msexo = 1 # Sexo Msg: 1 Masculino
+const sexoini = 1
 const evsala = 1 # Eventos dono sala: Sim
 
 func cmd_chegou # Chegou na sala
@@ -2187,12 +2197,14 @@ func cmd_soltouobj
 classe p_teste035
 herda comum_perso
 const nome = "técnico de luz"
+const sexoini = 1
 const lojaaula = "m_Proteção_de_luz 8"
 
 
 classe p_teste036
 herda comum_perso
 const nome = "treinadora de tiros"
+const sexoini = 0
 const lojaaula = "h_Sapato 8\nh_Arco_e_flecha 8\nh_Revolver 8\nm_Flechas_Enfurecidas 8"
 
 
@@ -2201,12 +2213,14 @@ herda comum_persobat
 const nome = "rato"
 const ident = "rato laboratório"
 const descnome = "um rato gordo"
-const descsala8 = "Um rato gordo vaga sem rumo."
-const msexo = 1 # Sexo Msg: 1 Masculino
+const descsala8 = "$P vaga sem rumo."
+const msexo = 1
+const sexoini = 2
 
 
 classe p_teste038
 herda comum_persobat
+const sexoini = 1
 const eveste = 1 # Eventos perso: Sim
 txt40 ident
 txt40 nome
@@ -2243,7 +2257,7 @@ classe p_teste039
 herda comum_perso
 const nome = "jardineiro"
 const descnome = "um jardineiro"
-const msexo = 1 # Sexo Msg: 1 Masculino
+const sexoini = 1
 const p_recebe = 1 # Recebe itens: Sim
 const eveste = 1 # Eventos perso: Sim
 
@@ -2269,6 +2283,7 @@ classe p_teste040
 herda comum_perso
 const nome = "vendedora bilhetes"
 const descnome = "uma vendedora de bilhetes"
+const sexoini = 0
 const lojaitem = "teste068 0"
 
 
@@ -2276,6 +2291,7 @@ classe p_teste041
 herda comum_persobat
 const nome = "combatente"
 const descnome = "combatente"
+const sexoini = 1
 
 func cmd_pnj_proc
   se !atkenv # Se não está lutando...
@@ -2289,7 +2305,7 @@ classe p_teste042
 herda comum_perso
 const nome = "colecionador"
 const descnome = "um colecionador"
-const msexo = 1 # Sexo Msg: 1 Masculino
+const sexoini = 1
 const evsala = 1 # Eventos dono sala: Sim
 
 func cmd_chegou # Chegou na sala
@@ -2321,6 +2337,7 @@ herda comum_persobat
 const nome = "lagarto verde"
 const descnome = "um lagarto verde"
 const msexo = 1 # Sexo Msg: 1 Masculino
+const sexoini = 2 # Sexo Perso: 2 Aleatório
 const p_animal = 3 # Lugar após domar: 3 Comando Animal ou sala, protege o dono
 const p_montar_tipo = 1 # Montar: 1 Somente se tiver dono
 const p_lugar = 2
@@ -2342,6 +2359,7 @@ herda comum_persobat
 const nome = "lagarto vermelho"
 const descnome = "um lagarto vermelho"
 const msexo = 1 # Sexo Msg: 1 Masculino
+const sexoini = 2 # Sexo Perso: 2 Aleatório
 const p_animal = 3 # Lugar após domar: 3 Comando Animal ou sala, protege o dono
 const p_montar_tipo = 1 # Montar: 1 Somente se tiver dono
 const p_lugar = 2
@@ -2365,6 +2383,7 @@ herda comum_persobat
 const nome = "lagarto planta"
 const descnome = "um lagarto planta"
 const msexo = 1 # Sexo Msg: 1 Masculino
+const sexoini = 2 # Sexo Perso: 2 Aleatório
 const tipo1 = "normal"
 const tipo2 = "vegetal"
 const p_animal = 3 # Lugar após domar: 3 Comando Animal ou sala, protege o dono
@@ -2376,8 +2395,9 @@ classe p_teste046
 herda comum_persobat
 const nome = "lagarto de fogo"
 const descnome = "um lagarto de fogo"
-const descsala8 = "Uma lagartixa está parada na parede."
+const descsala8 = "$P está parad$s na parede."
 const msexo = 1 # Sexo Msg: 1 Masculino
+const sexoini = 2 # Sexo Perso: 2 Aleatório
 const tipo1 = "normal"
 const tipo2 = "fogo"
 const p_animal = 3 # Lugar após domar: 3 Comando Animal ou sala, protege o dono
@@ -2393,6 +2413,7 @@ herda comum_persobat
 const nome = "lagartixa"
 const descnome = "uma lagartixa"
 const msexo = 0 # Sexo Msg: 0 Feminino
+const sexoini = 2 # Sexo Perso: 2 Aleatório
 const tipo1 = "normal"
 const eveste = 1 # Receber eventos do próprio objeto
 
@@ -2413,6 +2434,7 @@ herda comum_perso
 const nome = "cão"
 const descnome = "um cão"
 const msexo = 1 # Sexo Msg: 1 Masculino
+const sexoini = 2 # Sexo Perso: 2 Aleatório
 const lojaaula = "i_Latir 8"
 const lojaidioma = "latir"
 const lojaaulaidioma = 3 # Nível idioma: 3 Básico
@@ -2460,6 +2482,7 @@ herda comum_perso
 const nome = "aprendiz de magia"
 const ident = "aprendiz magia"
 const descnome = "Uma aprendiz de magia"
+const sexoini = 0
 const lojaaula = "m_Fecha_Saída 4\nm_Armadura_Solitária 4"
 
 

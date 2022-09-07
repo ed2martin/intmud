@@ -175,11 +175,11 @@ func itemtudo # Obtém um item no personagem ou na sala
   n.ini(arg1, 1)
   epara i = arg0.dentro1.ini, i, i.depois
     refvar ii = i.obj
-    ret ii.visivel(arg0) && n.nome(ii.var.z_ident ?? ii.ident, ii.objtot), ref(ii)
+    ret ii.visivel(arg0) && n.nome(ii.ident2, ii.objtot), ref(ii)
   efim
   epara i = arg0.dono.dentro1.ini, i, i.depois
     refvar ii = i.obj
-    ret ii.visivel(arg0) && n.nome(ii.var.z_ident ?? ii.ident, ii.objtot), ref(ii)
+    ret ii.visivel(arg0) && n.nome(ii.ident2, ii.objtot), ref(ii)
   efim
 
 func itemdono # Obtém um item na sala
@@ -190,7 +190,7 @@ func itemdono # Obtém um item na sala
   n.ini(arg1, 1)
   epara i = arg0.dono.dentro1.ini, i, i.depois
     refvar ii = i.obj
-    ret ii.visivel(arg0) && n.nome(ii.var.z_ident ?? ii.ident, ii.objtot), ref(ii)
+    ret ii.visivel(arg0) && n.nome(ii.ident2, ii.objtot), ref(ii)
   efim
 
 func itemdentro # Obtém um item no personagem
@@ -201,7 +201,7 @@ func itemdentro # Obtém um item no personagem
   n.ini(arg1, 1)
   epara i = arg0.dentro1.ini, i, i.depois
     refvar ii = i.obj
-    ret ii.visivel(arg0) && n.nome(ii.var.z_ident ?? ii.ident, ii.objtot), ref(ii)
+    ret ii.visivel(arg0) && n.nome(ii.ident2, ii.objtot), ref(ii)
   efim
 
 func persodono # Obtém um personagem na sala
@@ -212,7 +212,7 @@ func persodono # Obtém um personagem na sala
   n.ini(arg1, 1)
   epara i = arg0.dono.dentro2.ini, i, i.depois
     refvar ii = i.obj
-    ret ii.visivel(arg0) && n.nome(ii.var.z_ident ?? ii.ident, ii.objtot), ref(ii)
+    ret ii.visivel(arg0) && n.nome(ii.ident2, ii.objtot), ref(ii)
   efim
 
 func persooutro # Obtém um personagem na sala que não seja o próprio personagem
@@ -223,7 +223,7 @@ func persooutro # Obtém um personagem na sala que não seja o próprio personagem
   n.ini(arg1, 1)
   epara i = arg0.dono.dentro2.ini, i, i.depois
     refvar r = i.obj
-    ret r != arg0 && r.visivel(arg0) && n.nome(r.var.z_ident ?? r.ident, r.objtot), ref(r)
+    ret r != arg0 && r.visivel(arg0) && n.nome(r.ident2, r.objtot), ref(r)
   efim
 
 func persodentro # Obtém um animal no personagem (no comando Animal)
@@ -258,7 +258,7 @@ func itemlista # Obtém item ou personagem a partir de uma listaobj
   n.ini(arg1, 1)
   epara i = arg2.ini, i, i.depois
     refvar ii = i.obj
-    ret ii.visivel(arg0) && n.nome(ii.var.z_ident ?? ii.ident, ii.objtot), ref(ii)
+    ret ii.visivel(arg0) && n.nome(ii.ident2, ii.objtot), ref(ii)
   efim
 
 func persoinfo # Obtém o personagem que o jogador quer consultar a partir de um texto
@@ -281,7 +281,7 @@ func persoinfo # Obtém o personagem que o jogador quer consultar a partir de um 
   n.ini(txt1(arg1), 1000000)
   epara l.addfim(arg0.dono.dentro2), l, l.ini.remove
     refvar ll = l.objini
-    continuar !ll.visivel(arg0) || !n.nome(ll.var.z_ident ?? ll.ident, ll.objtot)
+    continuar !ll.visivel(arg0) || !n.nome(ll.ident2, ll.objtot)
     r = ll
     sair
   efim

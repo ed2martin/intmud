@@ -8,13 +8,14 @@ const jogperm = sock.jogperm # Permissões do personagem
 const jogarea = sock.jogarea # Área aonde tem permissão
 int1 jogconfig.32 # Configurações do personagem, mesmo que sock.jogconfig
 sav int1 psexo # Sexo do personagem: 0=feminino, 1=masculino
-const sexoini = msexo # Sexo inicial: 0=feminino, 1=masculino, 2=aleatório
-const msexo = 0 # Sexo: 0=feminino, 1=masculino
-const msexo2 = int(var.z_msexo ?? msexo)
+const sexoini = 2 # Sexo inicial: 0=feminino, 1=masculino, 2=aleatório
+const msexo = 2 # Sexo nas mensagens: 0=feminino, 1=masculino, 2=psexo
+const msexo2 = int(var.z_msexo ?? (msexo == 2 ? psexo : msexo))
 const nome = "sem nome"
-const ident = nome
-const descnome = nome
-const descnome2 = var.z_descnome ?? descnome
+const ident2 = var.z_ident ?? (!psexo ? identfem) ?? ident ?? nome
+const descnome2 = var.z_descnome ?? (!psexo ? descnomefem) ?? descnome ?? nome
+const descdono1 = "$s $q"
+const descdono2 = "$q de $d"
 const volexp = 1 # Volume expande se tiver itens dentro
 const volmax = config:p_volmax
 const objmax = config:p_objmax
@@ -75,16 +76,15 @@ const descsalaN = perso_cfg:descpersoN
 #
 # Ordem que deve organizar as constantes:
 const admordem = "nome\n\
-ident\n\
-descnome\n\
-descdono\n\
-descver\n\
+ident identfem\n\
+descnome descnomefem\n\
+descver descdonover\n\
 descident\n\
+descdono1 descdono2\n\
 descsala0 descsala1 descsala2 descsala3 descsala4c descsala4i\n\
 descsala5c descsala5i descsala6c descsala6i descsala6p\n\
 descsala7a descsala7b descsala7c descsala8 descsalaN\n\
-msexo\n\
-sexoini\n\
+sexoini msexo\n\
 m_atrib1 m_atrib2\n\
 pesoobj\n\
 volobj volmax volexp\n\

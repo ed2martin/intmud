@@ -1,4 +1,4 @@
-classe atualiza_577
+classe atualiza_581
 # Atualiza arquivos mud/config/* e mud/areas/* de acordo com novas mudanças
 prog p
 debug dbg
@@ -729,8 +729,8 @@ func ini3_exec
 func ini4_exec
   apagar(este)
 # Checa e muda a versão
-  ret (versao = config:versao) >= 577, nulo
-  p.criar("config", "const versao = 577 # Para atualizar diretórios areas e config")
+  ret (versao = config:versao) >= 581, nulo
+  p.criar("config", "const versao = 581 # Para atualizar diretórios areas e config")
   config:salvar
 # Comando Fim e Dicas aleatórias
   se versao < 457
@@ -1008,7 +1008,34 @@ func ini4_exec
       dbg.ini
       [p.texto]:ataque2 && p.criar(p.texto, "const ataque2perso = 0")
     efim
-  fimse  
+  fimse
+# Sexo e descrição dos personagens
+  se versao < 581
+    epara p.iniherdainv("comum_perso"), p.lin, p.depois
+      dbg.ini
+      continuar txt(p.texto, 0, 2) != "p_"
+      se p.existe(p.texto, "sexoini") == 1
+      senao p.existe(p.texto, "msexo") != 1
+        p.criar(p.texto, "const sexoini = 0")
+      senao p.varnum(p.texto, "msexo")
+        p.apagar(p.texto, "msexo")
+        p.criar(p.texto, "const sexoini = " + [p.texto]:msexo)
+      senao
+        movefunc(p.texto, "msexo", p.texto, "sexoini")
+      fimse
+      casovar [p.texto]:descdono
+      casose "0"
+        p.criar(p.texto, "const descdono1 = \"$q\"")
+        p.criar(p.texto, "const descdono2 = \"$q\"")
+        sair
+      casose "1"
+        p.criar(p.texto, "const descdono1 = \"$p\"")
+        p.criar(p.texto, "const descdono2 = \"$p\"")
+        sair
+      casofim
+      p.apagar(p.texto, "descdono")
+    efim
+  fimse
 # Avisa que atualizou arquivos
   tela.msg("Diretórios areas e config atualizados\n")
 

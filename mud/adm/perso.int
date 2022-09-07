@@ -669,44 +669,46 @@ const nome2 = "Palavras chave"
 const info2 = "Palavras que os jogadores digitam para se referir ao item"
 const tipo2 = "opc_linha"
 const vari2 = "ident"
+const nulo2 = "\c3" + [classe]:nome
 #
-const nome3 = "Descrição curta"
-const info3 = "Descrição usada na maioria dos comandos"
+const nome3 = "Palavras chave fem"
+const info3 = "Palavras chave se personagem feminino"
 const tipo3 = "opc_linha"
-const vari3 = "descnome"
+const vari3 = "identfem"
+const nulo3 = "\c3" + ([classe]:ident ?? [classe]:nome)
 #
-const nome4 = "Descrição com dono"
-const tipo4 = "opc_opcao"
-const vari4 = "descdono"
-const extr4 = "Sem o,a,um,uma na frente\nSem o nome do dono\nCompleto"
+const nome4 = "Descrição curta"
+const info4 = "Descrição usada na maioria dos comandos"
+const tipo4 = "opc_linha"
+const vari4 = "descnome"
+const nulo4 = "\c3" + [classe]:nome
 #
-const nome5 = "Descrição sala"
-const tipo5 = "menu_pdescsala--"
+const nome5 = "Desc curta fem"
+const info5 = "Descrição curta se personagem feminino"
+const tipo5 = "opc_linha"
+const vari5 = "descnomefem"
+const nulo5 = "\c3" + ([classe]:descnome ?? [classe]:nome)
 #
-const nome6 = "Descrição condição"
-const tipo6 = "menu_pdesccond--"
+const nome6 = "Descrição sala"
+const tipo6 = "menu_pdescsala--"
 #
-const nome7 = "Descrição ao olhar"
-const tipo7 = "opc_texto"
-const vari7 = "descver"
+const nome7 = "Descrição condição"
+const tipo7 = "menu_pdesccond--"
 #
-const nome8 = "Descrição ident"
-const info8 = "Texto adicionado após identificar (com magia de identificação)"
-const tipo8 = "opc_texto"
-const vari8 = "descident"
+const nome8 = "Outras descrições"
+const tipo8 = "menu_pdescoutros--"
 #
-const nome9 = "Sexo Msg"
-const info9 = "Usado nas mensagens com o personagem"
+const nome9 = "Sexo Perso"
+const info9 = "Aleatório escolhe um quando o personagem é criado"
 const tipo9 = "opc_opcao"
-const vari9 = "msexo"
-const extr9 = "Feminino\nMasculino"
+const vari9 = "sexoini"
+const extr9 = "Feminino\nMasculino\nAleatório"
 #
-const nome10 = "Sexo Perso"
-const info10 = "Se estiver como <herda const>, assume o mesmo valor de Sexo Msg\n\
-Aleatório escolhe um quando o personagem é criado"
+const nome10 = "Sexo Msg"
+const info10 = "Usado nas mensagens com o personagem"
 const tipo10 = "opc_opcao"
-const vari10 = "sexoini"
-const extr10 = "Feminino\nMasculino\nAleatório"
+const vari10 = "msexo"
+const extr10 = "Feminino\nMasculino\nSexo Perso"
 #
 const nome11 = "Peso"
 const info11 = "Em gramas"
@@ -966,6 +968,49 @@ const nulo8 = "\c3" + fnulo("desccond7")
 func fnulo
   refvar v = $t_[[classe]:tipo1].[arg0] ?? $t_[[classe]:tipo2].[arg0]
   ret v ?? $t_[[classe]:tipo2].[arg0] ?? $t_[[classe]:tipo3].[arg0] ?? perso_cfg:[arg0]
+
+
+classe menu_pdescoutros
+herda comando_menu
+const titulo = "Outras descrições"
+const menufim = var.menufim
+const colunas = 28
+const classe = var.classe1
+#
+const nome1 = "Ao olhar"
+const tipo1 = "opc_texto"
+const vari1 = "descver"
+#
+const nome2 = "Ao olhar com dono"
+const info2 = "Quando pertence a outro personagem; se ausente assume Ao olhar"
+const tipo2 = "opc_texto"
+const vari2 = "descdonover"
+#
+const nome3 = "Identificar"
+const info3 = "Texto adicionado após identificar (com magia de identificação)"
+const tipo3 = "opc_texto"
+const vari3 = "descident"
+#
+const titu4 = " * Descrição curta com dono"
+#
+const nome4 = "Para o dono"
+const tipo4 = "opc_linha"
+const vari4 = "descdono1"
+#
+const nome5 = "Para os outros"
+const tipo5 = "opc_linha"
+const vari5 = "descdono2"
+#
+const nome6 = "Caracteres especiais"
+const tipo6 = "opc_ajuda--"
+const extr6 = "\c3Caracteres especiais usadas nas descrições com dono:\b\n\
+$p = descrição curta\n\
+$q = descrição curta sem o/a/um/uma na frente\n\
+$d = descrição curta do dono\n\
+$s = seu ou sua\n\
+$t = teu ou tua\n\
+$$ = símbolo $"
+
 
 classe menu_patribs1
 herda comando_menu

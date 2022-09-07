@@ -59,9 +59,7 @@ const tipo22 = "menu_ataque_msg4--"
 #
 const nome23 = "Menus de mensagens"
 const tipo23 = "opc_ajuda--"
-const extr23 = menu_hab_ataque:msg1 + "\n" + menu_hab_ataque:msg2
-#
-const msg1 = "\c3Menus de mensagens:\b\n\
+const extr23 = "\c3Menus de mensagens:\b\n\
 Em princípio, pode-se colocar todas as mensagens no menu Mensagens 1.\n\
 Se você colocar mensagens em mais de um desses menus, as mensagens\n\
 de batalha serão pegas de um dos menus, escolhido aleatoriamente.\n\
@@ -69,8 +67,8 @@ O efeito do golpe será o mesmo, apenas a mensagem muda.\n\
 \c3Perso, alvo e outros:\b\n\
 Se quiser mensagens diferentes para o personagem, para o alvo e para\n\
 quem estiver assistindo, coloque as mensagens nas opções perso, alvo\n\
-e outros. Se alvo e outros estiverem vazios, será usada a do perso."
-const msg2 = "\c3Ao usar, exceto poções comidas etc:\b\n\
+e outros. Se alvo e outros estiverem vazios, será usada a do perso.\n\
+\c3Ao usar, exceto poções comidas etc:\b\n\
 É a mensagem enviada assim que o personagem usa a habilidade ou magia,\n\
 independente dela falhar ou não. No entanto, essa mensagem não é enviada\n\
 quando a magia for disparada por um item (quando o personagem comeu ou\n\
@@ -302,11 +300,13 @@ const nome2 = "Alvo"
 const info2 = "Se vazio, pega mensagem da opção 1"
 const tipo2 = "opc_linha"
 const vari2 = n_variavel + "_usar2"
+const nulo2 = "\c3" + [classe]:[n_variavel]_usar1
 #
 const nome3 = "Outros"
 const info3 = "Se vazio, pega mensagem da opção 1"
 const tipo3 = "opc_linha"
 const vari3 = n_variavel + "_usar3"
+const nulo3 = "\c3" + [classe]:[n_variavel]_usar1
 #
 const titu4 = " * Acertou em si mesmo"
 #
@@ -318,6 +318,7 @@ const nome5 = "Outros"
 const info5 = "Se vazio, pega mensagem da opção 4"
 const tipo5 = "opc_linha"
 const vari5 = n_variavel + "_auto2"
+const nulo5 = "\c3" + [classe]:[n_variavel]_auto1
 #
 const titu6 = " * Acertou outro personagem"
 #
@@ -329,11 +330,13 @@ const nome7 = "Alvo"
 const info7 = "Se vazio, pega mensagem da opção 6"
 const tipo7 = "opc_linha"
 const vari7 = n_variavel + "_perso2"
+const nulo7 = "\c3" + [classe]:[n_variavel]_perso1
 #
 const nome8 = "Outros"
 const info8 = "Se vazio, pega mensagem da opção 6"
 const tipo8 = "opc_linha"
 const vari8 = n_variavel + "_perso3"
+const nulo8 = "\c3" + [classe]:[n_variavel]_perso1
 #
 const titu9 = " * Matou o alvo"
 #
@@ -345,11 +348,13 @@ const nome10 = "Alvo"
 const info10 = "Se vazio, pega mensagem da opção 9"
 const tipo10 = "opc_linha"
 const vari10 = n_variavel + "_matou2"
+const nulo10 = "\c3" + [classe]:[n_variavel]_matou1
 #
 const nome11 = "Outros"
 const info11 = "Se vazio, pega mensagem da opção 9"
 const tipo11 = "opc_linha"
 const vari11 = n_variavel + "_matou3"
+const nulo11 = "\c3" + [classe]:[n_variavel]_matou1
 #
 const titu12 = " * Errou o alvo"
 #
@@ -361,11 +366,13 @@ const nome13 = "Alvo"
 const info13 = "Se vazio, pega mensagem da opção 12"
 const tipo13 = "opc_linha"
 const vari13 = n_variavel + "_errou2"
+const nulo13 = "\c3" + [classe]:[n_variavel]_errou1
 #
 const nome14 = "Outros"
 const info14 = "Se vazio, pega mensagem da opção 12"
 const tipo14 = "opc_linha"
 const vari14 = n_variavel + "_errou3"
+const nulo14 = "\c3" + [classe]:[n_variavel]_errou1
 #
 const titu15 = " * Não teve efeito"
 #
@@ -377,11 +384,13 @@ const nome16 = "Alvo"
 const info16 = "Se vazio, pega mensagem da opção 15"
 const tipo16 = "opc_linha"
 const vari16 = n_variavel + "_nulo2"
+const nulo16 = "\c3" + [classe]:[n_variavel]_nulo1
 #
 const nome17 = "Outros"
 const info17 = "Se vazio, pega mensagem da opção 15"
 const tipo17 = "opc_linha"
 const vari17 = n_variavel + "_nulo3"
+const nulo17 = "\c3" + [classe]:[n_variavel]_nulo1
 #
 const titu18 = " * O alvo esquivou (opcional)"
 #
@@ -394,11 +403,13 @@ const nome19 = "Alvo"
 const info19 = "Se vazio, pega mensagem da opção 18"
 const tipo19 = "opc_linha"
 const vari19 = n_variavel + "_esquivou2"
+const nulo19 = "\c3" + [classe]:[n_variavel]esquivou1
 #
 const nome20 = "Outros"
 const info20 = "Se vazio, pega mensagem da opção 18"
 const tipo20 = "opc_linha"
 const vari20 = n_variavel + "_esquivou3"
+const nulo20 = "\c3" + [classe]:[n_variavel]esquivou1
 
 
 classe menu_ataque_msg1
