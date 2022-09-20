@@ -20,11 +20,11 @@ func cabe # Cabeçalho: o nome do item/personagem/sala a partir da classe
   casose "s_"
     ret "\b\c6Sala " + txt(arg0, 2) + ":\b"
   casose "p_"
-    ret "\b\c6Perso " + txt(arg0, 2) + ", " + arg0.nome + ":\b"
+    ret "\b\c6Perso " + txt(arg0, 2) + ", " + arg0.descnome2 + ":\b"
   casose "i_"
-    ret "\b\c6Item " + txt(arg0, 2) + ", " + arg0.nome + ":\b"
+    ret "\b\c6Item " + txt(arg0, 2) + ", " + arg0.descnome2 + ":\b"
   casofim
-  ret txt(arg0) == "jogador", "\b\c6Jogador " + arg0.nome + ":\b"
+  ret txt(arg0) == "jogador", "\b\c6Jogador " + arg0.descnome2 + ":\b"
   ret "\b\c6Objeto " + arg0 + ":\b"
 
 func info # Usado por escr
@@ -88,7 +88,7 @@ func nobj # Retorna o nome de um objeto
     ret txt(arg0) + ", " + arg0.s_titulo
   casose "p_"
   casose "i_"
-    ret txt(arg0) + ", " + arg0.nome
+    ret txt(arg0) + ", " + arg0.descnome2
   casofim
   casovar arg0
   casose "misc_evento"
@@ -96,7 +96,7 @@ func nobj # Retorna o nome de um objeto
   casose "misc_tempo"
     ret txt(arg0) + ", função " + arg0.obj + ":" + arg0.func
   casose "jogador"
-    ret txt(arg0) + ", " + arg0.nome
+    ret txt(arg0) + ", " + arg0.descnome2
   casofim
   ret txt(arg0)
 
@@ -171,9 +171,9 @@ func escr
     txtmais.addfim(t2)
   efim
   se !txtmais.linhas
-    txtmais.addfim(txtcopiamai(r.nome, "A") + " não conhece habilidades.")
+    txtmais.addfim(txtcopiamai(r.descnome2, "A") + " não conhece habilidades.")
   senao
-    txtmais.addini("\b\c6Habilidades de " + r.nome + ":\b")
+    txtmais.addini("\b\c6Habilidades de " + r.descnome2 + ":\b")
   fimse
   arg0.sock.txtmostra
 
@@ -199,9 +199,9 @@ func escr
     txtmais.addfim(t2)
   efim
   se !txtmais.linhas
-    txtmais.addfim(txtcopiamai(r.nome, "A") + " não conhece magias.")
+    txtmais.addfim(txtcopiamai(r.descnome2, "A") + " não conhece magias.")
   senao
-    txtmais.addini("\b\c6Magias de " + r.nome + ":\b")
+    txtmais.addini("\b\c6Magias de " + r.descnome2 + ":\b")
   fimse
   arg0.sock.txtmostra
 
@@ -225,10 +225,10 @@ func escr
 ")"))
   efim
   se !txtmais.linhas
-    txtmais.addfim("Nenhum efeito afetando " + r.nome + ".")
+    txtmais.addfim("Nenhum efeito afetando " + r.descnome2 + ".")
   senao
     txtmais.ordenalin("", "x")
-    txtmais.addini("\b\c6Efeitos afetando " + r.nome + ":\b")
+    txtmais.addini("\b\c6Efeitos afetando " + r.descnome2 + ":\b")
   fimse
   arg0.sock.txtmostra
 
@@ -375,8 +375,8 @@ personagem, ou seja, os últimos 10 personagens que ele matou."
 func escr
   refvar r = misc:persoinfo(arg0, arg1)
   ret !r, 1
-  ret !r.p_hist.linhas, arg0.msg(txtcopiamai(r.nome, "A") + " não matou ninguém.")
+  ret !r.p_hist.linhas, arg0.msg(txtcopiamai(r.descnome2, "A") + " não matou ninguém.")
   arg0.sock.txtmais.limpar
-  arg0.sock.txtmais.addfim("\b\c6Histórico de " + txtcopiamai(r.nome, "A") + ":\b")
+  arg0.sock.txtmais.addfim("\b\c6Histórico de " + txtcopiamai(r.descnome2, "A") + ":\b")
   arg0.sock.txtmais.addfim(r.p_hist.ini.textolin(100))
   arg0.sock.txtmostra

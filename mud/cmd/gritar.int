@@ -41,7 +41,7 @@ func escr
     ret g, arg0.msg(g)
   efim
   arg0.pmove -= m_move
-  $misclog.falar("gritar " + arg0.nome + ": " + arg1)
+  arg0.sock && $misclog.falar("gritar " + arg0.sock.nome + ": " + arg1)
   $mens.p(arg0)
   $mens.mens = $miscbebida.msgperso(arg1, arg0.p_bebida)
   $mens.msg(m_gritar1, arg0)

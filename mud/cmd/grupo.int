@@ -87,7 +87,7 @@ func escr
         $mens.mp(m_nivel_alto, arg0, obj)
       senao
         obj.tseguir = 1
-        lin += ", " + txtcopiamai(obj.nome, "A")
+        lin += ", " + txtcopiamai(obj.descnome2, "A")
         nivelgrupo(arg0)
       fimse
     efim
@@ -116,7 +116,7 @@ func escr
     fimse
     nivelgrupo(arg0)
     se obj.tseguir
-      msggrupo(arg0, m_removido, obj.nome)
+      msggrupo(arg0, m_removido, obj.descnome2)
       obj.tseguir = 0
     senao obj.pnivel < nivelmin
       $mens.mens = nivelmin
@@ -126,7 +126,7 @@ func escr
       $mens.mp(m_nivel_alto, arg0, obj)
     senao
       obj.tseguir = 1, arg0.tseguir = 2
-      msggrupo(arg0, m_adicionado, obj.nome)
+      msggrupo(arg0, m_adicionado, obj.descnome2)
     fimse
     ret
 # Informações sobre os integrantes do grupo
@@ -135,18 +135,16 @@ func escr
     arg0.listagrupo(l)
     $mens.mp(lider ? m_nome_grupo : m_nenhum_grupo, arg0, lider)
     epara !lider && l.ini.remove, l, l.ini.remove
-      arg0.msg(info(l.objini))
+      $mens.p(arg0, l.objini)
+      $mens.mens = info(l.objini)
+      $mens.msgvis("$A $m", arg0)
     efim
     ret
   fimse
 
 func info # Retorna informações de um personagem
 # arg0 = personagem
-  txt100 lin
-  lin = txtcopiamai(arg0.nome, "A")
-  refvar dono = arg0.tseguir == 3 && arg0.iseguir ? arg0.iseguir.objlista
-  dono && (lin += " de " + txtcopiamai(dono.nome, "A"))
-  lin += " Vida " + arg0.pvida + "/" + arg0.pvidamax
+  txt100 lin = " Vida " + arg0.pvida + "/" + arg0.pvidamax
   lin += "  Mana " + arg0.pmana + "/" + arg0.pmanamax
   lin += "  Vigor " + arg0.pmove + "/" + arg0.pmovemax
   lin += "  Nível " + arg0.pnivel

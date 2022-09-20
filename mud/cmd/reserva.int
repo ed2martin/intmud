@@ -57,10 +57,12 @@ func listar # Lista animais na reserva
   txt100 lin
   listaitem i
   epara i = arg0.dentro3.ini, i, i.depois
+    refvar m = i.obj.descnome2
+    lin = txtcopiamai(txtproclin("o\na\num\numa", txt1(m + "x")) < 0 ? m : txt2(m), "A")
     se i.obj.pvidaok
-      lin = "1 " + txtcopiamai(i.obj.nome, "A") + "  N" + i.obj.pnivel
+      lin = "1 " + lin + "  N" + i.obj.pnivel
     senao
-      lin = "1 (" + txtcopiamai(i.obj.nome, "A") + ")  N" + i.obj.pnivel
+      lin = "1 (" + lin + ")  N" + i.obj.pnivel
     fimse
     t.addfim(lin)
   efim
@@ -78,7 +80,7 @@ func mostrar # Mostra um animal da reserva
   ref r = misc:itemlista(arg0, arg1, arg0.dentro3)
   ret !r, $mens.mp(m_sem_reserva, arg0)
   txt100 t1
-  arg0.msg("\b\c6Animal reserva \"" + r.nome + "\" nível "+ r.pnivel + "\b")
+  arg0.msg("\b\c6Animal reserva \"" + r.descnome2 + "\" nível "+ r.pnivel + "\b")
   t1 = "Vida " + r.pvida + "/" + r.pvidamax
   t1 += "  Mana " + r.pmana + "/" + r.pmanamax
   t1 += "  Vigor " + r.pmove + "/" + r.pmovemax

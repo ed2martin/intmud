@@ -396,7 +396,7 @@ v1)
     senao # Mesmo nível
       v2 = 1
     fimse
-    r.dono.perso && r.var.z_dono != r.dono.descnome && (v2 *= 1.5)
+    r.dono.perso && r.var.z_dono != r.dono.descnome2 && (v2 *= 1.5)
     r.dono.perso && (r = r.dono)
     r.iseguir && r.tseguir == 3 && (r = r.iseguir.objlista)
     r.iseguir && r.tseguir == 1 && (r = r.iseguir.objlista)
@@ -493,12 +493,12 @@ func morreu # Procedimentos quando morre
   mortes++
   se arg0.perso
     arg0.p_hist.remove(arg0.p_hist.linhas - 9)
-    refvar lin = "N" + arg0.pnivel + " x " + este + "(" + nome + ") N" + pnivel
+    refvar lin = "N" + arg0.pnivel + " x " + este + "(" + descnome2 + ") N" + pnivel
     refvar con = contr
     se este == con
       arg0.p_hist.addfim(lin)
     senao
-      arg0.p_hist.addfim(lin + " de " + con + "(" + con.nome + ") N" + contr.pnivel)
+      arg0.p_hist.addfim(lin + " de " + con + "(" + con.descnome2 + ") N" + contr.pnivel)
     fimse
   fimse
 # Jogador: anota no log, perde experiência e transfere jogador para outro lugar

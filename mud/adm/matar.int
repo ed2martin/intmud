@@ -32,9 +32,9 @@ func escr
       l.limpar
       l.addfim(r.dentro1, r.dentro2)
     senao r.perso && r.contr.jog
-      ret arg0.msg("Não é possível apagar personagem de jogador: " + r.nome)
+      ret arg0.msg("Não é possível apagar personagem de jogador: " + r.descnome2)
     senao
-      arg0.msg("Apagando: " + r.nome), apagar(r)
+      arg0.msg("Apagando: " + r.descnome2), apagar(r)
       ret
     fimse
   efim
@@ -49,5 +49,5 @@ func escr
   ret !arg1, arg0.msg("Matar quem?")
   refvar r = misc:persodono(arg0, arg1)
   ret !r, arg0.msg("Não há nenhum personagem chamado " + arg1)
-  arg0.msg("Matando " + r.nome)
+  arg0.msg("Matando " + r.descnome2)
   r.morreu(arg0)

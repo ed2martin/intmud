@@ -46,7 +46,7 @@ func escr
     refvar f = txt(arg0.dono.s_falar(arg0))
     ret f, arg0.msg(f)
   fimse
-  $misclog.falar("falar " + arg0.nome + ": " + arg1)
+  arg0.sock && $misclog.falar("falar " + arg0.sock.nome + ": " + arg1)
   refvar idioma = $idioma_[arg0.var.z_idioma]
   refvar sabe = !idioma ? 8 : arg0.var.[idioma.nomevar]_
   msg(arg0, arg1, idioma)

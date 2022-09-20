@@ -41,7 +41,7 @@ func escr
     cmdlog(arg0, "cmdj", arg1)
   fimse
   debug d
-  arg0.msg(txt(item.obj.nome) + ">" + d.cmd(item.obj, "ret " + txt2(arg1)))
+  arg0.msg(txt(item.obj.descnome2) + ">" + d.cmd(item.obj, "ret " + txt2(arg1)))
 
 
 classe adm_cmdp
@@ -71,7 +71,7 @@ func escr
       cmdlog(arg0, "cmdp", arg1)
     fimse
     debug d
-    ret arg0.msg(txt(r.nome) + ">" + d.cmd(r, "ret " + txt2(arg1)))
+    ret arg0.msg(txt(r.descnome2) + ">" + d.cmd(r, "ret " + txt2(arg1)))
   efim
   arg0.msg("Não há nenhum personagem chamado " + nome)
 
@@ -103,6 +103,6 @@ func escr
       cmdlog(arg0, "cmdi", arg1)
     fimse
     debug d
-    ret arg0.msg(txt(r.nome) + ">" + d.cmd(r, "ret " + txt2(arg1)))
+    ret arg0.msg(txt(r.descnome2) + ">" + d.cmd(r, "ret " + txt2(arg1)))
   efim
   arg0.msg("Não há nenhum item chamado " + nome)

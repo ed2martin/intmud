@@ -147,7 +147,7 @@ func ini # Coloca o objeto dentro de outro
     criar(var.ini("e_"), este, var.valor(var.ini("e_")))
   efim
   se dono.perso && !var.z_dono
-    var.z_dono = dono.nome
+    var.z_dono = dono.descnome2
     var.z_pnivel = pnivel
   fimse
   recalc_exec
@@ -200,7 +200,7 @@ func mudadono # Coloca personagem em outra sala ou outro personagem
   se arg0.perso # Vai para um personagem
     tseguir = 0, iseguir.remove, persolugar.limpar, p_proc = 1
     se !var.z_dono
-      var.z_dono = arg0.nome
+      var.z_dono = arg0.descnome2
       var.z_pnivel = pnivel
     fimse
   senao dono.perso # Estava em um personagem
@@ -290,6 +290,7 @@ func mudaobjeto # Muda o objeto desse personagem
   apagar(este)
 # Acerta variáveis
   r.var = var
+  r.psexo = psexo
   r.pnivel = pnivel
   r.tipo1 = tipo1
   r.tipo2 = tipo2
@@ -358,7 +359,7 @@ func mudadomador # Muda o domador
     tseguir = 3, iseguir.remove, iseguir = alvo.lseguir.addfim(este), ajustajogpnj
     pnumero = 0, alvo.acertanumero
     se !var.z_dono
-      var.z_dono = alvo.nome
+      var.z_dono = alvo.descnome2
       var.z_pnivel = pnivel
     fimse
   senao tseguir == 3

@@ -18,7 +18,7 @@ func escr
 # Obtém o personagem
   refvar r = misc:persoinfo(arg0, arg1)
   ret !r, nulo
-  t.addfim("\b\c6Estatísticas de \"" + r.nome + "\"\b")
+  t.addfim("\b\c6Estatísticas de \"" + r.descnome2 + "\"\b")
 # Vida, mana e vigor
   t1 = "Vida " + r.pvida + "/" + r.pvidamax
   t1 += "  Mana " + r.pmana + "/" + r.pmanamax
@@ -319,7 +319,7 @@ func escr
   senao
     lin2 = " " + txtnum(arg0.var.z_moedas_, ".") + " moedas"
   fimse
-  lin2 && (lin += ", " + txtcopiamai(arg0.persoesc.nome, "A") + lin2)
+  lin2 && (lin += ", " + txtcopiamai(arg0.persoesc.descnome2, "A") + lin2)
   arg0.msg(lin + ".")
 
 
@@ -334,7 +334,7 @@ os outros personagens e jogadores que estiverem na mesma sala."
 
 func escr
   txt200 lin
-  lin = txt(arg0.nome) + " relata:\n"
+  lin = txt(arg0.descnome2) + " relata:\n"
   lin += "Vida " + arg0.pvida + "/" + arg0.pvidamax
   lin += "  Mana " + arg0.pmana + "/" + arg0.pmanamax
   lin += "  Vigor " + arg0.pmove + "/" + arg0.pmovemax
@@ -379,15 +379,13 @@ func escr
     $mens.mens = arg1
     ret $mens.mp(m_sem_info, arg0)
   fimse
-  txt100 n
-  r.persoesc != arg0 && (n = " de " + r.nome)
   textotxt h
   epara i = r.dentro2.ini, i, i.depois
     continuar !i.obj.e_nome
     h.addfim("1 " + i.obj.e_nome + (i.obj.t_duracao ? " (" + int(i.obj.t_duracao / 10) + \
 ")"))
   efim
-  refvar nome = r == arg0 ? "você" : r.nome
+  refvar nome = r == arg0 ? "você" : r.descnome2
   ret !h.linhas, $mens.mp(r == arg0 ? m_nada1 : m_nada2, arg0, r)
   $mens.p(arg0, r)
   h.ordenalin("", "x")
@@ -412,11 +410,9 @@ Seguido de um número de 0 a $, mostra as informações do animal correspondente."
 func escr
   refvar r = misc:persoinfo(arg0, arg1)
   ret !r, nulo
-  se r == arg0
-    arg0.msg(vidalin(arg0))
-  senao
-    arg0.msg(txtcopiamai(r.nome, "A") + ": " + vidalin(r))
-  fimse
+  $mens.mens = vidalin(r)
+  $mens.p(arg0, r)
+  $mens.msgvis(r == arg0 ? "$m" : "$C: $m", arg0)
 
 func vidalin
   txt100 lin

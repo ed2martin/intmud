@@ -108,9 +108,9 @@ func escr # Listar personagens
     epara r = $p_[arg1], r && t.linhas < 500, r = objdepois(r)
       epara s = r.dono, s, s = s.dono
         se s.perso
-          lin = (s.jog ? ", jogador" : ", " + txt(s, 2)) + " (" + s.nome + ")" + lin
+          lin = (s.jog ? ", jogador" : ", " + txt(s, 2)) + " (" + s.descnome2 + ")" + lin
         senao s.item
-          lin = ", " + txt(s, 2) + " (" + s.nome + ")" + lin
+          lin = ", " + txt(s, 2) + " (" + s.descnome2 + ")" + lin
         senao
           lin = ", " + txt(s, 2) + " (" + s.s_titulo + ")" + lin
         fimse

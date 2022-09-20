@@ -106,8 +106,7 @@ func escr
       erro = m_nao_consegue[tipomsg]
     fimse
 # Tenta vestir
-    !erro && (erro = objvestir(alvo, r, int(n)))
-    erro && $mens.mp(erro, arg0, alvo, r)
+    erro ? $mens.mp(erro, arg0, alvo, r) : objvestir(alvo, r, int(n))
   efim
 # Avisa se não encontrou nenhum item
   se !achou

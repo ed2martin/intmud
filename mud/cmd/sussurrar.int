@@ -43,12 +43,16 @@ func escr
   senao arg0.var.u_[r.nome]
     ret $mens.mp(m_ignorar, arg0, r)
   senao arg0 == r
-    $misclog.telepatia("suss " + arg0.nome + " para " + r.nome + ": " + txt2(arg1))
+    se arg0.sock
+      $misclog.telepatia("suss " + arg0.nome + " para " + r.nome + ": " + txt2(arg1))
+    fimse
     $mens.p(arg0, arg0)
     $mens.mens = txt2(arg1)
     $mens.mtodos2(m_perso1, m_perso2)
   senao
-    $misclog.telepatia("suss " + arg0.nome + " para " + r.nome + ": " + txt2(arg1))
+    se arg0.sock || r.sock
+      $misclog.telepatia("suss " + arg0.nome + " para " + r.nome + ": " + txt2(arg1))
+    fimse
     $mens.p(arg0, r)
     $mens.mens = $miscbebida.msgperso(txt2(arg1), arg0.p_bebida)
     $mens.mtodos3(m_msg1, m_msg2, m_msg3)

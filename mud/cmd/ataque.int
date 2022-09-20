@@ -328,7 +328,7 @@ func exechab # Chamado quando personagem usa habilidade ou magia
     efim
     se tipoalvo == 8 && result == 0
       ref r
-      txt100 acertou = arg0.nome
+      txt100 acertou = arg0.descnome2
       listaobj outros
       contr0.listagrupo(outros)
       epara outros.remove(contr0), outros, outros.ini.remove
@@ -343,7 +343,7 @@ func exechab # Chamado quando personagem usa habilidade ou magia
           sair l.objini.cmd_alvo(arg0, r, este, r)
         efim
         continuar l
-        acertou += ", " + txtcopiamai(r.contr.nome, "A")
+        acertou += ", " + txtcopiamai(r.contr.descnome2, "A")
         result = 0 # Acertou o alvo
         efeitohab(arg0, r, arg2, arg3)
         r.p_imortal && (r.pvida = intmax(r.pvida, r.pvidamax)) # Imortal
@@ -600,7 +600,7 @@ func exechab # Chamado quando personagem usa habilidade ou magia
       e.objini.cmd_atacou(arg0, r, este, r, 0)
     efim
     se r.pvidaok
-      acertou && (danos += ", " + txtcopiamai(r.nome, "A") + " " + mudavida)
+      acertou && (danos += ", " + txtcopiamai(r.descnome2, "A") + " " + mudavida)
       r.acertapos(1)
     senao
       !config:atkexpsecundario && arg0.batalhafim # Não ganha experiência matando esse alvo
