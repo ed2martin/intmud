@@ -90,8 +90,10 @@ func mudaperso # Muda o personagem, arg0=novo personagem
       perso.jogconfig.bits = 0
     fimse
   fimse
-  ref r
+# Som da sala
+  perso.dono != arg0.dono && msgsom(arg0.dono.s_som, 1)
 # Indica que o jogador não controla o antigo personagem
+  ref r
   epara r = perso, r, r = r.dono
     r.socktot--
   efim
@@ -393,7 +395,7 @@ func msg # Envia mensagem
 
 func msgsom # Envia mensagem
 # arg0=nome do som
-# arg1 é verdadeiro se deve apenas enviar a mensagem
+# arg1 é verdadeiro se não deve repassar para quem estiver monitorando
   ret !arg0, nulo
   se !arg1 && lmonit
     listaitem i
@@ -757,11 +759,11 @@ func passo
 # Reconectar no mesmo personagem
   se ind.obj("pn " + texto)
     arg0.passo = ""
+    arg0.jogconfig.bits = ind.obj("pn " + texto).jogconfig.bits # Acerta config de som
     arg0.mudaperso(ind.obj("pn " + texto))
     arg0.nome = arg0.perso.nome
     arg0.cnome = "un " + texto
     arg0.perso.sock_entrou # Indica que o objeto sock voltou
-    arg0.jogconfig.bits = arg0.perso.jogconfig.bits
     arg0.jogperm = arg0.perso.jogperm
     arg0.jogarea = arg0.perso.jogarea
     arg0.temposair # Acerta tempo para sair do MUD
