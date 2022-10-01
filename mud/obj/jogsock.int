@@ -91,7 +91,7 @@ func mudaperso # Muda o personagem, arg0=novo personagem
     fimse
   fimse
 # Som da sala
-  perso.dono != arg0.dono && msgsom(arg0.dono.s_som, 1)
+  perso.dono != arg0.dono && msgsom((!misc:luz ? arg0.dono.s_somnoite) ?? arg0.dono.s_som, 1)
 # Indica que o jogador não controla o antigo personagem
   ref r
   epara r = perso, r, r = r.dono

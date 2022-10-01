@@ -673,13 +673,12 @@ func efeitohab # Efeito da habilidade ou magia sobre o alvo
   fimse
   real2 valor
   valor = (a_move1 + a_move2 * arg3) * (0.5 + arg2)
-  valor && (arg1.pmove = intmin(arg1.pmove + valor, arg1.pmovemax))
+  valor && (arg1.pmove = intmin(arg1.pmove + valor, intmax(arg1.pmove, arg1.pmovemax)))
   valor = (a_mana1 + a_mana2 * arg3) * (0.5 + arg2)
-  valor && (arg1.pmana = intmin(arg1.pmana + valor, arg1.pmanamax))
+  valor && (arg1.pmana = intmin(arg1.pmana + valor, intmax(arg1.pmana, arg1.pmanamax)))
   ret !(valor = (a_vida1 + a_vida2 * arg3) * (0.5 + arg2)), nulo
-  refvar vidaok = arg1.pvidaok
   refvar vida = int(arg1.pvida)
-  arg1.pvida = intmin(vida + valor, arg1.pvidamax)
+  arg1.pvida = intmin(vida + valor, intmax(arg1.pvida, arg1.pvidamax))
   mudavida += arg1.pvida - vida
 
 func velgolpe # Acerta o tempo de espera conforme o golpe

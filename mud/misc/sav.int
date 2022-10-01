@@ -97,6 +97,14 @@ func horatempo_exec # Atualiza hora MUD
       i.obj.perso.msg(horamsg)
     efim
   fimse
+# Envia som da sala para os jogadores
+  se misc:hora == 6 || misc:hora == 18
+    refvar v = misc:luz ? "s_som" : "s_somnoite"
+    indiceitem i
+    epara i.ini("un "), txt1(i.txt) == "un", i.depois
+      i.obj.perso.dono.s_somnoite && i.obj.msgsom(i.obj.perso.dono.[v], 1)
+    efim
+  fimse
 
 func extempo_exec
 # Checa se arquivos sav apagados em segundo plano

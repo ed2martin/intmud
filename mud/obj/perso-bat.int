@@ -752,7 +752,13 @@ func p_proc_atacar # Realiza um ataque
     refvar obj = ref(i.obj) # Objeto que processa o ataque
     refvar aulas = intpos(pbat.var.[obj.nomevar] - 1) / 7
     ret !obj.autohab2(pbat, aulas), 0
-    obj.exechab(pbat, arg0.persobat, aulas, pbat.pnivel)
+    se obj.tipoalvo < 6 # Habilitade/magia agressiva
+      obj.exechab(pbat, arg0.persobat, aulas, pbat.pnivel)
+    senao # Habilitade/magia não agressiva
+      l.limpar, listagrupo(l), i = l.ini, i.depois(rand(l.total))
+      refvar r = (i.obj.contr.dono == dono ? i.obj.persobat) ?? persobat
+      obj.exechab(pbat, r, aulas, pbat.pnivel)
+    fimse
     ret 1
   senao !atkenv # Ataque automático
     pbat.atkauto(arg0.persobat, 8)
