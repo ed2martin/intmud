@@ -13,6 +13,7 @@ As opções são:"
 #
 const m_desc = "Mostra descrições completas (como ao digitar OLHAR)"
 const m_saidas = "Mostra as saídas visíveis após a descrição da sala"
+const m_saidas2 = "Mostra as saídas visíveis separadas por vírgula"
 const m_cores = "Recebe sequência de cores no padrão ANSI (somente Telnet)"
 const m_acento = "Recebe letras com acentuação (codificação ISO8859-1)"
 const m_telepatia = "Recebe mensagens com o comando Telepatia"
@@ -79,9 +80,10 @@ const opc_admlog = arg0 & 0x20 ? 21
 const opc_cmdlog = arg0 & 0x40 ? 22
 const opc_musica1 = 23
 const opc_musica2 = 24
+const opc_saidas2 = 25
 #
 # Ordem das opções em AJUDA CONFIG
-const opcoes = "desc saidas cores acento telepatia chat novatos emocao seguir moedas prompt \
+const opcoes = "desc saidas saidas2 cores acento telepatia chat novatos emocao seguir moedas prompt \
 bprompt som1 som2 musica1 musica2 dicas imortal sala invquem invsala ac admlog cmdlog execlog"
 #
 const admordem = "ajudaini m_desc m_saidas m_cores m_acento m_telepatia m_chat m_novatos\n\
@@ -213,120 +215,124 @@ const nome3 = "Config Saídas"
 const tipo3 = "opc_texto"
 const vari3 = "m_saidas"
 #
-const nome4 = "Config Cores"
+const nome4 = "Config Saídas2"
 const tipo4 = "opc_texto"
-const vari4 = "m_cores"
+const vari4 = "m_saidas2"
 #
-const nome5 = "Config Acento"
+const nome5 = "Config Cores"
 const tipo5 = "opc_texto"
-const vari5 = "m_acento"
+const vari5 = "m_cores"
 #
-const nome6 = "Config Telepatia"
+const nome6 = "Config Acento"
 const tipo6 = "opc_texto"
-const vari6 = "m_telepatia"
+const vari6 = "m_acento"
 #
-const nome7 = "Config Chat"
+const nome7 = "Config Telepatia"
 const tipo7 = "opc_texto"
-const vari7 = "m_chat"
+const vari7 = "m_telepatia"
 #
-const nome8 = "Config Novatos"
+const nome8 = "Config Chat"
 const tipo8 = "opc_texto"
-const vari8 = "m_novatos"
+const vari8 = "m_chat"
 #
-const nome9 = "Config Emoção"
+const nome9 = "Config Novatos"
 const tipo9 = "opc_texto"
-const vari9 = "m_emocao"
+const vari9 = "m_novatos"
 #
-const nome10 = "Config Seguir"
+const nome10 = "Config Emoção"
 const tipo10 = "opc_texto"
-const vari10 = "m_seguir"
+const vari10 = "m_emocao"
 #
-const nome11 = "Config Moedas"
+const nome11 = "Config Seguir"
 const tipo11 = "opc_texto"
-const vari11 = "m_moedas"
+const vari11 = "m_seguir"
 #
-const nome12 = "Config Prompt"
+const nome12 = "Config Moedas"
 const tipo12 = "opc_texto"
-const vari12 = "m_prompt"
+const vari12 = "m_moedas"
 #
-const nome13 = "Config Bprompt"
+const nome13 = "Config Prompt"
 const tipo13 = "opc_texto"
-const vari13 = "m_bprompt"
+const vari13 = "m_prompt"
 #
-const nome14 = "Config Som1"
+const nome14 = "Config Bprompt"
 const tipo14 = "opc_texto"
-const vari14 = "m_som1"
+const vari14 = "m_bprompt"
 #
-const nome15 = "Config Som2"
+const nome15 = "Config Som1"
 const tipo15 = "opc_texto"
-const vari15 = "m_som2"
+const vari15 = "m_som1"
 #
-const nome16 = "Config Musica1"
+const nome16 = "Config Som2"
 const tipo16 = "opc_texto"
-const vari16 = "m_musica1"
+const vari16 = "m_som2"
 #
-const nome17 = "Config Musica2"
+const nome17 = "Config Musica1"
 const tipo17 = "opc_texto"
-const vari17 = "m_musica2"
+const vari17 = "m_musica1"
 #
-const nome18 = "Config Dicas"
+const nome18 = "Config Musica2"
 const tipo18 = "opc_texto"
-const vari18 = "m_dicas"
+const vari18 = "m_musica2"
 #
-const nome19 = "Config Imortal"
+const nome19 = "Config Dicas"
 const tipo19 = "opc_texto"
-const vari19 = "m_imortal"
+const vari19 = "m_dicas"
 #
-const nome20 = "Sala"
+const nome20 = "Config Imortal"
 const tipo20 = "opc_texto"
-const vari20 = "m_sala"
+const vari20 = "m_imortal"
 #
-const nome21 = "Config Invquem"
+const nome21 = "Sala"
 const tipo21 = "opc_texto"
-const vari21 = "m_invquem"
+const vari21 = "m_sala"
 #
-const nome22 = "Config Invsala"
+const nome22 = "Config Invquem"
 const tipo22 = "opc_texto"
-const vari22 = "m_invsala"
+const vari22 = "m_invquem"
 #
-const nome23 = "Config AC"
+const nome23 = "Config Invsala"
 const tipo23 = "opc_texto"
-const vari23 = "m_ac"
+const vari23 = "m_invsala"
 #
-const nome24 = "Config Admlog"
+const nome24 = "Config AC"
 const tipo24 = "opc_texto"
-const vari24 = "m_admlog"
+const vari24 = "m_ac"
 #
-const nome25 = "Config Cmdlog"
+const nome25 = "Config Admlog"
 const tipo25 = "opc_texto"
-const vari25 = "m_cmdlog"
+const vari25 = "m_admlog"
 #
-const nome26 = "Config Execlog"
+const nome26 = "Config Cmdlog"
 const tipo26 = "opc_texto"
-const vari26 = "m_execlog"
+const vari26 = "m_cmdlog"
 #
-const nome27 = "Opção inexistente"
-const tipo27 = "opc_linha"
-const vari27 = "m_config_invalida"
+const nome27 = "Config Execlog"
+const tipo27 = "opc_texto"
+const vari27 = "m_execlog"
 #
-const nome28 = "Mudou config"
+const nome28 = "Opção inexistente"
 const tipo28 = "opc_linha"
-const vari28 = "m_config_mudou"
+const vari28 = "m_config_invalida"
 #
-const nome29 = "Pára de seguir"
+const nome29 = "Mudou config"
 const tipo29 = "opc_linha"
-const vari29 = "m_parar_seguir"
+const vari29 = "m_config_mudou"
 #
-const nome30 = "Dicas"
-const info30 = "Uma dica por linha"
-const tipo30 = "opc_texto--"
-const clas30 = "config_dicas"
-const vari30 = "texto"
-const exec30 = "miscdicas:atualiza"
+const nome30 = "Pára de seguir"
+const tipo30 = "opc_linha"
+const vari30 = "m_parar_seguir"
 #
-const nome31 = "Tempo entre dicas"
-const info31 = "Em segundos, ou 0 para desativar as dicas"
-const tipo31 = "opc_numero--"
+const nome31 = "Dicas"
+const info31 = "Uma dica por linha"
+const tipo31 = "opc_texto--"
 const clas31 = "config_dicas"
-const vari31 = "tempo"
+const vari31 = "texto"
 const exec31 = "miscdicas:atualiza"
+#
+const nome32 = "Tempo entre dicas"
+const info32 = "Em segundos, ou 0 para desativar as dicas"
+const tipo32 = "opc_numero--"
+const clas32 = "config_dicas"
+const vari32 = "tempo"
+const exec32 = "miscdicas:atualiza"

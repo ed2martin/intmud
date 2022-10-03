@@ -59,6 +59,8 @@ func ini
 
 func fim
   lmonit.limpar
+  $mens.p(perso)
+  $mens.mvis2("", perso_cfg:ini_perso_caiu)
   mudaperso(nulo)
   indiceitem ind
   ind.obj("pn " + txt2(cnome)).sock_saiu(txt1(info) == "b")
@@ -707,7 +709,7 @@ func passo
   $jogsock_msg.p(arg0, arg0.nomefim, arg0.perso.pnivel, arg0.perso.var.z_moedas)
   $jogsock_msg.msg("Criou: $p, $c", config:criou_msgadm, config:criou_msgjog)
   $mens.p(arg0.perso)
-  $mens.mvis2("", "$P chegou.")
+  $mens.mvis2("", perso_cfg:ini_perso_entrou)
   ret 1
 
 
@@ -768,6 +770,8 @@ func passo
     arg0.jogarea = arg0.perso.jogarea
     arg0.temposair # Acerta tempo para sair do MUD
     $jogsock_msg.msgsock(arg0, perso_cfg:ini_reconectando + "\cn", arg0.nome)
+    $mens.p(arg0.perso)
+    $mens.mvis2("", perso_cfg:ini_perso_reconectou)
     txt200 lin
     arg0.nomefim = arg0.info
     $jogsock_msg.p(arg0, arg0.nomefim, arg0.perso.pnivel, arg0.perso.var.z_moedas)
@@ -922,10 +926,10 @@ txt100 m_p # Personagem
 txt100 m_c # Conexão com o MUD
 txt10 m_n # Nível do personagem
 txt30 m_m # Quantidade de moedas
-const m_@ = "$"
+const m_@g = "$"
 ref obj # Personagem
 txt100 s_m # Texto de msgsock()
-const s_@ = "$"
+const s_@g = "$"
 
 func p # Preenche os dados do personagem
   obj = arg0, m_p = arg0.nome, m_c = arg1, m_n = arg2, m_m = arg3
@@ -934,10 +938,10 @@ func msg # Envia mensagem de entrando ou saindo
 # arg0 = mensagem para o log
 # arg1 = mensagem para administradores
 # arg2 = mensagem para jogadores
-  $misclog.entrou(vartroca(txttroca(arg0, "$$", "$@"), "$", "m_"))
+  $misclog.entrou(vartrocacod(arg0, "$", "m_"))
   refvar sock = obj
-  refvar adm = vartroca(txttroca(arg1, "$$", "$@"), "$", "m_")
-  refvar jog = !sock.jogconfig.17 ? vartroca(txttroca(arg2, "$$", "$@"), "$", "m_")
+  refvar adm = vartrocacod(arg1, "$", "m_")
+  refvar jog = !sock.jogconfig.17 ? vartrocacod(arg2, "$", "m_")
   indiceitem item
   epara item.ini("un "), txt1(item.txt) == "un", item.depois
     continuar item.obj == sock
@@ -951,11 +955,11 @@ func msg # Envia mensagem de entrando ou saindo
 
 func msgsock # Envia mensagem de jogsock
   s_m = arg2
-  arg0.msg(vartroca(txttroca(arg1, "$$", "$@"), "$", "s_"))
+  arg0.msg(vartrocacod(arg1, "$", "s_"))
 
 func txtsock # Envia mensagem de jogsock
   s_m = arg2
-  ret vartroca(txttroca(arg1, "$$", "$@"), "$", "s_")
+  ret vartrocacod(arg1, "$", "s_")
 
 
 classe jogsock_retorna
@@ -985,7 +989,7 @@ func ex1_exec # Coloca o jogador em uma sala
   !perso.dono && perso.mudadono(s)
   temposair # Acerta tempo para sair do MUD
   $mens.p(perso)
-  $mens.mvis2("", "$P chegou.")
+  $mens.mvis2("", perso_cfg:ini_perso_entrou)
 
 func ex2_exec # Coloca na sala se necesário e chama evento cmd_sav dos objetos
   ex2 = 1
@@ -1002,9 +1006,9 @@ classe cmdatalho
 const iniclasse = !$[arg0] && criar(arg0)
 txt512 texto # O que o usuário digitou
 # Comandos comuns
-const mens = vartroca(txttroca(arg0, "$$", "$@"), "$", "m_")
+const mens = vartrocacod(arg0, "$", "m_")
 # Comandos de administração
-const adm = "\b" + vartroca(txttroca(arg0, "$$", "$@"), "$", "a_")
+const adm = "\b" + vartrocacod(arg0, "$", "a_")
 #
 const m_0 = texto
 const m_1 = txt1(m_0)
@@ -1019,7 +1023,7 @@ const m_9 = txtsub(texto, 8, 1)
 const m_S = txtsub(texto, 1)
 const m_T = txtsub(texto, 2)
 const m_Z = "\n"
-const m_@ = "$"
+const m_@g = "$"
 #
 # Em cmd, cmdp, cmdj e cmdi: \c1 vira aspas, \c2 vira barra invertida
 # Nos outros comandos, \c1 e \c2 são eliminados
@@ -1036,4 +1040,4 @@ const a_9 = "\c1" + txtsub(texto, 8, 1) + "\c1"
 const a_S = "\c1" + txtsub(texto, 1) + "\c1"
 const a_T = "\c1" + txtsub(texto, 2) + "\c1"
 const a_Z = "\n\b"
-const a_@ = "$"
+const a_@g = "$"

@@ -323,7 +323,10 @@ func descsala # Retorna descrição da sala
     se arg1 & 1
       t.addfim(var.z_desc ?? $mensjog.txt(misc:luz ? s_desc(arg0) : s_noite(arg0), arg0))
     fimse
-    arg1 & 2 && t.addfim(txtsai(arg0))
+    se arg1 & 2
+      refvar s = txtsai(arg0)
+      t.addfim("\bSaídas: " + (!s ? "Nenhuma" : arg0.jogconfig.25 ? txttroca(s, " ", ", ") : s))
+    fimse
     arg1 & 4 && var.z_moedas && t.addfim("Aqui há " + misc:txtmoedas(var.z_moedas) + ".")
   senao 1 & arg0.bitver
     t.addfim($mensjog.txt(comando_mover_cfg:m_escuro, arg0))
@@ -355,15 +358,16 @@ func descsala # Retorna descrição da sala
   efim
   ret lin + "  " + t.remove(1000)
 
-func txtsai # Retorna as saídas existentes
+func txtsai # Retorna as saídas visíveis separadas por espaço
+# Saídas trancadas vêm com uma exclamação na frente
 # arg0 = personagem
   txt80 sai
   sai += tsai2("n", arg0) + tsai2("s", arg0) + tsai2("l", arg0) + tsai2("o", arg0)
   sai += tsai2("ne", arg0) + tsai2("no", arg0) + tsai2("se", arg0) + tsai2("so", arg0)
   sai += tsai2("c", arg0) + tsai2("b", arg0) + tsai2("entrar", arg0) + tsai2("sair", arg0)
-  ret sai ? "\bSaídas:" + sai : "\bSaídas: Nenhuma"
+  ret txt(sai, 1)
 
-func tsai2 # Para mostrar as saídas existentes
+func tsai2 # Para mostrar as saídas visíveis
   refvar sala = dirsala(arg0, arg1)
   ret !(sala.s_sala || sala.item && sala.dono.s_sala) || inv_[arg0](arg1), ""
   casovar int(porta_[arg0])
