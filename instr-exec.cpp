@@ -1741,7 +1741,7 @@ bool Instr::ExecX()
                 if (VarFuncIni(VarAtual-1))
                     break;
                 FuncAtual->expr++;
-                if (VarAtual->Tipo() == varTxt)
+                if (VarAtual[-1].Tipo() == varTxt)
                 {
                     EXO_B_TEXTO( ch & *d2 , false )
                     break;
@@ -1763,7 +1763,7 @@ bool Instr::ExecX()
                 if (VarFuncIni(VarAtual-1))
                     break;
                 FuncAtual->expr++;
-                if (VarAtual->Tipo() == varTxt)
+                if (VarAtual[-1].Tipo() == varTxt)
                 {
                     EXO_B_TEXTO( ch ^ *d2 , true )
                     break;
@@ -1785,7 +1785,7 @@ bool Instr::ExecX()
                 if (VarFuncIni(VarAtual-1))
                     break;
                 FuncAtual->expr++;
-                if (VarAtual->Tipo() == varTxt)
+                if (VarAtual[-1].Tipo() == varTxt)
                 {
                     EXO_B_TEXTO( ch | *d2 , true )
                     break;

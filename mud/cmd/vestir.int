@@ -4,7 +4,7 @@ const objmenu = $m_cmd_vestir
 const objtipo = 2 # Pode renomear
 const posic = 5
 txt12 lugar # Posições aonde quer vestir
-txt12 vest # Posições aonde está vestindo alguma coisa
+txt12 vest1 # Posições principais e extras aonde está vestindo alguma coisa
 #
 const m_ajuda = "-t\n\
 -s <objeto> [posição]\n\
@@ -21,6 +21,8 @@ const m_nivel_a = "$A precisa chegar no nível $m para vestir $o."
 const m_renascer1 = "Você precisa renascer uma vez para vestir $o."
 const m_renascer2 = "Você precisa renascer duas vezes para vestir $o."
 const m_renascer3 = "Você precisa renascer $m vezes para vestir $o."
+const m_conhecimento_p = "Você não conhece $m nível $1."
+const m_conhecimento_a = "$A não conhece $m nível $1."
 const m_posicao_p = "Você não sabe aonde fica $m."
 const m_posicao_a = "$A não sabe aonde fica $m."
 const m_em_uso_p = "Você já está usando $o nessa posição."
@@ -29,7 +31,8 @@ const m_em_cima_p = "Antes você precisa parar de usar $o."
 const m_em_cima_a = "Antes $A precisa parar de usar $o."
 const admordem = "m_ajuda m_sem_args m_naover m_longe_a m_nao_consegue_p\n\
 m_nao_consegue_a m_nivel_p m_nivel_a m_renascer1 m_renascer2 m_renascer3\n\
-m_posicao_p m_posicao_a m_em_uso_p m_em_uso_a m_em_cima_p m_em_cima_a"
+m_conhecimento_p m_conhecimento_a m_posicao_p m_posicao_a\n\
+m_em_uso_p m_em_uso_a m_em_cima_p m_em_cima_a"
 
 func escr
   ret !arg1, $mensjog.msg(m_sem_args, arg0)
@@ -45,22 +48,18 @@ func escr
   int8 achou # Se 0, não achou nenhum item para vestir
   nomeobj n # Para reconhecer os itens
   listaitem item
-  vest = lugar = "0"
-# Preenche a variável vest com o que está vestindo
-  epara item = alvo.dentro2.ini, item, item.depois
-    refvar pos = item.obj.vestpos
-    pos > 0 && pos < 50 && (vest |= intbith(pos - 1))
-  efim
+  lugar = "0"
+  vest1 = alvo.positemvestir
 # Descobre aonde quer vestir
   misc:separa(arg1) # Separa nome do objeto do nome da posição
   se !misc:sep2
-    lugar = alvo.equippos # Todas as posições que possui
+    lugar = alvo.positemtotal # Todas as posições que possui
   senao
     n.ini(misc:sep2, 100)
     textotxt t
     textopos p
     t.addfim(config:equip_txt)
-    refvar lug2 = ~txthex(alvo.equippos, 12)
+    refvar lug2 = ~txthex(alvo.positemtotal, 12)
     epara p = t.ini, p, p.depois
       lug2 & intbith(p.linha) == "0" && n.nome(p.texto) && (lugar |= intbith(p.linha))
     efim
@@ -105,6 +104,18 @@ func escr
     senao tipo3 && txtproclin(txte(r.vestirnao), tipo3) >= 0
       erro = m_nao_consegue[tipomsg]
     fimse
+# Checa se tem conhecimento suficiente
+    se !erro
+      txt200 lin
+      textotxt t2
+      epara t2.addfim(r.vestiraula(alvo)), t2.linhas, t2.remove
+        continuar !(lin = t2.ini.texto)
+        continuar alvo.var.[txt1(lin)]_ >= txt2(lin)
+        $mens.mens = misc:nomevar(txt1(lin))
+        $mens.o_1 = txtmin(txtsublin(misc:aulas, txt2(lin), 1))
+        erro = m_conhecimento[tipomsg]
+      efim
+    fimse
 # Tenta vestir
     erro ? $mens.mp(erro, arg0, alvo, r) : objvestir(alvo, r, int(n))
   efim
@@ -116,47 +127,52 @@ func escr
   fimse
 
 func objvestir # Quer vestir um item
-# arg0 = personagem, arg1 = objeto, arg2 = quantidade
+# arg0 = personagem, arg1 = objeto, arg2 = quantidade, lugar = aonde vestir
   refvar tipomsg = arg0 == arg0.contr ? "_p" : "_a"
+  txt512 lin
   uint8 total
   epara total = arg2, total, total--
-# Checa se o item pode ser vestido
-    refvar lugar1 = lugar & txt(arg1.vestir1) # Posições aonde pode vestir o item
+# Obtém posições aonde pode vestir o item
+    refvar lugar1 = lugar & arg1.vestir1
     se lugar1 == "0"
       $mens.mp(m_nao_consegue[tipomsg], arg0.contr, arg0, arg1)
       ret
     fimse
 # Exclui posições em que está vestindo algo
-    refvar lugar2 = lugar1 & ~txthex(vest, 12)
+    refvar lugar2 = lugar1 & ~txthex(vest1, 12)
     se lugar2 == "0"
-      listaitem item
-      epara item = arg0.dentro2.ini, item, item.depois
-        sair item.obj.vestpos && intbith(item.obj.vestpos - 1) & (lugar1 & vest) != "0"
-      efim
-      $mens.mp(m_em_uso[tipomsg], arg0.contr, arg0, item.obj)
+      refvar obj = arg0.objitemvestir(lugar1)
+      $mens.mp(m_em_uso[tipomsg], arg0.contr, arg0, obj)
       ret
     fimse
-# Checa os itens que estão em cima
-    txt512 lin
+# Verifica posições extras
+    se vest1 & arg1.vestirextra != "0"
+      refvar obj = arg0.objitemvestir(arg1.vestirextra)
+      $mens.mp(m_em_uso[tipomsg], arg0.contr, arg0, obj)
+      ret
+    fimse
+# Exclui posições em que tem item em cima e obtém: numpos = posição
     epara lin = txtbith(lugar2), lin, lin = txt2(lin)
-      sair vest & txt(config:vestir[txt1(lin)]) == "0"
+      sair vest1 & config:vestir[txt1(lin)] == "0"
     efim
     se !lin
       lin = txtbith(lugar2)
-      txt12 pos = vest & txt(config:vestir[txt1(lin)])
-      listaitem item
-      epara item = arg0.dentro2.ini, item, item.depois
-        continuar !item.obj.vestpos
-        sair txttroca(intbith(item.obj.vestpos - 1) & pos, "0", "")
-      efim
-      $mens.mp(m_em_cima[tipomsg], arg0.contr, arg0, item.obj)
+      refvar obj = arg0.objitemvestir(config:vestir[txt1(lin)])
+      $mens.mp(m_em_cima[tipomsg], arg0.contr, arg0, obj)
       ret
     fimse
-# Checa se o item deixa vestir
-    txt100 txtvestir = arg1.cmd_podevestir(arg0)
-    ret txtvestir, txtvestir
-# Eventos
     refvar numpos = 1 + txt1(lin)
+# Verifica itens em cima nas posições extras
+    epara lin = txtbith(arg1.vestirextra), lin, lin = txt2(lin)
+      continuar vest1 & config:vestir[txt1(lin)] == "0"
+      refvar obj = arg0.objitemvestir(config:vestir[txt1(lin)])
+      $mens.mp(m_em_cima[tipomsg], arg0.contr, arg0, obj)
+      ret
+    efim
+# Checa se o item deixa vestir
+    refvar lin = arg1.cmd_podevestir(arg0)
+    ret lin, lin
+# Eventos
     listaobj l
     epara l.addfim(arg0.evento), l, l.ini.remove
       ret l.objini.cmd_vestir(arg0, arg1, numpos, arg0), nulo
@@ -166,7 +182,6 @@ func objvestir # Quer vestir um item
     efim
 # Veste o item
     arg1.vestir(numpos)
-    vest |= intbith(numpos - 1)
     refvar mvestir_a = txtsublin(config:equip_vestir, numpos - 1, 1) ?? "$P veste $o."
     refvar mvestir_p = txtsublin(config:equip_perso, numpos - 1, 1) ?? mvestir_a
     $mens.p(arg0, nulo, arg1)
@@ -179,6 +194,8 @@ func objvestir # Quer vestir um item
     epara l.addfim(arg1.evento), l, l.ini.remove
       l.objini.cmd_vestiu(arg0, arg1, numpos, arg1)
     efim
+# Acerta posições
+    vest1 = arg0.positemvestir
   efim
 
 
@@ -211,40 +228,48 @@ const vari6 = "m_renascer3"
 #
 const titu7 = " * Personagem veste"
 #
-const nome7 = "Não consegue"
+const nome7 = "Conhecimento"
 const tipo7 = "opc_linha"
-const vari7 = "m_nao_consegue_p"
+const vari7 = "m_conhecimento_p"
 #
-const nome8 = "Posição não existe"
+const nome8 = "Não consegue"
 const tipo8 = "opc_linha"
-const vari8 = "m_posicao_p"
+const vari8 = "m_nao_consegue_p"
 #
-const nome9 = "Já tem outro item"
+const nome9 = "Posição não existe"
 const tipo9 = "opc_linha"
-const vari9 = "m_em_uso_p"
+const vari9 = "m_posicao_p"
 #
-const nome10 = "Outro item em cima"
+const nome10 = "Já tem outro item"
 const tipo10 = "opc_linha"
-const vari10 = "m_em_cima_p"
+const vari10 = "m_em_uso_p"
 #
-const titu11 = " * Animal veste"
-#
-const nome11 = "Animal longe"
+const nome11 = "Outro item em cima"
 const tipo11 = "opc_linha"
-const vari11 = "m_longe_a"
+const vari11 = "m_em_cima_p"
 #
-const nome12 = "Não consegue"
-const tipo12 = "opc_linha"
-const vari12 = "m_nao_consegue_a"
+const titu12 = " * Animal veste"
 #
-const nome13 = "Posição não existe"
+const nome13 = "Conhecimento"
 const tipo13 = "opc_linha"
-const vari13 = "m_posicao_a"
+const vari13 = "m_conhecimento_a"
 #
-const nome14 = "Já tem outro item"
+const nome14 = "Animal longe"
 const tipo14 = "opc_linha"
-const vari14 = "m_em_uso_a"
+const vari14 = "m_longe_a"
 #
-const nome15 = "Outro item em cima"
+const nome15 = "Não consegue"
 const tipo15 = "opc_linha"
-const vari15 = "m_em_cima_a"
+const vari15 = "m_nao_consegue_a"
+#
+const nome16 = "Posição não existe"
+const tipo16 = "opc_linha"
+const vari16 = "m_posicao_a"
+#
+const nome17 = "Já tem outro item"
+const tipo17 = "opc_linha"
+const vari17 = "m_em_uso_a"
+#
+const nome18 = "Outro item em cima"
+const tipo18 = "opc_linha"
+const vari18 = "m_em_cima_a"

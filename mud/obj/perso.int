@@ -412,6 +412,34 @@ func tipoitemvestir
   efim
   ret tipoitemvestir2
 
+func positemtotal # Retorna as posições aonde pode vestir itens
+  txt100 lin
+  txt12 pos
+  lin = "t_" + tipo1
+  pos = (([lin]:equip1 ?? "FFFFFFFFFFFF") | [lin]:equip2) & ~txthex([lin]:equip3, 12)
+  lin = "t_" + tipo2
+  pos = (([lin]:equip1 ?? pos) | [lin]:equip2) & ~txthex([lin]:equip3, 12)
+  lin = "t_" + tipo3
+  pos = (([lin]:equip1 ?? pos) | [lin]:equip2) & ~txthex([lin]:equip3, 12)
+  ret ((equip1 ?? pos) | equip2) & ~txthex(equip3, 12)
+
+func positemvestir # Retorna as posições aonde está usando alguma coisa
+  txt12 vest1
+  listaitem item
+  epara item = dentro2.ini, item, item.depois
+    refvar pos = item.obj.vestpos
+    pos > 0 && pos < 50 && (vest1 |= intbith(pos - 1))
+    pos && (vest1 |= item.obj.vestirextra)
+  efim
+  ret vest1
+
+func objitemvestir # Retorna primeiro item em uma das posições
+# arg0 = posições (texto hexadecimal)
+  listaitem item
+  epara item = dentro2.ini, item, item.depois
+    ret arg0 & item.obj.vestpos2 != "0", ref(item.obj)
+  efim
+
 func recalc_exec # Ajusta variáveis
 # Acerta atributos básicos
   bitver = 17, bitinv = 3
@@ -552,17 +580,6 @@ func descpos
   casofim
   $mens.p(este)
   ret $mens.txt(descsalaN(arg0), arg0)
-
-func equippos # Retorna as posições aonde pode usar equipamentos
-  txt100 lin
-  txt12 pos
-  lin = "t_" + tipo1
-  pos = (([lin]:equip1 ?? "FFFFFFFFFFFF") | txt([lin]:equip2)) & ~txthex([lin]:equip3, 12)
-  lin = "t_" + tipo2
-  pos = (([lin]:equip1 ?? pos) | txt([lin]:equip2)) & ~txthex([lin]:equip3, 12)
-  lin = "t_" + tipo3
-  pos = (([lin]:equip1 ?? pos) | txt([lin]:equip2)) & ~txthex([lin]:equip3, 12)
-  ret ((equip1 ?? pos) | txt(equip2)) & ~txthex(equip3, 12)
 
 func acertanumero # Acerta os números dos animais que possui (variáveis pnumero)
   listaobj l

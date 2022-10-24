@@ -79,7 +79,7 @@ func txtident # Adiciona informações de item ou personagem em um textotxt
 # arg0 = personagem que está solicitando as informações
 # arg1 = item ou personagem sendo identificado
 # arg2 = textotxt aonde colocar as informações
-  txt100 lin
+  txt512 lin
 # Identificar personagem
   se arg1.perso
     refvar persobat = arg1.persobat
@@ -90,11 +90,11 @@ func txtident # Adiciona informações de item ou personagem em um textotxt
     lin += ", nível " + arg1.pnivel
     arg1.prenascer && (lin += ", R" + arg1.prenascer)
     txt100 nome
-    nome = (!arg1.msexo2 ? $t_[arg1.tipo1].nome2) ?? $t_[arg1.tipo1].nome ?? arg1.tipo1
+    nome = !arg1.msexo2 ? $t_[arg1.tipo1].nome2 ?? $t_[arg1.tipo1].nome ?? arg1.tipo1
     nome && (lin += ", " + nome)
-    nome = (!arg1.msexo2 ? $t_[arg1.tipo2].nome2) ?? $t_[arg1.tipo2].nome ?? arg1.tipo2
+    nome = !arg1.msexo2 ? $t_[arg1.tipo2].nome2 ?? $t_[arg1.tipo2].nome ?? arg1.tipo2
     nome && (lin += ", " + nome)
-    nome = (!arg1.msexo2 ? $t_[arg1.tipo3].nome2) ?? $t_[arg1.tipo3].nome ?? arg1.tipo3
+    nome = !arg1.msexo2 ? $t_[arg1.tipo3].nome2 ?? $t_[arg1.tipo3].nome ?? arg1.tipo3
     nome && (lin += ", " + nome)
     arg2.addfim(lin)
     refvar m = txt(arg1.descident(arg0))
@@ -129,21 +129,30 @@ func txtident # Adiciona informações de item ou personagem em um textotxt
     lin += "."
     arg2.addfim(lin)
   fimse
-# Aonde pode ser vestido
-  se 1
-    uint8 x
-    refvar xmax = intsublin(config:equip_txt)
-    txt100 valor = arg1.vestir1
-    lin = arg1.armatipo ? ", empunhando" : ""
-    enquanto x < xmax && valor
-      valor & "1" == "1" && (lin += ", " + txtsublin(config:equip_txt, x, 1))
-      x++, valor = valor >> 1
+# Aonde pode ser vestido e posições extras
+  se arg1.armatipo || ("0" | arg1.vestir1) | arg1.vestirextra != "0"
+    txt512 posic = arg1.armatipo ? ", empunhando"
+    txt512 extra
+    epara lin = config:equip_ordem, lin, lin = txt2(lin)
+      refvar valor = intbith(txt1(lin))
+      (valor & arg1.vestir1) != "0" && (posic += ", " + misc:equip(1 + txt1(lin)))
+      (valor & arg1.vestirextra) != "0" && (extra += ", " + misc:equip(1 + txt1(lin)))
     efim
-    lin && arg2.addfim("Pode ser usado em: " + txt(lin, 2) + ".")
+    posic && arg2.addfim("Pode ser usado em: " + txt(posic, 2) + ".")
+    extra && arg2.addfim("Ocupa posições: " + txt(extra, 2) + ".")
   fimse
 # Quem não pode vestir
   se arg1.vestirnao
     arg2.addfim("Não pode ser usado por: " + txttroca(arg1.vestirnao, "\n", ",") + ".")
+  fimse
+# Conhecimento necessário
+  se arg1.vestiraula
+    textotxt t2
+    epara t2.addfim(arg1.vestiraula(arg0)), t2.linhas, t2.remove
+      continuar !(lin = t2.ini.texto)
+      refvar nivel = txtmin(txtsublin(misc:aulas, txt2(lin), 1))
+      arg2.addfim("Requer " + misc:nomevar(txt1(lin)) + " nível " + nivel + ".")
+    efim
   fimse
 # Diversos
   arg1.i_chave && arg2.addfim("É um tipo de chave.")

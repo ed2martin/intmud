@@ -21,6 +21,10 @@ const m_nivel_a = "$A precisa chegar no nível $m para empunhar $o."
 const m_renascer1 = "Você precisa renascer uma vez para empunhar $o."
 const m_renascer2 = "Você precisa renascer duas vezes para empunhar $o."
 const m_renascer3 = "Você precisa renascer $m vezes para empunhar $o."
+const m_em_uso_p = "Você já está usando $o nessa posição."
+const m_em_uso_a = "$A já está usando $o nessa posição."
+const m_em_cima_p = "Antes você precisa parar de usar $o."
+const m_em_cima_a = "Antes $a precisa parar de usar $o."
 const m_empunhou1_p = "Você empunha $o."
 const m_empunhou1_a = "$A empunha $o."
 const m_empunhou2_p = "$P empunha $o."
@@ -28,7 +32,8 @@ const m_empunhou2_a = "$A empunha $o."
 const admordem = "m_ajuda m_sem_args m_naover m_nao_arma m_empunhando_p\n\
 m_empunhando_a m_nao_consegue_p m_nao_consegue_a m_conhecimento_p\n\
 m_conhecimento_a m_nivel_p m_nivel_a m_renascer1 m_renascer2 m_renascer3\n\
-m_empunhou1_p m_empunhou2_p"
+m_em_uso_p m_em_uso_a m_em_cima_p m_em_cima_a\n\
+m_empunhou1_p m_empunhou1_a m_empunhou2_p m_empunhou2_a"
 
 func escr
   ret !arg1, $mensjog.msg(m_sem_args, arg0)
@@ -40,7 +45,8 @@ func escr
   refvar tipo1 = txte(alvo.tipo1)
   refvar tipo2 = txte(alvo.tipo2)
   refvar tipo3 = txte(alvo.tipo3)
-# Empunha
+  txt200 lin
+# Verifica condições para empunhar
   ref r = misc:itemdentro(arg0, arg1)
   $mens.p(arg0, alvo, r)
   se !r
@@ -75,14 +81,38 @@ func escr
       ret $mens.msg(m_nao_consegue[tipomsg], arg0)
     fimse
   fimse
+# Checa se tem conhecimento suficiente
+  textotxt t2
+  epara t2.addfim(r.vestiraula(alvo)), t2.linhas, t2.remove
+    continuar !(lin = t2.ini.texto)
+    continuar alvo.var.[txt1(lin)]_ >= txt2(lin)
+    $mens.mens = misc:nomevar(txt1(lin))
+    $mens.o_1 = txtmin(txtsublin(misc:aulas, txt2(lin), 1))
+    ret $mens.mp(m_conhecimento[tipomsg], arg0, alvo, r)
+  efim
+# Verifica posições extras
+  refvar vest1 = alvo.positemvestir
+  se vest1 & r.vestirextra != "0"
+    refvar obj = arg0.objitemvestir(r.vestirextra)
+    ret $mens.mp(m_em_uso[tipomsg], arg0.contr, arg0, obj)
+  fimse
+# Verifica itens em cima nas posições extras
+  epara lin = txtbith(r.vestirextra), lin, lin = txt2(lin)
+    continuar vest1 & config:vestir[txt1(lin)] == "0"
+    refvar obj = arg0.objitemvestir(config:vestir[txt1(lin)])
+    ret $mens.mp(m_em_cima[tipomsg], arg0.contr, arg0, obj)
+  efim
+# Eventos
   listaobj e
   epara e.addfim(alvo.evento, r.evento), e, e.ini.remove
     ret e.objini.cmd_vestir(alvo, r, 50), nulo
   efim
+# Empunha
   r.vestir(50)
   $mens.p(arg0, nulo, r)
   $mens.msgsomvis(m_empunhou1[tipomsg], r.i_som_emp1, arg0)
   $mens.mvis2som(m_empunhou2[tipomsg], r.i_som_emp1)
+# Eventos
   epara e.addfim(alvo.evento, r.evento), e, e.ini.remove
     e.objini.cmd_vestiu(alvo, r, 50)
   efim
@@ -137,36 +167,52 @@ const nome11 = "Nível insuficiente"
 const tipo11 = "opc_linha"
 const vari11 = "m_nivel_p"
 #
-const nome12 = "Empunha perso"
+const nome12 = "Já tem outro item"
 const tipo12 = "opc_linha"
-const vari12 = "m_empunhou1_p"
+const vari12 = "m_em_uso_p"
 #
-const nome13 = "Empunha outros"
+const nome13 = "Outro item em cima"
 const tipo13 = "opc_linha"
-const vari13 = "m_empunhou2_p"
+const vari13 = "m_em_cima_p"
 #
-const titu14 = " * Animal empunha"
-#
-const nome14 = "Já está empunhando"
+const nome14 = "Empunha perso"
 const tipo14 = "opc_linha"
-const vari14 = "m_empunhando_a"
+const vari14 = "m_empunhou1_p"
 #
-const nome15 = "Não consegue"
+const nome15 = "Empunha outros"
 const tipo15 = "opc_linha"
-const vari15 = "m_nao_consegue_a"
+const vari15 = "m_empunhou2_p"
 #
-const nome16 = "Sem conhecimento"
+const titu16 = " * Animal empunha"
+#
+const nome16 = "Já está empunhando"
 const tipo16 = "opc_linha"
-const vari16 = "m_conhecimento_a"
+const vari16 = "m_empunhando_a"
 #
-const nome17 = "Nível insuficiente"
+const nome17 = "Não consegue"
 const tipo17 = "opc_linha"
-const vari17 = "m_nivel_a"
+const vari17 = "m_nao_consegue_a"
 #
-const nome18 = "Empunha perso"
+const nome18 = "Sem conhecimento"
 const tipo18 = "opc_linha"
-const vari18 = "m_empunhou1_a"
+const vari18 = "m_conhecimento_a"
 #
-const nome19 = "Empunha outros"
+const nome19 = "Nível insuficiente"
 const tipo19 = "opc_linha"
-const vari19 = "m_empunhou2_a"
+const vari19 = "m_nivel_a"
+#
+const nome20 = "Já tem outro item"
+const tipo20 = "opc_linha"
+const vari20 = "m_em_uso_a"
+#
+const nome21 = "Outro item em cima"
+const tipo21 = "opc_linha"
+const vari21 = "m_em_cima_a"
+#
+const nome22 = "Empunha perso"
+const tipo22 = "opc_linha"
+const vari22 = "m_empunhou1_a"
+#
+const nome23 = "Empunha outros"
+const tipo23 = "opc_linha"
+const vari23 = "m_empunhou2_a"

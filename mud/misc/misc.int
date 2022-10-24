@@ -103,10 +103,9 @@ const tudo = "tudo"
 const objmax = 2000000000
 
 func equip # Traduz número para lugar aonde está vestindo um item
-# Retorna um texto ou "Desconhecido" se não for um lugar válido
+# Retorna um texto ou "desconhecido" se não for um lugar válido
   ret arg0 == 50, "empunhando"
-  refvar valor = txtsublin(config:equip_txt, int(arg0) - 1, 1)
-  ret valor ? valor : "desconhecido"
+  ret txtsublin(config:equip_txt, int(arg0) - 1, 1) ?? "desconhecido"
 
 func atkesp # Tipos de golpes
 # arg0 = número do golpe

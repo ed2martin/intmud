@@ -29,14 +29,9 @@ func escr
   refvar alvo = ref(arg0.persoesc) ?? arg0 # Quem vai remover
   ret alvo.dono != arg0 && alvo.dono != arg0.dono, $mens.mp(m_longe_a, arg0, alvo)
   refvar tipomsg = arg0 == alvo ? "_p" : "_a"
-# Preenche a variável vest com o que está vestindo
-  txt12 vest # Aonde está vestindo
-  listaitem item
-  epara item = alvo.dentro2.ini, item, item.depois
-    refvar pos = item.obj.vestpos
-    pos > 0 && pos < 50 && (vest |= intbith(pos - 1))
-  efim
-# Remove
+# Variáveis
+  txt12 vest1 = alvo.positemvestir # Aonde está vestindo
+  txt512 lin
   uint8 total
   listaobj l
   nomeobj n # Para reconhecer os itens
@@ -45,16 +40,17 @@ func escr
     ref r = l.objini
     continuar !r.vestpos || !r.visivel(arg0) || !n.nome(r.ident2, r.objtot)
     total++
-    refvar valor = vest & txt(config:vestir[r.vestpos - 1])
-    se txttroca(valor, "0", "")
-      epara item = alvo.dentro2.ini, item, item.depois
-        continuar !item.obj.vestpos
-        sair txttroca(intbith(item.obj.vestpos - 1) & valor, "0", "")
-      efim
-      $mens.mp(m_em_cima[tipomsg], arg0, alvo, item.obj)
-      continuar
-    fimse
+# Verifica itens em cima
+    refvar vest2 = vest1 & ~txthex(r.vestpos2, 12)
+    epara lin = txtbith(r.vestpos2), lin, lin = txt2(lin)
+      continuar vest2 & config:vestir[txt1(lin)] == "0"
+      refvar obj = alvo.objitemvestir(vest2 & config:vestir[txt1(lin)])
+      $mens.mp(m_em_cima[tipomsg], arg0, alvo, obj)
+      sair
+    efim
+    continuar lin
     refvar posic = int(r.vestpos)
+# Eventos
     listaobj e
     epara e.addfim(alvo.evento), e, e.ini.remove
       ret e.objini.cmd_remover(alvo, r, posic, alvo), nulo
@@ -62,20 +58,23 @@ func escr
     epara e.addfim(r.evento), e, e.ini.remove
       ret e.objini.cmd_remover(alvo, r, posic, r), nulo
     efim
-    vest &= ~txthex(intbith(r.vestpos - 1), 12)
+# Remove o item
     refvar som = r.vestpos == 50 ? r.i_som_emp0 : r.i_som_vest0
     r.vestir(0)
     $mens.p(arg0, alvo, r)
     $mens.msgsomvis(m_removeu1[tipomsg], som, arg0)
     $mens.mvis2som(m_removeu2[tipomsg], som)
+# Eventos
     epara e.addfim(alvo.evento), e, e.ini.remove
       e.objini.cmd_removeu(alvo, r, posic, alvo)
     efim
     epara e.addfim(r.evento), e, e.ini.remove
       e.objini.cmd_removeu(alvo, r, posic, r)
     efim
+# Acerta posições
+    vest1 = alvo.positemvestir
   efim
-# Ajusta variáveis
+# Mensagem se não encontrou nenhum item
   !total && $mens.mp(m_naover[tipomsg], arg0, alvo)
 
 
@@ -96,7 +95,7 @@ const nome3 = "Sem alvo"
 const tipo3 = "opc_linha"
 const vari3 = "m_naover_p"
 #
-const nome4 = "Tem item em cima"
+const nome4 = "Outro item em cima"
 const tipo4 = "opc_linha"
 const vari4 = "m_em_cima_p"
 #
@@ -118,7 +117,7 @@ const nome8 = "Animal longe"
 const tipo8 = "opc_linha"
 const vari8 = "m_longe_a"
 #
-const nome9 = "Tem item em cima"
+const nome9 = "Outro item em cima"
 const tipo9 = "opc_linha"
 const vari9 = "m_em_cima_a"
 #

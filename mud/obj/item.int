@@ -89,6 +89,8 @@ vestir1\n\
 vestirnao\n\
 vestirsim\n\
 vestirsexo\n\
+vestiraula\n\
+vestirextra\n\
 volexp volmax volobj\n\
 inivar evhora eveste evperso evitem evsala"
 
@@ -142,6 +144,9 @@ func vestir # Veste o item, arg0=posição
   senao
     idono = dono.dentro1.addfim(este)
   fimse
+
+func vestpos2 # Retorna as posições aonde está usando este item
+  ret vestpos ? (vestpos < 50 ? intbith(vestpos - 1) : "0") | vestirextra : "0"
 
 const apagar = apagar(este), mdono(nulo) # Apaga o item (arg0 = quantidade)
 

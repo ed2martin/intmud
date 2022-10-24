@@ -1,0 +1,108 @@
+classe h_cmd_equip
+herda comando_comum
+const objmenu = $m_cmd_equip
+const objtipo = 2 # Pode renomear
+const posic = 5
+const txtajuda = txtajuda1(txttroca(config:animal1 ? m_ajuda2 : m_ajuda1, "$num", config:animal1))
+#
+const m_ajuda1 = "-t\n\
+-s\n\
+-s TUDO\n\
+Mostra os itens que o seu personagem está vestindo ou usando.\n\
+Sequido da palavra TUDO, são mostradas também as posições aonde o seu\n\
+personagem pode vestir algo."
+const m_ajuda2 = "-t\n\
+-s\n\
+-s TUDO\n\
+-s <número>\n\
+Mostra os itens que o seu personagem está vestindo ou usando.\n\
+Sequido da palavra TUDO, são mostradas também as posições aonde o seu\n\
+personagem pode vestir algo.\n\
+Seguido de um número de 0 a $num, mostra os itens do animal correspondente."
+const m_secundario = "* "
+const m_nada1 = "Você não está vestindo/usando nada."
+const m_nada2 = "$A não está vestindo/usando nada."
+const m_lista1 = "Você está equipad$s com:"
+const m_lista2 = "$A está equipad$t com:"
+const admordem = "m_ajuda1 m_ajuda2 m_secundario m_nada1 m_nada2 m_lista1 m_lista2"
+
+func escr
+  textotxt t
+  listaitem item
+  ref pos.55 # Posições principais
+  ref extra.55 # Posições extras
+  txt50 nomepos
+# Obtém o personagem
+  refvar r = arg1 == "tudo" ? arg0 : misc:persoinfo(arg0, arg1)
+  ret !r, nulo
+# Preenche pos
+  txt512 lin
+  epara item = r.dentro2.fim, item, item.antes
+    continuar !item.obj.vestpos || !item.obj.visivel(arg0)
+    pos.[item.obj.vestpos - 1] = item.obj
+    epara lin = txtbith(item.obj.vestirextra), lin, lin = txt2(lin)
+      extra.[txt1(lin)] = item.obj
+    efim
+  efim
+# Mostra as posições
+  refvar lugar = arg1 == "tudo" ? r.positemtotal : "0"
+  epara lin = config:equip_ordem, lin, lin = txt2(lin)
+    refvar o1 = pos.[txt1(lin)]
+    refvar obj = o1 ?? extra.[txt1(lin)]
+    se obj.vestpos && obj.visivel(arg0)
+      nomepos = "\c2(" + misc:equip(1 + txt1(lin)) + ")\b "
+      nomepos += txtesp(23 - inttotal(nomepos)) + (!o1 ? m_secundario)
+      nomepos += obj.atribs.ini.texto(1)
+      t.addfim(nomepos + txtcopiamai(obj.descnome2, "A"))
+    senao lugar & intbith(txt1(lin)) != "0"
+      nomepos = "\c2(" + misc:equip(txt1(lin)) + ")\b "
+      se nomepos != "\c2(desconhecido)\b "
+        t.addfim(nomepos + txtesp(23 - inttotal(nomepos)) + "nada")
+      fimse
+    fimse
+  efim
+# Envia mensagem
+  se t
+    $mens.p(arg0, r)
+    refvar nome = $mens.txt(r == arg0 ? m_lista1 : m_lista2, arg0)
+    arg0.msg2("\b\c6" + nome + "\b\n" + t.remove(1000))
+  senao
+    $mens.mp(r == arg0 ? m_nada1 : m_nada2, arg0, r)
+  fimse
+
+
+classe m_cmd_equip
+herda comando_menu_cmd
+#
+const nome1 = "Ajuda sem animais"
+const tipo1 = "opc_texto"
+const vari1 = "m_ajuda1"
+#
+const nome2 = "Ajuda com animais"
+const info2 = "$num = número de animais"
+const tipo2 = "opc_texto"
+const vari2 = "m_ajuda2"
+#
+const nome3 = "Posição secundária"
+const tipo3 = "opc_linha"
+const vari3 = "m_secundario"
+#
+const titu4 = " * Personagem"
+#
+const nome4 = "Não está equipado"
+const tipo4 = "opc_linha"
+const vari4 = "m_nada1"
+#
+const nome5 = "Está equipado"
+const tipo5 = "opc_linha"
+const vari5 = "m_lista1"
+#
+const titu6 = " * Animal"
+#
+const nome6 = "Não está equipado"
+const tipo6 = "opc_linha"
+const vari6 = "m_nada2"
+#
+const nome7 = "Está equipado"
+const tipo7 = "opc_linha"
+const vari7 = "m_lista2"
