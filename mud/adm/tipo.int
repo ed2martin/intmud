@@ -269,70 +269,75 @@ const tipo23 = "opc_opcao"
 const vari23 = "animalatk"
 const extr23 = "Não definido\nPersonagem e animais\nSomente personagem\nSomente animais"
 #
-const nome24 = "Morreu perso"
-const info24 = "Mensagem para o próprio personagem"
-const tipo24 = "opc_linha"
-const vari24 = "morreu0"
+const nome24 = "Sala inicial"
+const info24 = "Sala onde os jogadores vão após criar o personagem"
+const tipo24 = "opc_sala"
+const vari24 = "salaini"
 #
-const nome25 = "Morreu outros"
-const info25 = "Mensagem para os outros"
+const nome25 = "Morreu perso"
+const info25 = "Mensagem para o próprio personagem"
 const tipo25 = "opc_linha"
-const vari25 = "morreu1"
+const vari25 = "morreu0"
 #
-const nome26 = "Nível mínimo"
-const info26 = "Quando o personagem é criado ou renasce, ele vai para esse nível.\n\
+const nome26 = "Morreu outros"
+const info26 = "Mensagem para os outros"
+const tipo26 = "opc_linha"
+const vari26 = "morreu1"
+#
+const nome27 = "Nível mínimo"
+const info27 = "Quando o personagem é criado ou renasce, ele vai para esse nível.\n\
 Se houverem níveis diferentes na raça, classe e subclasse, é considerado\n\
 somente o maior."
-const tipo26 = "opc_numero"
-const vari26 = "nmin"
-const extr26 = "0 65535"
-#
-const nome27 = "Nível máximo"
-const info27 = "Quando o personagem chega no nível máximo, não sobe mais de nível, mas pode\n\
-renascer. Se houverem níveis diferentes na raça, classe e subclasse,\n\
-é considerado somente o maior. Se os três forem 0, não renasce."
 const tipo27 = "opc_numero"
-const vari27 = "nmax"
+const vari27 = "nmin"
 const extr27 = "0 65535"
 #
-const nome28 = "Evolui para"
-const tipo28 = "opc_tipos"
-const info28 = "Os novos tipos que o personagem pode escolher no comando renascer"
-const vari28 = "evoluir"
+const nome28 = "Nível máximo"
+const info28 = "Quando o personagem chega no nível máximo, não sobe mais de nível, mas pode\n\
+renascer. Se houverem níveis diferentes na raça, classe e subclasse,\n\
+é considerado somente o maior. Se os três forem 0, não renasce."
+const tipo28 = "opc_numero"
+const vari28 = "nmax"
+const extr28 = "0 65535"
 #
-const nome29 = "Fome e sede"
-const info29 = "Somente raças; se pode sentir fome e sede (se não for imortal)"
-const tipo29 = "opc_simnao"
-const vari29 = "fome"
+const nome29 = "Evolui para"
+const tipo29 = "opc_tipos"
+const info29 = "Os novos tipos que o personagem pode escolher no comando renascer"
+const vari29 = "evoluir"
 #
-const nome30 = "Ataque automático"
-const info30 = "Habilidade usada em ataques automáticos sem arma"
-const tipo30 = "opc_linha"
-const vari30 = "atipo"
+const nome31 = "Fome e sede"
+const info31 = "Somente raças; se pode sentir fome e sede (se não for imortal)"
+const tipo31 = "opc_simnao"
+const vari31 = "fome"
 #
-const nome31 = "Volume mínimo"
-const info31 = "Somente raças; o volume é escolhido aleatoriamente"
-const tipo31 = "opc_numero"
-const vari31 = "volmin"
-const exec31 = "jogador:ajustajog"
+const nome31 = "Ataque automático"
+const info31 = "Habilidade usada em ataques automáticos sem arma"
+const tipo31 = "opc_linha"
+const vari31 = "atipo"
 #
-const nome32 = "Volume máximo"
+const nome32 = "Volume mínimo"
 const info32 = "Somente raças; o volume é escolhido aleatoriamente"
 const tipo32 = "opc_numero"
-const vari32 = "volmax"
+const vari32 = "volmin"
 const exec32 = "jogador:ajustajog"
 #
-const nome33 = "Peso mínimo"
-const info33 = "Somente raças; o peso é escolhido aleatoriamente"
+const nome33 = "Volume máximo"
+const info33 = "Somente raças; o volume é escolhido aleatoriamente"
 const tipo33 = "opc_numero"
-const vari33 = "pesomin"
+const vari33 = "volmax"
 const exec33 = "jogador:ajustajog"
 #
-const nome34 = "Peso máximo"
+const nome34 = "Peso mínimo"
 const info34 = "Somente raças; o peso é escolhido aleatoriamente"
 const tipo34 = "opc_numero"
-const vari34 = "pesomax"
+const vari34 = "pesomin"
 const exec34 = "jogador:ajustajog"
+#
+const nome35 = "Peso máximo"
+const info35 = "Somente raças; o peso é escolhido aleatoriamente"
+const tipo35 = "opc_numero"
+const vari35 = "pesomax"
+const exec35 = "jogador:ajustajog"
 #
 const nome50 = "Variáveis"
 const tipo50 = "opc_linha"
@@ -357,11 +362,10 @@ const nulo8 = "\c3" + perso_cfg:desccond7
 classe comum_tipo
 #
 # Ordem que deve organizar as constantes:
-const admordem = "nome nome2 nomequem nomequem2 menu desc desc2 sexo racas classes\n\
-equip1 equip2 equip3 animalatk morreu0 morreu1 nmin nmax evoluir fome atipo\n\
-volmin volmax pesomin pesomax\n\
-desccond0 desccond1 desccond2 desccond3 desccond4 desccond5 desccond6 desccond7\n\
-inivar"
+const admordem = "nome nome2 nomequem nomequem2 menu desc desc2 sexo\n\
+racas classes equip1 equip2 equip3 animalatk salaini morreu0 morreu1 nmin nmax\n\
+evoluir fome atipo volmin volmax pesomin pesomax desccond0 desccond1 desccond2\n\
+desccond3 desccond4 desccond5 desccond6 desccond7 inivar"
 const iniclasse = !$[arg0] && criar(arg0)
 const fome = 1
 

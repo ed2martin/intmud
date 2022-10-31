@@ -690,25 +690,27 @@ func passo
   $jogsock_msg.msgsock(arg0, perso_cfg:ini_iniciando, arg0.nome)
   refvar v = arg0.var
   arg0.mudaperso(criar("jogador", nulo, v.j_tipo1, v.j_tipo2, v.j_tipo3))
-  arg0.perso.cnome = "pn " + txt2(arg0.cnome)
-  arg0.perso.nome = arg0.nome
-  arg0.perso.jogconfig.bits = arg0.jogconfig.bits
-  arg0.perso.psexo = arg0.var.j_sexo
-  arg0.perso.senha = arg0.var.j_senha ? sav1.senhacod(arg0.var.j_senha) : ""
-  arg0.perso.senhacod = arg0.perso.senha != "" # Se a senha está codificada
-  !arg0.perso.senhacod && (arg0.perso.senha = arg0.var.j_senha)
-  arg0.perso.var.z_email = arg0.var.j_email
+  refvar p = arg0.perso
+  p.cnome = "pn " + txt2(arg0.cnome)
+  p.nome = arg0.nome
+  p.jogconfig.bits = arg0.jogconfig.bits
+  p.psexo = arg0.var.j_sexo
+  p.senha = arg0.var.j_senha ? sav1.senhacod(arg0.var.j_senha) : ""
+  p.senhacod = p.senha != "" # Se a senha está codificada
+  !p.senhacod && (p.senha = arg0.var.j_senha)
+  p.var.z_email = arg0.var.j_email
   arg0.var.limpar("j_")
-  arg0.perso.mudadono(config:salaini)
+  refvar salaini = $t_[p.tipo1].salaini ?? $t_[p.tipo2].salaini ?? $t_[p.tipo3].salaini
+  p.mudadono(salaini ?? config:salaini)
   arg0.temposair # Acerta tempo para sair do MUD
   arg0.jogperm = config:autorizar ? "autorizar" : "jog"
-  arg0.perso.jogperm = arg0.jogperm
-  se arg0.perso.senha && !$perm_[arg0.jogperm].c_salvar
-    !arg0.perso.salvar && $jogsock_msg.msgsock(arg0, perso_cfg:ini_salvar_nao, arg0.nome)
+  p.jogperm = arg0.jogperm
+  se p.senha && !$perm_[arg0.jogperm].c_salvar
+    !p.salvar && $jogsock_msg.msgsock(arg0, perso_cfg:ini_salvar_nao, arg0.nome)
   fimse
-  $jogsock_msg.p(arg0, arg0.nomefim, arg0.perso.pnivel, arg0.perso.var.z_moedas)
+  $jogsock_msg.p(arg0, arg0.nomefim, p.pnivel, p.var.z_moedas)
   $jogsock_msg.msg("Criou: $p, $c", config:criou_msgadm, config:criou_msgjog)
-  $mens.p(arg0.perso)
+  $mens.p(p)
   $mens.mvis2("", perso_cfg:ini_perso_entrou)
   ret 1
 

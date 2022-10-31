@@ -48,6 +48,7 @@ func passo
     $mens.mp(m_senha_erro, p)
     arg0.passo = ""
   senao sav1.apagar("sav1/" + txt2(arg0.cnome) + ".sav")
+    $misclog.autoapagar(arg0.nome + " N" + arg0.perso.pnivel)
     p.senha = ""
     apagar(p)
     $miscsav.apagousav(txt2(arg0.cnome))
