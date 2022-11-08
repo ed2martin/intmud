@@ -576,6 +576,9 @@ func morreu # Procedimentos quando morre
     $mens.p(este)
     $mens.mtodos2(p_morreu0, p_morreu1)
     apagar(este)
+    se !p_recebe && p_corpo >= 2
+      var.z_moedas_ = int(intpos(var.z_moedas_ * misc:mudamoedas))
+    fimse
     se p_corpo == 4
       epara l.addfim(dentro1, dentro2), l, l.ini.remove
         l.objini.item && l.objini.mudadono(dono, l.objini.objtot)
@@ -613,8 +616,7 @@ func morreu # Procedimentos quando morre
   ret corpo
 
 func pegamoedas # Pega todas as moedas do personagem arg0
-  int32 moedas
-  moedas = arg0.var.z_moedas_
+  int32 moedas = arg0.var.z_moedas_
 # Pega moedas
   var.z_moedas_ += moedas
   arg0.var.z_moedas = ""

@@ -1,0 +1,106 @@
+classe adm_mudamoedas
+herda comando_adm
+const m_ajuda = "-t\n\
+-s\n\
+Permite mudar temporariamente as moedas que personagens ganham ao matar\n\
+personagens não jogador que não recebem itens."
+uint16 contmin # Contagem de minutos
+inttempo contseg # Contagem de segundos
+
+func ini
+  misc:mudamoedas = 1
+
+func escr
+  arg0.sock.m_menu("menu_mudamoedas")
+
+func menu # Retorna o texto do menu
+  ret contagem == 0 ? "0 (Parado)" : txt(contmin)
+
+func passo # Alterando um número
+  se arg1 == "" || arg1 == "\b"
+    arg0.passo = este
+    arg0.msg("Entre com um número, Z cancela")
+    ret 1
+  senao arg1 != "z"
+    uint16 valor
+    valor = arg1
+    se arg1 != valor # Checa se é número
+      ret passo(arg0, "\b")
+    senao valor == 0
+      se contmin != 0
+        contmin = contseg = 1 # Parar a contagem
+        cmdlog(arg0, "mudamoedas", "100%")
+      fimse
+    senao
+      refvar avisaini = contmin == 0 && config:mudamoedas_msgini
+      contmin = valor, contseg = 600, acertamoedas
+      cmdlog(arg0, "mudamoedas", txt(config:mudamoedas_valor) + "% por " + valor + " min")
+      se avisaini
+        $mens.p(este)
+        $mens.mens = contmin
+        $mens.mmud1(config:mudamoedas_msgini)
+      fimse
+    fimse
+  fimse
+  ret passosair(arg0)
+
+func contseg_exec
+  contmin--, contseg = 600
+  se contmin == 0
+    contseg = 0, acertamoedas
+    $mens.p(este)
+    $mens.mens = "0"
+    $mens.mmud1(config:mudamoedas_msgfim)
+  senao config:mudamoedas_tempo && contmin % config:mudamoedas_tempo == 0
+    $mens.p(este)
+    $mens.mens = contmin
+    $mens.mmud1(config:mudamoedas_msgrep)
+  fimse
+
+func acertamoedas
+  misc:mudamoedas = contmin ? config:mudamoedas_valor / 100 : 1
+
+
+classe menu_mudamoedas
+herda comando_menu
+const titulo = "Mudar moedas"
+const colunas = 35
+#
+const nome1 = "Tempo restante"
+const info1 = "Por quanto tempo mudar as moedas, em minutos"
+const tipo1 = "adm_mudamoedas--"
+const clas1 = "adm_mudamoedas"
+const vari1 = "contmin"
+#
+const nome2 = "Moedas ganhas"
+const info2 = "Quando personagens não jogador morrem, as moedas são multiplicadas por\n\
+esse valor, em porcentagem\n\
+Só tem efeito quando estiver contando tempo (o tempo restante não for 0)"
+const tipo2 = "opc_numero--"
+const clas2 = "config"
+const vari2 = "mudamoedas_valor"
+const exec2 = "adm_mudamoedas:acertamoedas"
+#
+const nome3 = "Tempo entre mensagens"
+const info3 = "Tempo da mensagem que se repete, em minutos"
+const tipo3 = "opc_numero--"
+const clas3 = "config"
+const vari3 = "mudamoedas_tempo"
+#
+const nome4 = "Mensagem inicial"
+const info4 = "Quando a contagem de tempo começa; na mensagem, $m é quantos minutos restam"
+const tipo4 = "opc_linha--"
+const clas4 = "config"
+const vari4 = "mudamoedas_msgini"
+#
+const nome5 = "Mensagem que repete"
+const info5 = "Na mensagem, $m é quantos minutos restam"
+const tipo5 = "opc_linha--"
+const clas5 = "config"
+const vari5 = "mudamoedas_msgrep"
+#
+const nome6 = "Mensagem final"
+const info6 = "Quando a contagem de tempo termina"
+const tipo6 = "opc_linha--"
+const clas6 = "config"
+const vari6 = "mudamoedas_msgfim"

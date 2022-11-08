@@ -337,10 +337,11 @@ func salvar # Salva o jogo, desde que a senha não seja nula
   ret sav1.salvar("sav1/" + txt2(cnome) + ".sav", lista, tempo, senha)
 
 func dentrocasa # Retorna verdadeiro se o jogador está dentro da própria casa
-  ret txt(dono, 0, 2) != "s_" || !txt(dono, 2), nulo
+  refvar sala = args ? arg0 : dono
+  ret txt(sala, 0, 2) != "s_" || !txt(sala, 2), nulo
   indiceitem item
   refvar t = "cj " + txt2(cnome)
-  refvar d = txt(dono, 2)
+  refvar d = txt(sala, 2)
   epara item.ini(t), txtsub(item.txt, 0, 2) == t, item.depois
     ret txtproclin(item.obj.c_salas, d) >= 0, 1
   efim

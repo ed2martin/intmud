@@ -12,7 +12,7 @@
 /* Define to the return type of 'accept' */
 #undef ACCEPT_TYPE_RETURN
 
-/* Define to 1 if the `closedir' function returns void instead of `int'. */
+/* Define to 1 if the `closedir' function returns void instead of int. */
 #undef CLOSEDIR_VOID
 
 /* Define to 1 if you have the <dirent.h> header file, and it defines `DIR'.
@@ -37,9 +37,6 @@
 /* Define to 1 if you have the `socket' library (-lsocket). */
 #undef HAVE_LIBSOCKET
 
-/* Define to 1 if you have the <memory.h> header file. */
-#undef HAVE_MEMORY_H
-
 /* Define to 1 if you have the `memset' function. */
 #undef HAVE_MEMSET
 
@@ -51,6 +48,9 @@
 
 /* Define to 1 if you have the <stdint.h> header file. */
 #undef HAVE_STDINT_H
+
+/* Define to 1 if you have the <stdio.h> header file. */
+#undef HAVE_STDIO_H
 
 /* Define to 1 if you have the <stdlib.h> header file. */
 #undef HAVE_STDLIB_H
@@ -141,7 +141,9 @@
 /* Determine what socket length (socklen_t) data type is */
 #undef SOCK_SOCKLEN_T
 
-/* Define to 1 if you have the ANSI C header files. */
+/* Define to 1 if all of the C90 standard headers exist (not just the ones
+   required in a freestanding environment). This macro is provided for
+   backward compatibility; new code need not use it. */
 #undef STDC_HEADERS
 
 /* Version number of package */
@@ -150,7 +152,7 @@
 /* Define to empty if `const' does not conform to ANSI C. */
 #undef const
 
-/* Define to `int' if <sys/types.h> does not define. */
+/* Define as a signed integer type capable of holding a process identifier. */
 #undef pid_t
 
 /* Define to `unsigned int' if <sys/types.h> does not define. */

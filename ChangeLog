@@ -1,3 +1,111 @@
+* 7/11/2022 IntMUD 1.14c MUD baseado na revisão 588
+
+   No IntMUD:
+  1. Corrigido bug: o programa caía ao salvar arquivo via Prog (pelo
+     IntMUD) com uma const com 4096 caracteres ou mais
+  2. Corrigido bug: Os operadores de bit estavam funcionando com textos
+     quando o segundo operador é um texto ao invés do primeiro operador
+  3. Suporte ao openssl 1.1, além do openssl 1.0
+  4. Versão do programa mudou para 1.14c
+
+   No telnet.int:
+  1. Agora consegue reproduzir sons do MUD (protocolo MSP) com pacote de
+     sons via programa ffplay (faz parte do ffmpeg)
+  2. Ao pressionar a tela F8, ele abre a porta 1963 para conexões locais
+     (da mesma máquina) para Telnet e Papovox
+
+   No MUD:
+  1. Corrigido bug: Ao tentar entrar em item do tipo container com uma
+     sala na opção "3 Sala/item entrar" do menu "11 Dentro" do comando
+     Eitem, diz que o item está fechado
+  2. Corrigido bug: Comandos vender e avaliar estavam aceitando qualquer
+     item
+  3. Corrigido bug: PNJs, ao se movimentarem pelo MUD, não estavam
+     verificando a sala destino via função dirsala das salas
+  4. Corrigido bug em mensagens que vêm com "Tecle M para mais": se as
+     linhas forem bastante longas, pode não vir mensagem nenhuma
+  5. Corrigido bug no comando Doar: não estava doando
+  6. Corrigido bug quando há uma música contínua e um som em um menu
+     (ex. som da sala no comando Esala): não estava tocando música como
+     contínua
+  7. Corrigido bug no personagem teste033 da sala teste146: não estava
+     enviando mensagem para o jogador
+  8. Corrigido bug: PNJs estavam usando habilidades e magias não
+     agressivas nos oponentes durante a luta, ao invés de usar nos
+     aliados
+  9. Corrigido bug: Habilidades e magias que mudam pontos de vida, mana
+     e/ou movimento estavam diminuindo esses atributos quando eles
+     estiverem acima do máximo
+ 10. Corrigido bug: Ao entrar no MUD, não estava reproduzindo o som da
+     sala se o personagem do jogador já estava no MUD
+ 11. Sons da sala não são mais repassados para quem está monitorando o
+     jogador
+ 12. Ao assumir um PNJ ou voltar para o próprio personagem, agora
+     reproduz o som da sala se os dois personagem estiverem em salas
+     diferentes
+ 13. Criada opção "31 Som de noite" dos comandos Esala e Earea
+ 14. Novas opções no comando Ecasa para definir as chaves das casas
+     (nome, descrição, etc.)
+ 15. Se a fechadura de um item for uma casa (Comando Eitem, 11 Dentro,
+     11 Fechadura), a chave da casa tranca e destranca e quem tem a
+     chave da casa consegue entrar sem precisar destrancar
+ 16. Mensagens do menu "11 Dentro" do comando Eitem foram para o agora
+     menu "23 Sons e mensagens"
+ 17. Criada opção "5 Entrou perso" do menu "23 Sons e mensagens" do
+     comando Eitem
+ 18. Ao entrar nos portais das salas teste159 e teste160, agora vem a
+     mensagem "Você atravessa o portal"
+ 19. Ao teclar ADM SOM, agora também é explicado as regras para os nomes
+     dos arquivos de som
+ 20. Criadas opções Abriu, Fechou, Trancou e Destrancou para o
+     personagem e para os outros no menu "23 Sons e mensagens" do
+     comando Eitem
+ 21. Criados menus "16 Msg andar" e "17 Msg abrir fechar" no comando
+     Esai
+ 22. No comando Econfig, menu "18 Andar pelo jogo", cada saída possui a
+     opção "1 Nome da porta"
+ 23. Criada sala teste186, com frases personalizadas para abrir, fechar,
+     trancar, destrancar e atravessar
+ 24. Função mudaporta das salas mudou e foram criadas as funções
+     mudaporta0, mudaporta2 e mudaporta3, documentadas no arquivo
+     mud/doc/07-salas.txt
+ 25. Comando "config +sala" agora só mostra as salas que também são
+     visíveis pelo comando Lsala
+ 26. Criada opção Config +saidas2, para mostrar as saídas separadas por
+     vírgulas
+ 27. Função txtsai das salas agora retorna somente as saídas, separadas
+     por espaço
+ 28. Habilidades e magias de identificar agora informam se o jogador não
+     perde o item ao entrar em uma sala que mata
+ 29. Nos comandos Ehab, Emag e Etec, menu "16 Ataque", agora existem
+     mais opções nas variáveis Ataque1 e Ataque2
+ 30. No comando Econfig, menu "6 Herda" submenu "4 Ataques", é possível
+     definir os valores padrão da variável Ataque2
+ 31. Criados comandos Ditem, Dmag1, Dmag2 e Dmag3 para calcular danos
+     causados pelos comandos Item, Comer, Beber e Recitar
+ 32. Apagado comando Dtec porque agora existe o comando Ditem
+ 33. Argumentos da função execgolpe, no arquivo cmd/ataque.int, mudaram,
+     vide arquivo doc/11-hab.txt
+ 34. Em qualquer mensagem, \dv é uma vírgula que desaparece se não for
+     seguida de espaço
+ 35. Personagem teste007, da sala teste031, agora se chama "João, o
+     mercenário" (algumas vezes com uma vírgula depois do nome)
+ 36. Opções 3 a 10 do comando Eperso (palavras chave, descrições e sexo)
+     mudaram
+ 37. Mensagens na sala de desconectado, reconectado e jogador entrando e
+     saindo, no comando Econfig, 14 Mensagens, 8 Personagem entrando
+ 38. Posições secundárias ao vestir ou empunhar um item (comando Eitem)
+ 39. Conhecimento necessário (habilidades, magias e idiomas) para poder
+     vestir ou empunhar um item (comando Eitem)
+ 40. O editor de textos dos menus agora aceita 16000 caracteres ao invés
+     de 2000
+ 41. Adicionado log do comando Autoapagar no menu "13 Arquivos de log"
+     do comando Econfig
+ 42. Criada opção "24 Sala inicial" no comando Etipo
+ 43. Criado comando Mudamoedas
+ 44. Função dentrocasa dos personagens agora pode ter um argumento, a
+     sala (vide mud/doc/08-perso.txt)
+
 * 13/3/2022 IntMUD 1.14a MUD baseado na revisão 568
 
    No MUD:

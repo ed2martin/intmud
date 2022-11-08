@@ -186,7 +186,7 @@ void cvs_MD5Final (unsigned char digest[16], struct cvs_MD5Context *ctx)
  */
 void cvs_MD5Transform (cvs_uint32 buf[4], const unsigned char inraw[64])
 {
-        register cvs_uint32 a, b, c, d;
+        cvs_uint32 a, b, c, d;
         cvs_uint32 in[16];
         int i;
 
