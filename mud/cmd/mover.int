@@ -333,7 +333,7 @@ func fugirdir # Obtém direção para onde pode fugir
   txt100 t
   prog p
   epara p.inifunctudo(dono, "dir_"), p.lin, p.depois
-    continuar !arg0.cabedentro(dono.[p.texto](arg0))
+    continuar !arg0.cabedentro(dono.dirsala(txt(p.texto, 4), arg0))
     refvar y = txt(p.texto, 4)
     !dono.fugir_[y](arg0) && int(dono.porta_[y]) < 2 && (t += y + " ")
   efim
