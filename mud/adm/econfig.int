@@ -160,6 +160,8 @@ const info11 = "Somente ao ativar o MUD; veja também o comando de admin COM"
 const tipo11 = "opc_com--"
 const vari11 = "inicom10"
 #
+const titu12 = " * Via telnet ou HTTP"
+#
 const nome12 = "Limite de conexões por IP"
 const tipo12 = "opc_numero--"
 const vari12 = "servusr"
@@ -170,20 +172,36 @@ const tipo13 = "opc_numero--"
 const vari13 = "servtempo"
 #
 const nome14 = "Caracteres de uma vez"
-const info14 = "Quantos caracteres cada jogador pode receber de uma vez do MUD.\n\
-Passado esse limite, jogadores começarão a perder mensagens."
+const info14 = "Quantos caracteres cada jogador pode receber de uma vez do MUD\n\
+Passado esse limite, jogadores começarão a perder mensagens\n\
+É também o tamanho máximo de uma mensagem"
 const tipo14 = "opc_numero--"
 const vari14 = "banda1"
-const exec14 = "admbanda:atualiza"
-const extr14 = "100 10000"
+const extr14 = "100 100000"
 #
 const nome15 = "Caracteres por segundo"
-const info15 = "Quantos caracteres por segundo cada jogador pode receber do MUD.\n\
-Passado esse limite, jogadores começarão a perder mensagens."
+const info15 = "Quantos caracteres por segundo cada jogador pode receber do MUD\n\
+Passado esse limite, jogadores começarão a perder mensagens"
 const tipo15 = "opc_numero--"
 const vari15 = "banda2"
-const exec15 = "admbanda:atualiza"
-const extr15 = "100 10000"
+const extr15 = "100 100000"
+#
+const titu16 = " * Via Bot"
+#
+const nome16 = "Caracteres de uma vez"
+const info16 = "Quantos caracteres cada jogador pode receber de uma vez do MUD\n\
+Passado esse limite, jogadores começarão a perder mensagens\n\
+É também o tamanho máximo de uma mensagem"
+const tipo16 = "opc_numero--"
+const vari16 = "bandabot1"
+const extr16 = "100 100000"
+#
+const nome17 = "Caracteres por segundo"
+const info17 = "Quantos caracteres por segundo cada jogador pode receber do MUD\n\
+Passado esse limite, jogadores começarão a perder mensagens"
+const tipo17 = "opc_numero--"
+const vari17 = "bandabot2"
+const extr17 = "100 100000"
 
 
 classe menu_econfig_salvar
@@ -1461,22 +1479,6 @@ func atu_exec # Atualiza a lista de nomes: a variável nomes
   epara p = t.ini, p, p.depois
     p.texto && (nomes.n_[txtnome(p.texto)] = 1)
   efim
-
-
-classe admbanda
-# Contém as variáveis para controle de banda dos jogadores
-# Objetivo: limitar as mensagens enviadas para os jogadores
-comum real b1 # Mesmo que config:banda1, só que em décimos de segundo
-comum real b2 # Mesmo que config:banda2, só que a cada décimo de segundo
-intexec atu
-const iniclasse = !$[arg0] && criar(arg0)
-const ini = atualiza
-
-func atualiza # Atualiza banda1 e banda2
-  b2 = config:banda2
-  b2 < 100 && (b2 = 100)
-  b1 = config:banda1 / b2
-  b1 < 1 && (b1 = 1)
 
 
 classe admtipo

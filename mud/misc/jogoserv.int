@@ -69,14 +69,23 @@ ref j_servip # Objeto jogoservip que possui esse objeto
 int8 infotelnet # 0 se Papovox (CRLF no final), 1 se Telnet (CRLF no começo), 2 se SSL
 txt1 j_t_crlf # Para controlar quando enviar CRLF no início
 const j_t_prompt = infotelnet ? j_conec.msg(j_t_crlf), j_t_crlf = ""
-const msgsock = j_conec.msg(infotelnet ? j_t_crlf + arg0 : arg0 + "\n"), j_t_crlf = "\n"
-const msgsala = j_conec.msg(infotelnet ? j_t_crlf + arg0 : arg0 + "\n"), j_t_crlf = "\n"
+textotxt j_enviar # Mensagens que devem ser enviadas
+intdec j_banda1 # Para controle de banda das mensagens para o jogador
+real j_banda2 # Para controle de banda das mensagens para o jogador
 const info = (infotelnet ? "t " : "p ") + j_conec.ip
 
-func msgtodos
-  ref r
-  epara r = $jogoserv, r, r = objdepois(r)
-    r.j_conec.msg(arg0 + "\n")
+func msgsock # Envia mensagem para o usuário
+  ret inttotal(arg0) > config:banda1 || j_enviar.bytes > config:banda1, nulo
+  ret j_banda1 > 1 + 10 * config:banda1 / config:banda2, nulo
+  j_banda1 += intdiv(j_banda2 += 10 * inttotal(arg0) / config:banda2)
+  j_banda2 -= intdiv(j_banda2)
+  j_enviar.addfim(arg0), j_conec_env
+
+func j_conec_env # Enviou mensagem
+  enquanto j_enviar.linhas
+    refvar t = j_enviar.ini.texto(0, 1000)
+    sair !j_conec.msg(infotelnet ? j_t_crlf + t : t + "\n")
+    j_enviar.remove, j_t_crlf = "\n"
   efim
 
 func salaobj

@@ -723,20 +723,23 @@ inttempo j_pong_tempo
 txt40 j_ping_txt # Mensagem enviada no ping
 txt250 j_pong_txt # Mensagem pong que deve enviar
 textotxt j_recebeu_txt # Parte da mensagem recebida
-const msgsala = msgsock(arg0)
+textotxt j_enviar # Mensagens que devem ser enviadas
+intdec j_banda1 # Para controle de banda das mensagens para o jogador
+real j_banda2 # Para controle de banda das mensagens para o jogador
 const info = "h " + j_conec.ip
 
-func msgsock
-  textotxt t
-  t.addfim(txtconv(arg0, "tu"))
-  enquanto t.linhas
-    j_conec.msg(txtconv("+" + txtvis(t.remove), "th"), 129)
-  efim
+func msgsock # Envia mensagem para o usuário
+  ret inttotal(arg0) > config:banda1 || j_enviar.bytes > config:banda1, nulo
+  ret j_banda1 > 1 + 10 * config:banda1 / config:banda2, nulo
+  j_banda1 += intdiv(j_banda2 += 10 * inttotal(arg0) / config:banda2)
+  j_banda2 -= intdiv(j_banda2)
+  j_enviar.addfim(arg0), j_conec_env
 
-func msgtodos
-  ref r
-  epara r = $jogohttp_usr, r, r = objdepois(r)
-    r.msgsock(arg0)
+func j_conec_env # Enviou mensagem
+  enquanto j_enviar.linhas
+    refvar t = j_enviar.ini.texto(0, 1000)
+    sair !j_conec.msg(txtconv("+" + txtvis(txtconv(t, "tu")), "th"), 129)
+    j_enviar.remove
   efim
 
 func msgprompt

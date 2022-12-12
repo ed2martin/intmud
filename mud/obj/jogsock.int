@@ -6,9 +6,7 @@ classe jogsock
 # info = tipo (l=local, t=telnet, p=papovox, b=bot) + espaço + extra
 # infotelnet = 1 (verdadeiro) se estiver conectado via Telnet
 # sendo que extra pode ser o endereço IP ou o nome da sala
-# msgsock(texto) = envia mensagem para jogador
-# msgsala(texto) = envia mensagem para todos da sala
-# msgtodos(texto) = envia mensagem para todos os jogadores
+# msgsock(texto) = envia mensagem para o jogador
 # msgprompt = executado quando acabou de enviar as mensagens
 # recebe(texto) = executado sempre que receber mensagem do jogador
 # salaobj(listaobj) = adicionar na listaobj com os objetos na mesma sala
@@ -25,8 +23,6 @@ txt512 ultimocom # Último comando digitado pelo usuário
 textotxt comandos # Cada 2 linhas = comando em espera para ser processado + permissões
 intexec execprompt # Para enviar mensagens do prompt
 intinc tempojogo # Tempo da sessão
-intdec msgtot1 # Usado no controle de banda das mensagens para o jogador
-real msgtot2 # Usado no controle de banda das mensagens para o jogador
 txt100 msgsom_t # Nome do último som enviado ao jogador
 inttempo tempofim1 # Para sair do jogo após algum tempo sem digitar nada
 int8 tempofim2 # Para sair do jogo após algum tempo sem digitar nada
@@ -354,10 +350,6 @@ func msg # Envia mensagem
   senao
     execprompt = 1
   fimse
-# Controle de banda
-  ret msgtot1 >= admbanda:b1, nulo
-  msgtot1 += intdiv(msgtot2 += inttotal(arg0) / admbanda:b2)
-  msgtot2 -= intdiv(msgtot2)
 # Sons
   textotxt t
   t.addfim(arg0)
@@ -405,10 +397,6 @@ func msgsom # Envia mensagem
       i.obj.msgsom(arg0, 1)
     efim
   fimse
-# Controle de banda
-  ret msgtot1 >= admbanda:b1, nulo
-  msgtot1 += intdiv(msgtot2 += inttotal(arg0) / admbanda:b2)
-  msgtot2 -= intdiv(msgtot2)
 # Som
   txt200 lin
   epara lin = arg0, txt1(lin), lin = txt2(lin)

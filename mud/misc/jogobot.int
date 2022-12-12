@@ -175,6 +175,10 @@ indiceobj j_nome
 listaitem j_sala
 txt30 j_ip
 ref j_jogobot
+textotxt j_enviar # Mensagens que devem ser enviadas
+inttempo j_msgtempo # Para enviar mensagens pendentes
+intdec j_banda1 # Para controle de banda das mensagens para o jogador
+real j_banda2 # Para controle de banda das mensagens para o jogador
 const info = "b " + j_ip + txt2(j_nome)
 const salaobj = arg0.addfim(j_sala.objlista.usr)
 
@@ -204,22 +208,19 @@ func novonome # Mudou de apelido
   j_nome = arg0
 
 func msgsock # Envia mensagem para o usuário
-  j_jogobot.tempo = 3600
-  textotxt t1
-  t1.addfim(arg0)
-  enquanto t1.linhas
-    refvar m = t1.remove
-    j_jogobot.conec.msg(txtsub(j_nome, 2) + " " + m + "\n")
-  efim
+  ret inttotal(arg0) > config:bandabot1 || j_enviar.bytes > config:bandabot1, nulo
+  ret j_banda1 > 1 + 10 * config:bandabot1 / config:bandabot2, nulo
+  j_banda1 += intdiv(j_banda2 += 10 * inttotal(arg0) / config:bandabot2)
+  j_banda2 -= intdiv(j_banda2)
+  j_enviar.addfim(arg0), j_msgtempo_exec
 
-func msgsala # Envia mensagem para todos da sala
-  j_sala.objlista.msg(arg0)
-
-func msgtodos # Envia mensagem para todos os jogadores
-  ref r
-  epara r = $jogobot_sala, r, r = objdepois(r)
-    r.msg(arg0)
+func j_msgtempo_exec # Tenta continuar enviando mensagem
+  enquanto j_enviar.linhas
+    refvar t = j_enviar.ini.texto(0, 1000)
+    sair !j_jogobot.conec.msg(txtsub(j_nome, 2) + " " + t + "\n")
+    j_enviar.remove, j_jogobot.tempo = 3600
   efim
+  j_enviar.linhas && (j_msgtempo = 5)
 
 
 classe jogobot2

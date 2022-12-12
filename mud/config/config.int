@@ -4,7 +4,7 @@ classe config
 # A variável versão é usada na classe atualiza, arquivo mud.int,
 # para atualizar os arquivos mud-a-*.int e mud-b-*.int, porque podem
 # haver mudanças nesses arquivos em versões mais recentes
-const versao = 596 # Para atualizar diretórios areas e config
+const versao = 597 # Para atualizar diretórios areas e config
 #
 # Jogar localmente (na janela do IntMUD)? 0=não, 1=sim
 const modolocal = 1 # Jogar localmente: Sim
@@ -36,15 +36,18 @@ const servusr = 3
 # Tempo entre duas conexões do mesmo endereço IP, em décimos de segundo
 const servtempo = 80
 #
-# Caracteres de uma vez
-# Quantos caracteres cada jogador pode receber de uma vez do MUD.
-# Passado esse limite, jogadores começarão a perder mensagens.
+# Caracteres de uma vez para Telnet/HTTP e para bot
+# Quantos caracteres cada jogador pode receber de uma vez do MUD
+# Passado esse limite, jogadores começarão a perder mensagens
+# É também o tamanho máximo de uma mensagem para o jogador
 const banda1 = 4000
+const bandabot1 = 4000
 #
-# Caracteres por segundo
-# Quantos caracteres por segundo cada jogador pode receber do MUD.
-# Passado esse limite, jogadores começarão a perder mensagens.
+# Caracteres por segundo para Telnet/HTTP e para bot
+# Quantos caracteres por segundo cada jogador pode receber do MUD
+# Passado esse limite, jogadores começarão a perder mensagens
 const banda2 = 500
+const bandabot2 = 500
 #
 # Senha para se tornar administrador, ou "" se não puder
 const senhaadm = "x2"
