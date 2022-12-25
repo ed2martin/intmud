@@ -119,6 +119,7 @@ func escr1
       p.criar(arg0.dono, "const dir_" + dir + "=$s_" + sala)
       p.criar("s_" + sala, "const dir_" + misc:d2[dir] + "=$" + arg0.dono)
       arg0.msg("\bSaída completa criada: " + dir + " para " + sala)
+      criar("admmudou", "s_" + sala)
     senao item
       p.criar(arg0.dono, "const dir_" + dir + "=$i_" + item)
       arg0.msg("\bSaída criada: " + dir + " para item " + item)

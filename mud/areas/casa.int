@@ -1,6 +1,7 @@
 classe a_casa
 herda area
 const a_nome = "Dentro da casa"
+const a_tempo = 1
 #
 # Mapa da casa:
 #
@@ -19,15 +20,14 @@ const a_nome = "Dentro da casa"
 # .                       |
 # .                     baixo
 const a_reset = 2
-const a_tempo = 1
 
 
 classe b_casa
 herda sala
 const s_area = "casa"
-const s_terreno = 0 # Terreno: 0 Dentro, lugar fechado - 1mv
-const s_luta = 1
 const s_item = 1
+const s_luta = 1
+const s_terreno = 0 # Terreno: 0 Dentro, lugar fechado - 1mv
 
 
 classe i_casa001
@@ -36,10 +36,10 @@ const nome = "escada"
 const descnome = "uma escada"
 const descver = "Pode-se abrí-la teclando ABRIR ESCADA e fechar com FECHAR ESCADA."
 const msexo = 0
+const i_aberto = 5 # Para os comandos abrir e fechar não checarem se a escada está aberta
 const pesoobj = 10200
 const eveste = 1 # Eventos item: Sim
 const visivel = arg0.posicao < 7 || arg0.var.d_escada_
-const i_aberto = 5 # Para os comandos abrir e fechar não checarem se a escada está aberta
 
 func descpos
   se arg0.var.d_escada_
@@ -91,12 +91,13 @@ classe i_casa003
 herda comum_itemperso
 const nome = "desgastada estante"
 const descnome = "uma desgastada estante"
-const pesoobj = 900000
-const mantersala = 1 # Mantém na sala: Sim
+const descpos = "Uma desgastada estante guarda alguns objetos aqui."
 const i_abertoini = 1 # Container: 1 Sempre aberto
+const pesoobj = 900000
+const objmax = 20
 const volobj = 10000
 const volmax = 6000
-const objmax = 20
+const mantersala = 1 # Mantém na sala: Sim
 const eveste = 1 # Receber eventos do próprio objeto
 intexec acertar # Se deve acertar os itens dentro
 const cmd_pegouobj = acertar = 1
@@ -114,8 +115,6 @@ func acertar_exec
   criar("i_casa006", este, 0) # Esfera branca
   criar("i_casa007", este, 0) # Boneca preta
   criar("i_casa005", este, 0) # Esfera preta
-
-const descpos = "Uma desgastada estante guarda alguns objetos aqui."
 
 
 classe i_casa004
@@ -216,28 +215,28 @@ classe i_casa008
 herda comum_itemgrupo
 const nome = "bolsa"
 const descnome = "uma bolsa"
-const pesoobj = 1200
 const descpos = "Uma bolsa está jogada aqui."
 const descver = "É uma pequena bolsa de couro. Há um pequeno papel preso nela, escrito\n\
 a palavra Beatriz."
+const pesoobj = 1200
 
 
 classe i_casa009
 herda comum_itemgrupo
 const nome = "bolsa"
 const descnome = "uma bolsa"
-const pesoobj = 1200
 const descpos = "Uma bolsa está jogada aqui."
 const descver = "É uma pequena bolsa de couro. Há um pequeno papel preso nela, escrito\n\
 a palavra Ivone."
+const pesoobj = 1200
 
 
 classe i_casa010
 herda comum_itemgrupo
 const nome = "chave"
 const descnome = "uma chave"
-const pesoobj = 100
 const i_chave = "casa1"
+const pesoobj = 100
 const tipoitem = "1"
 
 
@@ -258,14 +257,13 @@ const nome = "boneco de papel"
 const descnome = "um boneco de papel"
 const descver = "Parece ser muito frágil, pois é feito de papel."
 const descsala8 = "Um boneco de papel está se mexendo."
-const msexo = 1
 const sexoini = 2
+const msexo = 1
 const p_agressivo = arg0.pnivel <= 4 ? 2 : 1 # Agressivo para jogadores até nível 4
 
 func recalc1_auto # Altera atributos do personagem
 # Não alterar; função criada automaticamente
   pvidamax += -20
-
 
 
 classe p_casa002
@@ -274,8 +272,8 @@ const nome = "boneco de papel"
 const descnome = "um boneco de papel"
 const descver = "Parece ser muito frágil, pois é feito de papel."
 const descsala8 = "Um boneco de papel está se mexendo."
-const msexo = 1
 const sexoini = 2
+const msexo = 1
 ref alvo # Quem esse personagem deve atacar
 
 func cmd_ini # Personagem criado: anota o alvo
@@ -302,8 +300,8 @@ const nome = "boneco de papelão"
 const descnome = "um boneco de papelão"
 const descver = "Parece frágil, pois é feito de papelão."
 const descsala8 = "Um boneco de papelão está se mexendo."
-const msexo = 1
 const sexoini = 2
+const msexo = 1
 const p_exp = 0
 const eveste = 1 # Receber eventos do próprio objeto
 ref alvo # Quem esse personagem deve atacar
@@ -342,12 +340,12 @@ classe p_casa004
 herda comum_persobat
 const nome = "menina"
 const descnome = "uma menina"
-const descsala8 = "Uma menina está sentada aqui, dobrando papéis."
 const descver = "Debaixo do braço carrega diversas artes feitas dobrando-se papéis."
+const descsala8 = "Uma menina está sentada aqui, dobrando papéis."
 const sexoini = 0
+const inivar = "e_apagar=50"
 const eveste = 1 # Receber eventos do próprio objeto
 const evsala = 1 # Receber eventos do dono se o dono for sala
-const inivar = "e_apagar=50"
 inttempo tempo
 
 func cmd_mudadono
@@ -456,8 +454,8 @@ herda comum_persobat
 const nome = "bife"
 const descnome = "um bife"
 const descsala8 = "Um bife está flutuando aqui."
-const msexo = 1
 const sexoini = 2
+const msexo = 1
 const p_agressivo = 1 # Agressivo: 1 Se atacarem
 const p_exp = arg0.pnivel < 10 ? 100 # Dá experiência até o nível 10
 const p_morreu1 = "Um bife caiu no chão, imóvel."
@@ -474,14 +472,14 @@ herda comum_persobat
 const nome = "alface"
 const descnome = "um pé de alface"
 const descsala8 = "Um pé de alface está flutuando aqui."
-const msexo = 1
 const sexoini = 2
-const p_mover = 1
+const msexo = 1
 const p_agressivo = 1 # Agressivo: 1 Se atacarem
-const inivar = "h_arremessar=2"
-const p_morreu1 = "Alface se quebrou em folhas."
-const eveste = 1 # Receber eventos do próprio objeto
 const p_exp = arg0.pnivel < 10 ? 100 # Dá experiência até o nível 10
+const p_morreu1 = "Alface se quebrou em folhas."
+const p_mover = 1
+const inivar = "h_arremessar=2"
+const eveste = 1 # Receber eventos do próprio objeto
 
 func cmd_morreu
   criar("p_casa012", dono, nivel - 1)
@@ -493,8 +491,8 @@ herda comum_persobat
 const nome = "banana"
 const descnome = "uma banana"
 const descsala8 = "Uma banana está flutuando aqui."
-const msexo = 0
 const sexoini = 2
+const msexo = 0
 const p_agressivo = 1 # Agressivo: 1 Se atacarem
 const p_exp = arg0.pnivel < 10 ? 100 # Dá experiência até o nível 10
 const p_morreu1 = "$P se partiu."
@@ -507,8 +505,8 @@ herda comum_persobat
 const nome = "pião"
 const descnome = "um pião"
 const descsala8 = "Um pião está girando aqui."
-const msexo = 1
 const sexoini = 2
+const msexo = 1
 const p_agressivo = 1 # Agressivo: 1 Se atacarem
 const p_exp = arg0.pnivel < 10 ? 100 # Dá experiência até o nível 10
 const p_morreu1 = "$P virou pó de madeira."
@@ -522,11 +520,11 @@ const nome = "boneca"
 const descnome = "uma boneca"
 const descsala8 = "Uma boneca está parada aqui."
 const sexoini = 0
-const p_mover = 1
 const p_agressivo = 1 # Agressivo: 1 Se atacarem
-const inivar = "h_arremessar=2"
-const p_morreu1 = "$P foi vencida e desapareceu."
 const p_exp = arg0.pnivel < 10 ? 100 # Dá experiência até o nível 10
+const p_morreu1 = "$P foi vencida e desapareceu."
+const p_mover = 1
+const inivar = "h_arremessar=2"
 
 
 classe p_casa012
@@ -535,15 +533,15 @@ const nome = "folha de alface"
 const ident = "folha alface"
 const descnome = "uma folha de alface"
 const descsala8 = "Uma folha de alface balança no ar."
-const msexo = 0
 const sexoini = 2
-const ident = "folha alface"
+const msexo = 0
 const pesoobj = 50
-const p_mover = 1
 const p_agressivo = 2 # Agressivo: 2 Sim
-const p_morreu1 = "Uma folha de alface rasgou em vários pedaços."
-const inivar = "h_arremessar=2,e_apagar=100"
 const p_exp = arg0.pnivel < 10 ? 100 # Dá experiência até o nível 10
+const p_morreu1 = "Uma folha de alface rasgou em vários pedaços."
+const p_mover = 1
+const inivar = "h_arremessar=2,e_apagar=100"
+const ident = "folha alface"
 
 
 classe p_casa013
@@ -551,13 +549,13 @@ herda comum_persobat
 const nome = "cachorro"
 const descnome = "um cachorro"
 const descsala8 = "Um cachorro faminto está à procura de comida."
-const msexo = 1
 const sexoini = 2
+const msexo = 1
 const pesoobj = 40000
 const volobj = 100
-const p_morreu1 = "Um cachorro dá seu último suspiro e cai, morto."
-const p_agressivo = dono == $s_casa035 ? 2 : 1 # Agressivo só no saguão
 const nivel = 20
+const p_agressivo = dono == $s_casa035 ? 2 : 1 # Agressivo só no saguão
+const p_morreu1 = "Um cachorro dá seu último suspiro e cai, morto."
 const inivar = "h_morder=5"
 const eveste = 1 # Receber eventos do próprio objeto
 inttempo andar # Para fazer o cachorro andar
@@ -592,15 +590,15 @@ func recalc1_auto # Altera atributos do personagem
 
 classe p_casa014
 herda comum_persobat
-const pesoobj = 45000
 const nome = "zumbi"
 const descnome = "um zumbi" + nomealvo
 const descsala8 = "Um fétido zumbi vaga sem rumo por aqui."
-const msexo = 1
 const sexoini = 2
+const msexo = 1
+const pesoobj = 45000
 const volobj = 2000
-const p_mover = 2 # Movimentar: 2 Qualquer lugar
 const p_morreu1 = "$P se partiu em vários pedaços."
+const p_mover = 2 # Movimentar: 2 Qualquer lugar
 const p_movervel = 250
 const inivar = "h_morder=6"
 const eveste = 1 # Receber eventos do próprio objeto
@@ -807,8 +805,8 @@ const s_titulo = "Passagem"
 const s_desc = "O chão é todo de madeira, mas o que mais se destaca são as paredes e\n\
 o teto. Foram esculpidos de forma que parecesse uma caverna.\n\
 Há um antigo [quadro] preso na parede."
-const dir_s = $s_casa002
 const dir_n = $s_casa004
+const dir_s = $s_casa002
 const dir_l = $s_casa006
 const ver_quadro = "Quadro\n\
 Você vê o desenho de uma antiga mansão, num belo dia de sol.\n\
@@ -862,8 +860,8 @@ const s_desc = "Você está dentro de um jogo esquisito. Você é uma simples marion
 comandada por uma pessoa que mais parece um gigante daqui de dentro.\n\
 Há uma saída para cima, porém fica lacrada quando há mais de um boneco."
 const s_luta = 2 # Permite luta entre jogadores
-const dir_c = $s_casa004
 const eveste = 1 # Receber eventos do próprio objeto
+const dir_c = $s_casa004
 
 func cmd_mover
   se arg2 == "c"
@@ -883,8 +881,8 @@ herda b_casa
 const s_titulo = "Quarto"
 const s_desc = "Um pequeno quarto de empregada, agora usado como quarto de despejo.\n\
 No entanto, ainda há o que restou de uma cama de casal."
-const dir_o = $s_casa003
 const dir_l = $s_casa007
+const dir_o = $s_casa003
 
 
 classe s_casa007
@@ -905,8 +903,8 @@ Um grande lustre ilumina o local. Nota-se uma pequena saída ao sul."
 const eveste = 1 # Receber eventos do próprio objeto
 const dir_s = $s_casa009
 const dir_l = este
-const fugir_l = 1 # Sem fuga: Sim
 const dir_o = $s_casa002
+const fugir_l = 1 # Sem fuga: Sim
 
 func cmd_mover
   se arg2 == "l"
@@ -927,9 +925,9 @@ velas ilumina o lugar. É impressionante como simples velas produzem tanta\n\
 luz. As paredes, no entanto, são brancas, praticamente sem decoração.\n\
 Ao sul, há um arco que dá acesso a um patamar."
 const dir_n = $s_casa008
-const dir_o = $s_casa010
-const dir_l = $s_casa011
 const dir_s = $s_casa017
+const dir_l = $s_casa011
+const dir_o = $s_casa010
 
 
 classe s_casa010
@@ -944,8 +942,10 @@ const dir_l = $s_casa009
 classe s_casa011
 herda b_casa
 const s_titulo = "Quarto"
+const eveste = 1 # Receber eventos do próprio objeto
 const dir_o = $s_casa009
 const dir_c = $s_casa012
+const s_reset = "S 100 casa001 0 s"
 # const dir_c = arg0.var.d_escada_ ? $s_casa012
 const s_desc0 = "Há um tapete persa no chão bastante gasto e sujo. Alguém deixou a cama\n\
 de baixo do beliche desarrumada. Há um alçapão no teto, sabe-se lá o que\n\
@@ -954,7 +954,6 @@ const s_desc1 = " Mas mesmo subindo em cima do beliche, ainda fica um pouco alto
 const s_desc2 = "\n\
 Tem também alguma coisa em baixo do beliche, mas em pé não dá para ver\n\
 o que é."
-const eveste = 1 # Receber eventos do próprio objeto
 
 func s_desc
   se arg0.var.d_escada_ # Escada aberta
@@ -971,8 +970,6 @@ func cmd_mover
     ret 1
   fimse
 
-const s_reset = "S 100 casa001 0 s"
-
 func s_reset1 # Realiza o reset
 # Não alterar; função criada automaticamente a partir de s_reset
   !dentro1.objini("i_casa001") && criar("i_casa001", este, 0)
@@ -984,8 +981,8 @@ const s_titulo = "Sótão"
 const s_desc = "Um lugar bastante apertado, entre o teto e o telhado. Como pode-se\n\
 imaginar, está bastante sujo, pois a casa é antiga. Há aqui uma pequena\n\
 janela para leste, cuja vista dá para o telhado."
-const dir_b = $s_casa011
 const dir_l = $s_casa013
+const dir_b = $s_casa011
 
 
 classe s_casa013
@@ -993,8 +990,8 @@ herda b_casa
 const s_titulo = "No telhado"
 const s_desc = "Você anda com cuidado, pois as telhas são de cerâmica, e já estão bastante\n\
 gastas. Aqui é bastante alto, e o vento bate forte."
-const dir_o = $s_casa012
 const dir_s = $s_casa014
+const dir_o = $s_casa012
 
 
 classe s_casa014
@@ -1003,11 +1000,11 @@ const s_titulo = "Laje"
 const s_desc = "Aqui o chão é firme, e você consegue andar com segurança. Toda essa\n\
 área foi impermeabilizada. Nota-se um revestimento preto sobre o chão.\n\
 Talvez quisessem fazer um jardim aqui. Ao norte, começa o telhado."
-const dir_n = $s_casa013
-const dir_o = $s_casa015
-const dir_l = $s_casa016
-const s_reset = "P 100 casa004 10 10 1"
 const s_pnj = 0
+const dir_n = $s_casa013
+const dir_l = $s_casa016
+const dir_o = $s_casa015
+const s_reset = "P 100 casa004 10 10 1"
 
 func s_reset1 # Realiza o reset
 # Não alterar; função criada automaticamente a partir de s_reset
@@ -1030,8 +1027,8 @@ const s_titulo = "Laje"
 const s_desc = "Essa parte da laje bem que poderia ser um jardim. Há um pequeno muro à leste,\n\
 que se estende ao sul. Não é possível caminhar no telhado ao norte,\n\
 devido ao forte vento."
-const dir_o = $s_casa014
 const s_naoresg = 1 # Não permite resgatar jogador
+const dir_o = $s_casa014
 
 func cmd_salaperso # Personagem chegou
   arg0.var.j_salvar = ""
@@ -1057,24 +1054,24 @@ const s_desc = "Este espaço faz parte de um grande saguão, que continua ao sul. 
 balaústre de madeira nessa direção separa você de uma queda de seis\n\
 metros. À leste e oeste nota-se duas escadas. Um tapete comprido cobre\n\
 as escadas e este patamar. Ao norte passando por um arco, há um corredor."
-const dir_n = $s_casa009
-const dir_o = $s_casa031
-const dir_l = $s_casa032
 const s_pnj = 0
+const dir_n = $s_casa009
+const dir_l = $s_casa032
+const dir_o = $s_casa031
 
 
 classe s_casa018
 herda b_casa
 const s_titulo = "Patamar intermediário"
-const dir_n = $s_casa020
 const s_desc = "Você está exatamente na metade da escada, que começa ao sul e termina\n\
 à leste. Há um tapete decorando toda a escada. Balaustres de madeira\n\
 impede que se caia para o andar de baixo. Este patamar faz parte de um\n\
 grande saguão, que continua ao sul e à leste."
-const dir_l = $s_casa031
-const dir_s = $s_casa034
-const eveste = 1 # Receber eventos do próprio objeto
 const s_pnj = 1 # PNJs na sala
+const eveste = 1 # Receber eventos do próprio objeto
+const dir_n = $s_casa020
+const dir_s = $s_casa034
+const dir_l = $s_casa031
 
 func cmd_mover
   se arg2 == "s" && arg0.pnivel < 11
@@ -1090,11 +1087,11 @@ const s_desc = "Você está exatamente na metade da escada, que começa ao sul e te
 à oeste. Há um tapete decorando toda a escada. Balaustres de madeira\n\
 impede que se caia para o andar de baixo. Este patamar faz parte de um\n\
 grande saguão, que continua ao sul e à oeste."
-const dir_n = $s_casa027
-const dir_o = $s_casa032
-const dir_s = $s_casa033
-const eveste = 1 # Receber eventos do próprio objeto
 const s_pnj = 1 # PNJs na sala
+const eveste = 1 # Receber eventos do próprio objeto
+const dir_n = $s_casa027
+const dir_s = $s_casa033
+const dir_o = $s_casa032
 
 func cmd_mover
   se arg2 == "s" && arg0.pnivel < 11
@@ -1109,12 +1106,12 @@ const s_titulo = "Corredor"
 const s_desc = "Um pequeno corredor que continua ao norte. Há um arco no meio, separando\n\
 o corredor. As paredes possuem painéis que lembram tapetes persas.\n\
 O chão é todo quadriculado. Uma luz amarelada do lustre ilumina o lugar."
+const s_pnj = 1 # PNJs na sala
 const dir_n = $s_casa021
 const dir_s = $s_casa018
 const dir_l = $s_casa022
 const dir_c = !arg0.jog ? $s_casa027
 const dir_b = !arg0.jog ? $s_casa028
-const s_pnj = 1 # PNJs na sala
 
 
 classe s_casa021
@@ -1123,12 +1120,12 @@ const s_titulo = "Corredor"
 const s_desc = "Um pequeno corredor que continua ao sul. Há um arco no meio, separando\n\
 o corredor. As paredes possuem painéis que lembram tapetes persas.\n\
 O chão é todo quadriculado. Uma luz amarelada do lustre ilumina o lugar."
+const s_pnj = 1 # PNJs na sala
 const dir_s = $s_casa020
 const dir_l = $s_casa023
 const dir_o = $s_casa030
 const dir_c = !arg0.jog ? $s_casa027
 const dir_b = !arg0.jog ? $s_casa028
-const s_pnj = 1 # PNJs na sala
 
 
 classe s_casa022
@@ -1138,11 +1135,11 @@ const s_desc = "Aqui há apenas o básico que se espera de um toalete, uma pia de 
 e uma privada. No entanto, o brilho dourado da torneira é marcante.\n\
 Olhando atentamente para o vaso sanitário, nota-se um pequeno fio de\n\
 de água que não pára de correr."
-const dir_o = $s_casa020
-const dir_l = !arg0.jog ? $s_casa026
+const s_pnj = 1 # PNJs na sala
 const dir_n = !arg0.jog ? $s_casa023
 const dir_s = !arg0.jog ? $s_casa031
-const s_pnj = 1 # PNJs na sala
+const dir_l = !arg0.jog ? $s_casa026
+const dir_o = $s_casa020
 
 
 classe s_casa023
@@ -1152,13 +1149,13 @@ const s_desc = "Esta é a principal sala de jantar da casa. Nota-se pelo seu tama
 No centro há uma mesa redonda, com lugares para pelo menos doze pessoas.\n\
 No teto, mais ou menos sobre a mesa, um grande lustre de cristal\n\
 ilumina o ambiente."
-const dir_o = $s_casa021
-const dir_l = $s_casa024
-const dir_s = !arg0.jog ? $s_casa022
+const s_pnj = 1 # PNJs na sala
 const dir_n = !arg0.jog ? $s_casa030
+const dir_s = !arg0.jog ? $s_casa022
+const dir_l = $s_casa024
+const dir_o = $s_casa021
 const dir_c = !arg0.jog ? $s_casa026
 const dir_b = !arg0.jog ? $s_casa029
-const s_pnj = 1 # PNJs na sala
 const a_reset = "P 50 casa010 4 6 1\nP 50 casa011 5 7 1"
 
 func a_reset1 # Realiza o reset
@@ -1178,9 +1175,9 @@ const s_desc = "Poltronas e sofás, repletos de adornos, se destacam neste lugar.
 Uma grande lareira, na parede à leste, fornece o calor necessário\n\
 durante os dias de inverno. Ao norte, é possível aprecisar a vista\n\
 através de uma janela."
-const dir_o = $s_casa023
-const dir_s = $s_casa025
 const s_pnj = 0
+const dir_s = $s_casa025
+const dir_o = $s_casa023
 const s_reset = "P 100 casa006 0 0 1"
 
 func s_reset1 # Realiza o reset
@@ -1197,9 +1194,9 @@ const s_desc = "Esta sala é dedicada principalmente às crianças. Há uma estante 
 diversos brinquedos. A maioria deles é bem antiga, como peões e corda\n\
 de pular. Uma placa bem visível na entrada diz claramente para manter\n\
 tudo em ordem."
+const s_pnj = 0
 const dir_n = $s_casa024
 const dir_l = $s_casa026
-const s_pnj = 0
 const s_reset = "P 100 casa005 0 0 1"
 
 func s_reset1 # Realiza o reset
@@ -1215,13 +1212,13 @@ const s_titulo = "Sala de jantar"
 const s_desc = "É uma sala de jantar para poucas pessoas, por ser menor que a outra.\n\
 No centro há uma mesa com espaço para quatro pessoas, com relativo\n\
 conforto. Na parede fica uma prateleira, onde ficam pratos e talheres."
-const dir_o = $s_casa025
-const dir_l = $s_casa027
-const dir_s = !arg0.jog ? $s_casa032
+const s_pnj = 1 # PNJs na sala
 const dir_n = !arg0.jog ? $s_casa029
+const dir_s = !arg0.jog ? $s_casa032
+const dir_l = $s_casa027
+const dir_o = $s_casa025
 const dir_c = !arg0.jog ? $s_casa023
 const dir_b = !arg0.jog ? $s_casa030
-const s_pnj = 1 # PNJs na sala
 const a_reset = "P 50 casa010 4 7 1\nP 50 casa011 4 7 1"
 
 func a_reset1 # Realiza o reset
@@ -1240,13 +1237,13 @@ const s_titulo = "Corredor"
 const s_desc = "Um grande corredor que continua ao norte. No meio há um arco de madeira,\n\
 separando o corredor. Nas paredes foram feitas diversas pinturas.\n\
 O chão é todo encarpetado, porém carece de uma limpeza."
+const s_pnj = 1 # PNJs na sala
 const dir_n = $s_casa028
 const dir_s = $s_casa019
-const dir_o = $s_casa026
 const dir_l = $s_casa030
+const dir_o = $s_casa026
 const dir_c = !arg0.jog ? $s_casa020
 const dir_b = !arg0.jog ? $s_casa021
-const s_pnj = 1 # PNJs na sala
 
 
 classe s_casa028
@@ -1255,11 +1252,11 @@ const s_titulo = "Corredor"
 const s_desc = "Um grande corredor que continua ao sul. No meio há um arco de madeira,\n\
 separando o corredor. Nas paredes foram feitas diversas pinturas.\n\
 O chão é todo encarpetado, porém carece de uma limpeza."
+const s_pnj = 1 # PNJs na sala
 const dir_s = $s_casa027
 const dir_o = $s_casa029
 const dir_c = !arg0.jog ? $s_casa020
 const dir_b = !arg0.jog ? $s_casa021
-const s_pnj = 1 # PNJs na sala
 
 
 classe s_casa029
@@ -1268,13 +1265,13 @@ const s_titulo = "Despensa"
 const s_desc = "Você está em uma sala escura de tamanho razoável. O chão e as paredes\n\
 são um pouco rústicos, compostos apenas de ladrilhos e azulejos.\n\
 Há diversas caixas empilhadas. A única saída é à leste."
-const dir_l = $s_casa028
-const dir_o = !arg0.jog ? $s_casa022
+const s_pnj = 1 # PNJs na sala
 const dir_n = !arg0.jog ? $s_casa028
 const dir_s = !arg0.jog ? $s_casa026
+const dir_l = $s_casa028
+const dir_o = !arg0.jog ? $s_casa022
 const dir_c = !arg0.jog ? $s_casa023
 const dir_b = !arg0.jog ? $s_casa030
-const s_pnj = 1 # PNJs na sala
 const a_reset = "P 50 casa009 3 5 1\nF 100\nP 100 casa008 3 5 1"
 
 func a_reset1 # Realiza o reset
@@ -1297,14 +1294,14 @@ const s_desc = "O espaço aqui é relativamente grande. Aparentemente tudo está no
 devido lugar. Há um fogão de nove bocas, um pouco antigo, e em um canto,\n\
 meio escondido, um pequeno forno microondas. No entanto, a geladeira\n\
 e os armários estão vazios."
+const s_pnj = 1 # PNJs na sala
 const dir_l = $s_casa021
 const dir_o = $s_casa027
 const dir_c = !arg0.jog ? $s_casa022
 const dir_b = !arg0.jog ? $s_casa026
+const a_reset = "P 100 casa007 3 5 2\nF 100\nP 100 casa008 3 5 1"
 const dir_c = !arg0.jog ? $s_casa026
 const dir_b = !arg0.jog ? $s_casa029
-const s_pnj = 1 # PNJs na sala
-const a_reset = "P 100 casa007 3 5 2\nF 100\nP 100 casa008 3 5 1"
 
 func a_reset1 # Realiza o reset
 # Não alterar; função criada automaticamente a partir de a_reset
@@ -1325,10 +1322,10 @@ const s_titulo = "Escadaria"
 const s_desc = "Um tapete cobre o chão. Na parede, ao norte, há um quadro de um antigo\n\
 barão, que parece estar olhando para você. Ao sul, um balaústre de\n\
 madeira. A escada continua à leste e oeste."
+const s_pnj = 1 # PNJs na sala
+const dir_n = !arg0.jog ? $s_casa022
 const dir_l = $s_casa017
 const dir_o = $s_casa018
-const dir_n = !arg0.jog ? $s_casa022
-const s_pnj = 1 # PNJs na sala
 
 
 classe s_casa032
@@ -1337,23 +1334,23 @@ const s_titulo = "Escadaria"
 const s_desc = "Um tapete cobre o chão. Ao norte, preso fixado na parede, há uma espada\n\
 e um escudo antigos. Ao sul, um balaústre de madeira. A escada continua\n\
 à leste e oeste."
-const dir_o = $s_casa017
-const dir_l = $s_casa019
-const dir_n = !arg0.jog ? $s_casa026
 const s_pnj = 1 # PNJs na sala
+const dir_n = !arg0.jog ? $s_casa026
+const dir_l = $s_casa019
+const dir_o = $s_casa017
 
 
 classe s_casa033
 herda b_casa
 const s_titulo = "Escadaria"
 const s_desc = s_desc1 + s_desc2
+const s_pnj = 0 # PNJs na sala
+const eveste = 1 # Receber eventos do próprio objeto
+const dir_n = $s_casa019
+const dir_s = $s_casa035
 const s_desc1 = "Aqui já se vê o piso do saguão da casa, ao sul. O tapete cobre a escada\n\
 até no último degrau. À oeste fica o balaústre de madeira, e à leste só\n\
 se vê uma parede."
-const dir_n = $s_casa019
-const dir_s = $s_casa035
-const s_pnj = 0 # PNJs na sala
-const eveste = 1 # Receber eventos do próprio objeto
 
 func s_desc2
   se $s_casa035.dentro2.objini("p_casa013")
@@ -1373,13 +1370,13 @@ classe s_casa034
 herda b_casa
 const s_titulo = "Escadaria"
 const s_desc = s_desc1 + s_desc2
+const s_pnj = 0
+const eveste = 1 # Receber eventos do próprio objeto
+const dir_n = $s_casa018
+const dir_s = $s_casa035
 const s_desc1 = "Aqui já se vê o piso do saguão da casa, ao sul. O tapete cobre a escada\n\
 até no último degrau. À leste fica o balaústre de madeira, e à oeste só\n\
 se vê uma parede."
-const s_pnj = 0
-const dir_n = $s_casa018
-const dir_s = $s_casa035
-const eveste = 1 # Receber eventos do próprio objeto
 
 func s_desc2
   se $s_casa035.dentro2.objini("p_casa013")
@@ -1402,9 +1399,9 @@ const s_desc = "Essa é a região norte do saguão. Duas escadarias, à leste e oest
 levam para os aposentos superiores. Uma grande porta de madeira, ao norte,\n\
 marca a entrada da casa. Entre o saguão e a porta há um arco, que sustenta\n\
 o patamar das escadas. O chão é todo coberto por tapetes."
+const dir_s = $s_casa036
 const dir_l = $s_casa033
 const dir_o = $s_casa034
-const dir_s = $s_casa036
 const a_reset = "P 100 casa013 0 0 1"
 
 func a_reset1 # Realiza o reset
@@ -1423,8 +1420,8 @@ floresta densa daqui. À oeste e ao sul há diversas pinturas sob a parede\n\
 No centro, um grande lustre está preso há três metros de altura. O chão,\n\
 de granito, está quase todo coberto por tapetes."
 const dir_n = $s_casa035
-const dir_o = $s_casa037
 const dir_s = $s_casa060
+const dir_o = $s_casa037
 
 
 classe s_casa037
@@ -1435,8 +1432,8 @@ const s_desc = "Esse é um corredor comprido, embora estreito, que liga vários cô
 pois há zumbis por todo lado. Mas por algum motivo, eles chegam próximo\n\
 daqui e se afastam rapidamente em seguida."
 const s_pnj = 0 # PNJs entram: Não
-const dir_l = $s_casa036
 const dir_n = $s_casa038
+const dir_l = $s_casa036
 const dir_o = $s_casa039
 
 
@@ -1449,11 +1446,11 @@ em si, mas pelos objetos que nela estão. Observando melhor o lugar, você\n\
 nota algumas curiosas [letras] em um canto da parede, quase ocultas pela\n\
 poeira e pelo tempo. Elas parecem dizer algo importante."
 const dir_s = $s_casa037
+const s_reset = "S 100 casa003 0 S"
 const ver_letras = "Na parede está escrito assim:\n\
 Os objetos dessa [estante] repelem os zumbis. Se você tiver dificuldade\n\
 para pegar mais de um objeto de uma só vez, tecle ajuda nomes, depois\n\
 tecle ajuda pegar."
-const s_reset = "S 100 casa003 0 S"
 
 func s_reset1 # Realiza o reset
 # Não alterar; função criada automaticamente a partir de s_reset
@@ -1467,10 +1464,10 @@ const s_desc = "O local é abafado. As paredes cinzentas e corroídas pelo tempo, 
 a oeste, parecem querer te sufocar. Um ar podre vem da varanda, à sudeste.\n\
 O chão de cerâmica surpreende, tanto pela poeira imunda como por algumas\n\
 manchas ligeiramente avermelhadas."
+const dir_s = $s_casa058
 const dir_l = $s_casa037
 const dir_o = $s_casa040
 const dir_se = $s_casa057
-const dir_s = $s_casa058
 
 
 classe s_casa040
@@ -1479,9 +1476,9 @@ const s_titulo = "Corredor"
 const s_desc = "Aqui o corredor faz uma pequena curva, de leste à sudoeste, porém mantendo\n\
 o mesmo aspecto. Ao norte, você vê uma suíte totalmente destruída, como\n\
 se alguém estivesse procurando algo e não encontrou."
+const dir_n = $s_casa043
 const dir_l = $s_casa039
 const dir_so = $s_casa041
-const dir_n = $s_casa043
 
 
 classe s_casa041
@@ -1490,10 +1487,10 @@ const s_titulo = "Corredor"
 const s_desc = "Aqui o corredor faz uma pequena curva, do sul à nordeste, porém mantendo\n\
 o mesmo aspecto. À noroeste há uma suíte bastante danificada, e à oeste\n\
 uma biblioteca, com estantes presas na parede."
-const dir_ne = $s_casa040
 const dir_s = $s_casa042
-const dir_no = $s_casa045
 const dir_o = $s_casa048
+const dir_ne = $s_casa040
+const dir_no = $s_casa045
 
 
 classe s_casa042
@@ -1504,10 +1501,10 @@ const s_desc = "O corredor, que continua ao norte, aqui se divide em vários cômo
 à sudeste a entrada da piscina. A parede ao sul está toda arranhada, como\n\
 se um animal grande estivesse tentando afiar as unhas."
 const dir_n = $s_casa041
-const dir_so = $s_casa050
-const dir_o = $s_casa053
 const dir_l = $s_casa054
+const dir_o = $s_casa053
 const dir_se = $s_casa055
+const dir_so = $s_casa050
 const a_reset = "P 70 casa014 11 15 6"
 
 func a_reset1 # Realiza o reset
@@ -1550,18 +1547,17 @@ const s_desc = "Uma bela cama de casal bem no meio do quarto ocupa quase todo es
 Mas há algo estranho, há apenas o colchão, nenhum travesseiro ou cobertor,\n\
 e ele é duro como uma tábua. Na parede, dois armários embutidos estão\n\
 apenas preenchidos com uma gosma espessa."
-const dir_se = $s_casa041
 const dir_n = $s_casa046
 const dir_o = $s_casa047
+const dir_se = $s_casa041
 const portaini_o = 3 # Estado inicial: 3 Porta trancada
+const fechadura_o = "casa1"
+const tranc_o = 2 # Trancar: 2 Tranca ao fechar
 const s_reset = "D 100 o 3"
 
 func s_reset1 # Realiza o reset
 # Não alterar; função criada automaticamente a partir de s_reset
   mudaporta("o", 3)
-
-const tranc_o = 2 # Trancar: 2 Tranca ao fechar
-const fechadura_o = "casa1"
 
 
 classe s_casa046
@@ -1586,12 +1582,12 @@ const s_titulo = "Vestiário"
 const s_desc = "Uma gosma marrom já se espalhou por todo canto e destruiu a maioria das\n\
 coisas que haviam aqui. Você anda com bastante cuidado para não se\n\
 contaminar. Aparentemente a gosma vem de uma rachadura no teto."
+const s_pnj = 0 # PNJs entram: Não
 const dir_l = $s_casa045
 const portaini_l = 3 # Estado inicial: 3 Porta trancada
-const chave_l = "casa1"
-const s_pnj = 0 # PNJs entram: Não
 const tranc_l = 1 # Trancar: 1 Pode ser trancado
 const s_reset = "R 100 casa011\nS 100 casa011 1 S"
+const chave_l = "casa1"
 
 func s_reset1 # Realiza o reset
 # Não alterar; função criada automaticamente a partir de s_reset
@@ -1644,10 +1640,10 @@ const s_desc = "A primeira coisa que você nota aqui são três poltronas e dois so
 péssimo estado. Parte da madeira foi comida por cupins, e o que sobrou não\n\
 passa de trapos rasgados. Há também uma estante grudada na parede, com\n\
 antigas obras de arte."
-const dir_no = $s_casa049
-const dir_ne = $s_casa042
 const dir_s = $s_casa051
 const dir_o = $s_casa052
+const dir_ne = $s_casa042
+const dir_no = $s_casa049
 
 
 classe s_casa051
@@ -1695,8 +1691,8 @@ const s_titulo = "Entrada da piscina"
 const s_desc = "Este é um pequeno corredor que separa a piscina do restante da casa.\n\
 Você nota uma grande piscina ao ar livre, rodeada de paredes bastante\n\
 desgastadas pelo tempo. Porém uma grade ao sul lhe impede de prosseguir."
-const dir_no = $s_casa042
 const dir_l = $s_casa056
+const dir_no = $s_casa042
 
 
 classe s_casa056
@@ -1706,8 +1702,8 @@ const s_desc = "Essa parte da varanda é bastante úmida. Goteiras no chão já estr
 boa parte do piso, e um musgo cresce em uma rachadura na parede. O cheiro\n\
 forte vem de uma rede de descanso largada no chão, completamente mofada\n\
 e estragada."
-const dir_o = $s_casa055
 const dir_n = $s_casa057
+const dir_o = $s_casa055
 
 
 classe s_casa057

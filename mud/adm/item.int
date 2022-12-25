@@ -3,6 +3,7 @@ herda comando_adm_ajuda
 const m_ajuda = "-t Comandos de itens\n\
 -m LITEM Lista itens existentes\n\
 -m PITEM Pesquisa itens com um determinado nome\n\
+-m NITEM Pesquisa itens por nível e/ou renascer\n\
 -m IITEM Mostra aonde está um item\n\
 -m CITEM Cria um item\n\
 -m EITEM Edita um item\n\
@@ -71,6 +72,79 @@ func escr
   listar(arg0, "", arg2, arg1)
 
 
+classe adm_nitem
+herda comando_adm
+const objcmd = arg1.c_litem ? este
+const m_ajuda = "-t\n\
+-s N<nível>\n\
+-s N<nível>\n\
+-s R<renascer>\n\
+-s N<nível nínimo>-<nível máximo>\n\
+-s R<renascer mínimo>-<renascer máximo>\n\
+Pesquisa os itens conforme o nível e o a quantidade de renascer.\n\
+É possível combinar as opções N e R no mesmo comando. Se o valor mínimo\n\
+for omitodo será 0, e se o máximo for omitido, será 65535.\n\
+Exemplos:\n\
+-s N10\n\
+-s N15-20\n\
+-s N-20\n\
+-s R1-5\n\
+-s N20-50 R3\n\
+O primeiro pesquisa itens do nível 10, o segundo itens do nível 15 ao 20,\n\
+O terceiro itens do nível 0 ao 20, o quarto itens que precisa renascer de\n\
+1 a 5 vezes e o quarto itens do nível 20 ao 50 que precisa renascer 3 vezes."
+
+func escr # Editar item
+  txt512 lin
+  int32 nmin = 0
+  int32 nmax = 65535
+  int32 rmin = 0
+  int32 rmax = 65535
+  int8 achou
+# Obtém nível e quantidade de renascer
+  epara lin = arg1, lin, lin = txt2(lin)
+    refvar opc = txt1(lin)
+    refvar opc2 = txttroca(opc, "-", " ")
+    continuar intsub(opc2) > 2
+    se txt(opc, 0, 1) == "N"
+      nmin = txt(opc2, 1)
+      nmax = txtfim(opc, 1) == "-" ? 65536 : (txt2(opc2) ?? nmin)
+      achou = 1
+    senao txt(opc, 0, 1) == "R"
+      rmin = txt(opc2, 1)
+      rmax = txtfim(opc, 1) == "-" ? 65536 : (txt2(opc2) ?? rmin)
+      achou = 1
+    fimse
+  efim
+  ret !achou, arg0.msg("\bEspecificar o nível e/ou renascer após NITEM")
+# Procura os itens
+  debug d
+  prog p
+  int32 total
+  refvar t = arg0.sock.txtmais
+  t.limpar
+  d.exec = 100000
+  refvar prefixo = int(arg2.c_litem) < 2 ? "i_" + arg0.jogarea
+  epara p.iniclasse(prefixo ?? "i_"), p.lin, p.depois
+    sair prefixo && prefixo + txtfim(p.texto, 3) != p.texto
+    continuar nmin > [p.texto]:nivel || nmax < [p.texto]:nivel
+    continuar rmin > [p.texto]:renascer || rmax < [p.texto]:renascer
+    lin = txt(p.texto, 2) + " " + txt(" SGC", [p.texto]:item, 1)
+    lin += " " + inttotal($[p.texto]) + " N" + int([p.texto]:nivel)
+    t.addfim(lin + " R" + int([p.texto]:renascer) + " " + [p.texto]:nome)
+    total += inttotal($[p.texto])
+  efim
+# Mostra o resultado
+  se t.linhas
+    t.addini("\b\c6Item(" + t.linhas + ") Tipo Quantidade(" + total + ") Nível Renascer Nome\b")
+  senao
+    t.addini("\bNenhum item encontrado.")
+  fimse
+  lin = "\b\c6Procurando nível " + nmin + (nmin != nmax ? "-" + nmax)
+  t.addini(lin + " renascer " + rmin + (rmin != rmax ? "-" + rmax))
+  arg0.sock.txtmostra
+
+
 classe adm_iitem
 herda comando_adm
 const objcmd = arg1.c_iitem ? este
@@ -79,7 +153,7 @@ const m_ajuda = "-t\n-s <nome>\nMostra aonde está cada item do tipo especificado
 func escr # Listar personagens
   prog p
   se arg1 == ""
-    arg0.msg("\bTecle o nome do item IITEM")
+    arg0.msg("\bTecle o nome do item após IITEM")
   senao !existe_i(arg0, arg1)
     arg0.msg("\bItem não existe: " + arg1)
   senao arg2.c_iperso <= 1 && arg0.jogarea + txtfim(arg1, 3) != arg1

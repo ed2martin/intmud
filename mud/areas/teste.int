@@ -5,10 +5,10 @@ const a_nome = "Testes e exemplos"
 
 classe b_teste
 herda sala
+const s_area = "teste"
 const s_doarsalas = "teste155\nteste156\nteste157"
 const s_luta = 1
 const s_terreno = 1
-const s_area = "teste"
 
 
 classe c_teste001
@@ -74,8 +74,8 @@ classe i_teste002
 herda comum_item
 const nome = "pedra"
 const descnome = "uma pedra"
-const msexo = 0
 const descpos = "Aqui tem uma pedra."
+const msexo = 0
 const pesoobj = 200
 
 
@@ -83,8 +83,8 @@ classe i_teste003
 herda comum_itemgrupo
 const nome = "carne crua"
 const descnome = "uma carne crua"
-const pesoobj = 50
 const i_captura = 4
+const pesoobj = 50
 const volobj = 2
 const pnivel = 2
 
@@ -105,20 +105,20 @@ const descnome = "uma bolsa"
 const descver = "O couro é leve, porém resistente."
 const i_abertoini = 2 # Container: 2 Inicialmente aberto
 const i_tranc = 1 # Trancar: 1 Pode ser trancado
-const objmax = 20
 const pesoobj = 200
-const volmax = 5000
+const objmax = 20
 const volobj = 20
+const volmax = 5000
 
 
 classe i_teste006
 herda comum_itemperso
 const nome = "tocha"
 const descnome = "uma tocha"
-const luzini = -600
-const luztxt = "Uma tocha se apagou"
-const luzfim = 1 # Sem luz item some: Sim
 const luzitem = 6 # Tipo de luz: 6 Tocha (acende com fogo, produz fogo)
+const luzini = -600
+const luzfim = 1 # Sem luz item some: Sim
+const luztxt = "Uma tocha se apagou"
 const tipoitem = "100"
 
 
@@ -156,21 +156,21 @@ herda comum_itemperso
 const nome = "fósforo aceso"
 const descnome = "um fósforo aceso"
 const msexo = 1 # Sexo: 1 Masculino
-const luzini = 80
 const luzitem = 3 # Tipo de luz: 3 Não aceita acender/apagar, produz fogo
-const luztxt = "Um palito de fósforo acaba de queimar."
+const luzini = 80
 const luzfim = 1 # Sem luz item some: Sim
+const luztxt = "Um palito de fósforo acaba de queimar."
 
 
 classe i_teste011
 herda comum_itemperso
 const nome = "caixa de fósforo"
 const descnome = "uma caixa de fósforo"
+const luzitem = 5 # Tipo de luz: 5 Fósforo (acende uma vez, produz fogo)
+const tipoitem = "100"
 const eveste = 1 # Receber eventos do próprio objeto
 sav uint8 palitos # Quantidade de palitos de fósforo da caixa
-const luzitem = 5 # Tipo de luz: 5 Fósforo (acende uma vez, produz fogo)
 const luztempo = -10 # Quantidade de luz; para indicar que sempre pode acender
-const tipoitem = "100"
 
 func cmd_ini
   palitos = 20
@@ -304,10 +304,10 @@ classe i_teste019
 herda comum_itemgrupo
 const nome = "algemas"
 const descnome = "um par de algemas"
+const i_fechadura = "algema1"
 const pesoobj = 300
 const vestir1 = "20200"
 const evperso = 1 # Eventos em perso: Sim
-const i_fechadura = "algema1"
 
 func cmd_mover
 # Nos tornozelos, prejudica os pontos de movimento
@@ -395,9 +395,9 @@ const descnome = "uma caipinha de metanol"
 const f_tipo = 2 # Tipo: 2 Poção, beber
 const f_bebida = 5
 const f_sede = -2
+const f_diges = 40
 const f_magia1 = "cegueira"
 const f_nivel1 = 2
-const f_diges = 40
 
 
 classe i_teste026
@@ -568,9 +568,9 @@ classe i_teste037
 herda comum_itemperso
 const nome = "cinto dourado"
 const descnome = "um cinto dourado"
-const luzfim = 1 # Sem luz item some: Sim
 const luzitem = 7 # Tipo de luz: 7 Automático (acende ao vestir, sem fogo)
 const luzini = -5000
+const luzfim = 1 # Sem luz item some: Sim
 const vestir1 = "8000"
 
 
@@ -808,8 +808,8 @@ const descnome = "uma caixa de fósforo"
 const i_itens = "teste009"
 const i_abertoini = 1 # Container: 1 Sempre aberto
 const luzitem = 5 # Tipo de luz: 5 Fósforo (acende uma vez, produz fogo)
-const tipoitem = "100"
 const volmax = 20
+const tipoitem = "100"
 const eveste = 1 # Eventos item: Sim
 const luztempo = -10 # Quantidade de luz; para indicar que sempre pode acender
 
@@ -857,8 +857,8 @@ const armamunicao = 2 # Origem da munição: 2 Itens na arma
 const armafalha = 10
 const armatipo = 8 # Tipo de arma: 8 Revolver
 const i_municao = "teste054"
-const tipoitem = "1" # Tipo de item: 0-Possui metal (1-Arma)
 const volmax = 6
+const tipoitem = "1" # Tipo de item: 0-Possui metal (1-Arma)
 
 
 classe i_teste054
@@ -963,8 +963,8 @@ const i_saiitem1 = "$P saiu encolhido de uma pequena barraca."
 const i_saiitem2 = "$P flutuou encolhido de uma pequena barraca."
 const i_saiitem3 = "$P voou encolhido de uma pequena barraca."
 const i_saiitem4 = "$P saiu encolhido e cambaleando de uma pequena barraca."
-const mantersala = 1 # Mantém na sala: Sim
 const volobj = 100
+const mantersala = 1 # Mantém na sala: Sim
 
 
 classe i_teste064
@@ -1181,8 +1181,8 @@ const descpos = "Um ônibus moderno está aqui."
 const msexo = 1 # Sexo Msg: 1 Masculino
 const i_seguir = 1 # Pode seguir: Sim
 const i_salas = "teste178"
-const mantersala = 1 # Mantém na sala: Sim
 const volobj = 100
+const mantersala = 1 # Mantém na sala: Sim
 const rastrearsaladirlinhas = intsub(itinerario) + 2
 const itinerario = "teste179 teste180 teste181 teste180"
 uint8 destino
@@ -1351,8 +1351,8 @@ const nome = "macaco"
 const descnome = "um macaco"
 const descver = "Mamífero quadrúmeno.\nVocê não vê nada de especial."
 const descsala8 = "$P está fazendo bagunça aqui."
-const msexo = 1 # Sexo Msg: 1 Masculino
 const sexoini = 2 # Sexo Perso: 2 Aleatório
+const msexo = 1 # Sexo Msg: 1 Masculino
 const pesoobj = 30500
 const volobj = 500
 const tipo1 = "luta"
@@ -1367,8 +1367,8 @@ const nome = "cão"
 const descnome = "um cão"
 const descver = "Mamífero da família dos canídeos."
 const descsala8 = "$P late para você."
-const msexo = 1 # Sexo Msg: 1 Masculino
 const sexoini = 2 # Sexo Perso: 2 Aleatório
+const msexo = 1 # Sexo Msg: 1 Masculino
 const pesoobj = 30100
 const volobj = 300
 const p_agressivo = 2 # Agressivo: 2 Sim
@@ -1382,8 +1382,8 @@ const nome = "morcego"
 const descnome = "um morcego"
 const descver = "Mamífero da ordem dos quirópteros"
 const descsala8 = "$P está voando."
-const msexo = 1 # 0=feminino, 1=masculino
 const sexoini = 2 # Sexo Perso: 2 Aleatório
+const msexo = 1 # 0=feminino, 1=masculino
 const pesoobj = 30500
 const volobj = 100
 const tipo1 = "ar"
@@ -1411,8 +1411,8 @@ classe p_teste006
 herda comum_persobat
 const nome = "geléia"
 const descnome = "uma geléia"
-const msexo = 0 # Sexo: 0 Feminino
 const sexoini = 2 # Sexo Perso: 2 Aleatório
+const msexo = 0 # Sexo: 0 Feminino
 const pesoobj = 10000
 const nivel = 3
 const tipo1 = "água" # Inclui também os atributos na classe tipo_agua
@@ -1489,6 +1489,7 @@ herda comum_perso
 const nome = "Perito"
 const sexoini = 1
 const tipo1 = "Anão"
+const lojanao = ""
 const lojaaula = "h_Varinha 8\n\
 h_Cajado 8\n\
 h_Lâmina_curta 8\n\
@@ -1500,7 +1501,6 @@ h_Arma_exótica 8\n\
 h_Segundo_ataque 8\n\
 h_Terceiro_ataque 8"
 const taxaaula = 50
-const lojanao = ""
 
 
 classe p_teste010
@@ -1534,10 +1534,10 @@ func cmd_falou
 
 classe p_teste011
 herda comum_persobat
-const msexo = 1
-const sexoini = 2
 const nome = "camundongo gigante"
 const descnome = "um camundongo gigante"
+const sexoini = 2
+const msexo = 1
 const p_corpo = 2 # Quando morre: 2 Deixa corpo com itens e moedas
 
 func recalc1_auto # Altera atributos do personagem
@@ -1603,9 +1603,9 @@ const sexoini = 1
 
 classe p_teste015
 herda comum_perso
-const evsala = 1 # Eventos em sala: Sim
 const nome = "marceneiro"
 const sexoini = 1
+const evsala = 1 # Eventos em sala: Sim
 
 func cmd_chegou
   ret !arg0.jog, nulo # Retorna se não for jogador
@@ -1618,8 +1618,8 @@ const nome = "rato"
 const ident = "rato laboratório"
 const descnome = "um rato de laboratório"
 const descsala8 = "$P vaga sem rumo."
-const msexo = 1
 const sexoini = 2
+const msexo = 1
 const evsala = 1 # Eventos em sala: Sim
 
 func cmd_chegou
@@ -1873,8 +1873,8 @@ func descsala8
 classe p_teste022
 herda comum_perso
 const nome = "aprendiz do fogo"
-const descsala8 = "Um aprendiz do fogo está brincando com uma pequena chama."
 const ident = "aprendiz fogo"
+const descsala8 = "Um aprendiz do fogo está brincando com uma pequena chama."
 const sexoini = 1
 const lojaaula = "m_Chama_Protetora 5\nh_Chute_Élfico 5"
 const inivar = "e_chama_protetora=-100"
@@ -1967,10 +1967,10 @@ classe p_teste025
 herda comum_perso
 const nome = "Corretor de imóveis"
 const sexoini = 1
-const taxacompra = 20
 const lojainv = 1 # Produtos inv: Sim
 const lojacasa = "teste"
 const lojachave = "teste"
+const taxacompra = 20
 
 
 classe p_teste026
@@ -2214,8 +2214,8 @@ const nome = "rato"
 const ident = "rato laboratório"
 const descnome = "um rato gordo"
 const descsala8 = "$P vaga sem rumo."
-const msexo = 1
 const sexoini = 2
+const msexo = 1
 
 
 classe p_teste038
@@ -2336,8 +2336,8 @@ classe p_teste043
 herda comum_persobat
 const nome = "lagarto verde"
 const descnome = "um lagarto verde"
-const msexo = 1 # Sexo Msg: 1 Masculino
 const sexoini = 2 # Sexo Perso: 2 Aleatório
+const msexo = 1 # Sexo Msg: 1 Masculino
 const p_animal = 3 # Lugar após domar: 3 Comando Animal ou sala, protege o dono
 const p_montar_tipo = 1 # Montar: 1 Somente se tiver dono
 const p_lugar = 2
@@ -2358,8 +2358,8 @@ classe p_teste044
 herda comum_persobat
 const nome = "lagarto vermelho"
 const descnome = "um lagarto vermelho"
-const msexo = 1 # Sexo Msg: 1 Masculino
 const sexoini = 2 # Sexo Perso: 2 Aleatório
+const msexo = 1 # Sexo Msg: 1 Masculino
 const p_animal = 3 # Lugar após domar: 3 Comando Animal ou sala, protege o dono
 const p_montar_tipo = 1 # Montar: 1 Somente se tiver dono
 const p_lugar = 2
@@ -2382,8 +2382,8 @@ classe p_teste045
 herda comum_persobat
 const nome = "lagarto planta"
 const descnome = "um lagarto planta"
-const msexo = 1 # Sexo Msg: 1 Masculino
 const sexoini = 2 # Sexo Perso: 2 Aleatório
+const msexo = 1 # Sexo Msg: 1 Masculino
 const tipo1 = "normal"
 const tipo2 = "vegetal"
 const p_animal = 3 # Lugar após domar: 3 Comando Animal ou sala, protege o dono
@@ -2396,8 +2396,8 @@ herda comum_persobat
 const nome = "lagarto de fogo"
 const descnome = "um lagarto de fogo"
 const descsala8 = "$P está parad$s na parede."
-const msexo = 1 # Sexo Msg: 1 Masculino
 const sexoini = 2 # Sexo Perso: 2 Aleatório
+const msexo = 1 # Sexo Msg: 1 Masculino
 const tipo1 = "normal"
 const tipo2 = "fogo"
 const p_animal = 3 # Lugar após domar: 3 Comando Animal ou sala, protege o dono
@@ -2412,8 +2412,8 @@ classe p_teste047
 herda comum_persobat
 const nome = "lagartixa"
 const descnome = "uma lagartixa"
-const msexo = 0 # Sexo Msg: 0 Feminino
 const sexoini = 2 # Sexo Perso: 2 Aleatório
+const msexo = 0 # Sexo Msg: 0 Feminino
 const tipo1 = "normal"
 const eveste = 1 # Receber eventos do próprio objeto
 
@@ -2433,8 +2433,8 @@ classe p_teste048
 herda comum_perso
 const nome = "cão"
 const descnome = "um cão"
-const msexo = 1 # Sexo Msg: 1 Masculino
 const sexoini = 2 # Sexo Perso: 2 Aleatório
+const msexo = 1 # Sexo Msg: 1 Masculino
 const lojaaula = "i_Latir 8"
 const lojaidioma = "latir"
 const lojaaulaidioma = 3 # Nível idioma: 3 Básico
@@ -2571,6 +2571,7 @@ const s_noite = "Está escuro, e você acaba pisando em algumas pedras espalhadas 
 mesmo andando devagar. Por pouco não torce o pé."
 const dir_n = $s_teste004
 const dir_ne = $s_teste006
+const s_reset = "S 100 teste002 0 S"
 
 func cmd_salaperso # Personagem chegou
   ret !arg0.jog, nulo # Retorna se não for jogador
@@ -2585,8 +2586,6 @@ func cmd_soltarobj # Soltar alguma coisa
   se arg2.nome == "pedra"
     apagar(arg2) # Apagará a pedra
   fimse
-
-const s_reset = "S 100 teste002 0 S"
 
 func s_reset1 # Realiza o reset
 # Não alterar; função criada automaticamente a partir de s_reset
@@ -2604,8 +2603,8 @@ E se encontrasse um pescador, poderia teclar: dar minhoca pescador\n\
 Pode-se abreviar muita coisa, escrevendo só o começo das palavras. Exemplo,\n\
 peg minho ou mesmo pe mi ao invés de pegar minhoca."
 const dir_o = $s_teste004
-const dir_so = $s_teste005
 const dir_no = $s_teste007
+const dir_so = $s_teste005
 
 
 classe s_teste007
@@ -2616,10 +2615,10 @@ vai diminuindo gradativamente. É possível seguir também a sudeste.\n\
 Nas outras direções não há trilha, e o mato é denso demais para prosseguir."
 const s_noite = "O mato chega a um metro aqui. Na direção norte ele parece diminuir um\n\
 pouco. Nas outras direções, você não vê nada além do mato na escuridão."
-const dir_s = $s_teste004
-const dir_n = $s_teste008
-const dir_se = $s_teste006
 const eveste = 1 # Receber eventos do próprio objeto
+const dir_n = $s_teste008
+const dir_s = $s_teste004
+const dir_se = $s_teste006
 const s_reset = "P 100 teste001 0 0 1"
 
 func cmd_mover
@@ -2643,10 +2642,10 @@ const s_desc = "Você está em uma sala bastante ampla de uma casa, dizem ser mal 
 Há janelas mas é alto demais para pular. Há também um corredor a leste\n\
 e uma passagem ao norte."
 const dir_n = $s_teste009
-const portaini_n = 2
-const fecha_n = 1 # Fecha ao passar: Sim
 const dir_s = $s_teste007
 const dir_l = $s_teste010
+const portaini_n = 2
+const fecha_n = 1 # Fecha ao passar: Sim
 
 
 classe s_teste009
@@ -2743,9 +2742,9 @@ Tecle A ou AA para aumentar 1 ou 10 níveis\n\
 Tecle D ou DD para diminuir 1 ou 10 níveis\n\
 À leste você pode conseguir animais."
 const eveste = 1 # Eventos sala: Sim
+const dir_n = $s_teste002
 const dir_l = $s_teste065
 const dir_o = $s_teste014
-const dir_n = $s_teste002
 
 func cmd_salaperso # Personagem chegou
   se arg0.jog
@@ -2801,10 +2800,10 @@ const s_titulo = "Animais"
 const s_desc = "Esta é a praça central de um pequeno zoológico. À leste fica a saída.\n\
 Nas outras direções, você entra na jaula de alguns animais, e poderá\n\
 batalhar com eles. Você pode se recuperar aqui teclando deitar."
-const dir_l = $s_teste014
 const dir_n = $s_teste018
-const dir_o = $s_teste019
 const dir_s = $s_teste020
+const dir_l = $s_teste014
+const dir_o = $s_teste019
 
 func cmd_salaperso # Personagem chegou
   ret !arg0.jog, nulo # Retorna se não for jogador
@@ -2826,12 +2825,12 @@ func cmd_escr # Escreveu algo
 
 classe s_teste018
 herda b_teste
-const dir_s = $s_teste017
 const s_titulo = "Macaco"
 const s_desc = "Aqui fica um mamífero quadrúmeno. Se alimentam de frutas e de sementes,\n\
 ma quem sabe algum deles se interesse por uma bisteca. Geralmente são\n\
 inteligentes, sociáveis e muito ágeis, mas esses aqui se sentiram\n\
 ameaçados quando você entrou na jaula."
+const dir_s = $s_teste017
 const s_reset = "P 100 teste002 3 6 1"
 
 func s_reset1 # Realiza o reset
@@ -2843,11 +2842,11 @@ func s_reset1 # Realiza o reset
 
 classe s_teste019
 herda b_teste
-const dir_l = $s_teste017
 const s_titulo = "Cão"
 const s_desc = "Aqui é a jaula de um mamífero da família dos canídeos. São quadrúpedes,\n\
 mas de vez em quando ficam em pé apoiados em duas patas apenas. Esses\n\
 aqui são um pouco selvagens, pouco acostumados com a presença humana."
+const dir_l = $s_teste017
 const s_reset = "P 100 teste003 3 6 1 h_socar=1,h_arremessar=1"
 
 func s_reset1 # Realiza o reset
@@ -2859,11 +2858,11 @@ func s_reset1 # Realiza o reset
 
 classe s_teste020
 herda b_teste
-const dir_n = $s_teste017
 const s_titulo = "Morcego"
 const s_desc = "Esta é a jaula de alguns mamíferos da ordem dos quirópteros. Esses aqui\n\
 são basicamente ratos voadores, mas os membros inferiores possuem patágio,\n\
 por isso podem funcionar como asas, e esses animais podem voar."
+const dir_n = $s_teste017
 const s_reset = "P 100 teste004 3 6 1 h_arremessar=1"
 
 func s_reset1 # Realiza o reset
@@ -2879,8 +2878,8 @@ const s_titulo = "Centro de treinamento"
 const s_desc = "Aqui os funcionários do zoológico treinam animais e fazem duelos\n\
 entre si. No momento estão descansando, mas você pode desafiá-los\n\
 seguindo ao norte."
-const dir_s = $s_teste014
 const dir_n = $s_teste022
+const dir_s = $s_teste014
 
 
 classe s_teste022
@@ -2961,8 +2960,8 @@ herda b_teste
 const s_titulo = "Quarto escuro"
 const s_desc = "Este é um pequeno quarto para revelar fotografias. Não é à toa que é\n\
 tão escuro aqui."
-const dir_l = $s_teste023
 const s_luz = 3 # Luz: 3 Escuro
+const dir_l = $s_teste023
 
 
 classe s_teste026
@@ -3015,10 +3014,10 @@ const s_desc = "Personagens podem ter algumas propriedades especiais, e alguns i
 também podem mudar alguns atributos de um personagem, quando vestidos.\n\
 Veja a opção \"Atributos\" de tipos (raças e classes) e personagens,\n\
 e a opção \"Atributos vestir\" de itens."
-const dir_o = $s_teste026
-const dir_l = $s_teste032
 const dir_n = $s_teste029
 const dir_s = $s_teste063
+const dir_l = $s_teste032
+const dir_o = $s_teste026
 const s_reset = "S 100 teste012 3 S\n\
 S 100 teste013 3 S\n\
 S 100 teste015 1 S\n\
@@ -3150,13 +3149,13 @@ Ao norte, restaurando pontos de vida, mana e movimento.\n\
 A sudoeste, mudando o nível.\n\
 Ao sul, mudando as habilidades e magias.\n\
 A sudeste, mudando a quantidade de dinheiro."
-const dir_l = $s_teste034
-const dir_no = $s_teste036
 const dir_n = $s_teste038
-const dir_so = $s_teste039
 const dir_s = $s_teste040
-const dir_se = $s_teste042
+const dir_l = $s_teste034
 const dir_o = $s_teste043
+const dir_no = $s_teste036
+const dir_se = $s_teste042
+const dir_so = $s_teste039
 
 
 classe s_teste036
@@ -3170,8 +3169,8 @@ Usando o CMD são os seguintes comandos:\n\
 cmd mudadono($s_teste002)\n\
 cmdj João mudadono($s_teste002)\n\
 Mas tele não transporta um personagem da sala. Com CMDP isso é possível."
-const dir_se = $s_teste035
 const dir_n = $s_teste037
+const dir_se = $s_teste035
 
 
 classe s_teste037
@@ -3278,8 +3277,8 @@ Exemplo:\n\
 cmd 2.5*(3+4)\n\
 Rand retorna um número aleatório inteiro. Exemplo, um número de 3 a 8:\n\
 cmd rand(3, 8)"
-const dir_se = $s_teste043
 const dir_n = $s_teste045
+const dir_se = $s_teste043
 
 
 classe s_teste045
@@ -3586,11 +3585,11 @@ const s_desc = "Ao norte: introdução e como editar\n\
 Ao sul: primeiro trigger\n\
 À leste: após um tempo e mensagens\n\
 À oeste: outras ações"
-const dir_c = $s_teste002
 const dir_n = $s_teste068
 const dir_s = $s_teste071
 const dir_l = $s_teste074
 const dir_o = $s_teste078
+const dir_c = $s_teste002
 const dir_b = $s_teste082
 
 
@@ -3603,8 +3602,8 @@ O programa é dividido em classes. Salas são classes cujo nome começa com\n\
 s sublinhado (ex. sala teste001 é a classe s_teste001). Itens começam com\n\
 i sublinhado e PNJs começam com p_. Há outras classes também, que fazem\n\
 parte da programação do MUD."
-const dir_s = $s_teste067
 const dir_n = $s_teste069
+const dir_s = $s_teste067
 
 
 classe s_teste069
@@ -3614,8 +3613,8 @@ const s_desc = "Sabendo-se o nome da classe, pode-se modificá-la online usando o
 ecl. Exemplo, para editar o item teste002, o comando é: ecl teste002\n\
 Para o nome da sala aparecer sempre antes do título tecle: config +sala\n\
 Usuários normais não têm acesso a esses comandos, somente administradores."
-const dir_s = $s_teste068
 const dir_n = $s_teste070
+const dir_s = $s_teste068
 
 
 classe s_teste070
@@ -3688,8 +3687,8 @@ Isso faz com que funções, cujo nome é \"entrou\" seguido de um número,\n\
 sejam executadas. O número é o tempo decorrido, em décimos de segundo.\n\
 Note que se o personagem sair da sala, as funções páram de ser chamadas\n\
 e o envio das mensagens é interrompido."
-const dir_o = $s_teste067
 const dir_l = $s_teste075
+const dir_o = $s_teste067
 
 func cmd_salaperso
   ret !arg0.jog, nulo # Retorna se não for jogador
@@ -3736,8 +3735,8 @@ $mens.mvis1(\"$P olha rapidamente para $a, desconfiado.\")\n\
 Aqui, $P é substituído pela descrição do personagem e $a é o alvo.\n\
 Para saber que símbolos podem ser usados em $mens.mvis1, tecle adm mens\n\
 É possível usar cores em qualquer mensagem, veja adm cores"
-const dir_o = $s_teste075
 const dir_l = $s_teste077
+const dir_o = $s_teste075
 
 
 classe s_teste077
@@ -3759,9 +3758,9 @@ const s_titulo = "Outras ações"
 const s_desc = "Ao norte: O teto cai em 15 segundos\n\
 Ao sul: Você escorrega de volta\n\
 À oeste: Um lago congelado"
-const dir_l = $s_teste067
 const dir_n = $s_teste079
 const dir_s = $s_teste080
+const dir_l = $s_teste067
 const dir_o = $s_teste081
 
 
@@ -3806,9 +3805,9 @@ const s_desc = "O lago agora é um gelo tão liso que você não consegue parar de d
 Aqui a sala recebe eventos (a opção \"Eventos sala\" está em \"1 Sim\"),\n\
 caso contrário a função cmd_mover não é chamada. Essa função envia uma\n\
 mensagem ao personagem e retorna 1 para impedir que ele ande."
+const eveste = 1 # Eventos sala: Sim
 const dir_l = $s_teste078
 const dir_o = $s_teste002
-const eveste = 1 # Eventos sala: Sim
 
 func cmd_salaperso
   misc:tempo("entrou", arg0) # Dispara funções 'entrou'
@@ -3849,11 +3848,11 @@ Trigger em item e personagem: mude a opção \"Eventos em sala\" para 1.\n\
 Depois basta criar uma função chamada cmd_mover.\n\
 Nesta sala, a direção leste não funciona para anões. Já a direção oeste\n\
 só é permitida a anões."
-const dir_s = $s_teste082
+const eveste = 1 # Eventos sala: Sim
 const dir_n = $s_teste084
+const dir_s = $s_teste082
 const dir_l = $s_teste082
 const dir_o = $s_teste082
-const eveste = 1 # Eventos sala: Sim
 
 func cmd_mover
 # Nota: Há comentários demais aqui, para fins didáticos
@@ -3877,10 +3876,10 @@ const s_titulo = "Mudando as saídas"
 const s_desc = "Aqui a direção leste só existe para anões. Já a direção oeste só\n\
 existe para quem não é anão.\n\
 Isso foi feito apenas alterando as constantes que correspondem às direções."
+const dir_n = $s_teste085
 const dir_s = $s_teste083
 const dir_l = arg0.tipo1 == "anão" ? $s_teste082
 const dir_o = arg0.tipo1 != "anão" ? $s_teste082
-const dir_n = $s_teste085
 
 
 classe s_teste085
@@ -3981,11 +3980,11 @@ const s_titulo = "Outro lago congelado"
 const s_desc = "O lago agora é um gelo tão liso que você não consegue parar de deslizar.\n\
 Aqui é como a sala teste081, mas se você conseguir colocar os sapatos\n\
 em tempo, consegue seguir em outra direção."
+const eveste = 1 # Eventos sala: Sim
 const dir_n = $s_teste087
 const dir_s = $s_teste002
 const dir_l = $s_teste082
 const dir_o = $s_teste082
-const eveste = 1 # Eventos sala: Sim
 
 func cmd_salaperso
   misc:tempo("entrou", arg0) # Dispara funções 'entrou'
@@ -4100,10 +4099,10 @@ Só que João pede um de cada vez, e Maria não se importa com a ordem que\n\
 você der os itens. João e Maria são os personagens teste019 e teste020.\n\
 Nota: esse trigger é sensivelmente mais complicado."
 const dir_n = $s_teste082
-const portaini_n = 3 # Estado inicial: 3 Porta trancada
-const fechadura_n = "aaaaaaaaaa"
 const dir_l = $s_teste092
 const dir_o = $s_teste106
+const portaini_n = 3 # Estado inicial: 3 Porta trancada
+const fechadura_n = "aaaaaaaaaa"
 const s_reset = "P 100 teste019 0 0 1\nP 100 teste020 0 0 1"
 
 func s_reset1 # Realiza o reset
@@ -4521,17 +4520,17 @@ e sair da casa. Quem tem a chave, não precisa nem destrancar a porta.\n\
 Se perder a chave ou ela for roubada, basta comprar fechadura.\n\
 As chaves antigas deixam de funcionar e você precisa comprar chaves novas."
 const dir_n = $s_teste116
-const portaini_n = 3 # Estado inicial: 3 Porta trancada
-const fechadura_n = "teste001"
-const fecha_n = 1 # Fecha ao passar: Sim
-const tranc_n = 2 # Trancar: 2 Tranca ao fechar
 const dir_s = $s_teste117
-const portaini_s = 3 # Estado inicial: 3 Porta trancada
-const fechadura_s = "teste002"
-const fecha_s = 1 # Fecha ao passar: Sim
-const tranc_s = 2 # Trancar: 2 Tranca ao fechar
 const dir_l = $s_teste064
 const dir_o = $s_teste127
+const portaini_n = 3 # Estado inicial: 3 Porta trancada
+const portaini_s = 3 # Estado inicial: 3 Porta trancada
+const fechadura_n = "teste001"
+const fechadura_s = "teste002"
+const fecha_n = 1 # Fecha ao passar: Sim
+const fecha_s = 1 # Fecha ao passar: Sim
+const tranc_n = 2 # Trancar: 2 Tranca ao fechar
+const tranc_s = 2 # Trancar: 2 Tranca ao fechar
 const s_reset = "P 100 teste025 0 0 1\nI 100 teste006 0\nI 100 teste001 0"
 
 func s_reset1 # Realiza o reset
@@ -4573,11 +4572,11 @@ const s_item = 0
 const s_luta = 0 # Batalha: 0 Pacífico
 const objmax = 50
 const dir_n = $s_teste115
+const dir_s = $s_teste118
 const portaini_n = 3 # Estado inicial: 3 Porta trancada
 const fechadura_n = "teste002"
 const fecha_n = 1 # Fecha ao passar: Sim
 const tranc_n = 2 # Trancar: 2 Tranca ao fechar
-const dir_s = $s_teste118
 
 
 classe s_teste118
@@ -4766,6 +4765,7 @@ A pulseira deixa você invisível, mas você sofre queimaduras por 60\n\
 segundos quando coloca (efeito queimando nível 0) e perde um quarto\n\
 dos pontos de vida quando tira."
 const dir_n = $s_teste129
+const s_reset = "S 100 teste047 2 S"
 
 func cmd_salaperso # Personagem chegou
   ret !arg0.jog, nulo # Retorna se não for jogador
@@ -4776,8 +4776,6 @@ func cmd_escr
     arg0.msg("Você não consegue fazer isso.")
     ret 1
   fimse
-
-const s_reset = "S 100 teste047 2 S"
 
 func s_reset1 # Realiza o reset
 # Não alterar; função criada automaticamente a partir de s_reset
@@ -5360,12 +5358,11 @@ você vai para outra sala do MUD, e ao sair do ônibus, vai para a sala\n\
 aonde o item ônibus está."
 const dir_s = $s_teste161
 const a_reset = "S 100 teste067 1 S"
+const s_reset = "P 100 teste040 0 0 1"
 
 func a_reset1 # Realiza o reset
 # Não alterar; função criada automaticamente a partir de a_reset
   !dentro1.objini("i_teste067") && criar("i_teste067", este, 1)
-
-const s_reset = "P 100 teste040 0 0 1"
 
 func s_reset1 # Realiza o reset
 # Não alterar; função criada automaticamente a partir de s_reset
@@ -5565,8 +5562,8 @@ const s_titulo = "Parada de ônibus das casas"
 const s_desc = "Segunda parada do ônibus moderno, item teste078 criado na sala teste179.\n\
 O ônibus se movimenta de forma eficiente porque ele memoriza os últimos\n\
 caminhos percorridos. A saída ao norte só existe para esse ônibus."
-const dir_l = $s_teste127
 const dir_n = txt(arg0) == "i_teste078" ? $s_teste179 : nulo
+const dir_l = $s_teste127
 
 
 classe s_teste181

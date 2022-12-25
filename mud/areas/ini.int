@@ -6,17 +6,17 @@ const a_nome = "Ilha (início)"
 classe b_ini
 herda sala
 const s_area = "ini"
-const s_terreno = 1
-const s_luta = 1
 const s_item = 1
+const s_luta = 1
+const s_terreno = 1
 
 
 classe i_ini001
 herda comum_itemgrupo
 const nome = "diamante azul"
 const descnome = "um diamante azul"
-const msexo = 1
 const descpos = "Aqui tem um diamante azul."
+const msexo = 1
 const pesoobj = 200
 
 func cmd_mudadono # Objeto mudou de dono
@@ -31,8 +31,8 @@ classe i_ini002
 herda comum_itemgrupo
 const nome = "diamante amarelo"
 const descnome = "um diamante amarelo"
-const msexo = 1
 const descpos = "Aqui tem um diamante amarelo."
+const msexo = 1
 const pesoobj = 200
 
 func cmd_mudadono # Objeto mudou de dono
@@ -47,8 +47,8 @@ classe i_ini003
 herda comum_itemgrupo
 const nome = "diamante vermelho"
 const descnome = "um diamante vermelho"
-const msexo = 1
 const descpos = "Aqui tem um diamante vermelho."
+const msexo = 1
 const pesoobj = 200
 
 func cmd_mudadono # Objeto mudou de dono
@@ -63,8 +63,8 @@ classe i_ini004
 herda comum_itemgrupo
 const nome = "diamante verde"
 const descnome = "um diamante verde"
-const msexo = 1
 const descpos = "Aqui tem um diamante verde."
+const msexo = 1
 const pesoobj = 200
 
 func cmd_mudadono # Objeto mudou de dono
@@ -115,11 +115,11 @@ classe i_ini006
 herda comum_itemperso
 const nome = "tronco"
 const descnome = "um tronco de árvore"
-const msexo = 1
 const descpos = "Um pedaço grande de tronco está aqui no centro."
-const pesoobj = 1000000
+const msexo = 1
 const i_movel = 1 # 1=pode sentar, 2=pode sentar e deitar
 const i_lugar = 100 # Quantos personagens podem sentar
+const pesoobj = 1000000
 
 
 classe p_ini001
@@ -127,11 +127,11 @@ herda comum_perso
 const nome = "anão"
 const descnome = "um pequeno anão"
 const sexoini = 1
-const p_agressivo = 1 # Para poder receber ataques (não participará de batalha)
 const pesoobj = 70000
-const persobat = este # Personagem usado na batalha
+const p_agressivo = 1 # Para poder receber ataques (não participará de batalha)
 const eveste = 1 # Receber eventos do próprio objeto
 const evsala = 1 # Receber eventos do dono se o dono for sala
+const persobat = este # Personagem usado na batalha
 
 func cmd_atacar
   se "p_ini001" == arg1
@@ -156,11 +156,11 @@ classe p_ini002
 herda comum_perso
 const nome = "Silva"
 const sexoini = 1
-const p_agressivo = 1 # Para poder receber ataques (não participará de batalha)
-const pvida = 1000 # Para não dizer que o alvo está desmaiado
 const pesoobj = 80000
+const p_agressivo = 1 # Para poder receber ataques (não participará de batalha)
 const eveste = 1 # Receber eventos do próprio objeto
 const evsala = 1 # Receber eventos do dono se o dono for sala
+const pvida = 1000 # Para não dizer que o alvo está desmaiado
 
 func cmd_chegou # Alguém chegou na mesma sala
   ret !arg0.jog, nulo # Retorna se não for jogador
@@ -354,15 +354,15 @@ func cmd_mover
 
 classe s_ini002
 herda b_ini
-const s_luta = 0
 const s_titulo = "Centro da ilha"
 const s_desc = "Há uma palmeira um pouco seca aqui. Ao norte há um pequeno arbusto,\n\
 e ao sul, uma antiga cabana de palha. A ilha continua nas outras direções,\n\
 mas você vê apenas o chão."
+const s_luta = 0
+const dir_n = $s_ini010
+const dir_s = $s_ini008
 const dir_l = $s_ini005
 const dir_o = $s_ini007
-const dir_s = $s_ini008
-const dir_n = $s_ini010
 
 func cmd_salaperso # Personagem chegou
   ret !arg0.jog, nulo # Retorna se não for jogador
@@ -383,8 +383,8 @@ func entrou20
 
 classe s_ini003
 herda b_ini
-const descsala = "Nas nuvens"
 const s_ocultar = 1
+const descsala = "Nas nuvens"
 
 func cmd_salaperso # Personagem chegou
   ret !arg0.jog, nulo # Retorna se não for jogador
@@ -415,8 +415,8 @@ classe s_ini004
 herda b_ini
 # Altera a descrição da sala
 const s_titulo = "Na névoa branca"
-const descsala = "Você está caindo!"
 const s_ocultar = 1
+const descsala = "Você está caindo!"
 
 func cmd_salaperso # Personagem chegou
   se !arg0.jog # Apaga se não for jogador
@@ -472,10 +472,10 @@ Nas outras direções o chão termina e começa uma neblina branca.\n\
 Acima da neblina só se vê o céu azul. O chão nessa região também é azul,\n\
 mas há um [desenho] apagado (você pode ver teclando olhar desenho ou\n\
 teclando ver desenho)."
-const dir_o = $s_ini002
 const dir_n = $s_ini004
 const dir_s = $s_ini004
 const dir_l = $s_ini004
+const dir_o = $s_ini002
 const dir_b = $s_ini006
 const inv_b = 1
 const ver_desenho = "O desenho é o mapa de uma pequena ilha, com uma palmeira seca no meio,\n\
@@ -491,8 +491,8 @@ const s_desc = "A escada está bem firme, presa na rocha à leste. Mas infelizment
 é menor que parecia à primeira vista. Depois de 3 metros, a escada\n\
 simplesmente acaba no nada. O vento aqui é um pouco forte, e não seria\n\
 surpresa se alguma coisa caísse de cima."
-const dir_c = $s_ini005
 const eveste = 1 # Receber eventos do próprio objeto
+const dir_c = $s_ini005
 
 func cmd_salaperso # Personagem chegou
   ret !arg0.jog, nulo # Retorna se não for jogador
@@ -526,17 +526,17 @@ const s_titulo = "Região oeste da ilha"
 const s_desc = "Há várias pedras vermelhas no chão. Há também uma [placa] que pode ser lida\n\
 teclando olhar placa. À leste fica o centro da ilha. Nas outras direções só\n\
 se vê o céu azul e uma névoa branca no lugar do chão."
-const dir_l = $s_ini002
+const eveste = 1 # Receber eventos do próprio objeto
 const dir_n = $s_ini004
 const dir_s = $s_ini004
+const dir_l = $s_ini002
 const dir_o = $s_ini004
-const eveste = 1 # Receber eventos do próprio objeto
+const s_reset = "S 100 ini003 78 s"
 const ver_placa = "A placa diz: Depósito de diamantes vermelhos\n\
 Para pegar tecle pegar diamante_vermelho\n\
 Para soltar tecle soltar diamante_vermelho\n\
 Muitas vezes pode-se abreviar os comandos.\n\
 Exemplo, \"pe dia\" ao invés de \"pegar diamante_vermelho\"."
-const s_reset = "S 100 ini003 78 s"
 
 func cmd_pegarobj
   se arg2 == "i_ini003"
@@ -573,10 +573,10 @@ está escrito na placa tecle olhar placa)."
 const eveste = 1 # Receber eventos do próprio objeto
 const dir_n = $s_ini002
 const dir_s = $s_ini009
-const portaini_s = 2 # Estado inicial: 2 Porta fechada
-const portanome_s = "a porta da cabana"
 const dir_l = $s_ini004
 const dir_o = $s_ini004
+const portaini_s = 2 # Estado inicial: 2 Porta fechada
+const portanome_s = "a porta da cabana"
 inttempo fechaporta # Para fazer o vento bater a porta
 const ver_placa = "A placa diz:\nPara abrir a porta ao sul, tecle abrir s"
 
@@ -598,10 +598,10 @@ herda b_ini
 const s_titulo = "Dentro da cabana"
 const s_desc = "Há uma janela. A vista é do céu, e no lugar do chão, há uma\n\
 névoa branca como neve. Há uma pessoa esquisita aqui."
+const eveste = 1 # Receber eventos do próprio objeto
 const dir_n = $s_ini008
 const portaini_n = 2 # Inicialmente fechado
 const portanome_n = "a porta da cabana"
-const eveste = 1 # Receber eventos do próprio objeto
 const s_reset = "P 100 ini002 27 27 1"
 
 func cmd_abriudir
@@ -660,10 +660,10 @@ herda b_ini
 const s_titulo = "Pequena ilha"
 const s_desc = "Um pouco menor que a ilha grande, mas a névoa continua a mesma.\n\
 Há uma escada para cima, mas não se vê aonde ela vai dar."
-const dir_c = $s_ini013
+const eveste = 1 # Receber eventos do próprio objeto
 const dir_s = $s_ini015
 const dir_l = $s_ini017
-const eveste = 1 # Receber eventos do próprio objeto
+const dir_c = $s_ini013
 
 func cmd_mover
   se arg2 == "c"
@@ -699,12 +699,12 @@ herda b_ini
 const s_titulo = "Pequena ilha"
 const s_desc = "A neblina aqui é forte, mas não o suficiente para ocultar uma placa.\n\
 Pode-se ler o que está escrito na [placa]."
-const dir_n = $s_ini015
 const eveste = 1 # Receber eventos do próprio objeto
+const dir_n = $s_ini015
+const s_reset = "S 100 ini004 45 s"
 const ver_placa = "A placa diz: você pode saber o que está carregando e vestindo teclando\n\
 inv e equip, respectivamente. Talvez você queira remover ou vestir\n\
 alguma coisa (comandos são remover e vestir seguido do nome do item)."
-const s_reset = "S 100 ini004 45 s"
 
 func cmd_pegarobj
   se arg2 == "i_ini004"
@@ -737,39 +737,39 @@ const s_titulo = "Pequena ilha"
 const s_desc = "Ao norte há uma ponte de cordas, que não parece muito segura. A madeira\n\
 que compõe o chão da ponte está bastante gasta, e as cordas não estão\n\
 em muito melhor estado."
-const dir_o = $s_ini014
 const dir_n = $s_ini018
+const dir_o = $s_ini014
 
 
 classe s_ini018
 herda b_ini
-const s_terreno = 5
 const s_titulo = "Ponte de cordas"
 const s_desc = "Você está em uma extremidade da ponte. Conforme o vento bate,\n\
 a ponte balança um pouco. Felizmente há terra firme ao sul."
-const dir_s = $s_ini017
+const s_terreno = 5
 const dir_n = $s_ini019
+const dir_s = $s_ini017
 
 
 classe s_ini019
 herda b_ini
-const s_terreno = 5
 const s_titulo = "Ponte de cordas"
 const s_desc = "Há muita neblina, de modo que não se vê aonde a ponte começa ou termina.\n\
 Conforme o vento bate, a ponte balança e você se segura para não cair.\n\
 Algumas táboas estão quebradas aqui."
-const dir_s = $s_ini018
+const s_terreno = 5
 const dir_n = $s_ini020
+const dir_s = $s_ini018
 
 
 classe s_ini020
 herda b_ini
-const s_terreno = 5
 const s_titulo = "Ponte de cordas"
 const s_desc = "Você está em uma extremidade da ponte. Conforme o vento bate,\n\
 a ponte balança um pouco. Há terra firme ao norte."
-const dir_s = $s_ini019
+const s_terreno = 5
 const dir_n = $s_ini021
+const dir_s = $s_ini019
 
 
 classe s_ini021

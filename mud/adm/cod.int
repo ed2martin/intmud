@@ -13,6 +13,8 @@ const m_ajuda = "-t Comandos de edição do código\n\
 -m LFUNC Lista funções de uma classe\n\
 -m LFUNC2 Lista todas funções de uma classe, inclusive as herdadas\n\
 -m LARQ Lista os arquivos e as classes de cada arquivo\n\
+-m ORDENACL Ordena as const de uma classe\n\
+-m ORDENAARQ Ordena as const de todas as classes de um arquivo\n\
 -m MUDLER Recarrega arquivos do MUD que foram alterados\n\
 -m MD5CL Calcula o MD5 do texto de uma classe (para saber se mudou)\n\
 -m MD5SALVAR Calcula o MD5 de diversos arquivos e salva em mud-md5.txt\n\
@@ -21,8 +23,7 @@ const m_ajuda = "-t Comandos de edição do código\n\
 
 classe adm_lcl
 herda comando_adm
-const m_ajuda = "-tn\
--s [nome] [quantidade]\n\
+const m_ajuda = "-tn-s [nome] [quantidade]\n\
 Lista todas as classes que começam com o nome especificado.\n\
 Se o nome for omitido, lista todos os itens.\n\
 Para listar somente as classes que tenham uma certa quantidade mínima\n\
@@ -316,6 +317,7 @@ func escr
     epara p.iniarq(arg1), p.lin, p.depois
       t.addfim(p.texto + ",")
     efim
+    ret !t.linhas, arg0.msg("Arquivo está vazio ou não existe: " + arg1)
     lin = "\b\c6Arquivo " + arg1 + " (" + t.linhas + "):\b"
   fimse
   textopos pos
@@ -441,6 +443,62 @@ func passo
     ret 1
   casofim
   ret passoeditor(arg0, arg1, 1000, "Herança")
+
+
+classe adm_ordenacl
+herda comando_adm
+const m_ajuda = "-t\n\
+-s <nome da classe>\n\
+Ordena as const de uma classe de acordo com a const admordem.\n\
+Nota: isso já ocorre naturalmente ao editar a classe através de um menu,\n\
+com comandos como Esala, Eitem, Eperso, Etipo, Ehab, etc."
+
+func escr
+  prog p
+  se !arg1
+    arg0.msg("\bDigite o nome da classe após ORDENACL")
+  senao !p.existe(arg1)
+    arg0.msg("\bClasse não existe: " + arg1)
+  senao ![arg1]:admordem
+    arg0.msg("\bClasse não pode ser ordenada: " + arg1)
+  senao
+    criar("admmudou", arg1)
+    arg0.msg("\bOrdenando classe " + arg1)
+  fimse
+
+
+classe adm_ordenaarq
+herda comando_adm
+const m_ajuda = "-t\n\
+-s <prefixo do arquivo>\n\
+Ordena as const de todas as classes de um arquivo de acordo com a const\n\
+admordem.\n\
+Nota: isso já ocorre naturalmente ao editar a classe através de um menu,\n\
+com comandos como Esala, Eitem, Eperso, Etipo, Ehab, etc."
+
+func escr
+  prog p
+  se !arg1
+    arg0.msg("\bDigite o prefixo do arquivo após ORDENAARQ")
+  senao !p.arqnome(arg1)
+    arg0.msg("\bArquivo não existe: " + arg1)
+  senao
+    int32 total
+    int32 num
+    debug d
+    epara p.iniarq(arg1), p.lin, p.depois
+      d.ini, total++
+      continuar ![p.texto]:admordem
+      criar("admmudou", p.texto), num++
+    efim
+    se !total
+      arg0.msg("Arquivo está vazio ou não existe: " + arg1)
+    senao total == 1
+      arg0.msg("\bOrdenando " + num + " de 1 classe de " + arg1)
+    senao
+      arg0.msg("\bOrdenando " + num + " de " + total + " classes de " + arg1)
+    fimse
+  fimse
 
 
 classe adm_md5cl
