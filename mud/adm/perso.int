@@ -550,6 +550,9 @@ const vari35 = "p_atktipo"
 #
 const nome36 = "Quando morre"
 const tipo36 = "menu_pmorreu--"
+#
+const nome37 = "Fim da batalha"
+const tipo37 = "menu_pbatalhafim--"
 
 
 classe menu_pdescsala
@@ -638,6 +641,26 @@ const nulo5 = "\c3" + fnulo("desccond4")
 const nulo6 = "\c3" + fnulo("desccond5")
 const nulo7 = "\c3" + fnulo("desccond6")
 const nulo8 = "\c3" + fnulo("desccond7")
+
+func fnulo
+  refvar v = $t_[[classe]:tipo1].[arg0] ?? $t_[[classe]:tipo2].[arg0]
+  ret v ?? $t_[[classe]:tipo2].[arg0] ?? $t_[[classe]:tipo3].[arg0] ?? perso_cfg:[arg0]
+
+
+classe menu_pbatalhafim
+herda menu_batalhafim
+const menufim = var.menufim
+const classe = var.classe1
+const nulo1 = "\c3" + fnulo("batalhafim_p1")
+const nulo2 = "\c3" + fnulo("batalhafim_p2")
+const nulo3 = "\c3" + fnulo("batalhafim_p3")
+const nulo4 = "\c3" + fnulo("batalhafim_s1")
+const nulo5 = "\c3" + fnulo("batalhafim_s2")
+const nulo6 = "\c3" + fnulo("batalhafim_s3")
+const nulo7 = "\c3" + fnulo("batalhafim_t1")
+const nulo8 = "\c3" + fnulo("batalhafim_t2")
+const nulo9 = "\c3" + fnulo("batalhafim_t3")
+const nulo10 = "\c3" + fnulo("batalhafim_fim")
 
 func fnulo
   refvar v = $t_[[classe]:tipo1].[arg0] ?? $t_[[classe]:tipo2].[arg0]
@@ -1135,14 +1158,14 @@ const tipo33 = "menu_patribs2--"
 const nome34 = "Comportamento"
 const tipo34 = "menu_pcomportamento2--"
 #
-const nome37 = "Domar e montar"
-const tipo37 = "menu_pdomar--"
+const nome38 = "Domar e montar"
+const tipo38 = "menu_pdomar--"
 #
-const nome38 = "Dar e soltar"
-const info38 = "Se esse personagem pode ser dado ou solto"
-const tipo38 = "opc_opcao"
-const vari38 = "p_soltar"
-const extr38 = "Pode-se dar e soltar\nPode-se apenas soltar\nNão se pode dar nem soltar"
+const nome39 = "Dar e soltar"
+const info39 = "Se esse personagem pode ser dado ou solto"
+const tipo39 = "opc_opcao"
+const vari39 = "p_soltar"
+const extr39 = "Pode-se dar e soltar\nPode-se apenas soltar\nNão se pode dar nem soltar"
 
 
 classe menu_perso3

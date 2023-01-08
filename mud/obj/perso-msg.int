@@ -163,11 +163,29 @@ const exp_nivelmsg1 = "Você avança para o nível $m."
 const exp_nivelmsg2 = "$1 avança para o nível $m."
 const exp_nmax = ""
 #
+# Moedas
+const moedas_dar1 = "Você dá uma moeda para o grupo."
+const moedas_dar2 = "Você dá $m moedas para o grupo."
+const moedas_rec1 = "Você recebe uma moeda $d $a."
+const moedas_rec2 = "Você recebe $m moedas $d $a."
+#
 # Loja e aulas
 const loja_invisivel = "$P: Não negocio com quem não posso ver."
 const loja_naonegocia = "$P: Não negocio com $m."
 const loja_fechada = "$P: Volte outra hora."
 const loja_msgidioma = "$P só entende $m no nível $1."
+#
+# Fim da batalha
+const batalhafim_p1 = "Você se prepara."
+const batalhafim_p2 = "$P se prepara."
+const batalhafim_p3 = "$P se prepara."
+const batalhafim_s1 = "Você procura uma brecha."
+const batalhafim_s2 = "$P procura uma brecha."
+const batalhafim_s3 = "$P procura uma brecha."
+const batalhafim_t1 = "Você encara $a."
+const batalhafim_t2 = "$P encara você."
+const batalhafim_t3 = "$P encara $a."
+const batalhafim_fim = "Batalha encerrada."
 #
 const admordem = "descperso0 descperso1 descperso2 descperso3 descperso4c descperso4i\n\
 descperso5c descperso5i descperso6c descperso6i descperso6p\n\
@@ -200,7 +218,11 @@ ini_perso_entrou ini_perso_saiu ini_perso_caiu ini_perso_reconectou\n\
 exp_add1_voce exp_add2_voce exp_add1_animal exp_add2_animal\n\
 exp_sub1_voce exp_sub2_voce exp_sub1_animal exp_sub2_animal\n\
 exp_nivelmsg1 exp_nivelmsg2 exp_nmax\n\
-loja_invisivel loja_naonegocia loja_fechada loja_msgidioma"
+moedas_dar1 moedas_dar2 moedas_rec1 moedas_rec2\n\
+loja_invisivel loja_naonegocia loja_fechada loja_msgidioma\n\
+batalhafim_p1 batalhafim_p2 batalhafim_p3\n\
+batalhafim_s1 batalhafim_s2 batalhafim_s3\n\
+batalhafim_t1 batalhafim_t2 batalhafim_t3 batalhafim_fim"
 
 func iniclasse
   ret txt(arg0, 0, 2) != "h_", !$[arg0] && criar(arg0)
@@ -748,7 +770,7 @@ const vari12 = "ini_perso_reconectou"
 
 classe m_perso_exp
 herda comando_menu
-const titulo = "Experiência e nível"
+const titulo = "Experiência, nível e moedas"
 const menufim = "menu_econfig_msg"
 const colunas = 28
 const classe = "perso_cfg"
@@ -795,9 +817,25 @@ const info10 = "$P é o personagem, $1 é o nome do personagem visível a todos, $m
 const tipo10 = "opc_linha"
 const vari10 = "exp_nivelmsg2"
 #
-const nome11 = "Chegou ao nível máximo"
+const nome11 = "Chegou no nível máximo"
 const tipo11 = "opc_texto"
 const vari11 = "exp_nmax"
+#
+const nome12 = "Dar uma moeda"
+const tipo12 = "opc_linha"
+const vari12 = "moedas_dar1"
+#
+const nome13 = "Dar moedas"
+const tipo13 = "opc_linha"
+const vari13 = "moedas_dar2"
+#
+const nome14 = "Receber uma moeda"
+const tipo14 = "opc_linha"
+const vari14 = "moedas_rec1"
+#
+const nome15 = "Receber moedas"
+const tipo15 = "opc_linha"
+const vari15 = "moedas_rec2"
 
 
 classe m_perso_loja
@@ -822,3 +860,61 @@ const vari3 = "loja_fechada"
 const nome4 = "Não entende idioma"
 const tipo4 = "opc_linha"
 const vari4 = "loja_msgidioma"
+
+
+classe m_perso_batalhafim
+herda menu_batalhafim
+const menufim = "menu_econfig_msg"
+const classe = "perso_cfg"
+
+
+classe menu_batalhafim
+herda comando_menu
+const titulo = "Fim da batalha"
+const colunas = 28
+#
+const titu1 = " * Primeira mensagem"
+#
+const nome1 = "Perso"
+const tipo1 = "opc_linha"
+const vari1 = "batalhafim_p1"
+#
+const nome2 = "Alvo"
+const tipo2 = "opc_linha"
+const vari2 = "batalhafim_p2"
+#
+const nome3 = "Outros"
+const tipo3 = "opc_linha"
+const vari3 = "batalhafim_p3"
+#
+const titu4 = " * Segunda mensagem"
+#
+const nome4 = "Perso"
+const tipo4 = "opc_linha"
+const vari4 = "batalhafim_s1"
+#
+const nome5 = "Alvo"
+const tipo5 = "opc_linha"
+const vari5 = "batalhafim_s2"
+#
+const nome6 = "Outros"
+const tipo6 = "opc_linha"
+const vari6 = "batalhafim_s3"
+#
+const titu7 = " * Terceira mensagem"
+#
+const nome7 = "Perso"
+const tipo7 = "opc_linha"
+const vari7 = "batalhafim_t1"
+#
+const nome8 = "Alvo"
+const tipo8 = "opc_linha"
+const vari8 = "batalhafim_t2"
+#
+const nome9 = "Outros"
+const tipo9 = "opc_linha"
+const vari9 = "batalhafim_t3"
+#
+const nome10 = "Fim da batalha"
+const tipo10 = "opc_linha"
+const vari10 = "batalhafim_fim"

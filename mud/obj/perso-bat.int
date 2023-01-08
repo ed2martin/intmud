@@ -455,20 +455,30 @@ func atktempo_exec # Encerra a batalha depois de um tempo
   casose "1"
     ret
   casose "2"
-    posicao >= 4 && $mens.mvis1("$P se prepara.")
+    ret posicao < 4, nulo
+    refvar m1 = atktempo_msg("batalhafim_p1")
+    $mens.mvis3(m1, atktempo_msg("batalhafim_p2"), atktempo_msg("batalhafim_p3"))
     ret
   casose "3"
     atktempo = 30
-    posicao >= 4 && $mens.mvis1("$P procura uma brecha.")
+    ret posicao < 4, nulo
+    refvar m1 = atktempo_msg("batalhafim_s1")
+    $mens.mvis3(m1, atktempo_msg("batalhafim_s2"), atktempo_msg("batalhafim_s3"))
     ret
   casose "4"
     atktempo = 30
-    posicao >= 4 && $mens.mvis1("$P encara $a.")
+    ret posicao < 4, nulo
+    refvar m1 = atktempo_msg("batalhafim_t1")
+    $mens.mvis3(m1, atktempo_msg("batalhafim_t2"), atktempo_msg("batalhafim_t3"))
     ret
   casofim
-  atkenv.objlista.msg("Batalha encerrada.")
-  msg("Batalha encerrada.")
+  $mens.mp(atkenv.objlista.atktempo_msg("batalhafim_fim"), atkenv.objlista)
+  $mens.mp(atktempo_msg("batalhafim_fim"), este)
   batalhafim(1)
+
+func atktempo_msg # Para obter as mensagens de atktempo_exec
+  refvar m = [arg0] ?? $t_[tipo1].[arg0](este) ?? $t_[tipo2].[arg0](este)
+  ret m ?? $t_[tipo3].[arg0](este) ?? perso_cfg:[arg0]
 
 func restaurar # Restaura personagem (HP, mana, etc.)
   pmana = pmanamax, pmove = pmovemax, pvida = pvidamax
@@ -635,18 +645,15 @@ func pegamoedas # Pega todas as moedas do personagem arg0
   moedas = intdiv(moedas / l.total) # Quantas moedas para cada integrante
   ret !moedas, nulo # Retorna se não vai distribuir nenhuma moeda
   l.remove(este)
-  se moedas * l.total == 1
-    msg("Você dá uma moeda para o grupo.")
+  se ($mens.mens = moedas * l.total) == 1
+    $mens.mp(perso_cfg:moedas_dar1, este)
   senao
-    msg("Você dá " + moedas * l.total + " moedas para o grupo.")
+    $mens.mp(perso_cfg:moedas_dar2, este)
   fimse
+  $mens.mens = moedas
   epara i = l.ini, i, i.depois
     var.z_moedas_ -= moedas, i.obj.var.z_moedas_ += moedas
-    se moedas * l.total == 1
-      i.obj.msg("Você recebe uma moeda.")
-    senao
-      i.obj.msg("Você recebe " + moedas + " moedas.")
-    fimse
+    $mens.mp(moedas == 1 ? perso_cfg:moedas_rec1 : perso_cfg:moedas_rec2, i.obj, este)
   efim
 
 func p_proc_exec # Processar comportamento do personagem
