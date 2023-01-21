@@ -80,6 +80,14 @@ txt100 o_4 # Texto de $4
 txt100 o_5 # Texto de $5
 const iniclasse = !$[arg0] && criar(arg0)
 
+func removesom # Remove códigos de som de textotxt arg0
+  textopos p = arg0.ini
+  enquanto p.txtproc("\d=") >= 0
+    refvar ini = p.txtproc("\d=")
+    refvar som = txt(txt1(p.texto(ini, 80)), 2)
+    p.mudar("", ini, inttotal(som) + 3)
+  efim
+
 func p # Define os personagens
   perso = arg0, alvo = arg1, obj1 = arg2, obj2 = arg3
 
@@ -411,22 +419,30 @@ func mfalar2 # Mensagem de personagem falando
 # arg1 = mensagem para outros
 # arg2 = o que o personagem falou ($m nas mensagens)
 # arg3 = objeto que trata do idioma ($1 nas mensagens) ou null se língua comum
+# arg4 = nome da variável que contém o histórico das mensagens
   refvar contr = perso.dono.perso ? perso.dono : perso
   ret !contr.dono.socktot, nulo
   refvar m1 = $miscbebida.msgperso(arg2, contr.p_bebida)
   uint8 sabe1 = !arg3 ? 100 : contr.var.[arg3.nomevar] * 17 # Quanto conhece
   o_1 = arg3.falar
-  se arg0
+  se arg0 && contr.sock && contr.posicao >= 4
     mens = sabe1 < 100 ? arg3.converte(m1, sabe1) : m1
-    msginv(!sabe1 ? arg3.naoconhece ?? arg0, contr)
+    refvar m2 = este.txt(!sabe1 ? arg3.naoconhece ?? arg0, contr)
+    contr.msg(m2)
+    refvar e = contr.sock.var.[arg4]
+    arg4 && (e = m2 + (e ? "\n") + txtsublin(e, 0, 29))
   fimse
   ret !arg1, nulo
   listaobj l0
   l0.addfim(contr.dono.dentro2)
   epara l0.remove(contr), l0, l0.ini.remove
+    continuar !l0.objini.sock || l0.objini.posicao < 4
     refvar sabe2 = !arg3 ? 100 : intmin(sabe1, l0.objini.var.[arg3.nomevar] * 17)
     mens = sabe2 < 100 ? arg3.converte(m1, sabe2) : m1
-    msginv(!sabe2 ? arg3.naoconhece ?? arg1, l0.objini)
+    refvar m2 = este.txt(!sabe1 ? arg3.naoconhece ?? arg1, l0.objini)
+    l0.objini.msg(m2)
+    refvar e = l0.objini.sock.var.[arg4]
+    arg4 && (e = m2 + (e ? "\n") + txtsublin(e, 0, 29))
   efim
 
 func persomsg # Usado internamente, arg0 = mensagem de tu/ti

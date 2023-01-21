@@ -8,35 +8,47 @@ const posic = 0
 const txtajuda = v_tipo ? txtajuda1(m_ajuda1 + (v_tipo == 1 ? "\n" + m_ajuda2))
 #
 const m_ajuda1 = "-t\n\
--s <mensagem>\n\
--ss .<mensagem>\n\
+-s [mensagem]\n\
+-ss .[mensagem]\n\
 Envia mensagem para os jogadores que estiverem com o canal CHAT habilitado.\n\
+Se a mensagem for omitida, mostra as últimas mensagens enviadas e recebidas.\n\
 Para habilitar ou desabilitar esse canal, use o comando CONFIG."
 const m_ajuda2 = "Nota: quando o jogo é ativado em um chat, mensagens de uma sala do chat\n\
 não irão para as outras salas."
 const m_nivel = "Para usar o comando CHAT você precisa chegar no nível $m."
 const v_nivel = 0
 const m_desab = "Canal CHAT está desabilitado; para habilitar tecle CONFIG +CHAT"
-const m_sem_args = "Tecle a mensagem após CHAT."
+const m_hist_vazio = "Nenhuma mensagem de Chat."
+const m_hist_lista = "\b\c6Últimas mensagens de Chat:\b"
 const m_msg1 = "(chat) $R disse '$m'"
 const m_msg2 = "(chat) $R disse '$m'"
+const m_hist1 = "$R '$m'"
 const v_tipo = 2
-const admordem = "m_ajuda1 m_ajuda2 m_nivel v_nivel m_desab m_sem_args m_msg1 m_msg2 v_tipo"
+const admordem = "m_ajuda1 m_ajuda2 m_nivel v_nivel m_desab\n\
+m_hist_vazio m_hist_lista m_msg1 m_msg2 m_hist1 v_tipo"
+textovar var
 
 func escr
   $mens.p(arg0)
   $mens.mens = arg1
-  se arg2.c_chat
+  se !arg1
+    ret !var.historico, $mens.mp(m_hist_vazio, arg0)
+    refvar t = arg0.sock.txtmais
+    t.limpar
+    t.addfim(m_hist_lista)
+    t.addfim(var.historico)
+    arg0.sock.txtmostra
+  senao arg2.c_chat
     $mensjog.msg(arg2.c_chat, arg0)
   senao arg0.pnivel < v_nivel
     $mens.mens = v_nivel
     $mens.mp(m_nivel, arg0)
   senao !arg0.jogconfig.4
     $mens.mp(m_desab, arg0)
-  senao !arg1
-    $mens.mp(m_sem_args, arg0)
   senao v_tipo == 2 # Escrever para todos
     $misclog.jogchat("chat " + arg0.nome + ": " + arg1)
+    refvar m = var.historico
+    m = $mens.txt(m_hist1) + (m ? "\n") + txtsublin(m, 0, 29)
     indiceitem item
     epara item.ini("un "), txt1(item.txt) == "un", item.depois
       ref r = item.obj.perso
@@ -44,6 +56,8 @@ func escr
     efim
   senao # Escrever para quem estiver na mesma sala
     $misclog.jogchat("chat " + arg0.nome + ": " + arg1)
+    refvar m = var.historico
+    m = $mens.txt(m_hist1) + (m ? "\n") + txtsublin(m, 0, 29)
     listaobj l
     epara arg0.sock.salaobj(l), l, l.ini.remove
       ref r = l.objini.perso
@@ -62,46 +76,60 @@ const posic = 0
 const txtajuda = v_tipo ? txtajuda1(m_ajuda1 + (v_tipo == 1 ? "\n" + m_ajuda2))
 #
 const m_ajuda1 = "-t\n\
--s <mensagem>\n\
+-s [mensagem]\n\
 Envia mensagem para os jogadores que estiverem com o canal NOVATOS\n\
-habilitado. Esse canal é destinado a dúvidas de iniciantes.\n\
+habilitado. Se a mensagem for omitida, mostra as últimas mensagens enviadas\n\
+e recebidas. Esse canal é destinado a dúvidas de iniciantes.\n\
 Para habilitar ou desabilitar esse canal, use o comando CONFIG."
 const m_ajuda2 = "Nota: quando o jogo é ativado em um chat, mensagens de uma sala do chat\n\
 não irão para as outras salas."
 const m_nivel = "Para usar o comando NOVATOS você precisa chegar no nível $m."
 const v_nivel = 0
 const m_desab = "Canal NOVATOS está desabilitado; para habilitar tecle CONFIG +NOVATOS"
-const m_sem_args = "Tecle a mensagem após NOVATOS."
+const m_hist_vazio = "Nenhuma mensagem de Novatos."
+const m_hist_lista = "\b\c6Últimas mensagens de Novatos:\b"
 const m_msg1 = "(novatos) $R '$m'"
 const m_msg2 = "(novatos) $R '$m'"
+const m_hist1 = "$R '$m'"
 const v_tipo = 2
-const admordem = "m_ajuda1 m_ajuda2 m_nivel v_nivel m_desab m_sem_args m_msg v_tipo"
+const admordem = "m_ajuda1 m_ajuda2 m_nivel v_nivel m_desab\n\
+m_hist_vazio m_hist_lista m_msg m_hist1 v_tipo"
+textovar var
 
 func escr
   $mens.p(arg0)
   $mens.mens = arg1
-  se arg2.c_novatos
+  se !arg1
+    ret !var.historico, $mens.mp(m_hist_vazio, arg0)
+    refvar t = arg0.sock.txtmais
+    t.limpar
+    t.addfim(m_hist_lista)
+    t.addfim(var.historico)
+    arg0.sock.txtmostra
+  senao arg2.c_novatos
     $mensjog.msg(arg2.c_novatos, arg0)
   senao arg0.pnivel < v_nivel
     $mens.mens = v_nivel
     $mens.mp(m_nivel, arg0)
   senao !arg0.jogconfig.11
     $mens.mp(m_desab, arg0)
-  senao !arg1
-    $mens.mp(m_sem_args, arg0)
   senao v_tipo == 2 # Escrever para todos
     $misclog.jogchat("novatos " + arg0.nome + ": " + arg1)
+    refvar m = var.historico
+    m = $mens.txt(m_hist1) + (m ? "\n") + txtsublin(m, 0, 29)
     indiceitem item
     epara item.ini("un "), txt1(item.txt) == "un", item.depois
       ref r = item.obj.perso
-      r.jogconfig.4 && !r.var.u_[arg0.nome] && $mens.msg(arg0 == r ? m_msg1 : m_msg2, r)
+      r.jogconfig.11 && !r.var.u_[arg0.nome] && $mens.msg(arg0 == r ? m_msg1 : m_msg2, r)
     efim
   senao # Escrever para quem estiver na mesma sala
     $misclog.jogchat("novatos " + arg0.nome + ": " + arg1)
+    refvar m = var.historico
+    m = $mens.txt(m_hist1) + (m ? "\n") + txtsublin(m, 0, 29)
     listaobj l
     epara arg0.sock.salaobj(l), l, l.ini.remove
       ref r = l.objini.perso
-      r.jogconfig.4 && !r.var.u_[arg0.nome] && $mens.msg(arg0 == r ? m_msg1 : m_msg2, r)
+      r.jogconfig.11 && !r.var.u_[arg0.nome] && $mens.msg(arg0 == r ? m_msg1 : m_msg2, r)
     efim
   fimse
 
@@ -134,17 +162,25 @@ const nome6 = "Desabilitado"
 const tipo6 = "opc_linha"
 const vari6 = "m_desab"
 #
-const nome7 = "Sem argumentos"
+const nome7 = "Histórico vazio"
 const tipo7 = "opc_linha"
-const vari7 = "m_sem_args"
+const vari7 = "m_hist_vazio"
 #
-const nome8 = "Mensagem perso"
+const nome8 = "Histórico"
 const tipo8 = "opc_linha"
-const vari8 = "m_msg1"
+const vari8 = "m_hist_lista"
 #
-const nome9 = "Mensagem outros"
+const nome9 = "Mensagem perso"
 const tipo9 = "opc_linha"
-const vari9 = "m_msg2"
+const vari9 = "m_msg1"
+#
+const nome10 = "Mensagem outros"
+const tipo10 = "opc_linha"
+const vari10 = "m_msg2"
+#
+const nome11 = "Histórico"
+const tipo11 = "opc_linha"
+const vari11 = "m_hist1"
 
 
 classe m_cmd_novatos
@@ -175,14 +211,22 @@ const nome6 = "Desabilitado"
 const tipo6 = "opc_linha"
 const vari6 = "m_desab"
 #
-const nome7 = "Sem argumentos"
+const nome7 = "Histórico vazio"
 const tipo7 = "opc_linha"
-const vari7 = "m_sem_args"
+const vari7 = "m_hist_vazio"
 #
-const nome8 = "Mensagem perso"
+const nome8 = "Histórico"
 const tipo8 = "opc_linha"
-const vari8 = "m_msg1"
+const vari8 = "m_hist_lista"
 #
-const nome9 = "Mensagem outros"
+const nome9 = "Mensagem perso"
 const tipo9 = "opc_linha"
-const vari9 = "m_msg2"
+const vari9 = "m_msg1"
+#
+const nome10 = "Mensagem outros"
+const tipo10 = "opc_linha"
+const vari10 = "m_msg2"
+#
+const nome11 = "Histórico"
+const tipo11 = "opc_linha"
+const vari11 = "m_hist1"

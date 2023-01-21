@@ -5,12 +5,15 @@ const objtipo = 2 # Pode renomear
 const posic = 5
 #
 const m_ajuda = "-t\n\
+-s\n\
 -s <personagem> <mensagem>\n\
 Sussurra uma mensagem para um personagem que está na mesma sala.\n\
 A mensagem é enviada reservadamente para o personagem escolhido.\n\
-Os outros apenas ficam sabendo que você sussurrou alguma coisa."
+Os outros apenas ficam sabendo que você sussurrou alguma coisa.\n\
+Sem argumentos, mostra as últimas mensagens enviadas e recebidas."
 #
-const m_sem_args = "Sussurrar para quem?"
+const m_hist_vazio = "Nenhuma mensagem ao sussurrar."
+const m_hist_lista = "\b\c6Últimas mensagens ao sussurrar:\b"
 const m_sem_msg = "Sussurrar o quê?"
 const m_ignorar = "Você está ignorando $a."
 const m_ignorou = "$A ignora suas palavras."
@@ -20,14 +23,24 @@ const m_perso2 = "$P sussurrou algumas palavras."
 const m_msg1 = "Você sussurrou para $a '$m'"
 const m_msg2 = "$P sussurrou para $a '$m'"
 const m_msg3 = "$P sussurrou algumas palavras para você."
-const admordem = "m_ajuda m_sem_args m_sem_msg m_ignorar m_ignorou m_naover\n\
-m_perso1 m_perso2 m_msg1 m_msg2 m_msg3"
+const m_hist1 = "+$C '$m'"
+const m_hist2 = "$R '$m'"
+const admordem = "m_ajuda m_hist_vazio m_hist_lista m_sem_msg\n\
+m_ignorar m_ignorou m_naover m_perso1 m_perso2 m_msg1 m_msg2 m_msg3\n\
+m_hist1 m_hist2"
 
 func escr
   refvar perm_msg = $perm_[arg0.jogperm].c_falar
   se perm_msg
     ret $mens.mp(perm_msg, arg0)
   senao !arg1
+    ret !arg0.sock.var.z_hist_sussurrar, $mens.mp(m_hist_vazio, arg0)
+    refvar t = arg0.sock.txtmais
+    t.limpar
+    t.addfim(arg0.sock.var.z_hist_sussurrar)
+    $mens.removesom(t)
+    t.addini(m_hist_lista)
+    ret arg0.sock.txtmostra
     ret $mens.mp(m_sem_args, arg0)
   senao !txt2(arg1)
     ret $mens.mp(m_sem_msg, arg0)
@@ -36,26 +49,27 @@ func escr
     ret f, arg0.msg(f)
   fimse
   $mens.mens = txt1(arg1)
-  ref r = misc:persodono(arg0, txt1(arg1))
-  ret !r, $mens.mp(m_naover, arg0)
-  se r.var.u_[arg0.nome]
-    ret $mens.mp(m_ignorou, arg0, r)
-  senao arg0.var.u_[r.nome]
-    ret $mens.mp(m_ignorar, arg0, r)
-  senao arg0 == r
-    se arg0.sock
-      $misclog.telepatia("suss " + arg0.nome + " para " + r.nome + ": " + txt2(arg1))
-    fimse
+  ref perso = misc:persodono(arg0, txt1(arg1))
+  ret !perso, $mens.mp(m_naover, arg0)
+  se perso.var.u_[arg0.nome]
+    ret $mens.mp(m_ignorou, arg0, perso)
+  senao arg0.var.u_[perso.nome]
+    ret $mens.mp(m_ignorar, arg0, perso)
+  senao arg0 == perso
     $mens.p(arg0, arg0)
     $mens.mens = txt2(arg1)
     $mens.mtodos2(m_perso1, m_perso2)
   senao
-    se arg0.sock || r.sock
-      $misclog.telepatia("suss " + arg0.nome + " para " + r.nome + ": " + txt2(arg1))
-    fimse
-    $mens.p(arg0, r)
+    $mens.p(arg0, perso)
     $mens.mens = $miscbebida.msgperso(txt2(arg1), arg0.p_bebida)
     $mens.mtodos3(m_msg1, m_msg2, m_msg3)
+    se arg0.sock && perso.sock
+      $misclog.telepatia("suss " + arg0.nome + " para " + perso.nome + ": " + txt2(arg1))
+      refvar r = arg0.sock.var.z_hist_sussurrar
+      refvar e = perso.sock.var.z_hist_sussurrar
+      r = $mens.txt(m_hist1, perso) + (r ? "\n") + txtsublin(r, 0, 29)
+      e = $mens.txt(m_hist2, arg0) + (e ? "\n") + txtsublin(e, 0, 29)
+    fimse
   fimse
 # Executa eventos
   epara l.addfim(arg0.evento), l, l.ini.remove
@@ -73,43 +87,55 @@ const nome1 = "Ajuda"
 const tipo1 = "opc_texto"
 const vari1 = "m_ajuda"
 #
-const nome2 = "Sem argumentos"
+const nome2 = "Histórico vazio"
 const tipo2 = "opc_linha"
-const vari2 = "m_sem_args"
+const vari2 = "m_hist_vazio"
 #
-const nome3 = "Está ignorando"
+const nome3 = "Histórico"
 const tipo3 = "opc_linha"
-const vari3 = "m_ignorar"
+const vari3 = "m_hist_lista"
 #
-const nome4 = "Sendo ignorado"
+const nome4 = "Está ignorando"
 const tipo4 = "opc_linha"
-const vari4 = "m_ignorou"
+const vari4 = "m_ignorar"
 #
-const nome5 = "Sem alvo"
+const nome5 = "Sendo ignorado"
 const tipo5 = "opc_linha"
-const vari5 = "m_naover"
+const vari5 = "m_ignorou"
 #
-const nome6 = "Para si mesmo: perso"
-const info6 = "Mensagem para o personagem: sussurrou para si mesmo"
+const nome6 = "Sem alvo"
 const tipo6 = "opc_linha"
-const vari6 = "m_perso1"
+const vari6 = "m_naover"
 #
-const nome7 = "Para si mesmo: outros"
-const info7 = "Mensagem para os outros: sussurrou para si mesmo"
+const nome7 = "Para si mesmo: perso"
+const info7 = "Mensagem para o personagem: sussurrou para si mesmo"
 const tipo7 = "opc_linha"
-const vari7 = "m_perso2"
+const vari7 = "m_perso1"
 #
-const nome8 = "Sussurrou: perso"
-const info8 = "Mensagem para o personagem: sussurrou"
+const nome8 = "Para si mesmo: outros"
+const info8 = "Mensagem para os outros: sussurrou para si mesmo"
 const tipo8 = "opc_linha"
-const vari8 = "m_msg1"
+const vari8 = "m_perso2"
 #
-const nome9 = "Sussurrou: alvo"
-const info9 = "Mensagem para o alvo: sussurrou"
+const nome9 = "Sussurrou: perso"
+const info9 = "Mensagem para o personagem: sussurrou"
 const tipo9 = "opc_linha"
-const vari9 = "m_msg2"
+const vari9 = "m_msg1"
 #
-const nome10 = "Sussurrou: outros"
-const info10 = "Mensagem para os outros: sussurrou"
+const nome10 = "Sussurrou: alvo"
+const info10 = "Mensagem para o alvo: sussurrou"
 const tipo10 = "opc_linha"
-const vari10 = "m_msg3"
+const vari10 = "m_msg2"
+#
+const nome11 = "Sussurrou: outros"
+const info11 = "Mensagem para os outros: sussurrou"
+const tipo11 = "opc_linha"
+const vari11 = "m_msg3"
+#
+const nome12 = "Histórico enviado"
+const tipo12 = "opc_linha"
+const vari12 = "m_hist1"
+#
+const nome13 = "Histórico recebido"
+const tipo13 = "opc_linha"
+const vari13 = "m_hist2"

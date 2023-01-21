@@ -186,28 +186,41 @@ const posic = 0
 #
 const m_ajuda = "-t\n\
 -s <mensagem>\n\
-Envia uma mensagem para todos os integrantes do seu grupo.\n\
+Envia uma mensagem para todos os integrantes do seu grupo. Se a mensagem\n\
+for omitida, mostra as últimas mensagens enviadas e recebidas.\n\
 Vide também: GRUPO"
+const m_hist_vazio = "Nenhuma mensagem de Gchat."
+const m_hist_lista = "\b\c6Últimas mensagens de Gchat:\b"
 const m_nenhum_grupo = "Você não está em nenhum grupo."
 const m_enviou1 = "(gchat) Você '$m'"
 const m_enviou2 = "(gchat) $R '$m'"
-const admordem = "m_ajuda m_nenhum_grupo"
+const m_hist1 = "$R '$m'"
+const m_hist2 = "$R '$m'"
+const admordem = "m_ajuda m_nenhum_grupo m_hist_vazio m_hist_lista\n\
+m_hist1 m_hist2"
 
 func escr
   ref lider
-  se arg0.tseguir == 2
-    lider = arg0
-  senao arg0.iseguir && arg0.tseguir == 1
-    lider = arg0.iseguir.objlista
+  se !arg1
+    ret !arg0.sock.var.z_hist_gchat, $mens.mp(m_hist_vazio, arg0)
+    refvar t = arg0.sock.txtmais
+    t.limpar
+    t.addfim(m_hist_lista)
+    t.addfim(arg0.sock.var.z_hist_gchat)
+    ret arg0.sock.txtmostra
   fimse
-  ret !lider, $mens.mp(m_nenhum_grupo, arg0)
+  ret !arg0.donogrupo, $mens.mp(m_nenhum_grupo, arg0)
   $mens.mens = arg1
   $mens.p(arg0)
-  $mens.msginv(arg0 == lider ? m_enviou1 : m_enviou2, lider)
   listaobj l
+  arg0.listagrupo(l)
   epara l.addfim(lider.lseguir), l, l.ini.remove
+    continuar !l.objini.sock
     refvar r = l.objini
-    r.tseguir == 1 && $mens.msginv(arg0 == r ? m_enviou1 : m_enviou2, r)
+    $mens.msginv(arg0 == r ? m_enviou1 : m_enviou2, r)
+    refvar m2 = arg0 == r ? m_hist1 : m_hist2
+    refvar r2 = r.sock.var.z_hist_gchat
+    r2 = $mens.txt(m2, r) + (r2 ? "\n") + txtsublin(r2, 0, 29)
   efim
 
 
@@ -282,14 +295,30 @@ const nome1 = "Ajuda"
 const tipo1 = "opc_texto"
 const vari1 = "m_ajuda"
 #
-const nome2 = "Nenhum grupo"
+const nome2 = "Histórico vazio"
 const tipo2 = "opc_linha"
-const vari2 = "m_nenhum_grupo"
+const vari2 = "m_hist_vazio"
 #
-const nome3 = "Mensagem perso"
+const nome3 = "Histórico"
 const tipo3 = "opc_linha"
-const vari3 = "m_enviou1"
+const vari3 = "m_hist_lista"
 #
-const nome4 = "Mensagem outros"
+const nome4 = "Nenhum grupo"
 const tipo4 = "opc_linha"
-const vari4 = "m_enviou2"
+const vari4 = "m_nenhum_grupo"
+#
+const nome5 = "Mensagem perso"
+const tipo5 = "opc_linha"
+const vari5 = "m_enviou1"
+#
+const nome6 = "Mensagem outros"
+const tipo6 = "opc_linha"
+const vari6 = "m_enviou2"
+#
+const nome7 = "Histórico perso"
+const tipo7 = "opc_linha"
+const vari7 = "m_hist1"
+#
+const nome8 = "Histórico outros"
+const tipo8 = "opc_linha"
+const vari8 = "m_hist2"

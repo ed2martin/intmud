@@ -5,12 +5,15 @@ const objtipo = 2 # Pode renomear
 const posic = 5
 #
 const m_ajuda = "-t\n\
--s <mensagem>\n\
--ss '<mensagem>\n\
+-s [mensagem]\n\
+-ss '[mensagem]\n\
 Envia mensagem para todos os personagens que estiverem na mesma sala.\n\
 A mensagem pode aparecer diferente se for iniciada com reticências ou\n\
-terminada com reticências, interrogação ou exclamação."
-const m_sem_args = "Tecle a mensagem após FALAR."
+terminada com reticências, interrogação ou exclamação.\n\
+Se a mensagem for omitida, mostra as últimas mensagens enviadas\n\
+e recebidas."
+const m_hist_vazio = "Nenhuma mensagem ao falar."
+const m_hist_lista = "\b\c6Últimas mensagens ao falar:\b"
 const m_falar1 = "Você falou '$m'"
 const m_falar2 = "$P falou '$m'"
 const m_perguntar1 = "Você perguntou '$m'"
@@ -31,17 +34,24 @@ const i_ponderar1 = "Você ponderou em $1 '$m'"
 const i_ponderar2 = "$P ponderou em $1 '$m'"
 const i_continuar1 = "Você continuou em $1 '$m'"
 const i_continuar2 = "$P continuou em $1 '$m'"
-const admordem = "m_ajuda m_sem_args m_falar1 m_falar2 m_perguntar1 m_perguntar2\n\
-m_exclamar1 m_exclamar2 m_ponderar1 m_ponderar2 m_continuar1 m_continuar2\n\
+const admordem = "m_ajuda m_hist_vazio m_hist_lista m_falar1 m_falar2\n\
+m_perguntar1 m_perguntar2 m_exclamar1 m_exclamar2 m_ponderar1 m_ponderar2\n\
+m_continuar1 m_continuar2\n\
 i_falar1 i_falar2 i_perguntar1 i_perguntar2 i_exclamar1 i_exclamar2\n\
 i_ponderar1 i_ponderar2 i_continuar1 i_continuar2"
 
 func escr
   refvar perm_msg = $perm_[arg0.jogperm].c_falar
-  se perm_msg
+  se !arg1
+    ret !arg0.sock.var.z_hist_falar, $mens.mp(m_hist_vazio, arg0)
+    refvar t = arg0.sock.txtmais
+    t.limpar
+    t.addfim(arg0.sock.var.z_hist_falar)
+    $mens.removesom(t)
+    t.addini(m_hist_lista)
+    ret arg0.sock.txtmostra
+  senao perm_msg
     ret $mens.mp(perm_msg, arg0)
-  senao !arg1
-    ret $mens.mp(m_sem_args, arg0)
   senao
     refvar f = txt(arg0.dono.s_falar(arg0))
     ret f, arg0.msg(f)
@@ -64,23 +74,23 @@ func msg # Envia mensagem
   se txt(arg1, 0, 3) == "..."
     refvar m1 = arg2 ? i_continuar1 : m_continuar1
     refvar m2 = arg2 ? i_continuar2 : m_continuar2
-    $mens.mfalar2(m1, m2, arg1, arg2)
+    $mens.mfalar2(m1, m2, arg1, arg2, arg0.sock ? "z_hist_falar")
   senao txtfim(arg1, 1) == "?"
     refvar m1 = arg2 ? i_perguntar1 : m_perguntar1
     refvar m2 = arg2 ? i_perguntar2 : m_perguntar2
-    $mens.mfalar2(m1, m2, arg1, arg2)
+    $mens.mfalar2(m1, m2, arg1, arg2, arg0.sock ? "z_hist_falar")
   senao txtfim(arg1, 1) == "!"
     refvar m1 = arg2 ? i_exclamar1 : m_exclamar1
     refvar m2 = arg2 ? i_exclamar2 : m_exclamar2
-    $mens.mfalar2(m1, m2, arg1, arg2)
+    $mens.mfalar2(m1, m2, arg1, arg2, arg0.sock ? "z_hist_falar")
   senao txtfim(arg1, 3) == "..."
     refvar m1 = arg2 ? i_ponderar1 : m_ponderar1
     refvar m2 = arg2 ? i_ponderar2 : m_ponderar2
-    $mens.mfalar2(m1, m2, arg1, arg2)
+    $mens.mfalar2(m1, m2, arg1, arg2, arg0.sock ? "z_hist_falar")
   senao
     refvar m1 = arg2 ? i_falar1 : m_falar1
     refvar m2 = arg2 ? i_falar2 : m_falar2
-    $mens.mfalar2(m1, m2, arg1, arg2)
+    $mens.mfalar2(m1, m2, arg1, arg2, arg0.sock ? "z_hist_falar")
   fimse
 
 
@@ -91,110 +101,114 @@ const nome1 = "Ajuda"
 const tipo1 = "opc_texto"
 const vari1 = "m_ajuda"
 #
-const nome2 = "Sem argumentos"
+const nome2 = "Histórico vazio"
 const tipo2 = "opc_linha"
-const vari2 = "m_sem_args"
+const vari2 = "m_hist_vazio"
 #
-const titu3 = " * Língua comum"
-#
-const nome3 = "Falar: perso"
-const info3 = "Ao teclar falar e uma mensagem qualquer"
+const nome3 = "Histórico"
 const tipo3 = "opc_linha"
-const vari3 = "m_falar1"
+const vari3 = "m_hist_lista"
 #
-const nome4 = "Falar: outros"
+const titu4 = " * Língua comum"
+#
+const nome4 = "Falar: perso"
 const info4 = "Ao teclar falar e uma mensagem qualquer"
 const tipo4 = "opc_linha"
-const vari4 = "m_falar2"
+const vari4 = "m_falar1"
 #
-const nome5 = "Perguntar: perso"
-const info5 = "Ao teclar falar e uma mensagem terminada com interrogação"
+const nome5 = "Falar: outros"
+const info5 = "Ao teclar falar e uma mensagem qualquer"
 const tipo5 = "opc_linha"
-const vari5 = "m_perguntar1"
+const vari5 = "m_falar2"
 #
-const nome6 = "Perguntar: outros"
+const nome6 = "Perguntar: perso"
 const info6 = "Ao teclar falar e uma mensagem terminada com interrogação"
 const tipo6 = "opc_linha"
-const vari6 = "m_perguntar2"
+const vari6 = "m_perguntar1"
 #
-const nome7 = "Exclamar: perso"
-const info7 = "Ao teclar falar e uma mensagem terminada com exclamação"
+const nome7 = "Perguntar: outros"
+const info7 = "Ao teclar falar e uma mensagem terminada com interrogação"
 const tipo7 = "opc_linha"
-const vari7 = "m_exclamar1"
+const vari7 = "m_perguntar2"
 #
-const nome8 = "Exclamar: outros"
+const nome8 = "Exclamar: perso"
 const info8 = "Ao teclar falar e uma mensagem terminada com exclamação"
 const tipo8 = "opc_linha"
-const vari8 = "m_exclamar2"
+const vari8 = "m_exclamar1"
 #
-const nome9 = "Ponderar: perso"
-const info9 = "Ao teclar falar e uma mensagem terminada com reticências"
+const nome9 = "Exclamar: outros"
+const info9 = "Ao teclar falar e uma mensagem terminada com exclamação"
 const tipo9 = "opc_linha"
-const vari9 = "m_ponderar1"
+const vari9 = "m_exclamar2"
 #
-const nome10 = "Ponderar: outros"
+const nome10 = "Ponderar: perso"
 const info10 = "Ao teclar falar e uma mensagem terminada com reticências"
 const tipo10 = "opc_linha"
-const vari10 = "m_ponderar2"
+const vari10 = "m_ponderar1"
 #
-const nome11 = "Continuar: perso"
-const info11 = "Ao teclar falar e uma mensagem começada com reticências"
+const nome11 = "Ponderar: outros"
+const info11 = "Ao teclar falar e uma mensagem terminada com reticências"
 const tipo11 = "opc_linha"
-const vari11 = "m_continuar1"
+const vari11 = "m_ponderar2"
 #
-const nome12 = "Continuar: outros"
+const nome12 = "Continuar: perso"
 const info12 = "Ao teclar falar e uma mensagem começada com reticências"
 const tipo12 = "opc_linha"
-const vari12 = "m_continuar2"
+const vari12 = "m_continuar1"
 #
-const titu13 = " * Outros idiomas"
-#
-const nome13 = "Falar: perso"
-const info13 = "Ao teclar falar e uma mensagem qualquer"
+const nome13 = "Continuar: outros"
+const info13 = "Ao teclar falar e uma mensagem começada com reticências"
 const tipo13 = "opc_linha"
-const vari13 = "i_falar1"
+const vari13 = "m_continuar2"
 #
-const nome14 = "Falar: outros"
+const titu14 = " * Outros idiomas"
+#
+const nome14 = "Falar: perso"
 const info14 = "Ao teclar falar e uma mensagem qualquer"
 const tipo14 = "opc_linha"
-const vari14 = "i_falar2"
+const vari14 = "i_falar1"
 #
-const nome15 = "Perguntar: perso"
-const info15 = "Ao teclar falar e uma mensagem terminada com interrogação"
+const nome15 = "Falar: outros"
+const info15 = "Ao teclar falar e uma mensagem qualquer"
 const tipo15 = "opc_linha"
-const vari15 = "i_perguntar1"
+const vari15 = "i_falar2"
 #
-const nome16 = "Perguntar: outros"
+const nome16 = "Perguntar: perso"
 const info16 = "Ao teclar falar e uma mensagem terminada com interrogação"
 const tipo16 = "opc_linha"
-const vari16 = "i_perguntar2"
+const vari16 = "i_perguntar1"
 #
-const nome17 = "Exclamar: perso"
-const info17 = "Ao teclar falar e uma mensagem terminada com exclamação"
+const nome17 = "Perguntar: outros"
+const info17 = "Ao teclar falar e uma mensagem terminada com interrogação"
 const tipo17 = "opc_linha"
-const vari17 = "i_exclamar1"
+const vari17 = "i_perguntar2"
 #
-const nome18 = "Exclamar: outros"
+const nome18 = "Exclamar: perso"
 const info18 = "Ao teclar falar e uma mensagem terminada com exclamação"
 const tipo18 = "opc_linha"
-const vari18 = "i_exclamar2"
+const vari18 = "i_exclamar1"
 #
-const nome19 = "Ponderar: perso"
-const info19 = "Ao teclar falar e uma mensagem terminada com reticências"
+const nome19 = "Exclamar: outros"
+const info19 = "Ao teclar falar e uma mensagem terminada com exclamação"
 const tipo19 = "opc_linha"
-const vari19 = "i_ponderar1"
+const vari19 = "i_exclamar2"
 #
-const nome20 = "Ponderar: outros"
+const nome20 = "Ponderar: perso"
 const info20 = "Ao teclar falar e uma mensagem terminada com reticências"
 const tipo20 = "opc_linha"
-const vari20 = "i_ponderar2"
+const vari20 = "i_ponderar1"
 #
-const nome21 = "Continuar: perso"
-const info21 = "Ao teclar falar e uma mensagem começada com reticências"
+const nome21 = "Ponderar: outros"
+const info21 = "Ao teclar falar e uma mensagem terminada com reticências"
 const tipo21 = "opc_linha"
-const vari21 = "i_continuar1"
+const vari21 = "i_ponderar2"
 #
-const nome22 = "Continuar: outros"
+const nome22 = "Continuar: perso"
 const info22 = "Ao teclar falar e uma mensagem começada com reticências"
 const tipo22 = "opc_linha"
-const vari22 = "i_continuar2"
+const vari22 = "i_continuar1"
+#
+const nome23 = "Continuar: outros"
+const info23 = "Ao teclar falar e uma mensagem começada com reticências"
+const tipo23 = "opc_linha"
+const vari23 = "i_continuar2"
