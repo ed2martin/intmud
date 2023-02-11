@@ -47,10 +47,6 @@ sav listaitem iempu # Arma que está empunhando
 txt12 tipoiteminv2 # Tipos de item no inventário ou "" se precisa calcular
 txt12 tipoitemvestir2 # Tipos de item vestindo ou "" se precisa calcular
 inttempo p_proc # Para processar comportamento do personagem
-const p_corpo = config:p_corpo
-const p_morreu0 = config:p_morreu0
-const p_morreu1 = config:p_morreu1
-const p_morreu2 = config:p_morreu2
 const p_fome = 100 # Não está com fome
 const p_sede = 100 # Não está com sede
 intdec p_tmove # Quanto tempo para se mover novamente
@@ -84,6 +80,8 @@ descnome descnomefem\n\
 descver descdonover\n\
 descident\n\
 descdono1 descdono2\n\
+desccond0 desccond1 desccond2 desccond3 desccond4 desccond5\n\
+desccond6 desccond7\n\
 descsala0 descsala1 descsala2 descsala3 descsala4c descsala4i\n\
 descsala5c descsala5i descsala6c descsala6i descsala6p\n\
 descsala7a descsala7b descsala7c descsala8 descsalaN\n\
@@ -116,14 +114,11 @@ p_atktipo\n\
 p_animal p_captura p_domar_hab p_domar_aulas\n\
 p_montar_tipo p_montar_hab p_montar_aulas1 p_montar_aulas2 p_lugar\n\
 p_comecorpo\n\
-p_corpo\n\
 p_exp\n\
 p_evoluiperso p_evoluinivel p_evoluicom p_evoluimsg1\n\
 p_fugir\n\
 p_imortal\n\
 p_lembra\n\
-p_morreu1\n\
-p_morreu2\n\
 p_mover\n\
 p_movervel\n\
 p_naoresg\n\
@@ -133,6 +128,8 @@ p_perseguevel\n\
 p_recebe\n\
 p_soltar\n\
 p_som_entra p_som_voaentra p_som_sai p_som_voasai\n\
+p_morreu0 p_morreu1 p_morreu2 p_corpo_tipo p_corpo_ident p_corpo_descnome\n\
+p_corpo_descsala p_corpo_descver p_corpo_descident p_corpo_tempo p_corpo_some\n\
 batalhafim_p1 batalhafim_p2 batalhafim_p3\n\
 batalhafim_s1 batalhafim_s2 batalhafim_s3\n\
 batalhafim_t1 batalhafim_t2 batalhafim_t3 batalhafim_fim\n\
@@ -446,6 +443,11 @@ func objitemvestir # Retorna primeiro item em uma das posições
     ret arg0 & item.obj.vestpos2 != "0", ref(item.obj)
   efim
 
+func varherda # Obtém variável do personagem, do tipo ou de perso_cfg
+# arg0 = nome da variável
+  refvar m = txt([arg0]) ?? txt($t_[tipo1].[arg0](este)) ?? txt($t_[tipo2].[arg0](este))
+  ret m ?? txt($t_[tipo3].[arg0](este)) ?? txt(perso_cfg:[arg0])
+
 func recalc_exec # Ajusta variáveis
 # Acerta atributos básicos
   bitver = 17, bitinv = 3
@@ -629,16 +631,23 @@ func morreu # Procedimentos quando morre
     ret l.objini.cmd_morrer(este, arg0, arg0), nulo
   efim
 # Morreu
-  mortes++
-  p_morreu1 && $mens.p(este) + $mens.mtodos1(p_morreu1)
   apagar(este)
-  se p_corpo == 4
+  $mens.p(este)
+  $mens.mtodos2(varherda("p_morreu0"), varherda("p_morreu1"))
+  refvar corpotipo = int(varherda("p_corpo_tipo"))
+  se corpotipo == 4
     dono.var.z_moedas_ += var.z_moedas_
     epara l.addfim(dentro1, dentro2), l, l.ini.remove
       l.objini.item && l.objini.mudadono(dono, l.objini.objtot)
     efim
+    se arg0.jogconfig.10 && var.z_moedas
+      arg0.pegamoedas(este)
+    senao
+      dono.var.z_moedas_ += var.z_moedas_
+    fimse
   senao
-    p_corpo && criar("comum_corpo", este, p_corpo)
+    corpotipo && criar("comum_corpo", este, corpotipo)
+    corpo.var.z_moedas && arg0.jogconfig.10 && arg0.pegamoedas(corpo)
   fimse
 # Apaga efeitos
   listaitem i

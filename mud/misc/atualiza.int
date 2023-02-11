@@ -1,4 +1,4 @@
-classe atualiza_597
+classe atualiza_601
 # Atualiza arquivos mud/config/* e mud/areas/* de acordo com novas mudanças
 prog p
 debug dbg
@@ -729,8 +729,8 @@ func ini3_exec
 func ini4_exec
   apagar(este)
 # Checa e muda a versão
-  ret (versao = config:versao) >= 597, nulo
-  p.criar("config", "const versao = 597 # Para atualizar diretórios areas e config")
+  ret (versao = config:versao) >= 601, nulo
+  p.criar("config", "const versao = 601 # Para atualizar diretórios areas e config")
   config:salvar
 # Comando Fim e Dicas aleatórias
   se versao < 457
@@ -1048,6 +1048,31 @@ func ini4_exec
   se versao < 597
     criafunc("config", "const bandabot1 = 4000")
     criafunc("config", "const bandabot2 = 500")
+  fimse
+# Mensagens quando personagem morreu e se deixa corpo
+  se versao < 601
+    movefunc("config", "p_exp", "perso_cfg", "p_exp")
+    movefunc("config", "p_morreu0", "perso_cfg", "p_morreu0")
+    movefunc("config", "p_morreu1", "perso_cfg", "p_morreu1")
+    movefunc("config", "p_morreu2", "perso_cfg", "p_morreu2")
+    movefunc("config", "p_corpo", "perso_cfg", "p_corpo_tipo")
+    criafunc("config", "const item_descsala = \"$P está aqui.\"")
+    epara p.iniherdainv("comum_perso"), p.lin, p.depois
+      dbg.ini
+      continuar txt(p.texto, 0, 2) != "p_"
+      movefunc(p.texto, "p_corpo", p.texto, "p_corpo_tipo")
+    efim
+    epara p.iniherdainv("comum_tipo"), p.lin, p.depois
+      dbg.ini
+      movefunc(p.texto, "morreu0", p.texto, "p_morreu0")
+      movefunc(p.texto, "morreu1", p.texto, "p_morreu1")
+      movefunc(p.texto, "morreu2", p.texto, "p_morreu2")
+    efim
+    epara p.iniherdainv("comum_item"), p.lin, p.depois
+      dbg.ini
+      continuar txt(p.texto, 0, 2) != "i_" || p.existe(p.texto, "descpos") != 1
+      movefunc(p.texto, "descpos", p.texto, "descsala")
+    efim
   fimse
 # Avisa que atualizou arquivos
   tela.msg("Diretórios areas e config atualizados\n")

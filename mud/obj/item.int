@@ -7,7 +7,7 @@ const msexo2 = int(var.z_msexo ?? msexo)
 const nome = "sem nome"
 const ident2 = var.z_ident ?? ident ?? nome
 const descnome2 = var.z_descnome ?? descnome ?? nome
-const descpos = txtcopiamai(var.z_descnome ?? descnome ?? nome, "A") + " está aqui."
+const descsala = config:item_descsala
 const objsav = 1 # Se deve salvar o item ao salvar personagem do jogador
 const pnivel = nivel # Nível atual (personagens de nível mais baixo não vestem)
 const volmax = config:i_volmax
@@ -27,7 +27,7 @@ sav uint8 vestpos # Em que posição está vestindo, 0=nenhuma
 const admordem = "nome\n\
 ident\n\
 descnome\n\
-descpos\n\
+descsala\n\
 descloja\n\
 descver\n\
 descident\n\
@@ -222,6 +222,10 @@ func tipoitem2
 
 func tipoitem_mudou # Deve ser chamado quando o tipo de item mudou
   dono.perso && vestpos < 50 && ((vestpos ? dono.tipoitemvestir2 : dono.tipoiteminv2) = "")
+
+func descpos
+  $mens.p(este)
+  ret $mens.txt(descsala(arg0), arg0)
 
 func teclou # Processa comando
 # arg0=comando
@@ -536,42 +540,34 @@ classe comum_corpo
 herda comum_item
 # Corpo de um personagem que morreu
 const i_aberto = 1 # Para indicar que é container (sempre aberto)
+const descver = var.z_descver
+const descident = var.z_descident
 uint32 pesoobj # Peso do objeto (em gramas)
 uint32 volobj # Volume do objeto quando estiver vazio
 const volmax = 0 # Para não poder colocar nada no corpo
-const msexo = 1 # Sexo: 0=feminino, 1=masculino
 const nome = "corpo"
-txt100 descnome
-txt100 ident
 inttempo tempo
-int8 tipocorpo # Variável p_corpo do personagem que gerou o corpo
+int8 tipocorpo # Variável p_corpo_tipo do personagem que gerou o corpo
+# Se tipocorpo >= 2, transfere os itens do personagem que morreu
+# Se tipororpo >= 3, quando o corpo se decompõe, itens e dinheiro vão para a sala
 
-func ini
-# arg0 = personagem que morreu
-# arg1 = variável p_corpo do personagem
-# Se arg1 >=2, transfere os itens do personagem que morreu
-# Se arg1 >=3, quando o corpo se decompõe, itens e dinheiro vão para a sala
-  tempo = 1200, volobj = arg0.volobj, pesoobj = arg0.pesoobj
-  descnome = arg0.descnome
-  se txt2(descnome)
-    casovar txtmin(txt1(descnome))
-    casose "o"
-    casose "a"
-    casose "os"
-    casose "as"
-      descnome = "o corpo d" + txtmin(txt1(descnome)) + " " + txt2(descnome)
-      sair
-    casose
-      descnome = "o corpo de " + descnome
-    casofim
-  senao
-    descnome = "o corpo de " + descnome
-  fimse
-  ident = "corpo " + arg0.ident
+func ini # arg0 = personagem que morreu, arg1 = variável p_corpo_tipo
+  volobj = arg0.volobj, pesoobj = arg0.pesoobj
+  tempo = 10 * arg0.varherda("p_corpo_tempo")
+  tipocorpo = arg1
+  $mensvis.p(arg0, este)
+  $mensvis.mens = arg0.ident2
+  var.z_ident = $mensvis.txt(arg0.varherda("p_corpo_ident"), nulo)
+  var.z_descnome = $mensvis.txt(arg0.varherda("p_corpo_descnome"), nulo)
+  var.z_descpos = $mensvis.txt(arg0.varherda("p_corpo_descsala"), nulo)
+  var.z_descver = $mensvis.txt(arg0.varherda("p_corpo_descver"), nulo)
+  var.z_descident = $mensvis.txt(arg0.varherda("p_corpo_descident"), nulo)
+  var.z_corpo_some = $mensvis.txt(arg0.varherda("p_corpo_some"), nulo)
+  refvar infosexo = arg0.varherda("p_corpo_msexo")
+  var.z_msexo = infosexo != 2 ? infosexo : arg0.msexo2
   comum_obj:ini
   arg0.dono && mudadono(arg0.dono)
   recalc_exec
-  tipocorpo = arg1
 # Acorda personagens que comem corpos
   se tipocorpo
     listaitem i
@@ -587,21 +583,21 @@ func ini
     l.objini.item && l.objini.mudadono(este, l.objini.objtot)
   efim
   se var.z_moedas
-    $mens.p(arg0)
+    $mens.p(arg0, este)
     se dentro1.total
-      $mens.mvis2("", "Você nota alguns itens e moedas $e " + descnome + ".")
+      $mens.mvis2("", perso_cfg:p_corpo_itens_moedas)
     senao
-      $mens.mvis2("", "Você nota algumas moedas $e " + descnome + ".")
+      $mens.mvis2("", perso_cfg:p_corpo_moedas)
     fimse
   senao dentro1.total
-    $mens.p(arg0)
-    $mens.mvis2("Você nota alguns itens $e " + descnome + ".")
+    $mens.p(arg0, este)
+    $mens.mvis2("", perso_cfg:p_corpo_itens)
   fimse
 
 func tempo_exec
   refvar d = ref(dono)
-  d.msg(txtcopiamai(descnome, "A") + " se decompôs totalmente.")
-  este.apagar(100000) # Isso altera a variável dono
+  d.msg(var.z_corpo_some)
+  este.apagar(100000) # Nota: isso altera a variável dono
   se tipocorpo >= 3
     d.var.z_moedas_ += var.z_moedas_
     var.z_moedas_ = 0

@@ -5,7 +5,7 @@ const objmax = 1 # Quantos itens pode carregar
 const p_agressivo = 1 # Ataca se atacarem
 const p_atktipo = config:atk_txt # Que habilidade usar em ataques automáticos
 const p_atk_alvo = config:p_atk_alvo # Alvo dos ataques
-const p_exp = config:p_exp # Quantidade de experiência que dá, em porcentagem
+const p_exp = perso_cfg:p_exp # Quantidade de experiência que dá, em porcentagem
 const perso = 2 # Para identificar o tipo de personagem
 const pesoadd = !dono.perso && !(bitinv & 48) && !(bitver & 512) # Se falso, está voando
 const voladd = !dono.perso
@@ -456,29 +456,25 @@ func atktempo_exec # Encerra a batalha depois de um tempo
     ret
   casose "2"
     ret posicao < 4, nulo
-    refvar m1 = atktempo_msg("batalhafim_p1")
-    $mens.mvis3(m1, atktempo_msg("batalhafim_p2"), atktempo_msg("batalhafim_p3"))
+    refvar m1 = varherda("batalhafim_p1")
+    $mens.mvis3(m1, varherda("batalhafim_p2"), varherda("batalhafim_p3"))
     ret
   casose "3"
     atktempo = 30
     ret posicao < 4, nulo
-    refvar m1 = atktempo_msg("batalhafim_s1")
-    $mens.mvis3(m1, atktempo_msg("batalhafim_s2"), atktempo_msg("batalhafim_s3"))
+    refvar m1 = varherda("batalhafim_s1")
+    $mens.mvis3(m1, varherda("batalhafim_s2"), varherda("batalhafim_s3"))
     ret
   casose "4"
     atktempo = 30
     ret posicao < 4, nulo
-    refvar m1 = atktempo_msg("batalhafim_t1")
-    $mens.mvis3(m1, atktempo_msg("batalhafim_t2"), atktempo_msg("batalhafim_t3"))
+    refvar m1 = varherda("batalhafim_t1")
+    $mens.mvis3(m1, varherda("batalhafim_t2"), varherda("batalhafim_t3"))
     ret
   casofim
-  $mens.mp(atkenv.objlista.atktempo_msg("batalhafim_fim"), atkenv.objlista)
-  $mens.mp(atktempo_msg("batalhafim_fim"), este)
+  $mens.mp(atkenv.objlista.varherda("batalhafim_fim"), atkenv.objlista)
+  $mens.mp(varherda("batalhafim_fim"), este)
   batalhafim(1)
-
-func atktempo_msg # Para obter as mensagens de atktempo_exec
-  refvar m = [arg0] ?? $t_[tipo1].[arg0](este) ?? $t_[tipo2].[arg0](este)
-  ret m ?? $t_[tipo3].[arg0](este) ?? perso_cfg:[arg0]
 
 func restaurar # Restaura personagem (HP, mana, etc.)
   pmana = pmanamax, pmove = pmovemax, pvida = pvidamax
@@ -561,7 +557,7 @@ func morreu # Procedimentos quando morre
     batalhafim # Encerra a batalha
     expatual *= (100 - config:atkmorreuexp) / 100
     $mens.p(este)
-    $mens.mtodos2(p_morreu0, p_morreu1)
+    $mens.mtodos2(varherda("p_morreu0"), varherda("p_morreu1"))
     mudadono(config:salafim)
     salvar # Salva o jogo
     indiceitem ind
@@ -570,23 +566,25 @@ func morreu # Procedimentos quando morre
   senao dono.perso
     pvida = 0
     !dono.jog && batalhaexp(1.5) # Dá experiência se não for personagem de jogador
-    p_morreu2 && $mens.p(este) + $mens.mtodos1(p_morreu2)
+    $mens.p(este)
+    $mens.mtodos1(varherda("p_morreu2"))
 # Pertence a outro personagem: desmaiou, move para o comando Animal
   senao p_animal != 1 && tseguir == 3 && iseguir.objlista
-    p_morreu2 && $mens.p(este) + $mens.mtodos1(p_morreu2)
     ref r = iseguir.objlista
     pvida = 0, !r.jog && batalhaexp(1.5), batalhafim
     tseguir = 0, iseguir.remove, mudadono(r)
+    $mens.p(este)
+    $mens.mtodos1(varherda("p_morreu2"))
 # Morre
   senao
-    pvida = 0, batalhaexp(1), batalhafim
+    pvida = 0, batalhaexp(1), batalhafim, apagar(este)
     $mens.p(este)
-    $mens.mtodos2(p_morreu0, p_morreu1)
-    apagar(este)
-    se !p_recebe && p_corpo >= 2
+    $mens.mtodos2(varherda("p_morreu0"), varherda("p_morreu1"))
+    refvar corpotipo = int(varherda("p_corpo_tipo"))
+    se !p_recebe && corpotipo >= 2
       var.z_moedas_ = int(intpos(var.z_moedas_ * misc:mudamoedas))
     fimse
-    se p_corpo == 4
+    se corpotipo == 4
       epara l.addfim(dentro1, dentro2), l, l.ini.remove
         l.objini.item && l.objini.mudadono(dono, l.objini.objtot)
       efim
@@ -596,7 +594,7 @@ func morreu # Procedimentos quando morre
         dono.var.z_moedas_ += var.z_moedas_
       fimse
     senao
-      p_corpo && (corpo = criar("comum_corpo", este, p_corpo))
+      corpotipo && (corpo = criar("comum_corpo", este, corpotipo))
       corpo.var.z_moedas && arg0.jogconfig.10 && arg0.pegamoedas(corpo)
     fimse
   fimse

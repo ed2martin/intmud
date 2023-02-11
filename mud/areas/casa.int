@@ -41,13 +41,6 @@ const pesoobj = 10200
 const eveste = 1 # Eventos item: Sim
 const visivel = arg0.posicao < 7 || arg0.var.d_escada_
 
-func descpos
-  se arg0.var.d_escada_
-    ret "Uma grande escada está aberta aqui."
-  senao
-    ret "Uma escada está em baixo do beliche."
-  fimse
-
 func cmd_pegarobj
   se arg2 == este
     arg0.msg("A escada é grande demais para você pegar.")
@@ -76,12 +69,19 @@ func cmd_fecharobj
     ret 1
   fimse
 
+func descsala
+  se arg0.var.d_escada_
+    ret "Uma grande escada está aberta aqui."
+  senao
+    ret "Uma escada está em baixo do beliche."
+  fimse
+
 
 classe i_casa002
 herda comum_item
 const nome = "bife"
 const descnome = "um bife"
-const descpos = "O que restou de um bife repousa aqui, imóvel."
+const descsala = "O que restou de um bife repousa aqui, imóvel."
 const msexo = 1
 const pesoobj = 100
 const inivar = "e_apagar=50"
@@ -91,7 +91,7 @@ classe i_casa003
 herda comum_itemperso
 const nome = "desgastada estante"
 const descnome = "uma desgastada estante"
-const descpos = "Uma desgastada estante guarda alguns objetos aqui."
+const descsala = "Uma desgastada estante guarda alguns objetos aqui."
 const i_abertoini = 1 # Container: 1 Sempre aberto
 const pesoobj = 900000
 const objmax = 20
@@ -215,7 +215,7 @@ classe i_casa008
 herda comum_itemgrupo
 const nome = "bolsa"
 const descnome = "uma bolsa"
-const descpos = "Uma bolsa está jogada aqui."
+const descsala = "Uma bolsa está jogada aqui."
 const descver = "É uma pequena bolsa de couro. Há um pequeno papel preso nela, escrito\n\
 a palavra Beatriz."
 const pesoobj = 1200
@@ -225,7 +225,7 @@ classe i_casa009
 herda comum_itemgrupo
 const nome = "bolsa"
 const descnome = "uma bolsa"
-const descpos = "Uma bolsa está jogada aqui."
+const descsala = "Uma bolsa está jogada aqui."
 const descver = "É uma pequena bolsa de couro. Há um pequeno papel preso nela, escrito\n\
 a palavra Ivone."
 const pesoobj = 1200
@@ -458,8 +458,8 @@ const sexoini = 2
 const msexo = 1
 const p_agressivo = 1 # Agressivo: 1 Se atacarem
 const p_exp = arg0.pnivel < 10 ? 100 # Dá experiência até o nível 10
-const p_morreu1 = "Um bife caiu no chão, imóvel."
 const p_mover = 1
+const p_morreu1 = "Um bife caiu no chão, imóvel."
 const inivar = "h_arremessar=2"
 const eveste = 1 # Receber eventos do próprio objeto
 
@@ -476,8 +476,8 @@ const sexoini = 2
 const msexo = 1
 const p_agressivo = 1 # Agressivo: 1 Se atacarem
 const p_exp = arg0.pnivel < 10 ? 100 # Dá experiência até o nível 10
-const p_morreu1 = "Alface se quebrou em folhas."
 const p_mover = 1
+const p_morreu1 = "Alface se quebrou em folhas."
 const inivar = "h_arremessar=2"
 const eveste = 1 # Receber eventos do próprio objeto
 
@@ -495,8 +495,8 @@ const sexoini = 2
 const msexo = 0
 const p_agressivo = 1 # Agressivo: 1 Se atacarem
 const p_exp = arg0.pnivel < 10 ? 100 # Dá experiência até o nível 10
-const p_morreu1 = "$P se partiu."
 const p_mover = 1
+const p_morreu1 = "$P se partiu."
 const inivar = "h_arremessar=2"
 
 
@@ -509,8 +509,8 @@ const sexoini = 2
 const msexo = 1
 const p_agressivo = 1 # Agressivo: 1 Se atacarem
 const p_exp = arg0.pnivel < 10 ? 100 # Dá experiência até o nível 10
-const p_morreu1 = "$P virou pó de madeira."
 const p_mover = 1
+const p_morreu1 = "$P virou pó de madeira."
 const inivar = "h_arremessar=2"
 
 
@@ -522,8 +522,8 @@ const descsala8 = "Uma boneca está parada aqui."
 const sexoini = 0
 const p_agressivo = 1 # Agressivo: 1 Se atacarem
 const p_exp = arg0.pnivel < 10 ? 100 # Dá experiência até o nível 10
-const p_morreu1 = "$P foi vencida e desapareceu."
 const p_mover = 1
+const p_morreu1 = "$P foi vencida e desapareceu."
 const inivar = "h_arremessar=2"
 
 
@@ -538,8 +538,8 @@ const msexo = 0
 const pesoobj = 50
 const p_agressivo = 2 # Agressivo: 2 Sim
 const p_exp = arg0.pnivel < 10 ? 100 # Dá experiência até o nível 10
-const p_morreu1 = "Uma folha de alface rasgou em vários pedaços."
 const p_mover = 1
+const p_morreu1 = "Uma folha de alface rasgou em vários pedaços."
 const inivar = "h_arremessar=2,e_apagar=100"
 const ident = "folha alface"
 
@@ -597,9 +597,9 @@ const sexoini = 2
 const msexo = 1
 const pesoobj = 45000
 const volobj = 2000
-const p_morreu1 = "$P se partiu em vários pedaços."
 const p_mover = 2 # Movimentar: 2 Qualquer lugar
 const p_movervel = 250
+const p_morreu1 = "$P se partiu em vários pedaços."
 const inivar = "h_morder=6"
 const eveste = 1 # Receber eventos do próprio objeto
 txt50 nomealvo

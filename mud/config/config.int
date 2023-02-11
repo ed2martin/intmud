@@ -4,7 +4,7 @@ classe config
 # A variável versão é usada na classe atualiza, arquivo mud.int,
 # para atualizar os arquivos mud-a-*.int e mud-b-*.int, porque podem
 # haver mudanças nesses arquivos em versões mais recentes
-const versao = 597 # Para atualizar diretórios areas e config
+const versao = 601 # Para atualizar diretórios areas e config
 #
 # Jogar localmente (na janela do IntMUD)? 0=não, 1=sim
 const modolocal = 1 # Jogar localmente: Sim
@@ -15,10 +15,14 @@ const modolocal = 1 # Jogar localmente: Sim
 # telnet <endereço> <porta>
 # papo <endereço> <porta>
 # ssl <endereço> <porta>
-# Abre uma porta para entrar via Telnet, Papovox/Telnet ou Telnet c/critografia
+# http <endereço> <porta>
+# Abre uma porta para entrar via Telnet, Papovox/Telnet,
+# Telnet ccom critografia ou navegador
 # Endereço deve ser * (asterisco) se deve abrir em todos os endereços
 # bot <endereço> <porta> <sala> <senha>
+# bot2 <endereço> <porta> <sala> <senha>
 # Conecta em um chat que tem suporte a bot
+# Na opção bot2, permite permite saber o endereço IP dos usuários
 const inicom1 = ""
 const inicom2 = ""
 const inicom3 = ""
@@ -443,6 +447,9 @@ Psíquico\n\
 Veneno\n\
 Fantasma\nDragão"
 #
+# Mensagem quando um item está na sala
+const item_descsala = "$P está aqui."
+#
 # Tipos de ataque que usam ataque e defesa especiais (cada bit é um tipo)
 # Nota: é bem mais fácil editar essa opção com o comando ECONFIG, dentro do MUD
 const atkespecial = 31856 # Ataques especiais: Fogo, Água, Gelo, Luz, Trevas, Elétrico, Vegetal, \
@@ -637,25 +644,6 @@ const s_doarnao = "0"
 #
 # Salas: Quantidade de movimentos que um ataque de outra sala usa para chegar na sala
 const s_atk_move = 1
-#
-# Personagens quando morrem:
-# 0 = Não deixa corpo
-# 1 = Deixa corpo vazio
-# 2 = Deixa corpo com itens e moedas, somem com o corpo
-# 3 = Deixa corpo com itens e moedas, depois vão para sala
-const p_corpo = 0
-#
-# Personagens: Quantidade de experiência que dá, em porcentagem
-const p_exp = 100
-#
-# Para o próprio personagem: Mensagem morreu
-const p_morreu0 = "Você morreu."
-#
-# Personagens: Mensagem morreu
-const p_morreu1 = "$P morreu."
-#
-# Personagens: Mensagem desmaiou (quando pertence a outro personagem)
-const p_morreu2 = "$P desmaiou."
 #
 # Personagens: Tempo médio em décimos de segundo para ir para outra sala
 const p_movervel = 140

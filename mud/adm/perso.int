@@ -898,8 +898,7 @@ const vari21 = "lojamsgidioma"
 
 
 classe menu_pmorreu
-herda comando_menu
-const titulo = "Quando morre"
+herda menu_morreu
 const menufim = var.menufim
 const colunas = 25
 const classe = var.classe1
@@ -908,29 +907,29 @@ const nome1 = "Imortal"
 const tipo1 = "opc_simnao"
 const vari1 = "p_imortal"
 #
-const nome2 = "Corpo"
-const tipo2 = "opc_opcao"
-const vari2 = "p_corpo"
-const extr2 = "Não deixa corpo\n\
-Deixa corpo vazio\n\
-Deixa corpo com itens e moedas, somem com o corpo\n\
-Deixa corpo com itens e moedas, depois vão para sala\n\
-Deixa itens e moedas na sala, não deixa corpo"
+const nome2 = "Experiência"
+const info2 = "Quanta experiência dá quando morre, em porcentagem"
+const tipo2 = "opc_numero"
+const vari2 = "p_exp"
 #
-const nome3 = "Experiência"
-const info3 = "Quanta experiência dá quando morre, em porcentagem"
-const tipo3 = "opc_numero"
-const vari3 = "p_exp"
-#
-const nome4 = "Morreu"
-const info4 = "Quando não tem dono"
-const tipo4 = "opc_linha"
-const vari4 = "p_morreu1"
-#
-const nome5 = "Desmaiou"
-const info5 = "Quando pertence a outro personagem"
-const tipo5 = "opc_linha"
-const vari5 = "p_morreu2"
+const nulo3 = "\c3" + fnulo("p_morreu0")
+const nulo4 = "\c3" + fnulo("p_morreu1")
+const nulo5 = "\c3" + fnulo("p_morreu2")
+const nulo6 = "\c6" + fnulo_opc("p_corpo_tipo", extr6)
+const nulo7 = "\c3" + fnulo("p_corpo_ident")
+const nulo8 = "\c3" + fnulo("p_corpo_descnome")
+const nulo9 = "\c3" + fnulo("p_corpo_descsala")
+const nulo12 = "\c6" + fnulo_opc("p_corpo_msexo", extr12)
+const nulo13 = "\c6" + fnulo("p_corpo_tempo")
+const nulo14 = "\c3" + fnulo("p_corpo_some")
+
+func fnulo
+  refvar v = $t_[[classe]:tipo1].[arg0] ?? $t_[[classe]:tipo2].[arg0]
+  ret v ?? $t_[[classe]:tipo2].[arg0] ?? $t_[[classe]:tipo3].[arg0] ?? perso_cfg:[arg0]
+
+func fnulo_opc
+  refvar opc = fnulo(arg0)
+  ret txt(opc) + " " + txtsublin(arg1, opc, 1)
 
 
 classe menu_psom

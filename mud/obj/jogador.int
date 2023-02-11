@@ -56,12 +56,6 @@ const descsalaN = j_imortal ? perso_cfg:descimortalN : perso_cfg:descpersoN
 func p_animalatk # Obtém animalatk a partir da raça e da classe
   ret intpos(($t_[tipo1].animalatk ?? $t_[tipo2].animalatk ?? $t_[tipo3].animalatk) - 1)
 
-func p_morreu0 # Mensagem para o jogador quando morreu
-  ret $t_[tipo1].morreu0 ?? $t_[tipo2].morreu0 ?? $t_[tipo3].morreu0 ?? config:p_morreu0
-
-func p_morreu1 # Mensagem para outros personagens quando morreu
-  ret $t_[tipo1].morreu1 ?? $t_[tipo2].morreu1 ?? $t_[tipo3].morreu1 ?? config:p_morreu1
-
 func ini # Objeto foi criado
   tempojogo1 = 864000
   p_sede = p_fome = 30

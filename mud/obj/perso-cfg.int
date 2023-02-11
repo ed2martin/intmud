@@ -175,6 +175,24 @@ const loja_naonegocia = "$P: Não negocio com $m."
 const loja_fechada = "$P: Volte outra hora."
 const loja_msgidioma = "$P só entende $m no nível $1."
 #
+# Personagem morreu
+const p_exp = 100 # Quantidade de experiência que dá, em porcentagem
+const p_morreu0 = "Você morreu."
+const p_morreu1 = "$P morreu."
+const p_morreu2 = "$P desmaiou."
+const p_corpo_tipo = 0
+const p_corpo_ident = "corpo $m"
+const p_corpo_descnome = "O corpo $d $p"
+const p_corpo_descsala = "O corpo $d $p está aqui."
+const p_corpo_descver = ""
+const p_corpo_descident = ""
+const p_corpo_msexo = 1
+const p_corpo_tempo = 120
+const p_corpo_some = "O corpo $d $p se decompôs totalmente."
+const p_corpo_itens = "Você nota alguns itens $e $a."
+const p_corpo_moedas = "Você nota algumas moedas $e $a."
+const p_corpo_itens_moedas = "Você nota alguns itens e moedas $e $a."
+#
 # Fim da batalha
 const batalhafim_p1 = "Você se prepara."
 const batalhafim_p2 = "$P se prepara."
@@ -220,6 +238,9 @@ exp_sub1_voce exp_sub2_voce exp_sub1_animal exp_sub2_animal\n\
 exp_nivelmsg1 exp_nivelmsg2 exp_nmax\n\
 moedas_dar1 moedas_dar2 moedas_rec1 moedas_rec2\n\
 loja_invisivel loja_naonegocia loja_fechada loja_msgidioma\n\
+p_exp p_morreu0 p_morreu1 p_morreu2 p_corpo_tipo p_corpo_ident p_corpo_descnome\n\
+p_corpo_descsala p_corpo_descver p_corpo_descident p_corpo_msexo\n\
+p_corpo_tempo p_corpo_some p_corpo_itens p_corpo_moedas p_corpo_itens_p_moedas\n\
 batalhafim_p1 batalhafim_p2 batalhafim_p3\n\
 batalhafim_s1 batalhafim_s2 batalhafim_s3\n\
 batalhafim_t1 batalhafim_t2 batalhafim_t3 batalhafim_fim"
@@ -860,6 +881,97 @@ const vari3 = "loja_fechada"
 const nome4 = "Não entende idioma"
 const tipo4 = "opc_linha"
 const vari4 = "loja_msgidioma"
+
+
+classe menu_morreu
+herda comando_menu
+const titulo = "Quando morre"
+const colunas = 28
+#
+const nome3 = "Morreu perso"
+const info3 = "Mensagem para o próprio personagem"
+const tipo3 = "opc_linha"
+const vari3 = "p_morreu0"
+#
+const nome4 = "Morreu outros"
+const info4 = "Mensagem para os outros"
+const tipo4 = "opc_linha"
+const vari4 = "p_morreu1"
+#
+const nome5 = "Desmaiou"
+const info5 = "Quando pertence a outro personagem"
+const tipo5 = "opc_linha"
+const vari5 = "p_morreu2"
+#
+const nome6 = "Corpo"
+const tipo6 = "opc_opcao--"
+const vari6 = "p_corpo_tipo"
+const extr6 = "Não deixa corpo\n\
+Deixa corpo vazio\n\
+Deixa corpo com itens e moedas, somem com o corpo\n\
+Deixa corpo com itens e moedas, depois vão para sala\n\
+Deixa itens e moedas na sala, não deixa corpo"
+#
+const titu7 = " * Corpo do personagem"
+#
+const nome7 = "Palavras chave"
+const tipo7 = "opc_linha"
+const vari7 = "p_corpo_ident"
+#
+const nome8 = "Descrição curta"
+const tipo8 = "opc_linha"
+const vari8 = "p_corpo_descnome"
+#
+const nome9 = "Descrição sala"
+const tipo9 = "opc_linha"
+const vari9 = "p_corpo_descsala"
+#
+const nome10 = "Descrição ao olhar"
+const tipo10 = "opc_texto"
+const vari10 = "p_corpo_descver"
+#
+const nome11 = "Descrição ident"
+const info11 = "Texto adicionado após identificar (com magia de identificação)"
+const tipo11 = "opc_texto"
+const vari11 = "p_corpo_descident"
+#
+const nome12 = "Sexo Msg"
+const info12 = "Usado nas mensagens com o corpo"
+const tipo12 = "opc_opcao"
+const vari12 = "p_corpo_msexo"
+const extr12 = "Feminino\nMasculino\nPegar do personagem"
+#
+const nome13 = "Corpo some em"
+const info13 = "Em quantos segundos o corpo some"
+const tipo13 = "opc_numero"
+const vari13 = "p_corpo_tempo"
+
+const nome14 = "Corpo some Msg"
+const tipo14 = "opc_linha"
+const vari14 = "p_corpo_some"
+
+
+classe m_perso_morreu
+herda menu_morreu
+const menufim = "menu_econfig_msg"
+const classe = "perso_cfg"
+#
+const nome2 = "Experiência"
+const info2 = "Quanta experiência dá quando morre, em porcentagem"
+const tipo2 = "opc_numero--"
+const vari2 = "p_exp"
+#
+const nome15 = "Tem itens"
+const tipo15 = "opc_linha"
+const vari15 = "p_corpo_itens"
+#
+const nome16 = "Tem moedas"
+const tipo16 = "opc_linha"
+const vari16 = "p_corpo_moedas"
+#
+const nome17 = "Tem itens e moedas"
+const tipo17 = "opc_linha"
+const vari17 = "p_corpo_itens_moedas"
 
 
 classe m_perso_batalhafim

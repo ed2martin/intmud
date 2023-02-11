@@ -64,7 +64,7 @@ classe i_teste001
 herda comum_item
 const nome = "borracha"
 const descnome = "uma borracha"
-const descpos = "Uma borracha está jogada aqui."
+const descsala = "Uma borracha está jogada aqui."
 const msexo = 0
 const valor = 50
 const vestir = 8
@@ -74,7 +74,7 @@ classe i_teste002
 herda comum_item
 const nome = "pedra"
 const descnome = "uma pedra"
-const descpos = "Aqui tem uma pedra."
+const descsala = "Aqui tem uma pedra."
 const msexo = 0
 const pesoobj = 200
 
@@ -200,7 +200,7 @@ classe i_teste012
 herda comum_itemgrupo
 const nome = "faca"
 const descnome = "uma faca"
-const descpos = "Há uma faca no chão."
+const descsala = "Há uma faca no chão."
 const armamax = 120
 const armamin = 70
 const armatipo = 3 # Arma tipo: 1 Lâmina curta
@@ -213,7 +213,7 @@ classe i_teste013
 herda comum_itemgrupo
 const nome = "colete"
 const descnome = "um colete"
-const descpos = "Um colete está jogado aqui."
+const descsala = "Um colete está jogado aqui."
 const msexo = 1 # Sexo: 1 Masculino
 const nivel = 1
 const pesoobj = 1000
@@ -269,7 +269,7 @@ classe i_teste016
 herda comum_itemgrupo
 const nome = "óculos especiais"
 const descnome = "uns óculos especiais"
-const descpos = "Uns óculos especiais foram largados aqui."
+const descsala = "Uns óculos especiais foram largados aqui."
 const descver = "Esses óculos permitem ver coisas invisíveis."
 const msexo = 1 # Sexo: 1 Masculino
 const vestir1 = "2"
@@ -498,7 +498,7 @@ classe i_teste032
 herda comum_itemgrupo
 const nome = "fonte de água"
 const descnome = "uma fonte de água"
-const descpos = "Uma fonte jorra uma água límpida incessantemente."
+const descsala = "Uma fonte jorra uma água límpida incessantemente."
 const f_tipo = 1 # Tipo: 1 Fonte, não some após beber
 const f_fome = 1
 const f_sede = 20
@@ -556,7 +556,7 @@ classe i_teste036
 herda comum_itemperso
 const nome = "sofá"
 const descnome = "um sofá"
-const descpos = "No canto você vê um grande e confortável sofá."
+const descsala = "No canto você vê um grande e confortável sofá."
 const msexo = 1 # Sexo Msg: 1 Masculino
 const i_movel = 4 # Mobília: 4 Sentar e dormir confortavelmente
 const i_lugar = 1
@@ -578,7 +578,7 @@ classe i_teste038
 herda comum_itemperso
 const nome = "cama"
 const descnome = "uma cama"
-const descpos = "Uma confortável cama está à espera de algum necessitado."
+const descsala = "Uma confortável cama está à espera de algum necessitado."
 const i_movel = 4 # Mobília: 4 Sentar e dormir confortavelmente
 const pesoobj = 300500
 
@@ -641,7 +641,7 @@ classe i_teste041
 herda comum_item
 const nome = "relógio"
 const descnome = "um grande relógio"
-const descpos = "Há grande relógio que mais parece uma pequena estante."
+const descsala = "Há grande relógio que mais parece uma pequena estante."
 const descver = parte1 + parte2 + parte3
 const i_pegar = "O relógio está preso por uma corrente."
 const evhora = 1 # Eventos hora: Sim
@@ -675,7 +675,7 @@ classe i_teste042
 herda comum_item
 const nome = "fonte de água"
 const descnome = "uma fonte de água"
-const descpos = "Uma fonte jorra uma água límpida incessantemente."
+const descsala = "Uma fonte jorra uma água límpida incessantemente."
 const f_tipo = 1 # Tipo: 1 Fonte, não some após beber
 const f_fome = 1
 const f_sede = 20
@@ -971,7 +971,7 @@ classe i_teste064
 herda comum_item
 const nome = "janela"
 const descnome = "uma pequena janela"
-const descpos = "Há uma pequena janela na parede."
+const descsala = "Há uma pequena janela na parede."
 const i_pegar = "Não tem como retirar a janela da parede."
 const i_salaver = dono.dono.dono
 
@@ -980,7 +980,7 @@ classe i_teste065
 herda comum_itemperso
 const nome = "vaso grande"
 const descnome = "um vaso grande"
-const descpos = "Há um vaso grande no centro da sala."
+const descsala = "Há um vaso grande no centro da sala."
 const msexo = 1 # Sexo Msg: 1 Masculino
 const i_pegar = "É muito grande e pesado!"
 const i_abertoini = 1 # Container: 1 Sempre aberto
@@ -1005,7 +1005,7 @@ classe i_teste067
 herda comum_item
 const nome = "ônibus"
 const descnome = "um ônibus"
-const descpos = "Um ônibus antigo está aqui."
+const descsala = "Um ônibus antigo está aqui."
 const msexo = 1 # Sexo Msg: 1 Masculino
 const i_salaentrar = $s_teste168
 const mantersala = 1 # Mantém na sala: Sim
@@ -1177,7 +1177,7 @@ classe i_teste078
 herda comum_itemperso
 const nome = "ônibus"
 const descnome = "um ônibus"
-const descpos = "Um ônibus moderno está aqui."
+const descsala = "Um ônibus moderno está aqui."
 const msexo = 1 # Sexo Msg: 1 Masculino
 const i_seguir = 1 # Pode seguir: Sim
 const i_salas = "teste178"
@@ -1538,7 +1538,7 @@ const nome = "camundongo gigante"
 const descnome = "um camundongo gigante"
 const sexoini = 2
 const msexo = 1
-const p_corpo = 2 # Quando morre: 2 Deixa corpo com itens e moedas
+const p_corpo_tipo = 2 # Quando morre: 2 Deixa corpo com itens e moedas
 
 func recalc1_auto # Altera atributos do personagem
 # Não alterar; função criada automaticamente
@@ -2486,6 +2486,34 @@ const sexoini = 0
 const lojaaula = "m_Fecha_Saída 4\nm_Armadura_Solitária 4"
 
 
+classe p_teste050
+herda comum_persobat
+const nome = "robõ"
+const descnome = "um robõ"
+const desccond0 = "está inconsciente"
+const desccond1 = "está muito danificado, mal parando em pé"
+const desccond2 = "possui muitos rasgos e amassos"
+const desccond3 = "possui alguns rasgos na lataria"
+const desccond4 = "está bastante amassado"
+const desccond5 = "está um pouco amassado"
+const desccond6 = "possui alguns amassos"
+const desccond7 = "está em perfeitas condições de funcionamento"
+const msexo = 1 # Sexo Msg: 1 Masculino
+const p_morreu0 = "Você foi destruíd$s."
+const p_morreu1 = "$P teve uma pequena explosão interna e parou de funcionar."
+const p_morreu2 = "$P parou de funcionar"
+const p_corpo_tipo = 3 # Corpo: 3 Deixa corpo com itens e moedas, depois vão para sala
+const p_corpo_ident = "carcaça $m"
+const p_corpo_descnome = "a carcaça $d $p"
+const p_corpo_descsala = "A carcaça $d $p está aqui."
+const p_corpo_descver = "O que um dia foi um robô, agora é uma carcaça oca. Não sobrou quase \
+nada."
+const p_corpo_descident = "É apenas metal derretido, que pode virar cinzas a qualquer momento."
+const p_corpo_tempo = 60
+const p_corpo_some = "A carcaça $d $p se desmanchou completamente."
+const p_corpo_msexo = 0 # Sexo Msg: 0 Feminino
+
+
 classe s_teste001
 herda b_teste
 const s_titulo = "Entrada"
@@ -3367,6 +3395,7 @@ Quando ele morrer, tecle pegar moedas corpo, depois tecle olhar corpo,\n\
 e então pode pegar a faca dele teclando pegar faca corpo.\n\
 Obviamente, pode-se usar abreviações. Exemplo, peg fa cor."
 const dir_n = $s_teste030
+const dir_s = $s_teste187
 const s_reset = "P 100 teste011 0 0 1 z_moedas=200\nI 100 teste012 1"
 
 func s_reset1 # Realiza o reset
@@ -5704,4 +5733,21 @@ func cmd_falou
     se porta_s == 1
       mudaporta2("s", 2, "O vento bateu a porta sul.", "O vento bateu a porta norte.")
     fimse
+  fimse
+
+
+classe s_teste187
+herda b_teste
+const s_titulo = "Robõ com mensagens personalizadas"
+const s_desc = "Esse robõ, quando vencido em uma batalha, vira uma carcaça com algumas moedas.\n\
+A carcaça tem alguns textos personalizados, inclusive ao olhar e ao usar\n\
+magia de identificação. Ao olhar para o robô, as mensagens sobre o estado\n\
+de saúde também são diferentes."
+const dir_n = $s_teste051
+const s_reset = "P 100 teste050 1 1 1 h_socar,h_chutar,z_moedas=100"
+
+func s_reset1 # Realiza o reset
+# Não alterar; função criada automaticamente a partir de s_reset
+  se p_teste050:objsolto.total < 1
+    criar("p_teste050", este, 1, "h_socar,h_chutar,z_moedas=100")
   fimse

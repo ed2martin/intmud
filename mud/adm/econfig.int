@@ -1229,8 +1229,11 @@ const tipo2 = "menu_econfig_herda2--"
 const nome3 = "Personagens"
 const tipo3 = "menu_econfig_herda3--"
 #
-const nome4 = "Ataques"
-const tipo4 = "menu_econfig_herda4--"
+const nome4 = "Quando morre"
+const tipo4 = "m_perso_morreu--"
+#
+const nome5 = "Ataques"
+const tipo5 = "menu_econfig_herda4--"
 
 
 classe menu_econfig_herda1
@@ -1308,6 +1311,11 @@ const vari1 = "i_volmax"
 const nome2 = "Objetos máximo"
 const tipo2 = "opc_numero--"
 const vari2 = "i_objmax"
+#
+const nome3 = "Descrição sala"
+const info3 = "Descrição quando está na sala"
+const tipo3 = "opc_linha"
+const vari3 = "item_descsala"
 
 
 classe menu_econfig_herda3
@@ -1349,57 +1357,29 @@ const info6 = "Inclui objetos dentro de outros objetos que estão no personagem"
 const tipo6 = "opc_numero"
 const vari6 = "p_objlimite"
 #
-const nome7 = "Corpo"
-const tipo7 = "opc_opcao--"
-const vari7 = "p_corpo"
-const extr7 = "Não deixa corpo\n\
-Deixa corpo vazio\n\
-Deixa corpo com itens e moedas, somem com o corpo\n\
-Deixa corpo com itens e moedas, depois vão para sala"
+const nome7 = "Tempo move"
+const info7 = "Tempo médio em décimos de segundo para ir para outra sala"
+const tipo7 = "opc_numero--"
+const vari7 = "p_movervel"
+const extr7 = "5 1000"
 #
-const nome8 = "Experiência"
-const info8 = "Quanta experiência dá quando morre, em porcentagem"
+const nome8 = "Tempo lembra"
+const info8 = "Por quanto tempo se lembra dos jogadores que atacaram, em minutos"
 const tipo8 = "opc_numero--"
-const vari8 = "p_exp"
+const vari8 = "p_lembra"
+const extr8 = "0 1747" # Valor máximo de inttempo dividido por 600
 #
-const nome9 = "Morreu perso"
-const info9 = "Mensagem para o próprio personagem"
-const tipo9 = "opc_linha--"
-const vari9 = "p_morreu0"
+const nome9 = "Tempo persegue"
+const info9 = "Tempo médio em décimos de segundo para ir para outra sala"
+const tipo9 = "opc_numero--"
+const vari9 = "p_perseguevel"
+const extr9 = "5 1000"
 #
-const nome10 = "Morreu outros"
-const info10 = "Mensagem quando não tem dono"
-const tipo10 = "opc_linha--"
-const vari10 = "p_morreu1"
-#
-const nome11 = "Desmaiou"
-const info11 = "Mensagem quando pertence a outro personagem"
-const tipo11 = "opc_linha--"
-const vari11 = "p_morreu2"
-#
-const nome12 = "Tempo move"
-const info12 = "Tempo médio em décimos de segundo para ir para outra sala"
-const tipo12 = "opc_numero--"
-const vari12 = "p_movervel"
-const extr12 = "5 1000"
-#
-const nome13 = "Tempo lembra"
-const info13 = "Por quanto tempo se lembra dos jogadores que atacaram, em minutos"
-const tipo13 = "opc_numero--"
-const vari13 = "p_lembra"
-const extr13 = "0 1747" # Valor máximo de inttempo dividido por 600
-#
-const nome14 = "Tempo persegue"
-const info14 = "Tempo médio em décimos de segundo para ir para outra sala"
-const tipo14 = "opc_numero--"
-const vari14 = "p_perseguevel"
-const extr14 = "5 1000"
-#
-const nome15 = "Alvo dos ataques"
-const info15 = "Como o personagem escolhe quem atacar, quando está lutando com vários"
-const tipo15 = "opc_opcao--"
-const vari15 = "p_atk_alvo"
-const extr15 = "Não muda\nAleatório\nPersonagem de menor nível"
+const nome10 = "Alvo dos ataques"
+const info10 = "Como o personagem escolhe quem atacar, quando está lutando com vários"
+const tipo10 = "opc_opcao--"
+const vari10 = "p_atk_alvo"
+const extr10 = "Não muda\nAleatório\nPersonagem de menor nível"
 
 
 classe menu_econfig_herda4
