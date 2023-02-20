@@ -41,7 +41,7 @@ func escr1 # Consultar a lista de itens
         nivel = txt2(lin), lin = "i_" + txt1(lin)
         nivel == 0 && (nivel = [lin]:nivel)
         valor = lucro * [lin]:valor
-        lin = txtcopiamai([lin]:descloja ?? [lin]:descnome, "A")
+        lin = txtcopiamai([lin]:descloja ?? [lin]:descnome ?? [lin]:nome, "A")
         lin = "\b\c2" + linha + (linha < 10 ? "\b. " : "\b.") + lin
         lin += txtesp(40 - inttotal(lin + valor)) + "$" + valor
         nivel && (lin += "   N" + nivel)
@@ -160,7 +160,7 @@ func escr2 # Consultar um item
         valor = lucro * r.valor
         t2.limpar
         t2.addfim("\b\c6" + txtcopiamai(p.descnome2, "A") + " mostra:\b")
-        t2.addfim(r.descloja + ", custa $" + valor + ".")
+        t2.addfim(r.descloja2 + ", custa $" + valor + ".")
         r.desc && t2.addfim(r.desc)
         ret arg0.msg2(t2.remove(1000))
       efim

@@ -72,7 +72,7 @@ func escrhab
   textotxt t
   txtident(arg0, r, t)
 # Envia mensagem
-  arg0.msg2(t.remove(1000))
+  t.linhas && arg0.msg2(t.remove(1000))
   arg0.acertapos(1) # Porque os pontos de vida podem ter mudado
 
 func txtident # Adiciona informações de item ou personagem em um textotxt
@@ -108,8 +108,11 @@ func txtident # Adiciona informações de item ou personagem em um textotxt
     arg2.addfim(lin + ".")
   fimse
 # Peso e valor
-  refvar peso = arg1.pesoobj + arg1.pesoden + arg1.pesovar
-  lin = peso < 10000 ? txt(peso) + "g" : txt(peso / 1000) + "Kg"
+  lin = ""
+  se !arg1.i_escondepeso
+    refvar peso = arg1.pesoobj + arg1.pesoden + arg1.pesovar
+    lin = " e pesa " + (peso < 10000 ? txt(peso) + "g" : txt(peso / 1000) + "Kg")
+  fimse
   se !arg1.valor
   senao arg1.valor == 1
     lin += " e vale uma moeda"
@@ -118,7 +121,7 @@ func txtident # Adiciona informações de item ou personagem em um textotxt
   senao
     lin += " e vale " + arg1.valor + " moedas"
   fimse
-  arg2.addfim("Isso pesa " + lin + ".")
+  lin && arg2.addfim("Isso " + txt(lin, 3) + ".")
 # Se é arma
   se arg1.armatipo
     lin = "É uma arma do tipo \"" + txtsublin(config:arma_txt, arg1.armatipo, 1)

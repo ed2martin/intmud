@@ -111,8 +111,7 @@ func escr
     ret
   fimse
 # Sala para pegar e soltar itens
-  r2 = r1.item ? r1.i_salapegar
-  !r2 && (r2 = r1)
+  r2 = ref(r1.item ? r1.i_salapegar, r1)
 # O que o personagem está vestindo
   $mens.p(arg0, r1, r1)
   se r1.perso
@@ -194,7 +193,8 @@ func escr
     ret arg0.msg("\b" + txtcopiamai(r1.descnome2, "A") + t2 + ".\b " + t.remove(1000))
   senao
     refvar m1 = !arg0.psexo && r1.var.z_mdesc ? r1.var.z_mdesc : r1.var.z_desc
-    refvar m2 = (r1.temdomador ? r1.descdonover(arg0)) ?? r1.descver(arg0)
+    refvar mm = r1.temdomador ? r1.descdonover(arg0)
+    refvar m2 = mm ?? (2 == r1.i_aberto ? r1.descaberto(arg0)) ?? r1.descver(arg0)
     se m1 || m2 # Com descrição extra
       t2 && t.addini(txtcopiamai(r1.descnome2, "A") + t2 + ".")
       m1 && t.addini(m1)
@@ -238,7 +238,7 @@ func niveltipo # Usado para informar nível, raça e classe do personagem
 func nomevolume # Nome do item ou personagem e volume
 # arg0 = item ou personagem
 # arg1 = objeto que representa o conteúdo interno do item ou personagem
-  ret !v_olharvolume, txtcopiamai(arg0.descnome2, "A")
+  ret !v_olharvolume || arg1.i_escondevolume, txtcopiamai(arg0.descnome2, "A")
   txt100 nome
   nome = txtcopiamai(arg0.descnome2, "A") + " (volume " + arg0.voltot / arg0.objtot
   se arg0.item && (arg0.i_aberto == 1 || arg0.i_aberto == 2) || arg1.s_sala

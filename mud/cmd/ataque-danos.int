@@ -267,7 +267,7 @@ func danosg_sub
   ret !(arg0 || arg1), "Nenhum"
   refvar dmin = int(intpos(arg0 - 1)) + 1
   refvar dmax = int(intpos(arg1 - 1)) + 1
-  refvar extra = "   (" + (dmin + dmax) * arg2 / 2 + " por segundo)"
+  refvar extra = "   (" + int((dmin + dmax) * arg2 / 2) + " por segundo)"
   ret dmin == dmax, txt(dmin) + extra
   ret txt(dmin) + " a " + dmax + extra
 

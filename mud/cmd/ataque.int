@@ -542,6 +542,7 @@ func exechab # Chamado quando personagem usa habilidade ou magia
     result = 2 # Desvia
   senao
     execgolpe(arg0, arg1, arg2, arg3, arg4, atk) # Ataca
+    arg1.pvida += mudavida
   fimse
   se result != 4
     !result && efeitohab(arg0, arg1, arg2, arg3) # Acertou: aplica os efeitos
@@ -586,6 +587,7 @@ func exechab # Chamado quando personagem usa habilidade ou magia
       result = 2 # Desvia
     senao
       execgolpe(arg0, r, arg2, arg3, arg4, atk) # Ataca
+      r.pvida += mudavida
       continuar result == 4
     fimse
     refvar acertou = !result
@@ -694,7 +696,7 @@ func velgolpe # Acerta o tempo de espera conforme o golpe
     p_espera = intmax(p_espera, t2)
   fimse
 
-func execgolpe # Realiza um ataque e coloca resultado em result e mudavida
+func execgolpe # Calcula o resultado de um ataque e coloca em result e mudavida
 # arg0 = personagem que está atacando
 # arg1 = personagem alvo
 # arg2 = quanto sabe da habilidade ou magia (0=iniciante até 1=perito)
@@ -815,7 +817,6 @@ func execgolpe # Realiza um ataque e coloca resultado em result e mudavida
   casofim
 # Atualiza pontos de vida conforme os danos (pelo menos 1 de dano)
   mudavida = -intmax(1, danoadd + dano * arg5)
-  arg1.pvida += mudavida
 
 func mensinicio # Envia mensagem inicial da habilidade ou magia
 # arg0 = personagem que está usando a habilidade ou magia
