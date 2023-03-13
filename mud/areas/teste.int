@@ -1,6 +1,9 @@
 classe a_teste
 herda area
 const a_nome = "Testes e exemplos"
+const a_regiao = "teste"
+const a_regiaoori = "teste\nteste_inicio"
+const a_retornarsala = $s_teste002
 
 
 classe b_teste
@@ -2517,6 +2520,15 @@ const p_corpo_some = "A carcaça $d $p se desmanchou completamente."
 const p_corpo_msexo = 0 # Sexo Msg: 0 Feminino
 
 
+classe p_teste051
+herda comum_perso
+const nome = "mestre do retorno"
+const ident = "mestre retorno"
+const descnome = "o mestre do retorno"
+const sexoini = 1 # Sexo Perso: 1 Masculino
+const lojaaula = "h_Retornar 8\nh_Voltar 8"
+
+
 classe s_teste001
 herda b_teste
 const s_titulo = "Entrada"
@@ -3363,11 +3375,10 @@ const dir_n = $s_teste043
 classe s_teste049
 herda b_teste
 const s_titulo = "Retornar em níveis baixos"
-const s_desc = "Como administrador, tecle ECONFIG e mude a opção \"Retornar até nível\" para,\n\
-por exemplo, 10. Assim jogadores até nível 10 poderão retornar teclando\n\
-retornar. Depois, vá até o centro de uma cidade, tecle ESALA e mude a opção\n\
-\"Comando retornar\" para 3. Assim, o comando retornar retornará para a primeira\n\
-dessas salas em que o jogador esteve."
+const s_desc = "A habilidade Retornar pode ser usada por jogadores até o nível 5. Do nível\n\
+6 em diante, é preciso aprender para usar. Na sala teste031 pode-se aprender.\n\
+Para mudar o nível dessa habilidade, basta editá-la, teclando ehab retornar\n\
+Essa habilidade foi criada com o comando Chab."
 const dir_l = $s_teste030
 const dir_o = $s_teste050
 
@@ -3380,6 +3391,7 @@ Faixa preta, indo a leste, ensina essa magia.\n\
 O personagem prefeito é a classe p_teste010 do arquivo mud/areas/teste.int.\n\
 Para mudar as mensagens ou o valor que ele cobra, basta mudar essa classe."
 const dir_l = $s_teste049
+const dir_o = $s_teste188
 const s_reset = "P 100 teste010 0 0 1"
 
 func s_reset1 # Realiza o reset
@@ -5611,6 +5623,7 @@ classe s_teste182
 herda b_teste
 const s_titulo = "Sétimo andar"
 const s_desc = "Ao norte mesa, árvore com frutas e itens que somem ao soltar"
+const s_visitou = 1 # Área visitada: Sim
 const dir_n = $s_teste183
 const dir_b = $s_teste064
 
@@ -5753,4 +5766,34 @@ func s_reset1 # Realiza o reset
 # Não alterar; função criada automaticamente a partir de s_reset
   se p_teste050:objsolto.total < 1
     criar("p_teste050", este, 1, "h_socar,h_chutar,z_moedas=100")
+  fimse
+
+
+classe s_teste188
+herda b_teste
+const s_titulo = "Áreas visitadas"
+const s_desc = "Seu personagem lembra das áreas que já visitou. Isso é usado na habilidade\n\
+Voltar, para só poder voltar a áreas já visitadas.\n\
+Ma casa, basta entrar em qualquer uma das salas. Já a área de teste,\n\
+é necessário chegar no sétimo andar, na sala teste182.\n\
+Quem controla isso é a opção \"Área visitada\" dos comandos Earea e Esala."
+const dir_l = $s_teste050
+const dir_o = $s_teste189
+
+
+classe s_teste189
+herda b_teste
+const s_titulo = "Habilidade Voltar"
+const s_desc = "Este personagem ensina Retornar e Voltar. A habilidade Voltar permite voltar\n\
+a uma das áreas que você já esteve, com algumas limitações. Pode-se ir da casa\n\
+para a área de teste e vice-versa, mas da ilha só se pode ir para a área de\n\
+teste. Não é possível ir de outras áreas para a casa ou a área de teste.\n\
+Vide opções \"Região\" e \"Retorna de regiões\" do comando Earea."
+const dir_l = $s_teste188
+const s_reset = "P 100 teste051 0 0 1"
+
+func s_reset1 # Realiza o reset
+# Não alterar; função criada automaticamente a partir de s_reset
+  se p_teste051:objsolto.total < 1
+    criar("p_teste051", este, 0)
   fimse

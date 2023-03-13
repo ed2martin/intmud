@@ -2,19 +2,22 @@ classe comando_retornar
 herda comando_hab
 # Herdado pela classe magia_retornar
 const objcmd = arg0.persobat.var.[nomevar] || arg0.pnivel <= nivel ? este
-const txtajuda = int(nivel) >= 0 ? "\c3" + misc:nomevar(nomevar) + "\b\n" + msgextra
+const txtajuda = int(nivel) >= 0 ? habajuda(arg0)
 const cmdmenu = "retornar" # Editável via "menu_hab_retornar" e "menu_magia_retornar"
 const a_em_pe = 1
 const tipoalvo = 6 # Não agressivo
+const nivel = -1
 const c_espera = 15 # Tempo de esperar após usar esse comando
 const msgantes2 = "$P some em um redemoinho de fumaça."
 const msgdepois2 = "$P aparece de um redemoinho de fumaça."
 const msgerrou1 = "Por algum motivo a magia falhou."
 const msgnulo1 = "Por algum motivo a magia não teve efeito."
 const msgretorno = "Você não possui ponto de retorno."
+const msglistalugares = "Você pode retornar para:"
+const msglistavazia = "Você não pode retornar para nenhum lugar."
 #
 # Ordem que deve organizar as constantes:
-const admordem = "nomevar nivel sala\n\
+const admordem = "nomevar nivel escolhearea sala regiaodest\n\
 a_dormindo a_descansando a_sentado a_montado\n\
 a_em_pe a_bat_sentado a_bat_montado a_bat_em_pe\n\
 c_espera\n\
@@ -29,18 +32,53 @@ tipoperso\n\
 valor\n\
 msgextra msgini1 msgini2\n\
 msgantes1 msgantes2 msgdepois1 msgdepois2\n\
-msgerrou1 msgerrou2 msgnulo1 msgnulo2 msgretorno"
+msgerrou1 msgerrou2 msgnulo1 msgnulo2 msgretorno\n\
+msglistacabe msglistavazia"
 #
 const escr = escrhab(arg0, arg1)
-const aulapontos = config:a_a_aulapontos
+const aulapontos = config:a_aulapontos
 
 func escrhab # Personagem retorna
 # arg0 = personagem
-# arg1 = não usado; apenas para compatibilidade com outras habilidades e magias
+# arg1 = o que o personagem digitou
 # arg2 = item usado, ou nulo se não usou nenhum item
+  ref r
+# Obtém a sala para onde retornar
+  se !escolhearea # Não escolhe para onde retornar
+    r = ref(sala, $[arg0.var.z_salafim])
+  senao !arg1 # Não digitou nada, informa para onde pode retornar
+    refvar regiaoatual = txts($a_[arg0.dono.s_area].a_regiao)
+    textotxt t
+    prog p
+    epara p.iniclasse("a_"), p.lin, p.depois
+      refvar area = $[p.texto]
+      continuar !area.a_retornarsala || !arg0.var.are[p.texto]
+      continuar regiaodest && txtproclin(regiaodest, area.a_regiao) < 0
+      continuar area.a_regiaoori && txtproclin(area.a_regiaoori, regiaoatual) < 0
+      continuar !ref(area.a_retornarsala)
+      t.addfim(area.a_nome)
+    efim
+    ret !t.linhas, $mensjog.msg(msglistavazia, arg0)
+    t.addini(msglistalugares)
+    ret arg0.msg2(t.remove(10000))
+  senao # Digitou para onde retornar
+    refvar regiaoatual = txts($a_[arg0.dono.s_area].a_regiao)
+    nomeobj n
+    prog p
+    n.ini(arg1, 1)
+    epara p.iniclasse("a_"), p.lin, p.depois
+      refvar area = $[p.texto]
+      continuar !area.a_retornarsala || !arg0.var.are[p.texto]
+      continuar regiaodest && txtproclin(regiaodest, area.a_regiao) < 0
+      continuar area.a_regiaoori && txtproclin(area.a_regiaoori, regiaoatual) < 0
+      continuar !n.nome(area.a_nome, 1)
+      r = area.a_retornarsala
+      sair
+    efim
+    ret !r, $mensjog.msg(msglistavazia, arg0)
+  fimse
+# Verifica se pode retornar e aplica os custos do retorno
   refvar persobat = arg0.persobat
-  ref r = sala
-  !r && (r = $[arg0.var.z_salafim])
   se arg2.item
     ret !checahab1(persobat, arg2), nulo
     ret !r || r == arg0.dono, $mens.p(arg0) + $mens.mvis2(msgerrou1, msgerrou2)
@@ -52,6 +90,7 @@ func escrhab # Personagem retorna
     $mens.p(arg0) + $mens.mvis2(msgini1, msgini2)
   fimse
   arg0.acertapos(1) # Porque os pontos de vida podem ter mudado
+# Verifica se a sala permite retornar e se retorno não falhou
   se arg0.dono.s_semmagia && txt(nomevar, 0, 1) == "m"
     ret $mens.p(arg0) + $mens.mvis2(msgnulo1, msgnulo2)
   senao arg0.dono.s_retornar(arg0) == 1
@@ -59,8 +98,16 @@ func escrhab # Personagem retorna
   senao rand(100) < falha1 + (falha2 - falha1) * intpos(arg0.var.[nomevar]_ - 1) / 7
     ret $mens.p(arg0) + $mens.mvis2(msgerrou1, msgerrou2)
   fimse
+# Retorna
   $mens.p(arg0)
   $mens.mvis2(msgantes1, msgantes2)
   arg0.mudadono(r)
   $mens.p(arg0)
   $mens.mvis2(msgdepois1, msgdepois2)
+
+func habsintaxe # Retorna um texto que contém a sintaxe do comando
+# arg0 = objeto do personagem
+  ret "Sintaxe: " + habcomando + (escolhearea ? " [nome da área]")
+
+func hablista # Informações nos comandos Lhab, Lmag e Ltec
+  ret escolhearea ? "Retornar para área" : "Retornar"

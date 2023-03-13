@@ -37,38 +37,38 @@ func habajuda # Retorna um texto que contém informações
     epara pos = t.ini, pos, pos.depois
       pos.mudar(misc:nomevar(pos.texto))
     efim
-    t.addfim("Requer conhecimentos de: " + txttroca(t.remove(1000), "\n", ", "))
+    t.addfim("Requer conhecimentos de: " + txttroca(t.remove(1000), "\n", ", ") + ".")
     t.juntar, t.dividelin(40, 75)
   fimse
   refvar sintaxe = habsintaxe(arg0)
   txt512 lin = "\c3" + misc:nomevar(nomevar) + "\b" + (sintaxe ? "\n" + sintaxe)
   se tipoalvo < 6
     lin += "\nAtaque do tipo " + txtsublin(config:atknomes, tipoatk, 1)
-    lin += ", Força " + ataquemin + (ataquemin != ataquemax ? " a " + ataquemax)
-    lin += ", Velocidade " + vel
+    lin += ", força " + ataquemin + (ataquemin != ataquemax ? " a " + ataquemax)
+    lin += ", velocidade " + vel + "."
   fimse
   se int(aulaini) != int(aulafim)
     lin += "\nPrimeira aula a partir do nível "
     lin += intpos(int(aulaini) - config:nrenascer * txt2(arg0.var.[nomevar]))
     lin += ", perito nível "
-    lin += intpos(int(aulafim) - config:nrenascer * txt2(arg0.var.[nomevar]))
+    lin += intpos(int(aulafim) - config:nrenascer * txt2(arg0.var.[nomevar])) + "."
   senao aulaini
     lin += "\nPode aprender a partir do nível "
-    lin += intpos(int(aulaini) - config:nrenascer * txt2(arg0.var.[nomevar]))
+    lin += intpos(int(aulaini) - config:nrenascer * txt2(arg0.var.[nomevar])) + "."
   senao
-    lin += "\nPode aprender em qualquer nível"
+    lin += "\nPode aprender em qualquer nível."
   fimse
   refvar f1 = falha1 < 0 ? 0 : falha1 > 100 ? 100 : falha1
   refvar f2 = falha2 < 0 ? 0 : falha2 > 100 ? 100 : falha2
   se f1 != f2
-    lin += ", Falha " + f1 + "% iniciante a " + f2 + "% perito"
+    lin += " Falha " + f1 + "% iniciante a " + f2 + "% perito."
   senao f1 >= 100
-    lin += ", Sempre falha"
+    lin += " Sempre falha."
   senao f1 > 0
-    lin += ", Falha " + f1 + "%"
+    lin += " Falha " + f1 + "%."
   fimse
   se !atkfalha
-    lin += ", Não falha por embriaguez/precisão/evasão"
+    lin += " Não falha por embriaguez/precisão/evasão."
   fimse
   t.addini(lin)
   msgextra && t.addfim(msgextra)
@@ -112,10 +112,7 @@ func habajuda # Retorna um texto que contém informações
 
 func habsintaxe # Retorna um texto que contém a sintaxe do comando
 # arg0 = objeto do personagem
-  prog p
-  p.iniherdainv("h_cmd_lancar")
-  refvar lancar = txt(nomevar, 0, 1) == "m" ? txtcopiamai(txt(p.texto, 4), "A") + " " : ""
-  refvar sintaxe = lancar + txts(txt(nomevar, 2))
+  refvar sintaxe = habcomando
   se tipoalvo >= 9
     ret ""
   senao tipoalvo == 7 || tipoalvo == 8
@@ -126,6 +123,38 @@ func habsintaxe # Retorna um texto que contém a sintaxe do comando
   senao
     ret "Sintaxe: " + sintaxe + " [personagem]"
   fimse
+
+func habcomando # Retorna o nome do comando; se for magia, vem precedido de "Lançar"
+  prog p
+  p.iniherdainv("h_cmd_lancar")
+  refvar lancar = txt(nomevar, 0, 1) == "m" ? txtcopiamai(txt(p.texto, 4), "A") + " " : ""
+  ret lancar + txts(txt(nomevar, 2))
+
+func hablista # Informações nos comandos Lhab, Lmag e Ltec
+  refvar tipo = txtsublin(config:atknomes, tipoatk, 1)
+  casovar tipoalvo
+  casose "0"
+    ret tipo
+  casose "1":
+    ret tipo + ", Outros"
+  casose "2":
+    ret tipo + ", Todos dividindo ataque"
+  casose "3":
+    ret tipo + ", Outros dividindo ataque"
+  casose "4":
+    ret tipo + ", Todos sem dividir ataque"
+  casose "5":
+    ret tipo + ", Outros sem dividir ataque"
+  casose "6":
+    ret "Não agressivo"
+  casose "7":
+    ret "Não agressivo, O próprio"
+  casose "8":
+    ret "Não agressivo, O grupo"
+  casose "9":
+    ret "Automático"
+  casofim
+  ret "Nenhum"
 
 func checahab1 # Checa se personagem pode usar habilidade/magia e avisa o personagem
 # arg0 = personagem

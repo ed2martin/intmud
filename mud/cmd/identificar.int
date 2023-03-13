@@ -169,3 +169,11 @@ func txtident # Adiciona informações de item ou personagem em um textotxt
 # Identificação
   refvar m = txt(arg1.descident(arg0))
   m && arg2.addfim(m)
+
+func habsintaxe # Retorna um texto que contém a sintaxe do comando
+# arg0 = objeto do personagem
+  refvar sintaxe = habcomando
+  ret "Sintaxe: " + sintaxe + " <item>\n         " + sintaxe + " <personagem>"
+
+func hablista # Informações nos comandos Lhab, Lmag e Ltec
+  ret "Identificar"

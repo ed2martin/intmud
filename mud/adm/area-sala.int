@@ -488,194 +488,202 @@ func escr # Apagar descrição extra
 classe menu_area_sala
 # Opções em comum dos comandos Larea e Lsala
 #
-const nome6 = "Terreno"
-const tipo6 = "opc_opcao"
-const clas6 = var.classe1
-const vari6 = "s_terreno"
-const extr6 = adm_sala:txt_terreno
+const titu15 = " * Salas e áreas"
 #
-const nome7 = "Movimentos ataque"
-const info7 = "Quantidade de movimentos que um ataque de outra sala usa para chegar nessa"
-const tipo7 = "opc_numero"
-const clas7 = var.classe1
-const vari7 = "s_atk_move"
+const nome15 = "Área visitada"
+const info15 = "Indica que o jogador já esteve na área, para hab/magia de retorno"
+const tipo15 = "opc_simnao"
+const clas15 = var.classe1
+const vari15 = "s_visitou"
 #
-const nome8 = "Luz"
-const tipo8 = "opc_opcao"
-const clas8 = var.classe1
-const vari8 = "s_luz"
-const extr8 = adm_sala:txt_luz
+const nome16 = "Terreno"
+const tipo16 = "opc_opcao"
+const clas16 = var.classe1
+const vari16 = "s_terreno"
+const extr16 = adm_sala:txt_terreno
 #
-const nome9 = "Recuperação"
-const info9 = "Taxa de recuperação de vida, mana e movimentos\n\
+const nome17 = "Movimentos ataque"
+const info17 = "Quantidade de movimentos que um ataque de outra sala usa para chegar nessa"
+const tipo17 = "opc_numero"
+const clas17 = var.classe1
+const vari17 = "s_atk_move"
+#
+const nome18 = "Luz"
+const tipo18 = "opc_opcao"
+const clas18 = var.classe1
+const vari18 = "s_luz"
+const extr18 = adm_sala:txt_luz
+#
+const nome19 = "Recuperação"
+const info19 = "Taxa de recuperação de vida, mana e movimentos\n\
 Quanto maior, mais recupera; 0 não recupera"
-const tipo9 = "opc_numero"
-const clas9 = var.classe1
-const vari9 = "s_recup"
+const tipo19 = "opc_numero"
+const clas19 = var.classe1
+const vari19 = "s_recup"
 #
-const nome10 = "Fome e sede"
-const tipo10 = "opc_opcao"
-const clas10 = var.classe1
-const vari10 = "s_fome"
-const extr10 = "Presente\nAusente\nSome aos poucos"
+const nome20 = "Fome e sede"
+const tipo20 = "opc_opcao"
+const clas20 = var.classe1
+const vari20 = "s_fome"
+const extr20 = "Presente\nAusente\nSome aos poucos"
 #
-const nome11 = "Apagar itens"
-const info11 = "Em quantos minutos sem jogador na sala deve começar a apagar os itens"
-const tipo11 = "opc_numero"
-const clas11 = var.classe1
-const vari11 = "s_item"
+const nome21 = "Apagar itens"
+const info21 = "Em quantos minutos sem jogador na sala deve começar a apagar os itens"
+const tipo21 = "opc_numero"
+const clas21 = var.classe1
+const vari21 = "s_item"
 #
-const nome12 = "Morre ao entrar"
-const tipo12 = "opc_opcao"
-const clas12 = var.classe1
-const vari12 = "s_morre"
-const extr12 = "Não\n\
+const nome22 = "Morre ao entrar"
+const tipo22 = "opc_opcao"
+const clas22 = var.classe1
+const vari22 = "s_morre"
+const extr22 = "Não\n\
 Sim\n\
 Sim e perde itens e dinheiro\n\
 Sim e perde itens\n\
 Sim e perde dinheiro"
 #
-const nome13 = "Ao tentar falar"
-const info13 = "Mensagem recebida ao usar o comando falar; se nulo permite falar"
-const tipo13 = "opc_linha"
-const clas13 = var.classe1
-const vari13 = "s_falar"
+const nome23 = "Ao tentar falar"
+const info23 = "Mensagem recebida ao usar o comando falar; se nulo permite falar"
+const tipo23 = "opc_linha"
+const clas23 = var.classe1
+const vari23 = "s_falar"
 #
-const nome14 = "Ao tentar gritar"
-const info14 = "Mensagem recebida ao usar o comando gritar; se nulo permite gritar"
-const tipo14 = "opc_linha"
-const clas14 = var.classe1
-const vari14 = "s_gritar"
+const nome24 = "Ao tentar gritar"
+const info24 = "Mensagem recebida ao usar o comando gritar; se nulo permite gritar"
+const tipo24 = "opc_linha"
+const clas24 = var.classe1
+const vari24 = "s_gritar"
 #
-const nome15 = "Batalha"
-const tipo15 = "opc_opcao"
-const clas15 = var.classe1
-const vari15 = "s_luta"
-const extr15 = adm_sala:txt_luta
+const nome25 = "Batalha"
+const tipo25 = "opc_opcao"
+const clas25 = var.classe1
+const vari25 = "s_luta"
+const extr25 = adm_sala:txt_luta
 #
-const nome16 = "Sem resgate"
-const info16 = "Se não é possível resgatar outro jogador"
-const tipo16 = "opc_simnao"
-const clas16 = var.classe1
-const vari16 = "s_naoresg"
+const nome26 = "Sem resgate"
+const info26 = "Se não é possível resgatar outro jogador"
+const tipo26 = "opc_simnao"
+const clas26 = var.classe1
+const vari26 = "s_naoresg"
 #
-const nome17 = "Sem magia"
-const tipo17 = "opc_simnao"
-const clas17 = var.classe1
-const vari17 = "s_semmagia"
+const nome27 = "Sem magia"
+const tipo27 = "opc_simnao"
+const clas27 = var.classe1
+const vari27 = "s_semmagia"
 #
-const nome18 = "Comando retornar"
-const tipo18 = "opc_opcao"
-const clas18 = var.classe1
-const vari18 = "s_retornar"
-const extr18 = "Permitido\n\
+const nome28 = "Comando retornar"
+const tipo28 = "opc_opcao"
+const clas28 = var.classe1
+const vari28 = "s_retornar"
+const extr28 = "Permitido\n\
 Não permitido\n\
 Muda o ponto de retorno para essa sala\n\
 Muda o ponto de retorno se não possuir"
 #
-const nome19 = "Comando reserva"
-const tipo19 = "opc_simnao"
-const clas19 = var.classe1
-const vari19 = "s_reserva"
-#
-const nome20 = "Sala ao voltar"
-const info20 = "Quando um jogador sair do jogo e voltar, para qual sala deve voltar"
-const tipo20 = "opc_sala"
-const clas20 = var.classe1
-const vari20 = "s_voltar"
-#
-const nome21 = "PNJs na sala"
-const info21 = "Quantidade máxima de PNJs na sala; não afeta o reset"
-const tipo21 = "opc_numero"
-const clas21 = var.classe1
-const vari21 = "s_pnj"
-#
-const nome22 = "Jogadores na sala"
-const info22 = "Quantidade máxima de jogadores na sala"
-const tipo22 = "opc_numero"
-const clas22 = var.classe1
-const vari22 = "s_jog"
-#
-const nome23 = "Soltar itens"
-const tipo23 = "opc_opcao"
-const clas23 = var.classe1
-const vari23 = "s_soltartipo"
-const extr23 = "Permitido\nNão permitido\nDestrói"
-#
-const nome24 = "Msg perso soltar"
-const tipo24 = "opc_linha"
-const clas24 = var.classe1
-const vari24 = "s_soltarmsg1"
-const nulo24 = "\c3" + txtnulo("h_cmd_soltar", "m_soltar_sala1")
-#
-const nome25 = "Msg outros soltar"
-const tipo25 = "opc_linha"
-const clas25 = var.classe1
-const vari25 = "s_soltarmsg2"
-const nulo25 = "\c3" + txtnulo("h_cmd_soltar", "m_soltar_sala2")
-#
-const nome26 = "Msg perso pegar"
-const tipo26 = "opc_linha"
-const clas26 = var.classe1
-const vari26 = "s_pegarmsg1"
-const nulo26 = "\c3" + txtnulo("h_cmd_pegar", "m_pegar_sala1")
-#
-const nome27 = "Msg outros pegar"
-const tipo27 = "opc_linha"
-const clas27 = var.classe1
-const vari27 = "s_pegarmsg2"
-const nulo27 = "\c3" + txtnulo("h_cmd_pegar", "m_pegar_sala2")
-#
-const nome28 = "Volume dentro"
-const tipo28 = "opc_numero"
-const clas28 = var.classe1
-const vari28 = "volmax"
-#
-const nome29 = "Objetos máximo"
-const info29 = "Inclui objetos dentro de outros objetos que estão na sala"
-const tipo29 = "opc_numero"
+const nome29 = "Comando reserva"
+const tipo29 = "opc_simnao"
 const clas29 = var.classe1
-const vari29 = "objmax"
+const vari29 = "s_reserva"
 #
-const nome30 = "Som da sala"
-const info30 = "Nome do som tocado ao entrar na sala; vide adm som"
-const tipo30 = "opc_linha"
+const nome30 = "Sala ao voltar"
+const info30 = "Quando um jogador sair do jogo e voltar, para qual sala deve voltar"
+const tipo30 = "opc_sala"
 const clas30 = var.classe1
-const vari30 = "s_som"
+const vari30 = "s_voltar"
 #
-const nome31 = "Som de noite"
-const info31 = "Se ausente, \"Som da sala\" é do dia e da noite"
-const tipo31 = "opc_linha"
+const nome31 = "PNJs na sala"
+const info31 = "Quantidade máxima de PNJs na sala; não afeta o reset"
+const tipo31 = "opc_numero"
 const clas31 = var.classe1
-const vari31 = "s_somnoite"
+const vari31 = "s_pnj"
 #
-const nome32 = "Salas de doação"
-const info32 = "Para que salas os itens doados vão"
-const tipo32 = "opc_listasala"
+const nome32 = "Jogadores na sala"
+const info32 = "Quantidade máxima de jogadores na sala"
+const tipo32 = "opc_numero"
 const clas32 = var.classe1
-const vari32 = "s_doarsalas"
-const extr32 = "20"
+const vari32 = "s_jog"
 #
-const nome33 = "Itens doados"
-const info33 = "Itens doados que essa sala aceita; se vazio aceita qualquer item"
-const tipo33 = "opc_vetorhex"
+const nome33 = "Soltar itens"
+const tipo33 = "opc_opcao"
 const clas33 = var.classe1
-const vari33 = "s_doarsim"
-const extr33 = config:item_tipos
+const vari33 = "s_soltartipo"
+const extr33 = "Permitido\nNão permitido\nDestrói"
 #
-const nome34 = "Itens não doados"
-const info34 = "Itens doados que essa sala não aceita"
-const tipo34 = "opc_vetorhex"
+const nome34 = "Msg perso soltar"
+const tipo34 = "opc_linha"
 const clas34 = var.classe1
-const vari34 = "s_doarnao"
-const extr34 = config:item_tipos
+const vari34 = "s_soltarmsg1"
+const nulo34 = "\c3" + txtnulo("h_cmd_soltar", "m_soltar_sala1")
 #
-const nome35 = "Nome da entrada"
-const info35 = "Nome da porta correspondente a essa sala, quando ela pertence a um item\n\
-Se definido, pode-se entrar no item por essa sala, e sair sai do item"
+const nome35 = "Msg outros soltar"
 const tipo35 = "opc_linha"
 const clas35 = var.classe1
-const vari35 = "s_entrada"
+const vari35 = "s_soltarmsg2"
+const nulo35 = "\c3" + txtnulo("h_cmd_soltar", "m_soltar_sala2")
+#
+const nome36 = "Msg perso pegar"
+const tipo36 = "opc_linha"
+const clas36 = var.classe1
+const vari36 = "s_pegarmsg1"
+const nulo36 = "\c3" + txtnulo("h_cmd_pegar", "m_pegar_sala1")
+#
+const nome37 = "Msg outros pegar"
+const tipo37 = "opc_linha"
+const clas37 = var.classe1
+const vari37 = "s_pegarmsg2"
+const nulo37 = "\c3" + txtnulo("h_cmd_pegar", "m_pegar_sala2")
+#
+const nome38 = "Volume dentro"
+const tipo38 = "opc_numero"
+const clas38 = var.classe1
+const vari38 = "volmax"
+#
+const nome39 = "Objetos máximo"
+const info39 = "Inclui objetos dentro de outros objetos que estão na sala"
+const tipo39 = "opc_numero"
+const clas39 = var.classe1
+const vari39 = "objmax"
+#
+const nome40 = "Som da sala"
+const info40 = "Nome do som tocado ao entrar na sala; vide adm som"
+const tipo40 = "opc_linha"
+const clas40 = var.classe1
+const vari40 = "s_som"
+#
+const nome41 = "Som de noite"
+const info41 = "Se ausente, \"Som da sala\" é do dia e da noite"
+const tipo41 = "opc_linha"
+const clas41 = var.classe1
+const vari41 = "s_somnoite"
+#
+const nome42 = "Salas de doação"
+const info42 = "Para que salas os itens doados vão"
+const tipo42 = "opc_listasala"
+const clas42 = var.classe1
+const vari42 = "s_doarsalas"
+const extr42 = "20"
+#
+const info43 = "Itens doados que essa sala aceita; se vazio aceita qualquer item"
+const nome43 = "Itens doados"
+const tipo43 = "opc_vetorhex"
+const clas43 = var.classe1
+const vari43 = "s_doarsim"
+const extr43 = config:item_tipos
+#
+const nome44 = "Itens não doados"
+const info44 = "Itens doados que essa sala não aceita"
+const tipo44 = "opc_vetorhex"
+const clas44 = var.classe1
+const vari44 = "s_doarnao"
+const extr44 = config:item_tipos
+#
+const nome45 = "Nome da entrada"
+const info45 = "Nome da porta correspondente a essa sala, quando ela pertence a um item\n\
+Se definido, pode-se entrar no item por essa sala, e sair sai do item"
+const tipo45 = "opc_linha"
+const clas45 = var.classe1
+const vari45 = "s_entrada"
 
 
 classe menu_area
@@ -707,6 +715,23 @@ const nome5 = "Mensagem de reset"
 const info5 = "Enviada para os jogadores na área quando ocorre reset"
 const tipo5 = "opc_linha"
 const vari5 = "a_txtreset"
+#
+const nome6 = "Região"
+const info6 = "Um nome que identifica a região aonde esta área está ou texto vazio se nenhuma"
+const tipo6 = "opc_linha"
+const vari6 = "a_regiao"
+#
+const nome7 = "Retorna de regiões"
+const info7 = "Quando o personagem escolhe retornar (com hab/magia de retorno) para essa\n\
+área, de quais regiões pode retornar ou texto vazio se de qualquer região"
+const tipo7 = "opc_listaregioes"
+const vari7 = "a_regiaoori"
+#
+const nome8 = "Retorna para sala"
+const info8 = "Quando o personagem escolhe retornar (com hab/magia de retorno) para essa\n\
+área, para qual sala vai"
+const tipo8 = "opc_sala"
+const vari8 = "a_retornarsala"
 
 
 classe menu_sala
@@ -739,16 +764,16 @@ const info5 = "Se não deve mostrar descrição ao entrar na sala"
 const tipo5 = "opc_simnao"
 const vari5 = "s_ocultar"
 #
-const nome36 = "Embaralhar saídas"
-const info36 = "Se maior que 0, a cada quantos segundos muda as salas das direções\n\
+const nome6 = "Embaralhar saídas"
+const info6 = "Se maior que 0, a cada quantos segundos muda as salas das direções\n\
 n s l o ne no se so"
-const tipo36 = "opc_numero"
-const vari36 = "s_mudadir"
-const exec36 = "s_mudadir1"
+const tipo6 = "opc_numero"
+const vari6 = "s_mudadir"
+const exec6 = "s_mudadir1"
 #
-const nome37 = "Msg ao embaralhar"
-const tipo37 = "opc_linha"
-const vari37 = "s_salarandmsg"
+const nome7 = "Msg ao embaralhar"
+const tipo7 = "opc_linha"
+const vari7 = "s_salarandmsg"
 #
 const nome51 = "Eventos hora"
 const info51 = "Se a função cmd_hora é chamada quando a hora MUD mudar (5 minutos)"

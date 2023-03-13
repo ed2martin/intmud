@@ -900,6 +900,30 @@ func passo
   ret passo2(arg0, arg1, p.existe("idioma_" + txts(arg1)))
 
 
+classe opc_listaregioes
+herda comando_adm, opc_tipos
+
+func passo
+  prog p
+  arg0.passo = este
+  se arg1 == "o"
+    arg0.txtmais.limpar
+    epara p.iniclasse("a_"), p.lin, p.depois
+      $[p.texto].a_regiao && arg0.txtmais.addfim("1 " + txts($[p.texto].a_regiao))
+    efim
+    arg0.txtmais.juntalin
+    textopos pos
+    epara pos = arg0.txtmais.ini, pos.lin, pos.depois
+      pos.mudar("", 0, inttotal(txt1(pos.texto)) + 1)
+    efim
+  senao arg1
+    epara p.iniclasse("a_"), p.lin, p.depois
+      sair arg1 == txts($[p.texto].a_regiao)
+    efim
+  fimse
+  ret passo2(arg0, arg1, p.lin)
+
+
 classe opc_sala
 herda comando_adm
 const salaitem = 0 # Se aceita também itens

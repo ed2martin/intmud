@@ -52,11 +52,7 @@ func escr
   txt100 lin
   epara nulo, p.lin && t.linhas < 499, p.depois
     continuar !$[p.texto].cmdmenu # Continua se não é uma habilidade
-    lin = txtcopiamai(txt2(txte(p.texto)), "A") + ", "
-    se $[p.texto].tipoalvo < 6
-      lin += txtsublin(config:atknomes, $[p.texto].tipoatk, 1)
-    fimse
-    t.addfim(lin + nome[$[p.texto].tipoalvo])
+    t.addfim(txtcopiamai(txt2(txte(p.texto)), "A") + ", " + $[p.texto].hablista)
   efim
   se t.linhas
     arg0.msg2(lista + t.remove(500))

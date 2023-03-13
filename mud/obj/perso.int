@@ -247,6 +247,10 @@ func mudadono # Coloca personagem em outra sala ou outro personagem
   efim
 # Se for jogador, checa se tem personagens agressivos na sala
   se jog
+    se dono.s_visitou
+      datahora d
+      d.agora, var.area_[dono.s_area]_ = d.numtotal
+    fimse
     casovar int(dono.s_retornar(este))
     casose "3" # Muda o ponto de retorno se não possuir
       sair var.z_salafim

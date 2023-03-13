@@ -463,18 +463,3 @@ const atk1_perso1 = ""
 const atk1_matou1 = ""
 const atk1_errou1 = ""
 const atk1_nulo1 = ""
-
-
-classe magia_volta
-herda comando_ataque
-const nomevar = "m_Volta"
-const tipoalvo = 6 # Alvo: 6 Qualquer um; não é ataque
-const atk1_auto1 = "$P volta."
-const atk1_perso2 = "$P faz $a voltar."
-
-func cmd_alvofim
-  se arg2.result == 0
-    arg1.contr.mudadono($s_casa002)
-    $mens.p(arg1)
-    $mens.mtodos1("$P caiu aqui.")
-  fimse
