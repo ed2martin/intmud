@@ -47,6 +47,7 @@ TSslLoadErrorStrings SslLoadErrorStrings = 0;
 TSslCtxNew           SslCtxNew = 0;
 TSslCtxFree          SslCtxFree = 0;
 TSslSetFd            SslSetFd = 0;
+TTLSMethod           TLSMethod = 0;
 TSslMethodV2         SslMethodV2 = 0;
 TSslMethodV3         SslMethodV3 = 0;
 TSslMethodTLSV1      SslMethodTLSV1 = 0;
@@ -127,6 +128,7 @@ const char * AbreSSL()
     SslCtxNew           = (TSslCtxNew)     GETPROC(ssl_handle1, "SSL_CTX_new");
     SslCtxFree          = (TSslCtxFree)    GETPROC(ssl_handle1, "SSL_CTX_free");
     SslSetFd            = (TSslSetFd)      GETPROC(ssl_handle1, "SSL_set_fd");
+    TLSMethod           = (TTLSMethod)     GETPROC(ssl_handle1, "TLS_method");
     SslMethodV2         = (TSslMethodV2)   GETPROC(ssl_handle1, "SSLv2_method");
     SslMethodV3         = (TSslMethodV3)   GETPROC(ssl_handle1, "SSLv3_method");
     SslMethodTLSV1      = (TSslMethodTLSV1)GETPROC(ssl_handle1, "TLSv1_method");
@@ -144,7 +146,11 @@ const char * AbreSSL()
     SslPrivateKeyFile   = (TSslPrivateKeyFile)GETPROC(ssl_handle1, "SSL_CTX_use_PrivateKey_file");
     SslCertificateFile  = (TSslCertificateFile)GETPROC(ssl_handle1, "SSL_CTX_use_certificate_file");
     OPENSSLaddallalgorithms = (TOPENSSLaddallalgorithms)GETPROC(ssl_handle2, "OPENSSL_add_all_algorithms_noconf");
-    SslGetPeerCertificate = (TSslGetPeerCertificate)GETPROC(ssl_handle1, "SSL_get_peer_certificate");
+    SslGetPeerCertificate = (TSslGetPeerCertificate)GETPROC(ssl_handle1,
+            "SSL_get_peer_certificate");
+    if (!SslGetPeerCertificate)
+        SslGetPeerCertificate = (TSslGetPeerCertificate)GETPROC(ssl_handle1,
+                "SSL_get1_peer_certificate");
     SslX509free         = (TSslX509free)   GETPROC(ssl_handle2, "X509_free");
     SslX509d2i          = (TSslX509d2i)    GETPROC(ssl_handle2, "d2i_X509");
     SslX509i2d          = (TSslX509i2d)    GETPROC(ssl_handle2, "i2d_X509");
@@ -156,8 +162,8 @@ const char * AbreSSL()
     if (!SslCtxNew)           erro = "SSL_CTX_new não foi encontrado";
     if (!SslCtxFree)          erro = "SSL_CTX_free não foi encontrado";
     if (!SslSetFd)            erro = "SSL_set_fd não foi encontrado";
-    if (!SslMethodV2 && !SslMethodV23 && !SslMethodV3 && !SslMethodTLSV12)
-        erro = "SSLv2_method/SSLv3_method/TLSv1_2_method não foi encontrado";
+    if (!TLSMethod && !SslMethodV2 && !SslMethodV23 && !SslMethodV3 && !SslMethodTLSV12)
+        erro = "TLS_method/SSLv2_method/SSLv3_method/TLSv1_2_method não foi encontrado";
     if (!SslMethodTLSV1)      erro = "TLSv1_method não foi encontrado";
     if (!SslNew)              erro = "SSL_new não foi encontrado";
     if (!SslFree)             erro = "SSL_free não foi encontrado";
@@ -168,13 +174,13 @@ const char * AbreSSL()
     if (!SslPeek)             erro = "SSL_peek não foi encontrado";
     if (!SslWrite)            erro = "SSL_write não foi encontrado";
     if (!SslPending)          erro = "SSL_pending não foi encontrado";
-    if (!SslPrivateKeyFile)   erro = "SSL_CTX_use_PrivateKey_file";
-    if (!SslCertificateFile)  erro = "SSL_CTX_use_certificate_file";
+    if (!SslPrivateKeyFile)   erro = "SSL_CTX_use_PrivateKey_file não foi encontrado";
+    if (!SslCertificateFile)  erro = "SSL_CTX_use_certificate_file não foi encontrado";
     //if (!OPENSSLaddallalgorithms) erro = "OPENSSL_add_all_algorithms_noconf não foi encontrado";
-    if (!SslGetPeerCertificate) erro = "SSL_get_peer_certificate";
-    if (!SslX509free)         erro = "X509_free";
-    if (!SslX509d2i)          erro = "d2i_X509";
-    if (!SslX509i2d)          erro = "i2d_X509";
+    if (!SslGetPeerCertificate) erro = "SSL_get_peer_certificate não foi encontrado";
+    if (!SslX509free)         erro = "X509_free não foi encontrado";
+    if (!SslX509d2i)          erro = "d2i_X509 não foi encontrado";
+    if (!SslX509i2d)          erro = "i2d_X509 não foi encontrado";
     if (erro)
     {
         FechaSSL();
@@ -194,6 +200,8 @@ const char * AbreSSL()
         OPENSSLaddallalgorithms();
     //RAND_screen();
 
+    if (ssl_metodo == 0 && TLSMethod)
+        ssl_metodo = TLSMethod();
     if (ssl_metodo == 0 && SslMethodV23)
         ssl_metodo = SslMethodV23();
     if (ssl_metodo == 0 && SslMethodV3)

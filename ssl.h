@@ -32,6 +32,7 @@ typedef void (*TSslLoadErrorStrings)(void);
 typedef SSL_CTX * (*TSslCtxNew)(SSL_METHOD *meth);
 typedef void     (*TSslCtxFree)(SSL_CTX *);
 typedef int      (*TSslSetFd)(SSL *s, int fd);
+typedef SSL_METHOD *(*TTLSMethod)(void);
 typedef SSL_METHOD *(*TSslMethodV2)(void);
 typedef SSL_METHOD *(*TSslMethodV3)(void);
 typedef SSL_METHOD *(*TSslMethodTLSV1)(void);
