@@ -5,25 +5,25 @@ const objtipo = 2 # Pode renomear
 const objcmd = config:animal1 ? este
 const posic = 0
 #
-const m_ajudaI = "-t\n-h_cmd_capturar Pega o animal que está lutando com você\n\
--h_cmd_despedir Se despede (desfaz) de um animal seu\n\
+const m_ajudaI = "-t\n-h_cmd_capturar Pega $o-animal que está lutando com você\n\
+-h_cmd_despedir Se despede (desfaz) de $um-animal\n\
 -h_cmd_montar Monta em um personagem\n\
 -h_cmd_desmontar Desmonta de um personagem\n\
 -h_cmd_evoluir Faz um personagem seu evoluir"
-const m_ajudaA = "-h_cmd_animal Mostra animais que você possui\n\
--h_cmd_reserva Manuseio de animais reserva\n\
--h_cmd_dar Dá animal a outro personagem\n\
--h_cmd_chamar Traz animal seu da sala para o comando Animal\n\
--h_cmd_soltar Traz animal seu do comando Animal para a sala\n\
-  \c20\b            Não escolhe nenhum animal para batalha\n\
-  \c21\b a \c2$m\b        Escolhe um animal seu, de 1 a $m\n\
--h_cmd_trocar Dá itens para um animal e troca animais de lugar"
-const m_ajuda1 = "Nota: Seus animais acima do seu nível não lutam."
-const m_ajuda2 = "Nota: Seus animais $m níveis acima do seu nível não lutam."
-const m_ajuda3 = "Nota: Você precisa estar 1 nível acima do seu animal para ele lutar."
-const m_ajuda4 = "Nota: Você precisa estar $m níveis acima do seu animal para ele lutar."
-const m_sem_animais = "Não possui nenhum animal."
-const m_animais = "Animais:"
+const m_ajudaA = "-h_cmd_animal Mostra $seus-animais\n\
+-h_cmd_reserva Manuseio de $animais reserva\n\
+-h_cmd_dar Dá $um-animal a outro personagem\n\
+-h_cmd_chamar Traz $um-animal da sala para o comando $Cmd-animal\n\
+-h_cmd_soltar Traz $um-animal do comando $Cmd-animal para a sala\n\
+  \c20\b            Não escolhe $nenhum-animal para batalha\n\
+  \c21\b a \c2$num-animais\b        Escolhe $um-animal, de 1 a $num-animais\n\
+-h_cmd_trocar Dá itens para $um-animal e troca $animais de lugar"
+const m_ajuda1 = "Nota: $Seus-animais acima do seu nível não lutam."
+const m_ajuda2 = "Nota: $Seus-animais $m níveis acima do seu nível não lutam."
+const m_ajuda3 = "Nota: $Seus-animais a partir de 1 nível abaixo do seu não lutam."
+const m_ajuda4 = "Nota: $Seus-animais a partir de $m níveis abaixo do seu não lutam."
+const m_sem_animais = "Não possui $nenhum-animal."
+const m_animais = "$Animais:"
 const m_linhaperso = "$num$esc Você  N$nivel"
 const m_linhaanimal = "$num$esc$lugar $nome  N$nivel$des$obe"
 const m_esc_sim = "*"
@@ -59,20 +59,18 @@ func t1_obe
   ret x ? m_obe_nao : m_obe_sim
 
 func txtajuda
-  $mens.p(arg0)
-  $mens.mens = config:animal1
-  ret !config:animal1, txtajuda1($mens.txt(m_ajudaI, arg0))
+  ret !config:animal1, txtajuda1(m_ajudaI, arg0)
   refvar anim = m_ajudaI + "\n" + m_ajudaA
   se !config:animal2
-    ret txtajuda1($mens.txt(anim, arg0))
+    ret txtajuda1(anim, arg0)
   senao !config:animal_n
-    ret txtajuda1($mens.txt(anim + "\n" + m_ajuda1, arg0))
+    ret txtajuda1(anim + "\n" + m_ajuda1, arg0)
   senao config:animal_n > 0
-    ret txtajuda1($mens.txt(anim + "\n" + m_ajuda2, arg0))
+    ret txtajuda1(anim + "\n" + m_ajuda2, arg0)
   senao config:animal_n == -1
-    ret txtajuda1($mens.txt(anim + "\n" + m_ajuda3, arg0))
+    ret txtajuda1(anim + "\n" + m_ajuda3, arg0)
   senao
-    ret txtajuda1($mens.txt(anim + "\n" + m_ajuda4, arg0))
+    ret txtajuda1(anim + "\n" + m_ajuda4, arg0)
   fimse
 
 func escr
@@ -105,7 +103,7 @@ func escr
     epara pos = t.ini, pos, pos.depois
       pos.mudar("", 0, 4)
     efim
-    arg0.msg2("\b\c6" + m_animais + "\b\n" + t.remove(1000))
+    arg0.msg2("\b\c6" + $mens.tp(m_animais, arg0) + "\b\n" + t.remove(1000))
   fimse
 
 

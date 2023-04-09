@@ -3,7 +3,7 @@ herda comando_comum
 const objmenu = $m_cmd_equip
 const objtipo = 2 # Pode renomear
 const posic = 5
-const txtajuda = txtajuda1(txttroca(config:animal1 ? m_ajuda2 : m_ajuda1, "$num", config:animal1))
+const txtajuda = txtajuda1(config:animal1 ? m_ajuda2 : m_ajuda1)
 #
 const m_ajuda1 = "-t\n\
 -s\n\
@@ -18,13 +18,16 @@ const m_ajuda2 = "-t\n\
 Mostra os itens que o seu personagem está vestindo ou usando.\n\
 Sequido da palavra TUDO, são mostradas também as posições aonde o seu\n\
 personagem pode vestir algo.\n\
-Seguido de um número de 0 a $num, mostra os itens do animal correspondente."
+Seguido de um número de 0 a $num-animais, mostra os itens $d $o-animal correspondente."
 const m_secundario = "* "
 const m_nada1 = "Você não está vestindo/usando nada."
 const m_nada2 = "$A não está vestindo/usando nada."
+const m_naover = "Você não vê $m."
+const m_sem_animal = "Você não possui $animal $m."
 const m_lista1 = "Você está equipad$s com:"
 const m_lista2 = "$A está equipad$t com:"
-const admordem = "m_ajuda1 m_ajuda2 m_secundario m_nada1 m_nada2 m_lista1 m_lista2"
+const admordem = "m_ajuda1 m_ajuda2 m_secundario m_nada1 m_nada2 m_naover\n\
+m_sem_animal m_lista1 m_lista2"
 
 func escr
   textotxt t
@@ -33,7 +36,7 @@ func escr
   ref extra.55 # Posições extras
   txt50 nomepos
 # Obtém o personagem
-  refvar r = arg1 == "tudo" ? arg0 : misc:persoinfo(arg0, arg1)
+  refvar r = arg1 == "tudo" ? arg0 : misc:persoinfo(arg0, arg1, m_naover, m_sem_animal)
   ret !r, nulo
 # Preenche pos
   txt512 lin
@@ -87,22 +90,30 @@ const nome3 = "Posição secundária"
 const tipo3 = "opc_linha"
 const vari3 = "m_secundario"
 #
-const titu4 = " * Personagem"
-#
-const nome4 = "Não está equipado"
+const nome4 = "Alvo não existe"
 const tipo4 = "opc_linha"
-const vari4 = "m_nada1"
+const vari4 = "m_naover"
 #
-const nome5 = "Está equipado"
+const nome5 = "Não possui animal"
 const tipo5 = "opc_linha"
-const vari5 = "m_lista1"
+const vari5 = "m_sem_animal"
 #
-const titu6 = " * Animal"
+const titu6 = " * Personagem"
 #
 const nome6 = "Não está equipado"
 const tipo6 = "opc_linha"
-const vari6 = "m_nada2"
+const vari6 = "m_nada1"
 #
 const nome7 = "Está equipado"
 const tipo7 = "opc_linha"
-const vari7 = "m_lista2"
+const vari7 = "m_lista1"
+#
+const titu8 = " * Animal"
+#
+const nome8 = "Não está equipado"
+const tipo8 = "opc_linha"
+const vari8 = "m_nada2"
+#
+const nome9 = "Está equipado"
+const tipo9 = "opc_linha"
+const vari9 = "m_lista2"

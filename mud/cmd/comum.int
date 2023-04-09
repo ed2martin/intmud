@@ -1,4 +1,5 @@
 classe comando_comum_ajuda
+herda mens_tabela
 # Comando para os jogadores que contém somente páginas de ajuda
 
 const objtipo = 0 # Tipo de comando
@@ -63,7 +64,7 @@ func txtajuda1 # Prepara um texto de ajuda
     casofim
     p.remove
   efim
-  ret t.remove(1000)
+  ret vartrocacod(vartrocacod(t.remove(1000), "$", "o_"), "\d", "x_")
 
 
 classe comando_comum

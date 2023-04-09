@@ -91,8 +91,10 @@ misc:itemlista(<personagem>, <nome do personagem>, <variável listaobj>)
 Obtém um personagem ou item a partir dos personagens e itens da
 variável listaobj
 
-misc:persoinfo(<personagem>, <nome do personagem>)
+misc:persoinfo(<personagem>, <nome do personagem>, [msg não vê], [msg não possui])
 Obtém o personagem que o jogador quer consultar a partir de um texto
+Se [msg não vê] estiver ausente, assume "Você não vê $m."
+Se [msg não possui] estiver ausente, assume "Você não possui $animal $m."
 
 misc:separa(<texto>)
 Essa função separa o texto em o nome do objeto e nome do alvo

@@ -8,11 +8,11 @@ const txtajuda = txtajuda1(config:animal1 ? m_ajuda2 : m_ajuda1)
 const m_ajuda1 = "-t\n-s <objeto> <personagem>\nDá um objeto para outro personagem."
 const m_ajuda2 = "-t\n\
 -s <objeto> <personagem>\n\
--s <número do animal> <personagem>\n\
-Dá um objeto ou animal para outro personagem."
+-s <número $d $o-animal> <personagem>\n\
+Dá um objeto ou $animal para outro personagem."
 const m_sem_args = "Dar itens para quem?"
 const m_nao_possui = "Você não possui $m."
-const m_nao_dar = "Não é possível dar esse animal."
+const m_nao_dar = "Não é possível dar $b."
 const m_para_quem = "Dar $m para quem?"
 const m_naover = "Você não vê $m."
 const m_nao_pode = "Não é possível dar nada para $a."
@@ -52,7 +52,7 @@ func escr
       $mens.mens = arg1
       ret $mens.mp(m_nao_possui, arg0)
     senao r.p_soltar
-      ret $mens.mp(m_nao_dar, arg0)
+      ret $mens.mp(m_nao_dar, arg0, r)
     senao !txt2(arg1)
       $mens.mens = arg1
       ret $mens.mp(m_para_quem, arg0)

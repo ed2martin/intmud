@@ -106,9 +106,14 @@ Mensagem é o que falou, é o $m nos textos
 Objeto do idioma é algo como $idioma_élfico, ou null se for língua comum
 
 $mens.mp(texto, personagem, alvo, objeto 1, objeto 2)
-Envia mensagem simples para o próprio personagem.
-É equivalente a charmar $mens.p(personagem, alvo, objeto), e em seguida,
-$mens.msg(texto, personagem).
+Mensagem de personagem: envia mensagem simples para o próprio personagem.
+É equivalente a charmar $mens.p(personagem, alvo, objeto 1, objeto 2),
+e em seguida, $mens.msg(texto, personagem).
+
+$mens.tp(texto, personagem, alvo, objeto 1, objeto 2)
+Texto de personagem: retorna mensagem simples do próprio personagem.
+É equivalente a charmar $mens.p(personagem, alvo, objeto 1, objeto 2),
+e em seguida, retornar $mens.txt(texto, personagem).
 
 Para apenas obter o texto, fazendo as substituições com $, usar a função
 $mens.txt(texto, personagem)

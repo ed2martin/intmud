@@ -159,7 +159,7 @@ func txtident # Adiciona informações de item ou personagem em um textotxt
   fimse
 # Diversos
   arg1.i_chave && arg2.addfim("É um tipo de chave.")
-  arg1.i_captura && arg2.addfim("Pode ser usado para capturar animais.")
+  arg1.i_captura && arg2.addfim($mens.tp("Pode ser usado para $capturar $animais.", arg0))
   arg1.manterperso && arg2.addfim("Não perde ao entrar em uma sala que mata.")
   ref tec = $tecnica_[arg1.i_item_tecnica]
   tec && arg2.addfim("Comando item produz: " + txt(tec.nomevar, 2))

@@ -2,7 +2,7 @@ classe h_cmd_estat
 herda comando_comum
 const objtipo = 2 # Pode renomear
 const posic = 5
-const txtajuda = txtajuda1(txttroca(config:animal1 ? m_ajuda2 : m_ajuda1, "$", config:animal1))
+const txtajuda = txtajuda1(config:animal1 ? m_ajuda2 : m_ajuda1)
 #
 const m_ajuda1 = "-t\n\
 -s\n\
@@ -11,14 +11,16 @@ const m_ajuda2 = "-t\n\
 -s\n\
 -s <número>\n\
 Mostra as estatísticas e diversas informações sobre o seu personagem\n\
-ou o animal você escolheu. Seguido de um número de 0 a $ mostra\n\
-as estatísticas do animal correspondente."
+ou $o-animal que você escolheu. Seguido de um número de 0 a $num-animais mostra\n\
+as estatísticas $d $o-animal correspondente."
+const m_naover = "Você não vê $m."
+const m_sem_animal = "Você não possui $animal $m."
 
 func escr
   textotxt t
   txt100 t1
 # Obtém o personagem
-  refvar r = misc:persoinfo(arg0, arg1)
+  refvar r = misc:persoinfo(arg0, arg1, m_naover, m_sem_animal)
   ret !r, nulo
   t.addfim("\b\c6Estatísticas de \"" + r.descnome2 + "\"\b")
 # Vida, mana e vigor
@@ -401,7 +403,7 @@ classe h_cmd_vida
 herda comando_comum
 const objtipo = 2 # Pode renomear
 const posic = 0
-const txtajuda = txtajuda1(txttroca(config:animal1 ? m_ajuda2 : m_ajuda1, "$", config:animal1))
+const txtajuda = txtajuda1(config:animal1 ? m_ajuda2 : m_ajuda1, "$num")
 const m_ajuda1 = "-t\n\
 -s\n\
 Mostra os pontos de vida, mana, vigor, nível e experiência do seu personagem."
@@ -409,10 +411,12 @@ const m_ajuda2 = "-t\n\
 -s\n\
 -s <número>\n\
 Mostra os pontos de vida, mana, vigor, nível e experiência do seu personagem.\n\
-Seguido de um número de 0 a $, mostra as informações do animal correspondente."
+Seguido de um número de 0 a $num-animais, mostra as informações $d $o-animal correspondente."
+const m_naover = "Você não vê $m."
+const m_sem_animal = "Você não possui $animal $m."
 
 func escr
-  refvar r = misc:persoinfo(arg0, arg1)
+  refvar r = misc:persoinfo(arg0, arg1, m_naover, m_sem_animal)
   ret !r, nulo
   $mens.mens = vidalin(r)
   $mens.p(arg0, r)
@@ -434,14 +438,16 @@ classe h_cmd_inv
 herda comando_comum
 const objtipo = 2 # Pode renomear
 const posic = 5
-const txtajuda = txtajuda1(txttroca(config:animal1 ? m_ajuda2 : m_ajuda1, "$", config:animal1))
+const txtajuda = txtajuda1(config:animal1 ? m_ajuda2)
 #
 const m_ajuda1 = "-t\n-s\nMostra os itens que o seu personagem está carregando."
 const m_ajuda2 = "-t\n\
 -s\n\
 -s <número>\n\
 Mostra os itens que o seu personagem está carregando.\n\
-Seguido de um número de 0 a $ mostra os itens do animal correspondente."
+Seguido de um número de 0 a $num-animais mostra os itens $d $o-animal correspondente."
+const m_naover = "Você não vê $m."
+const m_sem_animal = "Você não possui $animal $m."
 const m_nada1 = "Você não está carregando nada."
 const m_nada2 = "$A não está carregando nada."
 const m_lista1 = "Você carrega:"
@@ -450,7 +456,7 @@ const m_lista2 = "$A carrega:"
 func escr
   textotxt t
   listaitem item
-  refvar r = misc:persoinfo(arg0, arg1)
+  refvar r = misc:persoinfo(arg0, arg1, m_naover, m_sem_animal)
   ret !r, nulo
   epara item = r.dentro1.fim, item, item.antes
     refvar i = item.obj

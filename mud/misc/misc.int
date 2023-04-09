@@ -267,13 +267,16 @@ func persoinfo # Obtém o personagem que o jogador quer consultar a partir de um 
 # Com jogadores normais, sempre retorna o personagem escolhido
 # arg0 = personagem
 # arg1 = texto do tipo: [nome do personagem na sala] [número do animal]
+# arg2 = mensagem do tipo "Você não vê $m."
+# arg3 = mensagem do tipo "Você não possui $animal $m."
 # Retorna o objeto do personagem, ou nulo se não encontrou (e avisa o jogador)
   ref r
   se !arg1
     ret arg0.persoesc
   senao arg1 == intpos(arg1) && config:animal1 >= arg1
     r = misc:personum(arg0, arg1)
-    !r && arg0.msg("Você não possui animal " + arg1 + ".")
+    $mens.mens = arg1
+    !r && $mens.mp(arg3 ?? "Você não possui $animal $m.", arg0)
     ret r
   senao !$perm_[arg0.jogperm].i_perso
     ret arg0.persoesc
@@ -288,13 +291,15 @@ func persoinfo # Obtém o personagem que o jogador quer consultar a partir de um 
     sair
   efim
   se !r
-    arg0.msg("Você não vê isso.")
+    $mens.mens = arg1
+    $mens.mp(arg2 ?? "Você não vê $m.", arg0)
     ret
   fimse
   refvar num = txt2(arg1)
   ret num != intpos(num) || config:animal1 < num, r
   refvar rr = misc:personum(arg0, num)
-  !rr && arg0.msg(txtcopiamai(r.descnome2, "A") + " não possui animal " + num + ".")
+  $mens.mens = arg1
+  !rr && arg0.mp("$P não possui $animal $m.")
   ret rr
 
 func txtmoedas # Retorna texto correspondente à quantidade de moedas

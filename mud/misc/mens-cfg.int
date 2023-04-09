@@ -1,0 +1,60 @@
+classe h_mens_cfg
+const m_animal = "animal"
+const m_animais = "animais"
+const m_genero_animal = "o"
+const m_um_animal = "um animal"
+const m_seus_animais = "seus animais"
+const m_nenhum_animal = "nenhum animal"
+const m_capturar = "capturar"
+#
+const admordem = "m_animal m_animais m_genero_animal m_um_animal\n\
+m_seus_animais m_nenhum_animal m_capturar"
+
+func iniclasse
+  ret txt(arg0, 0, 2) != "h_", !$[arg0] && criar(arg0)
+  prog p
+  ret p.existe(txt(arg0, 2)), nulo
+  p.criar(txt(arg0, 2) + "\nconfig/mens\nherda " + arg0)
+  misccriar:add(txt(arg0, 2))
+
+
+classe m_mens_cfg
+herda comando_menu
+const titulo = "Textos nas mensagens"
+const menufim = "menu_econfig_nomecmd"
+const colunas = 28
+const classe = "mens_cfg"
+#
+const nome1 = "$animal"
+const info1 = "Exemplo: Dá um objeto ou animal para outro personagem"
+const tipo1 = "opc_linha"
+const vari1 = "m_animal"
+#
+const nome2 = "$animais"
+const info2 = "Exemplo: Atingido o limite de animais reserva"
+const tipo2 = "opc_linha"
+const vari2 = "m_animais"
+#
+const nome3 = "$genero-animal"
+const info3 = "\"o\" se $animal for masculino ou \"a\" se $animal for feminimo"
+const tipo3 = "opc_linha"
+const vari3 = "m_genero_animal"
+#
+const nome4 = "$um-animal"
+const info4 = "Exemplo: Primeiro escolha um animal"
+const tipo4 = "opc_linha"
+const vari4 = "m_um_animal"
+#
+const nome5 = "$seus-animais"
+const info5 = "Exemplo: Seus animais acima do seu nível não lutam"
+const tipo5 = "opc_linha"
+const vari5 = "m_seus_animais"
+#
+const nome6 = "$nenhum-animal"
+const info6 = "Exemplo: Você não possui nenhum animal"
+const tipo6 = "opc_linha"
+const vari6 = "m_nenhum_animal"
+#
+const nome7 = "$capturar"
+const tipo7 = "opc_linha"
+const vari7 = "m_capturar"

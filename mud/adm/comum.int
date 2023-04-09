@@ -1,4 +1,5 @@
 classe comando_adm_ajuda
+herda mens_tabela
 # Comando de administração que contém somente páginas de ajuda
 const iniclasse = !$[arg0] && criar(arg0)
 const txtajuda = txtajuda1(m_ajuda)
@@ -40,7 +41,7 @@ func txtajuda1 # Prepara um texto de ajuda
     casofim
     p.remove
   efim
-  ret t.remove(1000)
+  ret vartrocacod(vartrocacod(t.remove(1000), "$", "o_"), "\d", "x_")
 
 
 classe comando_adm

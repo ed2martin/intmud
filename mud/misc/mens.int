@@ -63,6 +63,21 @@ const x_h@_uma@_ = "na "
 const x_h@_umas@_ = "nas "
 const x_h@_um@_ = "no "
 const x_h@_uns@_ = "nos "
+#
+const o_animal = txtcopiamai(mens_cfg:m_animal, intchr(arg0) < 95 ? "A" : "")
+const o_animais = txtcopiamai(mens_cfg:m_animais, intchr(arg0) < 95 ? "A" : "")
+const o_genero@qanimal = txtcopiamai(mens_cfg:m_genero_animal, intchr(arg0) < 95 ? "A" : "")
+const o_o@qanimal = o_genero@qanimal(arg0) + " " + mens_cfg:m_animal
+const o_um@qanimal = txtcopiamai(mens_cfg:m_um_animal, intchr(arg0) < 95 ? "A" : "")
+const o_seus@qanimais = txtcopiamai(mens_cfg:m_seus_animais, intchr(arg0) < 95 ? "A" : "")
+const o_nenhum@qanimal = txtcopiamai(mens_cfg:m_nenhum_animal, intchr(arg0) < 95 ? "A" : "")
+const o_capturar = txtcopiamai(mens_cfg:m_capturar, intchr(arg0) < 95 ? "A" : "")
+const o_num@qanimais = config:animal1
+
+func o_cmd@qanimal
+  prog p
+  p.iniherdainv("h_cmd_animal")
+  ret txtcopiamai(txt(p.texto, 4) ?? arg0, intchr(arg0) < 95 ? "A" : "")
 
 
 classe mens
@@ -91,7 +106,12 @@ func removesom # Remove códigos de som de textotxt arg0
 func p # Define os personagens
   perso = arg0, alvo = arg1, obj1 = arg2, obj2 = arg3
 
-func mp # Atalho para função p seguido da função msg
+func tp # Texto de personagem: atalho para função p seguido da função txt
+  perso = arg1, alvo = arg2, obj1 = arg3, obj2 = arg4
+  r = arg1.dono.perso && arg1.perso ? arg1.dono : arg1
+  ret vartrocacod(vartrocacod(arg0, "$", "o_"), "\d", "x_")
+
+func mp # Mensagem de personagem: atalho para função p seguido da função msg
   se arg1.sock
     perso = arg1, alvo = arg2, obj1 = arg3, obj2 = arg4
     r = arg1.dono.perso && arg1.perso ? arg1.dono : arg1

@@ -112,14 +112,14 @@ Notar que a partir do momento que a variável var.z_ident foi mudada,\n\
 as palavras chave passaram a ser baú grande (as palavras que deve-se\n\
 digitar para se referir ao item).\n\n\
 Para poupar digitação, é aconselhável criar atalhos como esses:\n\
-atalho textoitem cmdi $1 var.z_ident=\"$s\"\n\
-atalho nomeitem cmdi $1 var.z_descnome=\"$s\"\n\
-atalho salaitem cmdi $1 var.z_descpos=\"$s\"\n\
-atalho sexoitem cmdi $1 var.z_msexo=\"$s\"\n\
-atalho textoperso cmdp $1 var.z_ident=\"$s\"\n\
-atalho nomeperso cmdp $1 var.z_descnome=\"$s\"\n\
-atalho salaperso cmdp $1 var.z_descpadr=\"$s\"\n\
-atalho sexoperso cmdp $1 var.z_msexo=\"$s\"\n\n\
+atalho textoitem cmdi $$1 var.z_ident=\"$$s\"\n\
+atalho nomeitem cmdi $$1 var.z_descnome=\"$$s\"\n\
+atalho salaitem cmdi $$1 var.z_descpos=\"$$s\"\n\
+atalho sexoitem cmdi $$1 var.z_msexo=\"$$s\"\n\
+atalho textoperso cmdp $$1 var.z_ident=\"$$s\"\n\
+atalho nomeperso cmdp $$1 var.z_descnome=\"$$s\"\n\
+atalho salaperso cmdp $$1 var.z_descpadr=\"$$s\"\n\
+atalho sexoperso cmdp $$1 var.z_msexo=\"$$s\"\n\n\
 Com esses atalhos, mudar a bolsa para baú grande pode ser feito\n\
 digitando os seguintes comandos:\n\
 nomeitem bolsa um baú grande\n\
@@ -134,41 +134,52 @@ classe adm_mens
 herda comando_adm_ajuda
 const m_ajuda = "-t Caracteres especiais em mensagens\n\n\
 As seguintes sequências de caracteres têm um significado especial:\n\
- \c2$$\b  Símbolo $\n\
- \c2$P\b  Nome do personagem\n\
- \c2$Q\b  Nome do personagem sem citar o dono\n\
- \c2$R\b  Nome do personagem no comando QUEM\n\
- \c2$A\b  Nome do alvo\n\
- \c2$B\b  Nome do alvo sem citar o dono\n\
- \c2$C\b  Nome do alvo no comando QUEM\n\
- \c2$O\b  Nome do objeto\n\
- \c2$N\b  Nome do segundo objeto (exemplo, munição)\n\
- \c2$K\b  Nome do objeto citando o dono\n\
- \c2$L\b  Nome do segundo objeto citando o dono\n\
- \c2$H\b  Depende do personagem: um ou uma\n\
- \c2$I\b  Depende do alvo: um ou uma\n\
- \c2$J\b  Depende do objeto: um ou uma\n\
- \c2$S\b  Depende do personagem: o ou a\n\
- \c2$T\b  Depende do alvo: o ou a\n\
- \c2$U\b  Depende do objeto: o ou a\n\
- \c2$V\b  Depende do personagem: e ou a\n\
- \c2$W\b  Depende do alvo: e ou a\n\
- \c2$X\b  Depende do objeto: e ou a\n\
- \c2$M\b  Mensagem; somente comandos que usam uma mensagem digitada por alguém\n\
- \c2$D\b  É substituído por \"de\"\n\
+ \c2$$$$\b  Símbolo $$\n\
+ \c2$$p\b  Nome do personagem\n\
+ \c2$$q\b  Nome do personagem sem citar o dono\n\
+ \c2$$r\b  Nome do personagem no comando QUEM\n\
+ \c2$$a\b  Nome do alvo\n\
+ \c2$$b\b  Nome do alvo sem citar o dono\n\
+ \c2$$c\b  Nome do alvo no comando QUEM\n\
+ \c2$$o\b  Nome do objeto\n\
+ \c2$$n\b  Nome do segundo objeto (exemplo, munição)\n\
+ \c2$$k\b  Nome do objeto citando o dono\n\
+ \c2$$l\b  Nome do segundo objeto citando o dono\n\
+ \c2$$h\b  Depende do personagem: um ou uma\n\
+ \c2$$i\b  Depende do alvo: um ou uma\n\
+ \c2$$j\b  Depende do objeto: um ou uma\n\
+ \c2$$s\b  Depende do personagem: o ou a\n\
+ \c2$$t\b  Depende do alvo: o ou a\n\
+ \c2$$u\b  Depende do objeto: o ou a\n\
+ \c2$$v\b  Depende do personagem: e ou a\n\
+ \c2$$w\b  Depende do alvo: e ou a\n\
+ \c2$$x\b  Depende do objeto: e ou a\n\
+ \c2$$m\b  Mensagem; somente comandos que usam uma mensagem digitada por alguém\n\
+ \c2$$d\b  É substituído por \"de\"\n\
      No entando, seguido de o/a/os/as, forma as palavras do/da/dos/das\n\
-     Costuma ser usado nas mensagens como $d $p, $d $a e $d $o\n\
- \c2$E\b  É substituído por \"em\"\n\
+     Costuma ser usado nas mensagens como $$d $$p, $$d $$a e $$d $$o\n\
+ \c2$$e\b  É substituído por \"em\"\n\
      No entando, seguido de o/a/os/as, forma as palavras no/na/nos/nas\n\
-     Costuma ser usado nas mensagens como $e $p, $e $a e $e $o\n\
- \c2$F\b  Semelhante a $D, exceto que seguido de um/uma/uns/umas também\n\
+     Costuma ser usado nas mensagens como $$e $$p, $$e $$a e $$e $$o\n\
+ \c2$$f\b  Semelhante a $$d, exceto que seguido de um/uma/uns/umas também\n\
      forma as palavras do/da/dos/das.\n\
- \c2$G\b  Semelhante a $E, exceto que seguido de um/uma/uns/umas também\n\
+ \c2$$g\b  Semelhante a $$e, exceto que seguido de um/uma/uns/umas também\n\
      forma as palavras no/na/nos/nas.\n\n\
-Quando o símbolo $ for seguido de uma letra minúscula, a primeira letra\n\
-do texto não é transformada em maiúscula.\n\
-Para aparecer você/ti ao invés de você/tu, usar $P1, $Q1, $A1, $B1, $O1,\n\
-$N1, $K1 e $L1 ao invés de $P, $Q, $A, $B, $O e $N, $K e $L."
+Sequências definidas no comando Econfig, comentários entre parênteses:\n\n\
+ \c2$$animal\b          $animal\n\
+ \c2$$animais\b         $animais\n\
+ \c2$$genero-animal\b   $genero-animal  (pode ser o ou a)\n\
+ \c2$$o-animal\b        $o-animal\n\
+ \c2$$um-animal\b       $um-animal\n\
+ \c2$$seus-animais\b    $seus-animais\n\
+ \c2$$nenhum-animal\b   $nenhum-animal\n\
+ \c2$$capturar\b        $capturar\n\
+ \c2$$num-animais\b     $num-animais  (quantidade de animais do comando $cmd-animal)\n\
+ \c2$$cmd-animal\b      $cmd-animal  (nome do comando)\n\n\
+Quando o símbolo $$ for seguido de uma letra maiúscula, a primeira letra\n\
+do texto é transformada em maiúscula.\n\
+Para aparecer você/ti ao invés de você/tu, usar $$p1, $$q1, $$a1, $$b1, $$o1,\n\
+$$n1, $$k1 e $$l1 ao invés de $$p, $$q, $$a, $$b, $$o e $$n, $$k e $$l."
 
 
 classe adm_cores
