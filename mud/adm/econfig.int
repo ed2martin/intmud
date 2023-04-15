@@ -7,10 +7,8 @@ func escr
 
 
 classe menu_econfig
-herda comando_menu
+herda comando_menu_econfig
 const titulo = "Configurações do MUD"
-const colunas = 35
-const classe = "config"
 #
 const nome1 = "Como ativar o MUD"
 const tipo1 = "menu_econfig_ativar--"
@@ -98,11 +96,9 @@ const classe = "cmd_" # Classes que estão nesse menu
 
 
 classe menu_econfig_ativar
-herda comando_menu
+herda comando_menu_econfig
 const titulo = "Como ativar o MUD"
 const menufim = "menu_econfig"
-const colunas = 35
-const classe = "config"
 #
 const nome1 = "Jogar localmente"
 const info1 = "Jogar na própria janela que o IntMUD abre\n\
@@ -205,11 +201,9 @@ const extr17 = "100 100000"
 
 
 classe menu_econfig_salvar
-herda comando_menu
+herda comando_menu_econfig
 const titulo = "Criar e salvar personagem"
 const menufim = "menu_econfig"
-const colunas = 35
-const classe = "config"
 #
 const nome1 = "Nomes proibidos"
 const info1 = "Nomes não permitidos para personagens dos jogadores, uma linha por nome"
@@ -290,11 +284,9 @@ const extr11 = "1 10000"
 
 
 classe menu_econfig_itens
-herda comando_menu
+herda comando_menu_econfig
 const titulo = "Tipos de itens"
 const menufim = "menu_econfig"
-const colunas = 35
-const classe = "config"
 #
 const nome1 = "Tipos de itens"
 const info1 = "Tipos de itens usados nos comandos Vender, Avaliar e Doar"
@@ -348,11 +340,9 @@ const extr9 = config:item_tipos
 
 
 classe menu_econfig_log
-herda comando_menu
+herda comando_menu_econfig
 const titulo = "Arquivos de log"
 const menufim = "menu_econfig"
-const colunas = 35
-const classe = "config"
 #
 const nome1 = "Entrou e saiu"
 const info1 = "Usuários que entraram e saíram"
@@ -444,10 +434,9 @@ const exec13 = "misclog:atualiza_exec"
 
 
 classe menu_econfig_msg
-herda comando_menu
+herda comando_menu_econfig
 const titulo = "Mensagens"
 const menufim = "menu_econfig"
-const colunas = 35
 #
 const nome1 = "Mensagens do jogo"
 const tipo1 = "menu_econfig_msgjogo--"
@@ -514,11 +503,9 @@ const tipo21 = "m_perso_batalhafim--"
 
 
 classe menu_econfig_adm
-herda comando_menu
+herda comando_menu_econfig
 const titulo = "Comandos Admin"
 const menufim = "menu_econfig"
-const colunas = 35
-const classe = "config"
 #
 const nome1 = "Comando Echo"
 const tipo1 = "opc_linha--"
@@ -550,11 +537,9 @@ const vari7 = "acmsg"
 
 
 classe menu_econfig_msgjogo
-herda comando_menu
+herda comando_menu_econfig
 const titulo = "Mensagens do jogo"
 const menufim = "menu_econfig_msg"
-const colunas = 35
-const classe = "config"
 #
 const nome1 = "Apresentação"
 const info1 = "Primeira mensagem que o jogador recebe ao entrar no MUD"
@@ -590,11 +575,9 @@ const vari6 = "perigomsg"
 
 
 classe menu_econfig_entrasai
-herda comando_menu
+herda comando_menu_econfig
 const titulo = "Mensagens entra e sai"
 const menufim = "menu_econfig_msg"
-const colunas = 35
-const classe = "config"
 #
 const nome1 = "Jogador entrou, admin"
 const info1 = "Mensagem de jogador entrando, para administradores\n\
@@ -646,11 +629,9 @@ const vari8 = "criou_msgjog"
 
 
 classe menu_econfig_hora
-herda comando_menu
+herda comando_menu_econfig
 const titulo = "Mensagens por hora"
 const menufim = "menu_econfig_msg"
-const colunas = 35
-const classe = "config"
 #
 const nome1 = "1 hora"
 const tipo1 = "opc_linha"
@@ -750,11 +731,9 @@ const vari24 = "horamsg0"
 
 
 classe menu_econfig_ataques
-herda comando_menu
+herda comando_menu_econfig
 const titulo = "Ataques"
 const menufim = "menu_econfig"
-const colunas = 35
-const classe = "config"
 #
 const nome1 = "Experiência nível 0"
 const info1 = "Experiência ganha ao matar personagens do nível 0"
@@ -904,11 +883,9 @@ const vari23 = "expmax_"
 
 
 classe menu_econfig_casas
-herda comando_menu
+herda comando_menu_econfig
 const titulo = "Casas"
 const menufim = "menu_econfig"
-const colunas = 35
-const classe = "config"
 #
 const nome1 = "Casas por jogador"
 const info1 = "Quantas casas um jogador pode ter (sendo uma casa por área)"
@@ -981,11 +958,9 @@ const vari13 = "casamsgbloq"
 
 
 classe menu_econfig_vestir
-herda comando_menu
+herda comando_menu_econfig
 const titulo = "Vestir itens"
 const menufim = "menu_econfig"
-const colunas = 35
-const classe = "config"
 #
 const nome1 = "Nomes das posições"
 const tipo1 = "opc_txtopcao--"
@@ -1215,10 +1190,9 @@ const sobre = txtcopiamai(txtsublin(config:equip_txt, arg0, 1), "A") + " depende
 
 
 classe menu_econfig_herda
-herda comando_menu
+herda comando_menu_econfig
 const titulo = "Herda"
 const menufim = "menu_econfig"
-const colunas = 35
 #
 const nome1 = "Áreas"
 const tipo1 = "menu_econfig_herda1--"
@@ -1237,11 +1211,9 @@ const tipo5 = "menu_econfig_herda4--"
 
 
 classe menu_econfig_herda1
-herda comando_menu
+herda comando_menu_econfig
 const titulo = "Herda Áreas"
 const menufim = "menu_econfig_herda"
-const colunas = 35
-const classe = "config"
 #
 const nome1 = "Volume dentro"
 const tipo1 = "opc_numero--"
@@ -1298,11 +1270,9 @@ const extr10 = config:item_tipos
 
 
 classe menu_econfig_herda2
-herda comando_menu
+herda comando_menu_econfig
 const titulo = "Herda Itens"
 const menufim = "menu_econfig_herda"
-const colunas = 35
-const classe = "config"
 #
 const nome1 = "Volume"
 const tipo1 = "opc_numero--"
@@ -1319,11 +1289,9 @@ const vari3 = "item_descsala"
 
 
 classe menu_econfig_herda3
-herda comando_menu
+herda comando_menu_econfig
 const titulo = "Herda Personagens"
 const menufim = "menu_econfig_herda"
-const colunas = 35
-const classe = "config"
 #
 const nome1 = "Tipo 1"
 const info1 = "Nome da raça; o comando que mostra os tipos é adm tipo"
@@ -1383,11 +1351,9 @@ const extr10 = "Não muda\nAleatório\nPersonagem de menor nível"
 
 
 classe menu_econfig_herda4
-herda comando_menu
+herda comando_menu_econfig
 const titulo = "Herda Ataques"
 const menufim = "menu_econfig_herda"
-const colunas = 35
-const classe = "config"
 #
 const nome1 = "Pontos de aula"
 const info1 = "Quantos pontos de aula consome por aula"

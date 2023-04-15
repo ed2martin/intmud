@@ -8,9 +8,9 @@ func menu
   epara p.inifunctudo(arg0, arg1), p.lin, p.depois
     total++
   efim
-  ret total == 0, "Nenhum nível definido"
-  ret total == 1, "1 nível"
-  ret txt(v.total("")) + " níveis"
+  ret total == 0, "\c6Nenhum nível definido\b"
+  ret total == 1, "\c61 nível\b"
+  ret "\c6" + txt(v.total("")) + " níveis\b"
 
 func passo
   arg0.passo = este

@@ -626,10 +626,9 @@ func escr # Executa o comando
 
 
 classe menu_mover
-herda comando_menu
+herda comando_menu_cmd
 const titulo = "Andar pelo jogo e saídas"
 const menufim = "menu_econfig_msg"
-const colunas = 35
 #
 const nome1 = "Todas as direções"
 const tipo1 = "mmenu_mover_cfg--"
@@ -675,10 +674,9 @@ const tipo14 = "menu_mover_item--"
 
 
 classe mmenu_mover_cfg
-herda comando_menu
+herda comando_menu_cmd
 const titulo = "Todas as direções"
 const menufim = "menu_mover"
-const colunas = 28
 const classe = "comando_mover_cfg"
 #
 const nome1 = "Impossível"
@@ -732,10 +730,9 @@ const vari12 = "m_dormindo"
 
 
 classe menu_mover_comum
-herda comando_menu
+herda comando_menu_cmd
 const titulo = "Mover"
 const menufim = "menu_mover"
-const colunas = 28
 #
 const nome1 = "Nome da porta"
 const tipo1 = "opc_linha"
@@ -859,10 +856,9 @@ const classe = "cmd_entrar"
 
 
 classe menu_mover_item
-herda comando_menu
+herda comando_menu_cmd
 const titulo = "Entrar/sair item"
 const menufim = "menu_mover"
-const colunas = 28
 const classe = "cmd_entrar"
 #
 const nome1 = "Entrou andando"

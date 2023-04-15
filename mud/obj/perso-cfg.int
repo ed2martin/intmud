@@ -254,10 +254,9 @@ func iniclasse
 
 
 classe m_perso_descperso
-herda comando_menu
+herda comando_menu_econfig
 const titulo = "Personagem na sala"
 const menufim = "menu_econfig_msg"
-const colunas = 28
 const classe = "perso_cfg"
 const variavel = "descperso"
 #
@@ -339,10 +338,9 @@ const classe = "perso_cfg"
 
 
 classe comum_desccond
-herda comando_menu
+herda comando_menu_adm
 #
 const titulo = "Condição personagem"
-const colunas = 28
 #
 const nome1 = "Desmaiado"
 const tipo1 = "opc_linha"
@@ -378,10 +376,9 @@ const vari8 = "desccond7"
 
 
 classe m_perso_posicao_a
-herda comando_menu
+herda comando_menu_econfig
 const titulo = "Você não consegue"
 const menufim = "menu_econfig_msg"
-const colunas = 28
 const classe = "perso_cfg"
 #
 const nome1 = "Morto"
@@ -426,10 +423,9 @@ const vari10 = "semluta_a"
 
 
 classe m_perso_posicao_b
-herda comando_menu
+herda comando_menu_econfig
 const titulo = "Montaria não consegue"
 const menufim = "menu_econfig_msg"
-const colunas = 28
 const classe = "perso_cfg"
 #
 const nome1 = "Morto"
@@ -474,10 +470,9 @@ const vari10 = "acordado_b"
 
 
 classe m_perso_fomesede_a
-herda comando_menu
+herda comando_menu_econfig
 const titulo = "Fome e sede personagem"
 const menufim = "menu_econfig_msg"
-const colunas = 30
 const classe = "perso_cfg"
 #
 const nome1 = "Pouca sede"
@@ -534,10 +529,9 @@ const vari13 = "sobrio_a"
 
 
 classe m_perso_fomesede_b
-herda comando_menu
+herda comando_menu_econfig
 const titulo = "Fome e sede outros"
 const menufim = "menu_econfig_msg"
-const colunas = 30
 const classe = "perso_cfg"
 #
 const nome1 = "Sede"
@@ -566,10 +560,9 @@ const vari6 = "fome3sede3b"
 
 
 classe m_perso_perso
-herda comando_menu
+herda comando_menu_econfig
 const titulo = "Criar personagem"
 const menufim = "menu_econfig_msg"
-const colunas = 28
 const classe = "perso_cfg"
 #
 const nome1 = "Digite o nome"
@@ -602,10 +595,9 @@ const vari7 = "ini_perso_confirma"
 
 
 classe m_perso_senha
-herda comando_menu
+herda comando_menu_econfig
 const titulo = "Senha do personagem"
 const menufim = "menu_econfig_msg"
-const colunas = 28
 const classe = "perso_cfg"
 #
 const nome1 = "Digite uma senha"
@@ -658,10 +650,9 @@ const vari12 = "ini_senha_diferente2"
 
 
 classe m_perso_email
-herda comando_menu
+herda comando_menu_econfig
 const titulo = "E-mail e gênero"
 const menufim = "menu_econfig_msg"
-const colunas = 28
 const classe = "perso_cfg"
 #
 const nome1 = "Email, opcional"
@@ -686,10 +677,9 @@ const vari5 = "ini_sexo1"
 
 
 classe m_perso_raca
-herda comando_menu
+herda comando_menu_econfig
 const titulo = "Raça e classe"
 const menufim = "menu_econfig_msg"
-const colunas = 28
 const classe = "perso_cfg"
 #
 const nome1 = "Escolher raça"
@@ -730,10 +720,9 @@ const vari9 = "ini_tipo3_quer"
 
 
 classe m_perso_entrando
-herda comando_menu
+herda comando_menu_econfig
 const titulo = "Personagem entrando"
 const menufim = "menu_econfig_msg"
-const colunas = 28
 const classe = "perso_cfg"
 #
 const titu1 = " * Para o jogador"
@@ -790,10 +779,9 @@ const vari12 = "ini_perso_reconectou"
 
 
 classe m_perso_exp
-herda comando_menu
+herda comando_menu_econfig
 const titulo = "Experiência, nível e moedas"
 const menufim = "menu_econfig_msg"
-const colunas = 28
 const classe = "perso_cfg"
 #
 const nome1 = "Perso ganha 1"
@@ -860,10 +848,9 @@ const vari15 = "moedas_rec2"
 
 
 classe m_perso_loja
-herda comando_menu
+herda comando_menu_econfig
 const titulo = "Loja e aulas"
 const menufim = "menu_econfig_msg"
-const colunas = 28
 const classe = "perso_cfg"
 #
 const nome1 = "Msg invisível"
@@ -884,9 +871,8 @@ const vari4 = "loja_msgidioma"
 
 
 classe menu_morreu
-herda comando_menu
+herda comando_menu_adm
 const titulo = "Quando morre"
-const colunas = 28
 #
 const nome3 = "Morreu perso"
 const info3 = "Mensagem para o próprio personagem"
@@ -953,7 +939,7 @@ const vari14 = "p_corpo_some"
 
 classe m_perso_morreu
 herda menu_morreu
-const menufim = "menu_econfig_msg"
+const menufim = "menu_econfig_herda"
 const classe = "perso_cfg"
 #
 const nome2 = "Experiência"
@@ -981,9 +967,8 @@ const classe = "perso_cfg"
 
 
 classe menu_batalhafim
-herda comando_menu
+herda comando_menu_adm
 const titulo = "Fim da batalha"
-const colunas = 28
 #
 const titu1 = " * Primeira mensagem"
 #

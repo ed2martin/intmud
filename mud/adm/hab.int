@@ -595,7 +595,7 @@ const naoataque = "Técnica de item não é ataque: "
 
 
 classe menu_hab_comum
-herda comando_menu
+herda comando_menu_adm
 #
 const nome2 = "Posição"
 const tipo2 = "menu_hab_posicao--"
@@ -650,11 +650,9 @@ const vari12 = "tipoperso"
 
 
 classe menu_hab_posicao
-herda comando_menu
+herda comando_menu_adm
 const titulo = "Posição"
 const menufim = var.menufim
-const colunas = 25
-const classe = var.classe1
 #
 const nome1 = "Dormindo"
 const info1 = "Animal dormindo, quem controla o animal precisa estar acordado"
@@ -691,11 +689,9 @@ const vari8 = "a_bat_em_pe"
 
 
 classe menu_hab_requer
-herda comando_menu
+herda comando_menu_adm
 const titulo = "Requer"
 const menufim = var.menufim
-const colunas = 25
-const classe = var.classe1
 #
 const nome1 = "Arma"
 const info1 = "Se vazio, a arma é ignorada: ataca sem arma mesmo se estiver empunhando uma"
@@ -729,11 +725,9 @@ const extr5 = config:item_tipos
 
 
 classe menu_hab_custo
-herda comando_menu
+herda comando_menu_adm
 const titulo = "Consome"
 const menufim = var.menufim
-const colunas = 25
-const classe = var.classe1
 #
 const nome1 = "Tempo de espera"
 const info1 = "Tempo mínimo que deve esperar, em décimos de segundo"

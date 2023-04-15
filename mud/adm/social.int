@@ -116,13 +116,11 @@ func passo # Confirmar que quer apagar social
 
 
 classe menu_social
-herda comando_menu
+herda comando_menu_adm
 const titulo = "Social " + txt(var.classe1, 4)
-const colunas = 29
 #
 const nome1 = "Tipo de comando"
 const tipo1 = "opc_opcao"
-const clas1 = var.classe1
 const vari1 = "tipo"
 const extr1 = config:social_txt
 #
@@ -135,84 +133,70 @@ const extr2 = "1 30"
 #
 const nome3 = "Nível mínimo"
 const tipo3 = "opc_numero"
-const clas3 = var.classe1
 const vari3 = "nivel"
 #
 const nome4 = "Posição mínima"
 const tipo4 = "opc_opcao"
-const clas4 = var.classe1
 const vari4 = "posic"
 const extr4 = menu_social:txt_posicao
 #
 const nome5 = "Alvo posição mínima"
 const tipo5 = "opc_opcao"
-const clas5 = var.classe1
 const vari5 = "alvopos"
 const extr5 = menu_social:txt_posicao
 #
 const nome6 = "Mostrar invisível"
 const info6 = "Se o social aparece para quem não puder ver o personagem"
 const tipo6 = "opc_simnao"
-const clas6 = var.classe1
 const vari6 = "mvis"
 #
 const nome7 = "Argumento não existe"
 const info7 = "Quando o objeto ou personagem não existe"
 const tipo7 = "opc_linha"
-const clas7 = var.classe1
 const vari7 = "invalido"
 #
 const titu8 = " * Sem argumentos"
 #
 const nome8 = "Msg perso"
 const tipo8 = "opc_linha"
-const clas8 = var.classe1
 const vari8 = "sem1"
 #
 const nome9 = "Msg outros"
 const tipo9 = "opc_linha"
-const clas9 = var.classe1
 const vari9 = "sem2"
 #
 const titu10 = " * Com o próprio personagem"
 #
 const nome10 = "Msg perso"
 const tipo10 = "opc_linha"
-const clas10 = var.classe1
 const vari10 = "auto1"
 #
 const nome11 = "Msg outros"
 const tipo11 = "opc_linha"
-const clas11 = var.classe1
 const vari11 = "auto2"
 #
 const titu12 = " * Com outro personagem"
 #
 const nome12 = "Msg perso"
 const tipo12 = "opc_linha"
-const clas12 = var.classe1
 const vari12 = "perso1"
 #
 const nome13 = "Msg alvo"
 const tipo13 = "opc_linha"
-const clas13 = var.classe1
 const vari13 = "perso2"
 #
 const nome14 = "Msg outros"
 const tipo14 = "opc_linha"
-const clas14 = var.classe1
 const vari14 = "perso3"
 #
 const titu15 = " * Com um objeto"
 #
 const nome15 = "Msg perso"
 const tipo15 = "opc_linha"
-const clas15 = var.classe1
 const vari15 = "item1"
 #
 const nome16 = "Msg outros"
 const tipo16 = "opc_linha"
-const clas16 = var.classe1
 const vari16 = "item2"
 #
 const txt_posicao = "morto\n\

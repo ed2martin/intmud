@@ -362,11 +362,9 @@ func escr # Editar item
 
 
 classe menu_idescoutros
-herda comando_menu
+herda comando_menu_adm
 const titulo = "Outras descrições"
 const menufim = var.menufim
-const colunas = 25
-const classe = var.classe1
 #
 const nome1 = "Ao olhar"
 const tipo1 = "opc_texto"
@@ -394,11 +392,9 @@ const vari5 = "i_escondevolume"
 
 
 classe menu_identro2
-herda comando_menu
+herda comando_menu_adm
 const titulo = "Dentro grupo"
 const menufim = var.menufim
-const colunas = 25
-const classe = var.classe1
 #
 const nome1 = "Sala pegar,soltar"
 const info1 = "Se definido, os comandos pegar e soltar pegam e soltam itens dessa sala"
@@ -488,11 +484,9 @@ const vari12 = "i_comechave"
 
 
 classe menu_iarma1
-herda comando_menu
+herda comando_menu_adm
 const titulo = "Arma"
 const menufim = var.menufim
-const colunas = 25
-const classe = var.classe1
 #
 const nome1 = "Tipo de arma"
 const tipo1 = "opc_opcao"
@@ -589,11 +583,9 @@ const vari3 = "f_totalml"
 
 
 classe menu_ifome2
-herda comando_menu
+herda comando_menu_adm
 const titulo = "Fome e sede"
 const menufim = var.menufim
-const colunas = 25
-const classe = var.classe1
 #
 const nome1 = "Tipo"
 const tipo1 = "opc_opcao"
@@ -676,11 +668,9 @@ const extr15 = "0 65535"
 
 
 classe menu_isom
-herda comando_menu
+herda comando_menu_adm
 const titulo = "Sons e mensagens"
 const menufim = var.menufim
-const colunas = 25
-const classe = var.classe1
 #
 const nome1 = "Som empunhou"
 const info1 = "Ao empunhar esse item"
@@ -811,11 +801,9 @@ const nulo27 = "\c3" + txtnulo("h_cmd_destrancar", "m_item_destrancou2")
 
 
 classe menu_iatribs
-herda comando_menu
+herda comando_menu_adm
 const titulo = "Atributos"
 const menufim = var.menufim
-const colunas = 25
-const classe = var.classe1
 #
 const nome1 = "Texto item"
 const info1 = "Aparece na frente da descrição do item, entre parênteses\n\
@@ -863,11 +851,9 @@ const exec10 = "recalc_dono"
 
 
 classe menu_iluz
-herda comando_menu
+herda comando_menu_adm
 const titulo = "Fonte de luz"
 const menufim = var.menufim
-const colunas = 25
-const classe = var.classe1
 #
 const nome1 = "Tipo de luz"
 const tipo1 = "opc_opcao"
@@ -907,11 +893,9 @@ const vari6 = "luzfim"
 
 
 classe menu_iitem
-herda comando_menu
+herda comando_menu_adm
 const titulo = "Comando Item"
 const menufim = var.menufim
-const colunas = 25
-const classe = var.classe1
 #
 const nome1 = "Evolução"
 const info1 = "Se houver uma evolução, a técnica de item é ignorada"
@@ -956,7 +940,7 @@ const vari8 = "i_item_outro3"
 
 
 classe menu_icomum
-herda comando_menu
+herda comando_menu_adm
 const nome1 = "Nome"
 const tipo1 = "opc_linha"
 const vari1 = "nome"
@@ -1142,8 +1126,6 @@ const exec55 = "ajustaobj"
 classe menu_item1
 herda menu_icomum
 const titulo = "Item simples " + txt(var.classe1, 2)
-const colunas = 25
-const classe = var.classe1
 #
 const nome10 = "Dentro"
 const tipo10 = "menu_identro1--"
@@ -1155,8 +1137,6 @@ const tipo11 = "menu_iarma3--"
 classe menu_item2
 herda menu_icomum
 const titulo = "Item grupo " + txt(var.classe1, 2)
-const colunas = 25
-const classe = var.classe1
 #
 const nome10 = "Dentro"
 const tipo10 = "menu_identro2--"
@@ -1171,8 +1151,6 @@ const tipo26 = "menu_ifome2--"
 classe menu_item3
 herda menu_icomum
 const titulo = "Item " + txt(var.classe1, 2)
-const colunas = 25
-const classe = var.classe1
 #
 const nome10 = "Dentro"
 const tipo10 = "menu_identro3--"

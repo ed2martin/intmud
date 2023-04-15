@@ -258,10 +258,8 @@ func escr
 
 
 classe menu_perm_admin
-herda comando_menu
+herda comando_menu_adm
 const titulo = "Grupo de permissões admin (administração)"
-const colunas = 25
-const classe = var.classe1
 #
 const nome1 = "Texto comando Quem"
 const info1 = "Aparece para jogadores que não possuem Config +InvQuem"
@@ -309,10 +307,8 @@ const tipo8 = "opc_perm_atalhos--"
 
 
 classe menu_perm
-herda comando_menu
+herda comando_menu_adm
 const titulo = "Grupo de permissões " + txt(var.classe1, 5)
-const colunas = 25
-const classe = var.classe1
 #
 const nome1 = "Texto comando Quem"
 const info1 = "Aparece para jogadores que não possuem Config +InvQuem"
@@ -396,11 +392,9 @@ LTIPO, CTIPO, ETIPO, ATIPO, TRES: apagam raças e classes de jogadores"
 
 
 classe menu_perm_cmd
-herda comando_menu
+herda comando_menu_adm
 const titulo = "Comandos de jogador de " + txt(var.classe1, 5)
 const menufim = "menu_perm"
-const colunas = 25
-const classe = var.classe1
 #
 const nome1 = "Salvar"
 const info1 = "Mensagem quando tenta salvar; se vazio o personagem pode ser salvo"
@@ -488,11 +482,9 @@ const vari17 = "batalha"
 
 
 classe menu_perm_adm
-herda comando_menu
+herda comando_menu_adm
 const titulo = "Comandos de administração de " + txt(var.classe1, 5)
 const menufim = "menu_perm"
-const colunas = 25
-const classe = var.classe1
 #
 const nome1 = "Adm"
 const info1 = "Consultar a ajuda dos comandos de administração"
@@ -586,11 +578,9 @@ const vari15 = "i_perso"
 
 
 classe menu_perm_editor
-herda comando_menu
+herda comando_menu_adm
 const titulo = "Comandos de edição de " + txt(var.classe1, 5)
 const menufim = "menu_perm"
-const colunas = 25
-const classe = var.classe1
 #
 const nome1 = "Larea"
 const tipo1 = "opc_simnao"
@@ -732,26 +722,22 @@ func passo # Menu de atalhos
 
 
 classe menu_perm_atalhos
-herda comando_menu
+herda comando_menu_adm
 const titulo = "Atalho " + var.opcmenuperm
 const menufim = "opc_perm_atalhos"
-const colunas = 25
 #
 const nome1 = "Executa comando"
 const tipo1 = "opc_linha"
-const clas1 = var.classe1
 const vari1 = "cmd_" + var.opcmenuperm
 #
 const nome2 = "Ajuda diversos"
 const info2 = "Explicação curta do comando; aparece ao teclar Ajuda Diversos"
 const tipo2 = "opc_linha"
-const clas2 = var.classe1
 const vari2 = "div_" + var.opcmenuperm
 #
 const nome3 = "Ajuda " + var.opcmenuperm
 const info3 = "Explicação completa do comando"
 const tipo3 = "opc_texto"
-const clas3 = var.classe1
 const vari3 = "ajuda_" + var.opcmenuperm
 #
 const nome4 = "Executa comando"

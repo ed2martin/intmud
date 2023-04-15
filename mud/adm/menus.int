@@ -23,18 +23,19 @@ func passo
   casose "o"
     arg0.txtmais.limpar
     arg0.txtmais.addfim("\b" + titulo)
+    refvar col = menu_colunas
     prog p
     epara p.inifunctudo(este, "nome"), p.lin, p.depois # Opções de um dígito
       continuar inttotal(p.texto) > 5
       refvar t1 = titu[txt(p.texto, 4)]
       t1 && arg0.txtmais.addfim(t1)
-      arg0.txtmais.addfim(menu2(txt(p.texto, 4)))
+      arg0.txtmais.addfim(menu2(txt(p.texto, 4), col))
     efim
     epara p.inifunctudo(este, "nome"), p.lin, p.depois # Outras opções
       continuar inttotal(p.texto) == 5
       refvar t1 = titu[txt(p.texto, 4)]
       t1 && arg0.txtmais.addfim(t1)
-      arg0.txtmais.addfim(menu2(txt(p.texto, 4)))
+      arg0.txtmais.addfim(menu2(txt(p.texto, 4), col))
     efim
     se arg0.jogperm == "admin"
       arg0.txtmais.addfim("Tecle F seguido de um número se quiser editar como função")
@@ -47,14 +48,15 @@ func passo
     sair arg0.jogperm != "admin"
     arg0.txtmais.limpar
     txt100 lin
+    refvar col = menu_colunas
     prog p
     epara p.inifunctudo(este, "nome"), p.lin, p.depois # Opções de um dígito
       continuar inttotal(p.texto) > 5
-      arg0.txtmais.addfim(menu3(txt(p.texto, 4)))
+      arg0.txtmais.addfim(menu3(txt(p.texto, 4), col))
     efim
     epara p.inifunctudo(este, "nome"), p.lin, p.depois # Outras opções
       continuar inttotal(p.texto) == 5
-      arg0.txtmais.addfim(menu3(txt(p.texto, 4)))
+      arg0.txtmais.addfim(menu3(txt(p.texto, 4), col))
     efim
     arg0.txtmostra
     ret 1
@@ -77,7 +79,7 @@ func passo
     arg0.var.opcpasso = este
     arg0.var.opcvalido_ = txtproc(tipo[arg1], "--") >= 0
     arg0.var.opcexec = exec[arg1]
-    vari[arg1] && arg0.msg(menu2(arg1))
+    vari[arg1] && arg0.msg(menu2(arg1, menu_colunas))
     info[arg1] && arg0.msg(info[arg1])
     refvar tipo = txttroca(tipo[arg1], "-", "")
     $[tipo].passo(arg0, "\b")
@@ -108,8 +110,9 @@ func passo
 
 func menu2 # Usado em m_menu para obter o texto de uma opção do menu
 # arg0 = número da opção
+# arg1 = número de colunas (retorno da função menu_colunas)
   txt100 lin = "\b\c2" + arg0 + (txt(arg0, 1) ? "\b." : "\b. ") + nome[arg0]
-  refvar maximo = int(colunas)
+  refvar maximo = int(arg1) + 4
   inttotal(lin) < maximo && (lin = txt(lin + txtesp(maximo), 0, maximo))
   refvar tipo = txttroca(tipo[arg0], "-", "")
   refvar classe = clas[arg0] ?? classe
@@ -120,10 +123,20 @@ func menu2 # Usado em m_menu para obter o texto de uma opção do menu
 
 func menu3 # Usado em m_menu para obter o nome da variável
 # arg0 = número da opção
+# arg1 = número de colunas (retorno da função menu_colunas)
   txt100 lin = arg0 + (txt(arg0, 1) ? "." : ". ") + nome[arg0]
-  refvar maximo = int(colunas) - 4
+  refvar maximo = arg1
   inttotal(lin) < maximo && (lin = txt(lin + txtesp(maximo), 0, maximo))
   ret lin + ": " + (vari[arg0] ? (clas[arg0] ?? classe) + ":" + vari[arg0] : "")
+
+func menu_colunas # Retorna o número de colunas
+  uint8 col = colunas
+  prog p
+  epara p.inifunctudo(este, "nome"), p.lin, p.depois
+    refvar c = inttotal([p.texto]) + 3
+    col < c && (col = c)
+  efim
+  ret col
 
 func txtnulo # Retorna uma variável/função/constante da classe derivada
 # arg0 = nome da classe base (ex. h_cmd_abrir)
