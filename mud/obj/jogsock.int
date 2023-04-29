@@ -434,8 +434,8 @@ const m_menu = $[arg0].passo(este, "\b")
 
 
 classe ini_perso1
-herda comando_comum
 # Entrando no jogo: digitar o nome do personagem
+const iniclasse = !$[arg0] && criar(arg0)
 
 func passo
   indiceitem ind
@@ -477,7 +477,7 @@ func passo
 
 
 classe ini_perso2
-herda comando_comum
+const iniclasse = !$[arg0] && criar(arg0)
 
 func passo
   se arg1 == "N"
@@ -501,8 +501,8 @@ func passo
 
 
 classe ini_criasenha1
-herda comando_comum
 # Digitar a senha ao criar personagem
+const iniclasse = !$[arg0] && criar(arg0)
 
 func passo
   arg0.passo = este
@@ -522,8 +522,8 @@ func passo
 
 
 classe ini_criasenha2
-herda comando_comum
 # Repetir a senha ao criar personagem
+const iniclasse = !$[arg0] && criar(arg0)
 
 func passo
   arg0.passo = este
@@ -540,8 +540,8 @@ func passo
 
 
 classe ini_email1
-herda comando_comum
 # Digitar o e-mail
+const iniclasse = !$[arg0] && criar(arg0)
 
 func passo
   arg0.passo = este
@@ -568,8 +568,8 @@ func passo
 
 
 classe ini_sexo1
-herda comando_comum
 # Digitar H ou M
+const iniclasse = !$[arg0] && criar(arg0)
 
 func passo
   arg0.passo = este
@@ -582,8 +582,8 @@ func passo
 
 
 classe ini_raca1
-herda comando_comum
 # Começa a escolha de raça, classe e subclasse
+const iniclasse = !$[arg0] && criar(arg0)
 
 func passo
   arg0.tpasso = 1
@@ -591,8 +591,8 @@ func passo
 
 
 classe ini_raca2
-herda comando_comum
 # Escolhe raça, classe e subclasse
+const iniclasse = !$[arg0] && criar(arg0)
 
 func passo
   arg0.passo = este
@@ -662,49 +662,20 @@ func escolheu # Jogador fez a escolha
   arg0.var.j_tipo[txt1(arg0.tpasso)] = txt(txt2(arg0.tpasso), 2)
   arg0.tpasso = int(arg0.tpasso) + 1
   ret arg0.tpasso <= 3, 1
-  $ini_entrajogo.passo(arg0)
+  arg0.var.j_criarperso_ = 1
+  $config_menuentra.v_tipo > 1 ? $config_menuentra.passo(arg0) : $ini_entrajogo.passo(arg0)
   ret 0
 
 
-classe ini_entrajogo
-herda comando_comum
-# Entrar no jogo: cria personagem
-
-func passo
-  arqsav sav1
-  arg0.passo = ""
-  arg0.jogconfig.bits = config:jogconfig # Configurações iniciais
-  $jogsock_msg.msgsock(arg0, perso_cfg:ini_iniciando, arg0.nome)
-  refvar v = arg0.var
-  arg0.mudaperso(criar("jogador", nulo, v.j_tipo1, v.j_tipo2, v.j_tipo3))
-  refvar p = arg0.perso
-  p.cnome = "pn " + txt2(arg0.cnome)
-  p.nome = arg0.nome
-  p.jogconfig.bits = arg0.jogconfig.bits
-  p.psexo = arg0.var.j_sexo
-  p.senha = arg0.var.j_senha ? sav1.senhacod(arg0.var.j_senha) : ""
-  p.senhacod = p.senha != "" # Se a senha está codificada
-  !p.senhacod && (p.senha = arg0.var.j_senha)
-  p.var.z_email = arg0.var.j_email
-  arg0.var.limpar("j_")
-  refvar salaini = $t_[p.tipo1].salaini ?? $t_[p.tipo2].salaini ?? $t_[p.tipo3].salaini
-  p.mudadono(salaini ?? config:salaini)
-  arg0.temposair # Acerta tempo para sair do MUD
-  arg0.jogperm = config:autorizar ? "autorizar" : "jog"
-  p.jogperm = arg0.jogperm
-  se p.senha && !$perm_[arg0.jogperm].c_salvar
-    !p.salvar && $jogsock_msg.msgsock(arg0, perso_cfg:ini_salvar_nao, arg0.nome)
-  fimse
-  $jogsock_msg.p(arg0, arg0.nomefim, p.pnivel, p.var.z_moedas)
-  $jogsock_msg.msg("Criou: $p, $c", config:criou_msgadm, config:criou_msgjog)
-  $mens.p(p)
-  $mens.mvis2("", perso_cfg:ini_perso_entrou)
-  ret 1
-
-
 classe ini_entrasenha
-herda comando_comum
 # Entrar com a senha para carregar jogo salvo
+const iniclasse = !$[arg0] && criar(arg0)
+sav textovar var # Para carregar dados do jogo salvo
+sav uint16 pnivel
+sav int1 psexo # Sexo do personagem: 0=feminino, 1=masculino
+sav txt40 tipo1
+sav txt40 tipo2
+sav txt40 tipo3
 
 func passo
   indiceitem ind
@@ -740,6 +711,11 @@ func passo
       $jogsock_msg.msgsock(r, perso_cfg:ini_usarperso, arg0.info)
       r.nomefim = ""
       r.cnome = ""
+      arg0.var.z_hist_falar = r.var.z_hist_falar
+      arg0.var.z_hist_gritar = r.var.z_hist_gritar
+      arg0.var.z_hist_gchat = r.var.z_hist_gchat
+      arg0.var.z_hist_sussurrar = r.var.z_hist_sussurrar
+      arg0.var.z_hist_telepatia = r.var.z_hist_telepatia
     casose ""
       sair
     casose
@@ -773,61 +749,34 @@ func passo
     senao
       $jogsock_msg.msgsock(arg0, perso_cfg:ini_lutando2, txtcopiamai(alvo.descnome2, "A"))
     fimse
+# Carrega personagem ou vai para o menu de entrada com alguns dados do personagem
   senao
-# Primeiro cria personagem
-    arg0.passo = ""
     arg0.nome = arg0.tpasso
     arg0.cnome = "un " + texto
-    arg0.mudaperso(criar("jogador"))
-    arg0.perso.cnome = "pn " + texto
-    arg0.perso.nome = arg0.nome
-    arg0.perso.senha = sav1.senhacod(arg1)
-    arg0.perso.senhacod = arg0.perso.senha != "" # Se a senha está codificada
-    !arg0.perso.senhacod && (arg0.perso.senha = arg1)
-# Carrega personagem
-    listaobj l1
-    l1.addfim(arg0.perso)
-    sav1.ler("sav1/" + texto + ".sav", l1)
-    arg0.nome = arg0.perso.nome
-    arg0.jogconfig.bits = arg0.perso.jogconfig.bits
-    refvar perm = arg0.perso.jogperm
-    (!perm || !$perm_[perm]) && (perm = "jog")
-    arg0.jogperm = perm
-    arg0.jogarea = arg0.perso.jogarea
-    arg0.perso.tseguir = 0
-# Acerta variáveis
-    listaitem item
-    debug d
-    epara item = l1.ini, item, item.depois
-      d.ini, item.obj.ajustaobj
-    efim
-    epara item = l1.fim, item, item.antes
-      d.ini
-      ref obj = item.obj
-      obj.jog && obj.ajustajog
-      obj.var.limpar("d_", "j_")
-      obj.ajustapeso, obj.acertapos, obj.acertanumero, obj.recalc = 1
-    efim
-    epara item = arg0.perso.dentro2.ini, item, item.depois
-      continuar !item.obj.perso || item.obj.var.z_dono
-      item.obj.var.z_dono = arg0.perso.descnome2
-      item.obj.var.z_pnivel = item.obj.pnivel
-    efim
-# Muda de sala e volta ao jogo
-    arg0.perso.p_espera = 2 # Para processar um comando do jogador só após mudar de sala
-    criar("jogsock_retorna", arg0.perso, $[arg0.perso.salanome], l1) # Para mudar de sala
-    $jogsock_msg.msgsock(arg0, perso_cfg:ini_continuando + "\cn", arg0.nome)
-    txt200 lin
-    arg0.nomefim = arg0.info
-    $jogsock_msg.p(arg0, arg0.nomefim, arg0.perso.pnivel, arg0.perso.var.z_moedas)
-    $jogsock_msg.msg("Entrou: $p, $c", config:entrou_msgadm, config:entrou_msgjog)
+    arg0.var.j_senha = arg1
+    arg0.var.j_criarperso_ = 0
+    se $config_menuentra.v_tipo
+      listaobj l1
+      l1.addfim(este)
+      sav1.ler("sav1/" + texto + ".sav", l1, 1)
+      arg0.var.j_email = var.z_email
+      arg0.var.j_nivel_ = pnivel
+      arg0.var.j_sexo = psexo
+      arg0.var.j_tipo1 = tipo1
+      arg0.var.j_tipo2 = tipo2
+      arg0.var.j_tipo3 = tipo3
+      var.limpar, pnivel = 0, tipo1 = tipo2 = tipo3 = ""
+      $config_menuentra.passo(arg0)
+    senao
+      $ini_entrajogo.passo(arg0)
+    fimse
   fimse
   ret 1
 
 
 classe ini_mudasenha1
-herda comando_comum
 # Digitar a senha atual para mudar a senha
+const iniclasse = !$[arg0] && criar(arg0)
 
 func passo
   arg0.passo = este
@@ -850,8 +799,8 @@ func passo
 
 
 classe ini_mudasenha2
-herda comando_comum
 # Digitar a nova senha
+const iniclasse = !$[arg0] && criar(arg0)
 
 func passo
   arg0.passo = este
@@ -874,8 +823,8 @@ func passo
 
 
 classe ini_mudasenha3
-herda comando_comum
 # Repetir a senha digitada
+const iniclasse = !$[arg0] && criar(arg0)
 
 func passo
   arg0.passo = este
@@ -897,6 +846,171 @@ func passo
     arg0.passo = ""
   fimse
   ret 1
+
+
+classe ini_menuentra
+# Menu antes de entrar no jogo
+const m_menu = "Bemvind$artigo ao MUD\n\
+$Nome, nível $nivel, raça/classe $tipo1 $tipo2 $tipo3\n\
+Escolha uma opção:\n\
+1. Entrar no jogo\n\
+2. Ler a história deste mundo\n\
+3. Desconectar do jogo"
+const v_jogar = "1"
+const v_sair = "3"
+const v_texto1 = "2"
+const m_texto1 = "Em construção."
+const m_genero0 = "mulher"
+const m_genero1 = "homem"
+const admordem = "v_tipo m_menu m_menubot v_jogar v_sair\n\
+v_texto1 m_texto1 v_texto2 m_texto2 v_texto3 m_texto3 m_genero0 m_genero1"
+#
+ref perso
+const opc_@g = "$"
+const opc_nome = txtcopiamai(perso.nome, intchr(arg0) < 95 ? "A" : "")
+const opc_genero = txtcopiamai(m_genero[perso.var.j_sexo], intchr(arg0) < 95 ? "A" : "")
+const opc_tipo1 = o_tipo(arg0, perso.var.j_tipo1)
+const opc_tipo2 = o_tipo(arg0, perso.var.j_tipo2)
+const opc_tipo3 = o_tipo(arg0, perso.var.j_tipo3)
+const opc_nivel = perso.var.j_nivel_
+const opc_email = perso.var.j_email
+
+func opc_artigo
+  ret txtcopiamai(perso.var.j_sexo == "0" ? "a" : "o", intchr(arg0) < 95 ? "A" : "")
+
+func o_tipo
+  refvar t1 = perso.var.j_sexo == "0" ? $t_[arg1].nome2 ?? $t_[arg1].nome
+  ret txtcopiamai(t1, intchr(arg0) < 95 ? "A" : "")
+
+func iniclasse
+  ret arg0 != "ini_menuentra", !$[arg0] && criar(arg0)
+  prog p
+  ret p.existe("config_menuentra"), nulo
+  p.criar("config_menuentra\nconfig/config\nherda " + arg0)
+  misccriar:add("config_menuentra")
+
+func mostramenu
+  perso.msg2(vartrocacod(txt1(info) == "b" ? m_menubot : m_menu, "$", "opc_"))
+
+func passo
+  arg0.passo = este
+  perso = arg0
+  se arg1 == ""
+    mostramenu
+  senao arg1 == v_jogar
+    $ini_entrajogo.passo(arg0)
+  senao arg1 == v_sair
+    casovar txt1(arg0.info)
+    casose "t" # Conectado via Papovox
+    casose "p" # Conectado via Telnet
+    casose "h" # Conectado via navegador
+      apagar(arg0)
+      sair
+    casose "l" # Jogando localmente
+      $miscsav.salvartudo
+      terminar
+    casose "b" # Como bot
+      arg0.reinicia
+    casofim
+  senao arg1 == v_texto1 && m_texto1
+    arg0.msg2(vartrocacod(m_texto1, "$", "opc_"))
+  senao arg1 == v_texto2 && m_texto2
+    arg0.msg2(vartrocacod(m_texto2, "$", "opc_"))
+  senao arg1 == v_texto3 && m_texto3
+    arg0.msg2(vartrocacod(m_texto3, "$", "opc_"))
+  senao
+    mostramenu
+  fimse
+  ret 1
+
+
+classe ini_entrajogo
+# Entrar no jogo: cria ou carrega personagem
+const iniclasse = !$[arg0] && criar(arg0)
+
+func passo
+  arg0.passo = ""
+  arg0.var.j_criarperso_ ? criar_perso(arg0) : carregar_perso(arg0)
+  arg0.var.limpar("j_")
+
+func criar_perso # Cria personagem
+# arg0 = objeto jogsock do jogador
+  arqsav sav1
+  arg0.jogconfig.bits = config:jogconfig # Configurações iniciais
+  $jogsock_msg.msgsock(arg0, perso_cfg:ini_iniciando, arg0.nome)
+  refvar v = arg0.var
+  arg0.mudaperso(criar("jogador", nulo, v.j_tipo1, v.j_tipo2, v.j_tipo3))
+  refvar p = arg0.perso
+  p.cnome = "pn " + txt2(arg0.cnome)
+  p.nome = arg0.nome
+  p.jogconfig.bits = arg0.jogconfig.bits
+  p.psexo = arg0.var.j_sexo
+  p.senha = arg0.var.j_senha ? sav1.senhacod(arg0.var.j_senha) : ""
+  p.senhacod = p.senha != "" # Se a senha está codificada
+  !p.senhacod && (p.senha = arg0.var.j_senha)
+  p.var.z_email = arg0.var.j_email
+  refvar salaini = $t_[p.tipo1].salaini ?? $t_[p.tipo2].salaini ?? $t_[p.tipo3].salaini
+  p.mudadono(salaini ?? config:salaini)
+  arg0.temposair # Acerta tempo para sair do MUD
+  arg0.jogperm = config:autorizar ? "autorizar" : "jog"
+  p.jogperm = arg0.jogperm
+  se p.senha && !$perm_[arg0.jogperm].c_salvar
+    !p.salvar && $jogsock_msg.msgsock(arg0, perso_cfg:ini_salvar_nao, arg0.nome)
+  fimse
+  $jogsock_msg.p(arg0, arg0.nomefim, p.pnivel, p.var.z_moedas)
+  $jogsock_msg.msg("Criou: $p, $c", config:criou_msgadm, config:criou_msgjog)
+  $mens.p(p)
+  $mens.mvis2("", perso_cfg:ini_perso_entrou)
+  ret 1
+
+func carregar_perso # Carrega personagem
+# arg0 = objeto jogsock do jogador
+  txt20 texto = txts(txtnome(arg0.tpasso))
+# Primeiro cria personagem
+  arg0.mudaperso(criar("jogador"))
+  arg0.perso.cnome = "pn " + texto
+  arg0.perso.nome = arg0.nome
+  arg0.perso.senha = sav1.senhacod(arg0.var.j_senha)
+  arg0.perso.senhacod = arg0.perso.senha != "" # Se a senha está codificada
+  !arg0.perso.senhacod && (arg0.perso.senha = arg0.var.j_senha)
+  arg0.var.j_senha = ""
+# Carrega personagem
+  arqsav sav1
+  listaobj l1
+  l1.addfim(arg0.perso)
+  sav1.ler("sav1/" + texto + ".sav", l1)
+  arg0.nome = arg0.perso.nome
+  arg0.jogconfig.bits = arg0.perso.jogconfig.bits
+  refvar perm = arg0.perso.jogperm
+  (!perm || !$perm_[perm]) && (perm = "jog")
+  arg0.jogperm = perm
+  arg0.jogarea = arg0.perso.jogarea
+  arg0.perso.tseguir = 0
+# Acerta variáveis
+  listaitem item
+  debug d
+  epara item = l1.ini, item, item.depois
+    d.ini, item.obj.ajustaobj
+  efim
+  epara item = l1.fim, item, item.antes
+    d.ini
+    ref obj = item.obj
+    obj.jog && obj.ajustajog
+    obj.var.limpar("d_", "j_")
+    obj.ajustapeso, obj.acertapos, obj.acertanumero, obj.recalc = 1
+  efim
+  epara item = arg0.perso.dentro2.ini, item, item.depois
+    continuar !item.obj.perso || item.obj.var.z_dono
+    item.obj.var.z_dono = arg0.perso.descnome2
+    item.obj.var.z_pnivel = item.obj.pnivel
+  efim
+# Muda de sala e volta ao jogo
+  arg0.perso.p_espera = 2 # Para processar um comando do jogador só após mudar de sala
+  criar("jogsock_retorna", arg0.perso, $[arg0.perso.salanome], l1) # Para mudar de sala
+  $jogsock_msg.msgsock(arg0, perso_cfg:ini_continuando + "\cn", arg0.nome)
+  arg0.nomefim = arg0.info
+  $jogsock_msg.p(arg0, arg0.nomefim, arg0.perso.pnivel, arg0.perso.var.z_moedas)
+  $jogsock_msg.msg("Entrou: $p, $c", config:entrou_msgadm, config:entrou_msgjog)
 
 
 classe jogsock_msg

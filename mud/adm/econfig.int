@@ -32,35 +32,36 @@ const info5 = "Se acontecer do jogador cair em uma sala inexistente"
 const tipo5 = "opc_sala--"
 const vari5 = "salasav"
 #
-const nome6 = "Herda"
-const info6 = "Opções herdadas em outros comandos"
-const tipo6 = "menu_econfig_herda--"
+const nome6 = "Menu de entrada"
+const info6 = "Após criar personagem ou entrar com a senha mas antes de entrar no jogo"
+const tipo6 = "menu_econfig_menuentra--"
 #
 const nome7 = "Criar e salvar personagem"
 const tipo7 = "menu_econfig_salvar--"
 #
-const nome8 = "Atributos dos personagens"
-const info8 = "Valor inicial dos atributos para todos os personagens"
-const tipo8 = "opc_atribcfg--"
-const vari8 = "atribcfg"
+const nome8 = "Herda"
+const info8 = "Opções herdadas em outros comandos"
+const tipo8 = "menu_econfig_herda--"
 #
-const nome9 = "Fome e sede nível"
-const info9 = "A partir de que nível sente fome e sede"
-const tipo9 = "opc_numero--"
-const vari9 = "fomeini"
+const nome9 = "Atributos dos personagens"
+const info9 = "Valor inicial dos atributos para todos os personagens"
+const tipo9 = "opc_atribcfg--"
+const vari9 = "atribcfg"
 #
-const nome10 = "Sem fome e sede nível"
-const info10 = "A partir de que nível não sente mais fome e sede"
+const nome10 = "Fome e sede nível"
+const info10 = "A partir de que nível sente fome e sede"
 const tipo10 = "opc_numero--"
-const vari10 = "fomefim"
+const vari10 = "fomeini"
 #
-const nome11 = "Aulas por nível"
-const info11 = "Quantos pontos de aulas ganha quando sobe de nível"
+const nome11 = "Sem fome e sede nível"
+const info11 = "A partir de que nível não sente mais fome e sede"
 const tipo11 = "opc_numero--"
-const vari11 = "aulas"
+const vari11 = "fomefim"
 #
-const nome12 = "Tipos de itens"
-const tipo12 = "menu_econfig_itens--"
+const nome12 = "Aulas por nível"
+const info12 = "Quantos pontos de aulas ganha quando sobe de nível"
+const tipo12 = "opc_numero--"
+const vari12 = "aulas"
 #
 const nome13 = "Arquivos de log"
 const tipo13 = "menu_econfig_log--"
@@ -83,9 +84,12 @@ const tipo18 = "menu_econfig_ataques--"
 const nome19 = "Casas dos jogadores"
 const tipo19 = "menu_econfig_casas--"
 #
-const nome20 = "Posições para vestir itens"
-const info20 = "Os nomes das posições"
-const tipo20 = "menu_econfig_vestir--"
+const nome20 = "Tipos de itens"
+const tipo20 = "menu_econfig_itens--"
+#
+const nome21 = "Posições para vestir itens"
+const info21 = "Os nomes das posições"
+const tipo21 = "menu_econfig_vestir--"
 
 
 classe menu_econfig_cmd
@@ -199,6 +203,92 @@ const tipo17 = "opc_numero--"
 const vari17 = "bandabot2"
 const extr17 = "100 100000"
 
+
+classe menu_econfig_menuentra
+herda comando_menu_econfig
+const titulo = "Menu de entrada"
+const classe = "config_menuentra"
+const menufim = "menu_econfig"
+
+const nome1 = "Menu"
+const tipo1 = "opc_opcao"
+const vari1 = "v_tipo"
+const extr1 = "Desabilitado\nAo entrar no MUD com personagem salvo\n\Ao entrar no MUD"
+#
+const nome2 = "Texto de apresentação"
+const tipo2 = "opc_texto"
+const vari2 = "m_menu"
+#
+const nome3 = "Texto para bot"
+const info3 = "Texto de apresentação se o jogador entrar via bot\n\
+Se ausente, assume Texto de apresentação"
+const tipo3 = "opc_texto"
+const vari3 = "m_menubot"
+#
+const nome4 = "Opção jogar"
+const info4 = "O que o usuário digita para começar a jogar"
+const tipo4 = "opc_linha"
+const vari4 = "v_jogar"
+#
+const nome5 = "Opção sair do MUD"
+const info5 = "O que o usuário digita para sair do MUD"
+const tipo5 = "opc_linha"
+const vari5 = "v_sair"
+#
+const nome6 = "Opção 1"
+const info6 = "Ao digitar isso, é mostrado texto 1 e em seguida o menu"
+const tipo6 = "opc_linha"
+const vari6 = "v_texto1"
+#
+const nome7 = "Texto 1"
+const info7 = "Texto da opção 1"
+const tipo7 = "opc_texto"
+const vari7 = "m_texto1"
+#
+const nome8 = "Opção 2"
+const info8 = "Ao digitar isso, é mostrado texto 2 e em seguida o menu"
+const tipo8 = "opc_linha"
+const vari8 = "v_texto2"
+#
+const nome9 = "Texto 2"
+const info9 = "Texto da opção 2"
+const tipo9 = "opc_texto"
+const vari9 = "m_texto2"
+#
+const nome10 = "Opção 3"
+const info10 = "Ao digitar isso, é mostrado texto 3 e em seguida o menu"
+const tipo10 = "opc_linha"
+const vari10 = "v_texto3"
+#
+const nome11 = "Texto 3"
+const info11 = "Texto da opção 3"
+const tipo11 = "opc_texto"
+const vari11 = "m_texto3"
+#
+const nome12 = "$genero feminino"
+const info12 = "O que apresentar no lugar de $genero quando for feminino"
+const tipo12 = "opc_texto"
+const vari12 = "m_genero0"
+#
+const nome13 = "$genero masculino"
+const info13 = "O que apresentar no lugar de $genero quando for masculino"
+const tipo13 = "opc_texto"
+const vari13 = "m_genero1"
+#
+const nome14 = "Caracteres especiais"
+const tipo14 = "opc_ajuda"
+const extr14 = "\c3As seguintes sequências de caracteres têm um significado especial nos textos:\b\n\n\
+ \c2$$\b        Símbolo $\n\
+ \c2$nome\b     Nome do personagem\n\
+ \c2$artigo\b   Letra a se for personagem feminino ou o se for masculino\n\
+ \c2$genero\b   O texto da opção \"$genero feminino\" ou da \"$genero masculino\"\n\
+ \c2$nivel\b    Nível do personagem\n\
+ \c2$email\b    E-mail\n\
+ \c2$tipo1\b    Nome da raça\n\
+ \c2$tipo2\b    Nome da classe\n\
+ \c2$tipo3\b    Nome da subclasse\n\n\
+Quando o símbolo $ for seguido de uma letra maiúscula, a primeira letra\n\
+do texto é transformada em maiúscula."
 
 classe menu_econfig_salvar
 herda comando_menu_econfig

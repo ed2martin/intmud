@@ -278,60 +278,65 @@ const info26 = "Sala onde os jogadores vão após criar o personagem"
 const tipo26 = "opc_sala"
 const vari26 = "salaini"
 #
-const nome27 = "Nível mínimo"
-const info27 = "Quando o personagem é criado ou renasce, ele vai para esse nível.\n\
+const nome27 = "Sala renascer"
+const info27 = "Para que sala os jogadores vão após renascer"
+const tipo27 = "opc_sala"
+const vari27 = "sala_renascer"
+#
+const nome28 = "Nível mínimo"
+const info28 = "Quando o personagem é criado ou renasce, ele vai para esse nível.\n\
 Se houverem níveis diferentes na raça, classe e subclasse, é considerado\n\
 somente o maior."
-const tipo27 = "opc_numero"
-const vari27 = "nmin"
-const extr27 = "0 65535"
-#
-const nome28 = "Nível máximo"
-const info28 = "Quando o personagem chega no nível máximo, não sobe mais de nível, mas pode\n\
-renascer. Se houverem níveis diferentes na raça, classe e subclasse,\n\
-é considerado somente o maior. Se os três forem 0, não renasce."
 const tipo28 = "opc_numero"
-const vari28 = "nmax"
+const vari28 = "nmin"
 const extr28 = "0 65535"
 #
-const nome29 = "Evolui para"
-const tipo29 = "opc_tipos"
-const info29 = "Os novos tipos que o personagem pode escolher no comando renascer"
-const vari29 = "evoluir"
+const nome29 = "Nível máximo"
+const info29 = "Quando o personagem chega no nível máximo, não sobe mais de nível, mas pode\n\
+renascer. Se houverem níveis diferentes na raça, classe e subclasse,\n\
+é considerado somente o maior. Se os três forem 0, não renasce."
+const tipo29 = "opc_numero"
+const vari29 = "nmax"
+const extr29 = "0 65535"
 #
-const nome30 = "Fome e sede"
-const info30 = "Somente raças; se pode sentir fome e sede (se não for imortal)"
-const tipo30 = "opc_simnao"
-const vari30 = "fome"
+const nome30 = "Evolui para"
+const tipo30 = "opc_tipos"
+const info30 = "Os novos tipos que o personagem pode escolher no comando renascer"
+const vari30 = "evoluir"
 #
-const nome31 = "Ataque automático"
-const info31 = "Habilidade usada em ataques automáticos sem arma"
-const tipo31 = "opc_linha"
-const vari31 = "atipo"
+const nome31 = "Fome e sede"
+const info31 = "Somente raças; se pode sentir fome e sede (se não for imortal)"
+const tipo31 = "opc_simnao"
+const vari31 = "fome"
 #
-const nome32 = "Volume mínimo"
-const info32 = "Somente raças; o volume é escolhido aleatoriamente"
-const tipo32 = "opc_numero"
-const vari32 = "volmin"
-const exec32 = "jogador:ajustajog"
+const nome32 = "Ataque automático"
+const info32 = "Habilidade usada em ataques automáticos sem arma"
+const tipo32 = "opc_linha"
+const vari32 = "atipo"
 #
-const nome33 = "Volume máximo"
+const nome33 = "Volume mínimo"
 const info33 = "Somente raças; o volume é escolhido aleatoriamente"
 const tipo33 = "opc_numero"
-const vari33 = "volmax"
+const vari33 = "volmin"
 const exec33 = "jogador:ajustajog"
 #
-const nome34 = "Peso mínimo"
-const info34 = "Somente raças; o peso é escolhido aleatoriamente"
+const nome34 = "Volume máximo"
+const info34 = "Somente raças; o volume é escolhido aleatoriamente"
 const tipo34 = "opc_numero"
-const vari34 = "pesomin"
+const vari34 = "volmax"
 const exec34 = "jogador:ajustajog"
 #
-const nome35 = "Peso máximo"
+const nome35 = "Peso mínimo"
 const info35 = "Somente raças; o peso é escolhido aleatoriamente"
 const tipo35 = "opc_numero"
-const vari35 = "pesomax"
+const vari35 = "pesomin"
 const exec35 = "jogador:ajustajog"
+#
+const nome36 = "Peso máximo"
+const info36 = "Somente raças; o peso é escolhido aleatoriamente"
+const tipo36 = "opc_numero"
+const vari36 = "pesomax"
+const exec36 = "jogador:ajustajog"
 #
 const nome50 = "Variáveis"
 const tipo50 = "opc_linha"
@@ -391,7 +396,7 @@ classe comum_tipo
 #
 # Ordem que deve organizar as constantes:
 const admordem = "nome nome2 nomequem nomequem2 menu desc desc2 sexo\n\
-racas classes equip1 equip2 equip3 animalatk salaini nmin nmax\n\
+racas classes equip1 equip2 equip3 animalatk salaini sala_renascer nmin nmax\n\
 evoluir fome atipo volmin volmax pesomin pesomax desccond0 desccond1 desccond2\n\
 desccond3 desccond4 desccond5 desccond6 desccond7\n\
 p_morreu0 p_morreu1 p_morreu2 p_corpo_ident p_corpo_descnome p_corpo_descsala\n\

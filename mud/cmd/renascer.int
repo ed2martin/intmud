@@ -60,7 +60,7 @@ func acertahab # Acerta cada habilidade ou magia do jogador
 # Nota: só é chamado quando o comando Renascer perde as hab/magias
 # arg0 = personagem
 # arg1 = nome da variável em var; por exmeplo, habilidade Socar é "h_socar"
-# arg2 = variável em var; arg2 = arg0.var[arg1]
+# arg2 = variável em var; arg2 = arg0.var.[arg1]
 # arg2 contém grau de conhecimento seguido de espaço e quantas veses escolheu
   arg2 = txt2(arg2) ? intmin("3", txt1(arg2), txt2(arg2)) + " " + txt2(arg2) : ""
 
@@ -142,7 +142,7 @@ func passo1 # Escolha da raça, classe e subclasse
     senao
       lin = int(tpasso) == 1 ? "1" : int(tpasso) == 2 ? "2" : "3"
       refvar r = $[txt2(tpasso)]
-      $mens.mens = (arg0.perso.msexo2 ? "" : r.desc2) ?? r.desc ?? r.nome
+      $mens.mens = (arg0.perso.msexo2 ? "" : r.nome2) ?? r.nome
       $mens.mp(m_confirma[lin], arg0.perso)
       ret 0
     fimse
@@ -329,7 +329,7 @@ func renascer
   perso.pvida = perso.pvidamax
   perso.pmana = perso.pmanamax
   perso.pmove = perso.pmovemax
-  ref sala = acertasala(arg0, config:sala_renascer)
+  ref sala = acertasala(perso, $t_[perso.tipo1].sala_renascer ?? $t_[perso.tipo2].sala_renascer ?? $t_[perso.tipo3].sala_renascer ?? config:sala_renascer)
   sala && perso.mudadono(sala)
   ret 0
 
