@@ -25,6 +25,7 @@ const m_perso_nao = "Não é possível montar $e $a."
 const m_perso_cheio = "Não cabe mais ninguém $e $a."
 const m_nao_seguir = "$A não está seguindo você."
 const m_hab = "Precisa aprender mais $m para montar $e $a."
+const m_nao_consegue = "Você não consegue montar."
 const m_montou1 = "Você montou $e $a."
 const m_montou2 = "$P montou em você."
 const m_montou3 = "$P montou $e $a."
@@ -33,7 +34,7 @@ const m_trouxe2 = "$O montou $a em você."
 const m_trouxe3 = "$O montou $p $e $a."
 const admordem = "m_ajuda m_info_desmontado m_info_montado m_info_sentado\n\
 m_naover m_montado m_sentado m_descansando m_carregando m_perso_car\n\
-m_perso_dono m_perso_nao m_perso_cheio m_nao_seguir m_hab\n\
+m_perso_dono m_perso_nao m_perso_cheio m_nao_seguir m_hab m_nao_consegue\n\
 m_montou1 m_montou2 m_montou3 m_trouxe1 m_trouxe2 m_trouxe3"
 
 func escr
@@ -46,6 +47,9 @@ func escr
       $mens.mp(r.perso ? m_info_montado : m_info_sentado, arg0, r)
     fimse
     ret
+  senao !arg0.podeposicao("M")
+    refvar m = arg0.podeposicaoMmsg ?? $t_[arg0.tipo1].podeposicaoMmsg
+    ret $mens.mp(m ?? m_nao_consegue, arg0)
   fimse
   ref r = misc:persooutro(arg0, arg1)
   se !r
@@ -252,6 +256,10 @@ const vari14 = "m_nao_seguir"
 const nome15 = "Sem conhecimento"
 const tipo15 = "opc_linha"
 const vari15 = "m_hab"
+#
+const nome5 = "Não consegue"
+const tipo5 = "opc_linha"
+const vari5 = "m_nao_consegue"
 #
 const nome16 = "Montou perso"
 const tipo16 = "opc_linha"

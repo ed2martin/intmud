@@ -2504,6 +2504,7 @@ const desccond4 = "está bastante amassado"
 const desccond5 = "está um pouco amassado"
 const desccond6 = "possui alguns amassos"
 const desccond7 = "está em perfeitas condições de funcionamento"
+const descsala8 = "$P está aqui."
 const msexo = 1 # Sexo Msg: 1 Masculino
 const p_morreu0 = "Você foi destruíd$s."
 const p_morreu1 = "$P teve uma pequena explosão interna e parou de funcionar."
@@ -2515,9 +2516,17 @@ const p_corpo_descsala = "A carcaça $d $p está aqui."
 const p_corpo_descver = "O que um dia foi um robô, agora é uma carcaça oca. Não sobrou quase \
 nada."
 const p_corpo_descident = "É apenas metal derretido, que pode virar cinzas a qualquer momento."
+const p_corpo_msexo = 0 # Sexo Msg: 0 Feminino
 const p_corpo_tempo = 60
 const p_corpo_some = "A carcaça $d $p se desmanchou completamente."
-const p_corpo_msexo = 0 # Sexo Msg: 0 Feminino
+const podeposicao4tipo = 0 # Pode dormir: Não
+const podeposicao5tipo = 0 # Pode descansar: Não
+const podeposicao6tipo = 0 # Pode sentar: Não
+const podeposicaoMtipo = 0 # Pode montar: Não
+const podeposicao4msg = "Robôs não dormem."
+const podeposicao5msg = "Robôs não descansam."
+const podeposicao6msg = "Você não é um andróide para sentar."
+const podeposicaoMmsg = "Você não é um andróide para montar."
 
 
 classe p_teste051
@@ -5756,9 +5765,10 @@ classe s_teste187
 herda b_teste
 const s_titulo = "Robõ com mensagens personalizadas"
 const s_desc = "Esse robõ, quando vencido em uma batalha, vira uma carcaça com algumas moedas.\n\
-A carcaça tem alguns textos personalizados, inclusive ao olhar e ao usar\n\
-magia de identificação. Ao olhar para o robô, as mensagens sobre o estado\n\
-de saúde também são diferentes."
+Nota-se que a carcaça também é de uma máquina ao olhar e ao usar magia de\n\
+identificação. Ao olhar para o robô, o estado de saúde também é diferente.\n\
+E se for controlado (com o comando PNJ), nota-se que ele não dorme, não\n\
+descansa e não senta."
 const dir_n = $s_teste051
 const s_reset = "P 100 teste050 1 1 1 h_socar,h_chutar,z_moedas=100"
 

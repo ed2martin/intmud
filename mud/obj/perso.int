@@ -128,8 +128,11 @@ p_perseguevel\n\
 p_recebe\n\
 p_soltar\n\
 p_som_entra p_som_voaentra p_som_sai p_som_voasai\n\
-p_morreu0 p_morreu1 p_morreu2 p_corpo_tipo p_corpo_ident p_corpo_descnome\n\
-p_corpo_descsala p_corpo_descver p_corpo_descident p_corpo_tempo p_corpo_some\n\
+p_morreu0 p_morreu1 p_morreu2 p_corpo_tipo p_corpo_ident\n\
+p_corpo_descnome p_corpo_descsala p_corpo_descver p_corpo_descident\n\
+p_corpo_msexo p_corpo_tempo p_corpo_some\n\
+podeposicao4tipo podeposicao5tipo podeposicao6tipo podeposicaoMtipo\n\
+podeposicao4msg podeposicao5msg podeposicao6msg podeposicaoMmsg\n\
 batalhafim_p1 batalhafim_p2 batalhafim_p3\n\
 batalhafim_s1 batalhafim_s2 batalhafim_s3\n\
 batalhafim_t1 batalhafim_t2 batalhafim_t3 batalhafim_fim\n\
@@ -531,6 +534,22 @@ func teclouperm # Processa comando com permissões específicas
 func p_espera_exec # Pega o próximo comando
   sock ? sock.espera_exec : p_comando ? teclou(p_comando) : p_proc_exec
   p_comando = ""
+
+func podeposicao # Verifica se uma posição é válida para o personagem
+# arg0 = posição (vide variável posicao) ou "M" se for montar
+# Retorna 1 se posição válida ou 0 se não for
+  casovar arg0
+  casose "4" # Dormir
+    ret bitver & 0x800, 0
+    ret int(txt(podeposicao4tipo) ?? txt($t_[tipo1].podeposicao4tipo) ?? 1) != 0
+  casose "5" # Descansar
+    ret int(txt(podeposicao5tipo) ?? txt($t_[tipo1].podeposicao5tipo) ?? 1) != 0
+  casose "6" # Sentar
+    ret int(txt(podeposicao6tipo) ?? txt($t_[tipo1].podeposicao6tipo) ?? 1) != 0
+  casose "M" # Montar
+    ret int(txt(podeposicaoMtipo) ?? txt($t_[tipo1].podeposicaoMtipo) ?? 1) != 0
+  casofim
+  ret 1
 
 func msgposicao # Envia uma mensagem conforme a posição
 # arg0 = quem recebe a mensagem; se for nulo é o próprio personagem

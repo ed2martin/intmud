@@ -505,6 +505,9 @@ const vari31 = "p_evoluimsg1"
 const nome32 = "Sons"
 const tipo32 = "menu_psom--"
 #
+const nome33 = "Comandos personagem"
+const tipo33 = "menu_pcomandos--"
+#
 const nome50 = "Variáveis"
 const tipo50 = "opc_linha"
 const vari50 = "inivar"
@@ -542,16 +545,16 @@ const exec55 = "ajustaobj"
 
 classe menu_pcomum2
 herda comando_menu_adm
-const nome35 = "Tipo de ataque"
-const info35 = "Que habilidade usa em ataques automáticos"
-const tipo35 = "opc_linha"
-const vari35 = "p_atktipo"
+const nome36 = "Tipo de ataque"
+const info36 = "Que habilidade usa em ataques automáticos"
+const tipo36 = "opc_linha"
+const vari36 = "p_atktipo"
 #
-const nome36 = "Quando morre"
-const tipo36 = "menu_pmorreu--"
+const nome37 = "Quando morre"
+const tipo37 = "menu_pmorreu--"
 #
-const nome37 = "Fim da batalha"
-const tipo37 = "menu_pbatalhafim--"
+const nome38 = "Fim da batalha"
+const tipo38 = "menu_pbatalhafim--"
 
 
 classe menu_pdescsala
@@ -886,6 +889,31 @@ const tipo21 = "opc_linha"
 const vari21 = "lojamsgidioma"
 
 
+classe menu_pcomandos
+herda comum_perso_comandos
+const menufim = var.menufim
+#
+const nulo1 = fnulo1(vari1)
+const nulo2 = fnulo1(vari2)
+const nulo3 = fnulo1(vari3)
+const nulo4 = fnulo1(vari4)
+const nulo5 = fnulo2(vari5, "h_cmd_dormir", "m_nao_consegue")
+const nulo6 = fnulo2(vari6, "h_cmd_descansar", "m_nao_consegue")
+const nulo7 = fnulo2(vari7, "h_cmd_sentar", "m_nao_consegue")
+const nulo8 = fnulo2(vari8, "h_cmd_montar", "m_nao_consegue")
+
+func fnulo1
+  refvar v = $t_[[classe]:tipo1].[arg0]
+  ret !txt(v) || v ? "\c61 Sim" : "\c60 Não"
+
+func fnulo2 # arg0 = variável do personagem, arg0=classe, arg1=variável
+  refvar v = $t_[[classe]:tipo1].[arg0]
+  ret v, "\c3" + v
+  prog p
+  p.iniherdainv(arg1)
+  ret "\c3" + $[p.texto].[arg2]
+
+
 classe menu_pmorreu
 herda menu_morreu
 const menufim = var.menufim
@@ -1113,39 +1141,39 @@ classe menu_perso1
 herda menu_pcomum1
 const titulo = "Perso simples " + txt(var.classe1, 2)
 #
-const nome33 = "Atributos"
-const tipo33 = "menu_patribs1--"
+const nome34 = "Atributos"
+const tipo34 = "menu_patribs1--"
 #
-const nome34 = "Comportamento"
-const tipo34 = "menu_pcomportamento1--"
+const nome35 = "Comportamento"
+const tipo35 = "menu_pcomportamento1--"
 
 
 classe menu_perso2
 herda menu_pcomum1, menu_pcomum2
 const titulo = "Perso batalha " + txt(var.classe1, 2)
 #
-const nome33 = "Atributos"
-const tipo33 = "menu_patribs2--"
+const nome34 = "Atributos"
+const tipo34 = "menu_patribs2--"
 #
-const nome34 = "Comportamento"
-const tipo34 = "menu_pcomportamento2--"
+const nome35 = "Comportamento"
+const tipo35 = "menu_pcomportamento2--"
 #
-const nome38 = "Domar e montar"
-const tipo38 = "menu_pdomar--"
+const nome39 = "Domar e montar"
+const tipo39 = "menu_pdomar--"
 #
-const nome39 = "Dar e soltar"
-const info39 = "Se esse personagem pode ser dado ou solto"
-const tipo39 = "opc_opcao"
-const vari39 = "p_soltar"
-const extr39 = "Pode-se dar e soltar\nPode-se apenas soltar\nNão se pode dar nem soltar"
+const nome40 = "Dar e soltar"
+const info40 = "Se esse personagem pode ser dado ou solto"
+const tipo40 = "opc_opcao"
+const vari40 = "p_soltar"
+const extr40 = "Pode-se dar e soltar\nPode-se apenas soltar\nNão se pode dar nem soltar"
 
 
 classe menu_perso3
 herda menu_pcomum1, menu_pcomum2
 const titulo = "Perso completo " + txt(var.classe1, 2)
 #
-const nome33 = "Atributos"
-const tipo33 = "menu_patribs2--"
+const nome34 = "Atributos"
+const tipo34 = "menu_patribs2--"
 #
-const nome34 = "Comportamento"
-const tipo34 = "menu_pcomportamento3--"
+const nome35 = "Comportamento"
+const tipo35 = "menu_pcomportamento3--"

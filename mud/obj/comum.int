@@ -67,10 +67,12 @@ func fim # Objeto vai sair do jogo
     l.objini.cmd_fim(este), l.ini.remove
   efim
   cmd_objfim, idono && mdono(nulo)
-  refvar msgfim = "Você pára de seguir " + nome + "."
+  prog p
+  p.iniherdainv("h_cmd_seguir")
+  refvar msgfim = $[p.texto].m_parar_seguir
   listaitem i = lseguir.ini
   enquanto i
-    i.obj.tseguir == 3 ? i.depois : i.obj.msg(msgfim) + i.removedepois
+    i.obj.tseguir == 3 ? i.depois : $mens.mp(msgfim, i.obj, este) + i.removedepois
   efim
 
 func ajustapeso # Acerta peso, volume, jog e pnj

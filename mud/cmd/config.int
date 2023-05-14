@@ -50,7 +50,6 @@ informa quando a variável exec chegar a 0 (bug no programa)"
 #
 const m_config_invalida = "Opção inexistente: $m"
 const m_config_mudou = "Configuração alterada: $m"
-const m_parar_seguir = "Você pára de seguir $a."
 #
 # As próximas constantes são as opções do comando CONFIG
 # Cada constante contém o índice da variável de jogconfig
@@ -177,11 +176,12 @@ func escr
   fimse
 # Checa a propriedade SEGUIR
   se !opc.5 # Se não pode ser seguido
-    listaitem i
-    i = arg0.lseguir.ini
+    listaitem i = arg0.lseguir.ini
+    p.iniherdainv("h_cmd_seguir")
+    refvar parar_seguir = $[p.texto].m_parar_seguir
     enquanto i
       se i.obj.tseguir == 0 || i.obj.tseguir == 2
-        $mens.mp(m_parar_seguir, i.obj, arg0)
+        $mens.mp(parar_seguir, i.obj, arg0)
         i.removedepois
       senao
         i.depois
@@ -319,20 +319,16 @@ const nome29 = "Mudou config"
 const tipo29 = "opc_linha"
 const vari29 = "m_config_mudou"
 #
-const nome30 = "Pára de seguir"
-const tipo30 = "opc_linha"
-const vari30 = "m_parar_seguir"
+const nome30 = "Dicas"
+const info30 = "Uma dica por linha"
+const tipo30 = "opc_texto--"
+const clas30 = "config_dicas"
+const vari30 = "texto"
+const exec30 = "miscdicas:atualiza"
 #
-const nome31 = "Dicas"
-const info31 = "Uma dica por linha"
-const tipo31 = "opc_texto--"
+const nome31 = "Tempo entre dicas"
+const info31 = "Em segundos, ou 0 para desativar as dicas"
+const tipo31 = "opc_numero--"
 const clas31 = "config_dicas"
-const vari31 = "texto"
+const vari31 = "tempo"
 const exec31 = "miscdicas:atualiza"
-#
-const nome32 = "Tempo entre dicas"
-const info32 = "Em segundos, ou 0 para desativar as dicas"
-const tipo32 = "opc_numero--"
-const clas32 = "config_dicas"
-const vari32 = "tempo"
-const exec32 = "miscdicas:atualiza"

@@ -4,7 +4,9 @@ const objmenu = $m_cmd_dormir
 const objtipo = 2 # Pode renomear
 const posic = 5
 #
-const m_ajuda = "-t\n-s [objeto]\nDorme no chão. Com o nome de um objeto, tenta dormir no objeto."
+const m_ajuda = "-t\n\
+-s [objeto]\n\
+Dorme no chão. Com o nome de um objeto, tenta dormir no objeto."
 const m_naover = "Você não vê $m"
 const m_levantar = "Talvez você deva se levantar primeiro."
 const m_nao_consegue = "Você não consegue dormir."
@@ -20,7 +22,10 @@ m_cheio m_dormir_chao1 m_dormir_chao2 m_dormir_item1 m_dormir_item2"
 func escr
   ref r
 # Checa posição
-  ret arg0.bitver & 0x800, $mens.mp(m_nao_consegue, arg0)
+  se !arg0.podeposicao(4)
+    refvar m = arg0.podeposicao4msg ?? $t_[arg0.tipo1].podeposicao4msg
+    ret $mens.mp(m ?? m_nao_consegue, arg0)
+  fimse
   casovar arg0.posicao
   casose "5" # Descansando
   casose "6" # Sentado
@@ -131,7 +136,7 @@ func escr
     epara l.addfim(arg0.evento), l, l.ini.remove
       ret l.objini.cmd_acordar(r, arg0, arg0), nulo
     efim
-    r.posicao = 5
+    r.posicao = r.podeposicao(5) ? 5 : r.podeposicao(6) ? 6 : 8
     $mens.p(arg0, r)
     $mens.mtodos3(m_acorda_alvo1, m_acorda_alvo2, m_acorda_alvo3)
     epara l.addfim(r.evento), l, l.ini.remove
@@ -150,7 +155,7 @@ func escr
     epara l.addfim(arg0.evento), l, l.ini.remove
       ret l.objini.cmd_acordar(arg0, nulo, arg0), nulo
     efim
-    arg0.posicao = 5
+    arg0.posicao = arg0.podeposicao(5) ? 5 : arg0.podeposicao(6) ? 6 : 8
     $mens.p(arg0)
     $mens.mtodos2(m_acorda_perso1, m_acorda_perso2)
     epara l.addfim(arg0.evento), l, l.ini.remove

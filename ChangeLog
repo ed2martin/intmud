@@ -1,3 +1,91 @@
+* 14/5/2023 IntMUD 1.14c MUD baseado na revisão 608
+
+   No IntMUD:
+  1. Em alguns sistemas, o IntMUD não conseguiam carregar o SSL (conexão
+     segura) porque não achava a função função SSL_get_peer_certificate;
+     agora procura também por SSL_get1_peer_certificate
+  2. Internamente, o IntMUD agora passa a usar TLS_method sempre que
+     possível; pela documentação do OpenSSL, as outras funções _method
+     ficaram obsoletas
+
+   Nota: Quem não está tendo problemas com conexão segura não precisa atualizar
+
+   No MUD:
+  1. Corrigido bug em Etipo: a opção "Ataque automático" não estava
+     aparecendo
+  2. Corrigido bug: ao criar um item ou personagem, não estava acertando
+     a variável objnum (a quantidade total de objetos)
+  3. Corrigido bug: A opção "Chave" do comando Eitem não estava
+     aparecendo
+  4. Acrescentadas opções Tipo 1, Tipo 2 e Tipo 3 no comando Econfig, "8
+     Herda", "3 Personagens"
+  5. No comando Econfig, menu "1 Como ativar o MUD", a opção "14
+     Caracteres de uma vez" agora é também o tamanho máximo de uma
+     mensagem para o jogador e foram criadas as opções 16 e 17
+  6. No comando Econfig, menu "1 Como ativar o MUD", as opções 14 a 17
+     agora vão de 100 a 100 mil
+  7. Criados comandos de administração Ordenacl, Ordenaarq e Nitem
+  8. Comando Econfig, menu "14 Mensagens", submenu "16 Experiência e
+     nível" agora tem mensagens de moedas ganhas e divididas
+  9. Criado menu com mensagens de fim da batalha nos comandos Econfig
+     (no menu 14 Mensagens), Eperso e Etipo
+ 10. Criadas mensagens do corpo de um personagem morto no menu "Quando
+     morre" dos comandos Econfig (no menu 14 Mensagens), Eperso e Etipo
+ 11. Usuários podem consultar o histórico de mensagens dos comandos
+     Falar, Gritar, Sussurrar, Gchat, Chat e Novatos
+ 12. Criadas mensagens do corpo de um personagem morto no menu "Quando
+     morre" dos comandos Econfig (no menu 8 Herda), Eperso e Etipo
+ 13. Criada opção "3 Descrição sala" no comando Econfig, menu "8 Herda",
+     submenu "2 Itens"
+ 14. Opção "Descrição sala" dos itens agora aceita $p (nome do item) e
+     mais algumas sequências com $
+ 15. Constantes descpos dos itens mudaram de nome para descsala; essa
+     constante corresponde à opção "Descrição sala" do comando Eitem
+ 16. Criada sala teste167, com um robõ que ao ser vencido em batalha,
+     deixa uma carcaça
+ 17. Adicionado menu "Outras descrições" com mais algumas opções no
+     comando Eitem
+ 18. A bolsa da área de teste, item teste005 da sala teste024, agora tem
+     uma descrição diferente ao olhar para ela quando está aberta
+ 19. Comandos Dhab, Dmag, etc. agora mostram danos por segundo sem casas
+     decimais após a vírgula
+ 20. Função execgolpe do arquivo cmd/ataque.int agora só calcula o
+     resultado do ataque, não muda os pontos de vida do personagem alvo
+ 21. Magia/hab de retorno para transportar jogador para uma área que o
+     jogador já visitou
+ 22. Nos comandos Esala e Earea, criada opção "15 Área visitada"
+ 23. No comando Earea, criadas opções para região da área e sala de
+     retorno
+ 24. Criada habilidade Voltar: permite voltar a uma área já visitada,
+     com algumas limitações
+ 25. Atualizada a descrição da sala teste049, sobre Retornar em níveis
+     baixos
+ 26. Criadas salas teste188 e teste189 para explicar sobre a habilidade
+     Voltar
+ 27. Apagada a magia Volta, porque aparentemente não está sendo usada
+ 28. Comandos Lhab, Lmag e Ltec agora informam também se for do tipo
+     Identificar e se for do tipo Retornar
+ 29. No comando Econfig, menu "17 Renomear comandos", foi criado o
+     submenu "7 Textos nas mensagens"
+ 30. O menu do comando Equip no comando Econfig agora tem as opções "4
+     Alvo não existe" e "5 Não possui animal"
+ 31. Ao teclar "adm mens", são mostrados também os textos com $
+     definidos no comando Econfig
+ 32. Criada função $mens.tp, documentada em doc/03-mensagens.txt
+ 33. Criada opção no comando Etipo: Sala ao renascer
+ 34. Quando um jogador entra no MUD derrubando outro que estava com o
+     mesmo personagem (exemplo, porque a conexão "congelou"), o
+     histórico dos comandos Falar, Gritar, Gchat, Sussurrar e Telepatia
+     é transferido da conexão antiga para a nova
+ 35. Criada opção "6 Menu de entrada" no Econfig
+ 36. Opção "Para de seguir" foi do menu do comando Config para o menu do
+     comando Seguir
+ 37. Criado menu "Comandos personagem" (para poder desabilitar Dormir,
+     Sentar, Descansar, Montar) nos comandos Etipo e Eperso
+ 38. O robô da sala teste187 agora não dorme, não descansa e não senta
+ 39. Criada função podeposicao para checar posições válidas de um
+     personagens, documentada em doc/08-perso.txt
+
 * 7/11/2022 IntMUD 1.14c MUD baseado na revisão 589
 
    No IntMUD:
