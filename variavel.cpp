@@ -27,6 +27,7 @@
 #include "var-exec.h"
 #include "var-sav.h"
 #include "var-txt.h"
+#include "var-arqmem.h"
 #include "var-nomeobj.h"
 #include "var-telatxt.h"
 #include "var-socket.h"
@@ -155,6 +156,7 @@ int TVariavel::Tamanho(const char * instr)
     case Instr::cArqExec:   return sizeof(TVarExec);
     case Instr::cArqSav:    return 0;
     case Instr::cArqTxt:    return sizeof(TVarTxt);
+    case Instr::cArqMem:    return sizeof(TVarArqMem);
     case Instr::cIntTempo:  return sizeof(TVarIntTempo);
     case Instr::cIntExec:   return sizeof(TVarIntExec);
     case Instr::cTelaTxt:   return sizeof(TVarTelaTxt);
@@ -234,6 +236,7 @@ TVarTipo TVariavel::Tipo()
     case Instr::cArqExec:   return varOutros;
     case Instr::cArqSav:    return varOutros;
     case Instr::cArqTxt:    return varOutros;
+    case Instr::cArqMem:    return varOutros;
     case Instr::cIntTempo:  return varInt;
     case Instr::cIntExec:   return varInt;
     case Instr::cTelaTxt:
@@ -375,6 +378,12 @@ void TVariavel::Redim(TClasse * c, TObjeto * o, unsigned int antes, unsigned int
             end_txt[antes].Criar();
         for (; depois<antes; depois++)
             end_txt[depois].Apagar();
+        break;
+    case Instr::cArqMem:
+        for (; antes<depois; antes++)
+            end_arqmem[antes].Criar();
+        for (; depois<antes; depois++)
+            end_arqmem[depois].Apagar();
         break;
     case Instr::cIntTempo:
         for (; antes<depois; antes++)
@@ -628,6 +637,10 @@ void TVariavel::MoverEnd(void * destino, TClasse * classe, TObjeto * objeto)
         memmove(destino, endvar, vetor*sizeof(TVarTxt));
         endvar = destino;
         return;
+    case Instr::cArqMem:
+        memmove(destino, endvar, vetor*sizeof(TVarArqMem));
+        endvar = destino;
+        return;
     case Instr::cIntTempo:
         MOVER_COMPLETO( TVarIntTempo )
     case Instr::cIntExec:
@@ -842,6 +855,8 @@ bool TVariavel::getBool()
         return 0;
     case Instr::cArqTxt:
         return end_txt[indice].getValor();
+    case Instr::cArqMem:
+        return 0;
     case Instr::cIntTempo:
         return end_inttempo[indice].getValor(numfunc);
     case Instr::cIntExec:
@@ -1004,6 +1019,8 @@ int TVariavel::getInt()
         return 0;
     case Instr::cArqTxt:
         return end_txt[indice].getValor();
+    case Instr::cArqMem:
+        return 0;
     case Instr::cIntTempo:
         return end_inttempo[indice].getValor(numfunc);
     case Instr::cIntExec:
@@ -1161,6 +1178,8 @@ double TVariavel::getDouble()
         return 0;
     case Instr::cArqTxt:
         return end_txt[indice].getValor();
+    case Instr::cArqMem:
+        return 0;
     case Instr::cIntTempo:
         return end_inttempo[indice].getValor(numfunc);
     case Instr::cIntExec:
@@ -1240,6 +1259,7 @@ const char * TVariavel::getTxt()
     case Instr::cReal2:
         DoubleToTxt(txtnum, getDouble());
         return txtnum;
+    case Instr::cArqMem:
     case Instr::cConstNulo:
         return "";
     case Instr::cConstTxt:
@@ -1520,6 +1540,7 @@ void TVariavel::setInt(int valor)
     case Instr::cArqLog:
     case Instr::cArqSav:
     case Instr::cArqTxt:
+    case Instr::cArqMem:
         break;
     case Instr::cIntTempo:
         end_inttempo[indice].setValor(numfunc, valor);
@@ -1634,6 +1655,7 @@ void TVariavel::setDouble(double valor)
     case Instr::cArqExec:
     case Instr::cArqSav:
     case Instr::cArqTxt:
+    case Instr::cArqMem:
         break;
     case Instr::cTelaTxt:
         end_telatxt[indice].setValor(numfunc, DoubleToInt(valor));
@@ -1768,6 +1790,7 @@ void TVariavel::setTxt(const char * txt)
     case Instr::cArqExec:
     case Instr::cArqSav:
     case Instr::cArqTxt:
+    case Instr::cArqMem:
         break;
     case Instr::cTelaTxt:
         end_telatxt[indice].setTxt(numfunc, txt);
@@ -1997,6 +2020,8 @@ bool TVariavel::Func(const char * nome)
         return TVarSav::Func(this, nome);
     case Instr::cArqTxt:
         return end_txt[indice].Func(this, nome);
+    case Instr::cArqMem:
+        return end_arqmem[indice].Func(this, nome);
     case Instr::cTelaTxt:
         return end_telatxt[indice].Func(this, nome);
     case Instr::cSocket:

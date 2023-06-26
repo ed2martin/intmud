@@ -372,6 +372,7 @@ enum Comando
     cArqExec,           ///< Extra: ArqExec
     cArqSav,            ///< Extra: Salvar
     cArqTxt,            ///< Extra: ArqTxt
+    cArqMem,            ///< Extra: ArqMem
     cIntTempo,          ///< Extra: IntTempo
     cIntExec,           ///< Extra: IntExec
     cTelaTxt,           ///< Extra: TelaTxt

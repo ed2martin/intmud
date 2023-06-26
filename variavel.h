@@ -18,6 +18,7 @@ class TVarArqProg;
 class TVarExec;
 class TVarLog;
 class TVarTxt;
+class TVarArqMem;
 class TVarNomeObj;
 class TVarTelaTxt;
 class TVarSocket;
@@ -157,6 +158,7 @@ public:
         TVarArqProg  * end_arqprog;  ///< Instr::cArqProg
         TVarExec     * end_exec;     ///< Instr::cArqExec
         TVarTxt      * end_txt;      ///< Instr::cArqTxt
+        TVarArqMem   * end_arqmem;   ///< Instr::cArqMem
         TVarIntTempo * end_inttempo; ///< Instr::cIntTempo
         TVarIntExec  * end_intexec;  ///< Instr::cIntExec
         TListaObj    * end_listaobj; ///< Instr::cListaObj

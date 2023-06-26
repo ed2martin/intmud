@@ -110,10 +110,18 @@ const char * AbreSSL()
         return "Erro ao carregar libeay32.dll";
     }
 #else
+#ifdef __APPLE__
+    ssl_handle1 = dlopen("libssl.dylib", RTLD_LAZY);
+#else
     ssl_handle1 = dlopen("libssl.so", RTLD_LAZY);
+#endif
     if (ssl_handle1 == 0)
         return "Erro ao carregar libssl.so";
+#ifdef __APPLE__
+    ssl_handle2 = dlopen("libcrypto.dylib", RTLD_LAZY);
+#else
     ssl_handle2 = dlopen("libcrypto.so", RTLD_LAZY);
+#endif
     if (ssl_handle2 == 0)
     {
         dlclose(ssl_handle1);

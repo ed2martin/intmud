@@ -225,6 +225,7 @@ bool Instr::Decod(char * destino, const char * origem, int tamanho)
     case cArqExec:   strcpy(nome, "arqexec"); break;
     case cArqSav:    strcpy(nome, "arqsav"); break;
     case cArqTxt:    strcpy(nome, "arqtxt"); break;
+    case cArqMem:    strcpy(nome, "arqmem"); break;
     case cIntTempo:  strcpy(nome, "inttempo"); break;
     case cIntExec:   strcpy(nome, "intexec"); break;
     case cTelaTxt:   strcpy(nome, "telatxt"); break;

@@ -54,22 +54,23 @@ IntMUD (Interpretador MUD)
 25. ArqLog - gravar texto em arquivos de log
 26. ArqSav - salvar objetos em arquivos
 27. ArqTxt - acessar arquivos de texto
-28. IntTempo - gerar eventos depois de um tempo
-29. IntExec - gerar evento assim que possível
-30. TelaTxt - acessar a janela do programa
-31. Socket - comunicação via TCP/IP
-32. Serv - receber conexões via TCP/IP
-33. Prog - ler e alterar o programa
-33.1. Funções para iniciar uma consulta
-33.2. Funções para ler o resultado da consulta
-33.3. Funções para obter informações
-33.4. Funções para alterar o programa
-34. ArqProg - busca nos diretórios os arquivos que compõem o programa
-35. ArqExec - executar outros programas
-36. Debug - auxiliar a detectar erros no programa
-37. IndiceObj - objetos organizados de acordo com um texto
-38. IndiceItem - obter objeto pelo texto
-39. DataHora - calendário
+28. ArqMem - arquivo na memória
+29. IntTempo - gerar eventos depois de um tempo
+30. IntExec - gerar evento assim que possível
+31. TelaTxt - acessar a janela do programa
+32. Socket - comunicação via TCP/IP
+33. Serv - receber conexões via TCP/IP
+34. Prog - ler e alterar o programa
+34.1. Funções para iniciar uma consulta
+34.2. Funções para ler o resultado da consulta
+34.3. Funções para obter informações
+34.4. Funções para alterar o programa
+35. ArqProg - busca nos diretórios os arquivos que compõem o programa
+36. ArqExec - executar outros programas
+37. Debug - auxiliar a detectar erros no programa
+38. IndiceObj - objetos organizados de acordo com um texto
+39. IndiceItem - obter objeto pelo texto
+40. DataHora - calendário
 
 
 0. CRÉDITOS
@@ -3585,7 +3586,7 @@ Exemplo: ler(1) lê um caracter.
 Retorna a posição atual no arquivo (0=está no início do arquivo).
 
 27.11. pos(<posição>, <modo>)
-Muda a posição atual no arquivo.
+Muda a posição atual no arquivo. Retorna a nova posição atual.
 
 O modo é um número que indica como deve mudar a posição:
 0 - A partir do início do arquivo
@@ -3596,7 +3597,76 @@ O modo é um número que indica como deve mudar a posição:
 1 se chegou no fim do arquivo, 0 se não chegou.
 
 
-28. INTTEMPO - GERAR EVENTOS DEPOIS DE UM TEMPO
+28. ARQMEM - ARQUIVO NA MEMÓRIA
+
+É semelhante ao ArqTxt, porém o arquivo só existe na memória e só existe
+enquanto a variável existir.
+
+Funções:
+
+28.1. tamanho
+Retorna o tamanho do arquivo.
+
+28.2. pos
+Retorna a posição atual no arquivo (0=está no início do arquivo).
+Sempre que são lidos ou escritos bytes no arquivo, a posição atual avança
+para o primeiro byte após o que foi lido ou escrito.
+
+28.3. pos(<posição>)
+Muda a posição atual no arquivo (0=início do arquivo).
+A nova posição nunca estará antes do inicio do arquivo ou depois do final.
+Retorna a nova posição atual.
+
+28.4. eof
+Retorna 1 se chegou no fim do arquivo ou 0 se não chegou.
+
+28.5. limpar
+Apaga todo o conteúdo do arquivo. A posição atual vai para o início do arquivo.
+
+28.6. truncar
+Trunca o tamanho do arquivo na posição atual.
+
+28.7. escr(<texto>)
+Escreve texto no arquivo.
+Se for especificado mais de um texto, serão concatenados no arquivo.
+Retorna quantos bytes foram escritos.
+Exemplo, escr("ab", "\n") é o mesmo que escr("ab\n")
+
+28.8. escrbin(<texto>)
+Escreve bytes no arquivo. O texto contém os bytes no formato hexadecimal.
+Retorna quantos bytes foram escritos.
+
+28.9. add(<texto>)
+Mesmo que escr, porém adiciona no fim do arquivo.
+
+28.10. addbin(<texto>)
+Mesmo que escrbin, porém adiciona no fim do arquivo.
+
+28.11. ler
+Lê uma linha do arquivo. Retorna a linha lida sem o \n no final.
+Pode ler menos se chegou no fim do arquivo.
+
+28.12. ler(<tamanho>)
+Lê um determinado número de caracteres do arquivo.
+Pode ler menos se chegou no fim do arquivo.
+Exemplo: ler(1) lê um caracter.
+
+28.13. lerbin
+Lê uma linha do arquivo. Retorna a linha lida com os caracteres que indicam fim
+de linha, que podem ser um 0x0D (Mac antes do Mac OS X), 0x0D 0x0A (Windows)
+ou um 0x0A (Linux, Unix, Mac OS X, arquivos de texto no IntMUD, etc.).
+
+28.14. lerbin(<tamanho>)
+Mesmo que ler, porém retorna os bytes em hexadecimal.
+
+28.15. lerbinesp
+Mesmo que lerbin, porém retorna os bytes em hexadecimal separados por um espaço.
+
+28.16. lerbinesp(<tamanho>)
+Mesmo que lerbin, porém retorna os bytes em hexadecimal separados por um espaço.
+
+
+29. INTTEMPO - GERAR EVENTOS DEPOIS DE UM TEMPO
 
 Uma variável inteira de 0 a 1.048.575, subtraída 1 a cada décimo de segundo.
 A diferença de inttempo para intdec é que quando chega a 0, uma função
@@ -3624,7 +3694,7 @@ n.pos # Volta a contar (n=4)
 teste = n.abs # Mesmo que teste=4
 
 
-29. INTEXEC - GERAR EVENTO ASSIM QUE POSSÍVEL
+30. INTEXEC - GERAR EVENTO ASSIM QUE POSSÍVEL
 
 É uma variável que pode ser 0 ou 1, exatamente como int1.
 
@@ -3657,7 +3727,7 @@ telatxt t
 t.msg("Variável y é do tipo: " + p.vartipo("x", "y") + "\n")
 
 
-30. TELATXT - ACESSAR A JANELA DO PROGRAMA
+31. TELATXT - ACESSAR A JANELA DO PROGRAMA
 
 Semelhante a socket, mas trabalha com uma tela de texto, chamada console.
 Essa tela é semelhante ao 'prompt de comando', no Windows, ou o próprio
@@ -3665,43 +3735,43 @@ terminal, em Unix.
 
 Funções e variáveis:
 
-30.1. proto
+31.1. proto
 Retorna 0 se a janela do IntMUD estiver fechada ou 1 se estiver aberta.
 O valor de 'proto' depende da opção 'TELATXT' no início do programa
 (vide tópico 2.3).
 
-30.2. posx
+31.2. posx
 Posição do cursor: quantos caracteres enviou após o último \n.
 Caracteres especiais, como definição da cor, não contam.
 
-30.3. msg(<mensagem>)
+31.3. msg(<mensagem>)
 Envia mensagem para telatxt.
 
-30.4. tecla(<nome da tecla>)
+31.4. tecla(<nome da tecla>)
 Processa uma tecla, como se tivesse sido digitada pelo usuário.
 Nota: não gera eventos.
 
-30.5. texto
+31.5. texto
 Conteúdo da linha sendo digitada pelo usuário. Pode ser mudado.
 
-30.6. total
+31.6. total
 Tamanho da linha sendo editada, de 1 a 1023. Pode ser mudado.
 
-30.7. linha
+31.7. linha
 Linha em que o cursor está. 0 é a linha de edição, 1=última linha
 de texto, 2 = linha anterior, etc.
 
-30.8. limpa
+31.8. limpa
 Limpa a tela.
 
 Eventos:
 
-30.9. <nomedavariável>_msg
+31.9. <nomedavariável>_msg
 Recebeu mensagem.
 arg0 = Mensagem recebida
 arg1 = Índice da variável vetor, se não for vetor arg1=0
 
-29.10. <nomedavariável>_tecla
+31.10. <nomedavariável>_tecla
 Chamado sempre que o usuário pressionar uma tecla.
 arg0 = Nome da tecla
 arg1 = Índice da variável vetor, se não for vetor arg1=0
@@ -3724,7 +3794,7 @@ Notas - em um terminal Unix ou Linux:
  - Control+M é a tecla ENTER
 
 
-31. SOCKET - COMUNICAÇÃO VIA TCP/IP
+32. SOCKET - COMUNICAÇÃO VIA TCP/IP
 
 Representa uma conexão TCP/IP com outro programa.
 Como valor numérico, é 1 se proto!=0 (está conectado) ou 0 se proto=0.
@@ -3733,7 +3803,7 @@ Nesse caso, os eventos são gerados em mais de uma variável socket.
 
 Funções e variáveis:
 
-31.1. proto
+32.1. proto
 É um número que define o protocolo usado:
 0 - Não está conectado;
 1 - Conectando;
@@ -3748,45 +3818,45 @@ Funções e variáveis:
 Nota: É possível mudar essa variável para qualquer valor de 2 a 7,
       quando o socket estiver conectado.
 
-31.2. cores
+32.2. cores
 É um número que define como deve usar as cores nas mensagens:
 0 - Nenhuma cor;
 1 - Cores somente ao receber;
 2 - Cores somente ao enviar;
 3 - Cores ao enviar e receber.
 
-31.3. aflooder
+32.3. aflooder
 O anti flooder impede o recebimento de muitas mensagens ao mesmo tempo.
 0 desativa o anti flooder, outro valor ativa.
 
-31.4. opctelnet
+32.4. opctelnet
 Define se pode receber caracteres especiais do protocolo Telnet:
 Eco desligado "\ci", eco ligado "\cj", caracteres go ahead "\ck"
 e bipe "\cl". Não tem efeito em IRC e Papovox.
 
-31.5. posx
+32.5. posx
 Posição do cursor: quantos caracteres enviou após o último \n.
 Caracteres especiais, como definição da cor, não contam.
 
-31.6. ip
+32.6. ip
 Endereço IP correspondente a quem está conectado.
 
-31.7. iplocal
+32.7. iplocal
 Endereço IP local.
 
-31.8. abrir(<endereço>, <porta>)
+32.8. abrir(<endereço>, <porta>)
 Tenta conectar-se a um endereço.
 Após conectar, 'proto' passa a ser 3 e o evento _con é chamado (vide abaixo).
 Retorna 1 se conexão em progresso ou 0 se ocorreu erro
 (0 geralmente significa endereço inválido)
 
-31.9 abrirssl(<endereço>, <porta>)
+32.9 abrirssl(<endereço>, <porta>)
 Mesmo que a função abrir, acima, porém usando conexão segura (SSL).
 
-31.10. fechar
+32.10. fechar
 Encerra a conexão; não gera o evento fechou.
 
-31.11. msg(<mensagem>, [tipo de mensagem])
+32.11. msg(<mensagem>, [tipo de mensagem])
 Envia mensagem para o socket.
 O tipo de mensagem é usado somente no Papovox e em WebSocket.
 Se for omitido, assume 1, que no Papovox significa mensagem de texto.
@@ -3798,34 +3868,34 @@ Nota 2: No protocolo WebSocket, para enviar um texto é necessário antes
 converter para UTF-8 e Hexadecimal. A conversão pode ser feita assim:
 txtconv(txtconv("sua mensagem", "tu") "th")
 
-31.12. inissl
+32.12. inissl
 Apenas carrega biblioteca OpenSSL, usada para conexões seguras.
 Retorna a mensagem de erro ou "" se sucesso.
 Nota: a função 'abrirssl' já carrega a biblioteca automaticamente.
 
-31.13. txtmd5
+32.13. txtmd5
 Usado somente em conexões SSL. Retorna a assinatura MD5 do certificado
 do servidor.
 
-31.14. txtsha1
+32.14. txtsha1
 Usado somente em conexões SSL. Retorna a assinatura SHA1 do certificado
 do servidor.
 
-31.15. ipvalido(<texto>)
+32.15. ipvalido(<texto>)
 Retorna 1 se <texto> for um endereço IP, ou 0 se não for.
 
-31.16. ipnome(<nome ou endereço IP>)
+32.16. ipnome(<nome ou endereço IP>)
 Retorna o nome da máquina a partir do endereço IP.
 Se o nome não existir, retorna um texto vazio.
 Essa função funciona independente do socket estar conectado.
 Em servidores, não é recomendável usá-la pois enquanto o nome estiver
 sendo resolvido, o IntMUD fica parado. Melhor usar eventoip.
 
-31.17. nomeip(<nome ou endereço IP>)
+32.17. nomeip(<nome ou endereço IP>)
 Retorna o endereço IP a partir do nome da máquina ou endereço IP.
 Funciona exatamente como a função ipnome acima.
 
-31.18. eventoip(<nome ou endereço IP>)
+32.18. eventoip(<nome ou endereço IP>)
 Obtém nome e endereço IP a partir de um endereço.
 Não trava o programa até o endereço ser resolvido. Ao invés disso, gera
 um evento '_eventoip' (vide abaixo).
@@ -3837,7 +3907,7 @@ podem levar mais tempo para serem resolvidos.
 
 Eventos:
 
-31.19. <nomedavariável>_msg
+32.19. <nomedavariável>_msg
 Recebeu mensagem.
 arg0 = Mensagem recebida.
 arg1 = 1 se mensagem completa, 0 se incompleta (sem o \n).
@@ -3861,27 +3931,27 @@ Outros valores - Reservado, não usar
 No WebSocket, mensagens de texto (em arg1) estão em UTF-8 e em Hexadecimal.
 Para transformar para texto: txtconv(txtconv(arg1, "ht"), "ut")
 
-31.20. <nomedavariável>_env
+32.20. <nomedavariável>_env
 Todas as mensagens foram transmitidas (buffer de transmissão
 ficou vazio).
 arg0 = índice da variável vetor, se não for vetor arg0=0.
 
-31.21. <nomedavariável>_fechou
+32.21. <nomedavariável>_fechou
 O socket foi fechado remotamente.
 arg0 = Motivo (um texto).
 arg1 = Índice da variável vetor, se não for vetor arg1=0.
 Se essa função não existir, o objeto que contém o socket é apagado.
 
-31.22. <nomedavariável>_con
+32.22. <nomedavariável>_con
 Conseguiu conectar.
 arg0 = Índice da variável vetor, se não for vetor arg0=0.
 
-31.23. <nomedavariável>_err
+32.23. <nomedavariável>_err
 Não conseguiu conectar.
 arg0 = Mensagem de erro.
 arg1 = Índice da variável vetor, se não for vetor arg1=0.
 
-31.24. <nomedavariável>_eventoip
+32.24. <nomedavariável>_eventoip
 Resolveu um endereço fornecido pela função eventoip.
 arg0 = texto recebido pela função eventoip.
 arg1 = Nome da máquina, ou um texto vazio se não encontrou.
@@ -3889,24 +3959,24 @@ arg2 = Endereço IP da máquina, ou um texto vazio se não encontrou.
 arg3 = Índice da variável vetor, se não for vetor arg3=0.
 
 
-32. SERV - RECEBER CONEXÕES VIA TCP/IP
+33. SERV - RECEBER CONEXÕES VIA TCP/IP
 
 Funções:
 
-32.1 abrir(<endereço>, <porta>)
+33.1 abrir(<endereço>, <porta>)
 Abre uma porta para receber conexões.
 Se não quiser especificar um endereço, colocar "" no endereço.
 Retorna 1 se conseguiu abrir ou 0 se não conseguiu.
 
-32.2 abrirssl(<endereço>, <porta>)
+33.2 abrirssl(<endereço>, <porta>)
 Mesmo que a função abrir, acima, porém usando conexão segura (SSL).
 Para essa função funcionar, o suporte a conexões seguras já deve ter
 sido inicializado (vide função inissl, abaixo).
 
-32.3. fechar
+33.3. fechar
 Deixa de receber conexões.
 
-32.4. inissl(<nome do arquivo CRT>, <nome do arquivo KEY>)
+33.4. inissl(<nome do arquivo CRT>, <nome do arquivo KEY>)
 Carrega biblioteca OpenSSL (usada para conexões seguras) um certificado
 digital (um arquivo CRT) e uma chave privativa (um arquivo KEY).
 Retorna a mensagem de erro ou "" se sucesso.
@@ -3921,7 +3991,7 @@ que nesse caso serão 'x.key' e 'x.crt'.
 
 Eventos:
 
-32.5. <nomedavariável>_socket
+33.5. <nomedavariável>_socket
 arg0 = Socket correspondente à conexão (com a variável 'proto' sendo 2)
 arg1 = Índice da variável vetor, se não for vetor arg1=0
 
@@ -3941,98 +4011,98 @@ func conec_msg
   conec.msg("você escreveu " + arg1 + "\n")
 
 
-33. PROG - LER E ALTERAR O PROGRAMA
+34. PROG - LER E ALTERAR O PROGRAMA
 
 Nota: pode ser usado um objeto no lugar do nome de uma classe.
 
-33.1. Funções para iniciar uma consulta
+34.1. Funções para iniciar uma consulta
 
 Retornam 1 se há algum resultado resultado (pelo menos uma linha)
 para a consulta ou 0 se não há.
 
-33.1.1. iniarq
+34.1.1. iniarq
 Obter os nomes dos arquivos que compõem o programa em o .int no final.
 Não necessariamente em ordem alfabética.
 
-33.1.2. iniarq(<nome do arquivo sem o .int>)
+34.1.2. iniarq(<nome do arquivo sem o .int>)
 Obter as classes que pertencem ao arquivo, na ordem definida no arquivo.
 Um texto vazio significa o arquivo .int principal.
 
-33.1.3. iniclasse([texto])
+34.1.3. iniclasse([texto])
 Obter os nomes das classes que começam com o texto especificado.
 Em ordem alfabética.
 
-33.1.4. inifunc(<nome da classe>, [texto])
+34.1.4. inifunc(<nome da classe>, [texto])
 Obter os nomes das funções e variáveis definidas em uma classe.
 Somente as variáveis e funções que começam com o texto especificado.
 Em ordem alfabética.
 
-33.1.5. inifunctudo(<nome da classe>, [texto])
+34.1.5. inifunctudo(<nome da classe>, [texto])
 Mesmo que inifunc, mas inclui também as variáveis e funções herdadas.
 
-33.1.6. inifunccl(<nome da classe>, [texto])
+34.1.6. inifunccl(<nome da classe>, [texto])
 Mesmo que inifunc, mas as funções e variáveis são listadas na ordem em que
 aparecem na classe.
 
-33.1.7. iniherda(<nome da classe>)
+34.1.7. iniherda(<nome da classe>)
 Obter os nomes das classes definidas na instrução 'herda'.
 Na ordem definida na classe.
 
-33.1.8. iniherdatudo(<nome da classe>)
+34.1.8. iniherdatudo(<nome da classe>)
 Obter a lista de classes herdadas por uma classe.
 Inclui também as classes herdadas indiretamente.
 Na ordem em que as classes são herdadas.
 
-33.1.9. iniherdainv(<nome da classe>)
+34.1.9. iniherdainv(<nome da classe>)
 Herança inversa: obter os nomes das classes que herdam uma classe.
 A ordem em que as classes são listadas é imprevisível.
 
-33.1.10. inilinha(<nome da classe>)
+34.1.10. inilinha(<nome da classe>)
 Obter as linhas correspondentes a uma classe.
 
-33.1.11. inilinha(<nome da classe>, <nome da função>)
+34.1.11. inilinha(<nome da classe>, <nome da função>)
 Obter as linhas correspondentes a uma variável ou função da classe
 (definida na classe ou herdada).
 
 
-33.2. Funções para ler o resultado da consulta
+34.2. Funções para ler o resultado da consulta
 
-33.2.1. lin
+34.2.1. lin
 É 1 se linha válida ou 0 se chegou no fim da consulta.
 
-33.2.2. depois
+34.2.2. depois
 Vai para a próxima linha.
 
-33.2.3. depois(<número de linhas>)
+34.2.3. depois(<número de linhas>)
 Avança o número de linhas especificado.
 Nada faz se o número for menor ou igual a zero.
 
-33.2.4. texto
+34.2.4. texto
 Retorna o texto da linha atual.
 
-33.2.5. nivel
+34.2.5. nivel
 Retorna um número, que é o nível de indentação. Usado somente com
 inilinha.
 
 
-33.3. Funções para obter informações
+34.3. Funções para obter informações
 
 Nota: Funcionam independente das demais.
 
-33.3.1. existe(<nome da classe>)
+34.3.1. existe(<nome da classe>)
 Retorna 1 se a classe existe ou 0 se não existe.
 
-33.3.2. existe(<nome da classe>, <nome da variável>)
+34.3.2. existe(<nome da classe>, <nome da variável>)
 Retorna 0 se a variável ou função não existe, 1 se estiver
 definido na própria classe ou 2 se foi herdada.
 
-33.3.3. arquivo(<nome da classe>)
+34.3.3. arquivo(<nome da classe>)
 Retorna o nome do arquivo que contém a classe sem o .int no final.
 Exemplo, abc corresponde ao arquivo abc.int.
 Um texto vazio significa o arquivo .int principal. No entanto, a forma
 mais segura de obter o nome do arquivo é usando a função arqnome, abaixo.
 
-33.3.4. arqnome(<nome do arquivo sem o .int>)
+34.3.4. arqnome(<nome do arquivo sem o .int>)
 Retorna o nome do arquivo a partir do nome fornecido pela função arquivo.
 Um texto vazio significa o arquivo .int principal.
 
@@ -4040,58 +4110,58 @@ Exemplo:
 prog p
 p.arqnome("abc") # Retorna algo como "abc.int".
 
-33.3.5. vartipo(<nome da classe>, <nome da variável>)
+34.3.5. vartipo(<nome da classe>, <nome da variável>)
 Retorna o tipo de variável ou "" se a variável não existe.
 
-33.3.6. varlugar(<nome da classe>, <nome da variável>)
+34.3.6. varlugar(<nome da classe>, <nome da variável>)
 Retorna um número de acordo com o tipo de variável ou função:
 0 = Função ou variável não existe;
 1 = É variável da classe, está antes das funções;
 2 = É 'const' ou 'varconst', pode ser colocado em qualquer lugar;
 3 = É 'func' ou 'varfunc', está depois das variáveis.
 
-33.3.6. varnum(<nome da classe>, <nome da variável>)
+34.3.6. varnum(<nome da classe>, <nome da variável>)
 Retorna 1 se for constante numérica do tipo:
 const variável = valor numérico
 ou 0 se não for.
 
-33.3.7. vartexto(<nome da classe>, <nome da variável>)
+34.3.7. vartexto(<nome da classe>, <nome da variável>)
 Retorna 1 se for constante de texto do tipo:
 const variável = "texto"
 ou 0 se não for.
 
-33.3.8. varcomum(<nome da classe>, <nome da variável>)
+34.3.8. varcomum(<nome da classe>, <nome da variável>)
 Retorna 1 se variável for comum ou 0 se não for.
 
-33.3.9. varsav(<nome da classe>, <nome da variável>)
+34.3.9. varsav(<nome da classe>, <nome da variável>)
 Retorna 1 se variável for sav ou 0 se não for.
 
-33.3.10. varvetor(<nome da classe>, <nome da variável>)
+34.3.10. varvetor(<nome da classe>, <nome da variável>)
 Retorna a quantidade de variáveis do vetor ou 0 se não for vetor.
 
-33.3.11. const(<nome da classe>, <nome da variável>)
+34.3.11. const(<nome da classe>, <nome da variável>)
 Retorna o texto de uma variável constante do tipo:
 const variável = valor    (nesse caso retorna valor)
 const variável = "texto"  (nesse caso retorna texto)
 Retorna um texto vazio para outros tipos de variáveis.
 
-33.3.12. classe(<nome da classe>, <texto>)
+34.3.12. classe(<nome da classe>, <texto>)
 Primeiro checa se <texto> pode ser o conteúdo de uma classe (se não tem
 nenhum erro). Depois checa se está igual à classe especificada.
 Retorna a lista de erros em <texto>. Se não houver nenhum erro,
 retorna "1" se estiver igual ou "0" se estiver diferente.
 
 
-33.4. Funções para alterar o programa
+34.4. Funções para alterar o programa
 
 Nota: as alterações só serão efetuadas quando o controle retornar ao IntMUD.
 
-33.4.1. apagar(<classe>)
+34.4.1. apagar(<classe>)
         apagar(<classe>, <variável>)
 Apaga classe ou variável.
 Retorna: 1=sucesso, 0=falha (classe ou variável não existe)
 
-33.4.2. criar(<texto>)
+34.4.2. criar(<texto>)
 Cria uma classe. Se já existia, altera ao invés de criar.
 A primeira linha é o nome da classe.
 A segunda linha de <texto> é o nome do arquivo sem o .int no final.
@@ -4110,7 +4180,7 @@ Cria a seguinte classe no arquivo .int principal:
 Para criar a mesma classe, mas no arquivo x.int:
     p.criar("abc\nx\nint8 x\nconst n = 10")
 
-33.4.3. criar(<nome da classe>, <texto>)
+34.4.3. criar(<nome da classe>, <texto>)
 Cria uma função ou variável de uma classe.
 Se já existia, antes apaga a função ou variável.
 <texto> contém todas as instruções da função ou variável.
@@ -4123,40 +4193,40 @@ Exemplos:
     p.criar("abc", "int8 n") # Cria a variável n na classe abc
     p.criar("xyz", "func x\nret 10") # cria a função x na classe xyz
 
-33.4.4. apagarlin(<nome da classe>, <número da linha>)
+34.4.4. apagarlin(<nome da classe>, <número da linha>)
    apagarlin(<nome da classe>, <nome da variável>, <número da linha>)
 Apaga uma linha de uma classe ou variável.
 Nota: A primeira linha é a número 1.
 Retorna um texto vazio se conseguiu criar ou a mensagem de erro
 se não conseguiu.
 
-33.4.5. criarlin(<nome da classe>, <linha inicial>, <texto>)
+34.4.5. criarlin(<nome da classe>, <linha inicial>, <texto>)
    criarlin(<nome da classe>, <nome da variável>, <linha inicial>, <texto>)
 Adiciona linhas na classe ou função especificada.
 Nota: A primeira linha é a número 1.
 Retorna um texto vazio se conseguiu criar ou a mensagem de erro
 se não conseguiu.
 
-33.4.6. fantes(<nome da classe>, <nome da função 1>, [nome da função 2])
+34.4.6. fantes(<nome da classe>, <nome da função 1>, [nome da função 2])
 Muda uma função, constante ou variável de lugar em uma classe.
 Coloca a função 1 antes da função 2, caso as duas existam.
 Se a função 2 for omitida, coloca a função 1 no início da classe.
 Retorna um texto vazio se conseguiu mover ou a mensagem de erro se não
 conseguiu.
 
-33.4.7. fdepois(<nome da classe>, <nome da função 1>, [nome da função 2])
+34.4.7. fdepois(<nome da classe>, <nome da função 1>, [nome da função 2])
 Muda uma função, constante ou variável de lugar em uma classe.
 Coloca a função 1 depois da função 2, caso as duas existam.
 Se a função 2 for omitida, coloca a função 1 no final da classe.
 Retorna um texto vazio se conseguiu mover ou a mensagem de erro se não
 conseguiu.
 
-33.4.8. renomear(<nome da classe>, <novo nome da classe>)
+34.4.8. renomear(<nome da classe>, <novo nome da classe>)
 Renomeia a classe.
 Nota: A classe só será realmente renomeada quando o controle voltar ao
 IntMUD e após todas as outras alterações pendentes serem realizadas.
 
-33.4.9. salvar([texto])
+34.4.9. salvar([texto])
 Salva as alterações nos arquivos correspondentes, depois que todas
 as alterações pendentes nas classes forem efetuadas.
 O texto é composto de letras seguidas de números, que indicam como
@@ -4180,23 +4250,23 @@ salvar("L4000N0I2C1F1V0")
 Significa não dividir linhas, 2 espaços para indentação, 1 linha vazia
 entre classes e entre funções e nenhuma linha vazia entre variáveis.
 
-33.4.10. salvartudo([texto])
+34.4.10. salvartudo([texto])
 Mesmo que a função salvar, porém salva todos os arquivos,
 independete de terem sido alterados ou não.
 
 
-33.5. Funções para organizar as classes nos arquivos
+34.5. Funções para organizar as classes nos arquivos
 
-33.5.1. clini(<nome do arquivo sem o .int>)
+34.5.1. clini(<nome do arquivo sem o .int>)
 Retorna o nome da primeira classe do arquivo ou "" se não existe.
 
-33.5.2. clfim(<nome do arquivo sem o .int>)
+34.5.2. clfim(<nome do arquivo sem o .int>)
 Retorna o nome da última classe do arquivo ou "" se não existe.
 
-33.5.3. clantes(<nome da classe>)
+34.5.3. clantes(<nome da classe>)
 Retorna classe anterior do arquivo, ou "" se não houver.
 
-33.5.4. cldepois(<nome da classe>)
+34.5.4. cldepois(<nome da classe>)
 Retorna próxima classe do arquivo, ou "" se não houver.
 
 Para mudar a posição de uma classe no arquivo, acrescentar um argumento,
@@ -4229,83 +4299,83 @@ func organiza
   arquivos.salvar # Salva os arquivos que foram alterados
 
 
-34. ARQPROG - OBTER OS ARQUIVOS DO PROGRAMA
+35. ARQPROG - OBTER OS ARQUIVOS DO PROGRAMA
 
 Busca nos diretórios os arquivos que compõem o programa.
 
 Funções:
 
-34.1. abrir
+35.1. abrir
 Inicia a busca dos arquivos.
 
-34.2. fechar
+35.2. fechar
 Encerra a busca dos arquivos.
 
-34.3. lin
+35.3. lin
 É 1 se entrada válida ou 0 se chegou no fim da busca.
 
-34.4. texto
+35.4. texto
 Nome da entrada (nome do arquivo sem o .int no final).
 Nota: a primeira entrada da busca é sempre o arquivo .int principal.
 
-34.5. depois
+35.5. depois
 Passa para a próxima entrada, ou encerra a busca se não houver.
 
 
-35. ARQEXEC - Executar outros programas
+36. ARQEXEC - Executar outros programas
 
 Funções e variáveis:
 
-35.1. abrir(<comando>)
+36.1. abrir(<comando>)
 Executa o programa com o nome especificado.
 Se conseguiu executar, retorna um texto vazio.
 Caso contrário, retorna a mensagem de erro.
 Nota: As opções COMPLETO e ARQEXEC definem quais programas podem ser
 executados.
 
-35.2. fechar
+36.2. fechar
 Fecha o programa sendo executado.
 
-35.3. aberto
+36.3. aberto
 Retorna 1 (verdadeiro) se estiver executando um programa ou 0 (falso) se
 não estiver.
 
-35.4. msg(<texto>)
+36.4. msg(<texto>)
 Envia uma mensagem para o programa.
 
 Eventos:
 
-35.5. <nomedavariável>_msg
+36.5. <nomedavariável>_msg
 Recebeu mensagem do programa.
 arg0 = Mensagem recebida
 arg1 = 1 se mensagem completa, 0 se incompleta (sem o \n)
 arg2 = Índice da variável vetor, se não for vetor arg2=0
 
-35.6. <nomedavariável>_env
+36.6. <nomedavariável>_env
 Todas as mensagens foram enviadas ao programa (buffer de saída ficou vazio).
 arg0 = Índice da variável vetor, se não for vetor arg0=0
 
-35.7. <nomedavariável>_fechou
+36.7. <nomedavariável>_fechou
 O programa terminou.
 arg0 = Código de retorno (um número)
 arg1 = Índice da variável vetor, se não for vetor arg1=0
 
 
-36. DEBUG - AUXILIAR A DETECTAR ERROS NO PROGRAMA
+37. DEBUG - AUXILIAR A DETECTAR ERROS NO PROGRAMA
 
 Funções:
 
-36.1. exec
+37.1. exec
 Contador de instruções - opção 'exec' no início do arquivo int.
 A cada instrução executada essa variável é subtraída de 1.
 Quando chega a 0, o controle retorna automaticamente ao IntMUD.
 Pode ser lido e alterado, como uma variável.
 
-36.2. ini
+37.2. ini
 Inicializa exec com o valor definido na opção 'exec' no início
 do arquivo int.
 
-36.3. cmd(<texto>)
+37.3. cmd(<texto>)
       cmd(<objeto>, <texto>)
 Executa as instruções que estão no texto especificado.
 Quando houver mais de uma instrução, deve-se separá-las com '\n'.
@@ -4323,7 +4393,7 @@ d.cmd("x=x+1\nteste(\"x=\"+x+\"\\n\")")
 d.cmd("ret \"teste\"") # d.cmd retorna "teste"
 d.cmd("int8 x\nx=1+2\nret x") # d.cmd retorna "3"
 
-36.4. passo(<objeto>, <texto>)
+37.4. passo(<objeto>, <texto>)
       passo()
 Antes de executar cada instrução chama a função de <objeto>
 com o nome especificado em <texto>. Se a função não existir, passa
@@ -4332,7 +4402,7 @@ Na função:
 arg0 é oobjeto 'este'
 arg1 é o texto contendo a instrução que será executada executada
 
-36.5. func
+37.5. func
 Retorna o nível de funções: quantas funções foram chamadas até chegar
 na instrução atual. Exemplo:
 classe x
@@ -4342,28 +4412,28 @@ func iniclasse
 func teste
     # Aqui debug.func será 1 porque foi chamado por x:iniclasse
 
-36.6. stempo
-36.7. utempo
+37.6. stempo
+37.7. utempo
 Quanto tempo o programa usou do processador, em milésimos de segundos.
 stempo é o tempo usado pelo sistema e utempo é o tempo usado pelo programa.
 Se não for possível obter essa informação, essas funções retornam -1.
 
-36.8. mem
+37.8. mem
 Quantidade de memória que o programa está usando, em bytes.
 
-36.9. memmax
+37.9. memmax
 Quantidade máxima de memória que o programa chegou a usar, em bytes.
 
-36.10. ver
+37.10. ver
 Retorna um texto que é a versão do IntMUD.
 
-36.11. data
+37.11. data
 Retorna um texto que é a data em que o programa (mais especificamente
 o arquivo var-debug.cpp) foi compilado.
 
 Eventos:
 
-36.12. <nomedavariável>_erro
+37.12. <nomedavariável>_erro
 Ocorreu algum erro ao executar uma função.
 arg0 = Mensagem de erro (uma linha) seguido dos detalhes sobre o erro
 arg1 = Índice da variável vetor, se não for vetor arg1=0
@@ -4385,47 +4455,47 @@ telatxt tt
 tt.msg("Erro:   " + arg0 + "\n")
 
 
-37. INDICEOBJ - OBJETOS ORGANIZADOS DE ACORDO COM UM TEXTO
+38. INDICEOBJ - OBJETOS ORGANIZADOS DE ACORDO COM UM TEXTO
 
 É semelhante a uma variável txt64, porém o texto é associado ao objeto
 que contém essa variável. O processo inverso, obter um objeto a partir
 de um texto, é possível com a variável indiceitem.
 
 
-38. INDICEITEM - OBTER OBJETO PELO TEXTO
+39. INDICEITEM - OBTER OBJETO PELO TEXTO
 
 Permite obter os objetos que contém uma variável indiceobj com um
 determinado texto. Ignora variáveis indiceobj com texto vazio.
 
 Funções:
 
-38.1. ini(<texto>)
+39.1. ini(<texto>)
 Vai para o primeiro objeto com o texto ou parte dele.
 
-38.2. fim(<texto>)
+39.2. fim(<texto>)
 Vai para o último objeto com o texto ou parte dele.
 
-38.3. antes
+39.3. antes
 Passa para o objeto anterior.
 
-38.4. antes(<número de objetos>)
+39.4. antes(<número de objetos>)
 Recua o número de objetos especificado.
 Nada faz se o número for menor ou igual a zero.
 
-38.5. depois
+39.5. depois
 Passa para o próximo objeto.
 
-38.6. depois(<número de objetos>)
+39.6. depois(<número de objetos>)
 Avança o número de objetos especificado.
 Nada faz se o número for menor ou igual a zero.
 
-38.7. obj
+39.7. obj
 Objeto.
 
-38.8. txt
+39.8. txt
 Texto associado ao objeto.
 
-38.9. obj(<texto>)
+39.9. obj(<texto>)
 Objeto que contém o texto exato.
 Essa função funciona independente das demais.
 
@@ -4433,57 +4503,57 @@ Nota: Pode-se passar mais de um texto para as funções que possuem texto.
 Nesse caso, a função procurará por todos os textos.
 
 
-39. DATAHORA - CALENDÁRIO
+40. DATAHORA - CALENDÁRIO
 
 Operações envolvendo data e/ou hora, como obter a data atual e calcular
 quantidade de dias entre duas datas.
 
 Funções e variáveis:
 
-39.1. novadata(<ano>, <mês>, <dia>)
+40.1. novadata(<ano>, <mês>, <dia>)
 Muda ano, mês e dia.
 
-39.2. novahora(<hora>, <minuto>, <segundo>)
+40.2. novahora(<hora>, <minuto>, <segundo>)
 Muda hora, minuto e segundo.
 
-39.3. antes
+40.3. antes
 Muda data para o dia anterior.
 
-39.4. depois
+40.4. depois
 Muda data para o próximo dia.
 
-39.5. agora
+40.5. agora
 Muda para data e hora atuais.
 
-39.6. diasem
+40.6. diasem
 Retorna o dia da semana, de 0 a 6 (0=domingo).
 
-39.7. bissexto
+40.7. bissexto
 Retorna 1 se o ano for bissexto ou 0 se não for.
 
-39.8. ano
+40.8. ano
 Ano, de 1 a 9999.
 
-39.9. mes
+40.9. mes
 Mês, de 1 a 12.
 
-39.10. dia
+40.10. dia
 Dia, de 1 a 31. Conforme o mês pode não chegar a 31.
 
-39.11. hora
+40.11. hora
 Hora, de 0 a 23.
 
-39.12. min
+40.12. min
 Minuto, de 0 a 59.
 
-39.13. seg
+40.13. seg
 Segundo, de 0 a 59.
 
-39.14. numdias
+40.14. numdias
 Número de dias desde 1/1/1.
 
-39.15. numseg
+40.15. numseg
 Número de segundos desde o início do dia.
 
-39.16. numtotal
+40.16. numtotal
 Número de segundos desde 1/1/1.
