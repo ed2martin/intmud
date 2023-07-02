@@ -32,7 +32,7 @@ void TTextoTxt::TextoAnota(const char * txt, int total)
 {
     if (total<=0)
         return;
-    int bytes_por_bloco = (char*)Fim + TOTAL_TXTOBJ - Fim->Texto;
+    const int bytes_por_bloco = sizeof(TTextoBloco::Texto);
     int lin;
     Bytes += total;
 // Cria bloco se o bloco atual está cheio
@@ -447,7 +447,7 @@ void TTextoTxt::DivideLin(unsigned int min, unsigned int max, bool cores)
         // Anota ex_barra_n
                 col=0, dest_obj->Linhas++;
                 *dest_p++ = Instr::ex_barra_n;
-                if (dest_p >= (char*)dest_obj + TOTAL_TXTOBJ)
+                if (dest_p >= dest_obj->Texto + sizeof(dest_obj->Texto))
                 {
                     dest_obj->Bytes = dest_p - dest_obj->Texto;
                     if (dest_obj->Depois == ler_obj)
@@ -482,7 +482,7 @@ void TTextoTxt::DivideLin(unsigned int min, unsigned int max, bool cores)
     // Anota caracter
         dest_byte++;
         *dest_p++ = ch;
-        if (dest_p >= (char*)dest_obj + TOTAL_TXTOBJ)
+        if (dest_p >= dest_obj->Texto + sizeof(dest_obj->Texto))
         {
             dest_obj->Bytes = dest_p - dest_obj->Texto;
             if (dest_obj->Depois == ler_obj)

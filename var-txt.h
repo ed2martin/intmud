@@ -13,6 +13,17 @@ public:
     int  getValor();        ///< Ler valor numérico da variável
     bool Func(TVariavel * v, const char * nome); ///< Função da variável
 private:
+    bool FuncLer(TVariavel * v);          ///< Processa função Ler
+    bool FuncEscr(TVariavel * v);         ///< Processa função Escr
+    bool FuncEof(TVariavel * v);          ///< Processa função Eof
+    bool FuncPos(TVariavel * v);          ///< Processa função Pos
+    bool FuncFechar(TVariavel * v);       ///< Processa função Fechar
+    bool FuncFlush(TVariavel * v);        ///< Processa função Flush
+    bool FuncValido(TVariavel * v);       ///< Processa função Valido
+    bool FuncExiste(TVariavel * v);       ///< Processa função Existe
+    bool FuncAbrir(TVariavel * v);        ///< Processa função Abrir
+    bool FuncTruncar(TVariavel * v);      ///< Processa função Truncar
+
     void Fechar();      ///< Fecha arquivo
     FILE * arq;         ///< Para acessar o arquivo
     bool ModoBinario;   ///< Se está acessando o arquivo em modo binário

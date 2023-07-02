@@ -118,8 +118,7 @@ void TTextoTxt::IniBloco()
 //----------------------------------------------------------------------------
 void TTextoTxt::AddTexto(const char * texto, unsigned int tamtexto)
 {
-    const unsigned int bloco_ini = Inicio->Texto - (char*)Inicio;
-    const unsigned int bloco_tam = TOTAL_TXTOBJ - bloco_ini;
+    const unsigned int bloco_tam = sizeof(TTextoBloco::Texto);
     if (Inicio==0)
         IniBloco();
     Bytes += tamtexto;
@@ -249,7 +248,7 @@ void TTextoBloco::Mover(TTextoBloco * destino)
             obj->Bloco=destino;
 // Move na memória
     int total = Texto + Bytes - (char*)this;
-    assert(total <= TOTAL_TXTOBJ);
+    assert(total <= (int)sizeof(TTextoBloco));
     memcpy(destino, this, total);
 }
 
@@ -467,9 +466,7 @@ void TBlocoPos::MoverPos(int numlinhas)
 void TBlocoPos::Mudar(const char * texto, unsigned int tamtexto,
         unsigned int tamapagar)
 {
-    const unsigned int bloco_ini = Bloco->Texto - (char*)Bloco;
-    const unsigned int bloco_tam = TOTAL_TXTOBJ - bloco_ini;
-
+    const unsigned int bloco_tam = sizeof(TTextoBloco::Texto);
     int add_bytes = tamtexto;   // Quantidade de bytes inseridos
     int sub_bytes = 0;          // Quantidade de bytes removidos
     int dif_linhas = 0;         // = linhas inseridas - linhas removidas
@@ -751,8 +748,8 @@ TTextoBloco * TTextoGrupo::Criar()
     printf("TTextoBloco::Criar\n"); fflush(stdout);
 #endif
 // Se tem objeto TListaX disponível...
-    if (Usado && Usado->Total < TOTAL_TXTGR)
-        return (TTextoBloco*)Usado->Lista[Usado->Total++];
+    if (Usado && Usado->Total < TOTAL_TEXTOTXTX)
+        return Usado->Lista + (Usado->Total++);
 // Se não tem objeto disponível...
     TTextoGrupo * obj;
     if (Disp==0)    // Não tem objeto TTextoGrupo disponível
@@ -767,7 +764,7 @@ TTextoBloco * TTextoGrupo::Criar()
     obj->Total = 1;
     obj->Depois = Usado; // Coloca na lista Usado
     Usado = obj;
-    return (TTextoBloco*)obj->Lista[0];
+    return obj->Lista;
 }
 
 //----------------------------------------------------------------------------
@@ -776,7 +773,7 @@ TTextoBloco * TTextoGrupo::Apagar(TTextoBloco * lista)
 #ifdef DEBUG_MSG
     printf("TTextoBloco::Apagar\n"); fflush(stdout);
 #endif
-    TTextoBloco * lfim = (TTextoBloco*)Usado->Lista[Usado->Total - 1];
+    TTextoBloco * lfim = Usado->Lista + Usado->Total - 1;
     if (lista != lfim)
         lfim->Mover(lista);
     Usado->Total--;

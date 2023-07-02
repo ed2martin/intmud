@@ -1,10 +1,6 @@
 #ifndef VAR_TEXTO_H
 #define VAR_TEXTO_H
 
-#define TOTAL_TXTGR 62 // Número de objetos TTextoBloco em cada TTextoGrupo
-#define TOTAL_TXTOBJ 0x108 // Número de bytes em cada TTextoBloco
-// 62 * 0x108 = 0x3FF0
-
 //----------------------------------------------------------------------------
 class TVariavel;
 class TBlocoPos;
@@ -216,10 +212,11 @@ public:
     TTextoBloco * Depois; ///< Próximo TTextoBloco
     unsigned char Linhas; ///< Número de caracteres Instr::ex_barra_n do bloco
     unsigned char Bytes;  ///< Número de bytes do bloco
-    char Texto[1];        ///< A partir daqui: texto do bloco
+    char Texto[0xF0];     ///< A partir daqui: texto do bloco
 };
 
 //----------------------------------------------------------------------------
+#define TOTAL_TEXTOTXTX 128
 class TTextoGrupo /// Para otimizar alocação de memória de TTextoBloco
 {
 public:
@@ -237,7 +234,7 @@ private:
     static unsigned long Tempo; ///< Quando o último objeto mudou
     unsigned int Total;         ///< Número de objetos usados
     TTextoGrupo * Depois;       ///< Próximo objeto
-    char Lista[TOTAL_TXTGR][TOTAL_TXTOBJ]; ///< Objetos TTextoBloco
+    TTextoBloco Lista[TOTAL_TEXTOTXTX]; ///< Objetos TTextoBloco
 };
 
 //----------------------------------------------------------------------------

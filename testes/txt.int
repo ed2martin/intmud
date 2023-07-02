@@ -8,24 +8,24 @@ func ini
   arqtxt a2
   txt3 texto
   se a1.abrir("txt1.txt", 2) # Abre/Cria arquivo para escrita
-    a1.msg("bom dia\nboa tarde\n")
-    a1.msg("boa noite\n")
-    a1.msg("Posição=" + a1.pos + "\n")
+    a1.escr("bom dia\nboa tarde\n")
+    a1.escr("boa noite\n")
+    a1.escr("Posição=" + a1.pos + "\n")
     a1.pos(3) # Posiciona no quarto caracter do arquivo
-    a1.msg("_")
+    a1.escr("_")
     a1.pos(0, 2) # Posiciona no fim do arquivo
-    a1.msg("-FIM-\n")
+    a1.escr("-FIM-\n")
     a1.fechar
   fimse
   se a1.abrir("txt1.txt", 1) # Abre para leitura/escrita
     texto = a1.ler(3) # Lê três caracteres
     a1.pos(0, 2) # Posiciona no fim do arquivo
-    a1.msg(texto + "\n")
+    a1.escr(texto + "\n")
   fimse
-  a1.abrir("doc/descr.txt", 0)
+  a1.abrir("descr.txt", 0)
   a2.abrir("txt2.txt", 2)
   enquanto !a1.eof
-    a2.msg(txtremove(a1.ler, "EMD") + "\n")
+    a2.escr(txtremove(a1.ler, "EMD") + "\n")
   efim
   a1.fechar
   a2.fechar
