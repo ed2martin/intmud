@@ -48,21 +48,21 @@ static int CaractFunc(const char * str)
 /// Função vartroca
 bool Instr::FuncVarTroca(TVariavel * v, int valor)
 {
-    if (VarAtual < v+3)
+    if (VarAtual < v + 3)
         return false;
-    if (FuncAtual >= FuncFim - 2 || FuncAtual->este==0)
+    if (FuncAtual >= FuncFim - 2 || FuncAtual->este == nullptr)
         return false;
 
 // Variáveis
     TClasse * c = FuncAtual->este->Classe;
     const char * origem; // Primeiro argumento - texto original
     char mens[BUF_MENS]; // Aonde jogar o texto codificado
-    int porcent=100; // Porcentagem da possibilidade de troca
-    int espaco=0; // Quantas trocas deve ignorar após efetuar uma
-    int espacocont=0; // Contador de espaços entre trocas
+    int porcent = 100; // Porcentagem da possibilidade de troca
+    int espaco = 0; // Quantas trocas deve ignorar após efetuar uma
+    int espacocont = 0; // Contador de espaços entre trocas
 
 // Obtém porcentagem e espaço entre trocas
-    if (VarAtual >= v+4)
+    if (VarAtual >= v + 4)
     {
         porcent = v[4].getInt();
         if (porcent <= 0) // Nenhuma possibilidade de troca
@@ -74,15 +74,15 @@ bool Instr::FuncVarTroca(TVariavel * v, int valor)
         if (VarAtual >= v+5)
         {
             espaco = v[5].getInt();
-            if (espaco<0) espaco=0;
+            if (espaco < 0) espaco=0;
         }
     }
 
 // Obtém argumento - padrão que deve procurar no texto
     char txtpadrao[40]; // Texto
-    int  tampadrao=0;   // Tamanho do texto sem o zero
+    int  tampadrao = 0;   // Tamanho do texto sem o zero
     origem = v[2].getTxt();
-    while (*origem && tampadrao<(int)sizeof(txtpadrao))
+    while (*origem && tampadrao < (int)sizeof(txtpadrao))
         txtpadrao[tampadrao++] = TABELA_COMPARAVAR[*(unsigned char*)origem++];
 #if 0
     printf("Padrão = [");
@@ -95,7 +95,7 @@ bool Instr::FuncVarTroca(TVariavel * v, int valor)
     origem = v[3].getTxt();
     int tamvar = strlen(origem); // Tamanho do texto sem o zero
     int indini = 0;              // Índice inicial
-    int indfim = c->NumVar-1;    // Índice final
+    int indfim = c->NumVar - 1;    // Índice final
     if (tamvar)
     {
         indini = c->IndiceNomeIni(origem);
@@ -103,10 +103,10 @@ bool Instr::FuncVarTroca(TVariavel * v, int valor)
     }
 
 // Verifica se índices válidos
-    if (indini<0)   // Índice inválido
-        indini=1, indfim=0;
-    else if (tampadrao==0) // Texto a procurar é nulo
-        if (c->InstrVar[indini][tamvar+Instr::endNome]==0)
+    if (indini < 0)   // Índice inválido
+        indini = 1, indfim = 0;
+    else if (tampadrao == 0) // Texto a procurar é nulo
+        if (c->InstrVar[indini][tamvar + Instr::endNome] == 0)
                         // Se primeira variável é nula
             indini++; // Passa para próxima variável
 #if 0
@@ -120,7 +120,7 @@ bool Instr::FuncVarTroca(TVariavel * v, int valor)
     mens[2] = cConstExpr; // Tipo de instrução
     mens[Instr::endAlin] = 0;
     mens[Instr::endProp] = 0;
-    mens[Instr::endIndice] = Instr::endNome+2; // Aonde começam os dados da constante
+    mens[Instr::endIndice] = Instr::endNome + 2; // Aonde começam os dados da constante
     mens[Instr::endVetor] = 0; // Não é vetor
     mens[Instr::endExtra] = 0;
     mens[Instr::endNome] = '+'; // Nome da variável
@@ -137,13 +137,13 @@ bool Instr::FuncVarTroca(TVariavel * v, int valor)
     {
         int i;
     // Verifica padrão
-        for (i=0; i<tampadrao; i++)
+        for (i = 0; i < tampadrao; i++)
             if (TABELA_COMPARAVAR[(unsigned char)origem[i]] != txtpadrao[i])
                 break;
     // Não achou - anota caracter
         if (i<tampadrao)
         {
-            if (destino >= mens+sizeof(mens)-4)
+            if (destino >= mens+sizeof(mens) - 4)
                 break;
             *destino++ = *origem++;
             continue;
@@ -155,9 +155,9 @@ bool Instr::FuncVarTroca(TVariavel * v, int valor)
         const char * pontvar = 0; // Variável origem para a variável em indvar
 
         const char * p1 = origem + tampadrao;
-        for (int cont=tamvar;;)
+        for (int cont = tamvar;;)
         {
-            int xini=-1, xfim=fim;
+            int xini = -1, xfim = fim;
         // Obtém o caracter que está procurando
             int ch1 = (valor ? CaractOrigem(p1) : CaractTxtVar(p1));
             if (ch1 == 0) // Se for o fim do texto
@@ -165,12 +165,12 @@ bool Instr::FuncVarTroca(TVariavel * v, int valor)
         // Obtém: xini = primeira palavra com a letra
             while (ini<=fim)
             {
-                int meio = (ini+fim)/2;
+                int meio = (ini + fim) / 2;
                 int ch2 = (valor ?
                         CaractFunc(c->InstrVar[meio] + cont) :
                         CaractTxtVar(c->InstrVar[meio] + cont));
 #if 0
-                int comp = (ch1==ch2 ? 0 : ch1<ch2 ? -1 : 1);
+                int comp = (ch1 == ch2 ? 0 : ch1 < ch2 ? -1 : 1);
                 printf("cmp1  ini=%d fim=%d  [%s] [%s] = %d\n",
                        ini, fim, origem+tampadrao,
                        c->InstrVar[meio] + tamvar, comp); fflush(stdout);
@@ -188,9 +188,9 @@ bool Instr::FuncVarTroca(TVariavel * v, int valor)
             assert(xini <= xfim);
         // Obtém: xfim = última palavra com a letra
             ini = xini, fim = xfim;
-            while (ini<=fim)
+            while (ini <= fim)
             {
-                int meio = (ini+fim)/2;
+                int meio = (ini + fim) / 2;
                 int ch2 = (valor ?
                         CaractFunc(c->InstrVar[meio] + cont) :
                         CaractTxtVar(c->InstrVar[meio] + cont));
@@ -243,17 +243,17 @@ bool Instr::FuncVarTroca(TVariavel * v, int valor)
                         indvar<0 ? "" : c->InstrVar[indvar] + tamvar); fflush(stdout);
 #endif
         // Checa se deve continuar procurando
-            if (*p1==0 || *p3==0)
+            if (*p1 == 0 || *p3 == 0)
                 break;
             ini = xini, fim = xfim; // Procurar na faixa de xini a xfim
         }
     // Checa espaço entre trocas
-        if (indvar>=0 && espacocont)
-            indvar=-1,espacocont--;
+        if (indvar >= 0 && espacocont)
+            indvar =- 1,espacocont--;
     // Não achou variável - anota caracter
-        if (indvar<0)
+        if (indvar < 0)
         {
-            if (destino >= mens+sizeof(mens)-4)
+            if (destino >= mens + sizeof(mens) - 4)
                 break;
             *destino++ = *origem++;
             continue;
@@ -272,29 +272,29 @@ bool Instr::FuncVarTroca(TVariavel * v, int valor)
 #endif
         origem = pontvar;
     // Se for variável, copia texto
-        if (defvar[2]!=cFunc && defvar[2]!=cVarFunc &&
-                defvar[2]!=cConstExpr && defvar[2]!=cConstVar)
+        if (defvar[2] != cFunc && defvar[2] != cVarFunc &&
+                defvar[2] != cConstExpr && defvar[2] != cConstVar)
         {
             TVariavel v;
             indvar = c->IndiceVar[indvar];
             v.defvar = defvar;
             v.tamanho = 0;
             v.numbit = indvar >> 24;
-            if (defvar[2]==cConstTxt || // Constante
-                    defvar[2]==cConstNum)
+            if (defvar[2] == cConstTxt || // Constante
+                    defvar[2] == cConstNum)
                 v.endvar = 0;
             else if (indvar & 0x400000) // Variável da classe
                 v.endvar = c->Vars + (indvar & 0x3FFFFF);
             else    // Variável do objeto
                 v.endvar = FuncAtual->este->Vars + (indvar & 0x3FFFFF);
             const char * o = v.getTxt();
-            while (*o && destino<mens+sizeof(mens)-4)
+            while (*o && destino < mens + sizeof(mens) - 4)
                 *destino++ = *o++;
             continue;
         }
     // Verifica se espaço suficiente
         if (destino + strlen(defvar + Instr::endNome) + tamtxt + 15
-                >= mens+sizeof(mens))
+                >= mens + sizeof(mens))
             break;
     // Anota fim do texto
         if (dest_ini == 0) // Início
@@ -308,7 +308,7 @@ bool Instr::FuncVarTroca(TVariavel * v, int valor)
         }
     // Anota variável
         destino[0] = ex_varini;
-        destino = copiastr(destino+1, defvar + Instr::endNome);
+        destino = copiastr(destino + 1, defvar + Instr::endNome);
         destino[0] = ex_arg;
         destino[1] = ex_txt;
         destino += 2;
@@ -332,11 +332,11 @@ bool Instr::FuncVarTroca(TVariavel * v, int valor)
     destino += 3;
 
 // Texto puro, sem substituições
-    if (dest_ini==0)
+    if (dest_ini == 0)
     {
         const char * texto = mens + Instr::endNome + 3;
         ApagarVar(v);
-        bool b = CriarVarTexto(texto, destino-texto-3);
+        bool b = CriarVarTexto(texto, destino - texto - 3);
 #if 0
         printf("vartxt txt: %s\n", (char*)VarAtual->endvar);
         fflush(stdout);
@@ -347,7 +347,7 @@ bool Instr::FuncVarTroca(TVariavel * v, int valor)
 // Acerta tamanho da instrução
     int total = destino - mens;
     mens[0] = total;    // Tamanho da instrução
-    mens[1] = total>>8;
+    mens[1] = total >> 8;
 
 // Acerta variáveis
     ApagarVar(v);

@@ -26,22 +26,22 @@
 #include "instr.h"
 
 unsigned long TempoIni;
-char * arqnome = 0;
-char * arqinicio = 0;
-bool opcao_completo = 0;
-bool opcao_log = 0;
-char * tabNOMES1 = 0;
-char * tabNOMES2 = 0;
-char * tabCOMPLETO = 0;
-char * tabMAI = 0;
-char * tabMIN = 0;
-char * tabMAIMIN = 0;
-char * tabTXTCOD = 0;
-char * tabTXTDEC = 0;
-char * tab8B = 0;
-char * tab7B = 0;
-char * tabTXTSEPARA = 0;
-char * tabNOMEOBJ = 0;
+char * arqnome = nullptr;
+char * arqinicio = nullptr;
+bool opcao_completo = false;
+bool opcao_log = false;
+char * tabNOMES1 = nullptr;
+char * tabNOMES2 = nullptr;
+char * tabCOMPLETO = nullptr;
+char * tabMAI = nullptr;
+char * tabMIN = nullptr;
+char * tabMAIMIN = nullptr;
+char * tabTXTCOD = nullptr;
+char * tabTXTDEC = nullptr;
+char * tab8B = nullptr;
+char * tab7B = nullptr;
+char * tabTXTSEPARA = nullptr;
+char * tabNOMEOBJ = nullptr;
 
 //------------------------------------------------------------------------------
 // Prepara tabela ASCII (tabASC)
@@ -74,11 +74,11 @@ void tabASCinic(void)
     tabNOMEOBJ = tabNOMES1 + 0xB00;
 // Acerta tabNOMES1 e tabNOMEOBJ
     memset(tabNOMES1,0,256);
-    for (caract='a'; caract<='z'; caract++) // Letras de A a Z
+    for (caract = 'a'; caract <= 'z'; caract++) // Letras de A a Z
         tabNOMES1[caract-0x20] = tabNOMES1[caract] = caract;
-    for (caract='0'; caract<='9'; caract++) // Números de 0 a 9
+    for (caract = '0'; caract <= '9'; caract++) // Números de 0 a 9
         tabNOMES1[caract] = caract;
-    for (cpont=especialASCII; cpont[0] && cpont[1] && cpont[2]; cpont+=3)
+    for (cpont=especialASCII; cpont[0] && cpont[1] && cpont[2]; cpont += 3)
     {
         tabNOMES1[(unsigned char)cpont[1]] = cpont[0];
         tabNOMES1[(unsigned char)cpont[2]] = cpont[0];
@@ -87,14 +87,14 @@ void tabASCinic(void)
     tabNOMES1[(unsigned char)'_'] = ' ';
     tabNOMES1[(unsigned char)' '] = ' ';
     tabNOMES1[(unsigned char)'@'] = '@';
-    for (caract=1; caract<0x100; caract++)
-        if (tabNOMEOBJ[caract]==0)
-            tabNOMEOBJ[caract]=' ';
+    for (caract = 1; caract < 0x100; caract++)
+        if (tabNOMEOBJ[caract] == 0)
+            tabNOMEOBJ[caract] = ' ';
 // Acerta tabNOMES2
     memcpy(tabNOMES2, tabNOMES1, 0x100);
-    for (caract=1; caract<0x100; caract++)
-        if (tabNOMES2[caract]==0)
-            tabNOMES2[caract]=caract;
+    for (caract = 1; caract < 0x100; caract++)
+        if (tabNOMES2[caract] == 0)
+            tabNOMES2[caract] = caract;
 // Acerta tabCOMPLETO
     memcpy(tabCOMPLETO, tabNOMES2, 0x100);
     tabCOMPLETO[(unsigned char)'_'] = '_';
@@ -104,15 +104,15 @@ void tabASCinic(void)
     tabMAI[(unsigned char)'_'] = '_';
     memcpy(tabMIN, tabMAI, 0x100);
     memset(tabMAIMIN, 0, 0x100);
-    for (caract='A'; caract<='Z'; caract++) // Letras de A a Z
+    for (caract = 'A'; caract <= 'Z'; caract++) // Letras de A a Z
     {
-        tabMAI[caract+0x20] = caract;
+        tabMAI[caract + 0x20] = caract;
         tabMAI[caract] = caract;
-        tabMIN[caract] = caract+0x20;
+        tabMIN[caract] = caract + 0x20;
         tabMAIMIN[caract] = 2;
-        tabMAIMIN[caract+0x20] = 1;
+        tabMAIMIN[caract + 0x20] = 1;
     }
-    for (cpont=especialASCII; cpont[0] && cpont[1] && cpont[2]; cpont+=3)
+    for (cpont=especialASCII; cpont[0] && cpont[1] && cpont[2]; cpont += 3)
     {
         tabMAI[(unsigned char)cpont[1]] = cpont[2];
         tabMAI[(unsigned char)cpont[2]] = cpont[2];
@@ -132,19 +132,19 @@ void tabASCinic(void)
     tabTXTCOD[(unsigned char)'@'] = '@';
     tabTXTCOD[(unsigned char)' '] = '_';
     caract = 'f';
-    for (int x=0x23; x<127; x++)
-        if (tabNOMES1[x]==0)
+    for (int x = 0x23; x < 127; x++)
+        if (tabNOMES1[x] == 0)
         {
             tabTXTCOD[x] = caract;
-            caract = (caract=='m' ? 'o' : caract=='z' ? '0' : caract+1);
+            caract = (caract == 'm' ? 'o' : caract == 'z' ? '0' : caract + 1);
         }
 // Acerta tabTXTDEC
     memset(tabTXTDEC, 0, 0x100);
-    for (int x=0; x<0x100; x++)
+    for (int x = 0; x < 0x100; x++)
         if (tabTXTCOD[x])
             tabTXTDEC[(unsigned char)tabTXTCOD[x]] = x;
 // Acerta tab8B
-    for (int x=0; x<0x100; x++)
+    for (int x = 0; x < 0x100; x++)
         tab8B[x] = x;
 // Acerta tab7B
     const char StrNormal[] =
@@ -152,21 +152,21 @@ void tabASCinic(void)
             "DNOOOOOx" " UUUUY  "  // 0xD0
             "aaaaaa c" "eeeeiiii"  // 0xE0
             " nooooo " " uuuuy y"; // 0xF0
-    for (int x=0; x<0x80; x++)
+    for (int x = 0; x < 0x80; x++)
         tab7B[x] = x;
-    memset(tab7B+0x80, ' ', 0x40);
-    memcpy(tab7B+0xC0, StrNormal, 0x40);
+    memset(tab7B + 0x80, ' ', 0x40);
+    memcpy(tab7B + 0xC0, StrNormal, 0x40);
 // Acerta tabTXTSEPARA
-    memset(tabTXTSEPARA,0,256);
+    memset(tabTXTSEPARA, 0, 256);
     tabTXTSEPARA[0] = 1; // Vazio
     tabTXTSEPARA[(unsigned char)' '] = 8; // Espaço
-    for (int x='0'; x<='9'; x++) // Dígitos
+    for (int x = '0'; x <= '9'; x++) // Dígitos
         tabTXTSEPARA[x] = 4;
-    for (int x='a'; x<='z'; x++) // Letras de A a Z
-        tabTXTSEPARA[x-0x20] = tabTXTSEPARA[x] = 0x10;
+    for (int x = 'a'; x <= 'z'; x++) // Letras de A a Z
+        tabTXTSEPARA[x - 0x20] = tabTXTSEPARA[x] = 0x10;
     for (cpont=especialASCII; *cpont; cpont++) // Letras acentuadas
         tabTXTSEPARA[*(unsigned char*)cpont] = 0x10;
-    for (int x=0; x<0x100; x++) // Outros
+    for (int x = 0; x < 0x100; x++) // Outros
         if (tabTXTSEPARA[x] == 0)
             tabTXTSEPARA[x] = 0x20;
 }
@@ -200,78 +200,78 @@ int safe_write(int filedes, const void *buffer, int size)
 // tamanho é o tamanho máximo do buffer destino
 char * mprintf(char * destino, int tamanho, const char * mens, ...)
 {
-    const char * fim=&destino[tamanho<=0 ? 0 : tamanho-1];
+    const char * fim = &destino[tamanho <= 0 ? 0 : tamanho - 1];
     const char * p;
     char * p2;
     char numero[20];
-    bool zerofinal=(tamanho>0);
+    bool zerofinal = (tamanho > 0);
     unsigned int utamanho;
     va_list argp;
     va_start(argp, mens);
     for (; *mens; mens++)
     {
-        if (*mens!='%')
+        if (*mens != '%')
         {
             if (destino<fim)
-                *(destino++)=*mens;
+                *(destino++) = *mens;
             continue;
         }
         mens++;
         switch (*mens)
         {
         case '%':
-            if (destino<fim)
-                *(destino++)='%';
+            if (destino < fim)
+                *(destino++) = '%';
             break;
         case 'c':
-            if (destino<fim)
-                *(destino++)=va_arg(argp, int);
+            if (destino < fim)
+                *(destino++) = va_arg(argp, int);
             break;
         case 's':
-            for (p=va_arg(argp, char *); *p && destino<fim; p++,destino++)
+            for (p = va_arg(argp, char *); *p && destino < fim; p++, destino++)
                 *destino=*p;
             break;
         case 'S':
-            for (p=va_arg(argp, char *),p2=destino; *p && p2<fim; p++,p2++)
+            for (p = va_arg(argp, char *), p2 = destino; *p && p2 < fim; p++, p2++)
             {
-                *p2=*p;
-                if (*p!=' ')
-                    destino=p2+1;
+                *p2 = *p;
+                if (*p != ' ')
+                    destino = p2 + 1;
             }
             break;
         case 'd':
-            tamanho=va_arg(argp, int);
-            if (destino>=fim)
+            tamanho = va_arg(argp, int);
+            if (destino >= fim)
                 break;
-            if (tamanho<0)
+            if (tamanho < 0)
             {
-                *destino++='-';
-                tamanho=-tamanho;
+                *destino++ = '-';
+                tamanho = -tamanho;
             }
-            for (p2=numero; p2<&numero[sizeof(numero)] && tamanho; tamanho/=10)
-                *p2++=tamanho%10+'0';
-            if (p2==numero)
-                *p2++='0';
-            for (p=p2-1; p>=numero && destino<fim; p--)
-                *destino++=*p;
+            for (p2 = numero; p2 < &numero[sizeof(numero)] && tamanho; tamanho /= 10)
+                *p2++ = tamanho % 10 + '0';
+            if (p2 == numero)
+                *p2++ = '0';
+            for (p = p2 - 1; p >= numero && destino < fim; p--)
+                *destino++ = *p;
             break;
         case 'u':
-            utamanho=(unsigned int)va_arg(argp, unsigned int);
-            if (destino>=fim)
+            utamanho = (unsigned int)va_arg(argp, unsigned int);
+            if (destino >= fim)
                 break;
-            for (p2=numero; p2<&numero[sizeof(numero)] && utamanho; utamanho/=10)
-                *p2++=utamanho%10+'0';
-            if (p2==numero)
-                *p2++='0';
-            for (p=p2-1; p>=numero && destino<fim; p--)
-                *destino++=*p;
+            for (p2 = numero; p2 < &numero[sizeof(numero)] && utamanho; utamanho /= 10)
+                *p2++ = utamanho % 10 + '0';
+            if (p2 == numero)
+                *p2++ = '0';
+            for (p = p2 - 1; p >= numero && destino < fim; p--)
+                *destino++ = *p;
             break;
         default:
             mens--;
         }
     }
     if (zerofinal)
-        *destino=0;
+        *destino = 0;
     va_end(argp);
     return destino;
 }
@@ -291,34 +291,34 @@ char * copiastr(char * destino, const char * origem)
 // tamanho = número de caracteres que pode escrever em destino
 char * copiastr(char * destino, const char * origem, int tamanho)
 {
-    if (*origem==0 || tamanho<=1)
+    if (*origem == 0 || tamanho <= 1)
     {
-        if (tamanho>=1)
-            *destino=0;
+        if (tamanho >= 1)
+            *destino = 0;
         return destino;
     }
     *(destino++) = *(origem++);
-    tamanho-=2;  // -2 por causa do zero no final
+    tamanho -= 2;  // -2 por causa do zero no final
     for (; tamanho && *origem; tamanho--)
         *(destino++) = *(origem++);
-    *destino=0;
+    *destino = 0;
     return destino;
 }
 
 //------------------------------------------------------------------------------
 char * copiastrmin(char * destino, const char * origem, int tamanho)
 {
-    if (*origem==0 || tamanho<=1)
+    if (*origem == 0 || tamanho <= 1)
     {
-        if (tamanho>=1)
-            *destino=0;
+        if (tamanho >= 1)
+            *destino = 0;
         return destino;
     }
     *(destino++) = tabCOMPLETO[*(unsigned char*)(origem++)];
-    tamanho-=2;  // -2 por causa do zero no final
+    tamanho -= 2;  // -2 por causa do zero no final
     for (; tamanho && *origem; tamanho--)
         *(destino++) = tabCOMPLETO[*(unsigned char*)(origem++)];
-    *destino=0;
+    *destino = 0;
     return destino;
 }
 
@@ -328,13 +328,13 @@ int comparaVar(const char * string1, const char * string2)
 {
     for (;; string1++, string2++)
     {
-        unsigned char ch1,ch2;
-        if (*string1==0 || *string2==0)
+        unsigned char ch1, ch2;
+        if (*string1 == 0 || *string2 == 0)
             return (*string1 ? 2 : *string2 ? -2 : 0);
-        ch1=TABELA_COMPARAVAR[*(unsigned char *)string1];
-        ch2=TABELA_COMPARAVAR[*(unsigned char *)string2];
-        if (ch1!=ch2)
-            return (ch1<ch2 ? -1 : 1);
+        ch1 = TABELA_COMPARAVAR[*(unsigned char *)string1];
+        ch2 = TABELA_COMPARAVAR[*(unsigned char *)string2];
+        if (ch1 != ch2)
+            return (ch1 < ch2 ? -1 : 1);
     }
 }
 
@@ -344,13 +344,13 @@ int comparaZ(const char * string1, const char * string2)
 {
     for (;; string1++, string2++)
     {
-        unsigned char ch1,ch2;
-        if (*string1==0 || *string2==0)
+        unsigned char ch1, ch2;
+        if (*string1 == 0 || *string2 == 0)
             return (*string1 ? 2 : *string2 ? -2 : 0);
-        ch1=tabCOMPLETO[*(unsigned char *)string1];
-        ch2=tabCOMPLETO[*(unsigned char *)string2];
-        if (ch1!=ch2)
-            return (ch1<ch2 ? -1 : 1);
+        ch1 = tabCOMPLETO[*(unsigned char *)string1];
+        ch2 = tabCOMPLETO[*(unsigned char *)string2];
+        if (ch1 != ch2)
+            return (ch1 < ch2 ? -1 : 1);
     }
 }
 
@@ -358,15 +358,15 @@ int comparaZ(const char * string1, const char * string2)
 // Compara duas strings terminadas em espaço ou 0
 int compara(const char * string1, const char * string2)
 {
-    unsigned char ch1,ch2;
+    unsigned char ch1, ch2;
     while (true)
     {
-        ch1=(*string1==' ' ? 0 : tabCOMPLETO[*(unsigned char *)string1]);
-        ch2=(*string2==' ' ? 0 : tabCOMPLETO[*(unsigned char *)string2]);
-        if (ch1==0)
-            return (ch2==0 ? 0 : -2);
-        if (ch1!=ch2)
-            return (ch2==0 ? 2 : ch1<ch2 ? -1 : 1);
+        ch1 = (*string1 == ' ' ? 0 : tabCOMPLETO[*(unsigned char *)string1]);
+        ch2 = (*string2 == ' ' ? 0 : tabCOMPLETO[*(unsigned char *)string2]);
+        if (ch1 == 0)
+            return (ch2 == 0 ? 0 : -2);
+        if (ch1 != ch2)
+            return (ch2 == 0 ? 2 : ch1 < ch2 ? -1 : 1);
         string1++;
         string2++;
     }
@@ -376,13 +376,13 @@ int compara(const char * string1, const char * string2)
 // Compara duas strings de tamanho fixo
 int compara(const char * string1, const char * string2, int tam)
 {
-    for (; tam>0; string1++, string2++, tam--)
+    for (; tam > 0; string1++, string2++, tam--)
     {
         unsigned char ch1,ch2;
-        ch1=tabCOMPLETO[*(unsigned char *)string1];
-        ch2=tabCOMPLETO[*(unsigned char *)string2];
-        if (ch1!=ch2)
-            return (ch1<ch2 ? -1 : 1);
+        ch1 = tabCOMPLETO[*(unsigned char *)string1];
+        ch2 = tabCOMPLETO[*(unsigned char *)string2];
+        if (ch1 != ch2)
+            return (ch1 < ch2 ? -1 : 1);
     }
     return 0;
 }
@@ -391,39 +391,39 @@ int compara(const char * string1, const char * string2, int tam)
 // Verifica se nome de arquivo permitido (está no diretório do programa)
 bool arqvalido(char * nome)
 {
-    if (nome[0]==0)
+    if (nome[0] == 0)
         return false;
     char * p = nome;
 #ifdef __WIN32__
 // Acerta nome
     for (; *p; p++)
-        if (*p=='/')
-            *p='\\';
+        if (*p == '/')
+            *p = '\\';
     p = nome;
 // Checa se nome permitido
-    if (opcao_completo == 0)
+    if (opcao_completo == false)
     {
-        if (nome[0]=='\\' || nome[1]==':')
+        if (nome[0] == '\\' || nome[1] == ':')
             return false;
         for (; *p; p++)
-            if ((p==nome || p[-1]=='\\') &&
-                p[0]=='.' && p[1]=='.' && (p[2]==0 || p[2]=='\\'))
+            if ((p == nome || p[-1] == '\\') &&
+                p[0] == '.' && p[1] == '.' && (p[2] == 0 || p[2] == '\\'))
                 return false;
     }
 #else
 // Acerta nome
     for (; *p; p++)
-        if (*p=='\\')
-            *p='/';
+        if (*p == '\\')
+            *p = '/';
     p = nome;
 // Checa se nome permitido
-    if (opcao_completo == 0)
+    if (opcao_completo == false)
     {
-        if (nome[0]=='/')
+        if (nome[0] == '/')
             return false;
         for (; *p; p++)
-            if ((p==nome || p[-1]=='/') &&
-                p[0]=='.' && p[1]=='.' && (p[2]==0 || p[2]=='/'))
+            if ((p == nome || p[-1] == '/') &&
+                p[0] == '.' && p[1] == '.' && (p[2] == 0 || p[2] == '/'))
                 return false;
     }
 #endif
@@ -442,19 +442,19 @@ bool arqvalido(char * nome, bool somenteleitura)
     char * p = nome;
     while (*p)
         p++;
-    if (p >= nome+4)
-        if (p[-4]=='.')
+    if (p >= nome + 4)
+        if (p[-4] == '.')
     {
         ext[0] = p[-3] | 0x20;
         ext[1] = p[-2] | 0x20;
         ext[2] = p[-1] | 0x20;
     // Checa extensão
-        if (memcmp(ext, "com", 3)==0 || memcmp(ext, "exe", 3)==0 ||
-            memcmp(ext, "bat", 3)==0 || memcmp(ext, "pif", 3)==0 ||
-            memcmp(ext, "scr", 3)==0)
+        if (memcmp(ext, "com", 3) == 0 || memcmp(ext, "exe", 3) == 0 ||
+            memcmp(ext, "bat", 3) == 0 || memcmp(ext, "pif", 3) == 0 ||
+            memcmp(ext, "scr", 3) == 0)
             return false;
         if (!somenteleitura)
-            if (memcmp(ext, "int", 3)==0 || memcmp(ext, "log", 3)==0)
+            if (memcmp(ext, "int", 3) == 0 || memcmp(ext, "log", 3) == 0)
                 return false;
     }
 // Checa se é executável
@@ -473,32 +473,32 @@ bool arqvalido(char * nome, bool somenteleitura)
 // Verifica se nome válido para apelido
 int verifNome(const char * nome1)
 {
-    char anterior=0;
-    char verifH=0;      // Para não permitir letra antes de h, exceto
+    char anterior = 0;
+    char verifH = 0;      // Para não permitir letra antes de h, exceto
                         // em ch, lh, nh, quando apelido tiver vogal
-    for (int tamanho=0;; tamanho++,nome1++)
+    for (int tamanho = 0;; tamanho++,nome1++)
     {
-        if (*nome1==0)
-            return (tamanho<2 ? 1 : 0);
+        if (*nome1 == 0)
+            return (tamanho < 2 ? 1 : 0);
         char ch = tabNOMES1[*(unsigned char *)nome1];
-        if (ch==0 || ch=='_')
+        if (ch == 0 || ch == '_')
             return 2;
-        if (ch=='h' && anterior>='a' && anterior<='z' &&
-                  anterior!='c' && anterior!='l' && anterior!='n' &&
-                  anterior!='a' && anterior!='e' && anterior!='i' &&
-                  anterior!='o' && anterior!='u' && anterior!='y' &&
-                  anterior!='w' && anterior!='p')
-            if ( (verifH|=1) ==3 )
+        if (ch == 'h' && anterior >= 'a' && anterior <= 'z' &&
+                  anterior != 'c' && anterior != 'l' && anterior != 'n' &&
+                  anterior != 'a' && anterior != 'e' && anterior != 'i' &&
+                  anterior != 'o' && anterior != 'u' && anterior != 'y' &&
+                  anterior != 'w' && anterior != 'p')
+            if ((verifH |= 1) == 3)
                 return 2;
-        if ((ch>='a' && ch<='z') || ch=='ç')
+        if ((ch >= 'a' && ch <= 'z') || ch == 'ç')
         {
-            if (ch=='a' || ch=='e' || ch=='i' || ch=='o' || ch=='u')
-                if ( (verifH|=2) ==3 )
+            if (ch == 'a' || ch == 'e' || ch == 'i' || ch == 'o' || ch == 'u')
+                if ((verifH |= 2) == 3)
                     return 2;
         }
         else
-            verifH=0;
-        anterior=ch;
+            verifH = 0;
+        anterior = ch;
     }
 }
 
@@ -507,17 +507,17 @@ int verifNome(const char * nome1)
 int verifSenha(const char * nome1)
 {
     int letranum = 0;
-    for (int tamanho=0;; tamanho++,nome1++)
+    for (int tamanho = 0;; tamanho++, nome1++)
     {
         if (*(unsigned char*)nome1 <= ' ')
-            return (*nome1 ? 2 : tamanho<5 ? 1 : letranum!=3 ? 3 : 0);
+            return (*nome1 ? 2 : tamanho < 5 ? 1 : letranum != 3 ? 3 : 0);
         char ch = tabCOMPLETO[*(unsigned char*)nome1];
         if (ch)
         {
-            if (ch>='0' && ch<='9')
-                letranum|=1;
-            if (ch>='a' && ch<='z')
-                letranum|=2;
+            if (ch >= '0' && ch <= '9')
+                letranum |= 1;
+            if (ch >= 'a' && ch <= 'z')
+                letranum |= 2;
         }
     }
 }

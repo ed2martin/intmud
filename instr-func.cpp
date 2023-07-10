@@ -32,14 +32,14 @@
         *destino++ = *txt++;  \
         break;                \
     case ex_barra_c:          \
-        if ((txt[1]>='0' && txt[1]<='9') ||      \
-                (txt[1]>='A' && txt[1]<='J') ||  \
-                (txt[1]>='a' && txt[1]<='j'))    \
+        if ((txt[1] >= '0' && txt[1] <= '9') ||      \
+                (txt[1] >= 'A' && txt[1] <= 'J') ||  \
+                (txt[1] >= 'a' && txt[1] <= 'j'))    \
             *destino++ = *txt++; \
         *destino++ = *txt++;     \
         break;        \
     case ex_barra_d:  \
-        if (txt[1]>='0' && txt[1]<='7') \
+        if (txt[1] >= '0' && txt[1] <= '7') \
             *destino++ = *txt++; \
     case ex_barra_n:             \
         *destino++ = *txt++;     \
@@ -92,12 +92,12 @@ bool Instr::FuncCriar(TVariavel * v, int valor)
             break;
         const char * defvar = c->InstrVar[indice];
         const char * instr = defvar;
-        const char * expr = 0;
+        const char * expr = nullptr;
     // Verifica se é função
         if (defvar[2] == cFunc || defvar[2] == cVarFunc)
         {
             instr += Num16(instr);
-            if (instr[0]==0 && instr[1]==0)
+            if (instr[0] == 0 && instr[1] == 0)
                 break;
         }
         else if (defvar[2] == cConstExpr || defvar[2] == cConstVar)
@@ -113,7 +113,7 @@ bool Instr::FuncCriar(TVariavel * v, int valor)
         FuncAtual->linha = instr;
         FuncAtual->este = obj;
         FuncAtual->expr = expr;
-        FuncAtual->inivar = v+2;
+        FuncAtual->inivar = v + 2;
         FuncAtual->fimvar = VarAtual + 1;
         FuncAtual->numarg = FuncAtual->fimvar - FuncAtual->inivar;
         FuncAtual->tipo = 3;
@@ -135,7 +135,7 @@ bool Instr::FuncCriar(TVariavel * v, int valor)
 /// Apagar objeto (apagar)
 bool Instr::FuncApagar(TVariavel * v, int valor)
 {
-    for (TVariavel * var = v+1; var<=VarAtual; var++)
+    for (TVariavel * var = v + 1; var <= VarAtual; var++)
     {
         TObjeto * obj = var->getObj();
         if (obj)
@@ -175,8 +175,8 @@ bool Instr::FuncEste(TVariavel * v, int valor)
 /// Funções que lidam com números (intpos, intabs e int)
 bool Instr::FuncNumero(TVariavel * v, int valor)
 {
-    double numero=0;
-    for (TVariavel * var = v+1; var<=VarAtual; var++)
+    double numero = 0;
+    for (TVariavel * var = v + 1; var <= VarAtual; var++)
         numero += var->getDouble();
     ApagarVar(v);
     switch (valor)
@@ -184,12 +184,12 @@ bool Instr::FuncNumero(TVariavel * v, int valor)
     case 0: // intpos()
         if (!CriarVar(InstrDouble))
             return false;
-        VarAtual->setDouble(numero<0 ? 0 : numero);
+        VarAtual->setDouble(numero < 0 ? 0 : numero);
         return true;
     case 1: // intabs()
         if (!CriarVar(InstrDouble))
             return false;
-        VarAtual->setDouble(numero<0 ? -numero : numero);
+        VarAtual->setDouble(numero < 0 ? -numero : numero);
         return true;
     case 2: // int()
         numero = round(numero);
@@ -280,7 +280,7 @@ bool Instr::FuncNumero(TVariavel * v, int valor)
 /// Função mathpow
 bool Instr::FuncPow(TVariavel * v, int valor)
 {
-    if (VarAtual != v+2)
+    if (VarAtual != v + 2)
         return false;
     double numero = pow(v[1].getDouble(), v[2].getDouble());
     ApagarVar(v);
@@ -295,7 +295,7 @@ bool Instr::FuncPow(TVariavel * v, int valor)
 bool Instr::FuncIntBit(TVariavel * v, int valor)
 {
     int result = 0;
-    for (TVariavel * var = v+1; var<=VarAtual; var++)
+    for (TVariavel * var = v + 1; var <= VarAtual; var++)
     {
         const char * p = var->getTxt();
         while (*p)
@@ -324,25 +324,25 @@ bool Instr::FuncIntBit(TVariavel * v, int valor)
 /// Função txtbit
 bool Instr::FuncTxtBit(TVariavel * v, int valor)
 {
-    if (VarAtual < v+1)
+    if (VarAtual < v + 1)
         return false;
     int num = v[1].getInt();
-    const char * separador = (VarAtual >= v+2 ? v[2].getTxt() : " ");
+    const char * separador = (VarAtual >= v + 2 ? v[2].getTxt() : " ");
     char mens[BUF_MENS];    // Resultado
     char * destino = mens;
-    for (int x=0; x<32; x++, num>>=1)
+    for (int x = 0; x < 32; x++, num >>= 1)
     {
         if ((num & 1) == 0)
             continue;
         if (destino != mens)
         {
             const char * p = separador;
-            while (*p && destino<mens+sizeof(mens))
+            while (*p && destino < mens + sizeof(mens))
                 *destino++ = *p++;
         }
         if (x >= 10)
-            *destino++ = x/10+'0';
-        *destino++ = x%10+'0';
+            *destino++ = x / 10 + '0';
+        *destino++ = x % 10 + '0';
     }
     ApagarVar(v);
     return CriarVarTexto(mens, destino-mens);
@@ -356,7 +356,7 @@ bool Instr::FuncIntBitH(TVariavel * v, int valor)
     int  inicio = BUF_MENS - 1;
     mens[BUF_MENS-1] = 0;
 
-    for (TVariavel * var = v+1; var<=VarAtual; var++)
+    for (TVariavel * var = v + 1; var <= VarAtual; var++)
     {
         const char * p = var->getTxt();
         while (*p)
@@ -381,14 +381,14 @@ bool Instr::FuncIntBitH(TVariavel * v, int valor)
                 memset(mens + ender, 0, inicio - ender);
                 inicio = ender;
             }
-            mens[ender] |= (1 << (valor&3));
+            mens[ender] |= (1 << (valor & 3));
         }
     }
 
-    for (char * p = mens+inicio; p<mens+BUF_MENS; p++)
+    for (char * p = mens + inicio; p < mens + BUF_MENS; p++)
     {
         unsigned char ch = *p;
-        *p = (ch < 10 ? ch+'0' : ch+'7');
+        *p = (ch < 10 ? ch + '0' : ch + '7');
     }
 
     ApagarVar(v);
@@ -402,44 +402,44 @@ bool Instr::FuncTxtBitH(TVariavel * v, int valor)
     char mens[BUF_MENS];    // Resultado
     char * destino = mens;
     char separador[1024];
-    const char * pini = (VarAtual >= v+1 ? v[1].getTxt() : "");
+    const char * pini = (VarAtual >= v + 1 ? v[1].getTxt() : "");
     const char * p = pini;
     int bit = 0;
     while (*p)
         p++;
-    if (VarAtual >= v+2)
+    if (VarAtual >= v + 2)
         copiastr(separador, v[2].getTxt(), sizeof(separador));
     else
         strcpy(separador, " ");
     while (p >= pini)
     {
         char ch = *p--;
-        if (ch>='0' && ch<='9')
-            ch-='0';
-        else if (ch>='A' && ch<='Z')
-            ch-='A'-10;
-        else if (ch>='a' && ch<='z')
-            ch-='a'-10;
+        if (ch >= '0' && ch <= '9')
+            ch -= '0';
+        else if (ch >= 'A' && ch <= 'Z')
+            ch -= 'A' - 10;
+        else if (ch >= 'a' && ch <= 'z')
+            ch -= 'a' - 10;
         else
             continue;
-        for (int x=1; x<16; x<<=1,bit++)
+        for (int x = 1; x < 16; x <<= 1, bit++)
         {
             if ((ch & x) == 0)
                 continue;
             if (destino != mens)
             {
                 const char * sep = separador;
-                while (*sep && destino<mens+sizeof(mens))
+                while (*sep && destino < mens + sizeof(mens))
                     *destino++ = *sep++;
             }
             if (destino >= mens+sizeof(mens)-5)
                 break;
             int valor = bit;
-            if (valor >= 10000) *destino++ = valor/10000%10+'0';
-            if (valor >= 1000)  *destino++ = valor/1000%10+'0';
-            if (valor >= 100)   *destino++ = valor/100%10+'0';
-            if (valor >= 10)    *destino++ = valor/10%10+'0';
-            *destino++ = valor%10+'0';
+            if (valor >= 10000) *destino++ = valor/10000 % 10 + '0';
+            if (valor >= 1000)  *destino++ = valor/1000 % 10 + '0';
+            if (valor >= 100)   *destino++ = valor/100 % 10 + '0';
+            if (valor >= 10)    *destino++ = valor/10 % 10 + '0';
+            *destino++ = valor % 10 + '0';
         }
     }
 
@@ -451,7 +451,7 @@ bool Instr::FuncTxtBitH(TVariavel * v, int valor)
 /// Função txthex
 bool Instr::FuncTxtHex(TVariavel * v, int valor)
 {
-    if (VarAtual < v+2)
+    if (VarAtual < v + 2)
         return false;
     char mens[BUF_MENS];
     const char * p = v[1].getTxt();
@@ -479,7 +479,7 @@ bool Instr::FuncTxtHex(TVariavel * v, int valor)
 /// Função intmax
 bool Instr::FuncMax(TVariavel * v, int valor)
 {
-    if (VarAtual <= v+1)
+    if (VarAtual <= v + 1)
     {
         if (VarAtual == v)
             return false;
@@ -487,14 +487,14 @@ bool Instr::FuncMax(TVariavel * v, int valor)
         return true;
     }
     double d = v[1].getDouble();
-    TVariavel * pos = v+1;
-    for (TVariavel * var = v+2; var<=VarAtual; var++)
+    TVariavel * pos = v + 1;
+    for (TVariavel * var = v + 2; var <= VarAtual; var++)
     {
         double num = var->getDouble();
         if (d < num)
-            d=num, pos=var;
+            d = num, pos = var;
     }
-    ApagarVar(pos+1);
+    ApagarVar(pos + 1);
     ApagarRet(v);
     return true;
 }
@@ -503,7 +503,7 @@ bool Instr::FuncMax(TVariavel * v, int valor)
 /// Função intmin
 bool Instr::FuncMin(TVariavel * v, int valor)
 {
-    if (VarAtual <= v+1)
+    if (VarAtual <= v + 1)
     {
         if (VarAtual == v)
             return false;
@@ -511,14 +511,14 @@ bool Instr::FuncMin(TVariavel * v, int valor)
         return true;
     }
     double d = v[1].getDouble();
-    TVariavel * pos = v+1;
-    for (TVariavel * var = v+2; var<=VarAtual; var++)
+    TVariavel * pos = v + 1;
+    for (TVariavel * var = v + 2; var <= VarAtual; var++)
     {
         double num = var->getDouble();
         if (d > num)
-            d=num, pos=var;
+            d = num, pos = var;
     }
-    ApagarVar(pos+1);
+    ApagarVar(pos + 1);
     ApagarRet(v);
     return true;
 }
@@ -528,7 +528,7 @@ bool Instr::FuncMin(TVariavel * v, int valor)
 bool Instr::FuncRand(TVariavel * v, int valor)
 {
     int result = 0;
-    if (VarAtual == v+1)
+    if (VarAtual == v + 1)
     {
         if (v[1].Tipo() == varTxt) // Se for texto, embaralha o texto
         {
@@ -546,17 +546,17 @@ bool Instr::FuncRand(TVariavel * v, int valor)
             return CriarVarTexto(mens);
         }
         int max = v[1].getInt();
-        if (max>0)
+        if (max > 0)
             result = circle_random() % max;
     }
-    else if (VarAtual > v+1)
+    else if (VarAtual > v + 1)
     {
         int min = v[1].getInt();
         int max = v[2].getInt();
         if (min < max)
-            result = circle_random() % (max-min+1) + min;
+            result = circle_random() % (max - min + 1) + min;
         else if (min > max)
-            result = circle_random() % (min-max+1) + max;
+            result = circle_random() % (min - max + 1) + max;
         else
             result = min;
     }
@@ -568,10 +568,10 @@ bool Instr::FuncRand(TVariavel * v, int valor)
 /// Referência (ref)
 bool Instr::FuncRef(TVariavel * v, int valor)
 {
-    TObjeto * obj = 0;
-    for (TVariavel * var = v+1; var<=VarAtual && obj==0; var++)
+    TObjeto * obj = nullptr;
+    for (TVariavel * var = v + 1; var <= VarAtual && obj == nullptr; var++)
         obj = var->getObj();
-    if (obj==0)
+    if (obj == nullptr)
         return false;
     ApagarVar(v);
     if (!CriarVar(InstrVarObjeto))
@@ -590,7 +590,7 @@ bool Instr::FuncTxtNum(TVariavel * v, int valor)
                         // bit 2=1 -> separar com vírgulas
     int  digitos = -1;  // Dígitos após a vírgula, 0-9 ou -1=automático
 
-    if (VarAtual < v+2)
+    if (VarAtual < v + 2)
         return false;
 
 // Obtém o tipo de conversão
@@ -602,7 +602,7 @@ bool Instr::FuncTxtNum(TVariavel * v, int valor)
         case '.': flags |= 2; break;
         case ',': flags |= 4; break;
         default:
-            if (*p>='0' && *p<='9')
+            if (*p >= '0' && *p <= '9')
                 digitos = *p - '0';
         }
 
@@ -614,15 +614,15 @@ bool Instr::FuncTxtNum(TVariavel * v, int valor)
         if (tipo == varInt)
         {
             const char * zeros = "000000000";
-            if (flags&1)
+            if (flags & 1)
             {
                 sprintf(mens, "%E", v[1].getDouble());
-                flags=0;
+                flags = 0;
             }
-            else if (digitos<1 || digitos>9)
+            else if (digitos < 1 || digitos > 9)
                 sprintf(mens, "%d", v[1].getInt());
             else
-                sprintf(mens, "%d.%s", v[1].getInt(), zeros+9-digitos);
+                sprintf(mens, "%d.%s", v[1].getInt(), zeros + 9 - digitos);
             break;
         }
     // Não é numérico
@@ -634,7 +634,7 @@ bool Instr::FuncTxtNum(TVariavel * v, int valor)
         if ((flags&1) || d >= DOUBLE_MAX || d <= -DOUBLE_MAX)
         {
             sprintf(mens, "%E", d);
-            flags=0;
+            flags = 0;
             break;
         }
     // Quantidade fixa de dígitos
@@ -650,22 +650,22 @@ bool Instr::FuncTxtNum(TVariavel * v, int valor)
         char * p = mens;
         while (*p)
             p++;
-        while (p>mens && p[-1]=='0')
+        while (p > mens && p[-1] == '0')
             p--;
-        if (p>mens && p[-1]=='.')
+        if (p > mens && p[-1] == '.')
             p--;
         *p=0;
         break;
     }
 
 // Acrescenta pontos ou vírgulas, se necessário
-    if (flags&6)
+    if (flags & 6)
     {
         char * p = mens;
         int total;
-        while (*p && *p!='.')
+        while (*p && *p != '.')
             p++;
-        if (*p && (flags&2))
+        if (*p && (flags & 2))
             *p=',';
         total = (p - mens - (*mens=='-') - 1) / 3;
         char * dest = p;
@@ -674,10 +674,10 @@ bool Instr::FuncTxtNum(TVariavel * v, int valor)
         while (total > 0)
         {
             p -= 3;
-            assert(p>mens);
+            assert(p > mens);
             for (; dest >= p; dest--)
                 dest[total] = *dest;
-            dest[total--] = (flags&2 ? '.' : ',');
+            dest[total--] = (flags & 2 ? '.' : ',');
         }
     }
 
@@ -690,14 +690,14 @@ bool Instr::FuncTxtNum(TVariavel * v, int valor)
 bool Instr::FuncIntSub(TVariavel * v, int valor)
 {
     int total = 0;
-    if (VarAtual >= v+1)
+    if (VarAtual >= v + 1)
     {
         const char * txt = v[1].getTxt();
-        while (*txt==' ') txt++;
+        while (*txt == ' ') txt++;
         while (*txt)
         {
-            while (*txt && *txt!=' ') txt++;
-            while (*txt==' ') txt++;
+            while (*txt && *txt != ' ') txt++;
+            while (*txt == ' ') txt++;
             total++;
         }
     }
@@ -710,14 +710,14 @@ bool Instr::FuncIntSub(TVariavel * v, int valor)
 bool Instr::FuncIntSubLin(TVariavel * v, int valor)
 {
     int total = 0;
-    if (VarAtual >= v+1)
+    if (VarAtual >= v + 1)
     {
         const char * txt = v[1].getTxt();
         if (*txt)
         {
             total++;
             while (*txt)
-                if (*txt++==ex_barra_n)
+                if (*txt++ == ex_barra_n)
                     total++;
         }
     }
@@ -739,13 +739,13 @@ bool Instr::FuncTxt(TVariavel * v, int valor)
         tam = v[3].getInt();
     if (tam>0)
     {
-        if (VarAtual >= v+2)
+        if (VarAtual >= v + 2)
         {
             ini = v[2].getInt();
-            if (ini<0)
-                ini=0;
+            if (ini < 0)
+                ini = 0;
         }
-        if (VarAtual >= v+1)
+        if (VarAtual >= v + 1)
             txt = v[1].getTxt();
     }
     switch (valor)
@@ -754,45 +754,45 @@ bool Instr::FuncTxt(TVariavel * v, int valor)
         if (tam > (int)sizeof(mens))
             tam = sizeof(mens);
             // Avança para início do texto
-        for (const char * fim = txt+ini; *txt && txt<fim; )
+        for (const char * fim = txt + ini; *txt && txt < fim; )
             txt++;
             // Copia texto
-        for (const char * fim = txt+tam; *txt && txt<fim; )
+        for (const char * fim = txt + tam; *txt && txt < fim; )
             *destino++ = *txt++;
         break;
     case 1: // Obtém o texto para função txtsub
-        while (*txt==' ') txt++;
+        while (*txt == ' ') txt++;
             // Avança para início do texto
-        while (ini>0 && *txt)
+        while (ini > 0 && *txt)
         {
-            while (*txt && *txt!=' ') txt++;
-            while (*txt==' ') txt++;
+            while (*txt && *txt != ' ') txt++;
+            while (*txt == ' ') txt++;
             ini--;
         }
             // Copia texto
-        while (tam>0 && *txt && destino<mens+sizeof(mens))
+        while (tam > 0 && *txt && destino < mens + sizeof(mens))
         {
-            while (*txt==' ' && destino<mens+sizeof(mens))
+            while (*txt == ' ' && destino < mens + sizeof(mens))
                 *destino++ = *txt++;
-            while (*txt && *txt!=' ' && destino<mens+sizeof(mens))
+            while (*txt && *txt != ' ' && destino < mens + sizeof(mens))
                 *destino++ = *txt++;
             tam--;
         }
         break;
     case 2: // Obtém o texto para função txtsublin
             // Avança para início do texto
-        while (ini>0 && *txt)
+        while (ini > 0 && *txt)
         {
-            while (*txt && *txt!=ex_barra_n) txt++;
-            if (*txt==ex_barra_n) txt++;
+            while (*txt && *txt != ex_barra_n) txt++;
+            if (*txt == ex_barra_n) txt++;
             ini--;
         }
             // Copia texto
-        while (tam>0 && destino<mens+sizeof(mens))
+        while (tam > 0 && destino < mens + sizeof(mens))
         {
-            while (*txt && *txt!=ex_barra_n && destino<mens+sizeof(mens))
+            while (*txt && *txt != ex_barra_n && destino < mens +sizeof(mens))
                 *destino++ = *txt++;
-            if (*txt==0)
+            if (*txt == 0)
                 break;
             if (--tam)
                 *destino++ = *txt++;
@@ -811,13 +811,13 @@ bool Instr::FuncTxtFim(TVariavel * v, int valor)
     int tam = 0x10000;  // Tamanho
     char mens[BUF_MENS];    // Resultado
 // Obtém tam conforme os argumentos
-    if (VarAtual >= v+2)
+    if (VarAtual >= v + 2)
         tam = v[2].getInt();
     if (tam > (int)sizeof(mens))
         tam = sizeof(mens);
 // Obtém o texto
-    if (tam<=0 || VarAtual < v+1)
-        tam=0;
+    if (tam <= 0 || VarAtual < v + 1)
+        tam = 0;
     else
     {
         const char * txt = v[1].getTxt();
@@ -841,26 +841,26 @@ bool Instr::FuncTxt2(TVariavel * v, int valor)
     char mens[BUF_MENS];    // Resultado
     char * destino = mens;
 
-    if (VarAtual >= v+1)
+    if (VarAtual >= v + 1)
         txt = v[1].getTxt();
 // Obtém o texto
     switch (valor)
     {
     case 0: // txt1
-        while (*txt==' ')
+        while (*txt == ' ')
             txt++;
-        while (*txt && *txt!=' ' && destino<mens+sizeof(mens))
+        while (*txt && *txt != ' ' && destino < mens + sizeof(mens))
             *destino++ = *txt++;
         break;
     case 1: // txt2
-        while (*txt==' ') txt++;
-        while (*txt && *txt!=' ') txt++;
-        while (*txt==' ') txt++;
-        while (*txt && destino<mens+sizeof(mens))
+        while (*txt == ' ') txt++;
+        while (*txt && *txt != ' ') txt++;
+        while (*txt == ' ') txt++;
+        while (*txt && destino < mens + sizeof(mens))
             *destino++ = *txt++;
         break;
     case 2: // txtcor
-        while (*txt && destino<mens+sizeof(mens))
+        while (*txt && destino < mens + sizeof(mens))
         {
             switch (*txt)
             {
@@ -868,15 +868,15 @@ bool Instr::FuncTxt2(TVariavel * v, int valor)
                 txt++;
                 break;
             case ex_barra_c:
-                if ((txt[1]>='0' && txt[1]<='9') ||
-                        (txt[1]>='A' && txt[1]<='J') ||
-                        (txt[1]>='a' && txt[1]<='j'))
+                if ((txt[1] >= '0' && txt[1] <= '9') ||
+                        (txt[1] >= 'A' && txt[1] <= 'J') ||
+                        (txt[1] >= 'a' && txt[1] <= 'j'))
                     txt += 2;
                 else
                     txt++;
                 break;
             case ex_barra_d:
-                if (txt[1]>='0' && txt[1]<='7')
+                if (txt[1] >= '0' && txt[1] <= '7')
                     txt += 2;
                 else
                     txt++;
@@ -887,7 +887,7 @@ bool Instr::FuncTxt2(TVariavel * v, int valor)
         }
         break;
     case 3: // txtmai
-        while (*txt && destino<mens+sizeof(mens)-1)
+        while (*txt && destino < mens + sizeof(mens) - 1)
             switch (*txt)
             {
             FUNCTXT_CORES
@@ -895,27 +895,27 @@ bool Instr::FuncTxt2(TVariavel * v, int valor)
             }
         break;
     case 4: // txtmaiini
-        while (*txt && destino<mens+sizeof(mens)-1)
+        while (*txt && destino < mens + sizeof(mens) - 1)
         {
-            while (*txt && *(unsigned char*)txt<'0' &&
-                    destino<mens+sizeof(mens)-1)
+            while (*txt && *(unsigned char*)txt < '0' &&
+                    destino < mens + sizeof(mens) - 1)
                 switch (*txt)
                 {
                 FUNCTXT_CORES
                 default: *destino++ = *txt++;
                 }
-            if (*txt && destino<mens+sizeof(mens)-1)
+            if (*txt && destino < mens + sizeof(mens) - 1)
                 switch (*txt)
                 {
                 FUNCTXT_CORES
                 default: *destino++ = tabMAI[*(unsigned char*)txt++];
                 }
-            while (*txt && *txt!='.' && destino<mens+sizeof(mens)-1)
+            while (*txt && *txt != '.' && destino < mens + sizeof(mens) - 1)
                 *destino++ = *txt++;
         }
         break;
     case 5: // txtmin
-        while (*txt && destino<mens+sizeof(mens)-1)
+        while (*txt && destino < mens + sizeof(mens) - 1)
             switch (*txt)
             {
             FUNCTXT_CORES
@@ -923,22 +923,22 @@ bool Instr::FuncTxt2(TVariavel * v, int valor)
             }
         break;
     case 6: // txtmaimin
-        while (*txt && destino<mens+sizeof(mens)-1)
+        while (*txt && destino < mens + sizeof(mens) - 1)
         {
             while (*txt && *(unsigned char*)txt<'0' &&
-                    destino<mens+sizeof(mens)-1)
+                    destino < mens + sizeof(mens) - 1)
                 switch (*txt)
                 {
                 FUNCTXT_CORES
                 default: *destino++ = *txt++;
                 }
-            if (*txt && destino<mens+sizeof(mens)-1)
+            if (*txt && destino < mens + sizeof(mens) - 1)
                 switch (*txt)
                 {
                 FUNCTXT_CORES
                 default: *destino++ = tabMAI[*(unsigned char*)txt++];
                 }
-            while (*txt && *txt!='.' && destino<mens+sizeof(mens)-1)
+            while (*txt && *txt != '.' && destino < mens + sizeof(mens) - 1)
                 switch (*txt)
                 {
                 FUNCTXT_CORES
@@ -956,23 +956,23 @@ bool Instr::FuncTxt2(TVariavel * v, int valor)
             SHAInit(&shaInfo);
             SHAUpdate(&shaInfo, (unsigned char *)txt, strlen(txt));
             SHAFinal(digest, &shaInfo);
-            for (int x=0; x<20; x+=4)
+            for (int x = 0; x < 20; x += 4)
             {
-                unsigned int valor = digest[x]   * 0x1000000+
-                                     digest[x+1] * 0x10000+
-                                     digest[x+2] * 0x100+
-                                     digest[x+3];
-                for (int y=0; y<5; y++)
+                unsigned int valor = digest[x]     * 0x1000000+
+                                     digest[x + 1] * 0x10000+
+                                     digest[x + 2] * 0x100+
+                                     digest[x + 3];
+                for (int y = 0; y < 5; y++)
                 {
                     *destino++ = (valor & 0x3F) + 0x21;
                     valor >>= 6;
                 }
             }
-            *destino++ = (digest[0]&3) +
-                         (digest[4]&3)*4 +
-                         (digest[8]&3)*16 + 0x21;
-            *destino++ = (digest[12]&3) +
-                         (digest[16]&3)*4 + 0x21;
+            *destino++ = (digest[0] & 3) +
+                         (digest[4] & 3) * 4 +
+                         (digest[8] & 3) * 16 + 0x21;
+            *destino++ = (digest[12] & 3) +
+                         (digest[16] & 3) * 4 + 0x21;
             break;
         }
     case 9: // txtsha1
@@ -982,12 +982,12 @@ bool Instr::FuncTxt2(TVariavel * v, int valor)
             SHAInit(&shaInfo);
             SHAUpdate(&shaInfo, (unsigned char *)txt, strlen(txt));
             SHAFinal(digest, &shaInfo);
-            for (int x=0; x<20; x++)
+            for (int x = 0; x < 20; x++)
             {
                 int valor = digest[x] >> 4;
-                *destino++ = (valor<10 ? valor+'0' : valor+'a'-10);
+                *destino++ = (valor < 10 ? valor + '0' : valor + 'a' - 10);
                 valor = digest[x] & 0x0F;
-                *destino++ = (valor<10 ? valor+'0' : valor+'a'-10);
+                *destino++ = (valor < 10 ? valor + '0' : valor + 'a' - 10);
             }
             break;
         }
@@ -998,12 +998,12 @@ bool Instr::FuncTxt2(TVariavel * v, int valor)
             cvs_MD5Init(&md5Info);
             cvs_MD5Update(&md5Info, (unsigned char *)txt, strlen(txt));
             cvs_MD5Final(digest, &md5Info);
-            for (int x=0; x<16; x++)
+            for (int x = 0; x < 16; x++)
             {
                 int valor = digest[x] >> 4;
-                *destino++ = (valor<10 ? valor+'0' : valor+'a'-10);
+                *destino++ = (valor < 10 ? valor + '0' : valor + 'a' - 10);
                 valor = digest[x] & 0x0F;
-                *destino++ = (valor<10 ? valor+'0' : valor+'a'-10);
+                *destino++ = (valor < 10 ? valor + '0' : valor + 'a' - 10);
             }
             break;
         }
@@ -1011,24 +1011,24 @@ bool Instr::FuncTxt2(TVariavel * v, int valor)
         destino = txtNome(destino, txt, sizeof(mens));
         break;
     case 12: // txtcod
-        while (*txt && destino<mens+sizeof(mens)-2)
+        while (*txt && destino < mens + sizeof(mens)-2)
         {
             unsigned char ch = tabTXTCOD[*(unsigned char*)txt];
             if (ch)
-                *destino++='@', *destino++=ch;
+                *destino++ = '@', *destino++ = ch;
             else //if (tabNOMES1[*(unsigned char*)txt])
                 *destino++ = *txt;
             txt++;
         }
         break;
     case 13: // txtdec
-        while (*txt && destino<mens+sizeof(mens)-1)
+        while (*txt && destino < mens + sizeof(mens) - 1)
         {
-            if (*txt!='@')
+            if (*txt != '@')
                 *destino++ = *txt++;
             else if (txt[1])
             {
-                unsigned char ch = tabTXTDEC[*(unsigned char*)(txt+1)];
+                unsigned char ch = tabTXTDEC[*(unsigned char*)(txt + 1)];
                 if (ch)
                     *destino++ = ch;
                 txt+=2;
@@ -1038,30 +1038,30 @@ bool Instr::FuncTxt2(TVariavel * v, int valor)
         }
         break;
     case 14: // txtvis
-        for (; *txt && destino<mens+sizeof(mens)-2; txt++)
+        for (; *txt && destino < mens + sizeof(mens)-2; txt++)
             switch (*txt)
             {
             case Instr::ex_barra_b:
-                destino[0]='\\', destino[1]='b', destino+=2;
+                destino[0] = '\\', destino[1] = 'b', destino += 2;
                 break;
             case Instr::ex_barra_c:
-                destino[0]='\\', destino[1]='c', destino+=2;
+                destino[0] = '\\', destino[1] = 'c', destino += 2;
                 break;
             case Instr::ex_barra_d:
-                destino[0]='\\', destino[1]='d', destino+=2;
+                destino[0] = '\\', destino[1] = 'd', destino += 2;
                 break;
             case Instr::ex_barra_n:
-                destino[0]='\\', destino[1]='n', destino+=2;
+                destino[0] = '\\', destino[1] = 'n', destino += 2;
                 break;
             case '\"':
             case '\\':
-                *destino++='\\';
+                *destino++ = '\\';
             default:
                 *destino++ = *txt;
             }
         break;
     case 15: // txtinvis
-        for (; *txt && destino<mens+sizeof(mens)-1; txt++)
+        for (; *txt && destino < mens + sizeof(mens) - 1; txt++)
         {
             if (*txt != '\\')
             {
@@ -1069,7 +1069,7 @@ bool Instr::FuncTxt2(TVariavel * v, int valor)
                 continue;
             }
             txt++;
-            if (*txt==0)
+            if (*txt == 0)
                 break;
             switch (*txt)
             {
@@ -1088,33 +1088,33 @@ bool Instr::FuncTxt2(TVariavel * v, int valor)
     case 16: // txturlcod
       {
         bool ini = true;
-        while (*txt && destino<mens+sizeof(mens)-3)
+        while (*txt && destino < mens + sizeof(mens)-3)
         {
             char ch = *txt++;
-            if (ch==ex_barra_n)
+            if (ch == ex_barra_n)
             {
                 *destino++ = (ini ? '?' : '&');
                 ini = false;
             }
-            else if (ch==' ')
+            else if (ch == ' ')
                 *destino++ = '+';
-            else if ((ch>='0' && ch<='9') || (ch>='A' && ch<='Z') ||
-                    (ch>='a' && ch<='z') ||
-                    ch=='=' || ch=='-' || ch=='/' || ch=='.')
+            else if ((ch >= '0' && ch <= '9') || (ch >= 'A' && ch <= 'Z') ||
+                    (ch >= 'a' && ch <= 'z') ||
+                    ch == '=' || ch == '-' || ch == '/' || ch == '.')
                 *destino++ = ch;
             else
             {
                 switch (ch)
                 {
-                case ex_barra_b: ch=1; break;
-                case ex_barra_c: ch=2; break;
-                case ex_barra_d: ch=3; break;
+                case ex_barra_b: ch = 1; break;
+                case ex_barra_c: ch = 2; break;
+                case ex_barra_d: ch = 3; break;
                 }
                 int parte = (ch >> 4) & 15;
                 destino[0] = '%';
-                destino[1] = (parte<10 ? parte+'0' : parte+'7');
+                destino[1] = (parte < 10 ? parte + '0' : parte + '7');
                 parte = ch & 15;
-                destino[2] = (parte<10 ? parte+'0' : parte+'7');
+                destino[2] = (parte < 10 ? parte + '0' : parte + '7');
                 destino += 3;
             }
         }
@@ -1123,38 +1123,38 @@ bool Instr::FuncTxt2(TVariavel * v, int valor)
     case 17: // txturldec
       {
         bool ini = true;
-        while (*txt && destino<mens+sizeof(mens)-1)
+        while (*txt && destino < mens + sizeof(mens) - 1)
         {
             char ch = *txt++;
-            if (ch=='+')
+            if (ch == '+')
                 *destino++ = ' ';
-            else if (ch=='?')
+            else if (ch == '?')
             {
                 *destino++ = (ini ? ex_barra_n : '?');
                 ini = false;
             }
-            else if (ch=='&')
+            else if (ch == '&')
                 *destino++ = (ini ? '&' : ex_barra_n);
-            else if (ch!='%')
+            else if (ch != '%')
                 *destino++ = ch;
             else
             {
                 int cod;
             // Primeiro dígito
-                if (txt[0]>='0' && txt[0]<='9')
-                    cod = (txt[0]-'0') * 16;
-                else if ((txt[0]|0x20)>='a' && (txt[0]|0x20)<='f')
-                    cod = ((txt[0]|0x20) - 'W') * 16;
+                if (txt[0] >= '0' && txt[0] <= '9')
+                    cod = (txt[0] - '0') * 16;
+                else if ((txt[0] | 0x20) >= 'a' && (txt[0] | 0x20) <= 'f')
+                    cod = ((txt[0] | 0x20) - 'W') * 16;
                 else
                 {
                     *destino++ = ch;
                     continue;
                 }
             // Segundo dígito
-                if (txt[1]>='0' && txt[1]<='9')
-                    cod += txt[1]-'0';
-                else if ((txt[1]|0x20)>='a' && (txt[1]|0x20)<='f')
-                    cod += (txt[1]|0x20)-'W';
+                if (txt[1] >= '0' && txt[1] <= '9')
+                    cod += txt[1] - '0';
+                else if ((txt[1] | 0x20) >= 'a' && (txt[1] | 0x20) <= 'f')
+                    cod += (txt[1] | 0x20) - 'W';
                 else
                 {
                     *destino++ = ch;
@@ -1177,14 +1177,14 @@ bool Instr::FuncTxt2(TVariavel * v, int valor)
         break;
       }
     case 18: // txte
-        while (*txt && destino<mens+sizeof(mens)-1)
+        while (*txt && destino < mens + sizeof(mens) - 1)
         {
             *destino = (*txt != '_' ? *txt : ' ');
             destino++, txt++;
         }
         break;
     case 19: // txts
-        while (*txt && destino<mens+sizeof(mens)-1)
+        while (*txt && destino < mens + sizeof(mens) - 1)
         {
             *destino = (*txt != ' ' ? *txt : '_');
             destino++, txt++;
@@ -1193,17 +1193,17 @@ bool Instr::FuncTxt2(TVariavel * v, int valor)
     case 20: // txtrev
       {
         unsigned int total = strlen(txt);
-        if (total > sizeof(mens)-1)
-            total = sizeof(mens)-1;
+        if (total > sizeof(mens) - 1)
+            total = sizeof(mens) - 1;
         const char * t = txt + total;
-        for (t--; t>=txt; t--)
+        for (t--; t >= txt; t--)
         {
             char ch = *t;
             if (ch == ex_barra_c)
             {
-                if ((t[1]>='0' && t[1]<='9') ||
-                    (t[1]>='A' && t[1]<='J') ||
-                    (t[1]>='a' && t[1]<='j'))
+                if ((t[1] >= '0' && t[1] <= '9') ||
+                    (t[1] >= 'A' && t[1] <= 'J') ||
+                    (t[1] >= 'a' && t[1] <= 'j'))
                 {
                     destino[-1] = ex_barra_c;
                     *destino++ = t[1];
@@ -1212,7 +1212,7 @@ bool Instr::FuncTxt2(TVariavel * v, int valor)
             }
             else if (ch == ex_barra_d)
             {
-                if (t[1]>='0' && t[1]<='7') \
+                if (t[1] >= '0' && t[1] <= '7') \
                 {
                     destino[-1] = ex_barra_d;
                     *destino++ = t[1];
@@ -1240,9 +1240,9 @@ bool Instr::FuncTxtMudaMai(TVariavel * v, int valor)
     int porcent = 100;
 
 // Obtém argumentos
-    if (VarAtual >= v+1)
+    if (VarAtual >= v + 1)
     {
-        if (VarAtual >= v+2)
+        if (VarAtual >= v + 2)
             porcent = v[2].getInt();
         if (porcent <= 0) // Nenhuma possibilidade de troca
         {
@@ -1254,10 +1254,10 @@ bool Instr::FuncTxtMudaMai(TVariavel * v, int valor)
     }
 
 // Copia texto modificando
-    while (destino<mens+sizeof(mens)-1)
+    while (destino < mens + sizeof(mens) - 1)
     {
         unsigned char ch = *txt++;
-        if (ch==0)
+        if (ch == 0)
             break;
         switch (tabMAIMIN[ch])
         {
@@ -1282,7 +1282,7 @@ bool Instr::FuncTxtMudaMai(TVariavel * v, int valor)
 
 // Anota o texto
     ApagarVar(v);
-    return CriarVarTexto(mens, destino-mens);
+    return CriarVarTexto(mens, destino - mens);
 }
 
 //----------------------------------------------------------------------------
@@ -1293,13 +1293,13 @@ bool Instr::FuncTxtCopiaMai(TVariavel * v, int valor)
     char * destino = mens;
 
     *mens = 0;
-    if (VarAtual >= v+1)
+    if (VarAtual >= v + 1)
         destino = copiastr(mens, v[1].getTxt(), sizeof(mens));
-    if (VarAtual >= v+2)
+    if (VarAtual >= v + 2)
     {
         const char * o = v[2].getTxt();
         char * d = mens;
-        for (; *o && *d; o++,d++)
+        for (; *o && *d; o++, d++)
             switch (tabMAIMIN[*(unsigned char*)o])
             {
             case 1: // É letra minúscula
@@ -1320,22 +1320,22 @@ bool Instr::FuncTxtCopiaMai(TVariavel * v, int valor)
 /// Função txtesp
 bool Instr::FuncEsp(TVariavel * v, int valor)
 {
-    static char * texto = 0;
+    static char * texto = nullptr;
     int esp = 0;
-    if (texto==0)
+    if (texto == nullptr)
     {
         texto = new char[101];
         memset(texto, ' ', 100);
-        texto[100]=0;
+        texto[100] = 0;
     }
-    if (VarAtual >= v+1)
+    if (VarAtual >= v + 1)
         esp = v[1].getInt();
-    if (esp<0)
-        esp=100;
-    else if (esp>100)
+    if (esp < 0)
+        esp = 100;
+    else if (esp > 100)
         esp = 0;
     else
-        esp = 100-esp;
+        esp = 100 - esp;
     ApagarVar(v);
     if (!Instr::CriarVar(Instr::InstrTxtFixo))
         return false;
@@ -1352,11 +1352,11 @@ bool Instr::FuncTxtRepete(TVariavel * v, int valor)
     char * destino = mens;
     int repete = 0;      // Número de repetições
     int tamtxt = 0;      // Tamanho do texto em txt
-    if (VarAtual >= v+2)
+    if (VarAtual >= v + 2)
     {
         repete = v[2].getInt();
         txt = v[1].getTxt();
-        if (*txt==0)
+        if (*txt == 0)
             repete = 0;
         else
             tamtxt = strlen(txt);
@@ -1377,7 +1377,7 @@ bool Instr::FuncTxtRepete(TVariavel * v, int valor)
 bool Instr::FuncInt(TVariavel * v, int valor)
 {
     const char * txt = "";  // Texto
-    if (VarAtual >= v+1)
+    if (VarAtual >= v + 1)
         txt = v[1].getTxt();
 // Obtém o valor
     switch (valor)
@@ -1389,7 +1389,7 @@ bool Instr::FuncInt(TVariavel * v, int valor)
         valor = verifSenha(txt);
         break;
     default:
-        valor=0;
+        valor = 0;
     }
 // Retorna o valor
     ApagarVar(v);
@@ -1401,12 +1401,12 @@ bool Instr::FuncInt(TVariavel * v, int valor)
 bool Instr::FuncTxtRemove(TVariavel * v, int valor)
 {
     char mens[BUF_MENS]; // Resultado
-    if (VarAtual < v+2)
+    if (VarAtual < v + 2)
         return false;
     int remove = txtRemove(v[2].getTxt()); // O que deve remover
-    if (remove==0)
+    if (remove == 0)
     {
-        ApagarVar(v+2);
+        ApagarVar(v + 2);
         ApagarRet(v);
         return true;
     }
@@ -1419,7 +1419,7 @@ bool Instr::FuncTxtRemove(TVariavel * v, int valor)
 /// Função txtconv
 bool Instr::FuncTxtConv(TVariavel * v, int valor)
 {
-    if (VarAtual != v+2)
+    if (VarAtual != v + 2)
         return false;
     const char * texto = v[2].getTxt();
     while (true)
@@ -1437,9 +1437,9 @@ bool Instr::FuncTxtConv(TVariavel * v, int valor)
         char conv2 = texto[1] | 0x20;
         texto = v[1].getTxt();
 
-        if (conv1=='t' && conv2=='u') // "TU" de iso8859-1 para UTF8
+        if (conv1 == 't' && conv2 == 'u') // "TU" de iso8859-1 para UTF8
         {
-            while (*texto && destino < mens+BUF_MENS-2)
+            while (*texto && destino < mens + BUF_MENS - 2)
             {
                 unsigned char ch = *texto++;
                 if (ch < 0x80)
@@ -1454,10 +1454,10 @@ bool Instr::FuncTxtConv(TVariavel * v, int valor)
             return CriarVarTexto(mens, destino-mens);
         }
 
-        if (conv1=='u' && conv2=='t') // "UT" de UTF8 para iso8859-1
+        if (conv1 == 'u' && conv2 == 't') // "UT" de UTF8 para iso8859-1
         {
             int LerUTF8 = 0;
-            while (*texto && destino < mens+BUF_MENS-1)
+            while (*texto && destino < mens + BUF_MENS - 1)
             {
                 int ch = *(unsigned char*)texto++;
                 if (ch < 0x80)
@@ -1489,7 +1489,7 @@ bool Instr::FuncTxtConv(TVariavel * v, int valor)
             while (*texto && destino < mens+BUF_MENS-1)
             {
                 unsigned char ch = *texto++;
-                if (ch>='0' && ch<='9')
+                if (ch >= '0' && ch <= '9')
                     *destino++ = ch;
             }
             if (destino == mens)
@@ -1504,7 +1504,7 @@ bool Instr::FuncTxtConv(TVariavel * v, int valor)
 
         if (conv1 == 't') // Decodifica texto
         {
-            while (*texto && destino < mens+BUF_MENS-2)
+            while (*texto && destino < mens + BUF_MENS - 2)
             {
                 unsigned char ch = *texto++;
                 switch (ch)
@@ -1513,13 +1513,13 @@ bool Instr::FuncTxtConv(TVariavel * v, int valor)
                     break;
                 case ex_barra_c:
                     ch = *texto;
-                    if (ch && (ch<'0' || ch>'9') &&
-                            (ch<'A' || ch>'J') && (ch<'a' || ch>'j'))
+                    if (ch && (ch < '0' || ch > '9') &&
+                            (ch < 'A' || ch > 'J') && (ch < 'a' || ch > 'j'))
                         *destino++ = ch, texto++;
                     break;
                 case ex_barra_d:
                     ch = *texto;
-                    if (ch && (ch<'0' || ch>'7'))
+                    if (ch && (ch < '0' || ch > '7'))
                         *destino++ = ch, texto++;
                     break;
                 case ex_barra_n:
@@ -1603,11 +1603,11 @@ bool Instr::FuncTxtConv(TVariavel * v, int valor)
             {
 
             // Avança até encontrar um dígito de 1 a 9
-                while (*texto && (*texto<'0' || *texto>'9'))
+                while (*texto && (*texto < '0' || *texto > '9'))
                     texto++;
                 if (*texto == 0)
                     break;
-                while (*texto && (*texto<'1' || *texto>'9'))
+                while (*texto && (*texto < '1' || *texto > '9'))
                     texto++;
                 if (*texto == 0)
                 {
@@ -1646,7 +1646,7 @@ bool Instr::FuncTxtConv(TVariavel * v, int valor)
                 for (int y = 1; y < total; y++)
                 {
                     int v = mens[y];
-                    for (int x=y; x>0; x--)
+                    for (int x = y; x > 0; x--)
                     {
                         v += (unsigned char)mens[x-1] * 100;
                         mens[x] = (v & 0xFF);
@@ -1704,7 +1704,7 @@ bool Instr::FuncTxtConv(TVariavel * v, int valor)
                 char ch = *o++;
                 if (ch & 0xE0)
                     *d++ = ch;
-                else if (ch==13)
+                else if (ch == 13)
                 {
                     *d++ = ex_barra_n;
                     if (o < destino)
@@ -1731,9 +1731,9 @@ bool Instr::FuncTxtConv(TVariavel * v, int valor)
             for (const char * o = mens; o < destino; o++)
             {
                 char ch = ((*o >> 4) & 15);
-                *d++ = (ch < 10 ? ch+'0' : ch+'a'-10);
+                *d++ = (ch < 10 ? ch + '0' : ch + 'a' - 10);
                 ch = (*o & 15);
-                *d++ = (ch < 10 ? ch+'0' : ch+'a'-10);
+                *d++ = (ch < 10 ? ch + '0' : ch + 'a' - 10);
             }
             ApagarVar(v);
             return CriarVarTexto(mdest, d-mdest);
@@ -1748,7 +1748,7 @@ bool Instr::FuncTxtConv(TVariavel * v, int valor)
             const int maximo = (BUF_MENS / 4) * 3;
             if (destino > mens + maximo)
                 destino = mens + maximo;
-            for (; o <= destino-3; o+=3)
+            for (; o <= destino - 3; o += 3)
             {
                 int valor = (unsigned char)o[0] * 0x10000 +
                             (unsigned char)o[1] * 0x100 +
@@ -1758,7 +1758,7 @@ bool Instr::FuncTxtConv(TVariavel * v, int valor)
                 *d++ = cod[(valor >> 6) & 63];
                 *d++ = cod[valor & 63];
             }
-            if (o == destino-2)
+            if (o == destino - 2)
             {
                 int valor = (unsigned char)o[0] * 0x400 +
                             (unsigned char)o[1] * 4;
@@ -1767,7 +1767,7 @@ bool Instr::FuncTxtConv(TVariavel * v, int valor)
                 *d++ = cod[valor & 63];
                 *d++ = '=';
             }
-            else if (o == destino-1)
+            else if (o == destino - 1)
             {
                 int valor = (unsigned char)o[0] * 0x10;
                 *d++ = cod[(valor >> 6) & 63];
@@ -1776,17 +1776,17 @@ bool Instr::FuncTxtConv(TVariavel * v, int valor)
                 *d++ = '=';
             }
             ApagarVar(v);
-            return CriarVarTexto(mdest, d-mdest);
+            return CriarVarTexto(mdest, d - mdest);
         }
         else if (conv2 == 'd') // Codifica em decimal
         {
             char mdest[BUF_MENS];
             char * d = mdest + BUF_MENS;
-            while (destino > mens && d > mdest+6)
+            while (destino > mens && d > mdest + 6)
             {
                 char * anota = mens;
                 int valor = 0;
-                for (const char * p = mens; p<destino; p++)
+                for (const char * p = mens; p < destino; p++)
                 {
                     valor = valor * 0x100 + *(unsigned char*)p;
                     if (valor < 1000000)
@@ -1815,12 +1815,12 @@ bool Instr::FuncTxtConv(TVariavel * v, int valor)
         {
             char mdest[BUF_MENS];
             char * d = mdest;
-            if (destino > mens+BUF_MENS/8)
-                destino = mens+BUF_MENS/8;
+            if (destino > mens + BUF_MENS / 8)
+                destino = mens + BUF_MENS / 8;
             for (const char * o = mens; o < destino; o++)
             {
                 unsigned char ch = *o;
-                for (int x=0; x<8; x++,ch<<=1)
+                for (int x = 0; x < 8; x++, ch <<= 1)
                     *d++ = (ch & 0x80 ? '1' : '0');
             }
             ApagarVar(v);
@@ -1835,10 +1835,10 @@ bool Instr::FuncTxtConv(TVariavel * v, int valor)
 bool Instr::FuncTxtChr(TVariavel * v, int valor)
 {
     char mens[2];
-    valor=0;
-    if (VarAtual >= v+1)
-        valor=v[1].getInt();
-    if (valor>=32 && valor<=255)
+    valor = 0;
+    if (VarAtual >= v + 1)
+        valor = v[1].getInt();
+    if (valor >= 32 && valor <= 255)
         mens[0] = valor;
     else
     {
@@ -1851,7 +1851,7 @@ bool Instr::FuncTxtChr(TVariavel * v, int valor)
         default: mens[0] = 0;
         }
     }
-    mens[1]=0;
+    mens[1] = 0;
     ApagarVar(v);
     return CriarVarTexto(mens);
 }
@@ -1861,22 +1861,22 @@ bool Instr::FuncTxtChr(TVariavel * v, int valor)
 bool Instr::FuncIntChr(TVariavel * v, int valor)
 {
     const char * p = "";
-    if (VarAtual >= v+1)
+    if (VarAtual >= v + 1)
     {
         p = v[1].getTxt();
-        if (VarAtual >= v+2)
+        if (VarAtual >= v + 2)
         {
             int cont = v[2].getInt();
-            while (cont>0 && *p)
+            while (cont > 0 && *p)
                 p++,cont--;
         }
     }
     switch (*p)
     {
-    case ex_barra_b: valor=1; break;
-    case ex_barra_c: valor=2; break;
-    case ex_barra_d: valor=3; break;
-    case ex_barra_n: valor=10; break;
+    case ex_barra_b: valor = 1; break;
+    case ex_barra_c: valor = 2; break;
+    case ex_barra_d: valor = 3; break;
+    case ex_barra_n: valor = 10; break;
     default: valor = *(unsigned char*)p;
     }
     ApagarVar(v);
@@ -1888,10 +1888,10 @@ bool Instr::FuncIntChr(TVariavel * v, int valor)
 bool Instr::FuncIntDist(TVariavel * v, int valor)
 {
 // Checa quantidade de argumentos
-    if (VarAtual < v+2)
+    if (VarAtual < v + 2)
     {
         int result = 0;
-        if (VarAtual >= v+1)
+        if (VarAtual >= v + 1)
             result = strlen(v[1].getTxt());
         ApagarVar(v);
         return CriarVarInt(result);
@@ -1906,34 +1906,34 @@ bool Instr::FuncIntDist(TVariavel * v, int valor)
     texto2[0] = 0;
     tam1 = copiastr(texto1+1, v[1].getTxt(), sizeof(texto1)-1) - texto1;
     tam2 = copiastr(texto2+1, v[2].getTxt(), sizeof(texto2)-1) - texto2;
-    if (valor==0)
+    if (valor == 0)
     {
-        for (char * p = texto1+1; *p; p++)
+        for (char * p = texto1 + 1; *p; p++)
             *p = tabCOMPLETO[*(unsigned char*)p];
-        for (char * p = texto2+1; *p; p++)
+        for (char * p = texto2 + 1; *p; p++)
             *p = tabCOMPLETO[*(unsigned char*)p];
     }
-    if (valor==1)
+    if (valor == 1)
     {
-        for (char * p = texto1+1; *p; p++)
+        for (char * p = texto1 + 1; *p; p++)
             *p = tabMAI[*(unsigned char*)p];
-        for (char * p = texto2+1; *p; p++)
+        for (char * p = texto2 + 1; *p; p++)
             *p = tabMAI[*(unsigned char*)p];
     }
 // Obtém a distância
-    for (int x=0; x<tam1; x++)
+    for (int x = 0; x < tam1; x++)
         dist[x] = x;
-    for (int c2=1; c2<tam2; c2++)
+    for (int c2 = 1; c2 < tam2; c2++)
     {
         int antes = dist[0];
         dist[0] = c2;
-        for (int c1=1; c1<tam1; c1++)
+        for (int c1 = 1; c1 < tam1; c1++)
         {
             int atual = antes;
             if (texto1[c1] != texto2[c2])
             {
-                if (atual > dist[c1-1])
-                    atual = dist[c1-1];
+                if (atual > dist[c1 - 1])
+                    atual = dist[c1 - 1];
                 if (atual > dist[c1])
                     atual = dist[c1];
                 atual++;
@@ -1943,7 +1943,7 @@ bool Instr::FuncIntDist(TVariavel * v, int valor)
         }
     }
     ApagarVar(v);
-    return CriarVarInt(dist[tam1-1]);
+    return CriarVarInt(dist[tam1 - 1]);
 }
 
 //----------------------------------------------------------------------------
@@ -1952,13 +1952,13 @@ bool Instr::FuncTxtProc(TVariavel * v, int valor)
 {
     int posic = -1;     // Retorno - posição onde encontrou
     int ini = 0;        // Início
-    while (VarAtual >= v+2)
+    while (VarAtual >= v + 2)
     {
     // Obtém ini
-        if (VarAtual >= v+3)
+        if (VarAtual >= v + 3)
             ini = v[3].getInt();
-        if (ini<0)
-            ini=0;
+        if (ini < 0)
+            ini = 0;
     // Obtém o padrão
         TProcurar proc;
         if (!proc.Padrao(v[2].getTxt(), valor))
@@ -1970,7 +1970,7 @@ bool Instr::FuncTxtProc(TVariavel * v, int valor)
             break;
     // Procura
         posic = proc.Proc(p+ini, tam-ini);
-        if (posic>=0)
+        if (posic >= 0)
             posic += ini;
         break;
     }
@@ -1985,13 +1985,13 @@ bool Instr::FuncTxtProcLin(TVariavel * v, int valor)
 {
     int posic = -1;     // Retorno - posição onde encontrou
     int ini = 0;        // Início
-    while (VarAtual >= v+2)
+    while (VarAtual >= v + 2)
     {
     // Obtém ini
-        if (VarAtual >= v+3)
+        if (VarAtual >= v + 3)
             ini = v[3].getInt();
-        if (ini<0)
-            ini=0;
+        if (ini < 0)
+            ini = 0;
     // Obtém o padrão
         const char * ptemp1 = v[2].getTxt();
         char padrao[4096];
@@ -2014,10 +2014,10 @@ bool Instr::FuncTxtProcLin(TVariavel * v, int valor)
     // Obtém o texto a ser procurado
         const char * txt = v[1].getTxt();
         int linha = ini;
-        while (ini>0 && *txt)
+        while (ini > 0 && *txt)
         {
-            while (*txt && *txt!=ex_barra_n) txt++;
-            if (*txt==ex_barra_n) txt++;
+            while (*txt && *txt != ex_barra_n) txt++;
+            if (*txt == ex_barra_n) txt++;
             ini--;
         }
         if (ini > 0)
@@ -2036,9 +2036,9 @@ bool Instr::FuncTxtProcLin(TVariavel * v, int valor)
                     posic = linha;
                     break;
                 }
-                while (*txt && *txt!=ex_barra_n) txt++;
+                while (*txt && *txt != ex_barra_n) txt++;
                 if (*txt == 0) break;
-                txt++,linha++;
+                txt++, linha++;
             }
         }
         else if (valor == 1)
@@ -2046,7 +2046,7 @@ bool Instr::FuncTxtProcLin(TVariavel * v, int valor)
             while (true)
             {
                 unsigned int r;
-                for (r=0; r<tampadrao; r++)
+                for (r = 0; r < tampadrao; r++)
                     if (padrao[r] != tabMAI[*(unsigned char*)(txt+r)])
                         break;
                 if (r == tampadrao && (txt[r] == 0 || txt[r] == ex_barra_n))
@@ -2054,9 +2054,9 @@ bool Instr::FuncTxtProcLin(TVariavel * v, int valor)
                     posic = linha;
                     break;
                 }
-                while (*txt && *txt!=ex_barra_n) txt++;
+                while (*txt && *txt != ex_barra_n) txt++;
                 if (*txt == 0) break;
-                txt++,linha++;
+                txt++, linha++;
             }
         }
         else
@@ -2069,9 +2069,9 @@ bool Instr::FuncTxtProcLin(TVariavel * v, int valor)
                     posic = linha;
                     break;
                 }
-                while (*txt && *txt!=ex_barra_n) txt++;
+                while (*txt && *txt != ex_barra_n) txt++;
                 if (*txt == 0) break;
-                txt++,linha++;
+                txt++, linha++;
             }
         }
         break;
@@ -2085,21 +2085,21 @@ bool Instr::FuncTxtProcLin(TVariavel * v, int valor)
 /// Troca texto (txttroca)
 bool Instr::FuncTxtTroca(TVariavel * v, int valor)
 {
-    if (VarAtual < v+3)
+    if (VarAtual < v + 3)
         return false;
 // Obtém o padrão
     TProcurar proc;
-    if (DadosTopo+10 >= DadosFim ||
+    if (DadosTopo + 10 >= DadosFim ||
         !proc.Padrao(v[2].getTxt(), valor))
     {
-        ApagarVar(v+2);
+        ApagarVar(v + 2);
         ApagarRet(v);
         return true;
     }
 // Obtém o novo texto
     copiastr(proc.troca, v[3].getTxt(), sizeof(proc.troca));
 // Prepara variáveis
-    ApagarVar(v+2);
+    ApagarVar(v + 2);
     if (!CriarVar(InstrTxtFixo))
         return false;
     VarAtual->endvar = DadosTopo;
@@ -2126,10 +2126,10 @@ bool Instr::FuncTxtSepara(TVariavel * v, int valor)
     unsigned int nummask = 0;
     unsigned int tipoch = 1;  // Tipo de caracter conforme máscara
 // Obtém separador e máscara de bits (opções)
-    separador[0]=' ', separador[1]=0;
-    if (VarAtual >= v+2)
+    separador[0] = ' ', separador[1] = 0;
+    if (VarAtual >= v + 2)
     {
-        if (VarAtual >= v+3)
+        if (VarAtual >= v + 3)
             copiastr(separador, v[3].getTxt(), sizeof(separador));
         const char * opc = v[2].getTxt();
         mask[nummask] = 0;
@@ -2151,18 +2151,18 @@ bool Instr::FuncTxtSepara(TVariavel * v, int valor)
             case 'o': valormask |= 0x20; break;
             case '+': valormask <<= 8; break;
             case ',':
-                if ((valormask&0xFF) && (valormask&0xFF00) &&
+                if ((valormask & 0xFF) && (valormask & 0xFF00) &&
                         nummask < sizeof(mask) / sizeof(mask[0]))
                     mask[nummask++] = valormask & 0xFFFF;
                 valormask = 0;
                 break;
             }
-        if ((valormask&0xFF) && (valormask&0xFF00) &&
+        if ((valormask & 0xFF) && (valormask & 0xFF00) &&
                 nummask < sizeof(mask) / sizeof(mask[0]))
             mask[nummask++] = valormask;
     }
 // Texto original
-    if (VarAtual >= v+1)
+    if (VarAtual >= v + 1)
         txt = v[1].getTxt();
 // Obtém o texto
     const char * pnum = txt-1; // Para detectar número
@@ -2177,33 +2177,33 @@ bool Instr::FuncTxtSepara(TVariavel * v, int valor)
             if (pnum == txt)
                 tipoch |= 0x200;
         // Se for número, avança até o fim do número
-            if ((txt[0]=='-' && txt[1]>='0' && txt[1]<='9') || (tipoch&4))
+            if ((txt[0] == '-' && txt[1] >= '0' && txt[1] <= '9') || (tipoch & 4))
             {
                 tipoch |= 2;
                 pnum = txt+1;
-                while (*pnum>='0' && *pnum<='9')
+                while (*pnum >= '0' && *pnum <= '9')
                     pnum++;
-                if (pnum[0]=='.' && pnum[1]>='0' && pnum[1]<='9')
+                if (pnum[0] == '.' && pnum[1] >= '0' && pnum[1] <= '9')
                 {
                     pnum+=2;
-                    while (*pnum>='0' && *pnum<='9')
+                    while (*pnum >= '0' && *pnum <= '9')
                         pnum++;
                 }
             }
         }
     // Checa se deve acrescentar separador
-        for (unsigned int x=0; x<nummask; x++)
+        for (unsigned int x = 0; x < nummask; x++)
         {
             int valormask = mask[x] & tipoch;
-            if ((valormask&0xFF)==0 || (valormask&0xFF00)==0)
+            if ((valormask & 0xFF) == 0 || (valormask & 0xFF00) == 0)
                 continue;
             const char * p = separador;
-            while (*p && destino<mens+sizeof(mens))
+            while (*p && destino < mens + sizeof(mens))
                 *destino++ = *p++;
             break;
         }
     // Anota texto
-        if (*txt==0 || destino >= mens+sizeof(mens))
+        if (*txt == 0 || destino >= mens+sizeof(mens))
             break;
         *destino++ = *txt++;
     }
@@ -2216,19 +2216,19 @@ bool Instr::FuncTxtSepara(TVariavel * v, int valor)
 /// Funções objantes e objdepois
 bool Instr::FuncAntesDepois(TVariavel * v, int valor)
 {
-    if (VarAtual < v+1)
+    if (VarAtual < v + 1)
         return false;
 // Obtém objeto
     TObjeto * obj = v[1].getObj();
-    if (obj==0)
+    if (obj == nullptr)
         return false;
 // Obtém objeto anterior ou próximo
-    if (valor==0)
+    if (valor == 0)
         obj = obj->Antes;
     else
         obj = obj->Depois;
 // Anota objeto
-    if (obj==0)
+    if (obj == nullptr)
         return false;
     ApagarVar(v);
     if (!CriarVar(InstrVarObjeto))
@@ -2242,8 +2242,8 @@ bool Instr::FuncAntesDepois(TVariavel * v, int valor)
 bool Instr::FuncTotal(TVariavel * v, int valor)
 {
     int tamanho = 0;
-    TObjeto * obj = 0;
-    for (TVariavel * var = v+1; var<=VarAtual && obj==0; var++)
+    TObjeto * obj = nullptr;
+    for (TVariavel * var = v + 1; var <= VarAtual && obj == nullptr; var++)
         switch (var->Tipo())
         {
         case varOutros:

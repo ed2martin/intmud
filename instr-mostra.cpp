@@ -28,12 +28,12 @@ using namespace Instr;
  */
 bool Instr::Mostra(char * destino, const char * origem, int tamanho)
 {
-    int  expr=0;   // Índice da expressão numérica, 0=não há
-    int  coment=0; // Índice do comentário, 0=não há
-    char nome[VAR_NOME_TAM+20]; // Nome da instrução
+    int  expr = 0;   // Índice da expressão numérica, 0=não há
+    int  coment = 0; // Índice do comentário, 0=não há
+    char nome[VAR_NOME_TAM + 20]; // Nome da instrução
     char * perro = destino;
-    *nome=0;
-    *destino=0;
+    *nome = 0;
+    *destino = 0;
 
 // Comentário em variáveis
     if (origem[2] >= cVariaveis || origem[2] == cRefVar)
@@ -41,7 +41,7 @@ bool Instr::Mostra(char * destino, const char * origem, int tamanho)
         expr = origem[endIndice];
         if (expr == 0)
         {
-            for (coment=endNome; origem[coment]; coment++);
+            for (coment = endNome; origem[coment]; coment++);
             coment++;
         }
     }
@@ -51,26 +51,26 @@ bool Instr::Mostra(char * destino, const char * origem, int tamanho)
     {
     case cHerda:         // 1 byte = número de classes
         {
-            const char * p = origem+endVar+1;
+            const char * p = origem + endVar + 1;
             for (int total=(unsigned char)origem[endVar]; total; total--)
                 while (*p++);
-            if (p-origem+10 > tamanho)
+            if (p - origem + 10 > tamanho)
             {
                 copiastr(perro, "Espaço insuficiente");
                 return false;
             }
             destino = copiastr(destino, "herda ");
-            for (origem+=endVar+1; origem<p; origem++,destino++)
-                *destino = (*origem==0 ? ',' : *origem);
-            destino[-1]=0;
+            for (origem += endVar + 1; origem < p; origem++, destino++)
+                *destino = (*origem == 0 ? ',' : *origem);
+            destino[-1] = 0;
         }
         return true;
     case cExpr:  // Expressão numérica pura
         strcpy(nome, "=");
-        expr=endVar;
+        expr = endVar;
         break;
     case cComent: // Comentário
-        if ((int)strlen(origem+endVar) + endVar > tamanho)
+        if ((int)strlen(origem + endVar) + endVar > tamanho)
         {
             copiastr(perro, "Espaço insuficiente");
             return false;
@@ -79,25 +79,25 @@ bool Instr::Mostra(char * destino, const char * origem, int tamanho)
         return true;
 
 // Constrole de fluxo
-    case cSe:        strcpy(nome, "se");        expr=endVar+2; break;
-    case cSenao1:    strcpy(nome, "senao");     coment=endVar+2; break;
-    case cSenao2:    strcpy(nome, "senao");     expr=endVar+2; break;
-    case cFimSe:     strcpy(nome, "fimse");     coment=endVar; break;
-    case cEnquanto:  strcpy(nome, "enquanto");  expr=endVar+2; break;
-    case cEPara:     strcpy(nome, "epara ");    expr=endVar+6; break;
-    case cEFim:      strcpy(nome, "efim");      coment=endVar+2; break;
-    case cCasoVar:   strcpy(nome, "casovar ");  expr=endVar+2; break;
+    case cSe:        strcpy(nome, "se");        expr = endVar + 2; break;
+    case cSenao1:    strcpy(nome, "senao");     coment = endVar + 2; break;
+    case cSenao2:    strcpy(nome, "senao");     expr = endVar + 2; break;
+    case cFimSe:     strcpy(nome, "fimse");     coment = endVar; break;
+    case cEnquanto:  strcpy(nome, "enquanto");  expr = endVar + 2; break;
+    case cEPara:     strcpy(nome, "epara ");    expr = endVar + 6; break;
+    case cEFim:      strcpy(nome, "efim");      coment = endVar + 2; break;
+    case cCasoVar:   strcpy(nome, "casovar ");  expr = endVar + 2; break;
     case cCasoSe:
-        if (tamanho<11)
+        if (tamanho < 11)
         {
             copiastr(perro, "Espaço insuficiente");
             return false;
         }
         strcpy(destino, "casose \"");
-        tamanho-=8, destino+=8;
-        for (coment=endVar+4; origem[coment]; coment++)
+        tamanho -= 8, destino += 8;
+        for (coment = endVar + 4; origem[coment]; coment++)
         {
-            if (tamanho<3)
+            if (tamanho < 3)
             {
                 copiastr(perro, "Espaço insuficiente");
                 return false;
@@ -107,51 +107,51 @@ bool Instr::Mostra(char * destino, const char * origem, int tamanho)
             case ex_barra_n:
                 destino[0] = '\\';
                 destino[1] = 'n';
-                destino+=2, tamanho-=2;
+                destino += 2, tamanho -= 2;
                 break;
             case ex_barra_b:
                 destino[0] = '\\';
                 destino[1] = 'b';
-                destino+=2, tamanho-=2;
+                destino += 2, tamanho -= 2;
                 break;
             case ex_barra_c:
                 destino[0] = '\\';
                 destino[1] = 'c';
-                destino+=2, tamanho-=2;
+                destino += 2, tamanho -= 2;
                 break;
             case ex_barra_d:
                 destino[0] = '\\';
                 destino[1] = 'd';
-                destino+=2, tamanho-=2;
+                destino += 2, tamanho -= 2;
                 break;
             case '\"':
             case '\\':
-                *destino++='\\', tamanho--;
+                *destino++ = '\\', tamanho--;
             default:
-                *destino++=origem[coment], tamanho--;
+                *destino++ = origem[coment], tamanho--;
             }
         }
         *destino++ = '\"';
         *destino = 0;
         coment++;
         break;
-    case cCasoSePadrao: strcpy(nome, "casose");    coment=endVar; break;
-    case cCasoFim:      strcpy(nome, "casofim");   coment=endVar; break;
-    case cRet1:         strcpy(nome, "ret");       coment=endVar; break;
-    case cRet2:         strcpy(nome, "ret");       expr=endVar; break;
-    case cSair1:        strcpy(nome, "sair");      coment=endVar+2; break;
-    case cSair2:        strcpy(nome, "sair");      expr=endVar+2; break;
-    case cContinuar1:   strcpy(nome, "continuar"); coment=endVar+2; break;
-    case cContinuar2:   strcpy(nome, "continuar"); expr=endVar+2; break;
-    case cTerminar:     strcpy(nome, "terminar");  coment=endVar; break;
+    case cCasoSePadrao: strcpy(nome, "casose");    coment = endVar; break;
+    case cCasoFim:      strcpy(nome, "casofim");   coment = endVar; break;
+    case cRet1:         strcpy(nome, "ret");       coment = endVar; break;
+    case cRet2:         strcpy(nome, "ret");       expr = endVar; break;
+    case cSair1:        strcpy(nome, "sair");      coment = endVar + 2; break;
+    case cSair2:        strcpy(nome, "sair");      expr = endVar + 2; break;
+    case cContinuar1:   strcpy(nome, "continuar"); coment = endVar + 2; break;
+    case cContinuar2:   strcpy(nome, "continuar"); expr = endVar + 2; break;
+    case cTerminar:     strcpy(nome, "terminar");  coment = endVar; break;
 
 // Variáveis
     case cVariaveis: break;
     case cTxt1:
-        sprintf(nome, "txt%d", (unsigned char)origem[endIndice]+1);
+        sprintf(nome, "txt%d", (unsigned char)origem[endIndice] + 1);
         break;
     case cTxt2:
-        sprintf(nome, "txt%d", (unsigned char)origem[endIndice]+257);
+        sprintf(nome, "txt%d", (unsigned char)origem[endIndice] + 257);
         break;
     case cInt1:      strcpy(nome, "int1"); break;
     case cInt8:      strcpy(nome, "int8"); break;
@@ -165,12 +165,12 @@ bool Instr::Mostra(char * destino, const char * origem, int tamanho)
     case cReal:      strcpy(nome, "real"); break;
     case cReal2:     strcpy(nome, "real2"); break;
     case cRef:       strcpy(nome, "ref"); break;
-    case cRefVar:    strcpy(nome, "refvar"); coment=0; break;
-    case cConstNulo: strcpy(nome, "const (nulo)"); coment=0; break;
-    case cConstTxt:  strcpy(nome, "const (txt)"); coment=0; break;
-    case cConstNum:  strcpy(nome, "const (num)"); coment=0; break;
-    case cConstExpr: strcpy(nome, "const"); coment=0; break;
-    case cConstVar:  strcpy(nome, "varconst"); coment=0; break;
+    case cRefVar:    strcpy(nome, "refvar"); coment = 0; break;
+    case cConstNulo: strcpy(nome, "const (nulo)"); coment = 0; break;
+    case cConstTxt:  strcpy(nome, "const (txt)"); coment = 0; break;
+    case cConstNum:  strcpy(nome, "const (num)"); coment = 0; break;
+    case cConstExpr: strcpy(nome, "const"); coment = 0; break;
+    case cConstVar:  strcpy(nome, "varconst"); coment = 0; break;
     case cFunc:      strcpy(nome, "func"); break;
     case cVarFunc:   strcpy(nome, "varfunc"); break;
 
@@ -205,14 +205,14 @@ bool Instr::Mostra(char * destino, const char * origem, int tamanho)
     }
 
 // Copia nome da instrução ou variável
-    if (origem[2]>cVariaveis || origem[2]==cRefVar)
+    if (origem[2] > cVariaveis || origem[2] == cRefVar)
     {
-        if ((int)strlen(nome) + (int)strlen(origem+endNome) + 2 > tamanho)
+        if ((int)strlen(nome) + (int)strlen(origem + endNome) + 2 > tamanho)
         {
             copiastr(perro, "Espaço insuficiente");
             return false;
         }
-        sprintf(destino, "%s %s", nome, origem+endNome);
+        sprintf(destino, "%s %s", nome, origem + endNome);
     }
     else if (*nome)
     {
@@ -227,13 +227,13 @@ bool Instr::Mostra(char * destino, const char * origem, int tamanho)
        destino++, tamanho--;
 
 // Constantes - obtém o índice
-    if (origem[2]==cConstNulo || origem[2]==cConstTxt ||
-        origem[2]==cConstNum  || origem[2]==cConstExpr ||
-        origem[2]==cConstVar  || origem[2]==cRefVar)
+    if (origem[2] == cConstNulo || origem[2] == cConstTxt ||
+        origem[2] == cConstNum  || origem[2] == cConstExpr ||
+        origem[2] == cConstVar  || origem[2] == cRefVar)
     {
-        expr=endNome;
+        expr = endNome;
         while (origem[expr++]);
-        if (tamanho<3)
+        if (tamanho < 3)
         {
             copiastr(perro, "Espaço insuficiente");
             return false;
@@ -247,8 +247,8 @@ bool Instr::Mostra(char * destino, const char * origem, int tamanho)
     if (coment)
     {
         int total = Num16(origem) - coment;
-        assert(total>=0);
-        if (total>0)
+        assert(total >= 0);
+        if (total > 0)
         {
             if (total + 5 > tamanho)
             {
@@ -259,9 +259,9 @@ bool Instr::Mostra(char * destino, const char * origem, int tamanho)
             destino[1] = '#';
             destino[2] = ' ';
             if (total>0)
-                memcpy(destino+3, origem+coment, total);
+                memcpy(destino + 3, origem+coment, total);
         }
-        destino[3+total]=0;
+        destino[3 + total]=0;
         return true;
     }
 
@@ -278,13 +278,13 @@ bool Instr::Mostra(char * destino, const char * origem, int tamanho)
         switch (*origem)
         {
         case ex_fim:
-            *destino=0;
+            *destino = 0;
             return true;
         case ex_coment: // Comentário
-            if (tamanho<4)
+            if (tamanho < 4)
                 return false;
             strcpy(destino, " # ");
-            destino+=3, tamanho-=3;
+            destino += 3, tamanho -= 3;
             for (origem++; *origem; origem++)
             {
                 if (tamanho<2 || *(unsigned char*)origem < ' ')
@@ -292,7 +292,7 @@ bool Instr::Mostra(char * destino, const char * origem, int tamanho)
                 *destino = *origem;
                 destino++, tamanho--;
             }
-            *destino=0;
+            *destino = 0;
             return true;
 
         // Nome de variável ou função (um texto)
@@ -309,18 +309,18 @@ bool Instr::Mostra(char * destino, const char * origem, int tamanho)
         case ex_doispontos:  // Dois pontos
         case ex_ponto:       // Fim do nome da variável
         case ex_fecha:       // Fecha colchetes
-            if (tamanho<20)
+            if (tamanho < 20)
                 return false;
-            if (*origem==ex_varlocal)
+            if (*origem == ex_varlocal)
             {
                 origem++;
                 sprintf(destino, " (varlocal %d)", *(unsigned char*)origem);
             }
-            else if (*origem==ex_varini)
+            else if (*origem == ex_varini)
                 strcpy(destino, " (varini) ");
-            else if (*origem==ex_ponto)
+            else if (*origem == ex_ponto)
                 strcpy(destino, " (ponto) ");
-            else if (*origem==ex_doispontos)
+            else if (*origem == ex_doispontos)
                 strcpy(destino, " (:) ");
             else
                 strcpy(destino, " ]");
@@ -328,7 +328,7 @@ bool Instr::Mostra(char * destino, const char * origem, int tamanho)
                 destino++, tamanho--;
             for (origem++; *(unsigned char*)origem>=' '; )
             {
-                if (tamanho<2)
+                if (tamanho < 2)
                     return false;
                 *destino++ = *origem++;
             }
@@ -347,12 +347,12 @@ bool Instr::Mostra(char * destino, const char * origem, int tamanho)
             strcpy(nome, "\"");
             while (true)
             {
-                if (tamanho<3)
+                if (tamanho < 3)
                 {
-                    *destino=0;
+                    *destino = 0;
                     return false;
                 }
-                if (*origem==0)
+                if (*origem == 0)
                     break;
                 switch (*origem)
                 {
@@ -362,32 +362,32 @@ bool Instr::Mostra(char * destino, const char * origem, int tamanho)
                 case ex_barra_n:
                     destino[0] = '\\';
                     destino[1] = 'n';
-                    destino+=2, tamanho-=2;
+                    destino += 2, tamanho -= 2;
                     break;
                 case ex_barra_b:
                     destino[0] = '\\';
                     destino[1] = 'b';
-                    destino+=2, tamanho-=2;
+                    destino += 2, tamanho -= 2;
                     break;
                 case ex_barra_c:
                     destino[0] = '\\';
                     destino[1] = 'c';
-                    destino+=2, tamanho-=2;
+                    destino += 2, tamanho -= 2;
                     break;
                 case ex_barra_d:
                     destino[0] = '\\';
                     destino[1] = 'd';
-                    destino+=2, tamanho-=2;
+                    destino += 2, tamanho -= 2;
                     break;
                 case '\"':
                 case '\\':
-                    *destino++= '\\', tamanho--;
+                    *destino++ = '\\', tamanho--;
                 default:
                     if (*(unsigned char*)origem >= ' ')
                         *destino++ = *origem, tamanho--;
                     else
                     {
-                        *destino=0;
+                        *destino = 0;
                         return false;
                     }
                 }
@@ -401,23 +401,23 @@ bool Instr::Mostra(char * destino, const char * origem, int tamanho)
             origem++;
             break;
         case ex_num16p:
-            sprintf(nome, " %u", Num16(origem+1));
-            origem+=2;
+            sprintf(nome, " %u", Num16(origem + 1));
+            origem += 2;
             break;
         case ex_num32p:
-            sprintf(nome, " %u", Num32(origem+1));
-            origem+=4;
+            sprintf(nome, " %u", Num32(origem + 1));
+            origem += 4;
             break;
         case ex_num8n:
             sprintf(nome, " -%u", (unsigned char)origem[1]);
             origem++;
             break;
         case ex_num16n:
-            sprintf(nome, " -%u", Num16(origem+1));
-            origem+=2;
+            sprintf(nome, " -%u", Num16(origem + 1));
+            origem += 2;
             break;
         case ex_num32n:
-            sprintf(nome, " -%u", Num32(origem+1));
+            sprintf(nome, " -%u", Num32(origem + 1));
             origem+=4;
             break;
         case ex_num8hexp:
@@ -425,24 +425,24 @@ bool Instr::Mostra(char * destino, const char * origem, int tamanho)
             origem++;
             break;
         case ex_num16hexp:
-            sprintf(nome, " 0x%X", Num16(origem+1));
-            origem+=2;
+            sprintf(nome, " 0x%X", Num16(origem + 1));
+            origem += 2;
             break;
         case ex_num32hexp:
-            sprintf(nome, " 0x%X", Num32(origem+1));
-            origem+=4;
+            sprintf(nome, " 0x%X", Num32(origem + 1));
+            origem += 4;
             break;
         case ex_num8hexn:
             sprintf(nome, " -0x%X", (unsigned char)origem[1]);
             origem++;
             break;
         case ex_num16hexn:
-            sprintf(nome, " -0x%X", Num16(origem+1));
-            origem+=2;
+            sprintf(nome, " -0x%X", Num16(origem + 1));
+            origem += 2;
             break;
         case ex_num32hexn:
-            sprintf(nome, " -0x%X", Num32(origem+1));
-            origem+=4;
+            sprintf(nome, " -0x%X", Num32(origem + 1));
+            origem += 4;
             break;
         case ex_div1:        strcpy(nome, " /10"); break;
         case ex_div2:        strcpy(nome, " /100"); break;
@@ -510,13 +510,13 @@ bool Instr::Mostra(char * destino, const char * origem, int tamanho)
         case ex_barra_c:    // \c - usado em textos
         case ex_barra_d:    // \d - usado em textos
         default:            // Caracter desconhecido
-            *destino=0;
+            *destino = 0;
             return false;
         }
         origem++;
-        if ((int)strlen(nome)+4 > tamanho)
+        if ((int)strlen(nome) + 4 > tamanho)
         {
-            *destino=0;
+            *destino = 0;
             return false;
         }
         strcpy(destino, nome);

@@ -58,17 +58,17 @@ public:
 };
 
 //----------------------------------------------------------------------------
-TClasse * TClasse::ClInic=0;
+TClasse * TClasse::ClInic = nullptr;
 
 //----------------------------------------------------------------------------
 TClasseVar::TClasseVar()
 {
-    InstrVar=0;
-    IndiceVar=0;
-    NumVar=0;
-    Vars=0;
-    TamVars=0;
-    al=0;
+    InstrVar = nullptr;
+    IndiceVar = nullptr;
+    NumVar = 0;
+    Vars = nullptr;
+    TamVars = 0;
+    al = nullptr;
 }
 
 //----------------------------------------------------------------------------
@@ -83,24 +83,24 @@ TClasseVar::~TClasseVar()
 //----------------------------------------------------------------------------
 TClasse::TClasse(const char * nome, TArqMapa * arquivo)
 {
-    Comandos=0;
+    Comandos = nullptr;
     copiastr(Nome, nome, sizeof(Nome));
-    ListaDeriv=0;
-    NumDeriv=0;
-    InstrVar=0;
-    IndiceVar=0;
-    NumVar=0;
-    ObjetoIni=0;
-    ObjetoFim=0;
-    NumObj=0;
-    TamObj=0;
-    TamVars=0;
-    Vars=0;
-    ArqArquivo=0;
+    ListaDeriv = nullptr;
+    NumDeriv = 0;
+    InstrVar = nullptr;
+    IndiceVar = nullptr;
+    NumVar = 0;
+    ObjetoIni = nullptr;
+    ObjetoFim = nullptr;
+    NumObj = 0;
+    TamObj = 0;
+    TamVars = 0;
+    Vars = nullptr;
+    ArqArquivo = nullptr;
     RBinsert();
     ArqArquivo = arquivo;
     ArqAntes = arquivo->ClFim;
-    ArqDepois = 0;
+    ArqDepois = nullptr;
     arquivo->ClFim = this;
     (ArqAntes ? ArqAntes->ArqDepois : arquivo->ClInicio) = this;
     arquivo->Mudou = true;
@@ -129,7 +129,7 @@ TClasse::~TClasse()
     {
     // Chama destrutores das variáveis
         TVariavel v;
-        for (int x=(int)NumVar-1; x>=0; x--)
+        for (int x= (int)NumVar - 1; x >= 0; x--)
             if (InstrVar[x][2] > Instr::cVarFunc &&
                     (IndiceVar[x] & 0x400000))
             {
@@ -139,12 +139,12 @@ TClasse::~TClasse()
             }
     // Libera memória
         delete[] Vars;
-        Vars=0;
+        Vars = nullptr;
     }
 // Retira classe de ListaDeriv das outras classes
     TClasse * buf[HERDA_TAM];
     int total = Heranca(buf, HERDA_TAM);
-    for (int x=0; x<total; x++)
+    for (int x = 0; x < total; x++)
         buf[x]->RetiraDeriv(this);
 // Remove da RBT
     RBremove();
@@ -171,18 +171,18 @@ bool TClasse::NomeValido(char * nome)
         if (tabNOMES1[*(unsigned char*)o]==0)
             return false;
 // Avança para início do nome
-    for (o=nome; *o==' '; o++);
-    if (*o>='0' && *o<='9')
+    for (o = nome; *o == ' '; o++);
+    if (*o >= '0' && *o <= '9')
         return false;
 // Retira espaços desnecessários
     d=nome;
     for (; *o; o++)
-        if (*o!=' ' || (o[1]!=' ' && o[1]))
-            *d++=*o;
-    *d=0;
+        if (*o != ' ' || (o[1] != ' ' && o[1]))
+            *d++ = *o;
+    *d = 0;
 // Checa tamanho do nome
-    TClasse * cl=0; // Apenas para sizeof(TClasse::Nome)
-    if (d==nome || d-nome >= (int)sizeof(cl->Nome))
+    TClasse * cl = nullptr; // Apenas para sizeof(TClasse::Nome)
+    if (d == nome || d - nome >= (int)sizeof(cl->Nome))
         return false;
     return true;
 }
@@ -190,11 +190,11 @@ bool TClasse::NomeValido(char * nome)
 //----------------------------------------------------------------------------
 char * TClasse::NomeDef(char * texto)
 {
-    while (*texto==' ') texto++;
-    if (compara(texto, "classe ", 7)!=0)
+    while (*texto == ' ') texto++;
+    if (compara(texto, "classe ", 7) != 0)
         return 0;
     texto += 6;
-    while (*texto==' ') texto++;
+    while (*texto == ' ') texto++;
     return (tabNOMES1[*(unsigned char*)texto] ? texto : 0);
 }
 
@@ -229,11 +229,11 @@ void TClasse::MudaNome(const char * novonome)
 
     // Monta a instrução herda com o novo nome da classe
         assert(cl->Comandos[2] == Instr::cHerda);
-        memcpy(txtherda, cl->Comandos, Instr::endVar+1);
+        memcpy(txtherda, cl->Comandos, Instr::endVar + 1);
         const char * o = cl->Comandos + Instr::endVar + 1;
         char * d = txtherda + Instr::endVar + 1;
         bool mudounome = false;
-        for (int total=(unsigned char)txtherda[Instr::endVar]; total; total--)
+        for (int total = (unsigned char)txtherda[Instr::endVar]; total; total--)
         {
             if (strcmp(o, nomeantes) == 0)
             {
@@ -279,17 +279,17 @@ void TClasse::MudaNome(const char * novonome)
     // Acerta endereços das variáveis na classe herdada
         long long enddif = pnovo - ini;
         assert(ini + enddif == pnovo);
-        for (unsigned int y=0; y<cl->NumVar; y++)
+        for (unsigned int y = 0; y < cl->NumVar; y++)
             if (cl->InstrVar[y] >= ini &&
                         cl->InstrVar[y] < fim)
                 cl->InstrVar[y] += enddif;
 
     // Acerta endereços das variáveis nas outras classes
-        for (unsigned int numd=0; numd < cl->NumDeriv; numd++)
+        for (unsigned int numd = 0; numd < cl->NumDeriv; numd++)
         {
             TClasse * deriv = cl->ListaDeriv[numd];
             //printf("  Ajustando classe %s\n", deriv->Nome); fflush(stdout);
-            for (unsigned int y=0; y<deriv->NumVar; y++)
+            for (unsigned int y = 0; y < deriv->NumVar; y++)
                 if (deriv->InstrVar[y] >= ini &&
                         deriv->InstrVar[y] < fim)
                     deriv->InstrVar[y] += enddif;
@@ -306,7 +306,7 @@ void TClasse::MudaNome(const char * novonome)
         ArqArquivo->Mudou = true; \
     } \
     ArqArquivo = arquivo; \
-    if (arquivo==0) \
+    if (arquivo == nullptr) \
         return; \
     arquivo->Mudou = true;
 
@@ -317,7 +317,7 @@ void TClasse::MoveArquivo(TArqMapa * arquivo)
         return;
     REMOVE_ARQ
     ArqAntes = arquivo->ClFim;
-    ArqDepois = 0;
+    ArqDepois = nullptr;
     arquivo->ClFim = this;
     (ArqAntes ? ArqAntes->ArqDepois : arquivo->ClInicio) = this;
 }
@@ -328,7 +328,7 @@ void TClasse::MoveArqIni(TArqMapa * arquivo)
     if (arquivo->ClInicio == this)
         return;
     REMOVE_ARQ;
-    ArqAntes = 0;
+    ArqAntes = nullptr;
     ArqDepois = arquivo->ClInicio;
     arquivo->ClInicio = this;
     (ArqDepois ? ArqDepois->ArqAntes : arquivo->ClFim) = this;
@@ -341,7 +341,7 @@ void TClasse::MoveArqFim(TArqMapa * arquivo)
         return;
     REMOVE_ARQ;
     ArqAntes = arquivo->ClFim;
-    ArqDepois = 0;
+    ArqDepois = nullptr;
     arquivo->ClFim = this;
     (ArqAntes ? ArqAntes->ArqDepois : arquivo->ClInicio) = this;
 }
@@ -349,7 +349,7 @@ void TClasse::MoveArqFim(TArqMapa * arquivo)
 //----------------------------------------------------------------------------
 void TClasse::MoveArqAntes(TClasse * cl)
 {
-    if (cl==0 || cl==this || cl->ArqAntes==this)
+    if (cl == nullptr || cl == this || cl->ArqAntes == this)
         return;
     TArqMapa * arquivo = cl->ArqArquivo;
     REMOVE_ARQ;
@@ -362,7 +362,7 @@ void TClasse::MoveArqAntes(TClasse * cl)
 //----------------------------------------------------------------------------
 void TClasse::MoveArqDepois(TClasse * cl)
 {
-    if (cl==0 || cl==this || cl->ArqDepois==this)
+    if (cl == nullptr || cl == this || cl->ArqDepois == this)
         return;
     TArqMapa * arquivo = cl->ArqArquivo;
     REMOVE_ARQ;
@@ -392,7 +392,7 @@ bool TClasse::AcertaComandosFim(int valor)
 //----------------------------------------------------------------------------
 void TClasse::AcertaComandos(char * comandos)
 {
-    if (comandos==0)
+    if (comandos == nullptr)
         return;
 
     char * x;
@@ -404,7 +404,7 @@ void TClasse::AcertaComandos(char * comandos)
 
 // Primeiro zera endereços de desvio e acerta alinhamento
     int indent = 0;
-    for (char * p = comandos; p[0] || p[1]; p+=Num16(p))
+    for (char * p = comandos; p[0] || p[1]; p += Num16(p))
     {
         switch (p[2]) // Alinhamento
         {
@@ -440,7 +440,7 @@ void TClasse::AcertaComandos(char * comandos)
         case Instr::cSenao2:
         case Instr::cCasoSe:
         case Instr::cCasoSePadrao:
-            p[Instr::endAlin] = (indent<2 ? 1 : indent-1);
+            p[Instr::endAlin] = (indent < 2 ? 1 : indent - 1);
             break;
         default:
             p[Instr::endAlin] = indent;
@@ -466,21 +466,21 @@ void TClasse::AcertaComandos(char * comandos)
     }
 
 // Acerta endereços de desvio conforme instruções
-    for (char * p = comandos; p[0] || p[1]; p+=Num16(p))
+    for (char * p = comandos; p[0] || p[1]; p += Num16(p))
         switch (p[2])
         {
         case Instr::cSe:
         case Instr::cSenao1:
         case Instr::cSenao2:
             nivelse=0;
-            for (x=p+Num16(p); x[0] || x[1]; x+=Num16(x))
+            for (x=p+Num16(p); x[0] || x[1]; x += Num16(x))
             {
                 if (AcertaComandosFim(x[2]))
                     break;
                 if (x[2]==Instr::cSe)
                     nivelse++;
-                else if (nivelse==0 && (x[2]==Instr::cSenao1 ||
-                                        x[2]==Instr::cSenao2))
+                else if (nivelse == 0 && (x[2] == Instr::cSenao1 ||
+                                          x[2] == Instr::cSenao2))
                     break;
                 else if (x[2]==Instr::cFimSe)
                 {
@@ -489,69 +489,69 @@ void TClasse::AcertaComandos(char * comandos)
                     nivelse--;
                 }
             }
-            if (x-p >= 0x10000)
-                x = p+Num16(p);
-            p[Instr::endVar]   = (x-p);
-            p[Instr::endVar+1] = (x-p)>>8;
+            if (x - p >= 0x10000)
+                x = p + Num16(p);
+            p[Instr::endVar]     = (x-p);
+            p[Instr::endVar + 1] = (x-p)>>8;
             break;
         case Instr::cEnquanto:
         case Instr::cEPara:
             nivelse=0;
-            for (x=p+Num16(p); x[0] || x[1]; x+=Num16(x))
+            for (x = p+Num16(p); x[0] || x[1]; x += Num16(x))
             {
                 if (AcertaComandosFim(x[2]))
                     break;
-                if (x[2]==Instr::cEnquanto || x[2]==Instr::cEPara)
+                if (x[2] == Instr::cEnquanto || x[2] == Instr::cEPara)
                     nivelse++;
-                else if (x[2]==Instr::cContinuar1 ||
-                         x[2]==Instr::cContinuar2)
+                else if (x[2] == Instr::cContinuar1 ||
+                         x[2] == Instr::cContinuar2)
                 {
                     int valor = x-p;
-                    if (valor>0x10000) valor=0;
-                    x[Instr::endVar]   = valor;
-                    x[Instr::endVar+1] = valor >> 8;
+                    if (valor > 0x10000) valor=0;
+                    x[Instr::endVar]     = valor;
+                    x[Instr::endVar + 1] = valor >> 8;
                 }
-                else if (x[2]==Instr::cEFim)
+                else if (x[2] == Instr::cEFim)
                 {
                     if (nivelse)
                     {
                         nivelse--;
                         continue;
                     }
-                    int valor = x-p;
-                    if (valor>0x10000) valor=0;
-                    x[Instr::endVar]   = valor;
-                    x[Instr::endVar+1] = valor >> 8;
+                    int valor = x - p;
+                    if (valor > 0x10000) valor=0;
+                    x[Instr::endVar]     = valor;
+                    x[Instr::endVar + 1] = valor >> 8;
                     x+=Num16(x);
                     break;
                 }
             }
-            if (x-p >= 0x10000)
-                x = p+Num16(p);
-            p[Instr::endVar]   = (x-p);
-            p[Instr::endVar+1] = (x-p)>>8;
+            if (x - p >= 0x10000)
+                x = p + Num16(p);
+            p[Instr::endVar]     = (x - p);
+            p[Instr::endVar + 1] = (x - p) >> 8;
             break;
         case Instr::cCasoVar:
-            nivelse=0;
-            casopadrao=0;
-            casonum=0;
-            for (x=p+Num16(p); x[0] || x[1]; x+=Num16(x))
+            nivelse = 0;
+            casopadrao = nullptr;
+            casonum = 0;
+            for (x = p + Num16(p); x[0] || x[1]; x += Num16(x))
             {
                 if (AcertaComandosFim(x[2]))
                     break;
-                if (x[2]==Instr::cCasoVar)
+                if (x[2] == Instr::cCasoVar)
                     nivelse++;
-                else if (x[2]==Instr::cCasoSePadrao)
+                else if (x[2] == Instr::cCasoSePadrao)
                 {
-                    if (nivelse==0)
-                        casopadrao=x;
+                    if (nivelse == 0)
+                        casopadrao = x;
                 }
-                else if (x[2]==Instr::cCasoSe)
+                else if (x[2] == Instr::cCasoSe)
                 {
-                    if (nivelse==0 && casonum<sizeof(caso1)/sizeof(caso1[0]))
-                        caso1[casonum++]=x;
+                    if (nivelse == 0 && casonum<sizeof(caso1)/sizeof(caso1[0]))
+                        caso1[casonum++] = x;
                 }
-                else if (x[2]==Instr::cCasoFim)
+                else if (x[2] == Instr::cCasoFim)
                 {
                     if (nivelse)
                     {
@@ -559,29 +559,29 @@ void TClasse::AcertaComandos(char * comandos)
                         continue;
                     }
                 // Acerta casopadrao
-                    if (casopadrao==0)
-                        casopadrao=x;
+                    if (casopadrao == nullptr)
+                        casopadrao = x;
                 // Verifica se existe algum casose
-                    if (casonum==0)
+                    if (casonum == 0)
                     {
-                        p[Instr::endVar]   = (casopadrao-p);
-                        p[Instr::endVar+1] = (casopadrao-p) >> 8;
+                        p[Instr::endVar]     = (casopadrao - p);
+                        p[Instr::endVar + 1] = (casopadrao - p) >> 8;
                         break;
                     }
                 // Organiza caso1 em ordem alfabética; resultado em var1
                     char ** var1 = caso1;
                     char ** var2 = caso2;
-                    for (unsigned int a=1; a<casonum; a+=a)
+                    for (unsigned int a = 1; a < casonum; a += a)
                     {
                         char ** pont = var2;
                         var2 = var1;
                         var1 = pont;
-                        int lido=0;
-                        for (unsigned int b=0; b<casonum; )
+                        int lido = 0;
+                        for (unsigned int b = 0; b<casonum; )
                         {
-                            unsigned int b1=b, b2=b+a;
+                            unsigned int b1 = b, b2 = b + a;
                             b = b2;
-                            while (b1<b && b2<b+a && b2<casonum)
+                            while (b1 < b && b2 < b + a && b2 < casonum)
                             {
                                 if (strcmp(var2[b1] + Instr::endVar + 4,
                                            var2[b2] + Instr::endVar + 4) > 0)
@@ -589,22 +589,22 @@ void TClasse::AcertaComandos(char * comandos)
                                 else
                                     var1[lido++] = var2[b1++];
                             }
-                            while (b1<b && b1<casonum)
+                            while (b1 < b && b1 < casonum)
                                 var1[lido++] = var2[b1++];
                             b += a;
-                            while (b2<b && b2<casonum)
+                            while (b2 < b && b2 < casonum)
                                 var1[lido++] = var2[b2++];
                         }
                     }
                 // Obtém e anota a ordem de busca
                     int meio = casonum/2;
-                    p[Instr::endVar]   = (var1[meio]-p);
-                    p[Instr::endVar+1] = (var1[meio]-p)>>8;
+                    p[Instr::endVar]     = (var1[meio] - p);
+                    p[Instr::endVar + 1] = (var1[meio] - p) >> 8;
                     int pont[20][3]; // variável + mínimo + máximo
-                    int total=1;     // Quantidade de variáveis em pont
+                    int total = 1;   // Quantidade de variáveis em pont
                     pont[0][0] = meio; // Aonde anotar
                     pont[0][1] = 0;     // Menor índice
-                    pont[0][2] = casonum-1; // Maior índice
+                    pont[0][2] = casonum - 1; // Maior índice
                     while (total>0)
                     {
                         total--;
@@ -617,27 +617,27 @@ void TClasse::AcertaComandos(char * comandos)
                             soma = casopadrao - var1[var];
                         else
                         {
-                            pont[total][0] = (min+var)/2;
+                            pont[total][0] = (min + var) / 2;
                             pont[total][1] = min;
-                            pont[total][2] = var-1;
+                            pont[total][2] = var - 1;
                             soma = var1[pont[total][0]] - var1[var];
                             total++;
                         }
-                        var1[var][Instr::endVar]   = soma;
-                        var1[var][Instr::endVar+1] = soma >> 8;
+                        var1[var][Instr::endVar]     = soma;
+                        var1[var][Instr::endVar + 1] = soma >> 8;
                     // Checa depois (valor máximo)
                         if (var >= max)
                             soma = casopadrao - var1[var];
                         else
                         {
-                            pont[total][0] = (var+max+1)/2;
-                            pont[total][1] = var+1;
+                            pont[total][0] = (var + max + 1) / 2;
+                            pont[total][1] = var + 1;
                             pont[total][2] = max;
                             soma = var1[pont[total][0]] - var1[var];
                             total++;
                         }
-                        var1[var][Instr::endVar+2] = soma;
-                        var1[var][Instr::endVar+3] = soma >> 8;
+                        var1[var][Instr::endVar + 2] = soma;
+                        var1[var][Instr::endVar + 3] = soma >> 8;
                     }
                     break;
                 }
@@ -646,37 +646,37 @@ void TClasse::AcertaComandos(char * comandos)
         case Instr::cSair1:
         case Instr::cSair2:
             nivelse=0;
-            for (x=p+Num16(p); x[0] || x[1]; x+=Num16(x))
+            for (x = p + Num16(p); x[0] || x[1]; x += Num16(x))
                 if (AcertaComandosFim(x[2]))
                     break;
-                else if (x[2]==Instr::cEnquanto ||
-                         x[2]==Instr::cEPara ||
-                         x[2]==Instr::cCasoVar)
+                else if (x[2] == Instr::cEnquanto ||
+                         x[2] == Instr::cEPara ||
+                         x[2] == Instr::cCasoVar)
                     nivelse++;
-                else if (x[2]==Instr::cEFim ||
-                         x[2]==Instr::cCasoFim)
+                else if (x[2] == Instr::cEFim ||
+                         x[2] == Instr::cCasoFim)
                 {
                     if (nivelse)
                         nivelse--;
                     else
                     {
-                        x+=Num16(x);
+                        x += Num16(x);
                         break;
                     }
                 }
-            if (x-p >= 0x10000)
-                x = p+Num16(p);
-            p[Instr::endVar]   = (x-p);
-            p[Instr::endVar+1] = (x-p)>>8;
+            if (x - p >= 0x10000)
+                x = p + Num16(p);
+            p[Instr::endVar]     = (x - p);
+            p[Instr::endVar + 1] = (x - p) >> 8;
             break;
         }
 
 // Marca quais variáveis são locais (variáveis definidas na função)
 #ifdef OTIMIZAR_VAR
     const char * varlocal[255]; // Aonde estão definidas as variáveis locais
-    int totallocal=0;  // Quantas variáveis locais
+    int totallocal = 0;  // Quantas variáveis locais
 
-    for (char * p = comandos; p[0] || p[1]; p+=Num16(p))
+    for (char * p = comandos; p[0] || p[1]; p += Num16(p))
     {
         // Retira variáveis locais de varlocal
         int alin = (unsigned char)p[Instr::endAlin];
@@ -685,13 +685,13 @@ void TClasse::AcertaComandos(char * comandos)
         while (totallocal)
         {
             if ( alin >=
-                 (unsigned char)varlocal[totallocal-1][Instr::endAlin] )
+                 (unsigned char)varlocal[totallocal - 1][Instr::endAlin] )
                 break;
             totallocal--;
         }
 
         // Acrescenta variáveis locais em varlocal
-        char * expr = 0;
+        char * expr = nullptr;
         if (alin && (unsigned char)p[2] > Instr::cVariaveis)
         {
             if (totallocal < 255)
@@ -709,16 +709,16 @@ void TClasse::AcertaComandos(char * comandos)
                 expr = p + (unsigned char)p[Instr::endIndice];
                 break;
             case Instr::cExpr:        expr = p + Instr::endVar; break;
-            case Instr::cSe:          expr = p + Instr::endVar+2; break;
-            case Instr::cSenao2:      expr = p + Instr::endVar+2; break;
-            case Instr::cEnquanto:    expr = p + Instr::endVar+2; break;
-            case Instr::cEPara:       expr = p + Instr::endVar+6; break;
-            case Instr::cCasoVar:     expr = p + Instr::endVar+2; break;
+            case Instr::cSe:          expr = p + Instr::endVar + 2; break;
+            case Instr::cSenao2:      expr = p + Instr::endVar + 2; break;
+            case Instr::cEnquanto:    expr = p + Instr::endVar + 2; break;
+            case Instr::cEPara:       expr = p + Instr::endVar + 6; break;
+            case Instr::cCasoVar:     expr = p + Instr::endVar + 2; break;
             case Instr::cRet2:        expr = p + Instr::endVar; break;
-            case Instr::cSair2:       expr = p + Instr::endVar+2; break;
-            case Instr::cContinuar2:  expr = p + Instr::endVar+2; break;
+            case Instr::cSair2:       expr = p + Instr::endVar + 2; break;
+            case Instr::cContinuar2:  expr = p + Instr::endVar + 2; break;
             }
-        if (expr == 0)
+        if (expr == nullptr)
             continue;
 
         while (*expr != Instr::ex_fim && *expr != Instr::ex_coment)
@@ -732,17 +732,17 @@ void TClasse::AcertaComandos(char * comandos)
             case Instr::ex_varlocal:
                 {
                     // Obtém o nome da variável
-                    char nome[VAR_NOME_TAM+1];
+                    char nome[VAR_NOME_TAM + 1];
                     const char * o = expr + 1;
                     char * d = nome;
                     while (*(unsigned char*)o >= ' ' &&
-                           d < nome+sizeof(nome)-1)
+                           d < nome + sizeof(nome) - 1)
                         *d++ = *o++;
                     *d = 0;
 
                     // Procura a variável entre as variáveis locais
                     expr[0] = 255;
-                    for (int x=0; x<totallocal; x++)
+                    for (int x = 0; x < totallocal; x++)
                         if (strcmp(nome, varlocal[x] + Instr::endNome) == 0)
                         {
                             expr[0] = x;
@@ -759,7 +759,7 @@ void TClasse::AcertaComandos(char * comandos)
                        *expr != Instr::ex_abre &&
                        *expr != Instr::ex_varfim)
                 {
-                    assert(*expr!=0);
+                    assert(*expr != 0);
                     expr++;
                 }
                 break;
@@ -775,7 +775,7 @@ void TClasse::AcertaComandos(char * comandos)
             case Instr::ex_num32n:
             case Instr::ex_num32hexp:
             case Instr::ex_num32hexn:
-                expr+=2;
+                expr += 2;
             case Instr::ex_num16p:
             case Instr::ex_num16n:
             case Instr::ex_num16hexp:
@@ -804,9 +804,9 @@ void TClasse::AcertaComandos(char * comandos)
 
 #if 0
 // Mostra instruções com os endereços de desvio
-    for (char * p = comandos; p[0] || p[1]; p+=Num16(p))
+    for (char * p = comandos; p[0] || p[1]; p += Num16(p))
     {
-        int pos = p-comandos;
+        int pos = p - comandos;
         char mens[BUF_MENS];
         if (Instr::Decod(mens, p, sizeof(mens)))
         {
@@ -832,7 +832,7 @@ void TClasse::AcertaComandos(char * comandos)
             printf("  *** %d", pos-Num16(p+Instr::endVar)); // Para trás
             break;
         case Instr::cCasoVar: // Para frente ou para trás
-            printf("  *** %d", pos+(signed short)Num16(p+Instr::endVar));
+            printf("  *** %d", pos+(signed short)Num16(p + Instr::endVar));
             break;
         case Instr::cCasoSe:
             printf("  *** %d  %d", pos+(signed short)Num16(p+Instr::endVar),
@@ -856,7 +856,7 @@ int TClasse::Heranca(TClasse ** buffer, int tambuf)
     {
     // Se encontrou herança na classe...
         if ((atual->Comandos[0] || atual->Comandos[1]) &&
-             atual->Comandos[2]==Instr::cHerda)
+             atual->Comandos[2] == Instr::cHerda)
         {
             const char * p = atual->Comandos + Instr::endVar + 1;
             int x = (unsigned char)atual->Comandos[Instr::endVar];
@@ -865,9 +865,9 @@ int TClasse::Heranca(TClasse ** buffer, int tambuf)
             // Obtém a classe herdada
                 TClasse * c = Procura(p);
                 while (*p++);
-                assert(c!=0);
+                assert(c != nullptr);
             // A classe "this" não entra na lista
-                if (c==this)
+                if (c == this)
                     continue;
             // Verifica se já anotou a classe
                 TClasse ** cpont = buffer;
@@ -879,7 +879,7 @@ int TClasse::Heranca(TClasse ** buffer, int tambuf)
             // Anota a classe
                 *bufescr++ = c;
                 tambuf--;
-                if (tambuf<=0)
+                if (tambuf <= 0)
                     break;
             }
         }
@@ -904,10 +904,10 @@ bool TClasse::RetiraDeriv(TClasse * cl)
 // Marca todas as classes que serão verificadas
     {
         TClasse ** lista1 = ListaDeriv;
-        for (int total = NumDeriv; total>0; total--,lista1++)
+        for (int total = NumDeriv; total > 0; total--,lista1++)
             lista1[0]->Marca = 0;
         TClasse ** lista2 = cl->ListaDeriv;
-        for (int total = cl->NumDeriv; total>0; total--,lista2++)
+        for (int total = cl->NumDeriv; total > 0; total--,lista2++)
             lista2[0]->Marca = 1;
         cl->Marca = 1;
     }
@@ -915,14 +915,14 @@ bool TClasse::RetiraDeriv(TClasse * cl)
 // Verifica se as classes marcadas ainda herdam essa classe
     unsigned int removeu = 0;
     TClasse ** lista3 = ListaDeriv;
-    for (int total = NumDeriv; total>0; total--,lista3++)
+    for (int total = NumDeriv; total > 0; total--,lista3++)
     {
         TClasse * c = *lista3;
         if (c->Marca == 0)
             continue;
         TClasse * buf[HERDA_TAM];
         int tot = c->Heranca(buf, HERDA_TAM);
-        for (tot--; tot>=0; tot--)
+        for (tot--; tot >= 0; tot--)
             if (buf[tot] == this)
                 break;
 #if 0
@@ -942,7 +942,7 @@ bool TClasse::RetiraDeriv(TClasse * cl)
     if (removeu >= NumDeriv)
     {
         delete[] ListaDeriv;
-        ListaDeriv = 0;
+        ListaDeriv = nullptr;
         NumDeriv = 0;
     }
     else
@@ -952,7 +952,7 @@ bool TClasse::RetiraDeriv(TClasse * cl)
         TClasse ** p = ListaDeriv;
         int total1 = NumDeriv;
         int total2 = 0;
-        for (; total1>0; total1--,p++)
+        for (; total1 > 0; total1--, p++)
             if (*p)
                 lnovo[total2++] = *p;
         assert(total2 == ltam);
@@ -969,11 +969,11 @@ void TClasse::AdicionaDeriv(TClasse * cl)
 // Marca todas as classes que serão adicionadas
     {
         TClasse ** lista1 = cl->ListaDeriv;
-        for (int total = cl->NumDeriv; total>0; total--,lista1++)
+        for (int total = cl->NumDeriv; total > 0; total--,lista1++)
             lista1[0]->Marca = 1;
         cl->Marca = 1;
         TClasse ** lista2 = ListaDeriv;
-        for (int total = NumDeriv; total>0; total--,lista2++)
+        for (int total = NumDeriv; total > 0; total--,lista2++)
             lista2[0]->Marca = 0;
     }
 
@@ -981,7 +981,7 @@ void TClasse::AdicionaDeriv(TClasse * cl)
     int add = (cl->Marca ? 1 : 0);
     {
         TClasse ** lista3 = cl->ListaDeriv;
-        for (int total = cl->NumDeriv; total>0; total--,lista3++)
+        for (int total = cl->NumDeriv; total > 0; total--,lista3++)
             if (lista3[0]->Marca)
                 add++;
     }
@@ -1010,7 +1010,7 @@ void TClasse::AdicionaDeriv(TClasse * cl)
     TClasse ** lista4 = cl->ListaDeriv;
     if (cl->Marca)
         lnovo[indice++] = cl;
-    for (int total = cl->NumDeriv; total>0; total--,lista4++)
+    for (int total = cl->NumDeriv; total > 0; total--, lista4++)
         if (lista4[0]->Marca)
             lnovo[indice++] = lista4[0];
     assert(indice == NumDeriv + add);
@@ -1032,10 +1032,10 @@ void TClasse::AcertaDeriv()
     {
         AcertaComandos(cl->Comandos);
         cl->NumDeriv = 0;
-        if (cl->ListaDeriv==0)
+        if (cl->ListaDeriv == nullptr)
             continue;
         delete[] cl->ListaDeriv;
-        cl->ListaDeriv = 0;
+        cl->ListaDeriv = nullptr;
     }
 
 // Mostra herança
@@ -1044,15 +1044,15 @@ void TClasse::AcertaDeriv()
     {
         int total = cl->Heranca(buf, HERDA_TAM);
         printf("herda(%s) ", cl->Nome);
-        for (int x=0; x<total; x++)
-            printf("%c %s", x==0 ? '=' : ',', buf[x]->Nome);
+        for (int x = 0; x < total; x++)
+            printf("%c %s", x == 0 ? '=' : ',', buf[x]->Nome);
         putchar('\n'); fflush(stdout);
     }
 #endif
 
 // Obtém número de classes derivadas
     for (cl = TClasse::RBfirst(); cl; cl = TClasse::RBnext(cl))
-        for (int total = cl->Heranca(buf, HERDA_TAM); total>0; )
+        for (int total = cl->Heranca(buf, HERDA_TAM); total > 0; )
             buf[--total]->NumDeriv++;
 
 // Aloca memória em TClasse::ListaDeriv
@@ -1065,7 +1065,7 @@ void TClasse::AcertaDeriv()
 
 // Acerta ListaDeriv e NumDeriv
     for (TClasse * cl = TClasse::RBfirst(); cl; cl = TClasse::RBnext(cl))
-        for (int total = cl->Heranca(buf, HERDA_TAM); total>0; )
+        for (int total = cl->Heranca(buf, HERDA_TAM); total > 0; )
         {
             total--;
             buf[total]->ListaDeriv[ buf[total]->NumDeriv++ ] = cl;
@@ -1090,15 +1090,15 @@ void TClasse::AcertaDeriv(char * comandos_antes)
     total2 = Heranca(buf2, HERDA_TAM);
 
 // Verifica se a herança não mudou
-    for (; total1>0 && total2>0; total1--,total2--)
+    for (; total1 > 0 && total2 > 0; total1--, total2--)
         if (buf1[total1-1] != buf2[total2-1])
             break;
-    if (total1==0 && total2==0)
+    if (total1 == 0 && total2 == 0)
         return;
 
 // Retira herança
-    for (int x1=0; x1<total1; x1++)
-        for (int x2=0;; x2++)
+    for (int x1 = 0; x1 < total1; x1++)
+        for (int x2 = 0;; x2++)
         {
             if (x2 >= total2) // Retira herança
             {
@@ -1111,8 +1111,8 @@ void TClasse::AcertaDeriv(char * comandos_antes)
         }
 
 // Coloca herança
-    for (int x2=0; x2<total2; x2++)
-        for (int x1=0;; x1++)
+    for (int x2 = 0; x2 < total2; x2++)
+        for (int x1 = 0;; x1++)
         {
             if (x1 >= total1) // Coloca herança
             {
@@ -1136,10 +1136,10 @@ void TClasse::LimpaInstr()
     AcertaVar(true);
     delete[] antigo_com;
 // Se não é herdada, nada faz
-    if (NumDeriv==0)
+    if (NumDeriv == 0)
         return;
 // Acerta herança das outras classes - retira essa classe
-    for (unsigned int numcl=0; numcl < NumDeriv; numcl++)
+    for (unsigned int numcl = 0; numcl < NumDeriv; numcl++)
     {
     // Obtém a classe derivada
         TClasse * cl = ListaDeriv[numcl];
@@ -1153,7 +1153,7 @@ void TClasse::LimpaInstr()
         for (; x; x--)
         {
             TClasse * c = Procura(p);
-            assert(c!=0);
+            assert(c != nullptr);
             if (c == this)
                 break;
             while (*p++);
@@ -1193,19 +1193,19 @@ void TClasse::LimpaInstr()
     // Acerta endereços das variáveis na classe herdada
         cl->LimpaInstrSub(ini, fim, -tam_herda);
     // Acerta endereços das variáveis nas outras classes
-        for (unsigned int numd=0; numd < cl->NumDeriv; numd++)
+        for (unsigned int numd = 0; numd < cl->NumDeriv; numd++)
             cl->ListaDeriv[numd]->LimpaInstrSub(ini, fim, -tam_herda);
     }
 // Indica que a classe não está sendo herdada
     delete[] ListaDeriv;
-    ListaDeriv = 0;
+    ListaDeriv = nullptr;
     NumDeriv = 0;
 }
 
 //----------------------------------------------------------------------------
 void TClasse::LimpaInstrSub(const char * ini, const char * fim, int desloc)
 {
-    for (unsigned int y=0; y<NumVar; y++)
+    for (unsigned int y = 0; y < NumVar; y++)
     {
         char * defvar = InstrVar[y];
         if (defvar < ini || defvar >= fim)
@@ -1240,21 +1240,21 @@ int TClasse::AcertaVar(bool acertaderiv)
     antes.NumVar = NumVar;
     antes.Vars = Vars;
     antes.TamVars = TamVars;
-    InstrVar = 0;
-    IndiceVar = 0;
+    InstrVar = nullptr;
+    IndiceVar = nullptr;
     NumVar = 0;
-    Vars = 0;
+    Vars = nullptr;
     TamVars = 0;
 
 // Obtém classes herdadas
-    TClasse * herda[HERDA_TAM+1];
-    int numherda = Heranca(herda+1, HERDA_TAM) + 1;
+    TClasse * herda[HERDA_TAM + 1];
+    int numherda = Heranca(herda + 1, HERDA_TAM) + 1;
     herda[0] = this;
 
 // Obtém número de variáveis/funções
     unsigned int total = 0;
     const char * ComandosFim = Comandos;
-    for (int cont=0; cont<numherda; cont++)
+    for (int cont = 0; cont < numherda; cont++)
     {
         bool inifunc = false;
         char * p = herda[cont]->Comandos;
@@ -1267,38 +1267,38 @@ int TClasse::AcertaVar(bool acertaderiv)
             case Instr::cConstNum:
             case Instr::cConstExpr:
             case Instr::cConstVar:
-                total++, p+=Num16(p);
+                total++, p += Num16(p);
                 break;
             case Instr::cFunc:
             case Instr::cVarFunc:
-                total++, p+=Num16(p), inifunc=true;
+                total++, p += Num16(p), inifunc = true;
                 break;
             case Instr::cEnquanto:
             case Instr::cEPara:
             case Instr::cSe:
             case Instr::cSenao1:
             case Instr::cSenao2:
-                assert(p[Instr::endVar] || p[Instr::endVar+1]);
+                assert(p[Instr::endVar] || p[Instr::endVar + 1]);
                 p += Num16(p+Instr::endVar);
                 break;
             case Instr::cFimSe:
             default:
-                if (inifunc==false && p[2] > Instr::cVariaveis)
+                if (inifunc == false && p[2] > Instr::cVariaveis)
                     total++;
-                p+=Num16(p);
+                p += Num16(p);
             }
         }
-        if (cont==0)
+        if (cont == 0)
             ComandosFim = p;
     }
 
 // Aloca memória
-    char ** var1=0;
+    char ** var1 = 0;
     if (total) var1=new char*[total];
     total = 0;
 
 // Adiciona funções/variáveis
-    for (int cont=0; cont<numherda; cont++)
+    for (int cont = 0; cont < numherda; cont++)
     {
         bool inifunc = false;
         char * p = herda[cont]->Comandos;
@@ -1312,12 +1312,12 @@ int TClasse::AcertaVar(bool acertaderiv)
             case Instr::cConstExpr:
             case Instr::cConstVar:
                 var1[total++] = p;
-                p+=Num16(p);
+                p += Num16(p);
                 break;
             case Instr::cFunc:
             case Instr::cVarFunc:
                 var1[total++] = p;
-                p+=Num16(p), inifunc=true;
+                p += Num16(p), inifunc = true;
                 break;
             case Instr::cEnquanto:
             case Instr::cEPara:
@@ -1328,9 +1328,9 @@ int TClasse::AcertaVar(bool acertaderiv)
                 break;
             case Instr::cFimSe:
             default:
-                if (inifunc==false && p[2] > Instr::cVariaveis)
+                if (inifunc == false && p[2] > Instr::cVariaveis)
                     var1[total++] = p;
-                p+=Num16(p);
+                p += Num16(p);
             }
         }
     }
@@ -1339,17 +1339,17 @@ int TClasse::AcertaVar(bool acertaderiv)
     if (total)
     {
         char ** var2 = new char*[total];
-        for (unsigned int a=1; a<total; a+=a)
+        for (unsigned int a = 1; a < total; a += a)
         {
             char ** pont = var2;
             var2 = var1;
             var1 = pont;
-            int lido=0;
-            for (unsigned int b=0; b<total; )
+            int lido = 0;
+            for (unsigned int b = 0; b < total; )
             {
-                unsigned int b1=b, b2=b+a;
+                unsigned int b1 = b, b2 = b + a;
                 b = b2;
-                while (b1<b && b2<b+a && b2<total)
+                while (b1 < b && b2 < b + a && b2 < total)
                 {
                     if (comparaVar(var2[b1] + Instr::endNome,
                             var2[b2] + Instr::endNome) > 0)
@@ -1357,10 +1357,10 @@ int TClasse::AcertaVar(bool acertaderiv)
                     else
                         var1[lido++] = var2[b1++];
                 }
-                while (b1<b && b1<total)
+                while (b1 < b && b1 < total)
                     var1[lido++] = var2[b1++];
                 b += a;
-                while (b2<b && b2<total)
+                while (b2 < b && b2 < total)
                     var1[lido++] = var2[b2++];
             }
         }
@@ -1369,10 +1369,10 @@ int TClasse::AcertaVar(bool acertaderiv)
 
 // Obtém número de variáveis, detectando as repetidas
     NumVar = total;
-    for (int x=total-2; x>=0; x--)
-        if (comparaVar(var1[x]+Instr::endNome, var1[x+1]+Instr::endNome)==0)
+    for (int x = total - 2; x >= 0; x--)
+        if (comparaVar(var1[x]+Instr::endNome, var1[x+1] + Instr::endNome) == 0)
         {
-            var1[x+1]=0;
+            var1[x + 1]=0;
             NumVar--;
         }
 
@@ -1383,7 +1383,7 @@ int TClasse::AcertaVar(bool acertaderiv)
     else
     {
         InstrVar = new char*[NumVar];
-        for (unsigned int x=0,y=0; x<total; x++)
+        for (unsigned int x = 0, y = 0; x < total; x++)
             if (var1[x])
                 InstrVar[y++] = var1[x];
         delete[] var1;
@@ -1392,14 +1392,14 @@ int TClasse::AcertaVar(bool acertaderiv)
 
 // Acerta bits de controle de TClasse::IndiceVar
 // Acerta variáveis cInt1 (alinhamento de bit)
-    int indclasse=0, bitclasse=0;
-    int indobjeto=0, bitobjeto=0;
+    int indclasse = 0, bitclasse = 0;
+    int indobjeto = 0, bitobjeto = 0;
     IndiceVar = new unsigned int[NumVar];
-    for (unsigned int x=0; x<NumVar; x++)
+    for (unsigned int x = 0; x < NumVar; x++)
     {
         unsigned int valor = 0;
     // Verifica se está na própria classe
-        if (InstrVar[x]>=Comandos && InstrVar[x]<=ComandosFim)
+        if (InstrVar[x]>=Comandos && InstrVar[x] <= ComandosFim)
             valor |= 0x800000;
     // Verifica se é variável "comum"
         if (InstrVar[x][Instr::endProp] & 1)
@@ -1408,7 +1408,7 @@ int TClasse::AcertaVar(bool acertaderiv)
         if (InstrVar[x][2] == Instr::cInt1)
         {
             int total = (unsigned char)InstrVar[x][Instr::endVetor];
-            if (total==0)
+            if (total == 0)
                 total++;
             if (valor & 0x400000) // Classe
             {
@@ -1432,12 +1432,12 @@ int TClasse::AcertaVar(bool acertaderiv)
     if (bitobjeto) indobjeto++;
 
 // Acerta variáveis com alinhamento de 1 byte
-    for (unsigned int x=0; x<NumVar; x++)
+    for (unsigned int x = 0; x<NumVar; x++)
     {
         if (InstrVar[x][2] == Instr::cInt1)
             continue;
         int tamanho = TVariavel::Tamanho(InstrVar[x]);
-        if (tamanho&1)
+        if (tamanho & 1)
         {
             int total = (unsigned char)InstrVar[x][Instr::endVetor];
             if (total)
@@ -1448,16 +1448,16 @@ int TClasse::AcertaVar(bool acertaderiv)
                 IndiceVar[x] += indobjeto, indobjeto += tamanho;
         }
     }
-    if (indclasse&1) indclasse++;
-    if (indobjeto&1) indobjeto++;
+    if (indclasse & 1) indclasse++;
+    if (indobjeto & 1) indobjeto++;
 
 // Acerta variáveis com alinhamento de 2 bytes
-    for (unsigned int x=0; x<NumVar; x++)
+    for (unsigned int x = 0; x < NumVar; x++)
     {
         if (InstrVar[x][2] == Instr::cInt1)
             continue;
         int tamanho = TVariavel::Tamanho(InstrVar[x]);
-        if ((tamanho&3)==2)
+        if ((tamanho & 3) == 2)
         {
             int total = (unsigned char)InstrVar[x][Instr::endVetor];
             if (total)
@@ -1468,16 +1468,16 @@ int TClasse::AcertaVar(bool acertaderiv)
                 IndiceVar[x] += indobjeto, indobjeto += tamanho;
         }
     }
-    if (indclasse&2) indclasse+=2;
-    if (indobjeto&2) indobjeto+=2;
+    if (indclasse & 2) indclasse += 2;
+    if (indobjeto & 2) indobjeto += 2;
 
 // Acerta outras variáveis (alinhamento de 4 bytes)
-    for (unsigned int x=0; x<NumVar; x++)
+    for (unsigned int x = 0; x < NumVar; x++)
     {
         if (InstrVar[x][2] == Instr::cInt1)
             continue;
         int tamanho = TVariavel::Tamanho(InstrVar[x]);
-        if (tamanho && (tamanho&3)==0)
+        if (tamanho && (tamanho & 3) == 0)
         {
             int total = (unsigned char)InstrVar[x][Instr::endVetor];
             if (total)
@@ -1490,7 +1490,7 @@ int TClasse::AcertaVar(bool acertaderiv)
     }
 
 // Acerta variáveis
-    Vars = 0;
+    Vars = nullptr;
     TamVars = indclasse;
     TamObj = indobjeto;
 
@@ -1499,11 +1499,11 @@ int TClasse::AcertaVar(bool acertaderiv)
     printf("Classe=\"%s\"   Variáveis classe=%d   Variáveis Objeto=%d\n",
            Nome, indclasse, indobjeto);
     puts("  lugar  endereço:bit  tamanho  instrução");
-    for (int passo=0; passo<2; passo++)
-        for (unsigned int x=0; x<NumVar; x++)
+    for (int passo = 0; passo < 2; passo++)
+        for (unsigned int x = 0; x < NumVar; x++)
         {
             unsigned int valor = IndiceVar[x];
-            if (((valor & 0x400000)==0) == (passo==0))
+            if (((valor & 0x400000) == 0) == (passo == 0))
                 continue;
             int tam = TVariavel::Tamanho(InstrVar[x]);
             char mens[BUF_MENS];
@@ -1513,14 +1513,14 @@ int TClasse::AcertaVar(bool acertaderiv)
                     IndiceVar[x] & 0x400000 ? "classe" : "objeto",
                     valor & 0x3FFFFF);
             if ((valor>>24)!=0)
-                printf(":%02x", valor>>24);
+                printf(":%02x", valor >> 24);
             printf("  %d  %s\n", tam, mens);
         }
     putchar('\n');
 #endif
 
 // Nenhuma variável: nada para ser feito
-    if (NumVar==0 && antes.NumVar==0)
+    if (NumVar == 0 && antes.NumVar == 0)
         return 0;
 
 // Prepara lista de variáveis que mudaram
@@ -1535,9 +1535,9 @@ int TClasse::AcertaVar(bool acertaderiv)
 
         // passo=0 -> obtém variáveis de objetos
         // passo=1 -> obtém variáveis da classe (definida com "comum")
-    for (int passo=0; passo<2; passo++)
+    for (int passo = 0; passo < 2; passo++)
     {
-        unsigned int c1=0,c2=0;
+        unsigned int c1 = 0, c2 = 0;
         TVariavel v;
         v.Limpar();
     // Checa variáveis que mudaram
@@ -1556,14 +1556,14 @@ int TClasse::AcertaVar(bool acertaderiv)
                 bitobjeto |= 0x10;
         // Pula variáveis com tamanho zero
             bool tamzero=false;
-            if (TVariavel::Tamanho(antes.InstrVar[c1])==0)
+            if (TVariavel::Tamanho(antes.InstrVar[c1]) == 0)
                 c1++, tamzero=true;
-            if (TVariavel::Tamanho(InstrVar[c2])==0)
+            if (TVariavel::Tamanho(InstrVar[c2]) == 0)
                 c2++, tamzero=true;
             if (tamzero)
                 continue;
         // Variável apagada
-            if (cmp<0)
+            if (cmp < 0)
             {
                 if (antes.InstrVar[c1][2] > Instr::cVarFunc)
                 {
@@ -1576,7 +1576,7 @@ int TClasse::AcertaVar(bool acertaderiv)
                 continue;
             }
         // Variável criada
-            if (cmp>0)
+            if (cmp > 0)
             {
                 if (InstrVar[c2][2] > Instr::cVarFunc)
                 {
@@ -1595,12 +1595,12 @@ int TClasse::AcertaVar(bool acertaderiv)
             {
                 unsigned char tam1 = antes.InstrVar[c1][Instr::endVetor];
                 unsigned char tam2 = InstrVar[c2][Instr::endVetor];
-                if (tam1==0) tam1++;
-                if (tam2==0) tam2++;
-                if (tam1!=tam2)
+                if (tam1 == 0) tam1++;
+                if (tam2 == 0) tam2++;
+                if (tam1 != tam2)
                     bitobjeto |= 1;
                 al[total].comando = 3;
-                if (InstrVar[c2][2]==Instr::cInt1) // Bits: devem ser copiados
+                if (InstrVar[c2][2] == Instr::cInt1) // Bits: devem ser copiados
                     al[total].comando = 4;
                 al[total].defvar = antes.InstrVar[c1];
                 al[total].indvar = antes.IndiceVar[c1];
@@ -1655,7 +1655,7 @@ int TClasse::AcertaVar(bool acertaderiv)
             if ((antes.InstrVar[c1][Instr::endProp] & 1) == passo)
             {
                 bitobjeto |= 0x10;
-                if (TVariavel::Tamanho(antes.InstrVar[c1])==0)
+                if (TVariavel::Tamanho(antes.InstrVar[c1]) == 0)
                     continue;
                 bitobjeto |= 1;
                 if (antes.InstrVar[c1][2] <= Instr::cVarFunc)
@@ -1670,7 +1670,7 @@ int TClasse::AcertaVar(bool acertaderiv)
             if ((InstrVar[c2][Instr::endProp] & 1) == passo)
             {
                 bitobjeto |= 0x10;
-                if (TVariavel::Tamanho(InstrVar[c2])==0)
+                if (TVariavel::Tamanho(InstrVar[c2]) == 0)
                     continue;
                 bitobjeto |= 1;
                 if (InstrVar[c2][2] <= Instr::cVarFunc)
@@ -1687,16 +1687,16 @@ int TClasse::AcertaVar(bool acertaderiv)
     }
 
 // Acerta al[n].tam e al[n].bit
-    for (unsigned int x=0; x<total; x++)
+    for (unsigned int x = 0; x < total; x++)
     {
         al[x].tam = (unsigned char)al[x].defvar[Instr::endVetor];
-        if (al[x].tam==0)
-            al[x].tam=1;
+        if (al[x].tam == 0)
+            al[x].tam = 1;
         al[x].numbit = al[x].indvar >> 24;
     }
 
 // Acerta al[n].tam para comandos 4 em diante
-    for (unsigned int x=0; x<total; x++)
+    for (unsigned int x = 0; x < total; x++)
         if (al[x].comando >= 4)
         {
             if (al[x].tam > al[x+1].tam)
@@ -1709,29 +1709,29 @@ int TClasse::AcertaVar(bool acertaderiv)
 #ifdef MOSTRA_MUDOU
     printf("Classe=\"%s\"  classe_mudou=%s  objeto_mudou=%s  "
            "variáveis_mudaram=%s\n",
-           Nome, bitobjeto&2 ? "sim" : "não",
-                 bitobjeto&4 ? "sim" : "não",
-                 bitobjeto   ? "sim" : "não");
-    for (int x=0; x<indclasse; x++)
+           Nome, bitobjeto & 2 ? "sim" : "não",
+                 bitobjeto & 4 ? "sim" : "não",
+                 bitobjeto     ? "sim" : "não");
+    for (int x = 0; x < indclasse; x++)
     {
         int param = 0;
         char mens[BUF_MENS];
         printf("  %s  ", x<indobjeto ? "objeto" : "classe");
         switch (al[x].comando)
         {
-        case 1: printf("apagar("); param=1; break;
-        case 2: printf("criar("); param=1; break;
-        case 3: printf("mover("); param=2; break;
-        case 4: printf("copiar_int("); param=2; break;
-        case 5: printf("copiar_double("); param=2; break;
-        case 6: printf("copiar_txt("); param=2; break;
-        case 7: printf("copiar_ref("); param=2; break;
+        case 1: printf("apagar("); param = 1; break;
+        case 2: printf("criar("); param = 1; break;
+        case 3: printf("mover("); param = 2; break;
+        case 4: printf("copiar_int("); param = 2; break;
+        case 5: printf("copiar_double("); param = 2; break;
+        case 6: printf("copiar_txt("); param = 2; break;
+        case 7: printf("copiar_ref("); param = 2; break;
         default: printf("??? (");
         }
-        if (param>=1)
+        if (param >= 1)
             if (Instr::Decod(mens, al[x].defvar, sizeof(mens)))
                 printf("%s", mens);
-        if (param>=2)
+        if (param >= 2)
         {
             if (Instr::Decod(mens, al[x+1].defvar, sizeof(mens)))
                 printf(")  (%s", mens);
@@ -1743,10 +1743,10 @@ int TClasse::AcertaVar(bool acertaderiv)
 #endif
 
 // Acerta variáveis da classe
-    if ((bitobjeto & 2)==0) // Nenhuma variável mudou
+    if ((bitobjeto & 2) == 0) // Nenhuma variável mudou
     {
-        Vars = antes.Vars, antes.Vars = 0;
-        for (int x=indobjeto; x<indclasse; x++)
+        Vars = antes.Vars, antes.Vars = nullptr;
+        for (int x = indobjeto; x < indclasse; x++)
             if (al[x].comando == 3) // Mover
             {
                 x++; // Porque o novo endereço está em al[x+1]
@@ -1801,7 +1801,7 @@ int TClasse::AcertaVar(bool acertaderiv)
                 if (al[x+1].defvar[2] > Instr::cVarFunc)
                     al[x+1].Criar(this, 0);
                 al[x].indice = al[x+1].indice = al[x].tam;
-                for (; al[x].indice; al[x].indice--,al[x+1].indice--)
+                for (; al[x].indice; al[x].indice--, al[x+1].indice--)
                     al[x+1].setInt( al[x].getInt() );
                 al[x+1].setInt( al[x].getInt() );
                 if (al[x].defvar[2] > Instr::cVarFunc)
@@ -1812,7 +1812,7 @@ int TClasse::AcertaVar(bool acertaderiv)
                 if (al[x+1].defvar[2] > Instr::cVarFunc)
                     al[x+1].Criar(this, 0);
                 al[x].indice = al[x+1].indice = al[x].tam;
-                for (; al[x].indice; al[x].indice--,al[x+1].indice--)
+                for (; al[x].indice; al[x].indice--, al[x+1].indice--)
                     al[x+1].setDouble( al[x].getDouble() );
                 al[x+1].setDouble( al[x].getDouble() );
                 if (al[x].defvar[2] > Instr::cVarFunc)
@@ -1823,7 +1823,7 @@ int TClasse::AcertaVar(bool acertaderiv)
                 if (al[x+1].defvar[2] > Instr::cVarFunc)
                     al[x+1].Criar(this, 0);
                 al[x].indice = al[x+1].indice = al[x].tam;
-                for (; al[x].indice; al[x].indice--,al[x+1].indice--)
+                for (; al[x].indice; al[x].indice--, al[x+1].indice--)
                     al[x+1].setTxt( al[x].getTxt() );
                 al[x+1].setTxt( al[x].getTxt() );
                 if (al[x].defvar[2] > Instr::cVarFunc)
@@ -1834,7 +1834,7 @@ int TClasse::AcertaVar(bool acertaderiv)
                 if (al[x+1].defvar[2] > Instr::cVarFunc)
                     al[x+1].Criar(this, 0);
                 al[x].indice = al[x+1].indice = al[x].tam;
-                for (; al[x].indice; al[x].indice--,al[x+1].indice--)
+                for (; al[x].indice; al[x].indice--, al[x+1].indice--)
                     al[x+1].setObj( al[x].getObj() );
                 al[x+1].setObj( al[x].getObj() );
                 if (al[x].defvar[2] > Instr::cVarFunc)
@@ -1846,10 +1846,10 @@ int TClasse::AcertaVar(bool acertaderiv)
     } // if
 
 // Acerta variáveis dos objetos
-    if ((bitobjeto & 4)==0) // Nenhuma variável mudou
+    if ((bitobjeto & 4) == 0) // Nenhuma variável mudou
     {
         for (TObjeto * obj = ObjetoIni; obj; obj=obj->Depois)
-            for (int x=0; x<indobjeto; x++)
+            for (int x = 0; x < indobjeto; x++)
                 if (al[x].comando == 3) // Mover
                 {
                     x++; // Porque o novo endereço está em al[x+1]
@@ -1859,12 +1859,12 @@ int TClasse::AcertaVar(bool acertaderiv)
     }
     else // Alguma variável mudou
     {
-        for (int nobj=NumObj; nobj>0; nobj--)
+        for (int nobj = NumObj; nobj > 0; nobj--)
         {
         // Cria objeto no final da lista ligada
             TObjeto * obj = TObjeto::Criar(this, false);
         // Copia variáveis do primeiro objeto para o objeto criado
-            for (int x=0; x<indobjeto; x++)
+            for (int x = 0; x < indobjeto; x++)
             {
                 if (al[x].comando >= 3)
                 {
@@ -1904,7 +1904,7 @@ int TClasse::AcertaVar(bool acertaderiv)
                     if (al[x+1].defvar[2] > Instr::cVarFunc)
                         al[x+1].Criar(this, obj);
                     al[x].indice = al[x+1].indice = al[x].tam;
-                    for (; al[x].indice; al[x].indice--,al[x+1].indice--)
+                    for (; al[x].indice; al[x].indice--, al[x+1].indice--)
                         al[x+1].setInt( al[x].getInt() );
                     al[x+1].setInt( al[x].getInt() );
                     if (al[x].defvar[2] > Instr::cVarFunc)
@@ -1915,7 +1915,7 @@ int TClasse::AcertaVar(bool acertaderiv)
                     if (al[x+1].defvar[2] > Instr::cVarFunc)
                         al[x+1].Criar(this, obj);
                     al[x].indice = al[x+1].indice = al[x].tam;
-                    for (; al[x].indice; al[x].indice--,al[x+1].indice--)
+                    for (; al[x].indice; al[x].indice--, al[x+1].indice--)
                         al[x+1].setDouble( al[x].getDouble() );
                     al[x+1].setDouble( al[x].getDouble() );
                     if (al[x].defvar[2] > Instr::cVarFunc)
@@ -1926,7 +1926,7 @@ int TClasse::AcertaVar(bool acertaderiv)
                     if (al[x+1].defvar[2] > Instr::cVarFunc)
                         al[x+1].Criar(this, obj);
                     al[x].indice = al[x+1].indice = al[x].tam;
-                    for (; al[x].indice; al[x].indice--,al[x+1].indice--)
+                    for (; al[x].indice; al[x].indice--, al[x+1].indice--)
                         al[x+1].setTxt( al[x].getTxt() );
                     al[x+1].setTxt( al[x].getTxt() );
                     if (al[x].defvar[2] > Instr::cVarFunc)
@@ -1937,7 +1937,7 @@ int TClasse::AcertaVar(bool acertaderiv)
                     if (al[x+1].defvar[2] > Instr::cVarFunc)
                         al[x+1].Criar(this, obj);
                     al[x].indice = al[x+1].indice = al[x].tam;
-                    for (; al[x].indice; al[x].indice--,al[x+1].indice--)
+                    for (; al[x].indice; al[x].indice--, al[x+1].indice--)
                         al[x+1].setObj( al[x].getObj() );
                     al[x+1].setObj( al[x].getObj() );
                     if (al[x].defvar[2] > Instr::cVarFunc)
@@ -1960,17 +1960,17 @@ int TClasse::AcertaVar(bool acertaderiv)
     // Se lista de variáveis mudou: acerta classes derivadas
         if (bitobjeto)
         {
-            for (unsigned int x=0; x<NumDeriv; x++)
+            for (unsigned int x = 0; x < NumDeriv; x++)
                 ListaDeriv[x]->AcertaVar(false);
             break;
         }
     // Obtém faixa de endereço das variáveis
-        const char * ini=0;
-        const char * fim=0;
-        for (unsigned int x=0; x<antes.NumVar; x++)
+        const char * ini = nullptr;
+        const char * fim = nullptr;
+        for (unsigned int x = 0; x < antes.NumVar; x++)
             if (antes.IndiceVar[x] & 0x800000)
             {
-                if (ini==0)
+                if (ini == nullptr)
                     ini = fim = antes.InstrVar[x];
                 else if (ini > antes.InstrVar[x])
                     ini = antes.InstrVar[x];
@@ -1978,15 +1978,15 @@ int TClasse::AcertaVar(bool acertaderiv)
                     fim = antes.InstrVar[x];
             }
     // Lista não mudou: apenas acerta os endereços das variáveis
-        for (unsigned int x=0; x<NumDeriv; x++)
+        for (unsigned int x = 0; x < NumDeriv; x++)
         {
             TClasse * cl = ListaDeriv[x];
-            for (unsigned int y=0; y<cl->NumVar; y++)
+            for (unsigned int y = 0; y < cl->NumVar; y++)
                 if (cl->InstrVar[y] >= ini && cl->InstrVar[y] <= fim)
                 {
                     TVariavel v;
                     int ind = IndiceNome(cl->InstrVar[y] + Instr::endNome);
-                    assert(ind>=0);
+                    assert(ind >= 0);
                     //printf("[%s]:%p -> [%s]:%p\n",
                     //       cl->InstrVar[y] + Instr::endNome, cl->InstrVar[y],
                     //       InstrVar[ind] + Instr::endNome, InstrVar[ind]);
@@ -1999,7 +1999,7 @@ int TClasse::AcertaVar(bool acertaderiv)
                         v.MoverDef();
                     }
                     else // Variável do objeto
-                        for (TObjeto * obj = cl->ObjetoIni; obj; obj=obj->Depois)
+                        for (TObjeto * obj = cl->ObjetoIni; obj; obj = obj->Depois)
                         {
                             v.endvar = obj->Vars + (ind & 0x3FFFFF);
                             v.MoverDef();
@@ -2010,7 +2010,7 @@ int TClasse::AcertaVar(bool acertaderiv)
         break;
     }
 
-    return (bitobjeto==0 ? 0 : (bitobjeto&15)==0 ? 1 : 2);
+    return (bitobjeto == 0 ? 0 : (bitobjeto & 15) == 0 ? 1 : 2);
 }
 
 //----------------------------------------------------------------------------
@@ -2020,9 +2020,9 @@ TClasse * TClasse::Procura(const char * nome)
     while (y)
     {
         int i = comparaVar(nome, y->Nome);
-        if (i==0)
+        if (i == 0)
             return y;
-        if (i<0)
+        if (i < 0)
             y = y->RBleft;
         else
             y = y->RBright;
@@ -2033,16 +2033,16 @@ TClasse * TClasse::Procura(const char * nome)
 //----------------------------------------------------------------------------
 TClasse * TClasse::ProcuraIni(const char * nome)
 {
-    TClasse * x = 0;
+    TClasse * x = nullptr;
     TClasse * y = RBroot;
     while (y)
     {
         int i = comparaVar(nome, y->Nome);
-        if (i==0)
+        if (i == 0)
             return y;
-        if (i==-2)
+        if (i == -2)
             x = y;
-        if (i<0)
+        if (i < 0)
             y = y->RBleft;
         else
             y = y->RBright;
@@ -2053,14 +2053,14 @@ TClasse * TClasse::ProcuraIni(const char * nome)
 //----------------------------------------------------------------------------
 TClasse * TClasse::ProcuraFim(const char * nome)
 {
-    TClasse * x = 0;
+    TClasse * x = nullptr;
     TClasse * y = RBroot;
     while (y)
     {
         int i = comparaVar(nome, y->Nome);
-        if (i==0 || i==-2)
+        if (i == 0 || i == -2)
             x = y;
-        if (i==-1)
+        if (i == -1)
             y = y->RBleft;
         else
             y = y->RBright;
@@ -2075,18 +2075,18 @@ int TClasse::IndiceNome(const char * nome)
     int fim = NumVar - 1; // Índice final
     while (ini<=fim)
     {
-        int meio = (ini+fim)/2;
+        int meio = (ini + fim) / 2;
         switch (comparaVar(nome, InstrVar[meio] + Instr::endNome))
         {
         case 2:
         case 1:
-            ini = meio+1;
+            ini = meio + 1;
             break;
         case 0:
             return meio;
         case -1:
         case -2:
-            fim = meio-1;
+            fim = meio - 1;
         }
     }
     return -1;
@@ -2100,19 +2100,19 @@ int TClasse::IndiceNomeIni(const char * nome)
     int ind = -1;
     while (ini<=fim)
     {
-        int meio = (ini+fim)/2;
+        int meio = (ini + fim) / 2;
         switch (comparaVar(nome, InstrVar[meio] + Instr::endNome))
         {
         case 2:
         case 1:
-            ini = meio+1;
+            ini = meio + 1;
             break;
         case 0:
             return meio;
         case -2:
             ind = meio;
         default:
-            fim = meio-1;
+            fim = meio - 1;
         }
     }
     return ind;
@@ -2126,20 +2126,20 @@ int TClasse::IndiceNomeFim(const char * nome)
     int ind = -1;
     while (ini<=fim)
     {
-        int meio = (ini+fim)/2;
+        int meio = (ini + fim) / 2;
         switch (comparaVar(nome, InstrVar[meio] + Instr::endNome))
         {
         case 2:
         case 1:
-            ini = meio+1;
+            ini = meio + 1;
             break;
         case -1:
-            fim = meio-1;
+            fim = meio - 1;
             break;
         case -2:
         case 0:
             ind = meio;
-            ini = meio+1;
+            ini = meio + 1;
         }
     }
     return ind;
@@ -2152,7 +2152,7 @@ int TClasse::RBcomp(TClasse * x, TClasse * y)
 }
 
 //----------------------------------------------------------------------------
-TClasse * TClasse::RBroot=0;
+TClasse * TClasse::RBroot = nullptr;
 #define CLASS TClasse          // Nome da classe
 #define RBmask 1 // Máscara para bit 0
 #include "rbt.cpp.h"

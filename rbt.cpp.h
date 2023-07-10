@@ -68,8 +68,8 @@ public:
     TObjeto * proximo;
 };
 
-TObjeto * TObjeto::RBroot=0;
-TObjeto * TObjeto::inicio=0;
+TObjeto * TObjeto::RBroot = nullptr;
+TObjeto * TObjeto::inicio = nullptr;
 
 // Construtor - copia string para o objeto e coloca objeto na árvore
 TObjeto::TObjeto(const char * str)
@@ -125,13 +125,13 @@ void MostraArvore(void)
 
 // Checa cada objeto da árvore
 // Chamar Checa sem parâmetros para checar a árvore inteira
-void Checa(TObjeto * obj=0)
+void Checa(TObjeto * obj=nullptr)
 {
     if (obj==0)
     {
-        if (TObjeto::RBroot==0)
+        if (TObjeto::RBroot == nullptr)
             return;
-        if (TObjeto::RBroot->RBparent!=0)
+        if (TObjeto::RBroot->RBparent != nullptr)
         {
             puts("Árvore incorreta");
             exit(0);
@@ -146,12 +146,12 @@ void Checa(TObjeto * obj=0)
     }
     if (obj->RBleft)
     {
-        if (obj->RBleft->RBparent!=obj)
+        if (obj->RBleft->RBparent != obj)
         {
             puts("Árvore incorreta");
             exit(0);
         }
-        if ((obj->RBleft->RBcolour&1)==0 && (obj->RBcolour&1)==0)
+        if ((obj->RBleft->RBcolour&1) == 0 && (obj->RBcolour&1) == 0)
         {
             puts("Não é rbt");
             exit(0);
@@ -165,7 +165,7 @@ void Checa(TObjeto * obj=0)
             puts("Árvore incorreta");
             exit(0);
         }
-        if ((obj->RBright->RBcolour&1)==0 && (obj->RBcolour&1)==0)
+        if ((obj->RBright->RBcolour&1) == 0 && (obj->RBcolour&1) == 0)
         {
             puts("Não é rbt");
             exit(0);
@@ -182,8 +182,8 @@ int main(int argc, char *argv[])
     FILE * arq;
     struct timeval tinicio,tfim;
     char string[20],indice;
-    int totalregistros=0;
-    int totalapagado=0;
+    int totalregistros = 0;
+    int totalapagado = 0;
     int ch;
 
     if (argc!=2)
@@ -487,19 +487,19 @@ void CLASS::RBinsert(void)
     CLASS * x = this;
     // Insert in the tree in the usual way
     CLASS * y = RBroot;
-    x->RBleft = 0;
-    x->RBright = 0;
-    if (y == 0)
+    x->RBleft = nullptr;
+    x->RBright = nullptr;
+    if (y == nullptr)
     {
         RBroot = x;
         x->RBcolour |= RBmask; // black
-        x->RBparent = 0;
+        x->RBparent = nullptr;
         return;
     }
     while (true)
         if ( RBcomp(x,y) < 0 )
         {
-            if (y->RBleft == 0)
+            if (y->RBleft == nullptr)
             {
                 y->RBleft = x;
                 break;
@@ -508,7 +508,7 @@ void CLASS::RBinsert(void)
         }
         else
         {
-            if (y->RBright == 0)
+            if (y->RBright == nullptr)
             {
                 y->RBright = x;
                 break;
@@ -524,7 +524,7 @@ void CLASS::RBinsert(void)
         {
             // If x's parent is a left, y is x's right 'uncle'
             y = x->RBparent->RBparent->RBright;
-            if ( y != 0 && (~y->RBcolour & RBmask )) // if _red_
+            if ( y != nullptr && (~y->RBcolour & RBmask )) // if _red_
             {
                 // case 1 - change the colours
                 x->RBparent->RBcolour |= RBmask; // black
@@ -636,10 +636,10 @@ void CLASS::RBremove(void)
     }
 
 // Retira objeto (x) da árvore, faz y=objeto filho
-    i=y=0;                      // Obtém endereço do filho (0=não tem)
+    i = y = nullptr;              // Obtém endereço do filho (0=não tem)
     if (x->RBleft)  y = x->RBleft;
     if (x->RBright) y = x->RBright;
-    if (x->RBparent==0)           // Aponta pai para o filho
+    if (x->RBparent == nullptr)   // Aponta pai para o filho
         RBroot = y;               // Obtém irmão do objeto que está sendo retirado
     else
         if (x->RBparent->RBleft == x)
@@ -667,7 +667,7 @@ void CLASS::RBremove(void)
 // Acerta a árvore
     while (x->RBparent && (x->RBcolour&RBmask)) // if _black_
     {
-        if (i==0)                       // Obtém irmão de x
+        if (i == nullptr)                   // Obtém irmão de x
         {
             if (x->RBparent->RBleft == x)
                 i = x->RBparent->RBright;
@@ -693,7 +693,7 @@ void CLASS::RBremove(void)
             {
 
                 // Caso 2a: O filho do irmão mais distante de x é preto ou não existe
-                if (i->RBright==0 || (i->RBright->RBcolour&RBmask)) // if _black_
+                if (i->RBright==nullptr || (i->RBright->RBcolour&RBmask)) // if _black_
                 {
                     i->RBcolour &= ~RBmask;   // Irmão de x é vermelho
                     i->RBleft->RBcolour |= RBmask;// Filho do irmão mais perto de x é preto
@@ -724,7 +724,7 @@ void CLASS::RBremove(void)
             if ( (i->RBleft  && (~i->RBleft->RBcolour&RBmask)) || // if _red_
                  (i->RBright && (~i->RBright->RBcolour&RBmask)) ) // if _red_
             {
-                if (i->RBleft==0 || (i->RBleft->RBcolour&RBmask)) // if _black_
+                if (i->RBleft==nullptr || (i->RBleft->RBcolour&RBmask)) // if _black_
                 {
                     i->RBcolour &= ~RBmask; // red
                     i->RBright->RBcolour |= RBmask; // black
@@ -741,8 +741,8 @@ void CLASS::RBremove(void)
         }
         // Caso 3: o irmão preto de X não tem filho vermelho
         i->RBcolour &= ~RBmask; // O irmão de x é vermelho
-        x=x->RBparent;    // Move para cima na árvore
-        i=0;            // i=0 para calcular o irmão novamente
+        x = x->RBparent;    // Move para cima na árvore
+        i = nullptr;        // i=0 para calcular o irmão novamente
     }
     x->RBcolour |= RBmask;  // x é preto
 }

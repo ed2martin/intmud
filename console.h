@@ -11,7 +11,7 @@
 class TConsole /// Janela do programa
 {
 public:
-    TConsole() { Aberto=0; };
+    TConsole() { Aberto = 0; };
         ///< Construtor
     ~TConsole() { Fim(); }
         ///< Destrutor

@@ -23,7 +23,7 @@
 #include "exec.h"
 #include "misc.h"
 
-TExec * TExec::Inicio = 0;
+TExec * TExec::Inicio = nullptr;
 
 //------------------------------------------------------------------------------
 #ifndef __WIN32__
@@ -34,7 +34,7 @@ void TExec::proc_sigchld_handler(int signum)
     while (true)
     {
         pid = waitpid(-1, &status, WNOHANG);
-        if (pid<0 && errno!=ECHILD) // -1 significa que ocorreu algum erro
+        if (pid < 0 && errno!=ECHILD) // -1 significa que ocorreu algum erro
         {
             //perror("waitpid");
             break;
@@ -70,7 +70,7 @@ void TExec::Inicializa()
 TExec::TExec()
 {
     Rodando = false;
-    Antes = 0;
+    Antes = nullptr;
     Depois = Inicio;
     if (Depois)
         Depois->Antes = this;
@@ -208,7 +208,7 @@ const char * TExec::Abrir(const char * nomeprog)
     char * dmax = argtxt + sizeof(argtxt);
     argv[argc++] = d;
 
-    for (; d<dmax; nomeprog++)
+    for (; d < dmax; nomeprog++)
     {
         // Encontrou barra invertida
         //     Copia o próximo caracter
@@ -310,9 +310,9 @@ const char * TExec::Abrir(const char * nomeprog)
 
 // Cria pipe
     int descrpipe[4];
-    if (pipe(descrpipe)<0)      // Cria "pipe" de entrada
+    if (pipe(descrpipe) < 0)    // Cria "pipe" de entrada
         return "Erro ao criar PIPE";
-    if (pipe(descrpipe+2)<0)    // Cria "pipe" de saída
+    if (pipe(descrpipe + 2) < 0)// Cria "pipe" de saída
     {
         close(descrpipe[0]);
         close(descrpipe[1]);
@@ -322,7 +322,7 @@ const char * TExec::Abrir(const char * nomeprog)
 // Cria processo e executa programa
     char ch;
     pid = fork();               // Cria novo processo
-    if (pid<0)                  // Se <0: ocorreu erro
+    if (pid < 0)                // Se <0: ocorreu erro
     {
         close(descrpipe[0]);    // Entrada
         close(descrpipe[1]);
@@ -330,7 +330,7 @@ const char * TExec::Abrir(const char * nomeprog)
         close(descrpipe[3]);
         return "Erro ao criar processo";
     }
-    if (pid>0)                  // Se >0: processo "pai"
+    if (pid > 0)                // Se >0: processo "pai"
     {
         pipe_in = descrpipe[0];// Entrada
         close(descrpipe[1]);
@@ -445,7 +445,7 @@ int TExec::Ler(char * destino, int total)
         pipe_in = INVALID_HANDLE_VALUE;
         return 0;
     }
-    if (TotalBytesAvailable==0)
+    if (TotalBytesAvailable == 0)
         return 0;
 
     if (total > TotalBytesAvailable)
@@ -462,12 +462,13 @@ int TExec::Ler(char * destino, int total)
     if (total <= 0 || pipe_in < 0)
         return 0;
     int resposta = read(pipe_in, destino, total);
-    if (resposta<=0)
+    if (resposta <= 0)
     {
-        if (resposta<0 && (errno==EINTR || errno==EWOULDBLOCK || errno==ENOBUFS))
-            resposta=0;
+        if (resposta < 0 && (errno == EINTR || errno == EWOULDBLOCK ||
+                errno == ENOBUFS))
+            resposta = 0;
         else
-            resposta=-1;
+            resposta = -1;
     }
     if (resposta >= 0)
         return resposta;
@@ -498,7 +499,8 @@ int TExec::Escrever(const char * destino, int total)
     int resposta = write(pipe_out, destino, total);
     if (resposta > 0)
         return resposta;
-    if (resposta<0 && (errno==EINTR || errno==EWOULDBLOCK || errno==ENOBUFS))
+    if (resposta < 0 && (errno == EINTR || errno == EWOULDBLOCK ||
+            errno == ENOBUFS))
         return 0;
     close(pipe_out);
     pipe_out = -1;
@@ -539,17 +541,17 @@ int main()
         char mens[1000];
         bool rodando = (prg.InfoProg() == 1);
         int retorno = prg.CodRetorno;
-        int lido = prg.Ler(mens, sizeof(mens)-1);
+        int lido = prg.Ler(mens, sizeof(mens) - 1);
         if (lido > 0)
         {
             mens[lido] = 0;
             printf("LIDO: %s\n", mens); fflush(stdout);
         }
 
-        if (cont=='\n')
-            cont='a';
-        else if (cont=='j')
-            cont='\n';
+        if (cont == '\n')
+            cont = 'a';
+        else if (cont == 'j')
+            cont = '\n';
         else
             cont++;
         prg.Escrever(&cont, 1);

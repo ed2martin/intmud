@@ -133,9 +133,12 @@ int Instr::InfoFunc(const char * nome)
     {
         int meio = (ini+fim)/2;
         int resultado = strcmp(mens, ListaFunc[meio].Nome);
-        if (resultado==0) // Se encontrou...
+        if (resultado == 0) // Se encontrou...
             return meio;
-        if (resultado<0) fim=meio-1; else ini=meio+1;
+        if (resultado < 0)
+            fim = meio - 1;
+        else
+            ini = meio + 1;
     }
     return -1;
 }
@@ -208,14 +211,14 @@ int Instr::Prioridade(int operador)
 /// Verifica se instrução codificada é herda e contém a classe especificada
 bool Instr::ChecaHerda(const char * instr, const char * nomeclasse)
 {
-    if (instr[0]==0 && instr[1]==0)
+    if (instr[0] == 0 && instr[1] == 0)
         return false;
     if (instr[2] != cHerda)
         return false;
     int x = (unsigned char)instr[3];
-    for (instr+=4; x; x--)
+    for (instr += 4; x; x--)
     {
-        if (comparaVar(instr, nomeclasse)==0)
+        if (comparaVar(instr, nomeclasse) == 0)
             return true;
         while (*instr++);
     }
@@ -243,7 +246,7 @@ inicio:
                     goto inicio;
                 return instr;
             }
-        return 0;
+        return nullptr;
     }
 // Avançar para próxima função
     for (instr += Num16(instr); instr[0] || instr[1]; instr += Num16(instr))
@@ -261,7 +264,7 @@ inicio:
                     goto inicio;
                 return instr;
             }
-    return 0;
+    return nullptr;
 }
 
 //----------------------------------------------------------------------------
@@ -271,7 +274,7 @@ inicio:
  *  @return true se conseguiu criar, false se memória insuficiente */
 bool Instr::CriarVarInt(int valor)
 {
-    if (VarAtual >= VarFim-1)
+    if (VarAtual >= VarFim - 1)
         return false;
     VarAtual++;
     VarAtual->defvar = InstrVarInt;
@@ -297,19 +300,19 @@ bool Instr::CriarVarTexto(const char * mens, int tammens)
     if (VarAtual >= VarFim-1)
         return false;
 // Verifica espaço disponível (sem o 0 no final do texto)
-    if (tammens<0)
+    if (tammens < 0)
     {
-        if (mens==0)
+        if (mens == nullptr)
             return false;
-        tammens=strlen(mens);
+        tammens = strlen(mens);
     }
     int disp = DadosFim - DadosTopo - 1;
     if (disp<0)
         return false;
-    if (tammens>disp)
+    if (tammens > disp)
         tammens = disp;
 // Copia texto
-    if (tammens>0 && mens)
+    if (tammens > 0 && mens)
         memcpy(DadosTopo, mens, tammens);
     DadosTopo[tammens] = 0;
 // Acerta variáveis
@@ -317,9 +320,9 @@ bool Instr::CriarVarTexto(const char * mens, int tammens)
     VarAtual->defvar = InstrTxtFixo;
     VarAtual->nomevar = InstrTxtFixo;
     VarAtual->endvar = DadosTopo;
-    VarAtual->tamanho = tammens+1;
+    VarAtual->tamanho = tammens + 1;
     VarAtual->indice = 0;
-    DadosTopo += tammens+1;
+    DadosTopo += tammens + 1;
     return true;
 }
 
@@ -358,7 +361,7 @@ bool Instr::CriarVar(const char * def)
         return false;
 // Verifica se tamanho da variável é nulo
     int tam = TVariavel::Tamanho(def);
-    if (tam==0)
+    if (tam == 0)
     {
         VarAtual++;
         VarAtual->defvar = def;
@@ -372,16 +375,16 @@ bool Instr::CriarVar(const char * def)
     }
 // Acerta alinhamento do endereço da variável
     char * p = Instr::DadosTopo;
-    if ((tam&1)==0)
-        p += ((p-Instr::DadosPilha)&1);
-    if ((tam&3)==0)
-        p += ((p-Instr::DadosPilha)&2);
+    if ((tam & 1) == 0)
+        p += ((p - Instr::DadosPilha) & 1);
+    if ((tam & 3) == 0)
+        p += ((p - Instr::DadosPilha) & 2);
 // Prepara variável
     VarAtual++;
     VarAtual->endvar = p;
     VarAtual->defvar = def;
     VarAtual->nomevar = def;
-    VarAtual->indice = (def[endVetor]==0 ? 0 : 0xFF);
+    VarAtual->indice = (def[endVetor] == 0 ? 0 : 0xFF);
     VarAtual->numbit = 0;
     VarAtual->numfunc = 0;
     VarAtual->tamanho = VarAtual->TamanhoVetor();
@@ -417,9 +420,9 @@ void Instr::ApagarVar(TVariavel * v)
 /// Apaga variáveis na pilha de v a VarAtual-1
 void Instr::ApagarRet(TVariavel * v)
 {
-    for (TVariavel * var = VarAtual-1; var>=v; var--)
+    for (TVariavel * var = VarAtual - 1; var >= v; var--)
     {
-        if (var->tamanho==0)
+        if (var->tamanho == 0)
             continue;
         DadosTopo = (char*)var->endvar;
         if (var->endvar == VarAtual->endvar) // Se forem a mesma variável
@@ -435,13 +438,13 @@ void Instr::ApagarRet(TVariavel * v)
         char * p = DadosTopo;
         if (VarAtual->defvar[2] != cTxtFixo)
         {
-            if ((VarAtual->tamanho&1)==0)
-                p += ((p-Instr::DadosPilha)&1);
-            if ((VarAtual->tamanho&3)==0)
-                p += ((p-Instr::DadosPilha)&2);
+            if ((VarAtual->tamanho & 1) == 0)
+                p += ((p-Instr::DadosPilha) & 1);
+            if ((VarAtual->tamanho & 3) == 0)
+                p += ((p-Instr::DadosPilha) & 2);
         }
         if (p < VarAtual->endvar)
-            VarAtual->MoverEnd(p, 0, 0);
+            VarAtual->MoverEnd(p, nullptr, nullptr);
         DadosTopo = (char*)VarAtual->endvar + VarAtual->tamanho;
     }
 }
@@ -467,7 +470,7 @@ bool Instr::VarFuncIni(TVariavel * varini)
         if (defvar[2] == cVarFunc)
         {
             FuncAtual->linha = defvar + Num16(defvar);
-            FuncAtual->expr = 0;
+            FuncAtual->expr = nullptr;
         }
         else
         {
@@ -486,7 +489,7 @@ bool Instr::VarFuncIni(TVariavel * varini)
             FuncAtual->funcdebug = FuncAtual[-1].funcdebug;
         }
         else
-            FuncAtual->funcdebug = 0;
+            FuncAtual->funcdebug = nullptr;
         return true;
     }
     return false;
@@ -500,7 +503,7 @@ bool Instr::VarFuncIni(TVariavel * varini)
 bool Instr::VarFuncFim()
 {
     TVariavel * vfunc = VarAtual;
-    char * endini = 0;
+    char * endini = nullptr;
 
 // Procura última variável cVarFunc da pilha
     while (true)
@@ -519,11 +522,11 @@ bool Instr::VarFuncFim()
         vfunc->tamanho = 0; // A outra é cópia
         endini = 0;         // Por enquanto está na ordem correta em DadosPilha
     }
-    assert(vfunc->tamanho==0);
+    assert(vfunc->tamanho == 0);
 
 // Verifica se precisa acertar DadosPilha
-    if (VarAtual->tamanho==0 || // Se variável não está em DadosPilha
-            endini==0)  // Se variáveis então na ordem correta em DadosPilha
+    if (VarAtual->tamanho == 0 || // Se variável não está em DadosPilha
+            endini == 0)  // Se variáveis então na ordem correta em DadosPilha
     {
         *vfunc = *VarAtual;
         VarAtual--;
@@ -541,8 +544,8 @@ bool Instr::VarFuncFim()
                 DadosTopo = origem;
             if (DadosTopo > destino)
                 return false;
-            v->MoverEnd(destino, 0, 0);
-            for (TVariavel * vtemp = VarAtual; vtemp>vfunc; vtemp--)
+            v->MoverEnd(destino, nullptr, nullptr);
+            for (TVariavel * vtemp = VarAtual; vtemp > vfunc; vtemp--)
                 if (vtemp->endvar == origem)
                     vtemp->endvar = destino;
         }
@@ -552,19 +555,19 @@ bool Instr::VarFuncFim()
     VarAtual--;
 
 // Move variáveis vfunc a VarAtual para onde deverão ficar
-    for (TVariavel * v = vfunc; v<=VarAtual; v++)
+    for (TVariavel * v = vfunc; v <= VarAtual; v++)
         if (v->tamanho)
         {
             if (v->defvar[2] != cTxtFixo) // Alinhamento conforme variável
             {
-                if ((v->tamanho&1)==0)
-                    endini += ((endini-Instr::DadosPilha)&1);
-                if ((v->tamanho&3)==0)
-                    endini += ((endini-Instr::DadosPilha)&2);
+                if ((v->tamanho & 1) == 0)
+                    endini += ((endini - Instr::DadosPilha) & 1);
+                if ((v->tamanho & 3) == 0)
+                    endini += ((endini - Instr::DadosPilha) & 2);
             }
             char * origem = (char*)v->endvar;
-            v->MoverEnd(endini, 0, 0);
-            for (TVariavel * vtemp = vfunc; vtemp<=VarAtual; vtemp++)
+            v->MoverEnd(endini, nullptr, nullptr);
+            for (TVariavel * vtemp = vfunc; vtemp <= VarAtual; vtemp++)
                 if (vtemp->endvar == origem)
                     vtemp->endvar = endini;
             endini += v->tamanho;
@@ -580,34 +583,34 @@ bool Instr::ComparaInstr(const char * instr1, const char * instr2)
 {
     int total = Num16(instr1); // Quantidade de bytes em instr1
     int inicio = Instr::endVar;
-    const char * expr = 0; // Expressão numérica que está analisando
+    const char * expr = nullptr; // Expressão numérica que está analisando
                // Se 0, não checa expressão; apenas compara bytes a partir
                // de instr1+inicio com instr2+inicio
-    if (total==0) // Fim das instruções em instr1: checa fim em instr2
-        return (instr2[0]==0 && instr2[1]==0);
+    if (total == 0) // Fim das instruções em instr1: checa fim em instr2
+        return (instr2[0] == 0 && instr2[1] == 0);
     if (memcmp(instr1, instr2, 3) != 0)
         return false;
     switch (instr1[2])
     {
-    case cExpr:         expr = instr1 + Instr::endVar; break;
-    case cSe:           expr = instr1 + Instr::endVar+2; break;
-    case cSenao2:       expr = instr1 + Instr::endVar+2; break;
-    case cEnquanto:     expr = instr1 + Instr::endVar+2; break;
-    case cEPara:        expr = instr1 + Instr::endVar+6; break;
-    case cCasoVar:      expr = instr1 + Instr::endVar+2; break;
-    case cRet2:         expr = instr1 + Instr::endVar; break;
-    case cSair2:        expr = instr1 + Instr::endVar+2; break;
-    case cContinuar2:   expr = instr1 + Instr::endVar+2; break;
-    case cSenao1:       inicio = endVar+2; break;
-    case cFimSe:        inicio = endVar;   break;
-    case cEFim:         inicio = endVar+2; break;
-    case cCasoSe:       inicio = endVar+4; break;
-    case cCasoSePadrao: inicio = endVar;   break;
-    case cCasoFim:      inicio = endVar;   break;
-    case cRet1:         inicio = endVar;   break;
-    case cSair1:        inicio = endVar+2; break;
-    case cContinuar1:   inicio = endVar+2; break;
-    case cTerminar:     inicio = endVar;   break;
+    case cExpr:         expr = instr1 + Instr::endVar;     break;
+    case cSe:           expr = instr1 + Instr::endVar + 2; break;
+    case cSenao2:       expr = instr1 + Instr::endVar + 2; break;
+    case cEnquanto:     expr = instr1 + Instr::endVar + 2; break;
+    case cEPara:        expr = instr1 + Instr::endVar + 6; break;
+    case cCasoVar:      expr = instr1 + Instr::endVar + 2; break;
+    case cRet2:         expr = instr1 + Instr::endVar;     break;
+    case cSair2:        expr = instr1 + Instr::endVar + 2; break;
+    case cContinuar2:   expr = instr1 + Instr::endVar + 2; break;
+    case cSenao1:       inicio = endVar + 2; break;
+    case cFimSe:        inicio = endVar;     break;
+    case cEFim:         inicio = endVar + 2; break;
+    case cCasoSe:       inicio = endVar + 4; break;
+    case cCasoSePadrao: inicio = endVar;     break;
+    case cCasoFim:      inicio = endVar;     break;
+    case cRet1:         inicio = endVar;     break;
+    case cSair1:        inicio = endVar + 2; break;
+    case cContinuar1:   inicio = endVar + 2; break;
+    case cTerminar:     inicio = endVar;     break;
     case cRefVar:
         if (strcmp(instr1 + endNome, instr2 + endNome) != 0)
             return false;
@@ -626,7 +629,7 @@ bool Instr::ComparaInstr(const char * instr1, const char * instr2)
     if (inicio >= total)
         return true;
     if (expr == 0)
-        return (memcmp(instr1+inicio, instr2+inicio, total-inicio) == 0);
+        return (memcmp(instr1 + inicio, instr2 + inicio, total - inicio) == 0);
 
     {
         int valor = expr - instr1;
@@ -644,9 +647,9 @@ bool Instr::ComparaInstr(const char * instr1, const char * instr2)
                 int valor = expr - instr1;
                 if (memcmp(instr1, instr2, valor) != 0)
                     return false;
-                instr1 += valor+1;
-                instr2 += valor+1;
-                total -= valor+1;
+                instr1 += valor + 1;
+                instr2 += valor + 1;
+                total -= valor + 1;
             }
         case ex_varfunc:
             expr++;
@@ -654,9 +657,9 @@ bool Instr::ComparaInstr(const char * instr1, const char * instr2)
         case ex_fecha:  // Aberto com ex_abre
         case ex_ponto:  // Aberto com ex_arg
         case ex_doispontos:
-            while (*expr!=ex_arg && *expr!=ex_abre && *expr!=ex_varfim)
+            while (*expr != ex_arg && *expr != ex_abre && *expr != ex_varfim)
             {
-                assert(*expr!=0);
+                assert(*expr != 0);
                 expr++;
             }
             break;
@@ -704,17 +707,17 @@ bool Instr::ComparaInstr(const char * instr1, const char * instr2)
  */
 const char * Instr::ProcuraExpr(const char * expr, int valor)
 {
-    int contagem=0;
+    int contagem = 0;
     while (true)
     {
         //printf(">> %d %s\n", contagem, NomeExpr(*expr)); fflush(stdout);
-        if (*expr==valor && contagem<=0)
+        if (*expr == valor && contagem <= 0)
             return expr;
         switch (*expr++)
         {
         case ex_fim:
         case ex_coment:
-            return 0;
+            return nullptr;
         case ex_arg:    // Início da lista de argumentos
         case ex_abre:   // Abre colchetes; segue expressão numérica + ex_fecha
             break;
@@ -729,9 +732,9 @@ const char * Instr::ProcuraExpr(const char * expr, int valor)
         case ex_fecha:  // Aberto com ex_abre
         case ex_ponto:  // Aberto com ex_arg
         case ex_doispontos:
-            while (*expr!=ex_arg && *expr!=ex_abre && *expr!=ex_varfim)
+            while (*expr != ex_arg && *expr != ex_abre && *expr != ex_varfim)
             {
-                assert(*expr!=0);
+                assert(*expr != 0);
                 expr++;
             }
             break;
@@ -763,7 +766,7 @@ const char * Instr::ProcuraExpr(const char * expr, int valor)
             expr++;
         case ex_num0:
         case ex_num1:
-            while (*expr>=ex_div1 && *expr<=ex_div6)
+            while (*expr >= ex_div1 && *expr <= ex_div6)
                 expr++;
             break;
 
@@ -864,10 +867,10 @@ const char * Instr::NomeInstr(const char * instr)
 
     case cVariaveis:        return "";
     case cTxt1:
-        sprintf(nome, "txt%d", (unsigned char)instr[endExtra]+1);
+        sprintf(nome, "txt%d", (unsigned char)instr[endExtra] + 1);
         return nome;
     case cTxt2:
-        sprintf(nome, "txt%d", (unsigned char)instr[endExtra]+257);
+        sprintf(nome, "txt%d", (unsigned char)instr[endExtra] + 257);
         return nome;
     case cInt1:             return "int1";
     case cInt8:             return "int8";
@@ -1139,48 +1142,48 @@ const char * Instr::NomeExpr(int valor)
 //------------------------------------------------------------------------------
 Instr::ChecaLinha::ChecaLinha()
 {
-    esperando=0;
-    pbuf=0;
+    esperando = 0;
+    pbuf = 0;
 }
 
 //------------------------------------------------------------------------------
 void Instr::ChecaLinha::Inicio()
 {
-    esperando=0;
-    pbuf=0;
+    esperando = 0;
+    pbuf = 0;
 }
 
 //------------------------------------------------------------------------------
 const char * Instr::ChecaLinha::Instr(const char * instr)
 {
-    if (instr[0]==0 && instr[1]==0)
-        return 0;
+    if (instr[0] == 0 && instr[1] == 0)
+        return nullptr;
     unsigned char cod = *(unsigned char*)(instr+2);
 // Instrução Herda
-    if (cod==cHerda)
+    if (cod == cHerda)
     {
-        if (esperando!=0)
+        if (esperando != 0)
             return "Instrução Herda deve ser a primeira da classe";
         esperando=1;
-        return 0;
+        return nullptr;
     }
-    if (esperando==0)
-        esperando=1;
+    if (esperando == 0)
+        esperando = 1;
 // Comentário
-    if (cod==cComent)
-        return 0;
+    if (cod == cComent)
+        return nullptr;
 // Função
-    if (cod==cFunc || cod==cVarFunc)
+    if (cod == cFunc || cod == cVarFunc)
     {
-        esperando=2;
+        esperando = 2;
         return Fim();
     }
 // Constante
-    if (cod==cConstNulo || cod==cConstTxt ||
-        cod==cConstNum  || cod==cConstExpr || cod==cConstVar)
+    if (cod == cConstNulo || cod == cConstTxt ||
+        cod == cConstNum  || cod == cConstExpr || cod == cConstVar)
     {
-        if (esperando!=1)
-            esperando=3;
+        if (esperando != 1)
+            esperando = 3;
         return Fim();
     }
 // Variável
@@ -1206,14 +1209,14 @@ const char * Instr::ChecaLinha::Instr(const char * instr)
                 return "Somente variáveis definidas em funções permitem "
                         "atribuição de valor";
             }
-        return 0;
+        return nullptr;
     }
 // Instrução
     if (esperando != 2)
         return "Instrução não pertence a uma função";
 // Blocos de instruções
     if (ChecaErro <= 0)
-        return 0;
+        return nullptr;
     switch (cod)
     {
     case cSe:
@@ -1222,11 +1225,11 @@ const char * Instr::ChecaLinha::Instr(const char * instr)
         break;
     case cSenao1:
     case cSenao2:
-        if (pbuf ? buf[pbuf-1]!=0 : true)
+        if (pbuf ? buf[pbuf - 1] != 0 : true)
             return "Senão sem Se";
         break;
     case cFimSe:
-        if (pbuf ? buf[pbuf-1]!=0 : true)
+        if (pbuf ? buf[pbuf - 1] != 0 : true)
             return "FimSe sem Se";
         pbuf--;
         break;
@@ -1236,7 +1239,7 @@ const char * Instr::ChecaLinha::Instr(const char * instr)
             buf[pbuf++] = 1;
         break;
     case cEFim:
-        if (pbuf ? buf[pbuf-1]!=1 : true)
+        if (pbuf ? buf[pbuf - 1] != 1 : true)
             return "EFim sem Enquanto ou EPara";
         pbuf--;
         break;
@@ -1246,11 +1249,11 @@ const char * Instr::ChecaLinha::Instr(const char * instr)
         break;
     case cCasoSe:
     case cCasoSePadrao:
-        if (pbuf ? buf[pbuf-1]!=2 : true)
+        if (pbuf ? buf[pbuf - 1] != 2 : true)
             return "CasoSe sem CasoVar";
         break;
     case cCasoFim:
-        if (pbuf ? buf[pbuf-1]!=2 : true)
+        if (pbuf ? buf[pbuf - 1] != 2 : true)
             return "CasoFim sem CasoVar";
         pbuf--;
         break;
@@ -1258,36 +1261,36 @@ const char * Instr::ChecaLinha::Instr(const char * instr)
     case cSair2:
         if (pbuf)
         {
-            for (int x=pbuf-1; x>=0; x--)
+            for (int x = pbuf - 1; x >= 0; x--)
                 if (buf[x] != 0)
-                    return 0;
+                    return nullptr;
         }
         return "Sair sem Enquanto, EPara ou CasoVar";
     case cContinuar1:
     case cContinuar2:
         if (pbuf)
         {
-            for (int x=pbuf-1; x>=0; x--)
+            for (int x = pbuf - 1; x >= 0; x--)
                 if (buf[x] == 1)
-                    return 0;
+                    return nullptr;
         }
         return "Continuar sem Enquanto ou EPara";
     }
-    return 0;
+    return nullptr;
 }
 
 //------------------------------------------------------------------------------
 const char * Instr::ChecaLinha::Fim()
 {
     if (ChecaErro <= 0)
-        return 0;
+        return nullptr;
     if (ChecaErro == 1)
         for (; pbuf > 0; pbuf--)
-            if (buf[pbuf-1] != 0)
+            if (buf[pbuf - 1] != 0)
                 break;
     if (pbuf == 0)
-        return 0;
-    int result = buf[pbuf-1];
+        return nullptr;
+    int result = buf[pbuf - 1];
     pbuf = 0;
     switch (result)
     {

@@ -21,7 +21,7 @@
 #include "console.h"
 #include "misc.h"
 
-TConsole * Console = 0;
+TConsole * Console = nullptr;
 
 //---------------------------------------------------------------------------
 #ifdef __WIN32__
@@ -112,7 +112,7 @@ bool TConsole::Inic(bool completo)
     {
         char mens[0x100];
         char * d = mens;
-        for (; *lang && d<mens+sizeof(mens)-2; lang++)
+        for (; *lang && d < mens + sizeof(mens) - 2; lang++)
             if (*lang>='a' && *lang<='z')
                 *d++ = *lang - 0x20;
             else if (*lang != '-' && *lang != ' ')
@@ -182,31 +182,31 @@ bool TConsole::Inic(bool completo)
           0xEC, 0xE8, 0x98 };
 // 0 ~ 0x7F é padronizado
     memset(StrConv, ' ', sizeof(StrConv));
-    for (int x=0; x<0x80; x++)
+    for (int x = 0; x < 0x80; x++)
         StrConv[x] = x;
 // IBM850
-    if (Charset==0x103)
+    if (Charset == 0x103)
     {
-        memcpy(StrConv+0xA0, StrA0, 0x60);
+        memcpy(StrConv + 0xA0, StrA0, 0x60);
         memset(StrLer, ' ', sizeof(StrLer));
     }
 // Desconhecido
-    else if (Charset==0x100)
+    else if (Charset == 0x100)
     {
         const char StrNormal[] =
                 "AAAAAA C" "EEEEIIII"  // 0xC0
                 "DNOOOOOx" " UUUUY  "  // 0xD0
                 "aaaaaa c" "eeeeiiii"  // 0xE0
                 " nooooo " " uuuuy y"; // 0xF0
-        memcpy(StrConv+0xC0, StrNormal, 0x40);
+        memcpy(StrConv + 0xC0, StrNormal, 0x40);
     }
 // ISO8859-1
     else
-        for (int x=0xA1; x<0x100; x++)
+        for (int x = 0xA1; x < 0x100; x++)
             StrConv[x] = x;
 
 // Acerta StrLer a partir de StrConv
-    for (int x=0xFF; x>=0; x--)
+    for (int x = 0xFF; x >= 0; x--)
         StrLer[ (unsigned char)StrConv[x] ] = x;
     //printf("Charset = %x\n", Charset); fflush(stdout);
 
@@ -416,7 +416,7 @@ const char * TConsole::LerTecla()
     {
     // Lê próxima tecla
         int ch;
-        if (LerTexto[0]==0)
+        if (LerTexto[0] == 0)
         {
             fd_set read_fds;
             struct timeval tselect;
@@ -457,18 +457,18 @@ const char * TConsole::LerTecla()
             ch = (unsigned char)LerTexto[0], LerTexto[0] = 0;
         if (ch <= 0)
         {
-            if (LerPont!=1)
+            if (LerPont != 1)
                 break;
             LerPont=0;
             return "ESC";
         }
         //if (ch==3) return "BREAK";
     // Checa teclas sem o ESC
-        if (LerPont==0)
+        if (LerPont == 0)
         {
-            if (ch==127) return "BACK";
+            if (ch == 127) return "BACK";
         // Caracter normal
-            if ((unsigned char)ch>=' ')
+            if ((unsigned char)ch >= ' ')
             {
                 LerTexto[1] = ch;
                 LerTexto[2] = 0;
@@ -508,9 +508,9 @@ const char * TConsole::LerTecla()
             continue;
         }
     // Obtém string de teclas com o ESC
-        if (LerPont==1)
+        if (LerPont == 1)
         {
-            if (ch!='[' && ch!='O')
+            if (ch != '[' && ch != 'O')
             {
                 LerTexto[0] = ch;
                 LerPont = 0;
@@ -589,15 +589,15 @@ const char * TConsole::LerTecla()
         int fim = sizeof(cod_esc) / sizeof(cod_esc[0]) - 1;
         while (ini <= fim)
         {
-            int meio = (ini+fim)/2;
-            int valor = strcmp(LerTexto+1, cod_esc[meio]);
-            if (valor==0)
+            int meio = (ini + fim) / 2;
+            int valor = strcmp(LerTexto + 1, cod_esc[meio]);
+            if (valor == 0)
             {
                 const char * p = cod_esc[meio];
                 while (*p++);
                 return p;
             }
-            if (valor<0)
+            if (valor < 0)
                 fim = meio - 1;
             else
                 ini = meio + 1;
@@ -633,7 +633,7 @@ void TConsole::EnvTxt(const char * texto, int tamanho)
 {
 #ifdef __WIN32__
     MoverCursor = true;
-    while (tamanho>0)
+    while (tamanho > 0)
     {
         CHAR_INFO mens[1024];
         PCHAR_INFO dest = mens;
@@ -647,7 +647,7 @@ void TConsole::EnvTxt(const char * texto, int tamanho)
         int total = sizeof(mens)/sizeof(mens[0]);
         if (total>tamanho) total=tamanho;
         tamanho -= total;
-        for (; total>0; total--,texto++)
+        for (; total > 0; total--, texto++)
         {
         // Qualquer caracter exceto nova linha
             if (*texto != '\n')
@@ -685,7 +685,7 @@ void TConsole::EnvTxt(const char * texto, int tamanho)
         if (dest > mens) // Mensagens pendentes
         {
             mensrect.Top = mensrect.Bottom = LinAtual;
-            mensrect.Left = ColAtual - (dest-mens);
+            mensrect.Left = ColAtual - (dest - mens);
             mensrect.Right = ColAtual - 1;
             WriteConsoleOutput(con_out, mens, menstam, mensposic, &mensrect);
         }
@@ -696,9 +696,10 @@ void TConsole::EnvTxt(const char * texto, int tamanho)
         char mens[1024];
         char * dest = mens;
         int total = sizeof(mens)/2;
-        if (total>tamanho) total=tamanho;
+        if (total > tamanho)
+            total = tamanho;
         tamanho -= total;
-        for (; total>0; total--,texto++)
+        for (; total > 0; total--, texto++)
         {
             if (*texto == '\n')
             {
@@ -732,20 +733,20 @@ void TConsole::CorTxt(unsigned int novacor)
     CorAtual = novacor;
 // Troca frente com fundo
     if (antes & 0x200)
-        antes = (antes&~0x277) | ((antes>>4)&7) | ((antes<<4)&0x70);
+        antes = (antes & ~0x277) | ((antes >> 4) & 7) | ((antes << 4) & 0x70);
     if (novacor & 0x200)
-        novacor=(novacor&~0x277) | ((novacor>>4)&7) | ((novacor<<4)&0x70);
+        novacor = (novacor & ~0x277) | ((novacor >> 4) & 7) | ((novacor<<4) & 0x70);
 #ifdef __WIN32__
     if (((antes ^ novacor) & 0xF7) == 0)
         return;
     WORD atributos = 0;
-    if (novacor&1) atributos |= BACKGROUND_RED;
-    if (novacor&2) atributos |= BACKGROUND_GREEN;
-    if (novacor&4) atributos |= BACKGROUND_BLUE;
-    if (novacor&16) atributos |= FOREGROUND_RED;
-    if (novacor&32) atributos |= FOREGROUND_GREEN;
-    if (novacor&64) atributos |= FOREGROUND_BLUE;
-    if (novacor&128) atributos |= FOREGROUND_INTENSITY;
+    if (novacor & 1) atributos |= BACKGROUND_RED;
+    if (novacor & 2) atributos |= BACKGROUND_GREEN;
+    if (novacor & 4) atributos |= BACKGROUND_BLUE;
+    if (novacor & 16) atributos |= FOREGROUND_RED;
+    if (novacor & 32) atributos |= FOREGROUND_GREEN;
+    if (novacor & 64) atributos |= FOREGROUND_BLUE;
+    if (novacor & 128) atributos |= FOREGROUND_INTENSITY;
     // Nota: a opção de texto sublinhado é ignorada pelo Windows
     // Vide:
     // http://blogs.msdn.com/b/michkap/archive/2005/10/10/478911.aspx
@@ -758,7 +759,7 @@ void TConsole::CorTxt(unsigned int novacor)
         return;
     char mens[32];
     char * destino = mens;
-    char ini='[';
+    char ini = '[';
     //sprintf(destino, "%02x", cor); destino+=2;
     *destino++ = 0x1B;
                         // Tirar negrito, sublinhado e piscando
@@ -766,40 +767,40 @@ void TConsole::CorTxt(unsigned int novacor)
     {
         destino[0] = ini;
         destino[1] = '0';
-        destino+=2, ini=';';
+        destino+=2, ini = ';';
         antes = 0x70;
     }
-    if ((antes&0x80)==0 && (novacor&0x80)) // Negrito
+    if ((antes & 0x80) == 0 && (novacor & 0x80)) // Negrito
     {
         destino[0] = ini;
         destino[1] = '1';
-        destino+=2, ini=';';                    
+        destino += 2, ini=';';
     }
-    if ((antes&0x100)==0 && (novacor&0x100)) // Sublinhado
+    if ((antes & 0x100) == 0 && (novacor & 0x100)) // Sublinhado
     {
         destino[0] = ini;
         destino[1] = '4';
-        destino+=2, ini=';';
+        destino += 2, ini=';';
     }
-    if ((antes&0x400)==0 && (novacor&0x400)) // Texto piscando
+    if ((antes & 0x400) == 0 && (novacor & 0x400)) // Texto piscando
     {
         destino[0] = ini;
         destino[1] = '5';
-        destino+=2, ini=';';
+        destino += 2, ini = ';';
     }
-    if ((antes^novacor)&0x70) // Frente
+    if ((antes ^ novacor) & 0x70) // Frente
     {
         destino[0] = ini;
         destino[1] = '3';
-        destino[2] = ((novacor>>4)&7)+'0';
-        destino+=3, ini=';';
+        destino[2] = ((novacor >> 4) & 7) + '0';
+        destino += 3, ini = ';';
     }
-    if ((antes^novacor)&15) // Fundo
+    if ((antes ^ novacor) & 15) // Fundo
     {
         destino[0] = ini;
         destino[1] = '4';
-        destino[2] = (novacor&7)+'0';
-        destino+=3, ini=';';
+        destino[2] = (novacor & 7) + '0';
+        destino += 3, ini = ';';
     }
     *destino++ = 'm';
     *destino = 0;
@@ -821,7 +822,7 @@ void TConsole::CursorIni()
 //---------------------------------------------------------------------------
 void TConsole::CursorLin(int valor)
 {
-    if (valor==0)
+    if (valor == 0)
         return;
 #ifdef __WIN32__
     MoverCursor = true;
@@ -841,12 +842,12 @@ void TConsole::CursorLin(int valor)
 //---------------------------------------------------------------------------
 void TConsole::CursorCol(int valor)
 {
-    if (valor==0)
+    if (valor == 0)
         return;
 #ifdef __WIN32__
     MoverCursor = true;
 #else
-    if (valor>0)
+    if (valor > 0)
         printf("\x1B[%dC", valor);
     else
         printf("\x1B[%dD", -valor);
@@ -861,19 +862,19 @@ void TConsole::CursorCol(int valor)
 //---------------------------------------------------------------------------
 void TConsole::CursorPosic(int lin, int col)
 {
-    LinAtual = (lin<0 ? 0 : lin>=(int)LinTotal ? LinTotal-1 : lin);
-    ColAtual = (col<0 ? 0 : col>=(int)ColTotal ? ColTotal-1 : col);
+    LinAtual = (lin < 0 ? 0 : lin >= (int)LinTotal ? LinTotal - 1 : lin);
+    ColAtual = (col < 0 ? 0 : col >= (int)ColTotal ? ColTotal - 1 : col);
 #ifdef __WIN32__
     MoverCursor = true;
 #else
-    printf("\x1B[%d;%dH", LinAtual+1, ColAtual+1);
+    printf("\x1B[%d;%dH", LinAtual + 1, ColAtual + 1);
 #endif
 }
 
 //---------------------------------------------------------------------------
 void TConsole::InsereLin(int valor)
 {
-    if (valor<=0)
+    if (valor <= 0)
         return;
 #ifdef __WIN32__
     SMALL_RECT scroll;  // Região que será movida
@@ -896,7 +897,7 @@ void TConsole::InsereLin(int valor)
 //---------------------------------------------------------------------------
 void TConsole::ApagaLin(int valor)
 {
-    if (valor<=0)
+    if (valor <= 0)
         return;
 #ifdef __WIN32__
     SMALL_RECT scroll;  // Região que será movida
@@ -919,7 +920,7 @@ void TConsole::ApagaLin(int valor)
 //---------------------------------------------------------------------------
 void TConsole::InsereCol(int valor)
 {
-    if (valor<=0)
+    if (valor <= 0)
         return;
 #ifdef __WIN32__
     SMALL_RECT scroll;  // Região que será movida
@@ -940,7 +941,7 @@ void TConsole::InsereCol(int valor)
 //---------------------------------------------------------------------------
 void TConsole::ApagaCol(int valor)
 {
-    if (valor<=0)
+    if (valor <= 0)
         return;
 #ifdef __WIN32__
     SMALL_RECT scroll;  // Região que será movida
@@ -959,7 +960,7 @@ void TConsole::ApagaCol(int valor)
     printf("\x1B[s" // Salva o cursor
            "\x1B[500C"); // Vai para o fim da linha
     if (valor > 1)
-        printf("\x1B[%dD", valor-1); // Retorna um ou mais caracteres
+        printf("\x1B[%dD", valor - 1); // Retorna um ou mais caracteres
     printf("\x1B[K" // Apaga até o fim da linha
            "\x1B[u"); // Restaura o cursor
 #endif
