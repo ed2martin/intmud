@@ -93,7 +93,7 @@ TExec::~TExec()
 }
 
 //------------------------------------------------------------------------------
-const char * TExec::Abrir(const char * nomeprog)
+const char * TExec::Abrir(const char * nomeprog, bool visivel)
 {
     if (Rodando)
         return "Já está rodando um programa";
@@ -116,15 +116,15 @@ const char * TExec::Abrir(const char * nomeprog)
 
 // Cria pipe de entrada (STDOUT do programa)
     Success = CreatePipe(descrpipe, // Handle de leitura
-                         descrpipe+1, // Handle de escrita
+                         descrpipe + 1, // Handle de escrita
                          &SecurityAttributes, // Atributos de segurança
                          0); // Número de bytes reservado para o pipe, 0=default
     if (!Success)
         return "Erro ao criar PIPE";
 
 // Cria pipe de saída (STDIN do programa)
-    Success = CreatePipe(descrpipe+2, // Handle de leitura
-                         descrpipe+3, // Handle de escrita
+    Success = CreatePipe(descrpipe + 2, // Handle de leitura
+                         descrpipe + 3, // Handle de escrita
                          &SecurityAttributes, // Atributos de segurança
                          0); // Número de bytes reservado para o pipe, 0=default
     if (!Success)
@@ -146,7 +146,7 @@ const char * TExec::Abrir(const char * nomeprog)
     StartupInfo.cb           = sizeof(STARTUPINFO);
     StartupInfo.dwFlags      = STARTF_USESHOWWINDOW | STARTF_USESTDHANDLES;
     //StartupInfo.dwFlags      = STARTF_USESTDHANDLES;
-    StartupInfo.wShowWindow  = SW_HIDE;
+    StartupInfo.wShowWindow  = visivel ? SW_SHOW : SW_HIDE;
     StartupInfo.hStdInput    = descrpipe[2];
     StartupInfo.hStdOutput   = descrpipe[1];
     StartupInfo.hStdError    = descrpipe[1];
@@ -195,7 +195,7 @@ const char * TExec::Abrir(const char * nomeprog)
     pipe_out = descrpipe[3];
 
     Rodando = true;
-    return 0;
+    return nullptr;
 
 #else
 
@@ -265,13 +265,13 @@ const char * TExec::Abrir(const char * nomeprog)
     if (strchr(nomearq, '/'))
     {
         if (access(nomearq, X_OK) < 0)
-            nomearq = 0;
+            nomearq = nullptr;
     }
     else
     {
         int nometam = strlen(nomearq);
         const char * path = getenv("PATH");
-        if (path == 0)
+        if (path == nullptr)
             path = "/bin:/usr/bin";
         while (true)
         {
@@ -282,9 +282,9 @@ const char * TExec::Abrir(const char * nomeprog)
             while (*path && *path != ':')
                 path++;
             if (p == path)
-                pathtam = 1, p=".";
+                pathtam = 1, p = ".";
             else
-                pathtam = path-p;
+                pathtam = path - p;
             if (*path == ':')
                 path++;
             if (pathtam + nometam + 2 > (int)sizeof(nomebuf))
@@ -341,7 +341,7 @@ const char * TExec::Abrir(const char * nomeprog)
         fcntl(pipe_out, F_SETFL, O_NONBLOCK);
         safe_write(pipe_out, "a", 1);
         Rodando = true;
-        return 0;
+        return nullptr;
     }
     dup2(descrpipe[1],STDOUT_FILENO); // Entrada deste programa: stdout do outro
     dup2(descrpipe[1],STDERR_FILENO);

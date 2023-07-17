@@ -130,12 +130,12 @@ void TObjExec::EnvPend()
 //------------------------------------------------------------------------------
 void TObjExec::Receber()
 {
-    char bufRec[512];  // Contém a mensagem recebida
+    char bufRec[4096];  // Contém a mensagem recebida
     unsigned int pontRec = 0; // Número do byte que está lendo
 
     while (true)
     {
-        char buf[2048];
+        char buf[4096];
         int lido = Ler(buf, sizeof(buf));
         for (int cont = 0; cont < lido; cont++)
         {
@@ -147,26 +147,26 @@ void TObjExec::Receber()
             //}
             if (dado >= ' ')
             {
-                dadoRecebido=0;
+                dadoRecebido = 0;
                 bufRec[pontRec++] = dado;
                 if (pontRec < sizeof(bufRec) - 1)
                     continue;
             }
-            else if (dado!=10 && dado!=13)
+            else if (dado != 10 && dado != 13)
             {
-                dadoRecebido=0;
+                dadoRecebido = 0;
                 continue;
             }
-            else if (dado==13 ? dadoRecebido==10 : dadoRecebido==13)
+            else if (dado == 13 ? dadoRecebido == 10 : dadoRecebido == 13)
             {
-                dadoRecebido=0;
+                dadoRecebido = 0;
                 continue;
             }
             dadoRecebido = dado;
             bufRec[pontRec] = 0;
             pontRec = 0;
             if (VarExec)
-                VarExec->FuncEvento("msg", bufRec, dado==13 || dado==10);
+                VarExec->FuncEvento("msg", bufRec, dado == 13 || dado == 10);
         }
         if (lido != sizeof(buf))
             break;
@@ -274,9 +274,9 @@ void TVarExec::Mover(TVarExec * destino)
 void TVarExec::EndObjeto(TClasse * c, TObjeto * o)
 {
     if (o)
-        endobjeto=o, b_objeto=true;
+        endobjeto=o, b_objeto = true;
     else
-        endclasse=c, b_objeto=false;
+        endclasse=c, b_objeto = false;
 }
 
 //------------------------------------------------------------------------------
@@ -303,7 +303,7 @@ void TVarExec::FuncEvento(const char * evento, const char * texto, int valor)
     {
         if (texto)
             Instr::ExecArg(texto);
-        if (valor>=0)
+        if (valor >= 0)
             Instr::ExecArg(valor);
         Instr::ExecArg(indice);
         Instr::ExecX();
@@ -315,18 +315,18 @@ void TVarExec::FuncEvento(const char * evento, const char * texto, int valor)
 bool TVarExec::Func(TVariavel * v, const char * nome)
 {
 // Envia mensagem
-    if (comparaZ(nome, "msg")==0)
+    if (comparaZ(nome, "msg") == 0)
     {
-        if (ObjExec == 0 || Instr::VarAtual != v+1)
+        if (ObjExec == 0 || Instr::VarAtual != v + 1)
             return false;
         bool enviou = ObjExec->Enviar(v[1].getTxt());
         Instr::ApagarVar(v);
         return Instr::CriarVarInt(enviou);
     }
 // Começa a executar
-    if (comparaZ(nome, "abrir")==0)
+    if (comparaZ(nome, "abrir") == 0)
     {
-        if (Instr::VarAtual != v+1)
+        if (Instr::VarAtual < v + 1)
             return false;
         if (ObjExec)
         {
@@ -334,9 +334,7 @@ bool TVarExec::Func(TVariavel * v, const char * nome)
             ObjExec = 0;
         }
         const char * cmd = v[1].getTxt();
-        if (cmd == 0)
-            return false;
-        if (*cmd == 0)
+        if (cmd == nullptr || *cmd == 0)
             return false;
         if (!opcao_completo)
         {
@@ -348,7 +346,7 @@ bool TVarExec::Func(TVariavel * v, const char * nome)
                 int tamnome = strlen(nome);
                 if (tamnome == 0)
                     continue;
-                if (nome[tamnome-1] == '*')
+                if (nome[tamnome - 1] == '*')
                 {
                     tamnome--;
                     if (tamcmd < tamnome)
@@ -365,15 +363,16 @@ bool TVarExec::Func(TVariavel * v, const char * nome)
                 return Instr::CriarVarTexto("ArqExec não pode executar isso");
             }
         }
+        int visivel = (Instr::VarAtual >= v+2 ? v[2].getInt() : 0);
         ObjExec = new TObjExec(this);
-        const char * err = ObjExec->Abrir(cmd);
+        const char * err = ObjExec->Abrir(cmd, visivel == 1);
         Instr::ApagarVar(v);
         if (err)
             delete ObjExec;
         return Instr::CriarVarTexto(err ? err : "");
     }
 // Encerra a execução
-    if (comparaZ(nome, "fechar")==0)
+    if (comparaZ(nome, "fechar") == 0)
     {
         if (ObjExec)
         {
@@ -383,7 +382,7 @@ bool TVarExec::Func(TVariavel * v, const char * nome)
         return false;
     }
 // Checa se está aberto
-    if (comparaZ(nome, "aberto")==0)
+    if (comparaZ(nome, "aberto") == 0)
     {
         bool aberto = (ObjExec != 0);
         Instr::ApagarVar(v);

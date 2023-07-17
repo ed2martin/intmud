@@ -51,7 +51,7 @@ func tela_msg
     exec.msg(arg0 + "\n")
     ret
   fimse
-  refvar err = exec.abrir(arg0)
+  refvar err = exec.abrir(arg0, 1)
   se err != ""
     tela.msg("\d4Erro ao executar " + arg0 + ":\b\n" + err + "\n")
     ret

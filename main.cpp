@@ -14,17 +14,16 @@
 #include <dirent.h>
 #include <errno.h>
 #include <assert.h>
+#include <fcntl.h>
 #ifdef __WIN32__
     // O número de sockets padrão no Windows é 64
     // Se precisar mudar, definir FD_SETSIZE aqui, antes de winsock.h
  #define FD_SETSIZE 128
  #include <windows.h>
  #include <winsock.h>
- #include <fcntl.h>
  #include <io.h>
 #else
  #include <sys/types.h>
- #include <fcntl.h>
  #include <signal.h>
  #include <unistd.h>     // read e write
  #include <sys/time.h>
@@ -63,16 +62,16 @@
  #include <sys/vtimes.h>
 #endif
 
-void Inicializa(const char * arg);
+static void Inicializa(const char * arg);
+static void TerminaSign(int sig);
 void Termina();
-void TerminaSign(int sig);
 
 static FILE * err_log = nullptr;
 
 //------------------------------------------------------------------------------
 // Semelhante a sprintf(), exceto que:
 // Só processa caracteres %%, %c, %d, %u e %s
-void err_printf(const char * mens, ...)
+static void err_printf(const char * mens, ...)
 {
     char txt[512];
     char * destino = txt;
@@ -174,7 +173,29 @@ void err_printf(const char * mens, ...)
 }
 
 //------------------------------------------------------------------------------
-void err_fim()
+// Retorna contador de tempo sendo quem 1000 equivale a 1 segundo
+static unsigned int contador_tempo()
+{
+#ifdef __WIN32__
+    // Nota: a base de tempo do IntMUD é de 100 milissegundos
+    // Se for necessário maior precisào, usar QueryPerformanceFrequency()
+    // e QueryPerformanceCounter()
+    return timeGetTime();
+#else
+    struct timespec agora1;
+    if (clock_gettime(CLOCK_MONOTONIC, &agora1) == 0)
+        return static_cast<unsigned int>(agora1.tv_sec * 1000ULL +
+                agora1.tv_nsec / 1000000);
+    // Ocorreu um erro ao obter o tempo
+    struct timeval agora2;
+    gettimeofday(&agora2, 0);
+    return static_cast<unsigned int>(agora2.tv_sec * 1000LL +
+            agora2.tv_usec / 1000);
+#endif
+}
+
+//------------------------------------------------------------------------------
+static void err_fim()
 {
 #ifdef __WIN32__
     if (Console == nullptr)
@@ -262,22 +283,12 @@ int main(int argc, char *argv[])
     FD_ZERO(&set_entrada);
     FD_ZERO(&set_saida);
     FD_ZERO(&set_err);
-#ifdef __WIN32__
-    atual = timeGetTime();
-#else
-    gettimeofday(&tselect, 0);
-    atual = tselect.tv_sec * 1000LL + tselect.tv_usec / 1000;
-#endif
+    atual = contador_tempo();
     while (true)
     {
     // Obtém: espera = tempo decorrido
         espera = atual;
-#ifdef __WIN32__
-        atual = timeGetTime(); // Tempo atual
-#else
-        gettimeofday(&tselect, 0);
-        atual = tselect.tv_sec * 1000LL + tselect.tv_usec / 1000;
-#endif
+        atual = contador_tempo(); // Tempo atual
         espera = atual - espera;// Quanto tempo se passou em milissegundos
         atual -= espera % 100;  // Para passar para décimos de segundo
         espera /= 100;          // Arredonda para décimos de segundo
@@ -350,14 +361,7 @@ int main(int argc, char *argv[])
             espera = 10;
         if (espera > TESPERA_MAX)
             espera = TESPERA_MAX;
-
-#ifdef __WIN32__
-        tempo = timeGetTime();
-#else
-        gettimeofday(&tselect, 0);
-        tempo = tselect.tv_sec * 1000LL + tselect.tv_usec / 1000;
-#endif
-        tempo -= atual;
+        tempo = contador_tempo() - atual;
         espera *= 100;
         if (espera < tempo)
             espera = 0;
@@ -922,7 +926,7 @@ void Inicializa(const char * arg)
 #ifndef __WIN32__
 static int termsign = 0;
 /// Processa sinal que encerra o programa
-void TerminaSign(int sig)
+static void TerminaSign(int sig)
 {
 // Início
     if (termsign)

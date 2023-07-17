@@ -18,8 +18,12 @@ public:
 
     TExec();
     ~TExec();
-    const char * Abrir(const char * nomeprog);
+    const char * Abrir(const char * nomeprog, bool visivel = false);
         ///< Roda um programa
+        /**< @param nomeprog Comando
+         *   @param visivel Somente Windows: se a janela do programa deve
+         *        ficar visível
+         *   @return Mensagem de erro ou nullptr se conseguiu executar */
     void Fechar();
         ///< Fecha o programa
     int InfoProg();
