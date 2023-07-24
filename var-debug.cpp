@@ -25,8 +25,8 @@
 #include "instr.h"
 #include "misc.h"
 
-TVarDebug * TVarDebug::Inicio = 0;
-TVarDebug * TVarDebug::ObjAtual = 0;
+TVarDebug * TVarDebug::Inicio = nullptr;
+TVarDebug * TVarDebug::ObjAtual = nullptr;
 
 size_t getPeakRSS();
 size_t getCurrentRSS();
@@ -34,7 +34,7 @@ size_t getCurrentRSS();
 //------------------------------------------------------------------------------
 void TVarDebug::Criar()
 {
-    Antes = 0;
+    Antes = nullptr;
     Depois = Inicio;
     if (Inicio)
         Inicio->Antes = this;
@@ -47,8 +47,8 @@ void TVarDebug::Apagar()
     (Antes ? Antes->Depois : Inicio) = Depois;
     if (Depois)
         Depois->Antes = Antes;
-    if (ObjAtual==this)
-        ObjAtual=Depois;
+    if (ObjAtual == this)
+        ObjAtual = Depois;
 }
 
 //------------------------------------------------------------------------------
@@ -66,9 +66,9 @@ void TVarDebug::Mover(TVarDebug * destino)
 void TVarDebug::EndObjeto(TClasse * c, TObjeto * o)
 {
     if (o)
-        endobjeto=o, b_objeto=true;
+        endobjeto = o, b_objeto = true;
     else
-        endclasse=c, b_objeto=false;
+        endclasse = c, b_objeto = false;
 }
 
 //------------------------------------------------------------------------------
@@ -82,14 +82,14 @@ void TVarDebug::FuncEvento(const char * evento, const char * texto)
         if (vobj->b_objeto)
         {
             char mens[80];
-            sprintf(mens, "%s_%s", vobj->defvar+Instr::endNome, evento);
+            sprintf(mens, "%s_%s", vobj->defvar + Instr::endNome, evento);
             prossegue = Instr::ExecIni(vobj->endobjeto, mens);
         }
     // Definido em classe: prepara para executar
         else if (vobj->endclasse)
         {
             char mens[80];
-            sprintf(mens, "%s_%s", vobj->defvar+Instr::endNome, evento);
+            sprintf(mens, "%s_%s", vobj->defvar + Instr::endNome, evento);
             prossegue = Instr::ExecIni(vobj->endclasse, mens);
         }
     // Executa
@@ -111,45 +111,45 @@ void TVarDebug::FuncEvento(const char * evento, const char * texto)
 bool TVarDebug::Func(TVariavel * v, const char * nome)
 {
     using namespace Instr;
-    if (comparaZ(nome, "ini")==0)
+    if (comparaZ(nome, "ini") == 0)
     {
         VarExec = VarExecIni;
         return false;
     }
     int num=0;
-    if (comparaZ(nome, "exec")==0)
+    if (comparaZ(nome, "exec") == 0)
         num=1;
-    else if (comparaZ(nome, "utempo")==0)
+    else if (comparaZ(nome, "utempo") == 0)
         num=2;
-    else if (comparaZ(nome, "stempo")==0)
+    else if (comparaZ(nome, "stempo") == 0)
         num=3;
-    else if (comparaZ(nome, "mem")==0)
+    else if (comparaZ(nome, "mem") == 0)
         num=4;
-    else if (comparaZ(nome, "memmax")==0)
+    else if (comparaZ(nome, "memmax") == 0)
         num=5;
     if (num)
     {
-        ApagarVar(v+1);
+        ApagarVar(v + 1);
         VarAtual->numfunc = num;
         return true;
     }
 // Nível da função atual
-    if (comparaZ(nome, "func")==0)
+    if (comparaZ(nome, "func") == 0)
     {
         ApagarVar(v);
         return CriarVarInt(FuncAtual - FuncPilha);
     }
 // Executar instruções contidas em um texto
-    if (comparaZ(nome, "cmd")==0)
+    if (comparaZ(nome, "cmd") == 0)
     {
         if (VarAtual < v+1)
             return false;
-        if (FuncAtual >= FuncFim - 2 || FuncAtual->este==0)
+        if (FuncAtual >= FuncFim - 2 || FuncAtual->este == 0)
             return false;
     // Obtém o objeto "este"
-        const char * def_instr = 0;
-        TObjeto * obj = 0;
-        if (VarAtual >= v+2)
+        const char * def_instr = nullptr;
+        TObjeto * obj = nullptr;
+        if (VarAtual >= v + 2)
             obj = v[1].getObj(), def_instr = v[2].getTxt();
         else
             obj = FuncAtual->este, def_instr = v[1].getTxt();
@@ -177,10 +177,10 @@ bool TVarDebug::Func(TVariavel * v, const char * nome)
         ChecaLinha checalinha;
         checalinha.Inicio();
         checalinha.Instr(InstrDebugFunc);
-        for (char * com = mens.Buf; com[0] || com[1]; com+=Num16(com),linha++)
+        for (char * com = mens.Buf; com[0] || com[1]; com += Num16(com), linha++)
         {
             const char * p = checalinha.Instr(com);
-            if (com[2]==cHerda)
+            if (com[2] == cHerda)
                 p = "Instrução herda não é suportada por cmd";
             if (p)
             {
@@ -232,7 +232,7 @@ bool TVarDebug::Func(TVariavel * v, const char * nome)
         FuncAtual->nome = VarAtual->end_char;
         FuncAtual->linha = VarAtual->end_char;
         FuncAtual->este = obj;
-        FuncAtual->expr = 0;
+        FuncAtual->expr = nullptr;
         FuncAtual->inivar = VarAtual + 1;
         FuncAtual->fimvar = VarAtual + 1;
         FuncAtual->numarg = 0;
@@ -243,14 +243,14 @@ bool TVarDebug::Func(TVariavel * v, const char * nome)
         return true;
     }
 // Execução passo-a-passo
-    if (comparaZ(nome, "passo")==0)
+    if (comparaZ(nome, "passo") == 0)
     {
-        FuncAtual->funcdebug = 0;
-        if (VarAtual < v+2)
+        FuncAtual->funcdebug = nullptr;
+        if (VarAtual < v + 2)
             return false;
     // Obtém o objeto
         TObjeto * obj = v[1].getObj();
-        if (obj==0)
+        if (obj == nullptr)
             return false;
     // Obtém a instrução na classe
         TClasse * cl = obj->Classe;
@@ -259,8 +259,8 @@ bool TVarDebug::Func(TVariavel * v, const char * nome)
             return false;
         char * instr = cl->InstrVar[indice];
     // Verifica se é função ou constante que possa ser executada
-        if (instr[2]!=cFunc &&
-            instr[2]!=cVarFunc)
+        if (instr[2] != cFunc &&
+            instr[2] != cVarFunc)
             return false;
     // Inicia execução passo-a-passo
         FuncAtual->objdebug = obj;
@@ -268,12 +268,12 @@ bool TVarDebug::Func(TVariavel * v, const char * nome)
         return false;
     }
 // Dados do IntMUD
-    if (comparaZ(nome, "ver")==0)
+    if (comparaZ(nome, "ver") == 0)
     {
         ApagarVar(v);
         return CriarVarTexto(VERSION);
     }
-    if (comparaZ(nome, "data")==0)
+    if (comparaZ(nome, "data") == 0)
     {
         ApagarVar(v);
         return CriarVarTexto(__DATE__);
@@ -295,7 +295,7 @@ int TVarDebug::getTipo(int numfunc)
 //----------------------------------------------------------------------------
 int TVarDebug::getInt(int numfunc)
 {
-    if (numfunc==1)
+    if (numfunc == 1)
         return Instr::VarExec;
     else
         return DoubleToInt(getDouble(numfunc));
@@ -305,9 +305,9 @@ int TVarDebug::getInt(int numfunc)
 //----------------------------------------------------------------------------
 double TVarDebug::getDouble(int numfunc)
 {
-    if (numfunc==1)
+    if (numfunc == 1)
         return Instr::VarExec;
-    else if (numfunc==2 || numfunc==3)
+    else if (numfunc == 2 || numfunc == 3)
     {
 #ifdef __WIN32__
         FILETIME CreationTime;
@@ -315,27 +315,27 @@ double TVarDebug::getDouble(int numfunc)
         FILETIME KernelTime; // 1 = 100nanossegundos
         FILETIME UserTime;   // 1 = 100nanossegundos
         if (GetProcessTimes(GetCurrentProcess(),
-            &CreationTime, &ExitTime, &KernelTime, &UserTime)==0)
+            &CreationTime, &ExitTime, &KernelTime, &UserTime) == 0)
             return -1;
-        if (numfunc==2)
+        if (numfunc == 2)
             return UserTime.dwLowDateTime  * 0.0001 +
                    UserTime.dwHighDateTime * 0.0002 * 0x80000000;
         return KernelTime.dwLowDateTime  * 0.0001 +
                KernelTime.dwHighDateTime * 0.0002 * 0x80000000;
 #else
         struct rusage uso;
-        if (getrusage(RUSAGE_SELF, &uso)<0)
+        if (getrusage(RUSAGE_SELF, &uso) < 0)
             return -1;
-        if (numfunc==2)
+        if (numfunc == 2)
             return uso.ru_utime.tv_sec * 1000.0 +
                    uso.ru_utime.tv_usec / 1000.0;
         return uso.ru_stime.tv_sec * 1000.0 +
                uso.ru_stime.tv_usec / 1000.0;
 #endif
     }
-    else if (numfunc==4)
+    else if (numfunc == 4)
         return getCurrentRSS();
-    else if (numfunc==5)
+    else if (numfunc == 5)
         return getPeakRSS();
     return 0;
 }
@@ -344,7 +344,7 @@ double TVarDebug::getDouble(int numfunc)
 void TVarDebug::setValor(int numfunc, int valor)
 {
     if (numfunc)
-        Instr::VarExec = (valor<1 ? 1 : valor);
+        Instr::VarExec = (valor < 1 ? 1 : valor);
 }
 
 //----------------------------------------------------------------------------
@@ -355,9 +355,9 @@ void TVarDebug::Exec()
 // Verifica se pode criar função
     const char * linha = FuncAtual->linha;
     char * exec = FuncAtual->funcdebug;
-    if (exec==0 || FuncAtual+1 >= FuncFim)
+    if (exec == nullptr || FuncAtual + 1 >= FuncFim)
         return;
-    if (linha==0 || (linha[0]==0 && linha[1]==0))
+    if (linha == nullptr || (linha[0] == 0 && linha[1] == 0))
         return;
     switch (linha[2])
     {
@@ -376,13 +376,13 @@ void TVarDebug::Exec()
     FuncAtual->nome = exec;
     FuncAtual->linha = exec + Num16(exec);
     FuncAtual->este = FuncAtual[-1].objdebug;
-    FuncAtual->expr = 0;
+    FuncAtual->expr = nullptr;
     FuncAtual->inivar = VarAtual + 1;
     FuncAtual->fimvar = VarAtual + 1;
     FuncAtual->numarg = 0;
     FuncAtual->tipo = 2;
     FuncAtual->indent = 0;
-    FuncAtual->funcdebug = 0;
+    FuncAtual->funcdebug = nullptr;
 
 // Argumento: objeto
     if (!CriarVar(InstrVarObjeto))

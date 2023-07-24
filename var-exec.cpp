@@ -19,14 +19,14 @@
 #include "instr.h"
 #include "misc.h"
 
-TArqExec * TArqExec::Inicio = 0;
+TArqExec * TArqExec::Inicio = nullptr;
 bool TObjExec::boolenvpend = false;
-TObjExec * TObjExec::Inicio = 0;
+TObjExec * TObjExec::Inicio = nullptr;
 
 //------------------------------------------------------------------------------
 TArqExec::TArqExec(const char * texto)
 {
-    Anterior = 0;
+    Anterior = nullptr;
     Proximo = Inicio;
     if (Proximo)
         Proximo->Anterior = this;
@@ -47,13 +47,13 @@ TArqExec::~TArqExec()
 //------------------------------------------------------------------------------
 TObjExec::TObjExec(TVarExec * var)
 {
-    assert(var->ObjExec == 0);
+    assert(var->ObjExec == nullptr);
     var->ObjExec = this;
     VarExec = var;
     pontEnv = 0;
     dadoRecebido = 0;
 // Coloca na lista ligada
-    Antes = 0;
+    Antes = nullptr;
     Depois = Inicio;
     if (Inicio)
         Inicio->Antes = this;
@@ -64,7 +64,7 @@ TObjExec::TObjExec(TVarExec * var)
 TObjExec::~TObjExec()
 {
     if (VarExec)
-        VarExec->ObjExec = 0;
+        VarExec->ObjExec = nullptr;
 // Retira da lista ligada
     (Antes ? Antes->Depois : Inicio) = Depois;
     if (Depois)
@@ -77,20 +77,20 @@ bool TObjExec::Enviar(const char * txt)
     char buf[EXEC_ENV];
     int  tamanho = 0;
 // Prepara mensagem
-    for (; *txt && tamanho<EXEC_ENV-4; txt++)
+    for (; *txt && tamanho < EXEC_ENV - 4; txt++)
     {
         switch (*txt)
         {
         case Instr::ex_barra_b:
             break;
         case Instr::ex_barra_c:
-            if ((txt[1]>='0' && txt[1]<='9') ||
-                    (txt[1]>='A' && txt[1]<='J') ||
-                    (txt[1]>='a' && txt[1]<='j'))
+            if ((txt[1] >= '0' && txt[1] <= '9') ||
+                    (txt[1] >= 'A' && txt[1] <= 'J') ||
+                    (txt[1] >= 'a' && txt[1] <= 'j'))
                 txt++;
             break;
         case Instr::ex_barra_d:
-            if (txt[1]>='0' && txt[1]<='7')
+            if (txt[1] >= '0' && txt[1] <= '7')
                 txt++;
             break;
         case Instr::ex_barra_n:
@@ -172,7 +172,7 @@ void TObjExec::Receber()
             break;
     }
 
-    if (pontRec != 0 && VarExec != 0)
+    if (pontRec != 0 && VarExec != nullptr)
     {
         bufRec[pontRec] = 0;
         VarExec->FuncEvento("msg", bufRec, 0);
@@ -199,11 +199,11 @@ void TObjExec::Fd_Set(fd_set * set_entrada, fd_set * set_saida)
         // Verifica evento env
             if (ev_env && obj->VarExec)
             {
-                obj->VarExec->FuncEvento("env", 0, -1);
+                obj->VarExec->FuncEvento("env", nullptr, -1);
                 continue;
             }
         // Checa se deve apagar o objeto, passa para o próximo
-            if (obj->VarExec == 0)
+            if (obj->VarExec == nullptr)
             {
                 TObjExec * proximo = obj->Depois;
                 delete obj;
@@ -238,7 +238,7 @@ void TObjExec::ProcEventos(fd_set * set_entrada, fd_set * set_saida)
     {
     // Checa se chegou alguma coisa
         obj->Receber();
-        if (obj->VarExec == 0)
+        if (obj->VarExec == nullptr)
             continue;
 
     // Checa se o programa fechou
@@ -246,11 +246,11 @@ void TObjExec::ProcEventos(fd_set * set_entrada, fd_set * set_saida)
             continue;
         obj->Receber(); // Recebe dados pendentes
         if (obj->VarExec)
-            obj->VarExec->FuncEvento("fechou", 0, obj->CodRetorno);
+            obj->VarExec->FuncEvento("fechou", nullptr, obj->CodRetorno);
         if (obj->VarExec)
         {
-            obj->VarExec->ObjExec = 0; // Indica que o programa fechou
-            obj->VarExec = 0;
+            obj->VarExec->ObjExec = nullptr; // Indica que o programa fechou
+            obj->VarExec = nullptr;
         }
     }
 }
@@ -259,7 +259,7 @@ void TObjExec::ProcEventos(fd_set * set_entrada, fd_set * set_saida)
 void TVarExec::Apagar()
 {
     if (ObjExec)
-        ObjExec->VarExec = 0;
+        ObjExec->VarExec = nullptr;
 }
 
 //------------------------------------------------------------------------------
@@ -274,9 +274,9 @@ void TVarExec::Mover(TVarExec * destino)
 void TVarExec::EndObjeto(TClasse * c, TObjeto * o)
 {
     if (o)
-        endobjeto=o, b_objeto = true;
+        endobjeto = o, b_objeto = true;
     else
-        endclasse=c, b_objeto = false;
+        endclasse = c, b_objeto = false;
 }
 
 //------------------------------------------------------------------------------
@@ -317,7 +317,7 @@ bool TVarExec::Func(TVariavel * v, const char * nome)
 // Envia mensagem
     if (comparaZ(nome, "msg") == 0)
     {
-        if (ObjExec == 0 || Instr::VarAtual != v + 1)
+        if (ObjExec == nullptr || Instr::VarAtual != v + 1)
             return false;
         bool enviou = ObjExec->Enviar(v[1].getTxt());
         Instr::ApagarVar(v);
@@ -330,8 +330,8 @@ bool TVarExec::Func(TVariavel * v, const char * nome)
             return false;
         if (ObjExec)
         {
-            ObjExec->VarExec = 0;
-            ObjExec = 0;
+            ObjExec->VarExec = nullptr;
+            ObjExec = nullptr;
         }
         const char * cmd = v[1].getTxt();
         if (cmd == nullptr || *cmd == 0)
@@ -357,7 +357,7 @@ bool TVarExec::Func(TVariavel * v, const char * nome)
                 if (memcmp(cmd, nome, tamnome) == 0)
                     break;
             }
-            if (obj == 0)
+            if (obj == nullptr)
             {
                 Instr::ApagarVar(v);
                 return Instr::CriarVarTexto("ArqExec não pode executar isso");
@@ -376,15 +376,15 @@ bool TVarExec::Func(TVariavel * v, const char * nome)
     {
         if (ObjExec)
         {
-            ObjExec->VarExec = 0;
-            ObjExec = 0;
+            ObjExec->VarExec = nullptr;
+            ObjExec = nullptr;
         }
         return false;
     }
 // Checa se está aberto
     if (comparaZ(nome, "aberto") == 0)
     {
-        bool aberto = (ObjExec != 0);
+        bool aberto = (ObjExec != nullptr);
         Instr::ApagarVar(v);
         return Instr::CriarVarInt(aberto);
     }

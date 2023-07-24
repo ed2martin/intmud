@@ -7,17 +7,17 @@
 #include "instr.h"
 #include "misc.h"
 
-char * TArqIncluir::arqnome = 0;
-TArqIncluir * TArqIncluir::Inicio = 0;
-TArqIncluir * TArqIncluir::Fim = 0;
+char * TArqIncluir::arqnome = nullptr;
+TArqIncluir * TArqIncluir::Inicio = nullptr;
+TArqIncluir * TArqIncluir::Fim = nullptr;
 
 //----------------------------------------------------------------------------
 TArqIncluir::TArqIncluir(const char * nome)
 {
     copiastr(Padrao, nome, sizeof(Padrao));
-    Anterior=Fim, Proximo=0;
-    (Fim ? Fim->Proximo : Inicio)=this;
-    Fim=this;
+    Anterior = Fim, Proximo = nullptr;
+    (Fim ? Fim->Proximo : Inicio) = this;
+    Fim = this;
 }
 
 //----------------------------------------------------------------------------
@@ -30,10 +30,10 @@ TArqIncluir::~TArqIncluir()
 //----------------------------------------------------------------------------
 bool TArqIncluir::ProcPadrao(const char * nome)
 {
-    if (*nome==0)
+    if (*nome == 0)
         return true;
-    for (TArqIncluir * obj = Inicio; obj; obj=obj->Proximo)
-        if (strcmp(nome, obj->Padrao)==0)
+    for (TArqIncluir * obj = Inicio; obj; obj = obj->Proximo)
+        if (strcmp(nome, obj->Padrao) == 0)
             return true;
     return false;
 }
@@ -47,7 +47,7 @@ bool TArqIncluir::ProcArq(const char * nome)
         if (memcmp(nome, obj->Padrao, tam) != 0)
             continue;
         const char * p = nome + tam;
-        while (*p && *p!='\\' && *p!='/')
+        while (*p && *p != '\\' && *p != '/')
             p++;
         if (*p == 0)
             return true;
@@ -61,9 +61,9 @@ void TArqIncluir::ArqNome(const char * nome)
     if (arqnome)
     {
         delete[] arqnome;
-        arqnome = 0;
+        arqnome = nullptr;
     }
-    if (nome == 0)
+    if (nome == nullptr)
         return;
     int tam = strlen(nome) + 1;
     arqnome = new char[tam];
@@ -82,7 +82,7 @@ void TVarArqProg::Criar()
 #ifdef __WIN32__
     wdir = INVALID_HANDLE_VALUE;
 #else
-    dir = 0;
+    dir = nullptr;
 #endif
 }
 
@@ -111,7 +111,7 @@ void TVarArqProg::Fechar()
 #else
     if (dir)
         closedir(dir);
-    dir = 0;
+    dir = nullptr;
 #endif
 }
 
@@ -119,7 +119,7 @@ void TVarArqProg::Fechar()
 void TVarArqProg::Proximo()
 {
     char mens[ARQINCLUIR_TAM]; // Para procurar arquivos em um diretório
-    const char * nomearq = 0; // Nome do arquivo encontrado
+    const char * nomearq = nullptr; // Nome do arquivo encontrado
 
     while (true)
     {
@@ -128,11 +128,11 @@ void TVarArqProg::Proximo()
 #ifdef __WIN32__
         if (wdir == INVALID_HANDLE_VALUE)
 #else
-        if (dir == 0)
+        if (dir == nullptr)
 #endif
         {
         // Se não há próximo diretório: fim da busca
-            if (Incluir == 0)
+            if (Incluir == nullptr)
             {
                 *Arquivo = 0;
                 return;
@@ -143,11 +143,11 @@ void TVarArqProg::Proximo()
             const char * p;
             for (p = Arquivo; *p; p++)
                 if (*p == '/' || *p == '\\')
-                    ArqBarra = p+1-Arquivo;
+                    ArqBarra = p + 1 - Arquivo;
             ArqPadrao = p - Arquivo;
 #ifdef __WIN32__
         // Obtém o nome a procurar
-            copiastr(mens, Incluir->Padrao, sizeof(mens)-1);
+            copiastr(mens, Incluir->Padrao, sizeof(mens) - 1);
             strcat(mens, "*");
             for (char * p = mens; *p; p++)
                 if (*p == '/')
@@ -164,7 +164,7 @@ void TVarArqProg::Proximo()
             nomearq = ffd.cFileName;
 #else
         // Obtém o nome a procurar
-            copiastr(mens, Incluir->Padrao, sizeof(mens)-1);
+            copiastr(mens, Incluir->Padrao, sizeof(mens) - 1);
             strcat(mens, "*");
             char * p2 = mens;
             for (char * p = mens; *p; p++)
@@ -180,13 +180,13 @@ void TVarArqProg::Proximo()
             Incluir = Incluir->Proximo;
         // Abre o diretório e obtém a primeira entrada
             dir = opendir(mens);
-            if (dir==0)
+            if (dir == nullptr)
                 continue;
             struct dirent * sdir = readdir(dir);
-            if (sdir==0)
+            if (sdir == nullptr)
             {
                 closedir(dir);
-                dir = 0;
+                dir = nullptr;
                 continue;
             }
             if (sdir->d_type != DT_REG)
@@ -211,10 +211,10 @@ void TVarArqProg::Proximo()
             nomearq = ffd.cFileName;
 #else
             struct dirent * sdir = readdir(dir);
-            if (sdir==0)
+            if (sdir == nullptr)
             {
                 closedir(dir);
-                dir = 0;
+                dir = nullptr;
                 continue;
             }
             if (sdir->d_type != DT_REG)
@@ -262,34 +262,34 @@ void TVarArqProg::Proximo()
 bool TVarArqProg::Func(TVariavel * v, const char * nome)
 {
 // Pesquisar entrada atual no diretório
-    if (comparaZ(nome, "lin")==0)
+    if (comparaZ(nome, "lin") == 0)
     {
         bool b = (*Arquivo != 0);
         Instr::ApagarVar(v);
         return Instr::CriarVarInt(b);
     }
-    if (comparaZ(nome, "texto")==0)
+    if (comparaZ(nome, "texto") == 0)
     {
         char arq[ARQINCLUIR_TAM];
         copiastr(arq, Arquivo, sizeof(arq));
         Instr::ApagarVar(v);
         return Instr::CriarVarTexto(arq);
     }
-    if (comparaZ(nome, "depois")==0)
+    if (comparaZ(nome, "depois") == 0)
     {
         Proximo();
         return false;
     }
 
 // Iniciar a busca
-    if (comparaZ(nome, "abrir")==0)
+    if (comparaZ(nome, "abrir") == 0)
     {
         Fechar();
         Abrir();
         Instr::ApagarVar(v);
         return Instr::CriarVarTexto("");
     }
-    if (comparaZ(nome, "fechar")==0)
+    if (comparaZ(nome, "fechar") == 0)
     {
         Fechar();
         return false;

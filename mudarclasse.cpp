@@ -20,22 +20,22 @@
 
 //#define DEBUG
 
-TMudarClasse * TMudarClasse::Inicio=0;
-TMudarClasse * TMudarClasse::Fim=0;
-char TMudarClasse::Salvar=0;
-TRenomeiaClasse * TRenomeiaClasse::Inicio = 0;
-TRenomeiaClasse * TRenomeiaClasse::Fim = 0;
+TMudarClasse * TMudarClasse::Inicio = nullptr;
+TMudarClasse * TMudarClasse::Fim = nullptr;
+char TMudarClasse::Salvar = 0;
+TRenomeiaClasse * TRenomeiaClasse::Inicio = nullptr;
+TRenomeiaClasse * TRenomeiaClasse::Fim = nullptr;
 
 //----------------------------------------------------------------------------
 TMudarAux::TMudarAux()
 {
-    numbloco=0;
+    numbloco = 0;
 }
 
 //------------------------------------------------------------------------------
 void TMudarAux::AddBloco(const char * ender, int tamanho)
 {
-    if (tamanho<=0 || numbloco >= sizeof(tambloco) / sizeof(tambloco[0]))
+    if (tamanho <= 0 || numbloco >= sizeof(tambloco) / sizeof(tambloco[0]))
         return;
     endbloco[numbloco] = ender;
     tambloco[numbloco] = tamanho;
@@ -56,18 +56,18 @@ void TMudarAux::AddBloco(const char * ender, int tamanho)
 bool TMudarAux::ChecaBloco(char * mensagem, int tamanho)
 {
 // Checa o tamanho do bloco
-    int total=0;
-    for (unsigned int bloco=0; bloco<numbloco; bloco++)
+    int total = 0;
+    for (unsigned int bloco = 0; bloco < numbloco; bloco++)
         total += tambloco[bloco];
 // Verifica se bloco válido
     int linha=1;
     Instr::ChecaLinha checalinha;
     checalinha.Inicio();
-    for (unsigned int bloco=0; bloco<numbloco; bloco++)
+    for (unsigned int bloco = 0; bloco < numbloco; bloco++)
     {
         const char * com = endbloco[bloco];
         const char * fim = com + tambloco[bloco];
-        while (com<fim)
+        while (com < fim)
         {
             const char * p = checalinha.Instr(com);
             if (p)
@@ -75,7 +75,7 @@ bool TMudarAux::ChecaBloco(char * mensagem, int tamanho)
                 mprintf(mensagem, tamanho, "%d: %s\n", linha, p);
                 return false;
             }
-            com+=Num16(com), linha++;
+            com += Num16(com), linha++;
         }
     }
     const char * p = checalinha.Fim();
@@ -91,18 +91,18 @@ bool TMudarAux::ChecaBloco(char * mensagem, int tamanho)
 //------------------------------------------------------------------------------
 void TMudarAux::AnotaBloco(TMudarClasse * obj)
 {
-    int total=0;
-    for (unsigned int bloco=0; bloco<numbloco; bloco++)
+    int total = 0;
+    for (unsigned int bloco = 0; bloco < numbloco; bloco++)
         total += tambloco[bloco];
-    char * com = new char[total+2];
+    char * com = new char[total + 2];
     total=0;
-    for (unsigned int bloco=0; bloco<numbloco; bloco++)
+    for (unsigned int bloco = 0; bloco < numbloco; bloco++)
     {
         memcpy(com+total, endbloco[bloco], tambloco[bloco]);
         total += tambloco[bloco];
     }
-    com[total]=0;
-    com[total+1]=0;
+    com[total] = 0;
+    com[total + 1] = 0;
     obj->MudarComandos(com);
 }
 
@@ -122,13 +122,13 @@ char * TMudarAux::ProcuraInstr(char * comando, const char * nomevar)
         case Instr::cConstNum:
         case Instr::cConstExpr:
         case Instr::cConstVar:
-            if (comparaVar(comando + Instr::endNome, nomevar)==0)
+            if (comparaVar(comando + Instr::endNome, nomevar) == 0)
                 return comando;
             comando += Num16(comando);
             break;
         default:
             if (inifunc==false && comando[2] > Instr::cVariaveis)
-                if (comparaVar(comando + Instr::endNome, nomevar)==0)
+                if (comparaVar(comando + Instr::endNome, nomevar) == 0)
                     return comando;
             comando += Num16(comando);
         }
@@ -139,7 +139,7 @@ char * TMudarAux::ProcuraInstr(char * comando, const char * nomevar)
 //------------------------------------------------------------------------------
 char * TMudarAux::AvancaInstr(char * comando)
 {
-    if (comando[0]==0 && comando[1]==0)
+    if (comando[0] == 0 && comando[1] == 0)
         return comando;
     if (comando[2] != Instr::cFunc && comando[2] != Instr::cVarFunc)
         return comando + Num16(comando);
@@ -173,7 +173,7 @@ char * TMudarAux::FimInstr(char * comando)
 //------------------------------------------------------------------------------
 bool TMudarAux::CodifInstr(TAddBuffer * destino, const char * origem)
 {
-    char mens[BUF_CODIF+30];
+    char mens[BUF_CODIF + 30];
     char menscod[BUF_CODIF];
     int linhanum = 1;
     char * linhaend = mens;
@@ -185,9 +185,9 @@ bool TMudarAux::CodifInstr(TAddBuffer * destino, const char * origem)
         unsigned char ch = *origem++;
         if (ch && ch != Instr::ex_barra_n)
         {
-            if (ch==' ' && linhaend==mens)
+            if (ch == ' ' && linhaend == mens)
                 continue;
-            if (linhaend >= mens+sizeof(mens)-1)
+            if (linhaend >= mens + sizeof(mens) - 1)
             {
                 sprintf(mens, "%d: Instrução muito grande", linhanum);
                 destino->Limpar();
@@ -200,21 +200,21 @@ bool TMudarAux::CodifInstr(TAddBuffer * destino, const char * origem)
     // Checa linha vazia
         if (linhaend==mens)
         {
-            if (ch==0)
+            if (ch == 0)
                 break;
             linhanum++;
             continue;
         }
     // Checa \ seguido de \n
-        if (ch==Instr::ex_barra_n && origem[-2]=='\\')
+        if (ch == Instr::ex_barra_n && origem[-2] == '\\')
         {
             linhaend--;
             linhanum++;
             continue;
         }
     // Processa instrução
-        *linhaend=0;
-        linhaend=mens;
+        *linhaend = 0;
+        linhaend = mens;
         if (Instr::Codif(menscod, mens, sizeof(menscod)))
         {
             if (codifok)
@@ -228,13 +228,13 @@ bool TMudarAux::CodifInstr(TAddBuffer * destino, const char * origem)
             if (codifok)
             {
                 destino->Limpar();
-                destino->Add(mens+1, strlen(mens+1));
-                codifok=false;
+                destino->Add(mens + 1, strlen(mens + 1));
+                codifok = false;
             }
             else
                 destino->Add(mens, strlen(mens));
         }
-        if (ch==0)
+        if (ch == 0)
             break;
         linhanum++;
     }
@@ -244,13 +244,13 @@ bool TMudarAux::CodifInstr(TAddBuffer * destino, const char * origem)
 //----------------------------------------------------------------------------
 TMudarClasse::TMudarClasse(const char * nome)
 {
-    RBcolour=0;
-    Comandos=0;
+    RBcolour = 0;
+    Comandos = nullptr;
     copiastr(Nome, nome, sizeof(Nome));
-    Arquivo=0;
+    Arquivo = nullptr;
     RBinsert();
     Antes=Fim;
-    Depois=0;
+    Depois = nullptr;
     (Antes ? Antes->Depois : Inicio) = this;
     Fim = this;
 }
@@ -268,7 +268,7 @@ TMudarClasse::~TMudarClasse()
 //----------------------------------------------------------------------------
 void TMudarClasse::MudarComandos(char * com)
 {
-    if (com==Comandos)
+    if (com == Comandos)
         return;
     if (Comandos)
         delete[] Comandos;
@@ -284,7 +284,7 @@ bool TMudarClasse::ExecPasso()
         if (Inicio->Comandos || // Se classe vai ser alterada
             (Inicio->RBcolour & 2)) // Se classe vai ser apagada
             break;
-        if ((Inicio->RBcolour & 4)==0) // Se não foi mudada
+        if ((Inicio->RBcolour & 4) == 0) // Se não foi mudada
         {
             delete Inicio;
             continue;
@@ -292,7 +292,7 @@ bool TMudarClasse::ExecPasso()
             // Foi mudada
         TClasse * cl = TClasse::Procura(Inicio->Nome);
         delete Inicio;
-        if (cl==0)
+        if (cl == nullptr)
             continue;
 #ifdef DEBUG
         printf("iniclasse %s\n", cl->Nome); fflush(stdout);
@@ -311,14 +311,14 @@ bool TMudarClasse::ExecPasso()
         TMudarClasse * m = mudar;
         mudar = mudar->Depois;
     // Verifica se classe deve ser apagada
-        if ((m->RBcolour & 2)==0)
+        if ((m->RBcolour & 2) == 0)
             continue;
     // Obtém a classe
         TClasse * cl = TClasse::Procura(m->Nome);
-        if (cl==0)
+        if (cl == nullptr)
         {
             m->RBcolour &= ~2;
-            if (m->Comandos==0)
+            if (m->Comandos == nullptr)
                 delete m;
             continue;
         }
@@ -328,16 +328,16 @@ bool TMudarClasse::ExecPasso()
 #ifdef DEBUG
             printf("apagando objetos %s\n", cl->Nome); fflush(stdout);
 #endif
-            for (TObjeto * obj = cl->ObjetoIni; obj; obj=obj->Depois)
+            for (TObjeto * obj = cl->ObjetoIni; obj; obj = obj->Depois)
                 obj->MarcarApagar();
             pendente = true;
             continue;
         }
     // Apaga a classe
         m->RBcolour &= ~2;
-        if (m->Comandos==0) // Nenhuma alteração: apaga TMudarClasse
+        if (m->Comandos == nullptr) // Nenhuma alteração: apaga TMudarClasse
             delete m;
-        else if (m->Arquivo==0) // Anota o arquivo
+        else if (m->Arquivo == nullptr) // Anota o arquivo
             m->Arquivo = cl->ArqArquivo;
 #ifdef DEBUG
         printf("delete %s\n", cl->Nome); fflush(stdout);
@@ -348,13 +348,13 @@ bool TMudarClasse::ExecPasso()
     if (pendente)
         return true;
 // Cria classes
-    for (TMudarClasse * mudar = Inicio; mudar; mudar=mudar->Depois)
+    for (TMudarClasse * mudar = Inicio; mudar; mudar = mudar->Depois)
     {
     // Verifica se classe vai ser mudada
-        if (mudar->Comandos==0)
+        if (mudar->Comandos == nullptr)
             continue;
     // Verifica se a classe já existe
-        if (TClasse::Procura(mudar->Nome) != 0)
+        if (TClasse::Procura(mudar->Nome) != nullptr)
             continue;
     // Cria a classe vazia
         TClasse * cl = new TClasse(mudar->Nome, mudar->Arquivo);
@@ -366,22 +366,22 @@ bool TMudarClasse::ExecPasso()
         printf("new %s\n", cl->Nome); fflush(stdout);
 #endif
     // Indica que precisa executar função iniclasse
-        if (TClasse::ClInic == 0)
+        if (TClasse::ClInic == nullptr)
             mudar->RBcolour |= 4;
         else if (TClasse::RBcomp(cl, TClasse::ClInic) < 0)
             mudar->RBcolour |= 4;
     }
 // Altera instruções das classes
-    for (TMudarClasse * mudar = Inicio; mudar; mudar=mudar->Depois)
+    for (TMudarClasse * mudar = Inicio; mudar; mudar = mudar->Depois)
     {
     // Verifica se classe vai ser mudada
-        if (mudar->Comandos==0)
+        if (mudar->Comandos == nullptr)
             continue;
     // Retira da instrução herda as classes que não existem (foram apagadas)
         char * const instr = mudar->Comandos;
-        if ((instr[0] || instr[1]) && instr[2]==Instr::cHerda)
+        if ((instr[0] || instr[1]) && instr[2] == Instr::cHerda)
         {
-            char * o = instr+Instr::endVar+1, * d = instr+Instr::endVar+1;
+            char * o = instr+Instr::endVar + 1, * d = instr + Instr::endVar + 1;
             for (int x = (unsigned char)instr[Instr::endVar]; x; x--)
             {
                 TClasse * c = TClasse::Procura(o);
@@ -419,7 +419,7 @@ bool TMudarClasse::ExecPasso()
         TClasse * cl = TClasse::Procura(mudar->Nome);
 #ifdef DEBUG
         printf("Alterando %s\n", cl->Nome);
-        for (const char * p = instr; Num16(p); p+=Num16(p))
+        for (const char * p = instr; Num16(p); p += Num16(p))
         {
             char mens[BUF_MENS];
             assert(Instr::Decod(mens, p, sizeof(mens)));
@@ -431,7 +431,7 @@ bool TMudarClasse::ExecPasso()
         if (mudar->Arquivo)
             cl->MoveArquivo(mudar->Arquivo);
         cl->Comandos = instr;
-        mudar->Comandos = 0;
+        mudar->Comandos = nullptr;
         cl->AcertaDeriv(antigo_com);
         cl->AcertaVar(true);
         delete[] antigo_com;
@@ -439,14 +439,14 @@ bool TMudarClasse::ExecPasso()
 // Executa funções iniclasse das classes que foram criadas
     while (Inicio)
     {
-        if ((Inicio->RBcolour & 4)==0)
+        if ((Inicio->RBcolour & 4) == 0)
         {
             delete Inicio;
             continue;
         }
         TClasse * cl = TClasse::Procura(Inicio->Nome);
         delete Inicio;
-        if (cl==0)
+        if (cl == nullptr)
             continue;
 #ifdef DEBUG
         printf("iniclasse %s\n", cl->Nome); fflush(stdout);
@@ -464,7 +464,7 @@ bool TMudarClasse::ExecPasso()
     if (Salvar)
     {
         TArqMapa::SalvarArq(Salvar >= 2);
-        Salvar=0;
+        Salvar = 0;
     }
     return false;
 }
@@ -476,9 +476,9 @@ TMudarClasse * TMudarClasse::Procurar(const char * nome)
     while (y)
     {
         int i = comparaVar(nome, y->Nome);
-        if (i==0)
+        if (i == 0)
             return y;
-        if (i<0)
+        if (i < 0)
             y = y->RBleft;
         else
             y = y->RBright;
@@ -493,7 +493,7 @@ int TMudarClasse::RBcomp(TMudarClasse * x, TMudarClasse * y)
 }
 
 //----------------------------------------------------------------------------
-TMudarClasse * TMudarClasse::RBroot=0;
+TMudarClasse * TMudarClasse::RBroot = nullptr;
 #define CLASS TMudarClasse          // Nome da classe
 #define RBmask 1 // Máscara para bit 0
 #include "rbt.cpp.h"
@@ -504,7 +504,7 @@ TRenomeiaClasse::TRenomeiaClasse(const char * antes, const char * depois)
     copiastr(NomeAntes, antes, sizeof(NomeAntes));
     copiastr(NomeDepois, depois, sizeof(NomeDepois));
     Antes = Fim;
-    Depois = 0;
+    Depois = nullptr;
     Fim = this;
     (Antes ? Antes->Depois : Inicio) = this;
 }
@@ -525,7 +525,7 @@ void TRenomeiaClasse::Processa()
         if (cl1)
         {
             TClasse * cl2 = TClasse::Procura(Inicio->NomeDepois);
-            if (cl2 == 0 || cl1 == cl2)
+            if (cl2 == nullptr || cl1 == cl2)
                 cl1->MudaNome(Inicio->NomeDepois);
         }
         delete Inicio;

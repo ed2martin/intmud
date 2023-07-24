@@ -22,8 +22,8 @@
 
 //#define DEBUG_CRIAR // Mostra objetos criados e apagados
 
-TObjeto * TObjeto::IniApagar = 0;
-TObjeto * TObjeto::FimApagar = 0;
+TObjeto * TObjeto::IniApagar = nullptr;
+TObjeto * TObjeto::FimApagar = nullptr;
 
 //----------------------------------------------------------------------------
 TObjeto::TObjeto() { assert(0); }
@@ -48,7 +48,7 @@ TObjeto * TObjeto::Criar(TClasse * c, bool criavar)
     if (criavar)
     {
         TVariavel v;
-        for (int x=(int)c->NumVar-1; x>=0; x--)
+        for (int x = (int)c->NumVar - 1; x >= 0; x--)
             if (c->InstrVar[x][2] > Instr::cVarFunc &&
                     (c->IndiceVar[x] & 0x400000)==0)
             {
@@ -82,7 +82,7 @@ void TObjeto::Apagar()
     }
 // Remove variáveis TVarRef que apontam para o objeto
     while (VarRefIni)
-        VarRefIni->MudarPont(0);
+        VarRefIni->MudarPont(nullptr);
 // Remove variáveis TListaX que apontam para o objeto
     while (VarListaX)
         VarListaX->Apagar();
@@ -94,9 +94,9 @@ void TObjeto::Apagar()
         delete VarBlocoRef;
 // Chama destrutores das variáveis
     TVariavel v;
-    for (int x=(int)Classe->NumVar-1; x>=0; x--)
+    for (int x = (int)Classe->NumVar - 1; x >= 0; x--)
         if (Classe->InstrVar[x][2] > Instr::cVarFunc &&
-                (Classe->IndiceVar[x] & 0x400000)==0)
+                (Classe->IndiceVar[x] & 0x400000) == 0)
         {
             v.endvar = Vars + (Classe->IndiceVar[x] & 0x3FFFFF);
             v.defvar = Classe->InstrVar[x];
@@ -123,24 +123,28 @@ void TObjeto::Apagar(TObjeto * obj)
 // Coloca o outro objeto na lista dos que serão apagados
     obj->AntesApagar = AntesApagar;
     obj->DepoisApagar = DepoisApagar;
-    if (AntesApagar) AntesApagar->DepoisApagar = obj;
-    if (DepoisApagar) DepoisApagar->AntesApagar = obj;
-    if (IniApagar==this) IniApagar=obj;
-    if (FimApagar==this) FimApagar=obj;
+    if (AntesApagar)
+        AntesApagar->DepoisApagar = obj;
+    if (DepoisApagar)
+        DepoisApagar->AntesApagar = obj;
+    if (IniApagar == this)
+        IniApagar = obj;
+    if (FimApagar == this)
+        FimApagar = obj;
 // Acerta variáveis TVarRef que apontam para o objeto
-    for (TVarRef * pont = VarRefIni; pont; pont=pont->Depois)
+    for (TVarRef * pont = VarRefIni; pont; pont = pont->Depois)
         pont->Pont = obj;
     obj->VarRefIni = VarRefIni;
 // Acerta variáveis TListaX que apontam para o objeto
-    for (TListaX * pont = VarListaX; pont; pont=pont->ObjDepois)
+    for (TListaX * pont = VarListaX; pont; pont = pont->ObjDepois)
         pont->Objeto = obj;
     obj->VarListaX = VarListaX;
 // Acerta variáveis TBlocoObj que apontam para o objeto
-    for (TBlocoObj * pont = VarBlocoObj; pont; pont=pont->ObjDepois)
+    for (TBlocoObj * pont = VarBlocoObj; pont; pont = pont->ObjDepois)
         pont->Objeto = obj;
     obj->VarBlocoObj = VarBlocoObj;
 // Acerta variáveis VarBlocoRef que apontam para o objeto
-    for (TBlocoVarRef * pont = VarBlocoRef; pont; pont=pont->ObjDepois)
+    for (TBlocoVarRef * pont = VarBlocoRef; pont; pont = pont->ObjDepois)
         pont->Objeto = obj;
     obj->VarBlocoRef = VarBlocoRef;
 // Tira da lista ligada
@@ -157,7 +161,7 @@ void TObjeto::MarcarApagar()
     if (AntesApagar || IniApagar==this)
         return;
     AntesApagar = FimApagar;
-    DepoisApagar = 0;
+    DepoisApagar = nullptr;
     (AntesApagar ? AntesApagar->DepoisApagar : IniApagar) = this;
     FimApagar = this;
 }

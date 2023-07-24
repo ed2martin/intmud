@@ -23,7 +23,7 @@
 #include "instr.h"
 #include "misc.h"
 
-#define BISSEXTO(x) ((x)%4 ? 0 : (x)%100 ? 1 : (x)%400 ? 0 : 1)
+#define BISSEXTO(x) ((x) % 4 ? 0 : (x) % 100 ? 1 : (x) % 400 ? 0 : 1)
 
 //------------------------------------------------------------------------------
 // Teste das funções NumData e DataNum
@@ -34,7 +34,7 @@ public:
     TTeste1()
     {
         TVarDataHora v;
-        for (int x=0; x<4000111; x++)
+        for (int x = 0; x < 4000111; x++)
         {
             v.Ano = v.Mes = v.Dia = 0;
             v.NumData(x);
@@ -67,8 +67,8 @@ DataHoraNumTotal
 //------------------------------------------------------------------------------
 void TVarDataHora::Criar()
 {
-    Ano=1, Mes=1, Dia=1;
-    Hora=0, Min=0, Seg=0;
+    Ano = 1, Mes = 1, Dia = 1;
+    Hora = 0, Min = 0, Seg = 0;
 }
 
 //------------------------------------------------------------------------------
@@ -130,14 +130,14 @@ bool TVarDataHora::Func(TVariavel * v, const char * nome)
     {
         if (ini > fim)
             return false;
-        meio = (ini+fim)/2;
+        meio = (ini + fim) / 2;
         int resultado = comparaZ(nome, DataHoraFunc[meio]);
-        if (resultado==0) // Se encontrou...
+        if (resultado == 0) // Se encontrou...
             break;
-        if (resultado<0)
-            fim = meio-1;
+        if (resultado < 0)
+            fim = meio - 1;
         else
-            ini = meio+1;
+            ini = meio + 1;
     }
 // Encontrou
     switch (meio)
@@ -169,16 +169,16 @@ bool TVarDataHora::Func(TVariavel * v, const char * nome)
             return false;
         }
     case 1: // Ano
-        Instr::ApagarVar(v+1);
+        Instr::ApagarVar(v + 1);
         Instr::VarAtual->numfunc = DataHoraAno;
         return true;
     case 2: // Antes
-        if (Dia>1)
+        if (Dia > 1)
             Dia--;
-        else if (Mes>1)
+        else if (Mes > 1)
             Mes--, Dia = DiasMes();
-        else if (Ano>1)
-            Dia=31, Mes=12, Ano--;
+        else if (Ano > 1)
+            Dia = 31, Mes = 12, Ano--;
         return false;
     case 3: // Bissexto
         ini = BISSEXTO(Ano);
@@ -188,12 +188,12 @@ bool TVarDataHora::Func(TVariavel * v, const char * nome)
         if (Dia < DiasMes())
             Dia++;
         else if (Mes < 12)
-            Dia=1, Mes++;
+            Dia = 1, Mes++;
         else if (Ano < 9999)
-            Dia=1, Mes=1, Ano++;
+            Dia = 1, Mes = 1, Ano++;
         return false;
     case 5: // Dia
-        Instr::ApagarVar(v+1);
+        Instr::ApagarVar(v + 1);
         Instr::VarAtual->numfunc = DataHoraDia;
         return true;
     case 6: // DiaSem
@@ -201,32 +201,32 @@ bool TVarDataHora::Func(TVariavel * v, const char * nome)
         Instr::ApagarVar(v);
         return Instr::CriarVarInt(ini);
     case 7: // Hora
-        Instr::ApagarVar(v+1);
+        Instr::ApagarVar(v + 1);
         Instr::VarAtual->numfunc = DataHoraHora;
         return true;
     case 8: // Mes
-        Instr::ApagarVar(v+1);
+        Instr::ApagarVar(v + 1);
         Instr::VarAtual->numfunc = DataHoraMes;
         return true;
     case 9: // Min
-        Instr::ApagarVar(v+1);
+        Instr::ApagarVar(v + 1);
         Instr::VarAtual->numfunc = DataHoraMin;
         return true;
     case 10: // NovaData
         if (Instr::VarAtual - v >= 1)
         {
             int x = v[1].getInt();
-            Ano = (x<1 ? 1 : x>9999 ? 9999 : x);
+            Ano = (x < 1 ? 1 : x > 9999 ? 9999 : x);
         }
         if (Instr::VarAtual - v >= 2)
         {
             int x = v[2].getInt();
-            Mes = (x<1 ? 1 : x>12 ? 12 : x);
+            Mes = (x < 1 ? 1 : x > 12 ? 12 : x);
         }
         if (Instr::VarAtual - v >= 3)
         {
             int x = v[3].getInt();
-            Dia = (x<1 ? 1 : x>31 ? 31 : x);
+            Dia = (x < 1 ? 1 : x > 31 ? 31 : x);
         }
         ini = DiasMes();
         if (Dia > ini)
@@ -236,33 +236,33 @@ bool TVarDataHora::Func(TVariavel * v, const char * nome)
         if (Instr::VarAtual - v >= 1)
         {
             int x = v[1].getInt();
-            Hora = (x<0 ? 0 : x>23 ? 23 : x);
+            Hora = (x < 0 ? 0 : x > 23 ? 23 : x);
         }
         if (Instr::VarAtual - v >= 2)
         {
             int x = v[2].getInt();
-            Min = (x<0 ? 0 : x>59 ? 59 : x);
+            Min = (x < 0 ? 0 : x > 59 ? 59 : x);
         }
         if (Instr::VarAtual - v >= 3)
         {
             int x = v[3].getInt();
-            Seg = (x<0 ? 0 : x>59 ? 59 : x);
+            Seg = (x < 0 ? 0 : x > 59 ? 59 : x);
         }
         return false;
     case 12: // NumDia
-        Instr::ApagarVar(v+1);
+        Instr::ApagarVar(v + 1);
         Instr::VarAtual->numfunc = DataHoraNumDia;
         return true;
     case 13: // NumSeg
-        Instr::ApagarVar(v+1);
+        Instr::ApagarVar(v + 1);
         Instr::VarAtual->numfunc = DataHoraNumSeg;
         return true;
     case 14: // NumTotal
-        Instr::ApagarVar(v+1);
+        Instr::ApagarVar(v + 1);
         Instr::VarAtual->numfunc = DataHoraNumTotal;
         return true;
     case 15: // Seg
-        Instr::ApagarVar(v+1);
+        Instr::ApagarVar(v + 1);
         Instr::VarAtual->numfunc = DataHoraSeg;
         return true;
     }
@@ -292,9 +292,9 @@ int TVarDataHora::getInt(int numfunc)
     case DataHoraMin: return Min;
     case DataHoraSeg: return Seg;
     case DataHoraNumDia: return DataNum();
-    case DataHoraNumSeg: return (Hora*60+Min)*60+Seg;
+    case DataHoraNumSeg: return (Hora * 60 + Min) * 60 + Seg;
     case DataHoraNumTotal:
-        return DoubleToInt((Hora*60+Min)*60+Seg + DataNum() * 86400.0);
+        return DoubleToInt((Hora * 60 + Min) * 60 + Seg + DataNum() * 86400.0);
     }
     return 0;
 }
@@ -306,7 +306,7 @@ double TVarDataHora::getDouble(int numfunc)
         return 0;
     if (numfunc != DataHoraNumTotal)
         return getInt(numfunc);
-    return (Hora*60+Min)*60+Seg + DataNum() * 86400.0;
+    return (Hora * 60 + Min) * 60 + Seg + DataNum() * 86400.0;
 }
 
 //------------------------------------------------------------------------------
@@ -316,33 +316,33 @@ void TVarDataHora::setInt(int numfunc, int valor)
     switch (numfunc)
     {
     case DataHoraAno:
-        Ano = (valor<1 ? 1 : valor>9999 ? 9999 : valor);
-        if (Mes==2 && Dia==29 && !BISSEXTO(Ano))
+        Ano = (valor < 1 ? 1 : valor > 9999 ? 9999 : valor);
+        if (Mes == 2 && Dia == 29 && !BISSEXTO(Ano))
             Dia--;
         break;
     case DataHoraMes:
-        Mes = (valor<1 ? 1 : valor>12 ? 12 : valor);
+        Mes = (valor < 1 ? 1 : valor > 12 ? 12 : valor);
         x = DiasMes();
         if (Dia > x)
             Dia = x;
         break;
     case DataHoraDia:
-        if (valor<1)
-            Dia=1;
+        if (valor < 1)
+            Dia = 1;
         else
         {
             x = DiasMes();
-            Dia = (valor<x ? valor : x);
+            Dia = (valor < x ? valor : x);
         }
         break;
     case DataHoraHora:
-        Hora = (valor<0 ? 0 : valor>23 ? 23 : valor);
+        Hora = (valor < 0 ? 0 : valor > 23 ? 23 : valor);
         break;
     case DataHoraMin:
-        Min = (valor<0 ? 0 : valor>59 ? 59 : valor);
+        Min = (valor < 0 ? 0 : valor > 59 ? 59 : valor);
         break;
     case DataHoraSeg:
-        Seg = (valor<0 ? 0 : valor>59 ? 59 : valor);
+        Seg = (valor < 0 ? 0 : valor > 59 ? 59 : valor);
         break;
     case DataHoraNumDia:
         if (valor < 0) // 1/1/1
@@ -358,18 +358,18 @@ void TVarDataHora::setInt(int numfunc, int valor)
             Seg = 0, Min = 0, Hora = 0;
             break;
         }
-        NumData(valor/86400);
+        NumData(valor / 86400);
         valor %= 86400;
         // Muda hora/minuto/segundo em seguida
     case DataHoraNumSeg:
         if (valor < 0)
             valor = 0;
-        if (valor > 24*60*60-1)
-            valor = 24*60*60-1;
+        if (valor > 24 * 60 * 60 - 1)
+            valor = 24 * 60 * 60 - 1;
         Seg = valor%60;
         valor /= 60;
-        Min = valor%60;
-        Hora = valor/60;
+        Min = valor % 60;
+        Hora = valor / 60;
         break;
     }
 }
@@ -377,7 +377,7 @@ void TVarDataHora::setInt(int numfunc, int valor)
 //------------------------------------------------------------------------------
 void TVarDataHora::setDouble(int numfunc, double valor)
 {
-    if (numfunc!=DataHoraNumTotal || valor<=0)
+    if (numfunc != DataHoraNumTotal || valor <= 0)
     {
         setInt(numfunc, DoubleToInt(valor));
         return;
@@ -392,19 +392,19 @@ void TVarDataHora::setDouble(int numfunc, double valor)
 void TVarDataHora::LerSav(const char * texto)
 {
     int x, y;
-    for (x=0; x<14; x++)
-        if (texto[x]<'0' || texto[x]>'9')
+    for (x = 0; x < 14; x++)
+        if (texto[x] < '0' || texto[x] > '9')
             return;
     x = (texto[0] - '0') * 1000 + (texto[1] - '0') * 100 +
         (texto[2] - '0') * 10 + texto[3] - '0';
-    Ano = (x<1 ? 1 : x>9999 ? 9999 : x);
+    Ano = (x < 1 ? 1 : x > 9999 ? 9999 : x);
     x = (texto[4] - '0') * 10 + texto[5] - '0';
-    Mes = (x<1 ? 1 : x>12 ? 12 : x);
+    Mes = (x < 1 ? 1 : x > 12 ? 12 : x);
     x = (texto[6] - '0') * 10 + texto[7] - '0';
     y = DiasMes();
-    Dia = (x<1 ? 1 : x>y ? y : x);
+    Dia = (x < 1 ? 1 : x > y ? y : x);
     x = (texto[8] - '0') * 10 + texto[9] - '0';
-    Hora = (x>23 ? 23 : x);
+    Hora = (x > 23 ? 23 : x);
     x = (texto[10] - '0') * 10 + texto[11] - '0';
     Min = (x>59 ? 59 : x);
     x = (texto[12] - '0') * 10 + texto[13] - '0';
@@ -414,20 +414,20 @@ void TVarDataHora::LerSav(const char * texto)
 //------------------------------------------------------------------------------
 void TVarDataHora::SalvarSav(char * texto)
 {
-    texto[0] = Ano/1000+'0';
-    texto[1] = Ano/100%10+'0';
-    texto[2] = Ano/10%10+'0';
-    texto[3] = Ano%10+'0';
-    texto[4] = Mes/10+'0';
-    texto[5] = Mes%10+'0';
-    texto[6] = Dia/10+'0';
-    texto[7] = Dia%10+'0';
-    texto[8] = Hora/10+'0';
-    texto[9] = Hora%10+'0';
-    texto[10] = Min/10+'0';
-    texto[11] = Min%10+'0';
-    texto[12] = Seg/10+'0';
-    texto[13] = Seg%10+'0';
+    texto[0] = Ano / 1000 + '0';
+    texto[1] = Ano / 100 % 10 + '0';
+    texto[2] = Ano / 10 % 10 + '0';
+    texto[3] = Ano % 10 + '0';
+    texto[4] = Mes / 10 + '0';
+    texto[5] = Mes % 10 + '0';
+    texto[6] = Dia / 10 + '0';
+    texto[7] = Dia % 10 + '0';
+    texto[8] = Hora / 10 + '0';
+    texto[9] = Hora % 10 + '0';
+    texto[10] = Min / 10 + '0';
+    texto[11] = Min % 10 + '0';
+    texto[12] = Seg / 10 + '0';
+    texto[13] = Seg % 10 + '0';
     texto[14] = 0;
 }
 
@@ -448,15 +448,15 @@ int TVarDataHora::DataNum()
     int valor = Dia - 1;
 
 // Obtém dias conforme meses decorridos
-    valor += DiasMesTabela[Mes-1];
-    if (Mes>2)
+    valor += DiasMesTabela[Mes - 1];
+    if (Mes > 2)
         valor += BISSEXTO(Ano);
 
 // Obtém dias conforme anos decorridos
     int a = Ano - 1;
-    valor += a*1461/4 - a/100 + a/400;
-    // ou:  valor += a*365 + a/4 - a/100 + a/400;
-    // ou:  valor += a*1461/4 - (a/100*3+3)/4;
+    valor += a * 1461 / 4 - a / 100 + a / 400;
+    // ou:  valor += a * 365 + a / 4 - a / 100 + a / 400;
+    // ou:  valor += a * 1461 / 4 - (a / 100 * 3 + 3) / 4;
     return valor;
 }
 
@@ -474,8 +474,8 @@ void TVarDataHora::NumData(int dias)
 //   do echo $i $[(i*4+3)/146097]
 // done
 // for ((i=0; i<=4; i++)); do echo $i $[i*146097/4] ; done
-    int a = (dias*4+3)/146097;
-    dias -= a*146097/4;
+    int a = (dias * 4 + 3) / 146097;
+    dias -= a * 146097 / 4;
 
 // Dentro de 100 anos: A cada 4 anos, 1 é bissexto
 // 1,2,3, 5,6,7 não são, 4,8 são, etc.
@@ -486,35 +486,35 @@ void TVarDataHora::NumData(int dias)
 //   do echo $i $[(i*4+3)/1461]
 // done
 // for ((i=0; i<=4; i++)); do echo $i $[i*1461/4] ; done
-    int b = (dias*4+3)/1461;
-    dias -= b*1461/4;
+    int b = (dias * 4 + 3) / 1461;
+    dias -= b * 1461 / 4;
 
 // Anota o ano
-    Ano = a*100+b+1;
+    Ano = a * 100 + b + 1;
 
 // Verifica se é bissexto
-    int bissexto = (b%4!=3 ? 0 : b!=99 ? 1 : a%4==3);
+    int bissexto = (b % 4 != 3 ? 0 : b != 99 ? 1 : a % 4 == 3);
 
 // Simula fevereiro com 30 dias na contagem de dias
-    if (dias >= 31+28+bissexto)
-        dias += 2-bissexto;
+    if (dias >= 31 + 28 + bissexto)
+        dias += 2 - bissexto;
 
 // O ciclo se repete a cada 7 meses, totalizando 214 dias:
 // 31+30+31+30+31+30+31
-    int x = (dias*7+3)/214;
-    Mes = x+1; // Mês começa no 1
+    int x = (dias * 7 + 3) / 214;
+    Mes = x + 1; // Mês começa no 1
 
 // A fórmula que funcionou para obter o dia é essa
 // Teste: for ((x=0; x<=12; x++)); do echo $x $[(x*214+3)/7] ; done
-    Dia = 1 + dias - (x*214+3)/7;
+    Dia = 1 + dias - (x * 214 + 3) / 7;
 }
 
 //------------------------------------------------------------------------------
 int TVarDataHora::DiasMes()
 {
-    if (Mes==2)
-        return (Ano%4 ? 28 : Ano%100 ? 29 : Ano%400 ? 28 : 29);
-    if (Mes<8)
-        return 30 + Mes%2;
-    return 31 - Mes%2;
+    if (Mes == 2)
+        return (Ano % 4 ? 28 : Ano % 100 ? 29 : Ano % 400 ? 28 : 29);
+    if (Mes < 8)
+        return 30 + Mes % 2;
+    return 31 - Mes % 2;
 }

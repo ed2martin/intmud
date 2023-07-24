@@ -24,9 +24,9 @@
 #include "misc.h"
 
 #ifdef __WIN32__
- #define DIR_VALIDO (wdir!=INVALID_HANDLE_VALUE)
+ #define DIR_VALIDO (wdir != INVALID_HANDLE_VALUE)
 #else
- #define DIR_VALIDO (dir!=0)
+ #define DIR_VALIDO (dir != nullptr)
 #endif
 
 //------------------------------------------------------------------------------
@@ -35,7 +35,7 @@ void TVarDir::Criar()
 #ifdef __WIN32__
     wdir = INVALID_HANDLE_VALUE;
 #else
-    dir = 0;
+    dir = nullptr;
 #endif
 }
 
@@ -49,7 +49,7 @@ void TVarDir::Apagar()
 #else
     if (dir)
         closedir(dir);
-    dir = 0;
+    dir = nullptr;
 #endif
 }
 
@@ -57,32 +57,32 @@ void TVarDir::Apagar()
 bool TVarDir::Func(TVariavel * v, const char * nome)
 {
 // Pesquisar entrada atual no diretório
-    if (comparaZ(nome, "lin")==0)
+    if (comparaZ(nome, "lin") == 0)
     {
         bool b = DIR_VALIDO;
         Instr::ApagarVar(v);
         return Instr::CriarVarInt(b);
     }
-    if (comparaZ(nome, "texto")==0)
+    if (comparaZ(nome, "texto") == 0)
     {
         Instr::ApagarVar(v);
         return Instr::CriarVarTexto(DIR_VALIDO ? arqdir : "");
     }
-    if (comparaZ(nome, "depois")==0)
+    if (comparaZ(nome, "depois") == 0)
     {
         Proximo();
         return false;
     }
 
 // Barra
-    if (comparaZ(nome, "barra")==0)
+    if (comparaZ(nome, "barra") == 0)
     {
         const char * txt = "";  // Texto
         char mens[BUF_MENS];    // Resultado
         char * destino = mens;
-        if (Instr::VarAtual >= v+1)
+        if (Instr::VarAtual >= v + 1)
             txt = v[1].getTxt();
-        while (destino < mens+sizeof(mens)-1)
+        while (destino < mens+sizeof(mens) - 1)
         {
             char ch = *txt++;
             if (ch == 0)
@@ -101,16 +101,16 @@ bool TVarDir::Func(TVariavel * v, const char * nome)
     }
 
 // Abrir/Fechar diretório
-    if (comparaZ(nome, "abrir")==0)
+    if (comparaZ(nome, "abrir") == 0)
     {
         char mens[512];
     // Fecha diretório
         Apagar();
     // Obtém nome do diretório
         *mens = 0;
-        if (Instr::VarAtual >= v+1)
-            copiastr(mens, v[1].getTxt(), sizeof(mens)-2);
-        if (*mens==0)
+        if (Instr::VarAtual >= v + 1)
+            copiastr(mens, v[1].getTxt(), sizeof(mens) - 2);
+        if (*mens == 0)
             strcpy(mens, ".");
     // Checa se nome válido
         if (!arqvalido(mens))
@@ -125,7 +125,7 @@ bool TVarDir::Func(TVariavel * v, const char * nome)
         wdir = FindFirstFile(mens, &ffd);
         if (wdir == INVALID_HANDLE_VALUE)
             return Instr::CriarVarTexto("");
-        while (strcmp(ffd.cFileName, ".")==0 || strcmp(ffd.cFileName, "..")==0)
+        while (strcmp(ffd.cFileName, ".") == 0 || strcmp(ffd.cFileName, "..") == 0)
             if (FindNextFile(wdir, &ffd) == 0)
             {
                 FindClose(wdir);
@@ -137,7 +137,7 @@ bool TVarDir::Func(TVariavel * v, const char * nome)
                     ? 'D' : 'A';
 #else
         dir = opendir(mens);
-        if (dir==0)
+        if (dir == nullptr)
         {
             Instr::ApagarVar(v);
             return Instr::CriarVarTexto(strerror(errno));
@@ -147,17 +147,17 @@ bool TVarDir::Func(TVariavel * v, const char * nome)
         Instr::ApagarVar(v);
         return Instr::CriarVarTexto("");
     }
-    if (comparaZ(nome, "fechar")==0)
+    if (comparaZ(nome, "fechar") == 0)
     {
         Apagar();
         return false;
     }
 
 // Atributos do arquivo
-    if (comparaZ(nome, "tipo")==0)
+    if (comparaZ(nome, "tipo") == 0)
     {
     // Sem argumentos: entrada encontrada em abrir()
-        if (Instr::VarAtual < v+1)
+        if (Instr::VarAtual < v + 1)
         {
             char txt[2] = "?";
             if (DIR_VALIDO)
@@ -166,7 +166,7 @@ bool TVarDir::Func(TVariavel * v, const char * nome)
             return Instr::CriarVarTexto(txt);
         }
    // Com argumento
-        if (Instr::VarAtual < v+1)
+        if (Instr::VarAtual < v + 1)
         {
             Instr::ApagarVar(v);
             return Instr::CriarVarTexto("?");
@@ -188,7 +188,7 @@ bool TVarDir::Func(TVariavel * v, const char * nome)
         Instr::ApagarVar(v);
         return Instr::CriarVarTexto(mens);
     }
-    if (comparaZ(nome, "tamanho")==0)
+    if (comparaZ(nome, "tamanho") == 0)
     {
         char mens[512];
         double tam = 0;
@@ -225,15 +225,15 @@ bool TVarDir::Func(TVariavel * v, const char * nome)
         return true;
     }
     int tipo = 0;
-    if (comparaZ(nome, "mtempo")==0)
+    if (comparaZ(nome, "mtempo") == 0)
         tipo = 1;
-    else if (comparaZ(nome, "atempo")==0)
+    else if (comparaZ(nome, "atempo") == 0)
         tipo = 2;
     if (tipo)
     {
         char mens[512];
         *mens = 0;
-        while (Instr::VarAtual >= v+1)
+        while (Instr::VarAtual >= v + 1)
         {
             copiastr(mens, v[1].getTxt(), sizeof(mens));
             if (!arqvalido(mens))
@@ -289,9 +289,9 @@ bool TVarDir::Func(TVariavel * v, const char * nome)
     }
 
 // Criar/Apagar diretório
-    if (comparaZ(nome, "criardir")==0)
+    if (comparaZ(nome, "criardir") == 0)
         tipo = 1;
-    else if (comparaZ(nome, "apagardir")==0)
+    else if (comparaZ(nome, "apagardir") == 0)
         tipo = 2;
     if (tipo)
     {
@@ -306,7 +306,7 @@ bool TVarDir::Func(TVariavel * v, const char * nome)
         if (!arqvalido(mens))
             return Instr::CriarVarTexto("Nome de diretório não permitido");
         int err = 0;
-        if (tipo==1)
+        if (tipo == 1)
 #ifdef __WIN32__
             err = mkdir(mens);
 #else
@@ -314,7 +314,7 @@ bool TVarDir::Func(TVariavel * v, const char * nome)
 #endif
         else
             err = rmdir(mens);
-        if (err>=0)
+        if (err >= 0)
             *mens = 0;
         else
             copiastr(mens, strerror(errno), sizeof(mens));
@@ -322,7 +322,7 @@ bool TVarDir::Func(TVariavel * v, const char * nome)
     }
 
 // Apgar arquivo
-    if (comparaZ(nome, "apagar")==0)
+    if (comparaZ(nome, "apagar") == 0)
     {
         char mens[512];
         if (Instr::VarAtual < v+1)
@@ -342,10 +342,10 @@ bool TVarDir::Func(TVariavel * v, const char * nome)
     }
 
 // Renomear arquivo/diretório
-    if (comparaZ(nome, "renomear")==0)
+    if (comparaZ(nome, "renomear") == 0)
     {
         char antes[512], depois[512];
-        if (Instr::VarAtual < v+2)
+        if (Instr::VarAtual < v + 2)
         {
             Instr::ApagarVar(v);
             return Instr::CriarVarTexto("");
@@ -373,7 +373,7 @@ void TVarDir::Proximo()
         return;
     while (FindNextFile(wdir, &ffd) != 0)
     {
-        if (strcmp(ffd.cFileName, ".")==0 || strcmp(ffd.cFileName, "..")==0)
+        if (strcmp(ffd.cFileName, ".") == 0 || strcmp(ffd.cFileName, "..") == 0)
             continue;
         copiastr(arqdir, ffd.cFileName, sizeof(arqdir));
         arqtipo = (ffd.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY)
@@ -383,14 +383,14 @@ void TVarDir::Proximo()
     FindClose(wdir);
     wdir = INVALID_HANDLE_VALUE;
 #else
-    if (dir==0)
+    if (dir == nullptr)
         return;
     while (true)
     {
         struct dirent * sdir = readdir(dir);
-        if (sdir==0)
+        if (sdir == nullptr)
             break;
-        if (strcmp(sdir->d_name, ".")==0 || strcmp(sdir->d_name, "..")==0)
+        if (strcmp(sdir->d_name, ".") == 0 || strcmp(sdir->d_name, "..") == 0)
             continue;
         copiastr(arqdir, sdir->d_name, sizeof(arqdir));
         switch (sdir->d_type)
@@ -402,6 +402,6 @@ void TVarDir::Proximo()
         return;
     }
     closedir(dir);
-    dir = 0;
+    dir = nullptr;
 #endif
 }

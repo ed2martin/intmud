@@ -42,9 +42,9 @@ void TIndiceItem::Mover(TIndiceItem * destino)
 //----------------------------------------------------------------------------
 int TIndiceItem::getValor()
 {
-    if (IndiceObj==0)
+    if (IndiceObj == nullptr)
         return 0;
-    return IndiceObj->Objeto!=0;
+    return IndiceObj->Objeto != nullptr;
 }
 
 //----------------------------------------------------------------------------
@@ -63,12 +63,12 @@ void TIndiceItem::MudarRef(TIndiceObj * indice)
         (Antes ? Antes->Depois : IndiceObj->IndiceItem) = Depois;
         if (Depois)
             Depois->Antes = Antes;
-        IndiceObj = 0;
+        IndiceObj = nullptr;
     }
     if (indice)
     {
         IndiceObj = indice;
-        Antes = 0;
+        Antes = nullptr;
         Depois = indice->IndiceItem;
         indice->IndiceItem = this;
         if (Depois)
@@ -104,11 +104,11 @@ bool TIndiceItem::Func(TVariavel * v, const char * nome)
     copiastrmin(mens, nome, sizeof(mens));
     while (ini <= fim)
     {
-        int meio = (ini+fim)/2;
+        int meio = (ini + fim) / 2;
         int resultado = strcmp(mens, ExecFunc[meio].Nome);
-        if (resultado==0) // Se encontrou...
+        if (resultado == 0) // Se encontrou...
             return (this->*ExecFunc[meio].Func)(v);
-        if (resultado<0) fim=meio-1; else ini=meio+1;
+        if (resultado < 0) fim = meio - 1; else ini = meio + 1;
     }
     return false;
 }
@@ -119,10 +119,10 @@ bool TIndiceItem::FuncObj(TVariavel * v)
 // Nenhum argumento
     if (Instr::VarAtual == v)
     {
-        if (IndiceObj==0)
+        if (IndiceObj == nullptr)
             return false;
         TObjeto * obj = IndiceObj->Objeto;
-        if (obj==0)
+        if (obj == nullptr)
             return false;
         Instr::ApagarVar(v);
         if (!Instr::CriarVar(Instr::InstrVarObjeto))
@@ -131,19 +131,19 @@ bool TIndiceItem::FuncObj(TVariavel * v)
         return true;
     }
 // Pelo menos um argumento
-    for (TVariavel * v1 = v+1; v1<=Instr::VarAtual; v1++)
+    for (TVariavel * v1 = v + 1; v1 <= Instr::VarAtual; v1++)
     {
         const char * txt = v1->getTxt();
     // Ignora texto vazio
-        if (*txt==0)
+        if (*txt == 0)
             continue;
     // Procura indiceobj
         TIndiceObj * indice = TIndiceObj::Procura(txt);
-        if (indice==0)
+        if (indice == nullptr)
             continue;
     // Obtém objeto
         TObjeto * obj = indice->Objeto;
-        if (obj==0)
+        if (obj == nullptr)
             continue;
     // Retorna o objeto encontrado
         Instr::ApagarVar(v);
@@ -161,7 +161,7 @@ bool TIndiceItem::FuncTxt(TVariavel * v)
 {
 // Obtém o texto e o tamanho do texto
     char mens[100];
-    *mens=0;
+    *mens = 0;
     if (IndiceObj)
         copiastr(mens, IndiceObj->Nome, sizeof(mens));
 // Anota o texto
@@ -173,20 +173,20 @@ bool TIndiceItem::FuncTxt(TVariavel * v)
 // Objeto anterior
 bool TIndiceItem::FuncAntes(TVariavel * v)
 {
-    if (IndiceObj==0)
+    if (IndiceObj == nullptr)
         return false;
     int total = 1;
     TIndiceObj * obj = IndiceObj;
     if (Instr::VarAtual >= v+1)
         total = v[1].getInt();
-    for (; total>0; total--)
+    for (; total > 0; total--)
     {
         obj = TIndiceObj::RBprevious(obj);
-        if (obj==0)
+        if (obj == nullptr)
             break;
-        if (compara(obj->Nome, IndiceObj->Nome, TamTxt)!=0)
+        if (compara(obj->Nome, IndiceObj->Nome, TamTxt) != 0)
         {
-            obj=0;
+            obj = nullptr;
             break;
         }
     }
@@ -198,20 +198,20 @@ bool TIndiceItem::FuncAntes(TVariavel * v)
 // Próximo objeto
 bool TIndiceItem::FuncDepois(TVariavel * v)
 {
-    if (IndiceObj==0)
+    if (IndiceObj == nullptr)
         return false;
     int total = 1;
     TIndiceObj * obj = IndiceObj;
     if (Instr::VarAtual >= v+1)
         total = v[1].getInt();
-    for (; total>0; total--)
+    for (; total > 0; total--)
     {
         obj = TIndiceObj::RBnext(obj);
-        if (obj==0)
+        if (obj == nullptr)
             break;
-        if (compara(obj->Nome, IndiceObj->Nome, TamTxt)!=0)
+        if (compara(obj->Nome, IndiceObj->Nome, TamTxt) != 0)
         {
-            obj=0;
+            obj = nullptr;
             break;
         }
     }
@@ -223,22 +223,22 @@ bool TIndiceItem::FuncDepois(TVariavel * v)
 // Primeiro objeto
 bool TIndiceItem::FuncIni(TVariavel * v)
 {
-    for (TVariavel * v1 = v+1; v1<=Instr::VarAtual; v1++)
+    for (TVariavel * v1 = v + 1; v1 <= Instr::VarAtual; v1++)
     {
         const char * txt = v1->getTxt();
     // Ignora texto vazio
-        if (*txt==0)
+        if (*txt == 0)
             continue;
     // Procura indiceobj
         TIndiceObj * indice = TIndiceObj::ProcIni(txt);
-        if (indice==0)
+        if (indice == nullptr)
             continue;
     // Encontrou
         MudarRef(indice);
         TamTxt = strlen(txt);
         return false;
     }
-    MudarRef(0);
+    MudarRef(nullptr);
     return false;
 }
 
@@ -246,22 +246,22 @@ bool TIndiceItem::FuncIni(TVariavel * v)
 // Último objeto
 bool TIndiceItem::FuncFim(TVariavel * v)
 {
-    for (TVariavel * v1 = v+1; v1<=Instr::VarAtual; v1++)
+    for (TVariavel * v1 = v + 1; v1 <= Instr::VarAtual; v1++)
     {
         const char * txt = v1->getTxt();
     // Ignora texto vazio
-        if (*txt==0)
+        if (*txt == 0)
             continue;
     // Procura indiceobj
         TIndiceObj * indice = TIndiceObj::ProcFim(txt);
-        if (indice==0)
+        if (indice == nullptr)
             continue;
     // Encontrou
         MudarRef(indice);
         TamTxt = strlen(txt);
         return false;
     }
-    MudarRef(0);
+    MudarRef(nullptr);
     return false;
 }
 
@@ -269,7 +269,7 @@ bool TIndiceItem::FuncFim(TVariavel * v)
 void TIndiceObj::Apagar()
 {
     while (IndiceItem)
-        IndiceItem->MudarRef(0);
+        IndiceItem->MudarRef(nullptr);
     if (*Nome)
         RBremove();
 }
@@ -278,23 +278,23 @@ void TIndiceObj::Apagar()
 void TIndiceObj::Mover(TIndiceObj * destino)
 {
     // Acerta TIndiceItem::IndiceObj em todos os TIndiceItem
-    for (TIndiceItem * obj = IndiceItem; obj; obj=obj->Depois)
+    for (TIndiceItem * obj = IndiceItem; obj; obj = obj->Depois)
         obj->IndiceObj = destino;
     // Acerta a RBT
     if (*Nome)
     {
-        if (RBroot==this)
-            RBroot=destino;
+        if (RBroot == this)
+            RBroot = destino;
         if (RBleft)
-            RBleft->RBparent=destino;
+            RBleft->RBparent = destino;
         if (RBright)
-            RBright->RBparent=destino;
+            RBright->RBparent = destino;
         if (RBparent)
         {
-            if (RBparent->RBleft==this)
-                RBparent->RBleft=destino;
-            if (RBparent->RBright==this)
-                RBparent->RBright=destino;
+            if (RBparent->RBleft == this)
+                RBparent->RBleft = destino;
+            if (RBparent->RBright == this)
+                RBparent->RBright = destino;
         }
     }
     // Move
@@ -311,7 +311,7 @@ const char * TIndiceObj::getNome()
 void TIndiceObj::setNome(const char * texto)
 {
     while (IndiceItem)
-        IndiceItem->MudarRef(0);
+        IndiceItem->MudarRef(nullptr);
     if (*Nome)
         RBremove();
     copiastr(Nome, texto, sizeof(Nome));
@@ -326,20 +326,20 @@ TIndiceObj * TIndiceObj::Procura(const char * nome)
     while (y)
     {
         int i = comparaZ(nome, y->Nome);
-        if (i==0)
+        if (i == 0)
             return y;
-        if (i<0)
+        if (i < 0)
             y = y->RBleft;
         else
             y = y->RBright;
     }
-    return 0;
+    return nullptr;
 }
 
 //----------------------------------------------------------------------------
 TIndiceObj * TIndiceObj::ProcIni(const char * nome)
 {
-    TIndiceObj * x = 0;
+    TIndiceObj * x = nullptr;
     TIndiceObj * y = RBroot;
     while (y)
     {
@@ -361,7 +361,7 @@ TIndiceObj * TIndiceObj::ProcIni(const char * nome)
 //----------------------------------------------------------------------------
 TIndiceObj * TIndiceObj::ProcFim(const char * nome)
 {
-    TIndiceObj * x = 0;
+    TIndiceObj * x = nullptr;
     TIndiceObj * y = RBroot;
     while (y)
     {
@@ -389,7 +389,7 @@ int TIndiceObj::RBcomp(TIndiceObj * x, TIndiceObj * y)
 }
 
 //----------------------------------------------------------------------------
-TIndiceObj * TIndiceObj::RBroot=0;
+TIndiceObj * TIndiceObj::RBroot = nullptr;
 #define CLASS TIndiceObj    // Nome da classe
 #define RBmask 1 // Máscara para bit 0
 #include "rbt.cpp.h"

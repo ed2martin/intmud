@@ -46,8 +46,8 @@
 //#define DEBUG_SSL    // Mostra informações de conexão SSL
 //#define DEBUG_WEBSOCK // Mostra informações de conexão WebSock
 
-TSocket * TSocket::SockAtual = 0;
-TSocket * TSocket::sInicio = 0;
+TSocket * TSocket::SockAtual = nullptr;
+TSocket * TSocket::sInicio = nullptr;
 bool TSocket::boolenvpend = false;
 
 // Conexão de socket, vide também:
@@ -115,21 +115,21 @@ TSocket * TSocket::Conectar(const char * ender, int porta, bool ssl)
     struct hostent *hnome;
     int conManip;
 
-    if (porta<0 || porta>65535)
-        return 0;
+    if (porta < 0 || porta > 65535)
+        return nullptr;
 #ifdef __WIN32__
-    memset(&conSock,0,sizeof(conSock));
-    conSock.sin_addr.s_addr=inet_addr(ender);
+    memset(&conSock, 0, sizeof(conSock));
+    conSock.sin_addr.s_addr = inet_addr(ender);
     if ( conSock.sin_addr.s_addr == INADDR_NONE )
     {
         if ( (hnome=gethostbyname(ender)) == NULL )
-            return 0;
+            return nullptr;
         conSock.sin_addr = (*(struct in_addr *)hnome->h_addr);
     }
-    conSock.sin_family=AF_INET;
-    conSock.sin_port=htons( (u_short)porta );
+    conSock.sin_family = AF_INET;
+    conSock.sin_port = htons( (u_short)porta );
     if ( (conManip = socket(PF_INET, SOCK_STREAM, 0)) == INVALID_SOCKET)
-        return 0;
+        return nullptr;
     SockConfig(conManip);
     if ( connect(conManip, (struct sockaddr *)&conSock,
                                       sizeof(struct sockaddr)) == SOCKET_ERROR)
@@ -137,7 +137,7 @@ TSocket * TSocket::Conectar(const char * ender, int porta, bool ssl)
         if (WSAGetLastError() != WSAEWOULDBLOCK)
         {
             closesocket(conManip);
-            return 0;
+            return nullptr;
         }
     }
 #else
@@ -146,24 +146,24 @@ TSocket * TSocket::Conectar(const char * ender, int porta, bool ssl)
     conSock.sin_port=htons(porta);
     if (inet_aton(ender, &conSock.sin_addr) == 0)
     {
-        if ( (hnome=gethostbyname(ender)) == NULL )
-            return 0;
+        if ( (hnome = gethostbyname(ender)) == nullptr )
+            return nullptr;
         conSock.sin_addr = (*(struct in_addr *)hnome->h_addr);
     }
-    if ( (conManip=socket(PF_INET,SOCK_STREAM,0)) ==-1)
-        return 0;
+    if ( (conManip = socket(PF_INET,SOCK_STREAM, 0)) ==-1)
+        return nullptr;
     SockConfig(conManip);
     if ( connect(conManip, (struct sockaddr *)&conSock,
-                                      sizeof(struct sockaddr)) <0 )
+                                      sizeof(struct sockaddr)) < 0 )
     {
         if (errno != EINPROGRESS)
         {
             close(conManip);
-            return 0;
+            return nullptr;
         }
     }
 #endif
-    TSocket * s = new TSocket(conManip, 0);
+    TSocket * s = new TSocket(conManip, nullptr);
     s->proto = (ssl ? spConnect2 : spConnect1);
     s->conSock = conSock;
 #ifdef DEBUG_SSL
@@ -297,13 +297,13 @@ void TSocket::SockConfig(int localSocket)
 #ifdef __WIN32__
     int sopcoes;
     int stamanho;
-    unsigned long argp=1; // 0=bloquear  1=nao bloquear
+    unsigned long argp = 1; // 0=bloquear  1=nao bloquear
     ioctlsocket(localSocket, FIONBIO, &argp);
-    sopcoes=2048;
+    sopcoes = 2048;
     stamanho=sizeof(sopcoes);
     setsockopt(localSocket, SOL_SOCKET, SO_RCVBUF,
             (const char*)(void*)&sopcoes, stamanho);
-    sopcoes=2048;
+    sopcoes = 2048;
     stamanho=sizeof(sopcoes);
     setsockopt(localSocket, SOL_SOCKET, SO_SNDBUF,
             (const char*)(void*)&sopcoes, stamanho);
@@ -311,10 +311,10 @@ void TSocket::SockConfig(int localSocket)
     size_t sopcoes;
     ACCEPT_TYPE_ARG3 stamanho;
     fcntl(localSocket, F_SETFL, O_NONBLOCK);
-    sopcoes=2048;
+    sopcoes = 2048;
     stamanho=sizeof(sopcoes);
     setsockopt(localSocket, SOL_SOCKET, SO_RCVBUF, &sopcoes, stamanho);
-    sopcoes=2048;
+    sopcoes = 2048;
     stamanho=sizeof(sopcoes);
     setsockopt(localSocket, SOL_SOCKET, SO_SNDBUF, &sopcoes, stamanho);
 #endif
@@ -327,31 +327,31 @@ TSocket::TSocket(int socknum, SSL * sslnum)
     printf("new TSocket(%d)\n", socknum); fflush(stdout);
 #endif
 // Coloca na lista ligada
-    sAntes = 0;
+    sAntes = nullptr;
     sDepois = sInicio;
     if (sInicio)
         sInicio->sAntes = this;
     sInicio = this;
 // Acerta variáveis
-    sock=socknum;
-    sockssl=sslnum;
-    pontEnv=0;
-    pontEnvSsl=0;
-    pontTelnet=0;
-    pontESC=0;
+    sock = socknum;
+    sockssl = sslnum;
+    pontEnv = 0;
+    pontEnvSsl = 0;
+    pontTelnet = 0;
+    pontESC = 0;
     memset(telnetopc, 0, sizeof(telnetopc));
-    telnetecho=0;
-    pontRec=0;
-    dadoRecebido=0;
-    CorAtual=0x70;
-    CorAnterior=0x70;
-    proto=spTelnet1;
-    cores=0;
-    eventoenv=false;
-    usaropctelnet=false;
-    sockenvrec=0;
-    sockerro=0;
-    AFlooder=0;
+    telnetecho = 0;
+    pontRec = 0;
+    dadoRecebido = 0;
+    CorAtual = 0x70;
+    CorAnterior = 0x70;
+    proto = spTelnet1;
+    cores = 0;
+    eventoenv = false;
+    usaropctelnet = false;
+    sockenvrec = 0;
+    sockerro = 0;
+    AFlooder = 0;
 }
 
 //------------------------------------------------------------------------------
@@ -363,8 +363,8 @@ TSocket::~TSocket()
 // Fecha Socket
     FecharSock(0, 0);
 // Verifica se apagou objeto SockAtual
-    if (SockAtual==this)
-        SockAtual=sDepois;
+    if (SockAtual == this)
+        SockAtual = sDepois;
 // Retira da lista ligada
     (sAntes ? sAntes->sDepois : sInicio) = sDepois;
     if (sDepois)
@@ -380,7 +380,7 @@ void TSocket::Fechar()
 //------------------------------------------------------------------------------
 void TSocket::FecharSock(int erro, bool env)
 {
-    if (sock<0)
+    if (sock < 0)
         return;
     if (!env)
         EnvPend();
@@ -391,10 +391,10 @@ void TSocket::FecharSock(int erro, bool env)
 #endif
         SslShutdown(sockssl);
         SslFree(sockssl);
-        sockssl = 0;
+        sockssl = nullptr;
     }
     close(sock);
-    sock=-1;
+    sock = -1;
     pontRec = 0;
     pontEnv = 0;
     pontEnvSsl = 0;
@@ -405,7 +405,7 @@ void TSocket::FecharSock(int erro, bool env)
 //------------------------------------------------------------------------------
 void TSocket::CriaSSL()
 {
-    if (sockssl || sock<0)
+    if (sockssl || sock < 0)
         return;
     sockssl = SslNew(ssl_ctx_cliente);
     SslSetFd(sockssl, sock);
@@ -418,7 +418,7 @@ void TSocket::CriaSSL()
 //------------------------------------------------------------------------------
 bool TSocket::Conectado()
 {
-    if (sock<0)
+    if (sock < 0)
         return false;
     switch (proto)
     {
@@ -440,7 +440,7 @@ int TSocket::Variavel(char num, int valor)
     switch (num)
     {
     case 1: // proto
-        if (sock<0)
+        if (sock < 0)
             return 0;
         if (valor >= 0)
         {
@@ -457,36 +457,36 @@ int TSocket::Variavel(char num, int valor)
                 switch (valor)
                 {
                 case 2:
-                    mudar = (proto!=spTelnet1 && proto!=spTelnet2);
+                    mudar = (proto != spTelnet1 && proto != spTelnet2);
                     proto = spTelnet1;
                     break;
                 case 3:
-                    mudar = (proto!=spTelnet1 && proto!=spTelnet2);
+                    mudar = (proto != spTelnet1 && proto != spTelnet2);
                     proto = spTelnet2;
                     break;
                 case 4:
-                    mudar = (proto!=spIRC);
+                    mudar = (proto != spIRC);
                     proto = spIRC;
                     break;
                 case 5:
-                    mudar = (proto!=spPapovox);
+                    mudar = (proto != spPapovox);
                     proto = spPapovox;
                     break;
                 case 6:
-                    mudar = (proto!=spWebSockM0 && proto!=spWebSockM1);
+                    mudar = (proto != spWebSockM0 && proto != spWebSockM1);
                     proto = spWebSockM0;
                     break;
                 case 7:
-                    mudar = (proto!=spWebSockM0 && proto!=spWebSockM1);
+                    mudar = (proto != spWebSockM0 && proto != spWebSockM1);
                     proto = spWebSockM1;
                     break;
                 case 8:
-                    mudar = (proto!=spHexa);
+                    mudar = (proto != spHexa);
                     proto = spHexa;
                     break;
                 }
                 if (mudar)
-                    pontRec=0, pontESC=0, pontTelnet=0;
+                    pontRec = 0, pontESC = 0, pontTelnet =0;
             }
         }
         switch (proto)
@@ -501,22 +501,22 @@ int TSocket::Variavel(char num, int valor)
         }
         return 1;
     case 2: // cores
-        if (valor>=0)
-            cores = (valor>3 ? 3 : valor);
+        if (valor >= 0)
+            cores = (valor > 3 ? 3 : valor);
         return cores;
     case 3: // aflooder
-        if (valor>=0)
+        if (valor >= 0)
         {
-            if (valor==0)
-                AFlooder=0;
-            else if (AFlooder==0)
-                AFlooder=TempoIni+1;
+            if (valor == 0)
+                AFlooder = 0;
+            else if (AFlooder == 0)
+                AFlooder = TempoIni + 1;
         }
-        return (AFlooder!=0);
+        return (AFlooder != 0);
     case 4: // opctelnet
-        if (proto!=spTelnet1 && proto!=spTelnet2)
+        if (proto != spTelnet1 && proto != spTelnet2)
             return 1;
-        if (valor>=0)
+        if (valor >= 0)
             usaropctelnet = valor;
         return usaropctelnet;
     }
@@ -527,7 +527,7 @@ int TSocket::Variavel(char num, int valor)
 void TSocket::Endereco(int num, char * mens, int tam)
 {
     *mens = 0;
-    if (sock<0)
+    if (sock < 0)
         return;
     if (num < 2)
     {
@@ -543,21 +543,21 @@ void TSocket::Endereco(int num, char * mens, int tam)
             r = getpeername(sock, (struct sockaddr *)&conSock, &tam);
         else
             r = getsockname(sock, (struct sockaddr *)&conSock, &tam);
-        if (r>=0)
+        if (r >= 0)
             copiastr(mens, inet_ntoa(conSock.sin_addr), tam);
         return;
     }
     if (num < 4)
     {
     // Obtém objeto X509
-        if (sockssl==0 || sock<0)
+        if (sockssl == nullptr || sock < 0)
             return;
         X509 * obj509 = SslGetPeerCertificate(sockssl);
-        if (obj509==0)
+        if (obj509 == nullptr)
             return;
     // Obtém o tamanho do certificado
-        int total = SslX509i2d(obj509, 0);
-        if (total<=0)
+        int total = SslX509i2d(obj509, nullptr);
+        if (total <= 0)
         {
             SslX509free(obj509);
             return;
@@ -586,14 +586,14 @@ void TSocket::Endereco(int num, char * mens, int tam)
             total = 20;
         }
     // Monta o texto
-        for (int x=0; x<total; x++)
+        for (int x = 0; x < total; x++)
         {
             int valor = digest[x] >> 4;
-            texto[x*2] = (valor<10 ? valor+'0' : valor+'a'-10);
+            texto[x * 2] = (valor < 10 ? valor + '0' : valor + 'a' - 10);
             valor = digest[x] & 0x0F;
-            texto[x*2+1] = (valor<10 ? valor+'0' : valor+'a'-10);
+            texto[x * 2 + 1] = (valor < 10 ? valor + '0' : valor + 'a' - 10);
         }
-        texto[total*2] = 0;
+        texto[total * 2] = 0;
         copiastr(mens, texto, tam);
     // Desaloca os recursos
         delete[] buf;
@@ -605,19 +605,19 @@ void TSocket::Endereco(int num, char * mens, int tam)
 //------------------------------------------------------------------------------
 bool TSocket::EnvMens(const char * mensagem, int codigo)
 {
-    if (sock<0)
+    if (sock < 0)
         return false;
 
 // Papovox
-    if (proto==spPapovox)
+    if (proto == spPapovox)
     {
         char mens[SOCKET_ENV];
         char * ini = mens;
         char * destino = mens + 3;
-        if (codigo<0)
-            codigo=0;
-        if (codigo>255)
-            codigo=255;
+        if (codigo < 0)
+            codigo = 0;
+        if (codigo > 255)
+            codigo = 255;
         for (; *mensagem; mensagem++)
         {
             if (destino >= mens + sizeof(mens) - 4)
@@ -625,7 +625,7 @@ bool TSocket::EnvMens(const char * mensagem, int codigo)
             switch (*mensagem)
             {
             case 1:
-                mensagem+=2;
+                mensagem += 2;
             case 2:
             case 3:
             case 4:
@@ -643,7 +643,7 @@ bool TSocket::EnvMens(const char * mensagem, int codigo)
             }
         }
         int total = destino - ini - 3;
-        if (total>0)
+        if (total > 0)
         {
             ini[0] = codigo;
             ini[1] = total;
@@ -657,7 +657,7 @@ bool TSocket::EnvMens(const char * mensagem, int codigo)
     }
 
 // WebSock
-    if (proto==spWebSockM0 || proto==spWebSockM1)
+    if (proto == spWebSockM0 || proto == spWebSockM1)
     {
         char mens[SOCKET_ENV];
         char * ini = mens + 10;
@@ -677,11 +677,11 @@ bool TSocket::EnvMens(const char * mensagem, int codigo)
             else
                 continue;
             if (valor >= 0x100)
-                *destino++ = valor, valor=1;
+                *destino++ = valor, valor = 1;
         }
 
     // Máscara
-        if (proto==spWebSockM1)
+        if (proto == spWebSockM1)
         {
             char cod[4];
             valor = (circle_random() & 0xFFFF);
@@ -697,7 +697,7 @@ bool TSocket::EnvMens(const char * mensagem, int codigo)
             ini -= 4;
             memcpy(ini, cod, 4);
             int ind = 0;
-            for (char * p = mens+10; p < destino; p++,ind=(ind+1)&3)
+            for (char * p = mens + 10; p < destino; p++,ind = (ind + 1) & 3)
                 *p ^= cod[ind];
         }
 
@@ -712,7 +712,7 @@ bool TSocket::EnvMens(const char * mensagem, int codigo)
             ini[1] = tamanho >> 8;
             ini[2] = tamanho;
         }
-        if (proto==spWebSockM1)
+        if (proto == spWebSockM1)
             ini[0] |= 0x80;
 
     // Código
@@ -733,7 +733,7 @@ bool TSocket::EnvMens(const char * mensagem, int codigo)
     }
 
 // Hexadecimal
-    if (proto==spHexa)
+    if (proto == spHexa)
     {
         char mens[SOCKET_ENV];
         char * destino = mens;
@@ -753,7 +753,7 @@ bool TSocket::EnvMens(const char * mensagem, int codigo)
             {
                 if (destino >= mens + sizeof(mens))
                     return false;
-                *destino++ = valor, valor=1;
+                *destino++ = valor, valor = 1;
             }
         }
         if (destino != mens)
@@ -762,7 +762,7 @@ bool TSocket::EnvMens(const char * mensagem, int codigo)
     }
 
 // Sem cores
-    if ((cores&2)==0)
+    if ((cores & 2) == 0)
     {
         if (!Conectado())
             return false;
@@ -770,12 +770,12 @@ bool TSocket::EnvMens(const char * mensagem, int codigo)
         char * destino = mens;
         for (; *mensagem; mensagem++)
         {
-            if (destino >= mens + sizeof(mens)-2)
+            if (destino >= mens + sizeof(mens) - 2)
                 return false;
             switch (*(unsigned char*)mensagem)
             {
             case 1:
-                mensagem+=2;
+                mensagem += 2;
                 break;
             case 2: // echo off
                 memcpy(destino, "\xFF\xFB\x01", 3);
@@ -810,7 +810,7 @@ bool TSocket::EnvMens(const char * mensagem, int codigo)
     }
 
 // Telnet
-    if (proto==spTelnet1 || proto==spTelnet2)
+    if (proto == spTelnet1 || proto == spTelnet2)
     {
         char mens[SOCKET_ENV];
         char * destino = mens;
@@ -819,10 +819,10 @@ bool TSocket::EnvMens(const char * mensagem, int codigo)
         for (; *mensagem; mensagem++)
         {
         // Verifica se espaço suficiente
-            if (destino >= mens + sizeof(mens)-15)
+            if (destino >= mens + sizeof(mens) - 15)
                 return false;
         // Caracter normal
-            if (*mensagem!=1)
+            if (*mensagem != 1)
             {
                 switch (*(unsigned char*)mensagem)
                 {
@@ -863,9 +863,9 @@ bool TSocket::EnvMens(const char * mensagem, int codigo)
             mensagem += 2;
 
             if (antes & 0x200)
-                antes = (antes&~0x277) | ((antes>>4)&7) | ((antes<<4)&0x70);
+                antes = (antes & ~0x277) | ((antes >> 4) & 7) | ((antes << 4) & 0x70);
             if (agora & 0x200)
-                agora=(agora&~0x277) | ((agora>>4)&7) | ((agora<<4)&0x70);
+                agora = (agora & ~0x277) | ((agora >> 4) & 7) | ((agora << 4) & 0x70);
 
             char ini='[';
             //sprintf(destino, "%04x", cor); destino+=2;
@@ -875,46 +875,46 @@ bool TSocket::EnvMens(const char * mensagem, int codigo)
             {
                 destino[0] = ini;
                 destino[1] = '0';
-                destino+=2, ini=';';
+                destino += 2, ini=';';
                 antes = 0x70;
             }
-            if ((antes&0x80)==0 && (agora&0x80)) // Negrito
+            if ((antes&0x80) == 0 && (agora & 0x80)) // Negrito
             {
                 destino[0] = ini;
                 destino[1] = '1';
-                destino+=2, ini=';';
+                destino += 2, ini=';';
             }
-            if ((antes&0x100)==0 && (agora&0x100)) // Sublinhado
+            if ((antes & 0x100) == 0 && (agora & 0x100)) // Sublinhado
             {
                 destino[0] = ini;
                 destino[1] = '4';
-                destino+=2, ini=';';
+                destino += 2, ini = ';';
             }
-            if ((antes&0x400)==0 && (agora&0x400)) // Texto piscando
+            if ((antes & 0x400) == 0 && (agora & 0x400)) // Texto piscando
             {
                 destino[0] = ini;
                 destino[1] = '5';
-                destino+=2, ini=';';
+                destino += 2, ini = ';';
             }
-            if ((antes^agora)&0x70) // Frente
+            if ((antes ^ agora) & 0x70) // Frente
             {
                 destino[0] = ini;
                 destino[1] = '3';
-                destino[2] = ((cor>>4)&7)+'0';
-                destino+=3, ini=';';
+                destino[2] = ((cor >> 4) & 7) + '0';
+                destino += 3, ini = ';';
             }
             if ((antes^agora)&15) // Fundo
             {
                 destino[0] = ini;
                 destino[1] = '4';
-                destino[2] = (cor&7)+'0';
-                destino+=3, ini=';';
+                destino[2] = (cor & 7) + '0';
+                destino += 3, ini=';';
             }
             *destino++ = 'm';
             //*destino++ = '\\';
-            //*destino++ = (novacor>>8)+'0';
-            //*destino++ = ((novacor>>4)&15)+'0';
-            //*destino++ = (novacor&15)+'0';
+            //*destino++ = (novacor >> 8) + '0';
+            //*destino++ = ((novacor >> 4) & 15) + '0';
+            //*destino++ = (novacor & 15) + '0';
         }
         if (destino != mens)
             eventoenv = true;
@@ -933,7 +933,7 @@ bool TSocket::EnvMens(const char * mensagem, int codigo)
         for (; *mensagem; mensagem++)
         {
         // Verifica se espaço suficiente
-            if (destino >= mens + sizeof(mens)-10)
+            if (destino >= mens + sizeof(mens) - 10)
                 return false;
         // Próxima linha
             if (*mensagem=='\n')
@@ -943,7 +943,7 @@ bool TSocket::EnvMens(const char * mensagem, int codigo)
                 continue;
             }
         // Caracter normal
-            if (*mensagem!=1)
+            if (*mensagem != 1)
             {
                 if (*(unsigned char*)mensagem >= ' ')
                     *destino++ = *mensagem;
@@ -951,49 +951,49 @@ bool TSocket::EnvMens(const char * mensagem, int codigo)
             }
         // Definição de cor
             bool numero =   // Se pode ser interpretado como número
-                    (mensagem[3]==0 ||
-                    (mensagem[3]>='0' && mensagem[3]<='9'));
+                    (mensagem[3] == 0 ||
+                    (mensagem[3] >= '0' && mensagem[3] <= '9'));
             bool virgula =  // Se pode ser interpretado como vírgula
-                    (mensagem[3]==0 || mensagem[3]==',');
+                    (mensagem[3] == 0 || mensagem[3] == ',');
             unsigned int antes = cor ^ Num16(mensagem + 1);
             cor = Num16(mensagem + 1);
             mensagem += 2;
             *destino++ = 3;
             if (cor==0x70) // Cor padrão
             {
-                if (numero==false)
-                    *destino=0;
+                if (numero == false)
+                    *destino = 0;
                 else if (virgula==false)
                     sprintf(destino, "%02d",
-                            desconvirc[(cor>>4)&15]);
+                            desconvirc[(cor >> 4) & 15]);
                 else
                     sprintf(destino, "%d,%02d",
-                            desconvirc[(cor>>4)&15],
-                            desconvirc[cor&15]);
+                            desconvirc[(cor >> 4) & 15],
+                            desconvirc[cor & 15]);
             }
             else if ((antes & 15)==0) // Fundo não mudou
             {
                 if (virgula)
                     sprintf(destino, "%d,%02d",
-                            desconvirc[(cor>>4)&15],
-                            desconvirc[cor&15]);
+                            desconvirc[(cor >> 4) & 15],
+                            desconvirc[cor & 15]);
                 else if (numero)
                     sprintf(destino, "%02d",
-                            desconvirc[(cor>>4)&15]);
+                            desconvirc[(cor >> 4) & 15]);
                 else
                     sprintf(destino, "%d",
-                            desconvirc[(cor>>4)&15]);
+                            desconvirc[(cor >> 4) & 15]);
             }
             else // Fundo mudou
             {
                 if (numero)
                     sprintf(destino, "%d,%02d",
-                            desconvirc[(cor>>4)&15],
-                            desconvirc[cor&15]);
+                            desconvirc[(cor >> 4) & 15],
+                            desconvirc[cor & 15]);
                 else
                     sprintf(destino, "%d,%d",
-                            desconvirc[(cor>>4)&15],
-                            desconvirc[cor&15]);
+                            desconvirc[(cor >> 4) & 15],
+                            desconvirc[cor & 15]);
             }
             while (*destino)
                 destino++;
@@ -1025,7 +1025,7 @@ bool TSocket::EnvMensBytes(const char * mensagem, int tamanho)
     pontEnv += tamanho;
 #if 0
     printf("\nEnviando %p  ", this);
-    for (const char * pp = mensagem; pp<mensagem+tamanho; pp++)
+    for (const char * pp = mensagem; pp < mensagem + tamanho; pp++)
     {
         printf(" %02x", *(unsigned char*)pp);
         if (*(signed char*)pp >= 0x20)
@@ -1039,12 +1039,12 @@ bool TSocket::EnvMensBytes(const char * mensagem, int tamanho)
 //------------------------------------------------------------------------------
 void TSocket::EnvPend()
 {
-    if (sock<0 || pontEnv<=0)
+    if (sock < 0 || pontEnv <= 0)
         return;
-    int resposta, coderro=0;
+    int resposta, coderro = 0;
 #ifdef DEBUG_MSG
     printf(">>> ENV \"");
-    for (unsigned int x=0; x<pontEnv; x++)
+    for (unsigned int x = 0; x < pontEnv; x++)
         putchar(bufEnv[x]);
     printf("\"\n");
 #endif
@@ -1102,33 +1102,33 @@ void TSocket::EnvPend()
         }
 #else
         resposta=send(sock, bufEnv, pontEnv, 0);
-        if (resposta<=0)
+        if (resposta <= 0)
         {
             coderro = errno;
-            if (resposta<0 && (errno==EINTR || errno==EWOULDBLOCK ||
-                                errno==EAGAIN || errno==ENOBUFS ||
-                                errno==EALREADY || errno==EINPROGRESS))
-                resposta=0;
-            else if (resposta==0)
-                resposta=-1,coderro=ECONNRESET;
+            if (resposta < 0 && (errno == EINTR || errno == EWOULDBLOCK ||
+                                errno == EAGAIN || errno == ENOBUFS ||
+                                errno == EALREADY || errno == EINPROGRESS))
+                resposta = 0;
+            else if (resposta == 0)
+                resposta = -1, coderro = ECONNRESET;
         }
 #endif
     }
-    if (resposta<0)
+    if (resposta < 0)
         FecharSock(coderro, 1);
-    else if (resposta>=(int)pontEnv)
-        pontEnv=0;
-    else if (resposta>0)
+    else if (resposta >= (int)pontEnv)
+        pontEnv = 0;
+    else if (resposta > 0)
     {
         pontEnv -= resposta;
-        memmove(bufEnv, bufEnv+resposta, pontEnv);
+        memmove(bufEnv, bufEnv + resposta, pontEnv);
     }
 }
 
 //------------------------------------------------------------------------------
 void TSocket::SairPend()
 {
-    for (TSocket * obj = sInicio; obj; obj=obj->sDepois)
+    for (TSocket * obj = sInicio; obj; obj = obj->sDepois)
         obj->EnvPend();
 }
 
@@ -1147,7 +1147,7 @@ void TSocket::Fd_Set(fd_set * set_entrada, fd_set * set_saida, fd_set * set_err)
             if (obj->pontEnv)
             {
                 obj->EnvPend();
-                ev_env = (obj->pontEnv<=0) && obj->eventoenv;
+                ev_env = (obj->pontEnv <= 0) && obj->eventoenv;
             }
         // Verifica socket fechou
             if (obj->sock < 0)
@@ -1155,22 +1155,22 @@ void TSocket::Fd_Set(fd_set * set_entrada, fd_set * set_saida, fd_set * set_err)
                 char mens[100];
                 mprintf(mens, sizeof(mens), "%s %s",
                     obj->sockenvrec ? "Ao enviar" : "Ao receber",
-                    obj->sockerro<0 ? "protocolo incorreto" :
-                    obj->sockerro==0 ? "" :
+                    obj->sockerro < 0 ? "protocolo incorreto" :
+                    obj->sockerro == 0 ? "" :
                     TxtErro(obj->sockerro));
             // Gera evento
                 SockAtual = obj;
                 obj->FuncFechou(mens);
             // Passa para próximo objeto TSocket
-                if (SockAtual==obj) // Se objeto Socket não foi apagado, apaga
+                if (SockAtual == obj) // Se objeto Socket não foi apagado, apaga
                     delete obj;
-                obj=SockAtual;  // SockAtual já está no próximo objeto
+                obj = SockAtual;  // SockAtual já está no próximo objeto
                 continue;
             }
         // Verifica se socket fechado
             if (!obj->Conectado())
             {
-                obj=obj->sDepois;
+                obj = obj->sDepois;
                 continue;
             }
         // Verifica evento env
@@ -1188,7 +1188,7 @@ void TSocket::Fd_Set(fd_set * set_entrada, fd_set * set_saida, fd_set * set_err)
         if (!boolenvpend)
             break;
     }
-    for (TSocket * obj = sInicio; obj; obj=obj->sDepois)
+    for (TSocket * obj = sInicio; obj; obj = obj->sDepois)
     {
         if (obj->proto == spConnect1 || obj->proto == spConnect2)
         {
@@ -1216,13 +1216,13 @@ void TSocket::ProcEventos(fd_set * set_entrada,
     for (TSocket * obj = sInicio; obj; )
     {
     // Verifica se socket aberto
-        if (obj->sock<0)
+        if (obj->sock < 0)
         {
             obj = obj->sDepois;
             continue;
         }
     // Verifica socket conectando
-        if (obj->proto==spConnect1 || obj->proto==spConnect2)
+        if (obj->proto == spConnect1 || obj->proto == spConnect2)
         {
             int coderro = 0;
 #ifdef __WIN32__
@@ -1238,10 +1238,10 @@ void TSocket::ProcEventos(fd_set * set_entrada,
                             (char*)&coderro, &len) != 0)
                 {
                     coderro = WSAGetLastError();
-                    if (coderro==0)
-                        coderro=-1;
+                    if (coderro == 0)
+                        coderro = -1;
                 }
-                else if (coderro==0) // Timeout no select
+                else if (coderro == 0) // Timeout no select
                 {
                     obj = obj->sDepois;
                     continue;
@@ -1249,8 +1249,8 @@ void TSocket::ProcEventos(fd_set * set_entrada,
             }
 #else
         // Checa se conexão pendente
-            if (FD_ISSET(obj->sock, set_entrada)==0 &&
-                    FD_ISSET(obj->sock, set_saida)==0)
+            if (FD_ISSET(obj->sock, set_entrada) == 0 &&
+                    FD_ISSET(obj->sock, set_saida) == 0)
             {
                 obj = obj->sDepois;
                 continue;
@@ -1260,9 +1260,9 @@ void TSocket::ProcEventos(fd_set * set_entrada,
                                       sizeof(struct sockaddr)) < 0 )
             {
                 coderro = errno;
-                if (coderro==EISCONN)
-                    coderro=0;
-                if (coderro==EALREADY)
+                if (coderro == EISCONN)
+                    coderro = 0;
+                if (coderro == EALREADY)
                 {
                     obj = obj->sDepois;
                     continue;
@@ -1274,7 +1274,7 @@ void TSocket::ProcEventos(fd_set * set_entrada,
                 int err = 0;
                 SOCK_SOCKLEN_T len = sizeof(err);
                 if (getsockopt(obj->sock, SOL_SOCKET, SO_ERROR,
-                    (void*)&err, &len)==0)
+                    (void*)&err, &len) == 0)
                 if (err)
                     coderro = err;
             }
@@ -1307,7 +1307,7 @@ void TSocket::ProcEventos(fd_set * set_entrada,
         // Erro ao conectar
         }
     // Verifica conexão SSL
-        if (obj->proto==spSslConnect)
+        if (obj->proto == spSslConnect)
         {
             int resposta = SslConnect(obj->sockssl);
             if (resposta > 0)
@@ -1347,7 +1347,7 @@ void TSocket::ProcEventos(fd_set * set_entrada,
             continue;
         }
     // Lê e processa dados pendentes
-        if (obj->sockssl==0 && FD_ISSET(obj->sock, set_entrada)==0)
+        if (obj->sockssl == nullptr && FD_ISSET(obj->sock, set_entrada) == 0)
         {
             obj = obj->sDepois;
             continue;
@@ -1356,7 +1356,7 @@ void TSocket::ProcEventos(fd_set * set_entrada,
         {
         // Lê do socket
             char mens[4096];
-            int resposta, coderro=0;
+            int resposta, coderro = 0;
             if (obj->sockssl)
             {
                 coderro = 0;
@@ -1389,8 +1389,8 @@ void TSocket::ProcEventos(fd_set * set_entrada,
             {
 #ifdef __WIN32__
                 resposta = recv(obj->sock, mens, sizeof(mens), 0);
-                if (resposta==0)
-                    resposta=-1;
+                if (resposta == 0)
+                    resposta = -1;
                 else if (resposta==SOCKET_ERROR)
                 {
                     coderro = WSAGetLastError();
@@ -1398,15 +1398,15 @@ void TSocket::ProcEventos(fd_set * set_entrada,
                 }
 #else
                 resposta = recv(obj->sock, mens, sizeof(mens), 0);
-                if (resposta<=0)
+                if (resposta <= 0)
                 {
                     coderro = errno;
-                    if (resposta<0 && (coderro==EINTR || coderro==EWOULDBLOCK ||
-                                       coderro==EAGAIN || coderro==ENOBUFS ||
-                                       coderro==EALREADY || coderro==EINPROGRESS))
-                        resposta=0;
+                    if (resposta < 0 && (coderro== EINTR || coderro == EWOULDBLOCK ||
+                                       coderro == EAGAIN || coderro == ENOBUFS ||
+                                       coderro == EALREADY || coderro == EINPROGRESS))
+                        resposta = 0;
                     else
-                        resposta=-1, coderro=ECONNRESET;
+                        resposta = -1, coderro = ECONNRESET;
                 }
 #endif
             }
@@ -1456,7 +1456,7 @@ int TSocket::Processa(const char * buffer, int tamanho)
 {
 #if 0
     printf("\nRecebendo %p  ", this);
-    for (const char * pp = buffer; pp<buffer+tamanho; pp++)
+    for (const char * pp = buffer; pp < buffer + tamanho; pp++)
     {
         printf(" %02x", *(unsigned char*)pp);
         if (*(signed char*)pp >= 0x20)
@@ -1466,18 +1466,18 @@ int TSocket::Processa(const char * buffer, int tamanho)
 #endif
 
 // Ignora CR/LF, quando estiver mudando de protocolo
-    if ((*buffer==10 && dadoRecebido==13) ||
-        (*buffer==13 && dadoRecebido==10))
+    if ((*buffer == 10 && dadoRecebido == 13) ||
+        (*buffer == 13 && dadoRecebido == 10))
         buffer++, tamanho--, dadoRecebido=0;
 
 // Protocolo Telnet
-    if (proto==spTelnet1 || proto==spTelnet2)
+    if (proto == spTelnet1 || proto == spTelnet2)
     {
         unsigned char dado;
         while (tamanho)
         {
         // Obtém próximo caracter
-            dado=*buffer++;
+            dado = *buffer++;
             tamanho--;
 //------- Para mostrar o que chegou
 //printf("[%d;%d] ",dado,dadoRecebido); fflush(stdout);
@@ -1488,23 +1488,23 @@ int TSocket::Processa(const char * buffer, int tamanho)
         // Protocolo do Telnet
 
         // Primeiro caracter  - IAC
-            if (pontTelnet==0)
+            if (pontTelnet == 0)
             {
-                if (dado<7)
+                if (dado < 7)
                     continue;
-                if (dado==255)
+                if (dado == 255)
                 {
-                    bufTelnet[pontTelnet++]=dado;
+                    bufTelnet[pontTelnet++] = dado;
                     continue;
                 }
                 goto telnet_cor;
             }
         // Telnet: Mensagem comprida (SB + SE)
         // 255 250 ... 255 240 = mensagem
-            if (pontTelnet>=3 && dado==240 &&
-                    bufTelnet[pontTelnet-1]==255)
+            if (pontTelnet >= 3 && dado == 240 &&
+                    bufTelnet[pontTelnet - 1] == 255)
             {
-                if (bufTelnet[3]==1)
+                if (bufTelnet[3] == 1)
                     switch (bufTelnet[2])
                     {
                     case 24: // Quer saber o terminal
@@ -1524,7 +1524,7 @@ int TSocket::Processa(const char * buffer, int tamanho)
                         EnvMensBytes("\xFF\xFA\x27\x00\xFF\xF0", 6);
                         break;
                     }
-                pontTelnet=0;
+                pontTelnet = 0;
                 continue;
             }
         // Telnet: Mensagem de 2 bytes
@@ -1532,39 +1532,39 @@ int TSocket::Processa(const char * buffer, int tamanho)
         // 255 249 = go ahead
         // 255 244 = interrupt process (Control+C)
         // 255 240 = end of option negotiation
-            if (pontTelnet==1)
+            if (pontTelnet == 1)
             {
-                if (dado==255)
+                if (dado == 255)
                 {
-                    pontTelnet=0;
+                    pontTelnet = 0;
                     goto telnet_cor;
                 }
-                if (dado==249)
+                if (dado == 249)
                 {
-                    pontTelnet=0, dado=6;
+                    pontTelnet = 0, dado = 6;
                     goto telnet_cor;
                 }
-                if (dado==240)
+                if (dado == 240)
                 {
-                    pontTelnet=0;
+                    pontTelnet = 0;
                     continue;
                 }
-                if (dado==244)
+                if (dado == 244)
                 {
                     FecharSock(-1, 0);
                     return 0;
                 }
             }
         // Telnet: Anota caracter no buffer
-            if (pontTelnet>=(int)sizeof(bufTelnet))
+            if (pontTelnet >= (int)sizeof(bufTelnet))
                 pontTelnet--;
             bufTelnet[pontTelnet++]=dado;
         // Telnet: Mensagem de 3 bytes
         // 255 x y = mensagem x y
-            if (pontTelnet!=3 || bufTelnet[1]==250)
+            if (pontTelnet != 3 || bufTelnet[1] == 250)
                 continue;
             pontTelnet=0;
-            if (bufTelnet[1]>=251 && bufTelnet[1]<=254)
+            if (bufTelnet[1] >= 251 && bufTelnet[1] <= 254)
             {
                 int ind = -1;
                 switch (bufTelnet[2])
@@ -1580,9 +1580,9 @@ int TSocket::Processa(const char * buffer, int tamanho)
                 case 34: ind=8; break; // Linemode
                 case 36: ind=9; break; // Environment Variables
                 default:
-                    bufTelnet[1] = (bufTelnet[1]<243 ? 254 : 252);
+                    bufTelnet[1] = (bufTelnet[1] < 243 ? 254 : 252);
                 }
-                if (ind>=0) switch (bufTelnet[1])
+                if (ind >= 0) switch (bufTelnet[1])
                 {
                 case 251: // WILL -> responde DO
                     if ((telnetopc[ind] & 3) == 2)
@@ -1620,97 +1620,97 @@ int TSocket::Processa(const char * buffer, int tamanho)
                 if (ind < 0)
                     continue;
                 EnvMensBytes((char*)bufTelnet, 3);
-                if (bufTelnet[2]==31) // Quer saber o tamanho da janela
+                if (bufTelnet[2] == 31) // Quer saber o tamanho da janela
                     EnvMensBytes("\xFF\xFA\x1F" // Comando
                         "\x00\x50\x00\x18" // Tamanho
                         "\xFF\xF0", 9); // Fim do comando
-                if (bufTelnet[1]==253 && dado==1) // 255 251 1 = echo off
+                if (bufTelnet[1] == 253 && dado == 1) // 255 251 1 = echo off
                 {
-                    dado=4;
+                    dado = 4;
                     goto telnet_cor;
                 }
-                if (bufTelnet[1]==254 && dado==1) // 255 252 1 = echo on
+                if (bufTelnet[1] == 254 && dado == 1) // 255 252 1 = echo on
                 {
-                    dado=5;
+                    dado = 5;
                     goto telnet_cor;
                 }
             }
             continue;
 telnet_cor:
         // Filtra cores do Telnet
-            if (dadoRecebido==2)
+            if (dadoRecebido == 2)
             {
-                if (dado>' ' && ((dado|0x20)<'a' || (dado|0x20)>'z'))
+                if (dado>' ' && ((dado|0x20) < 'a' || (dado|0x20) > 'z'))
                 {
-                    if (pontESC<sizeof(bufESC)-2)
-                        bufESC[pontESC++]=dado;
+                    if (pontESC < sizeof(bufESC) - 2)
+                        bufESC[pontESC++] = dado;
                     continue;
                 }
-                dadoRecebido=0;
-                if (dado!='m' || bufESC[0]!='[' || pontESC==0)
+                dadoRecebido = 0;
+                if (dado != 'm' || bufESC[0] != '[' || pontESC == 0)
                     continue;
-                bufESC[pontESC]=';';
-                bufESC[pontESC+1]=0;
-                unsigned char * x = bufESC+1;
+                bufESC[pontESC] = ';';
+                bufESC[pontESC+1] = 0;
+                unsigned char * x = bufESC + 1;
                 while (*x)
                 {
-                    if (x[1]==';')
+                    if (x[1] == ';')
                     {
                         switch (x[0])
                         {
-                        case '0': CorAtual=0x70; break; // Cores padrão
-                        case '1': CorAtual|=0x80; break; // Negrito
-                        case '4': CorAtual|=0x100; break; // Sublinhado
-                        case '5': CorAtual|=0x400; break; // Piscando
-                        case '7': CorAtual|=0x200; break; // Inversão
+                        case '0': CorAtual =0x70; break; // Cores padrão
+                        case '1': CorAtual |= 0x80; break; // Negrito
+                        case '4': CorAtual |= 0x100; break; // Sublinhado
+                        case '5': CorAtual |= 0x400; break; // Piscando
+                        case '7': CorAtual |= 0x200; break; // Inversão
                         }
                     }
-                    else if (x[0]=='2') // Remover atributos
+                    else if (x[0] == '2') // Remover atributos
                     {
-                        if (memcmp(x+1, "2;", 2)==0) // Sem negrito
-                            CorAtual&=~0x80;
-                        else if (memcmp(x+1, "4;", 2)==0) // Sem sublinado
-                            CorAtual&=~0x100;
-                        else if (memcmp(x+1, "5;", 2)==0) // Sem piscante
-                            CorAtual&=~0x400;
-                        else if (memcmp(x+1, "7;", 2)==0) // Sem inversão
-                            CorAtual&=~0x200;
+                        if (memcmp(x + 1, "2;", 2) == 0) // Sem negrito
+                            CorAtual &= ~0x80;
+                        else if (memcmp(x+1, "4;", 2) == 0) // Sem sublinado
+                            CorAtual &= ~0x100;
+                        else if (memcmp(x+1, "5;", 2) == 0) // Sem piscante
+                            CorAtual &= ~0x400;
+                        else if (memcmp(x+1, "7;", 2) == 0) // Sem inversão
+                            CorAtual &= ~0x200;
                     }
-                    else if (x[0]=='3' && x[1]>='0' &&
-                             x[1]<='9' && x[2]==';')
+                    else if (x[0] == '3' && x[1] >= '0' &&
+                             x[1] <= '9' && x[2] == ';')
                     {
                         CorAtual &= ~0x70;
-                        if (x[1]>='8')
+                        if (x[1] >= '8')
                             CorAtual |= 0x70;
                         else
-                            CorAtual += (x[1]-'0')*16;
+                            CorAtual += (x[1] - '0') * 16;
                     }
-                    else if (x[0]=='4' && x[1]>='0' &&
-                             x[1]<='9' && x[2]==';')
+                    else if (x[0] == '4' && x[1] >= '0' &&
+                             x[1] <= '9' && x[2] == ';')
                     {
                         CorAtual &= ~0x0F;
-                        if (x[1]<'8')
-                            CorAtual += (x[1]-'0');
+                        if (x[1] < '8')
+                            CorAtual += (x[1] - '0');
                     }
                     x++;
-                    while (*x && *x!=';')
+                    while (*x && *x != ';')
                         x++;
-                    if (*x==';')
+                    if (*x == ';')
                         x++;
                 }
                 continue;
             }
         // Sequências de controle - caracter ESC
-            if (dado==27)
+            if (dado == 27)
             {
-                dadoRecebido=2;
-                pontESC=0;
+                dadoRecebido = 2;
+                pontESC = 0;
             }
         // Próxima linha
-            else if (dado==10 || dado==13)
+            else if (dado == 10 || dado == 13)
             {
-                if (dado==13 ? dadoRecebido==10 : dadoRecebido==13)
-                    dadoRecebido=0;
+                if (dado == 13 ? dadoRecebido == 10 : dadoRecebido == 13)
+                    dadoRecebido = 0;
                 else
                 {
                     dadoRecebido = dado;
@@ -1721,19 +1721,19 @@ telnet_cor:
                 }
             }
         // BackSpace
-            else if (dado==8 || dado==127)
+            else if (dado == 8 || dado == 127)
             {
-                if (pontRec>1)
+                if (pontRec > 1)
                     pontRec--;
             }
         // Caracteres imprimíveis
-            else if (dado>=' ' || (usaropctelnet && dado>=4 && dado<=7))
+            else if (dado >= ' ' || (usaropctelnet && dado >= 4 && dado <= 7))
             {
                 if (pontRec < sizeof(bufRec) / sizeof(bufRec[0]) - 4)
                 {
                     bufRec[pontRec].carac = dado;
                     bufRec[pontRec].cor = CorAtual;
-                    if ((CorAtual & 15) == (CorAtual>>4))
+                    if ((CorAtual & 15) == (CorAtual >> 4))
                         bufRec[pontRec].cor ^= 0x80;
                     pontRec++;
                 }
@@ -1743,63 +1743,63 @@ telnet_cor:
     }
 
 // Protocolo IRC
-    if (proto==spIRC)
+    if (proto == spIRC)
     {
         char dado;
         while (tamanho)
         {
         // Obtém próximo caracter
-            dado=*buffer++;
+            dado = *buffer++;
             tamanho--;
 //printf(" CH(%d,%c) ", (unsigned char)dado,
 //            (unsigned char)dado>=32?dado:' '); fflush(stdout);
         // Filtra cores do IRC
-            if (dado==3)
+            if (dado == 3)
             {
-                dadoRecebido=21;
+                dadoRecebido = 21;
                 CorIRC1 = CorIRC2 = 0;
                 continue;
             }
-            if (dadoRecebido>=21)
+            if (dadoRecebido >= 21)
             {
                 dadoRecebido++;
-                if (dadoRecebido==23 && dado==',')
+                if (dadoRecebido == 23 && dado == ',')
                 {
                     dadoRecebido++;
                     continue;
                 }
-                else if (dadoRecebido==24)
+                else if (dadoRecebido == 24)
                 {
                     if (dado==',')
                         continue;
                 }
-                else if (dadoRecebido<=26 && dado>='0' && dado<='9')
+                else if (dadoRecebido <= 26 && dado >= '0' && dado <= '9')
                 {
-                    if (dadoRecebido<=24)
-                        CorIRC1 = CorIRC1*10 + dado-'0';
+                    if (dadoRecebido <= 24)
+                        CorIRC1 = CorIRC1 * 10 + dado - '0';
                     else
-                        CorIRC2 = CorIRC2*10 + dado-'0';
+                        CorIRC2 = CorIRC2 * 10 + dado - '0';
                     continue;
                 }
-                if (dadoRecebido==22)
-                    CorAtual=0x70;
+                if (dadoRecebido == 22)
+                    CorAtual = 0x70;
                 else
                 {
                 // Muda a frente
-                    if (dadoRecebido<=25)
+                    if (dadoRecebido <= 25)
                     {
                         CorAtual &= 15;
-                        CorAtual |= convirc[CorIRC1&15] * 16;
+                        CorAtual |= convirc[CorIRC1 & 15] * 16;
                     }
                 // Muda frente e fundo
                     else
-                        CorAtual = convirc[CorIRC1&15] * 16 +
-                                (convirc[CorIRC2&15] & 7);
+                        CorAtual = convirc[CorIRC1 & 15] * 16 +
+                                (convirc[CorIRC2 & 15] & 7);
                 }
-                dadoRecebido=0;
+                dadoRecebido = 0;
             }
         // Próxima linha
-            else if (dado==10)
+            else if (dado == 10)
             {
                 bufRec[pontRec].cor = CorAtual;
             // Envia mensagem
@@ -1807,19 +1807,19 @@ telnet_cor:
                 return tamanho;
             }
         // BackSpace
-            else if (dado==8 || dado==127)
+            else if (dado == 8 || dado == 127)
             {
-                if (pontRec>1)
+                if (pontRec > 1)
                     pontRec--;
             }
         // Caracteres imprimíveis
-            else if ((unsigned char)dado>=' ')
+            else if ((unsigned char)dado >= ' ')
             {
                 if (pontRec < sizeof(bufRec) / sizeof(bufRec[0]) - 4)
                 {
                     bufRec[pontRec].carac = dado;
                     bufRec[pontRec].cor = CorAtual;
-                    if ((CorAtual & 15) == (CorAtual>>4))
+                    if ((CorAtual & 15) == (CorAtual >> 4))
                         bufRec[pontRec].cor ^= 0x80;
                     pontRec++;
                 }
@@ -1829,10 +1829,10 @@ telnet_cor:
     }
 
 // Protocolo Papovox
-    if (proto==spPapovox)
+    if (proto == spPapovox)
     {
-        dadoRecebido=0;
-        for (; pontRec<3 && tamanho>0; tamanho--,buffer++) // Cabeçalho
+        dadoRecebido = 0;
+        for (; pontRec < 3 && tamanho > 0; tamanho--, buffer++) // Cabeçalho
         {
             bufRec[pontRec].carac = *(unsigned char*)buffer;
             bufRec[pontRec].cor = 0x70;
@@ -1847,7 +1847,7 @@ telnet_cor:
             FecharSock(-1, 0);
             return 0;
         }
-        for (; tamanho>0 && pontRec<mensagem; tamanho--)
+        for (; tamanho > 0 && pontRec<mensagem; tamanho--)
         {
             bufRec[pontRec].carac = *(unsigned char*)buffer++;
             bufRec[pontRec].cor = 0x70;
@@ -1861,13 +1861,13 @@ telnet_cor:
     }
 
 // Protocolo WebSock
-    if (proto==spWebSockM0 || proto==spWebSockM1)
+    if (proto == spWebSockM0 || proto == spWebSockM1)
     {
         char dado;
 
 #ifdef DEBUG_WEBSOCK
         printf("Chegou (%d) =", tamanho);
-        for (const char * pp = buffer; pp<buffer+tamanho; pp++)
+        for (const char * pp = buffer; pp < buffer + tamanho; pp++)
             printf(" %02x", *(unsigned char*)pp);
         putchar('\n'); fflush(stdout);
 #endif
@@ -1878,16 +1878,18 @@ telnet_cor:
         switch (pontRec)
         {
         case 0: // Tipo de mensagem
-            if (tamanho <= 0) return 0;
+            if (tamanho <= 0)
+                return 0;
             telnetecho = *(unsigned char*)buffer;
             bufRec[pontRec++].carac = *buffer++, tamanho--;
         case 1: // Tamanho (8 bits)
-            if (tamanho <= 0) return 0;
+            if (tamanho <= 0)
+                return 0;
             dado = *buffer;
             bufRec[pontRec++].carac = *buffer++, tamanho--;
             if ((dado & 0x7F) < 126)
             {
-                for (int a=0; a<7; a++)
+                for (int a = 0; a < 7; a++)
                     bufRec[pontRec++].carac = 0;
                 bufRec[pontRec++].carac = (dado & 0x7F);
                 break;
@@ -1898,7 +1900,8 @@ telnet_cor:
         case 5:
             while (pontRec < 6)
             {
-                if (tamanho <= 0) return 0;
+                if (tamanho <= 0)
+                    return 0;
                 bufRec[pontRec++].carac = 0;
                 if ((bufRec[1].carac & 0x7F) != 127)
                     continue;
@@ -1910,22 +1913,26 @@ telnet_cor:
                 buffer++, tamanho--;
             }
         case 6: // Tamanho (64 bits)
-            if (tamanho <= 0) return 0;
+            if (tamanho <= 0)
+                return 0;
             if ((bufRec[1].carac & 0x7F) == 127)
                 bufRec[pontRec++].carac = *buffer++, tamanho--;
             else
                 bufRec[pontRec++].carac = 0;
         case 7: // Tamanho (64 bits)
-            if (tamanho <= 0) return 0;
+            if (tamanho <= 0)
+                return 0;
             if ((bufRec[1].carac & 0x7F) == 127)
                 bufRec[pontRec++].carac = *buffer++, tamanho--;
             else
                 bufRec[pontRec++].carac = 0;
         case 8: // Tamanho (16 bits)
-            if (tamanho <= 0) return 0;
+            if (tamanho <= 0)
+                return 0;
             bufRec[pontRec++].carac = *buffer++, tamanho--;
         case 9:
-            if (tamanho <= 0) return 0;
+            if (tamanho <= 0)
+                return 0;
             bufRec[pontRec++].carac = *buffer++, tamanho--;
         }
     // bufRec[10] a bufRec[13] = máscara
@@ -1941,7 +1948,8 @@ telnet_cor:
             }
             while (pontRec < 14)
             {
-                if (tamanho <= 0) return 0;
+                if (tamanho <= 0)
+                    return 0;
                 bufRec[pontRec++].carac = *buffer++, tamanho--;
             }
         }
@@ -1958,17 +1966,17 @@ telnet_cor:
         tot2 -= pontRec-14; // tot2 = quantos bytes para completar o buffer
         if ((unsigned int)tamanho < tot2)
         {
-            for (; tamanho>0; tamanho--)
+            for (; tamanho > 0; tamanho--)
                 bufRec[pontRec++].carac = *buffer++;
             return 0;
         }
         tamanho -= tot2;
-        for (; tot2>0; tot2--)
+        for (; tot2 > 0; tot2--)
             bufRec[pontRec++].carac = *buffer++;
 
 #ifdef DEBUG_WEBSOCK
         printf("BufRec (%d) =", pontRec);
-        for (unsigned int xx=0; xx<pontRec; xx++)
+        for (unsigned int xx = 0; xx < pontRec; xx++)
             printf(" %02x", (unsigned char)bufRec[xx].carac);
         putchar('\n'); fflush(stdout);
 #endif
@@ -1977,7 +1985,7 @@ telnet_cor:
         char mens[SOCKET_REC * 2];
         char * d = mens;
         int cod = 0;
-        for (unsigned int x=14; x<pontRec; x++)
+        for (unsigned int x = 14; x < pontRec; x++)
         {
             char dadoch = bufRec[x].carac ^ bufRec[10 + cod].carac;
             char ch = ((dadoch >> 4) & 15);
@@ -1989,7 +1997,7 @@ telnet_cor:
         *d = 0;
     // Acerta bufRec
         int codigo = telnetecho;
-        total -= pontRec-14;
+        total -= pontRec - 14;
         if (total == 0)
             pontRec = 0;
         else
@@ -2007,7 +2015,7 @@ telnet_cor:
 #ifdef DEBUG_WEBSOCK
         printf("total = %d\n" "codigo = %d\n", total, codigo);
         printf("Depois (%d) =", pontRec);
-        for (unsigned int xx=0; xx<pontRec; xx++)
+        for (unsigned int xx = 0; xx<pontRec; xx++)
             printf(" %02x", (unsigned char)bufRec[xx].carac);
         putchar('\n'); fflush(stdout);
 #endif
@@ -2018,20 +2026,20 @@ telnet_cor:
     }
 
 // Protocolo Hexadecimal
-    if (proto==spHexa)
+    if (proto == spHexa)
     {
-        dadoRecebido=0;
+        dadoRecebido = 0;
         pontRec = 0;
         char mens[SOCKET_REC * 2 + 1];
         int total = (tamanho <= SOCKET_REC ? tamanho : SOCKET_REC);
-        for (int cont=0; cont<total; cont++)
+        for (int cont = 0; cont<total; cont++)
         {
             char ch = ((buffer[cont] >> 4) & 15);
             mens[cont*2] = (ch < 10 ? ch+'0' : ch+'a'-10);
             ch = (buffer[cont] & 15);
-            mens[cont*2+1] = (ch < 10 ? ch+'0' : ch+'a'-10);
+            mens[cont * 2 + 1] = (ch < 10 ? ch+'0' : ch+'a'-10);
         }
-        mens[total*2] = 0;
+        mens[total * 2] = 0;
     // Envia mensagem
         FuncEvento("msg", mens, true, 1);
         EventoMens(true);
@@ -2046,26 +2054,26 @@ telnet_cor:
 void TSocket::EventoMens(bool completo)
 {
 // Prepara mensagem
-    char texto[SOCKET_REC*4];
+    char texto[SOCKET_REC * 4];
     char * dest = texto;
     char * fim = texto + sizeof(texto) - 9;
     int codigo = 1;
 
 // Prepara - Telnet e IRC
-    if (proto==spTelnet1 || proto==spTelnet2 || proto==spIRC)
+    if (proto == spTelnet1 || proto == spTelnet2 || proto == spIRC)
     {
-        if (cores&1) // Com cor
+        if (cores & 1) // Com cor
         {
             int cor = CorAnterior;
             bufRec[pontRec].cor = CorAtual;
-            if ((CorAtual & 15) == (CorAtual>>4))
+            if ((CorAtual & 15) == (CorAtual >> 4))
                 bufRec[pontRec].cor ^= 0x80;
-            for (unsigned int x=0; dest<fim; x++)
+            for (unsigned int x = 0; dest < fim; x++)
             {
                 if (cor!=bufRec[x].cor)
                 {
                     if ((bufRec[x].cor & 0xFF) == 0x70)
-                        *dest++ = Instr::ex_barra_b, cor=0x70;
+                        *dest++ = Instr::ex_barra_b, cor = 0x70;
                     else
                     {
                         cor ^= (bufRec[x].cor & 0xFF);
@@ -2090,10 +2098,10 @@ void TSocket::EventoMens(bool completo)
                     }
                     cor = bufRec[x].cor;
                 }
-                if (x>=pontRec)
+                if (x >= pontRec)
                     break;
                 unsigned char ch = bufRec[x].carac;
-                if (ch>=4 && ch<=7)
+                if (ch >= 4 && ch <= 7)
                 {
                     *dest++ = Instr::ex_barra_c;
                     *dest++ = ch + 'C';
@@ -2104,15 +2112,15 @@ void TSocket::EventoMens(bool completo)
             CorAnterior = cor;
         }
         else // Sem cor
-            for (unsigned int x=0; x<pontRec && dest<fim; x++)
+            for (unsigned int x = 0; x < pontRec && dest < fim; x++)
             {
                 unsigned char ch = bufRec[x].carac;
-                if (ch>=' ')
-                    *dest++=ch;
+                if (ch >= ' ')
+                    *dest++ = ch;
             }
-        if (proto==spIRC) // IRC
+        if (proto == spIRC) // IRC
             CorAtual = 0x70;
-        *dest=0;
+        *dest = 0;
     }
 // Prepara - Papovox
     else if (proto==spPapovox)
@@ -2120,10 +2128,10 @@ void TSocket::EventoMens(bool completo)
         int mensagem =          // Tamanho da mensagem
                 3 + bufRec[1].carac + bufRec[2].carac * 0x100;
         assert(mensagem < SOCKET_REC);
-        for (int x=3; x<mensagem && dest<fim; x++)
+        for (int x = 3; x<mensagem && dest<fim; x++)
             if (bufRec[x].carac >= ' ')
                 *dest++ = bufRec[x].carac;
-        *dest=0;
+        *dest = 0;
         codigo = bufRec[0].carac;
     }
 // Protocolo desconhecido ou não está conectado
@@ -2134,7 +2142,7 @@ void TSocket::EventoMens(bool completo)
     }
 
 // Acerta variáveis
-    pontRec=0;
+    pontRec = 0;
 #ifdef DEBUG_MSG
     printf(">>>>>>> Recebeu %s\n", texto);
 #endif
@@ -2144,7 +2152,7 @@ void TSocket::EventoMens(bool completo)
     {
         if (AFlooder >= TempoIni + 60) // Condição de flooder
             return;
-        AFlooder += strlen(texto)/8+5; // Acerta AFlooder
+        AFlooder += strlen(texto) / 8 + 5; // Acerta AFlooder
         if (AFlooder <= TempoIni)  // Acerta valor mínimo de AFlooder
             AFlooder = TempoIni + 1;
     }

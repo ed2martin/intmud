@@ -30,7 +30,7 @@ static const int tamanhobloco = 1024;
 //----------------------------------------------------------------------------
 void TVarArqMem::Criar()
 {
-    Inicio = Fim = PosBloco = 0;
+    Inicio = Fim = PosBloco = nullptr;
     PosByte = ArqByte = 0;
 }
 
@@ -60,10 +60,10 @@ bool TVarArqMem::CriarBloco()
     bl->Posicao = pos;
     bl->Tamanho = tam;
     bl->Antes = Fim;
-    bl->Depois = 0;
+    bl->Depois = nullptr;
     (Fim ? Fim->Depois : Inicio) = bl;
     Fim = bl;
-    if (PosBloco == 0)
+    if (PosBloco == nullptr)
         PosBloco = bl;
     ArqByte = 0;
     return true;
@@ -73,9 +73,9 @@ bool TVarArqMem::CriarBloco()
 void TVarArqMem::ApagarBloco()
 {
     TBloco * bl = Fim;
-    if (bl == 0)
+    if (bl == nullptr)
         return;
-    (bl->Antes ? bl->Antes->Depois : Inicio) = 0;
+    (bl->Antes ? bl->Antes->Depois : Inicio) = nullptr;
     Fim = bl->Antes;
     if (PosBloco == bl)
         PosBloco = Fim;
@@ -86,19 +86,19 @@ void TVarArqMem::ApagarBloco()
 //----------------------------------------------------------------------------
 int TVarArqMem::Tamanho()
 {
-    return (Fim == 0 ? 0 : Fim->Posicao + ArqByte);
+    return (Fim == nullptr ? 0 : Fim->Posicao + ArqByte);
 }
 
 //----------------------------------------------------------------------------
 int TVarArqMem::Posicao()
 {
-    return (PosBloco == 0 ? 0 : PosBloco->Posicao + PosByte);
+    return (PosBloco == nullptr ? 0 : PosBloco->Posicao + PosByte);
 }
 
 //----------------------------------------------------------------------------
 void TVarArqMem::Posicao(int novapos)
 {
-    if (Fim == 0) // Arquivo vazio
+    if (Fim == nullptr) // Arquivo vazio
         return;
     if (novapos <= 0) // No início do arquivo
     {
@@ -143,7 +143,7 @@ void TVarArqMem::TruncarZero()
 void TVarArqMem::TruncarPosicao()
 {
     TBloco * bl = PosBloco;
-    if (bl == 0) // Arquivo vazio
+    if (bl == nullptr) // Arquivo vazio
         return;
     if (PosByte > 0) // Posição não está no início do bloco
     {
@@ -154,7 +154,7 @@ void TVarArqMem::TruncarPosicao()
         return;
     }
     bl = bl->Antes; // Vai para o fim do bloco anterior
-    if (bl == 0) // Se não há bloco anterior: arquivo vazio
+    if (bl == nullptr) // Se não há bloco anterior: arquivo vazio
     {
          TruncarZero();
          return;
@@ -203,7 +203,7 @@ int TVarArqMem::Escrever(char * buffer, int tamanho)
     if (tamanho <= 0)
         return 0;
     TBloco * bl = PosBloco;
-    if (bl == 0)
+    if (bl == nullptr)
     {
         CriarBloco();
         bl = PosBloco;
@@ -272,11 +272,11 @@ bool TVarArqMem::Func(TVariavel * v, const char * nome)
     copiastrmin(mens, nome, sizeof(mens));
     while (ini <= fim)
     {
-        int meio = (ini+fim)/2;
+        int meio = (ini + fim) / 2;
         int resultado = strcmp(mens, ExecFunc[meio].Nome);
-        if (resultado==0) // Se encontrou...
+        if (resultado == 0) // Se encontrou...
             return (this->*ExecFunc[meio].Func)(v);
-        if (resultado<0) fim=meio-1; else ini=meio+1;
+        if (resultado < 0) fim = meio - 1; else ini = meio + 1;
     }
     return false;
 }
@@ -308,14 +308,14 @@ bool TVarArqMem::FuncEof(TVariavel * v)
 //------------------------------------------------------------------------------
 bool TVarArqMem::FuncEscr(TVariavel * v)
 {
-    for (TVariavel * v1 = v+1; v1<=Instr::VarAtual; v1++)
+    for (TVariavel * v1 = v + 1; v1 <= Instr::VarAtual; v1++)
     {
         const char * txt = v1->getTxt();
         char mens[BUF_MENS];
         int pmens = 0;
         while (*txt)
         {
-            if (pmens >= (int)sizeof(mens)-2)
+            if (pmens >= (int)sizeof(mens) - 2)
             {
                 Escrever(mens, pmens);
                 pmens = 0;
@@ -326,15 +326,15 @@ bool TVarArqMem::FuncEscr(TVariavel * v)
                 txt++;
                 break;
             case Instr::ex_barra_c:
-                if ((txt[1]>='0' && txt[1]<='9') ||
-                        (txt[1]>='A' && txt[1]<='J') ||
-                        (txt[1]>='a' && txt[1]<='j'))
+                if ((txt[1] >= '0' && txt[1] <= '9') ||
+                        (txt[1] >= 'A' && txt[1] <= 'J') ||
+                        (txt[1] >= 'a' && txt[1] <= 'j'))
                     txt += 2;
                 else
                     txt++;
                 break;
             case Instr::ex_barra_d:
-                if (txt[1]>='0' && txt[1]<='7')
+                if (txt[1] >= '0' && txt[1] <= '7')
                     txt += 2;
                 else
                     txt++;
@@ -357,7 +357,7 @@ bool TVarArqMem::FuncEscr(TVariavel * v)
 //------------------------------------------------------------------------------
 bool TVarArqMem::FuncEscrBin(TVariavel * v)
 {
-    for (TVariavel * v1 = v+1; v1<=Instr::VarAtual; v1++)
+    for (TVariavel * v1 = v + 1; v1 <= Instr::VarAtual; v1++)
     {
         const char * txt = v1->getTxt();
         char mens[BUF_MENS];
@@ -378,7 +378,7 @@ bool TVarArqMem::FuncEscrBin(TVariavel * v)
                 continue;
             if (valor < 0x100)
                 continue;
-            mens[pmens++] = valor, valor=1;
+            mens[pmens++] = valor, valor = 1;
             if (pmens >= (int)sizeof(mens))
             {
                 Escrever(mens, pmens);
@@ -499,9 +499,9 @@ bool TVarArqMem::FuncLerBinComum(TVariavel * v, bool espaco)
                 char ch = ((lido >> 4) & 15);
                 if (espaco)
                     mens[pmens++] = ' ';
-                mens[pmens++] = (ch < 10 ? ch+'0' : ch+'a'-10);
+                mens[pmens++] = (ch < 10 ? ch + '0' : ch + 'a' - 10);
                 ch = (lido & 15);
-                mens[pmens++] = (ch < 10 ? ch+'0' : ch+'a'-10);
+                mens[pmens++] = (ch < 10 ? ch + '0' : ch + 'a' - 10);
                 if (pmens >= total)
                 {
                     pont.MudaPosicao(buf);
@@ -523,9 +523,9 @@ bool TVarArqMem::FuncLerBinComum(TVariavel * v, bool espaco)
                 char ch = ((lido >> 4) & 15);
                 if (espaco)
                     mens[pmens++] = ' ';
-                mens[pmens++] = (ch < 10 ? ch+'0' : ch+'a'-10);
+                mens[pmens++] = (ch < 10 ? ch + '0' : ch + 'a' - 10);
                 ch = (lido & 15);
-                mens[pmens++] = (ch < 10 ? ch+'0' : ch+'a'-10);
+                mens[pmens++] = (ch < 10 ? ch + '0' : ch + 'a' - 10);
                 if (lido == '\n')
                 {
                     pont.MudaPosicao(buf);
@@ -552,7 +552,7 @@ fim:
     DEBUG1
     Instr::ApagarVar(v);
     int add = (espaco && pmens ? 1 : 0);
-    return Instr::CriarVarTexto(mens+add, pmens-add);
+    return Instr::CriarVarTexto(mens + add, pmens - add);
 }
 
 //------------------------------------------------------------------------------
@@ -565,7 +565,7 @@ bool TVarArqMem::FuncLimpar(TVariavel * v)
 //------------------------------------------------------------------------------
 bool TVarArqMem::FuncPos(TVariavel * v)
 {
-    if (Instr::VarAtual >= v+1)
+    if (Instr::VarAtual >= v + 1)
         Posicao(v[1].getInt());
     int pos = Posicao();
     Instr::ApagarVar(v);
@@ -594,10 +594,10 @@ bool TVarArqMem::FuncTruncar(TVariavel * v)
 TVarArqMem::TArqLer::TArqLer(TVarArqMem * arqmem, bool inicio)
 {
     this->arqmem = arqmem;
-    if (arqmem->Inicio == 0) // Arquivo vazio
+    if (arqmem->Inicio == nullptr) // Arquivo vazio
     {
-        bloco = 0;
-        buffer = 0;
+        bloco = nullptr;
+        buffer = nullptr;
         tamanho = 0;
     }
     else if (inicio) // A partir do começo do arquivo
@@ -618,21 +618,21 @@ TVarArqMem::TArqLer::TArqLer(TVarArqMem * arqmem, bool inicio)
 //------------------------------------------------------------------------------
 void TVarArqMem::TArqLer::Proximo()
 {
-    if (bloco == 0)
+    if (bloco == nullptr)
         return;
-    if ((bloco = bloco->Depois) != 0)
+    if ((bloco = bloco->Depois) != nullptr)
     {
         buffer = reinterpret_cast<char*>(bloco) + sizeof(*bloco);
         tamanho = (bloco == arqmem->Fim ? arqmem->ArqByte : bloco->Tamanho);
     }
     else
-        tamanho = 0, buffer = 0;
+        tamanho = 0, buffer = nullptr;
 }
 
 //------------------------------------------------------------------------------
 void TVarArqMem::TArqLer::MudaPosicao(const char * posicao)
 {
-    if (bloco == 0)
+    if (bloco == nullptr)
     {
         arqmem->PosBloco = arqmem->Fim;
         arqmem->PosByte = arqmem->ArqByte;
@@ -656,10 +656,10 @@ void TVarArqMem::TArqLer::MudaPosicao(const char * posicao)
 //----------------------------------------------------------------------------
 void TVarArqMem::Debug()
 {
-    if (Inicio == 0)
+    if (Inicio == nullptr)
     {
-        assert(Fim == 0);
-        assert(PosBloco == 0);
+        assert(Fim == nullptr);
+        assert(PosBloco == nullptr);
         assert(PosByte == 0);
         assert(ArqByte == 0);
     }
@@ -672,13 +672,13 @@ void TVarArqMem::Debug()
             assert(PosByte <= ArqByte);
         else
             assert(PosByte < PosBloco->Tamanho);
-        TBloco * bl1 = 0, * bl2 = Inicio;
+        TBloco * bl1 = nullptr, * bl2 = Inicio;
         while (bl2 != Fim)
         {
             assert(bl2->Antes == bl1);
             bl1 = bl2;
             bl2 = bl2->Depois;
         }
-        assert(bl2->Depois == 0);
+        assert(bl2->Depois == nullptr);
     }
 }

@@ -34,53 +34,53 @@
 #endif
 
 //----------------------------------------------------------------------------
-static HANDLE_DLL ssl_handle1 = 0; // Aponta para DLL aberta - SSL
-static HANDLE_DLL ssl_handle2 = 0; // Aponta para DLL aberta - util
-SSL_CTX * ssl_ctx_cliente = 0;
-SSL_CTX * ssl_ctx_servidor = 0;
-SSL_METHOD * ssl_metodo = 0;
+static HANDLE_DLL ssl_handle1 = nullptr; // Aponta para DLL aberta - SSL
+static HANDLE_DLL ssl_handle2 = nullptr; // Aponta para DLL aberta - util
+SSL_CTX * ssl_ctx_cliente = nullptr;
+SSL_CTX * ssl_ctx_servidor = nullptr;
+SSL_METHOD * ssl_metodo = nullptr;
 
 //----------------------------------------------------------------------------
-TSslGetError         SslGetError = 0;
-TSslLibraryInit      SslLibraryInit = 0;
-TSslLoadErrorStrings SslLoadErrorStrings = 0;
-TSslCtxNew           SslCtxNew = 0;
-TSslCtxFree          SslCtxFree = 0;
-TSslSetFd            SslSetFd = 0;
-TTLSMethod           TLSMethod = 0;
-TSslMethodV2         SslMethodV2 = 0;
-TSslMethodV3         SslMethodV3 = 0;
-TSslMethodTLSV1      SslMethodTLSV1 = 0;
-TSslMethodTLSV12     SslMethodTLSV12 = 0;
-TSslMethodV23        SslMethodV23 = 0;
-TSslNew              SslNew = 0;
-TSslFree             SslFree = 0;
-TSslAccept           SslAccept = 0;
-TSslConnect          SslConnect = 0;
-TSslShutdown         SslShutdown = 0;
-TSslRead             SslRead = 0;
-TSslPeek             SslPeek = 0;
-TSslWrite            SslWrite = 0;
-TSslPending          SslPending = 0;
-TSslPrivateKeyFile   SslPrivateKeyFile = 0;
-TSslCertificateFile  SslCertificateFile = 0;
-TOPENSSLaddallalgorithms OPENSSLaddallalgorithms = 0;
-TSslGetPeerCertificate SslGetPeerCertificate = 0;
-TSslX509free         SslX509free = 0;
-TSslX509d2i          SslX509d2i = 0;
-TSslX509i2d          SslX509i2d = 0;
+TSslGetError         SslGetError = nullptr;
+TSslLibraryInit      SslLibraryInit = nullptr;
+TSslLoadErrorStrings SslLoadErrorStrings = nullptr;
+TSslCtxNew           SslCtxNew = nullptr;
+TSslCtxFree          SslCtxFree = nullptr;
+TSslSetFd            SslSetFd = nullptr;
+TTLSMethod           TLSMethod = nullptr;
+TSslMethodV2         SslMethodV2 = nullptr;
+TSslMethodV3         SslMethodV3 = nullptr;
+TSslMethodTLSV1      SslMethodTLSV1 = nullptr;
+TSslMethodTLSV12     SslMethodTLSV12 = nullptr;
+TSslMethodV23        SslMethodV23 = nullptr;
+TSslNew              SslNew = nullptr;
+TSslFree             SslFree = nullptr;
+TSslAccept           SslAccept = nullptr;
+TSslConnect          SslConnect = nullptr;
+TSslShutdown         SslShutdown = nullptr;
+TSslRead             SslRead = nullptr;
+TSslPeek             SslPeek = nullptr;
+TSslWrite            SslWrite = nullptr;
+TSslPending          SslPending = nullptr;
+TSslPrivateKeyFile   SslPrivateKeyFile = nullptr;
+TSslCertificateFile  SslCertificateFile = nullptr;
+TOPENSSLaddallalgorithms OPENSSLaddallalgorithms = nullptr;
+TSslGetPeerCertificate SslGetPeerCertificate = nullptr;
+TSslX509free         SslX509free = nullptr;
+TSslX509d2i          SslX509d2i = nullptr;
+TSslX509i2d          SslX509i2d = nullptr;
 
 //----------------------------------------------------------------------------
 void FechaSSL()
 {
-    if (ssl_handle1 == 0)
+    if (ssl_handle1 == nullptr)
         return;
     if (ssl_ctx_cliente)
         SslCtxFree(ssl_ctx_cliente);
-    ssl_ctx_cliente = 0;
+    ssl_ctx_cliente = nullptr;
     if (ssl_ctx_servidor)
         SslCtxFree(ssl_ctx_servidor);
-    ssl_ctx_servidor = 0;
+    ssl_ctx_servidor = nullptr;
 #ifdef __WIN32__
     FreeLibrary(ssl_handle1);
     FreeLibrary(ssl_handle2);
@@ -88,25 +88,25 @@ void FechaSSL()
     dlclose(ssl_handle1);
     dlclose(ssl_handle2);
 #endif
-    ssl_handle1 = ssl_handle2 = 0;
+    ssl_handle1 = ssl_handle2 = nullptr;
 }
 
 //----------------------------------------------------------------------------
 const char * AbreSSL()
 {
     if (ssl_handle1)
-        return 0;
+        return nullptr;
 #ifdef __WIN32__
     ssl_handle1 = LoadLibrary("ssleay32.dll");
-    if (ssl_handle1 == 0)
+    if (ssl_handle1 == nullptr)
         ssl_handle1 = LoadLibrary("libssl32.dll");
-    if (ssl_handle1 == 0)
+    if (ssl_handle1 == nullptr)
         return "Erro ao carregar ssleay32.dll ou libssl32.dll";
     ssl_handle2 = LoadLibrary("libeay32.dll");
-    if (ssl_handle2 == 0)
+    if (ssl_handle2 == nullptr)
     {
         FreeLibrary(ssl_handle1);
-        ssl_handle1 = 0;
+        ssl_handle1 = nullptr;
         return "Erro ao carregar libeay32.dll";
     }
 #else
@@ -115,17 +115,17 @@ const char * AbreSSL()
 #else
     ssl_handle1 = dlopen("libssl.so", RTLD_LAZY);
 #endif
-    if (ssl_handle1 == 0)
+    if (ssl_handle1 == nullptr)
         return "Erro ao carregar libssl.so";
 #ifdef __APPLE__
     ssl_handle2 = dlopen("libcrypto.dylib", RTLD_LAZY);
 #else
     ssl_handle2 = dlopen("libcrypto.so", RTLD_LAZY);
 #endif
-    if (ssl_handle2 == 0)
+    if (ssl_handle2 == nullptr)
     {
         dlclose(ssl_handle1);
-        ssl_handle1 = 0;
+        ssl_handle1 = nullptr;
         return "Erro ao carregar libcrypto.so";
     }
 #endif
@@ -163,7 +163,7 @@ const char * AbreSSL()
     SslX509d2i          = (TSslX509d2i)    GETPROC(ssl_handle2, "d2i_X509");
     SslX509i2d          = (TSslX509i2d)    GETPROC(ssl_handle2, "i2d_X509");
 
-    const char * erro = 0;
+    const char * erro = nullptr;
     if (!SslGetError)         erro = "SSL_get_error não foi encontrado";
     //if (!SslLibraryInit)      erro = "SSL_library_init não foi encontrado";
     //if (!SslLoadErrorStrings) erro = "SSL_load_error_strings não foi encontrado";
@@ -208,17 +208,17 @@ const char * AbreSSL()
         OPENSSLaddallalgorithms();
     //RAND_screen();
 
-    if (ssl_metodo == 0 && TLSMethod)
+    if (ssl_metodo == nullptr && TLSMethod)
         ssl_metodo = TLSMethod();
-    if (ssl_metodo == 0 && SslMethodV23)
+    if (ssl_metodo == nullptr && SslMethodV23)
         ssl_metodo = SslMethodV23();
-    if (ssl_metodo == 0 && SslMethodV3)
+    if (ssl_metodo == nullptr && SslMethodV3)
         ssl_metodo = SslMethodV3();
-    if (ssl_metodo == 0 && SslMethodTLSV12)
+    if (ssl_metodo == nullptr && SslMethodTLSV12)
         ssl_metodo = SslMethodTLSV12();
-    if (ssl_metodo == 0 && SslMethodV2)
+    if (ssl_metodo == nullptr && SslMethodV2)
         ssl_metodo = SslMethodV2();
-    return 0;
+    return nullptr;
 }
 
 //----------------------------------------------------------------------------
@@ -227,9 +227,9 @@ const char * AbreClienteSSL()
     const char * err = AbreSSL();
     if (err)
         return err;
-    if (ssl_ctx_cliente == 0)
+    if (ssl_ctx_cliente == nullptr)
         ssl_ctx_cliente = SslCtxNew(ssl_metodo);
-    return 0;
+    return nullptr;
 }
 
 //----------------------------------------------------------------------------
@@ -238,25 +238,25 @@ const char * AbreServidorSSL(const char * arq_crt, const char * arq_key)
     const char * err = AbreSSL();
     if (err)
         return err;
-    if (ssl_ctx_servidor == 0)
+    if (ssl_ctx_servidor == nullptr)
     {
         ssl_ctx_servidor = SslCtxNew(ssl_metodo);
         //SSL_CTX_set_options(tlsctx, SSL_OP_SINGLE_DH_USE);
         int valor;
         valor = SslCertificateFile(ssl_ctx_servidor, arq_crt, SSL_FILETYPE_PEM);
-        if (valor<=0)
+        if (valor <= 0)
         {
             SslCtxFree(ssl_ctx_servidor);
-            ssl_ctx_servidor = 0;
+            ssl_ctx_servidor = nullptr;
             return "Não foi possível carregar certificado (arquivo CRT)";
         }
         valor = SslPrivateKeyFile(ssl_ctx_servidor, arq_key, SSL_FILETYPE_PEM);
-        if (valor<=0)
+        if (valor <= 0)
         {
             SslCtxFree(ssl_ctx_servidor);
-            ssl_ctx_servidor = 0;
+            ssl_ctx_servidor = nullptr;
             return "Não foi possível carregar chave privativa (arquivo KEY)";
         }
     }
-    return 0;
+    return nullptr;
 }
