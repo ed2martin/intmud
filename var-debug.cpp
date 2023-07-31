@@ -107,178 +107,240 @@ void TVarDebug::FuncEvento(const char * evento, const char * texto)
     } // for (TVarDebug ...
 }
 
-//----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 bool TVarDebug::Func(TVariavel * v, const char * nome)
 {
-    using namespace Instr;
-    if (comparaZ(nome, "ini") == 0)
+// Lista das funções de varmem
+// Deve obrigatoriamente estar em letras minúsculas e ordem alfabética
+    static const struct {
+        const char * Nome;
+        bool (*Func)(TVariavel * v); } ExecFunc[] = {
+        { "cmd",          &TVarDebug::FuncCmd },
+        { "data",         &TVarDebug::FuncData },
+        { "exec",         &TVarDebug::FuncExec },
+        { "func",         &TVarDebug::FuncFunc },
+        { "ini",          &TVarDebug::FuncIni },
+        { "mem",          &TVarDebug::FuncMem },
+        { "memmax",       &TVarDebug::FuncMemMax },
+        { "passo",        &TVarDebug::FuncPasso },
+        { "stempo",       &TVarDebug::FuncStempo },
+        { "utempo",       &TVarDebug::FuncUtempo },
+        { "ver",          &TVarDebug::FuncVer } };
+// Procura a função correspondente e executa
+    int ini = 0;
+    int fim = sizeof(ExecFunc) / sizeof(ExecFunc[0]) - 1;
+    char mens[80];
+    copiastrmin(mens, nome, sizeof(mens));
+    while (ini <= fim)
     {
-        VarExec = VarExecIni;
-        return false;
+        int meio = (ini + fim) / 2;
+        int resultado = strcmp(mens, ExecFunc[meio].Nome);
+        if (resultado == 0) // Se encontrou...
+            return (ExecFunc[meio].Func)(v);
+        if (resultado < 0) fim = meio - 1; else ini = meio + 1;
     }
-    int num=0;
-    if (comparaZ(nome, "exec") == 0)
-        num=1;
-    else if (comparaZ(nome, "utempo") == 0)
-        num=2;
-    else if (comparaZ(nome, "stempo") == 0)
-        num=3;
-    else if (comparaZ(nome, "mem") == 0)
-        num=4;
-    else if (comparaZ(nome, "memmax") == 0)
-        num=5;
-    if (num)
-    {
-        ApagarVar(v + 1);
-        VarAtual->numfunc = num;
-        return true;
-    }
+    return false;
+}
+
+//----------------------------------------------------------------------------
+bool TVarDebug::FuncIni(TVariavel * v)
+{
+    Instr::VarExec = Instr::VarExecIni;
+    return false;
+}
+
+//----------------------------------------------------------------------------
+bool TVarDebug::FuncExec(TVariavel * v)
+{
+    Instr::ApagarVar(v + 1);
+    v->numfunc = 1;
+    return true;
+}
+
+//----------------------------------------------------------------------------
+bool TVarDebug::FuncUtempo(TVariavel * v)
+{
+    Instr::ApagarVar(v + 1);
+    v->numfunc = 2;
+    return true;
+}
+
+//----------------------------------------------------------------------------
+bool TVarDebug::FuncStempo(TVariavel * v)
+{
+    Instr::ApagarVar(v + 1);
+    v->numfunc = 3;
+    return true;
+}
+
+//----------------------------------------------------------------------------
+bool TVarDebug::FuncMem(TVariavel * v)
+{
+    Instr::ApagarVar(v + 1);
+    v->numfunc = 4;
+    return true;
+}
+
+//----------------------------------------------------------------------------
+bool TVarDebug::FuncMemMax(TVariavel * v)
+{
+    Instr::ApagarVar(v + 1);
+    v->numfunc = 5;
+    return true;
+}
+
+//----------------------------------------------------------------------------
 // Nível da função atual
-    if (comparaZ(nome, "func") == 0)
-    {
-        ApagarVar(v);
-        return CriarVarInt(FuncAtual - FuncPilha);
-    }
+bool TVarDebug::FuncFunc(TVariavel * v)
+{
+    Instr::ApagarVar(v);
+    return Instr::CriarVarInt(Instr::FuncAtual - Instr::FuncPilha);
+}
+
+//----------------------------------------------------------------------------
 // Executar instruções contidas em um texto
-    if (comparaZ(nome, "cmd") == 0)
+bool TVarDebug::FuncCmd(TVariavel * v)
+{
+    if (Instr::VarAtual < v + 1)
+        return false;
+    if (Instr::FuncAtual >= Instr::FuncFim - 2 || Instr::FuncAtual->este == 0)
+        return false;
+// Obtém o objeto "este"
+    const char * def_instr = nullptr;
+    TObjeto * obj = nullptr;
+    if (Instr::VarAtual >= v + 2)
+        obj = v[1].getObj(), def_instr = v[2].getTxt();
+    else
+        obj = Instr::FuncAtual->este, def_instr = v[1].getTxt();
+// Codifica as instruções
+    TAddBuffer mens;
+        // Adiciona definição de função
+    assert(TMudarAux::CodifInstr(&mens, "func f"));
+    unsigned int TotalFunc = mens.Total;
+    if (!TMudarAux::CodifInstr(&mens, def_instr)) // Checa se erro
     {
-        if (VarAtual < v+1)
-            return false;
-        if (FuncAtual >= FuncFim - 2 || FuncAtual->este == 0)
-            return false;
-    // Obtém o objeto "este"
-        const char * def_instr = nullptr;
-        TObjeto * obj = nullptr;
-        if (VarAtual >= v + 2)
-            obj = v[1].getObj(), def_instr = v[2].getTxt();
-        else
-            obj = FuncAtual->este, def_instr = v[1].getTxt();
-    // Codifica as instruções
-        TAddBuffer mens;
-            // Adiciona definição de função
-        assert(TMudarAux::CodifInstr(&mens, "func f"));
-        unsigned int TotalFunc = mens.Total;
-        if (!TMudarAux::CodifInstr(&mens, def_instr)) // Checa se erro
-        {
-            mens.Add("\x00\x00", 2); // Zero no fim da mensagem
-            mens.AnotarBuf();    // Anota resultado em mens.Buf
-            Instr::ApagarVar(v);
-            return Instr::CriarVarTexto(mens.Buf);
-        }
-        if (mens.Total == TotalFunc) // Nenhuma instrução
-        {
-            Instr::ApagarVar(v);
-            return Instr::CriarVarTexto("");
-        }
         mens.Add("\x00\x00", 2); // Zero no fim da mensagem
         mens.AnotarBuf();    // Anota resultado em mens.Buf
-    // Verifica se bloco válido
-        int linha=1;
-        ChecaLinha checalinha;
-        checalinha.Inicio();
-        checalinha.Instr(InstrDebugFunc);
-        for (char * com = mens.Buf; com[0] || com[1]; com += Num16(com), linha++)
-        {
-            const char * p = checalinha.Instr(com);
-            if (com[2] == cHerda)
-                p = "Instrução herda não é suportada por cmd";
-            if (p)
-            {
-                char txt1[1024];
-                mprintf(txt1, sizeof(txt1), "%d: %s", linha, p);
-                ApagarVar(v);
-                return CriarVarTexto(txt1);
-            }
-        }
-        const char * p = checalinha.Fim();
+        Instr::ApagarVar(v);
+        return Instr::CriarVarTexto(mens.Buf);
+    }
+    if (mens.Total == TotalFunc) // Nenhuma instrução
+    {
+        Instr::ApagarVar(v);
+        return Instr::CriarVarTexto("");
+    }
+    mens.Add("\x00\x00", 2); // Zero no fim da mensagem
+    mens.AnotarBuf();    // Anota resultado em mens.Buf
+// Verifica se bloco válido
+    int linha=1;
+    Instr::ChecaLinha checalinha;
+    checalinha.Inicio();
+    checalinha.Instr(Instr::InstrDebugFunc);
+    for (char * com = mens.Buf; com[0] || com[1]; com += Num16(com), linha++)
+    {
+        const char * p = checalinha.Instr(com);
+        if (com[2] == Instr::cHerda)
+            p = "Instrução herda não é suportada por cmd";
         if (p)
         {
             char txt1[1024];
             mprintf(txt1, sizeof(txt1), "%d: %s", linha, p);
-            ApagarVar(v);
-            return CriarVarTexto(txt1);
+            Instr::ApagarVar(v);
+            return Instr::CriarVarTexto(txt1);
         }
-    // Acerta o bloco
-        TClasse::AcertaComandos(mens.Buf);
-    // Anota instruções em DadosPilha
-        ApagarVar(v);
-        if (!CriarVarTexto(mens.Buf + TotalFunc, mens.Total - TotalFunc))
-            return CriarVarTexto(
-                    "Quantidade de instruções muito grande");
-    // Para mostrar o que codificou
+    }
+    const char * p = checalinha.Fim();
+    if (p)
+    {
+        char txt1[1024];
+        mprintf(txt1, sizeof(txt1), "%d: %s", linha, p);
+        Instr::ApagarVar(v);
+        return Instr::CriarVarTexto(txt1);
+    }
+// Acerta o bloco
+    TClasse::AcertaComandos(mens.Buf);
+// Anota instruções em DadosPilha
+    Instr::ApagarVar(v);
+    if (!Instr::CriarVarTexto(mens.Buf + TotalFunc, mens.Total - TotalFunc))
+        return Instr::CriarVarTexto(
+                "Quantidade de instruções muito grande");
+// Para mostrar o que codificou
 #if 0
-        for (const char * p = VarAtual->end_char; Num16(p); p+=Num16(p))
-        {
-            char mens[BUF_MENS];
-            int total = Num16(p);
-            putchar('-');
-            for (int x=0; x<total; x++)
-                printf(" %02X", (unsigned char)p[x]);
-            putchar('\n');
-            if (Instr::Mostra(mens, p, sizeof(mens)))
-                printf("+ %s\n", mens);
-            if (Instr::Decod(mens, p, sizeof(mens)))
-                printf("%s\n", mens);
-            else
-            {
-                printf("**** Erro\n");
-                exit(EXIT_FAILURE);
-            }
-        }
+    for (const char * p = VarAtual->end_char; Num16(p); p+=Num16(p))
+    {
+        char mens[BUF_MENS];
+        int total = Num16(p);
+        putchar('-');
+        for (int x=0; x<total; x++)
+            printf(" %02X", (unsigned char)p[x]);
         putchar('\n');
+        if (Instr::Mostra(mens, p, sizeof(mens)))
+            printf("+ %s\n", mens);
+        if (Instr::Decod(mens, p, sizeof(mens)))
+            printf("%s\n", mens);
+        else
+        {
+            printf("**** Erro\n");
+            exit(EXIT_FAILURE);
+        }
+    }
+    putchar('\n');
 #endif
-    // Acerta função
-        FuncAtual++;
-        FuncAtual->nome = VarAtual->end_char;
-        FuncAtual->linha = VarAtual->end_char;
-        FuncAtual->este = obj;
-        FuncAtual->expr = nullptr;
-        FuncAtual->inivar = VarAtual + 1;
-        FuncAtual->fimvar = VarAtual + 1;
-        FuncAtual->numarg = 0;
-        FuncAtual->tipo = 4;
-        FuncAtual->indent = 0;
-        FuncAtual->objdebug = FuncAtual[-1].objdebug;
-        FuncAtual->funcdebug = FuncAtual[-1].funcdebug;
-        return true;
-    }
+// Acerta função
+    Instr::FuncAtual++;
+    Instr::FuncAtual->nome = Instr::VarAtual->end_char;
+    Instr::FuncAtual->linha = Instr::VarAtual->end_char;
+    Instr::FuncAtual->este = obj;
+    Instr::FuncAtual->expr = nullptr;
+    Instr::FuncAtual->inivar = Instr::VarAtual + 1;
+    Instr::FuncAtual->fimvar = Instr::VarAtual + 1;
+    Instr::FuncAtual->numarg = 0;
+    Instr::FuncAtual->tipo = 4;
+    Instr::FuncAtual->indent = 0;
+    Instr::FuncAtual->objdebug = Instr::FuncAtual[-1].objdebug;
+    Instr::FuncAtual->funcdebug = Instr::FuncAtual[-1].funcdebug;
+    return true;
+}
+
+//----------------------------------------------------------------------------
 // Execução passo-a-passo
-    if (comparaZ(nome, "passo") == 0)
-    {
-        FuncAtual->funcdebug = nullptr;
-        if (VarAtual < v + 2)
-            return false;
-    // Obtém o objeto
-        TObjeto * obj = v[1].getObj();
-        if (obj == nullptr)
-            return false;
-    // Obtém a instrução na classe
-        TClasse * cl = obj->Classe;
-        int indice = cl->IndiceNome(v[2].getTxt());
-        if (indice < 0)
-            return false;
-        char * instr = cl->InstrVar[indice];
-    // Verifica se é função ou constante que possa ser executada
-        if (instr[2] != cFunc &&
-            instr[2] != cVarFunc)
-            return false;
-    // Inicia execução passo-a-passo
-        FuncAtual->objdebug = obj;
-        FuncAtual->funcdebug = instr;
+bool TVarDebug::FuncPasso(TVariavel * v)
+{
+    Instr::FuncAtual->funcdebug = nullptr;
+    if (Instr::VarAtual < v + 2)
         return false;
-    }
-// Dados do IntMUD
-    if (comparaZ(nome, "ver") == 0)
-    {
-        ApagarVar(v);
-        return CriarVarTexto(VERSION);
-    }
-    if (comparaZ(nome, "data") == 0)
-    {
-        ApagarVar(v);
-        return CriarVarTexto(__DATE__);
-    }
+// Obtém o objeto
+    TObjeto * obj = v[1].getObj();
+    if (obj == nullptr)
+        return false;
+// Obtém a instrução na classe
+    TClasse * cl = obj->Classe;
+    int indice = cl->IndiceNome(v[2].getTxt());
+    if (indice < 0)
+        return false;
+    char * instr = cl->InstrVar[indice];
+// Verifica se é função ou constante que possa ser executada
+    if (instr[2] != Instr::cFunc &&
+        instr[2] != Instr::cVarFunc)
+        return false;
+// Inicia execução passo-a-passo
+    Instr::FuncAtual->objdebug = obj;
+    Instr::FuncAtual->funcdebug = instr;
     return false;
+}
+
+//----------------------------------------------------------------------------
+bool TVarDebug::FuncVer(TVariavel * v)
+{
+    Instr::ApagarVar(v);
+    return Instr::CriarVarTexto(VERSION);
+}
+
+//----------------------------------------------------------------------------
+bool TVarDebug::FuncData(TVariavel * v)
+{
+    Instr::ApagarVar(v);
+    return Instr::CriarVarTexto(__DATE__);
 }
 
 //----------------------------------------------------------------------------

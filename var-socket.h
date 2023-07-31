@@ -128,15 +128,24 @@ public:
     void EndObjeto(TClasse * c, TObjeto * o);
     void Igual(TVarSocket * v);     ///< Operador de atribuição igual
     bool Func(TVariavel * v, const char * nome); ///< Função da variável
-    bool FuncAbrir(TVariavel * v, int valor);
-    bool FuncFechar(TVariavel * v, int valor);
-    bool FuncEndereco(TVariavel * v, int valor);
-    bool FuncVariaveis(TVariavel * v, int valor);
-    bool FuncEventoIP(TVariavel * v, int valor);
-    bool FuncNomeIP(TVariavel * v, int valor);
-    bool FuncIPNome(TVariavel * v, int valor);
-    bool FuncIPValido(TVariavel * v, int valor);
-    bool FuncIniSSL(TVariavel * v, int valor);
+    bool FuncMsg(TVariavel * v);
+    bool FuncAbrir(TVariavel * v);
+    bool FuncAbrirSsl(TVariavel * v);
+    bool FuncFechar(TVariavel * v);
+    bool FuncIpLocal(TVariavel * v);
+    bool FuncIp(TVariavel * v);
+    bool FuncMd5(TVariavel * v);
+    bool FuncSha1(TVariavel * v);
+    bool FuncAFlooder(TVariavel * v);
+    bool FuncCores(TVariavel * v);
+    bool FuncOpcTelnet(TVariavel * v);
+    bool FuncPosX(TVariavel * v);
+    bool FuncProto(TVariavel * v);
+    bool FuncEventoIP(TVariavel * v);
+    bool FuncNomeIP(TVariavel * v);
+    bool FuncIPNome(TVariavel * v);
+    bool FuncIPValido(TVariavel * v);
+    bool FuncIniSSL(TVariavel * v);
     static int getTipo(int numfunc);
                             ///< Retorna o tipo de variável
     int  getValor(int numfunc);

@@ -137,175 +137,301 @@ int TVarSav::Tempo(const char * arqnome)
 //----------------------------------------------------------------------------
 bool TVarSav::Func(TVariavel * v, const char * nome)
 {
-// Inicializa variáveis se necessário
-    if (!InicVar)
+// Lista das funções de varmem
+// Deve obrigatoriamente estar em letras minúsculas e ordem alfabética
+    static const struct {
+        const char * Nome;
+        bool (*Func)(TVariavel * v); } ExecFunc[] = {
+        { "apagar",       &TVarSav::FuncApagar },
+        { "dias",         &TVarSav::FuncDias },
+        { "existe",       &TVarSav::FuncExiste },
+        { "ler",          &TVarSav::FuncLer },
+        { "limpar",       &TVarSav::FuncLimpar },
+        { "limpou",       &TVarSav::FuncLimpou },
+        { "salvar",       &TVarSav::FuncSalvar },
+        { "salvarcod",    &TVarSav::FuncSalvarCod },
+        { "senha",        &TVarSav::FuncSenha },
+        { "senhacod",     &TVarSav::FuncSenhaCod },
+        { "valido",       &TVarSav::FuncValido }  };
+// Procura a função correspondente e executa
+    int ini = 0;
+    int fim = sizeof(ExecFunc) / sizeof(ExecFunc[0]) - 1;
+    char mens[80];
+    copiastrmin(mens, nome, sizeof(mens));
+    while (ini <= fim)
+    {
+        int meio = (ini + fim) / 2;
+        int resultado = strcmp(mens, ExecFunc[meio].Nome);
+        if (resultado == 0) // Se encontrou...
+            return (*ExecFunc[meio].Func)(v);
+        if (resultado < 0) fim = meio - 1; else ini = meio + 1;
+    }
+    return false;
+}
+
+//------------------------------------------------------------------------------
+bool TVarSav::FuncLimpar(TVariavel * v)
+{
+    if (!InicVar) // Inicializa variáveis se necessário
     {
         ProcEventos(0);
-        InicVar=true;
+        InicVar = true;
     }
-// Checar um diretório
-    if (comparaZ(nome, "limpar")==0)
+    if (Instr::VarAtual < v + 1) // Menos de 1 argumento
     {
-        if (Instr::VarAtual < v+1) // Menos de 1 argumento
-        {
-            TVarSavDir::ChecaTudo();
-            return false;
-        }
-        char mens[512];
-        copiastr(mens, v[1].getTxt(), sizeof(mens));
-        if (*mens==0)
-            strcpy(mens, ".");
+        TVarSavDir::ChecaTudo();
+        return false;
+    }
+    char mens[512];
+    copiastr(mens, v[1].getTxt(), sizeof(mens));
+    if (*mens==0)
+        strcpy(mens, ".");
+    Instr::ApagarVar(v);
+// Se inválido: retorna 0
+    if (!arqvalido(mens))
+        return Instr::CriarVarInt(0);
+// Válido: coloca na lista de pendentes e retorna 1
+    TVarSavDir::NovoDir(mens);
+    return Instr::CriarVarInt(1);
+}
+
+//------------------------------------------------------------------------------
+bool TVarSav::FuncLimpou(TVariavel * v)
+{
+    if (!InicVar) // Inicializa variáveis se necessário
+    {
+        ProcEventos(0);
+        InicVar = true;
+    }
+    char mens[BUF_MENS];
+    char * p = mens;
+    *p++ = (TVarSavDir::ChecaPend() ? '1' : '0');
+    *p=0;
+    while (TVarSavArq::Inicio)
+    {
+        p = mprintf(p, mens+sizeof(mens)-p, "%c%s",
+                Instr::ex_barra_n, TVarSavArq::Inicio->Nome);
+        delete TVarSavArq::Inicio;
+    }
+    Instr::ApagarVar(v);
+    return Instr::CriarVarTexto(mens);
+}
+
+//------------------------------------------------------------------------------
+bool TVarSav::FuncSenhaCod(TVariavel * v)
+{
+    if (!InicVar) // Inicializa variáveis se necessário
+    {
+        ProcEventos(0);
+        InicVar = true;
+    }
+    if (Instr::VarAtual > v + 1) // Mais de um argumento
+    {
+        char mens2[100];
+        char fator = v[2].getTxt()[0];
+        Senha(mens2, v[1].getTxt(), fator);
+        int result = strcmp(v[2].getTxt(), mens2);
         Instr::ApagarVar(v);
-    // Se inválido: retorna 0
-        if (!arqvalido(mens))
-            return Instr::CriarVarInt(0);
-    // Válido: coloca na lista de pendentes e retorna 1
-        TVarSavDir::NovoDir(mens);
-        return Instr::CriarVarInt(1);
+        return Instr::CriarVarInt(result == 0);
     }
-// Checar arquivos que foram apagados
-    if (comparaZ(nome, "limpou")==0)
-    {
-        char mens[BUF_MENS];
-        char * p = mens;
-        *p++ = (TVarSavDir::ChecaPend() ? '1' : '0');
-        *p=0;
-        while (TVarSavArq::Inicio)
-        {
-            p = mprintf(p, mens+sizeof(mens)-p, "%c%s",
-                    Instr::ex_barra_n, TVarSavArq::Inicio->Nome);
-            delete TVarSavArq::Inicio;
-        }
-        Instr::ApagarVar(v);
-        return Instr::CriarVarTexto(mens);
-    }
-// Gerar senha codificada
-    if (comparaZ(nome, "senhacod")==0)
-    {
-        if (Instr::VarAtual > v+1) // Mais de um argumento
-        {
-            char mens2[100];
-            char fator = v[2].getTxt()[0];
-            Senha(mens2, v[1].getTxt(), fator);
-            int result = strcmp(v[2].getTxt(), mens2);
-            Instr::ApagarVar(v);
-            return Instr::CriarVarInt(result == 0);
-        }
-        char mens[256];
-        *mens = 0;
-        if (Instr::VarAtual == v+1) // 1 argumento
-            Senha(mens, v[1].getTxt(), circle_random() % 90 + 33);
-        Instr::ApagarVar(v);
-        return Instr::CriarVarTexto(mens);
-    }
-// Obtém o nome do arquivo
-    char arqnome[512]; // Nome do arquivo; nulo se não for válido
-    bool escrita = false;
-    *arqnome=0;
-    if (Instr::VarAtual >= v+1)
-    {
-        copiastr(arqnome, v[1].getTxt(), sizeof(arqnome)-4);
-    // Verifica se nome permitido
-        if (arqvalido(arqnome, true))
-            escrita = true;
-        else if (!arqvalido(arqnome, false))
-            *arqnome=0;
-    }
+    char mens[256];
+    *mens = 0;
+    if (Instr::VarAtual == v + 1) // 1 argumento
+        Senha(mens, v[1].getTxt(), circle_random() % 90 + 33);
+    Instr::ApagarVar(v);
+    return Instr::CriarVarTexto(mens);
+}
+
+//------------------------------------------------------------------------------
 // Checa se nome de arquivo é válido
-    if (comparaZ(nome, "valido")==0)
+bool TVarSav::FuncValido(TVariavel * v)
+{
+    if (!InicVar) // Inicializa variáveis se necessário
     {
-        Instr::ApagarVar(v);
-        return Instr::CriarVarInt(*arqnome != 0);
+        ProcEventos(0);
+        InicVar = true;
     }
+    int result = 0;
+    if (Instr::VarAtual >= v + 1)
+    {
+        char arqnome[512];
+        copiastr(arqnome, v[1].getTxt(), sizeof(arqnome) - 4);
+        if (arqvalido(arqnome, false)) // Verifica se nome permitido
+            result = 1;
+    }
+    Instr::ApagarVar(v);
+    return Instr::CriarVarInt(result);
+}
+
+//------------------------------------------------------------------------------
 // Checa se arquivo existe
-    if (comparaZ(nome, "existe")==0)
+bool TVarSav::FuncExiste(TVariavel * v)
+{
+    if (!InicVar) // Inicializa variáveis se necessário
     {
+        ProcEventos(0);
+        InicVar = true;
+    }
+    int result = 0;
+    if (Instr::VarAtual >= v + 1)
+    {
+        char arqnome[512];
         struct stat buf;
-        Instr::ApagarVar(v);
-        if (*arqnome && stat(arqnome, &buf)<0)
-            *arqnome = 0;
-        return Instr::CriarVarInt(*arqnome != 0);
+        copiastr(arqnome, v[1].getTxt(), sizeof(arqnome) - 4);
+        if (arqvalido(arqnome, false) && stat(arqnome, &buf) >= 0)
+            result = 1;
     }
-// Checar senha
-    if (comparaZ(nome, "senha")==0)
+    Instr::ApagarVar(v);
+    return Instr::CriarVarInt(result);
+}
+
+//------------------------------------------------------------------------------
+bool TVarSav::FuncSenha(TVariavel * v)
+{
+    if (!InicVar) // Inicializa variáveis se necessário
     {
-        char mens[512];
-        TArqLer arqler;
-        if (*arqnome==0 || Instr::VarAtual < v+2 || !arqler.Abrir(arqnome))
+        ProcEventos(0);
+        InicVar = true;
+    }
+    if (Instr::VarAtual < v + 2)
+    {
+        Instr::ApagarVar(v);
+        return Instr::CriarVarInt(0);
+    }
+    TArqLer arqler;
+    char arqnome[512];
+    copiastr(arqnome, v[1].getTxt(), sizeof(arqnome) - 4);
+    if (!arqvalido(arqnome, false) || !arqler.Abrir(arqnome))
+    {
+        Instr::ApagarVar(v);
+        return Instr::CriarVarInt(0);
+    }
+    char mens[512];
+    while (arqler.Linha(mens, sizeof(mens), false) > 0)
+    {
+        if (strcmp(mens, "+++") == 0)
+            break;
+        if (compara(mens, "senha=", 6) != 0)
+            continue;
+        char mens2[100];
+        Senha(mens2, v[2].getTxt(), mens[6]);
+        if (strcmp(mens + 6, mens2) == 0)
+            break;
+        Instr::ApagarVar(v);
+        return Instr::CriarVarInt(0);
+    }
+    Instr::ApagarVar(v);
+    return Instr::CriarVarInt(1);
+}
+
+//------------------------------------------------------------------------------
+bool TVarSav::FuncDias(TVariavel * v)
+{
+    if (!InicVar) // Inicializa variáveis se necessário
+    {
+        ProcEventos(0);
+        InicVar = true;
+    }
+    int result = 0;
+    if (Instr::VarAtual >= v + 1)
+    {
+        char arqnome[512];
+        copiastr(arqnome, v[1].getTxt(), sizeof(arqnome) - 4);
+        if (arqvalido(arqnome, false))
         {
-            Instr::ApagarVar(v);
-            return Instr::CriarVarInt(0);
+            result = Tempo(arqnome);
+            if (result > 0)
+                result = (result + 1439) / 1440;
         }
-        while (arqler.Linha(mens, sizeof(mens), false)>0)
-        {
-            if (strcmp(mens, "+++")==0)
-                break;
-            if (compara(mens, "senha=", 6)!=0)
-                continue;
-            char mens2[100];
-            Senha(mens2, v[2].getTxt(), mens[6]);
-            if (strcmp(mens+6, mens2)==0)
-                break;
-            Instr::ApagarVar(v);
-            return Instr::CriarVarInt(0);
-        }
-        Instr::ApagarVar(v);
-        return Instr::CriarVarInt(1);
     }
-// Checar a quantidade de dias para expirar
-    if (comparaZ(nome, "dias")==0)
+    Instr::ApagarVar(v);
+    return Instr::CriarVarInt(result);
+}
+
+
+//------------------------------------------------------------------------------
+bool TVarSav::FuncLer(TVariavel * v)
+{
+    if (!InicVar) // Inicializa variáveis se necessário
     {
-        Instr::ApagarVar(v);
-        if (!Instr::CriarVarInt(0))
-            return false;
-        if (*arqnome==0)
-            return true;
-        int x = Tempo(arqnome);
-        if (x > 0)
-            x = (x+1439)/1440;
-        Instr::VarAtual->setInt(x);
-        return true;
+        ProcEventos(0);
+        InicVar = true;
     }
-// Ler arquivo
-    if (comparaZ(nome, "ler")==0)
+    int result = 0;
+    if (Instr::VarAtual >= v + 1)
     {
-        int x = Ler(v, arqnome);
-        Instr::ApagarVar(v);
-        return Instr::CriarVarInt(x);
+        char arqnome[512];
+        copiastr(arqnome, v[1].getTxt(), sizeof(arqnome) - 4);
+        if (arqvalido(arqnome, false))
+            result = Ler(v, arqnome);
     }
-// Salvar arquivo
-    if (comparaZ(nome, "salvar")==0)
+    Instr::ApagarVar(v);
+    return Instr::CriarVarInt(result);
+}
+
+//------------------------------------------------------------------------------
+bool TVarSav::FuncSalvar(TVariavel * v)
+{
+    if (!InicVar) // Inicializa variáveis se necessário
     {
-        int x = 0;
-        if (escrita)
-            x = Salvar(v, arqnome, false);
-        Instr::ApagarVar(v);
-        return Instr::CriarVarInt(x);
+        ProcEventos(0);
+        InicVar = true;
     }
-    if (comparaZ(nome, "salvarcod")==0)
+    int result = 0;
+    if (Instr::VarAtual >= v + 1)
     {
-        int x = 0;
-        if (escrita)
-            x = Salvar(v, arqnome, true);
-        Instr::ApagarVar(v);
-        return Instr::CriarVarInt(x);
+        char arqnome[512];
+        copiastr(arqnome, v[1].getTxt(), sizeof(arqnome) - 4);
+        if (arqvalido(arqnome, true))
+            result = Salvar(v, arqnome, false);
     }
-// Apagar arquivo
-    if (comparaZ(nome, "apagar")==0)
+    Instr::ApagarVar(v);
+    return Instr::CriarVarInt(result);
+}
+
+//------------------------------------------------------------------------------
+bool TVarSav::FuncSalvarCod(TVariavel * v)
+{
+    if (!InicVar) // Inicializa variáveis se necessário
     {
-        Instr::ApagarVar(v);
-        if (!Instr::CriarVarInt(0))
-            return false;
-        if (*arqnome && escrita)
+        ProcEventos(0);
+        InicVar = true;
+    }
+    int result = 0;
+    if (Instr::VarAtual >= v + 1)
+    {
+        char arqnome[512];
+        copiastr(arqnome, v[1].getTxt(), sizeof(arqnome) - 4);
+        if (arqvalido(arqnome, true))
+            result = Salvar(v, arqnome, true);
+    }
+    Instr::ApagarVar(v);
+    return Instr::CriarVarInt(result);
+}
+
+//------------------------------------------------------------------------------
+bool TVarSav::FuncApagar(TVariavel * v)
+{
+    if (!InicVar) // Inicializa variáveis se necessário
+    {
+        ProcEventos(0);
+        InicVar = true;
+    }
+    int result = 0;
+    if (Instr::VarAtual >= v + 1)
+    {
+        char arqnome[512];
+        copiastr(arqnome, v[1].getTxt(), sizeof(arqnome) - 4);
+        if (arqvalido(arqnome, true))
         {
             remove(arqnome);
             struct stat buf;
-            if (stat(arqnome, &buf)<0) // se arquivo não existe: sucesso
-                Instr::VarAtual->setInt(1);
+            if (stat(arqnome, &buf) < 0) // se arquivo não existe: sucesso
+                result = 1;
         }
-        return true;
     }
-    return false;
+    Instr::ApagarVar(v);
+    return Instr::CriarVarInt(result);
 }
 
 //----------------------------------------------------------------------------

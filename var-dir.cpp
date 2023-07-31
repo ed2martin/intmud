@@ -53,315 +53,400 @@ void TVarDir::Apagar()
 #endif
 }
 
+
 //------------------------------------------------------------------------------
 bool TVarDir::Func(TVariavel * v, const char * nome)
 {
-// Pesquisar entrada atual no diretório
-    if (comparaZ(nome, "lin") == 0)
+// Lista das funções de varmem
+// Deve obrigatoriamente estar em letras minúsculas e ordem alfabética
+    static const struct {
+        const char * Nome;
+        bool (TVarDir::*Func)(TVariavel * v); } ExecFunc[] = {
+        { "abrir",        &TVarDir::FuncAbrir },
+        { "apagar",       &TVarDir::FuncApagar },
+        { "apagardir",    &TVarDir::FuncApagarDir },
+        { "atempo",       &TVarDir::FuncAtempo },
+        { "barra",        &TVarDir::FuncBarra },
+        { "criardir",     &TVarDir::FuncCriarDir },
+        { "depois",       &TVarDir::FuncDepois },
+        { "fechar",       &TVarDir::FuncFechar },
+        { "lin",          &TVarDir::FuncLin },
+        { "mtempo",       &TVarDir::FuncMtempo },
+        { "renomear",     &TVarDir::FuncRenomear },
+        { "tamanho",      &TVarDir::FuncTamanho },
+        { "texto",        &TVarDir::FuncTexto },
+        { "tipo",         &TVarDir::FuncTipo } };
+// Procura a função correspondente e executa
+    int ini = 0;
+    int fim = sizeof(ExecFunc) / sizeof(ExecFunc[0]) - 1;
+    char mens[80];
+    copiastrmin(mens, nome, sizeof(mens));
+    while (ini <= fim)
     {
-        bool b = DIR_VALIDO;
-        Instr::ApagarVar(v);
-        return Instr::CriarVarInt(b);
+        int meio = (ini + fim) / 2;
+        int resultado = strcmp(mens, ExecFunc[meio].Nome);
+        if (resultado == 0) // Se encontrou...
+            return (this->*ExecFunc[meio].Func)(v);
+        if (resultado < 0) fim = meio - 1; else ini = meio + 1;
     }
-    if (comparaZ(nome, "texto") == 0)
-    {
-        Instr::ApagarVar(v);
-        return Instr::CriarVarTexto(DIR_VALIDO ? arqdir : "");
-    }
-    if (comparaZ(nome, "depois") == 0)
-    {
-        Proximo();
-        return false;
-    }
+    return false;
+}
 
-// Barra
-    if (comparaZ(nome, "barra") == 0)
+//------------------------------------------------------------------------------
+bool TVarDir::FuncLin(TVariavel * v)
+{
+    bool b = DIR_VALIDO;
+    Instr::ApagarVar(v);
+    return Instr::CriarVarInt(b);
+}
+
+//------------------------------------------------------------------------------
+bool TVarDir::FuncTexto(TVariavel * v)
+{
+    Instr::ApagarVar(v);
+    return Instr::CriarVarTexto(DIR_VALIDO ? arqdir : "");
+}
+
+//------------------------------------------------------------------------------
+bool TVarDir::FuncDepois(TVariavel * v)
+{
+    Proximo();
+    return false;
+}
+
+//------------------------------------------------------------------------------
+bool TVarDir::FuncBarra(TVariavel * v)
+{
+    const char * txt = "";  // Texto
+    char mens[BUF_MENS];    // Resultado
+    char * destino = mens;
+    if (Instr::VarAtual >= v + 1)
+        txt = v[1].getTxt();
+    while (destino < mens+sizeof(mens) - 1)
     {
-        const char * txt = "";  // Texto
-        char mens[BUF_MENS];    // Resultado
-        char * destino = mens;
-        if (Instr::VarAtual >= v + 1)
-            txt = v[1].getTxt();
-        while (destino < mens+sizeof(mens) - 1)
-        {
-            char ch = *txt++;
-            if (ch == 0)
-                break;
+        char ch = *txt++;
+        if (ch == 0)
+            break;
 #ifdef __WIN32__
-            if (ch == '/')
-                ch = '\\';
+        if (ch == '/')
+            ch = '\\';
 #else
-            if (ch == '\\')
-                ch = '/';
+        if (ch == '\\')
+            ch = '/';
 #endif
-            *destino++ = ch;
-        }
-        Instr::ApagarVar(v);
-        return Instr::CriarVarTexto(mens, destino-mens);
+        *destino++ = ch;
     }
+    Instr::ApagarVar(v);
+    return Instr::CriarVarTexto(mens, destino-mens);
+}
 
+//------------------------------------------------------------------------------
 // Abrir/Fechar diretório
-    if (comparaZ(nome, "abrir") == 0)
+bool TVarDir::FuncAbrir(TVariavel * v)
+{
+    char mens[512];
+// Fecha diretório
+    Apagar();
+// Obtém nome do diretório
+    *mens = 0;
+    if (Instr::VarAtual >= v + 1)
+        copiastr(mens, v[1].getTxt(), sizeof(mens) - 2);
+    if (*mens == 0)
+        strcpy(mens, ".");
+// Checa se nome válido
+    if (!arqvalido(mens))
     {
-        char mens[512];
-    // Fecha diretório
-        Apagar();
-    // Obtém nome do diretório
-        *mens = 0;
-        if (Instr::VarAtual >= v + 1)
-            copiastr(mens, v[1].getTxt(), sizeof(mens) - 2);
-        if (*mens == 0)
-            strcpy(mens, ".");
-    // Checa se nome válido
-        if (!arqvalido(mens))
-        {
-            Instr::ApagarVar(v);
-            return Instr::CriarVarTexto("Nome não permitido");
-        }
-    // Abre o diretório
+        Instr::ApagarVar(v);
+        return Instr::CriarVarTexto("Nome não permitido");
+    }
+// Abre o diretório
 #ifdef __WIN32__
-        WIN32_FIND_DATA ffd;
-        strcat(mens, "\\*");
-        wdir = FindFirstFile(mens, &ffd);
-        if (wdir == INVALID_HANDLE_VALUE)
-            return Instr::CriarVarTexto("");
-        while (strcmp(ffd.cFileName, ".") == 0 || strcmp(ffd.cFileName, "..") == 0)
-            if (FindNextFile(wdir, &ffd) == 0)
-            {
-                FindClose(wdir);
-                wdir = INVALID_HANDLE_VALUE;
-                return Instr::CriarVarTexto("");
-            }
-        copiastr(arqdir, ffd.cFileName, sizeof(arqdir));
-        arqtipo = (ffd.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY)
-                    ? 'D' : 'A';
-#else
-        dir = opendir(mens);
-        if (dir == nullptr)
+    WIN32_FIND_DATA ffd;
+    strcat(mens, "\\*");
+    wdir = FindFirstFile(mens, &ffd);
+    if (wdir == INVALID_HANDLE_VALUE)
+        return Instr::CriarVarTexto("");
+    while (strcmp(ffd.cFileName, ".") == 0 || strcmp(ffd.cFileName, "..") == 0)
+        if (FindNextFile(wdir, &ffd) == 0)
         {
-            Instr::ApagarVar(v);
-            return Instr::CriarVarTexto(strerror(errno));
+            FindClose(wdir);
+            wdir = INVALID_HANDLE_VALUE;
+            return Instr::CriarVarTexto("");
         }
-        Proximo();
+    copiastr(arqdir, ffd.cFileName, sizeof(arqdir));
+    arqtipo = (ffd.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY)
+                ? 'D' : 'A';
+#else
+    dir = opendir(mens);
+    if (dir == nullptr)
+    {
+        Instr::ApagarVar(v);
+        return Instr::CriarVarTexto(strerror(errno));
+    }
+    Proximo();
 #endif
+    Instr::ApagarVar(v);
+    return Instr::CriarVarTexto("");
+}
+
+//------------------------------------------------------------------------------
+bool TVarDir::FuncFechar(TVariavel * v)
+{
+    Apagar();
+    return false;
+}
+
+//------------------------------------------------------------------------------
+// Atributos do arquivo
+bool TVarDir::FuncTipo(TVariavel * v)
+{
+// Sem argumentos: entrada encontrada em abrir()
+    if (Instr::VarAtual < v + 1)
+    {
+        char txt[2] = "?";
+        if (DIR_VALIDO)
+            txt[0] = arqtipo;
+        Instr::ApagarVar(v);
+        return Instr::CriarVarTexto(txt);
+    }
+// Com argumento
+    if (Instr::VarAtual < v + 1)
+    {
+        Instr::ApagarVar(v);
+        return Instr::CriarVarTexto("?");
+    }
+    struct stat buf;
+    char mens[512];
+    copiastr(mens, v[1].getTxt(), sizeof(mens));
+    if (!arqvalido(mens)) // Não permitido
+        mens[0] = '?';
+    else if (stat(mens, &buf) < 0) // Não existe
+        mens[0] = '?';
+    else if (S_ISDIR(buf.st_mode)) // Diretório
+        mens[0] = 'D';
+    else if (S_ISREG(buf.st_mode)) // Arquivo normal
+        mens[0] = 'A';
+    else
+        mens[0] = 'O';
+    mens[1] = 0;
+    Instr::ApagarVar(v);
+    return Instr::CriarVarTexto(mens);
+}
+
+//------------------------------------------------------------------------------
+bool TVarDir::FuncTamanho(TVariavel * v)
+{
+    char mens[512];
+    double tam = 0;
+    while (Instr::VarAtual >= v+1)
+    {
+        copiastr(mens, v[1].getTxt(), sizeof(mens));
+        if (!arqvalido(mens))
+            break;
+#ifdef __WIN32__
+        HANDLE hFile = CreateFile(mens, // file to open
+                GENERIC_READ,     // open for reading
+                FILE_SHARE_READ,  // share for reading
+                NULL,             // default security
+                OPEN_EXISTING,    // existing file only
+                FILE_ATTRIBUTE_NORMAL, // normal file
+                NULL);            // no attribute template
+        if (hFile == INVALID_HANDLE_VALUE)
+            break;
+        LARGE_INTEGER lFileSize;
+        if (GetFileSizeEx(hFile, &lFileSize))
+            tam = lFileSize.QuadPart;
+        CloseHandle(hFile);
+#else
+        struct stat buf;
+        if (stat(mens, &buf) >= 0)
+            tam = buf.st_size;
+#endif
+        break;
+    }
+    Instr::ApagarVar(v);
+    if (!Instr::CriarVar(Instr::InstrDouble))
+        return false;
+    Instr::VarAtual->setDouble(tam);
+    return true;
+}
+
+//------------------------------------------------------------------------------
+/// Obtém data e hora de um arquivo
+/** @param nomearq Nome do arquivo
+ *  @param buffer Aonde colocar data e hora, se conseguiu obter
+ *  @param tipo 1=mtempo, 2=atempo
+ *  @note Se não conseguir obter data e hora, não altera o conteúdo de buffer */
+static inline void VarDirObtemTempo(char * nomearq, char * buffer, int tipo)
+{
+    if (!arqvalido(nomearq))
+        return;
+#ifdef __WIN32__
+    FILETIME ftCreate, ftAccess, ftWrite;
+    SYSTEMTIME stUTC, stLocal;
+    HANDLE hFile = CreateFile(nomearq, // file to open
+            GENERIC_READ,     // open for reading
+            FILE_SHARE_READ,  // share for reading
+            NULL,             // default security
+            OPEN_EXISTING,    // existing file only
+            FILE_ATTRIBUTE_NORMAL, // normal file
+            NULL);            // no attribute template
+    if (hFile == INVALID_HANDLE_VALUE)
+        return;
+    if (GetFileTime(hFile, &ftCreate, &ftAccess, &ftWrite))
+    {
+        if (tipo == 1)
+            FileTimeToSystemTime(&ftWrite, &stUTC);
+        else
+            FileTimeToSystemTime(&ftAccess, &stUTC);
+        SystemTimeToTzSpecificLocalTime(NULL, &stUTC, &stLocal);
+        sprintf(buffer, "%d %d %d %d %d %d",
+                stLocal.wYear, stLocal.wMonth, stLocal.wDay,
+                stLocal.wHour, stLocal.wMinute, stLocal.wSecond);
+    }
+    CloseHandle(hFile);
+#else
+    struct stat buf;
+    if (stat(nomearq, &buf) < 0)
+        return;
+    time_t tempoatual;
+    struct tm * tempolocal;
+    if (tipo == 1)    // mtempo
+        tempoatual = buf.st_mtime;
+    else            // atempo
+        tempoatual = buf.st_atime;
+    // localtime() Converte para representação local de tempo
+    tempolocal = localtime(&tempoatual);
+    sprintf(buffer, "%d %d %d %d %d %d",
+            tempolocal->tm_year + 1900, // Ano começa no 1900
+            tempolocal->tm_mon + 1, // Mês começa no 1
+            tempolocal->tm_mday, // Dia começa no 0
+            tempolocal->tm_hour,
+            tempolocal->tm_min,
+            tempolocal->tm_sec);
+#endif
+}
+
+//------------------------------------------------------------------------------
+bool TVarDir::FuncMtempo(TVariavel * v)
+{
+    char buffer[256] = "";
+    char nomearq[1024];
+    if (Instr::VarAtual >= v + 1)
+    {
+        copiastr(nomearq, v[1].getTxt(), sizeof(nomearq));
+        VarDirObtemTempo(nomearq, buffer, 1);
+    }
+    Instr::ApagarVar(v);
+    return Instr::CriarVarTexto(buffer);
+}
+
+//------------------------------------------------------------------------------
+bool TVarDir::FuncAtempo(TVariavel * v)
+{
+    char buffer[256] = "";
+    char nomearq[1024];
+    if (Instr::VarAtual >= v + 1)
+    {
+        copiastr(nomearq, v[1].getTxt(), sizeof(nomearq));
+        VarDirObtemTempo(nomearq, buffer, 2);
+    }
+    Instr::ApagarVar(v);
+    return Instr::CriarVarTexto(buffer);
+}
+
+//------------------------------------------------------------------------------
+bool TVarDir::FuncApagarDir(TVariavel * v)
+{
+    char mens[512];
+    if (Instr::VarAtual < v+1)
+    {
         Instr::ApagarVar(v);
         return Instr::CriarVarTexto("");
     }
-    if (comparaZ(nome, "fechar") == 0)
-    {
-        Apagar();
-        return false;
-    }
-
-// Atributos do arquivo
-    if (comparaZ(nome, "tipo") == 0)
-    {
-    // Sem argumentos: entrada encontrada em abrir()
-        if (Instr::VarAtual < v + 1)
-        {
-            char txt[2] = "?";
-            if (DIR_VALIDO)
-                txt[0] = arqtipo;
-            Instr::ApagarVar(v);
-            return Instr::CriarVarTexto(txt);
-        }
-   // Com argumento
-        if (Instr::VarAtual < v + 1)
-        {
-            Instr::ApagarVar(v);
-            return Instr::CriarVarTexto("?");
-        }
-        struct stat buf;
-        char mens[512];
-        copiastr(mens, v[1].getTxt(), sizeof(mens));
-        if (!arqvalido(mens)) // Não permitido
-            mens[0] = '?';
-        else if (stat(mens, &buf) < 0) // Não existe
-            mens[0] = '?';
-        else if (S_ISDIR(buf.st_mode)) // Diretório
-            mens[0] = 'D';
-        else if (S_ISREG(buf.st_mode)) // Arquivo normal
-            mens[0] = 'A';
-        else
-            mens[0] = 'O';
-        mens[1] = 0;
-        Instr::ApagarVar(v);
-        return Instr::CriarVarTexto(mens);
-    }
-    if (comparaZ(nome, "tamanho") == 0)
-    {
-        char mens[512];
-        double tam = 0;
-        while (Instr::VarAtual >= v+1)
-        {
-            copiastr(mens, v[1].getTxt(), sizeof(mens));
-            if (!arqvalido(mens))
-                break;
-#ifdef __WIN32__
-            HANDLE hFile = CreateFile(mens, // file to open
-                    GENERIC_READ,     // open for reading
-                    FILE_SHARE_READ,  // share for reading
-                    NULL,             // default security
-                    OPEN_EXISTING,    // existing file only
-                    FILE_ATTRIBUTE_NORMAL, // normal file
-                    NULL);            // no attribute template
-            if (hFile == INVALID_HANDLE_VALUE)
-                break;
-            LARGE_INTEGER lFileSize;
-            if (GetFileSizeEx(hFile, &lFileSize))
-                tam = lFileSize.QuadPart;
-            CloseHandle(hFile);
-#else
-            struct stat buf;
-            if (stat(mens, &buf) >= 0)
-                tam = buf.st_size;
-#endif
-            break;
-        }
-        Instr::ApagarVar(v);
-        if (!Instr::CriarVar(Instr::InstrDouble))
-            return false;
-        Instr::VarAtual->setDouble(tam);
-        return true;
-    }
-    int tipo = 0;
-    if (comparaZ(nome, "mtempo") == 0)
-        tipo = 1;
-    else if (comparaZ(nome, "atempo") == 0)
-        tipo = 2;
-    if (tipo)
-    {
-        char mens[512];
+    copiastr(mens, v[1].getTxt(), sizeof(mens));
+    Instr::ApagarVar(v);
+    if (!arqvalido(mens))
+        return Instr::CriarVarTexto("Nome de diretório não permitido");
+    int err = rmdir(mens);
+    if (err >= 0)
         *mens = 0;
-        while (Instr::VarAtual >= v + 1)
-        {
-            copiastr(mens, v[1].getTxt(), sizeof(mens));
-            if (!arqvalido(mens))
-                break;
-#ifdef __WIN32__
-            FILETIME ftCreate, ftAccess, ftWrite;
-            SYSTEMTIME stUTC, stLocal;
-            HANDLE hFile = CreateFile(mens, // file to open
-                    GENERIC_READ,     // open for reading
-                    FILE_SHARE_READ,  // share for reading
-                    NULL,             // default security
-                    OPEN_EXISTING,    // existing file only
-                    FILE_ATTRIBUTE_NORMAL, // normal file
-                    NULL);            // no attribute template
-            if (hFile == INVALID_HANDLE_VALUE)
-                break;
-            if (GetFileTime(hFile, &ftCreate, &ftAccess, &ftWrite))
-            {
-                if (tipo == 1)
-                    FileTimeToSystemTime(&ftWrite, &stUTC);
-                else
-                    FileTimeToSystemTime(&ftAccess, &stUTC);
-                SystemTimeToTzSpecificLocalTime(NULL, &stUTC, &stLocal);
-                sprintf(mens, "%d %d %d %d %d %d",
-                        stLocal.wYear, stLocal.wMonth, stLocal.wDay,
-                        stLocal.wHour, stLocal.wMinute, stLocal.wSecond);
-            }
-            CloseHandle(hFile);
-#else
-            struct stat buf;
-            if (stat(mens, &buf) < 0)
-                break;
-            time_t tempoatual;
-            struct tm * tempolocal;
-            if (tipo == 1)    // mtempo
-                tempoatual = buf.st_mtime;
-            else            // atempo
-                tempoatual = buf.st_atime;
-            // localtime() Converte para representação local de tempo
-            tempolocal = localtime(&tempoatual);
-            sprintf(mens, "%d %d %d %d %d %d",
-                    tempolocal->tm_year + 1900, // Ano começa no 1900
-                    tempolocal->tm_mon + 1, // Mês começa no 1
-                    tempolocal->tm_mday, // Dia começa no 0
-                    tempolocal->tm_hour,
-                    tempolocal->tm_min,
-                    tempolocal->tm_sec);
-#endif
-             break;
-       }
-        Instr::ApagarVar(v);
-        return Instr::CriarVarTexto(mens);
-    }
+    else
+        copiastr(mens, strerror(errno), sizeof(mens));
+    return Instr::CriarVarTexto(mens);
+}
 
-// Criar/Apagar diretório
-    if (comparaZ(nome, "criardir") == 0)
-        tipo = 1;
-    else if (comparaZ(nome, "apagardir") == 0)
-        tipo = 2;
-    if (tipo)
+//------------------------------------------------------------------------------
+bool TVarDir::FuncCriarDir(TVariavel * v)
+{
+    char mens[512];
+    if (Instr::VarAtual < v+1)
     {
-        char mens[512];
-        if (Instr::VarAtual < v+1)
-        {
-            Instr::ApagarVar(v);
-            return Instr::CriarVarTexto("");
-        }
-        copiastr(mens, v[1].getTxt(), sizeof(mens));
         Instr::ApagarVar(v);
-        if (!arqvalido(mens))
-            return Instr::CriarVarTexto("Nome de diretório não permitido");
-        int err = 0;
-        if (tipo == 1)
-#ifdef __WIN32__
-            err = mkdir(mens);
-#else
-            err = mkdir(mens, S_IRWXU|S_IRWXG|S_IRWXO);
-#endif
-        else
-            err = rmdir(mens);
-        if (err >= 0)
-            *mens = 0;
-        else
-            copiastr(mens, strerror(errno), sizeof(mens));
-        return Instr::CriarVarTexto(mens);
+        return Instr::CriarVarTexto("");
     }
+    copiastr(mens, v[1].getTxt(), sizeof(mens));
+    Instr::ApagarVar(v);
+    if (!arqvalido(mens))
+        return Instr::CriarVarTexto("Nome de diretório não permitido");
+#ifdef __WIN32__
+    int err = mkdir(mens);
+#else
+    int err = mkdir(mens, S_IRWXU|S_IRWXG|S_IRWXO);
+#endif
+    if (err >= 0)
+        *mens = 0;
+    else
+        copiastr(mens, strerror(errno), sizeof(mens));
+    return Instr::CriarVarTexto(mens);
+}
 
+//------------------------------------------------------------------------------
 // Apgar arquivo
-    if (comparaZ(nome, "apagar") == 0)
+bool TVarDir::FuncApagar(TVariavel * v)
+{
+    char mens[512];
+    if (Instr::VarAtual < v+1)
     {
-        char mens[512];
-        if (Instr::VarAtual < v+1)
-        {
-            Instr::ApagarVar(v);
-            return Instr::CriarVarTexto("");
-        }
-        copiastr(mens, v[1].getTxt(), sizeof(mens));
         Instr::ApagarVar(v);
-        if (!arqvalido(mens, false))
-            return Instr::CriarVarTexto("Nome de arquivo não permitido");
-        if (remove(mens) >= 0) // remove ou unlink
-            *mens = 0;
-        else
-            copiastr(mens, strerror(errno), sizeof(mens));
-        return Instr::CriarVarTexto(mens);
+        return Instr::CriarVarTexto("");
     }
+    copiastr(mens, v[1].getTxt(), sizeof(mens));
+    Instr::ApagarVar(v);
+    if (!arqvalido(mens, false))
+        return Instr::CriarVarTexto("Nome de arquivo não permitido");
+    if (remove(mens) >= 0) // remove ou unlink
+        *mens = 0;
+    else
+        copiastr(mens, strerror(errno), sizeof(mens));
+    return Instr::CriarVarTexto(mens);
+}
 
+//------------------------------------------------------------------------------
 // Renomear arquivo/diretório
-    if (comparaZ(nome, "renomear") == 0)
+bool TVarDir::FuncRenomear(TVariavel * v)
+{
+    char antes[512], depois[512];
+    if (Instr::VarAtual < v + 2)
     {
-        char antes[512], depois[512];
-        if (Instr::VarAtual < v + 2)
-        {
-            Instr::ApagarVar(v);
-            return Instr::CriarVarTexto("");
-        }
-        copiastr(antes, v[1].getTxt(), sizeof(antes));
-        copiastr(depois, v[2].getTxt(), sizeof(depois));
         Instr::ApagarVar(v);
-        if (!arqvalido(antes, true) || !arqvalido(depois, true))
-            return Instr::CriarVarTexto("Nome de arquivo não permitido");
-        if (rename(antes, depois) >= 0)
-            *antes = 0;
-        else
-            copiastr(antes, strerror(errno), sizeof(antes));
-        return Instr::CriarVarTexto(antes);
+        return Instr::CriarVarTexto("");
     }
-    return false;
+    copiastr(antes, v[1].getTxt(), sizeof(antes));
+    copiastr(depois, v[2].getTxt(), sizeof(depois));
+    Instr::ApagarVar(v);
+    if (!arqvalido(antes, true) || !arqvalido(depois, true))
+        return Instr::CriarVarTexto("Nome de arquivo não permitido");
+#ifdef __WIN32__
+    if (MoveFileEx(antes, depois,
+            MOVEFILE_REPLACE_EXISTING | MOVEFILE_COPY_ALLOWED))
+#else
+    if (rename(antes, depois) >= 0)
+#endif
+        *antes = 0;
+    else
+        copiastr(antes, strerror(errno), sizeof(antes));
+    return Instr::CriarVarTexto(antes);
 }
 
 //------------------------------------------------------------------------------

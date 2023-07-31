@@ -801,7 +801,8 @@ bool TListaItem::FuncAntes(TVariavel * v)
         obj = obj->ListaAntes;
     MudarRef(obj);
     DEBUG1
-    return false;
+    Instr::ApagarVar(v + 1);
+    return true;
 }
 
 //----------------------------------------------------------------------------
@@ -817,7 +818,8 @@ bool TListaItem::FuncDepois(TVariavel * v)
         obj = obj->ListaDepois;
     MudarRef(obj);
     DEBUG1
-    return false;
+    Instr::ApagarVar(v + 1);
+    return true;
 }
 
 //----------------------------------------------------------------------------
@@ -839,7 +841,8 @@ bool TListaItem::FuncObjAntes(TVariavel * v)
     }
     MudarRef(obj);
     DEBUG1
-    return false;
+    Instr::ApagarVar(v + 1);
+    return true;
 }
 
 //----------------------------------------------------------------------------
@@ -861,7 +864,8 @@ bool TListaItem::FuncObjDepois(TVariavel * v)
     }
     MudarRef(obj);
     DEBUG1
-    return false;
+    Instr::ApagarVar(v + 1);
+    return true;
 }
 
 //----------------------------------------------------------------------------
@@ -884,7 +888,8 @@ bool TListaItem::FuncRemoveAntes(TVariavel * v)
     MudarRef(ListaX->ListaAntes);
     l->Apagar();
     DEBUG1
-    return false;
+    Instr::ApagarVar(v + 1);
+    return true;
 }
 
 //----------------------------------------------------------------------------
@@ -896,7 +901,8 @@ bool TListaItem::FuncRemoveDepois(TVariavel * v)
     MudarRef(ListaX->ListaDepois);
     l->Apagar();
     DEBUG1
-    return false;
+    Instr::ApagarVar(v + 1);
+    return true;
 }
 
 //----------------------------------------------------------------------------

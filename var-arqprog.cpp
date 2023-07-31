@@ -261,38 +261,67 @@ void TVarArqProg::Proximo()
 //------------------------------------------------------------------------------
 bool TVarArqProg::Func(TVariavel * v, const char * nome)
 {
-// Pesquisar entrada atual no diretório
-    if (comparaZ(nome, "lin") == 0)
+// Lista das funções de varmem
+// Deve obrigatoriamente estar em letras minúsculas e ordem alfabética
+    static const struct {
+        const char * Nome;
+        bool (TVarArqProg::*Func)(TVariavel * v); } ExecFunc[] = {
+        { "abrir",        &TVarArqProg::FuncAbrir },
+        { "depois",       &TVarArqProg::FuncDepois },
+        { "fechar",       &TVarArqProg::FuncFechar },
+        { "lin",          &TVarArqProg::FuncLin },
+        { "texto",        &TVarArqProg::FuncTexto } };
+// Procura a função correspondente e executa
+    int ini = 0;
+    int fim = sizeof(ExecFunc) / sizeof(ExecFunc[0]) - 1;
+    char mens[80];
+    copiastrmin(mens, nome, sizeof(mens));
+    while (ini <= fim)
     {
-        bool b = (*Arquivo != 0);
-        Instr::ApagarVar(v);
-        return Instr::CriarVarInt(b);
-    }
-    if (comparaZ(nome, "texto") == 0)
-    {
-        char arq[ARQINCLUIR_TAM];
-        copiastr(arq, Arquivo, sizeof(arq));
-        Instr::ApagarVar(v);
-        return Instr::CriarVarTexto(arq);
-    }
-    if (comparaZ(nome, "depois") == 0)
-    {
-        Proximo();
-        return false;
-    }
-
-// Iniciar a busca
-    if (comparaZ(nome, "abrir") == 0)
-    {
-        Fechar();
-        Abrir();
-        Instr::ApagarVar(v);
-        return Instr::CriarVarTexto("");
-    }
-    if (comparaZ(nome, "fechar") == 0)
-    {
-        Fechar();
-        return false;
+        int meio = (ini + fim) / 2;
+        int resultado = strcmp(mens, ExecFunc[meio].Nome);
+        if (resultado == 0) // Se encontrou...
+            return (this->*ExecFunc[meio].Func)(v);
+        if (resultado < 0) fim = meio - 1; else ini = meio + 1;
     }
     return false;
+}
+
+//------------------------------------------------------------------------------
+bool TVarArqProg::FuncAbrir(TVariavel * v)
+{
+    Fechar();
+    Abrir();
+    Instr::ApagarVar(v);
+    return Instr::CriarVarTexto("");
+}
+//------------------------------------------------------------------------------
+bool TVarArqProg::FuncFechar(TVariavel * v)
+{
+    Fechar();
+    return false;
+}
+
+//------------------------------------------------------------------------------
+bool TVarArqProg::FuncDepois(TVariavel * v)
+{
+    Proximo();
+    return false;
+}
+
+//------------------------------------------------------------------------------
+bool TVarArqProg::FuncLin(TVariavel * v)
+{
+    bool b = (*Arquivo != 0);
+    Instr::ApagarVar(v);
+    return Instr::CriarVarInt(b);
+}
+
+//------------------------------------------------------------------------------
+bool TVarArqProg::FuncTexto(TVariavel * v)
+{
+    char arq[ARQINCLUIR_TAM];
+    copiastr(arq, Arquivo, sizeof(arq));
+    Instr::ApagarVar(v);
+    return Instr::CriarVarTexto(arq);
 }

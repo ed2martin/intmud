@@ -68,6 +68,12 @@ private:
     TArqIncluir * Incluir; // Próximo diretório a buscar
     int ArqBarra;       // Primeiro caracter a partir da última "/" no arquivo
     int ArqPadrao;      // Quantos caracteres compõem o padrão do arquivo
+
+    bool FuncAbrir(TVariavel * v);  ///< Processa função Abrir
+    bool FuncFechar(TVariavel * v); ///< Processa função Fechar
+    bool FuncDepois(TVariavel * v); ///< Processa função Depois
+    bool FuncLin(TVariavel * v);    ///< Processa função Lin
+    bool FuncTexto(TVariavel * v);  ///< Processa função Texto
 };
 
 //----------------------------------------------------------------------------

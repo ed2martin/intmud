@@ -41,6 +41,18 @@ private:
         ///< Tempo que corresponde a dia, hora e minuto
     static int TempoSav;
         ///< Quanto tempo checou arquivos pendentes pela última vez
+
+    static bool FuncLimpar(TVariavel * v);     ///< Processa função Limpar
+    static bool FuncLimpou(TVariavel * v);     ///< Processa função Limpou
+    static bool FuncSenhaCod(TVariavel * v);   ///< Processa função SenhaCod
+    static bool FuncValido(TVariavel * v);     ///< Processa função Valido
+    static bool FuncExiste(TVariavel * v);     ///< Processa função Existe
+    static bool FuncSenha(TVariavel * v);      ///< Processa função Senha
+    static bool FuncDias(TVariavel * v);       ///< Processa função Dias
+    static bool FuncLer(TVariavel * v);        ///< Processa função Ler
+    static bool FuncSalvar(TVariavel * v);     ///< Processa função Salvar
+    static bool FuncSalvarCod(TVariavel * v);  ///< Processa função SalvarCod
+    static bool FuncApagar(TVariavel * v);     ///< Processa função Apagar
 };
 
 //----------------------------------------------------------------------------

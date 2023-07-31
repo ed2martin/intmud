@@ -2813,11 +2813,13 @@ já estiverem na listaobj.
 Recua a quantidade de objetos especificada.
 Nada faz se a quantidade for menor ou igual a zero.
 Sem argumentos, posiciona-se no objeto anterior.
+Retorna a própria variável 'listaitem'.
 
 18.5. depois([número de objetos])
 Avança a quantidade de objetos especificada.
 Nada faz se a quantidade for menor ou igual a zero.
 Sem argumentos, posiciona-se no próximo objeto.
+Retorna a própria variável 'listaitem'.
 
 18.6. objantes([número de objetos])
 Semelhante à função 'antes', mas considera apenas objetos da mesma classe.
@@ -2830,10 +2832,12 @@ Remove objeto da lista, a 'listaitem' passa a não ser um objeto válido.
 
 18.9. removeantes
 Remove objeto da lista e passa para o anterior.
+Retorna a própria variável 'listaitem'.
 Nota: Não confundir com 'remover o objeto anterior'.
 
 18.10. removedepois
 Remove objeto da lista e passa para o próximo.
+Retorna a própria variável 'listaitem'.
 Nota: Não confundir com 'remover o próximo objeto'.
 
 18.11. obj
@@ -2890,7 +2894,7 @@ Adiciona linhas no início do textotxt.
 19.7. addfim(<texto>)
 Adiciona linhas no fim do textotxt.
 
-19.8. remove(<quantidade de linhas>)
+19.8. remove([quantidade de linhas])
 Retorna um texto que contém uma quantidade de linhas do início do
 textotxt. Retira essas linhas do textotxt.
 Se a quantidade de linhas for omitida, remove uma linha apenas.
@@ -3028,17 +3032,21 @@ Retorna a quantidade de bytes desde o início do texto; começa no 0.
 
 20.4. antes
 Passa para a linha anterior.
+Retorna a própria variável 'textopos'.
 
 20.5. antes(<número de linhas>)
 Recua o número de linhas especificado.
 Nada faz se o número for menor ou igual a zero.
+Retorna a própria variável 'textopos'.
 
 20.6. depois
 Vai para a próxima linha.
+Retorna a própria variável 'textopos'.
 
 20.7. depois(<número de linhas>)
 Avança o número de linhas especificado.
 Nada faz se o número for menor ou igual a zero.
+Retorna a própria variável 'textopos'.
 
 20.8. texto([caracter inicial], [quantidade de caracteres])
 Retorna o texto da linha atual ou de parte da linha atual.
@@ -3384,7 +3392,7 @@ Apaga um arquivo.
 Retorna "" se sucesso ou um texto contendo o erro.
 
 24.13. renomear(<antigo nome>, <novo nome>)
-Renomeia uma entrada.
+Renomeia uma entrada. Se o novo nome já existir, é substituído.
 Retorna "" se sucesso ou um texto contendo o erro.
 
 24.14. barra(<texto>)

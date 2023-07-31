@@ -8,7 +8,7 @@ const msg = tela1.msg(arg0)
 func iniclasse
   criar(arg0)
 func mostra_menu
-  msg("Opções:\n")
+  msg("\c3Opções:\b\n")
   msg("l - mostra a lista\n")
   msg("t - mostra os objetos\n")
   msg("x - teste com lista local\n")
@@ -33,16 +33,14 @@ func tela1_tecla
   ret 1
 func escr_l
   listaitem item
-  item = lista.ini
-  msg("Lista pertence a " + lista.objlista + "/" + item.objlista + "\n")
-  msg("Lista contém (" + lista.total + "):\n")
-  enquanto item
+  msg("\c3Lista pertence a " + lista.objlista + "/" + item.objlista + "\b\n")
+  msg("\c3Lista contém (" + lista.total + "):\b\n")
+  epara item = lista.ini, item, item.depois
     msg(txt(item.obj) + " /" + item.obj.opc + "\n")
-    item.depois
   efim
   ret 1
 func escr_t
-  msg("Objetos:\n")
+  msg("\c3Objetos:\b\n")
   msg("porta = " + porta:total + "\n")
   msg("janela = " + janela:total + "\n")
   msg("cadeira = " + cadeira:total + "\n")
@@ -59,11 +57,9 @@ func escr_x
 #i1.depois
 #i1.addfim($porta)
 #i1.remove
-  msg("Lista local\n")
-  i1 = l1.fim
-  enquanto i1
+  msg("\c3Lista local\b\n")
+  epara i1 = l1.fim, i1, i1.antes
     msg(txt(i1.obj) + "\n")
-    i1.antes
   efim
   ret 1
 func escr_y
@@ -71,7 +67,7 @@ func escr_y
   l1.addfim($janela)
   l1.addfim($cadeira)
   l1.addfim($cadeira)
-  msg("Lista local (" + l1.total + ")\n")
+  msg("\c3Lista local (" + l1.total + ")\b\n")
   enquanto l1.ini
     msg(txt(l1.ini.obj) + "   (" + l1.total + ")\n")
     l1.ini.remove
@@ -80,11 +76,9 @@ func escr_y
 func escr_a
   listaitem item
   lista.rand
-  msg("Organizado:\n")
-  item = lista.ini
-  enquanto item
+  msg("\c3Organizado:\b\n")
+  epara item = lista.ini, item, item.depois
     msg(txt(item.obj) + " /" + item.obj.opc + "\n")
-    item.depois
   efim
   ret 1
 func escr_d
@@ -100,14 +94,9 @@ const escr_7 = readiciona(7)
 const escr_8 = readiciona(8)
 const escr_9 = readiciona(9)
 func readiciona
-  listaitem l1
-  uint32 num
-  num = lista.total
-  l1 = lista.ini
-  l1.depois(arg0 - 1)
-  se !l1
-    msg("vazio\n")
-  fimse
+  listaitem l1 = lista.ini.depois(arg0 - 1)
+  uint32 num = lista.total
+  !l1 && msg("Vazio\n")
   lista.addfim(l1.obj)
   msg("Objetos adicionados: " + (lista.total - num) + "\n")
   ret 1

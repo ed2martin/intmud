@@ -750,12 +750,13 @@ bool TTextoPos::Func(TVariavel * v, const char * nome)
 bool TTextoPos::FuncAntes(TVariavel * v, int valor)
 {
     int total = 1;
-    if (Instr::VarAtual >= v+1)
+    if (Instr::VarAtual >= v + 1)
         total = v[1].getInt();
-    if (total>0)
+    if (total > 0)
         MoverPos(-total);
     DebugTextoTxt(TextoTxt);
-    return false;
+    Instr::ApagarVar(v + 1);
+    return true;
 }
 
 //----------------------------------------------------------------------------
@@ -768,7 +769,8 @@ bool TTextoPos::FuncDepois(TVariavel * v, int valor)
     if (total>0)
         MoverPos(total);
     DebugTextoTxt(TextoTxt);
-    return false;
+    Instr::ApagarVar(v + 1);
+    return true;
 }
 
 //----------------------------------------------------------------------------

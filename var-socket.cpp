@@ -395,41 +395,29 @@ void TVarSocket::Igual(TVarSocket * v)
 //------------------------------------------------------------------------------
 bool TVarSocket::Func(TVariavel * v, const char * nome)
 {
-// Envia mensagem: de longe é a função mais usada
-    if (comparaZ(nome, "msg")==0)
-    {
-        if (Socket==0)
-            return false;
-        bool enviou = true;
-        int codigo = (Instr::VarAtual > v+1 ? v[2].getInt() : 1);
-        if (Instr::VarAtual >= v+1)
-            enviou = Socket->Enviar(v[1].getTxt(), codigo);
-        Instr::ApagarVar(v);
-        return Instr::CriarVarInt(enviou);
-    }
 // Lista das funções de socket
 // Deve obrigatoriamente estar em letras minúsculas e ordem alfabética
     static const struct {
         const char * Nome;
-        int valor;
-        bool (TVarSocket::*Func)(TVariavel * v, int valor); } ExecFunc[] = {
-        { "abrir",        0, &TVarSocket::FuncAbrir },
-        { "abrirssl",     1, &TVarSocket::FuncAbrir },
-        { "aflooder",     SocketAFlooder,  &TVarSocket::FuncVariaveis },
-        { "cores",        SocketCores,     &TVarSocket::FuncVariaveis },
-        { "eventoip",     0, &TVarSocket::FuncEventoIP },
-        { "fechar",       0, &TVarSocket::FuncFechar },
-        { "inissl",       0, &TVarSocket::FuncIniSSL },
-        { "ip",           1, &TVarSocket::FuncEndereco },
-        { "iplocal",      0, &TVarSocket::FuncEndereco },
-        { "ipnome",       0, &TVarSocket::FuncIPNome },
-        { "ipvalido",     0, &TVarSocket::FuncIPValido },
-        { "nomeip",       0, &TVarSocket::FuncNomeIP },
-        { "opctelnet",    SocketOpcTelnet, &TVarSocket::FuncVariaveis },
-        { "posx",         SocketPosX,      &TVarSocket::FuncVariaveis },
-        { "proto",        SocketProto,     &TVarSocket::FuncVariaveis },
-        { "txtmd5",       2, &TVarSocket::FuncEndereco },
-        { "txtsha1",      3, &TVarSocket::FuncEndereco }  };
+        bool (TVarSocket::*Func)(TVariavel * v); } ExecFunc[] = {
+        { "abrir",        &TVarSocket::FuncAbrir },
+        { "abrirssl",     &TVarSocket::FuncAbrirSsl },
+        { "aflooder",     &TVarSocket::FuncAFlooder },
+        { "cores",        &TVarSocket::FuncCores },
+        { "eventoip",     &TVarSocket::FuncEventoIP },
+        { "fechar",       &TVarSocket::FuncFechar },
+        { "inissl",       &TVarSocket::FuncIniSSL },
+        { "ip",           &TVarSocket::FuncIp },
+        { "iplocal",      &TVarSocket::FuncIpLocal },
+        { "ipnome",       &TVarSocket::FuncIPNome },
+        { "ipvalido",     &TVarSocket::FuncIPValido },
+        { "msg",          &TVarSocket::FuncMsg },
+        { "nomeip",       &TVarSocket::FuncNomeIP },
+        { "opctelnet",    &TVarSocket::FuncOpcTelnet },
+        { "posx",         &TVarSocket::FuncPosX },
+        { "proto",        &TVarSocket::FuncProto },
+        { "txtmd5",       &TVarSocket::FuncMd5 },
+        { "txtsha1",      &TVarSocket::FuncSha1 }  };
 // Procura a função correspondente e executa
     int ini = 0;
     int fim = sizeof(ExecFunc) / sizeof(ExecFunc[0]) - 1;
@@ -437,18 +425,32 @@ bool TVarSocket::Func(TVariavel * v, const char * nome)
     copiastrmin(mens, nome, sizeof(mens));
     while (ini <= fim)
     {
-        int meio = (ini+fim)/2;
+        int meio = (ini + fim) / 2;
         int resultado = strcmp(mens, ExecFunc[meio].Nome);
-        if (resultado==0) // Se encontrou...
-            return (this->*ExecFunc[meio].Func)(v, ExecFunc[meio].valor);
-        if (resultado<0) fim=meio-1; else ini=meio+1;
+        if (resultado == 0) // Se encontrou...
+            return (this->*ExecFunc[meio].Func)(v);
+        if (resultado < 0) fim = meio - 1; else ini = meio + 1;
     }
     return false;
 }
 
 //----------------------------------------------------------------------------
+// Envia mensagem: de longe é a função mais usada
+bool TVarSocket::FuncMsg(TVariavel * v)
+{
+    if (Socket==0)
+        return false;
+    bool enviou = true;
+    int codigo = (Instr::VarAtual > v+1 ? v[2].getInt() : 1);
+    if (Instr::VarAtual >= v+1)
+        enviou = Socket->Enviar(v[1].getTxt(), codigo);
+    Instr::ApagarVar(v);
+    return Instr::CriarVarInt(enviou);
+}
+
+//----------------------------------------------------------------------------
 /// Conecta
-bool TVarSocket::FuncAbrir(TVariavel * v, int valor)
+bool TVarSocket::FuncAbrir(TVariavel * v)
 {
     MudarSock(0);
     if (Instr::VarAtual - v < 2)
@@ -458,16 +460,7 @@ bool TVarSocket::FuncAbrir(TVariavel * v, int valor)
 #ifdef DEBUG_MSG
     printf(">>>>>>> Abrir(%s, %d)\n", ender, porta);
 #endif
-    if (valor == 1)
-    {
-        const char * err = AbreClienteSSL();
-        if (err)
-        {
-            Instr::ApagarVar(v);
-            return Instr::CriarVarInt(0);
-        }
-    }
-    TSocket * s = TSocket::Conectar(ender, porta, valor==1);
+    TSocket * s = TSocket::Conectar(ender, porta, false);
     if (s)
         MudarSock(s);
     Instr::ApagarVar(v);
@@ -475,8 +468,34 @@ bool TVarSocket::FuncAbrir(TVariavel * v, int valor)
 }
 
 //----------------------------------------------------------------------------
+/// Conecta
+bool TVarSocket::FuncAbrirSsl(TVariavel * v)
+{
+    MudarSock(0);
+    if (Instr::VarAtual - v < 2)
+        return false;
+    int porta = v[2].getInt();
+    const char * ender = v[1].getTxt();
+#ifdef DEBUG_MSG
+    printf(">>>>>>> AbrirSsl(%s, %d)\n", ender, porta);
+#endif
+    const char * err = AbreClienteSSL();
+    if (err)
+    {
+        Instr::ApagarVar(v);
+        return Instr::CriarVarInt(0);
+    }
+    TSocket * s = TSocket::Conectar(ender, porta, true);
+    if (s)
+        MudarSock(s);
+    Instr::ApagarVar(v);
+    return Instr::CriarVarInt(s!=0);
+}
+
+
+//----------------------------------------------------------------------------
 /// Fecha Socket
-bool TVarSocket::FuncFechar(TVariavel * v, int valor)
+bool TVarSocket::FuncFechar(TVariavel * v)
 {
     if (Socket)
         Socket->Fechar();
@@ -484,29 +503,88 @@ bool TVarSocket::FuncFechar(TVariavel * v, int valor)
 }
 
 //----------------------------------------------------------------------------
-/// Endereço IP
-bool TVarSocket::FuncEndereco(TVariavel * v, int valor)
+bool TVarSocket::FuncIpLocal(TVariavel * v)
 {
-    char mens[50];
-    *mens=0;
+    char mens[50] = "";
     if (Socket)
-        Socket->Endereco(valor, mens, sizeof(mens));
+        Socket->Endereco(0, mens, sizeof(mens));
     Instr::ApagarVar(v);
     return Instr::CriarVarTexto(mens);
 }
 
 //----------------------------------------------------------------------------
-/// Variáveis
-bool TVarSocket::FuncVariaveis(TVariavel * v, int valor)
+bool TVarSocket::FuncIp(TVariavel * v)
 {
-    Instr::ApagarVar(v+1);
-    Instr::VarAtual->numfunc = valor;
+    char mens[50] = "";
+    if (Socket)
+        Socket->Endereco(1, mens, sizeof(mens));
+    Instr::ApagarVar(v);
+    return Instr::CriarVarTexto(mens);
+}
+
+//----------------------------------------------------------------------------
+bool TVarSocket::FuncMd5(TVariavel * v)
+{
+    char mens[50] = "";
+    if (Socket)
+        Socket->Endereco(2, mens, sizeof(mens));
+    Instr::ApagarVar(v);
+    return Instr::CriarVarTexto(mens);
+}
+
+//----------------------------------------------------------------------------
+bool TVarSocket::FuncSha1(TVariavel * v)
+{
+    char mens[50] = "";
+    if (Socket)
+        Socket->Endereco(3, mens, sizeof(mens));
+    Instr::ApagarVar(v);
+    return Instr::CriarVarTexto(mens);
+}
+
+//----------------------------------------------------------------------------
+bool TVarSocket::FuncAFlooder(TVariavel * v)
+{
+    Instr::ApagarVar(v + 1);
+    Instr::VarAtual->numfunc = SocketAFlooder;
+    return true;
+}
+
+//----------------------------------------------------------------------------
+bool TVarSocket::FuncCores(TVariavel * v)
+{
+    Instr::ApagarVar(v + 1);
+    Instr::VarAtual->numfunc = SocketCores;
+    return true;
+}
+
+//----------------------------------------------------------------------------
+bool TVarSocket::FuncOpcTelnet(TVariavel * v)
+{
+    Instr::ApagarVar(v + 1);
+    Instr::VarAtual->numfunc = SocketOpcTelnet;
+    return true;
+}
+
+//----------------------------------------------------------------------------
+bool TVarSocket::FuncPosX(TVariavel * v)
+{
+    Instr::ApagarVar(v + 1);
+    Instr::VarAtual->numfunc = SocketPosX;
+    return true;
+}
+
+//----------------------------------------------------------------------------
+bool TVarSocket::FuncProto(TVariavel * v)
+{
+    Instr::ApagarVar(v + 1);
+    Instr::VarAtual->numfunc = SocketProto;
     return true;
 }
 
 //----------------------------------------------------------------------------
 /// Obter nome e gerar evento
-bool TVarSocket::FuncEventoIP(TVariavel * v, int valor)
+bool TVarSocket::FuncEventoIP(TVariavel * v)
 {
     if (Instr::VarAtual - v < 1)
         return false;
@@ -523,7 +601,7 @@ bool TVarSocket::FuncEventoIP(TVariavel * v, int valor)
 
 //----------------------------------------------------------------------------
 /// Endereço IP a partir do nome ou IP
-bool TVarSocket::FuncNomeIP(TVariavel * v, int valor)
+bool TVarSocket::FuncNomeIP(TVariavel * v)
 {
     if (Instr::VarAtual - v < 1)
         return false;
@@ -560,7 +638,7 @@ bool TVarSocket::FuncNomeIP(TVariavel * v, int valor)
 
 //----------------------------------------------------------------------------
 /// Nome a partir do nome ou IP
-bool TVarSocket::FuncIPNome(TVariavel * v, int valor)
+bool TVarSocket::FuncIPNome(TVariavel * v)
 {
     if (Instr::VarAtual - v < 1)
         return false;
@@ -589,7 +667,7 @@ bool TVarSocket::FuncIPNome(TVariavel * v, int valor)
 
 //----------------------------------------------------------------------------
 /// Checa se é um endereço IP válido
-bool TVarSocket::FuncIPValido(TVariavel * v, int valor)
+bool TVarSocket::FuncIPValido(TVariavel * v)
 {
     if (Instr::VarAtual - v < 1)
         return false;
@@ -609,7 +687,7 @@ bool TVarSocket::FuncIPValido(TVariavel * v, int valor)
 
 //----------------------------------------------------------------------------
 /// Abre biblioteca SSL
-bool TVarSocket::FuncIniSSL(TVariavel * v, int valor)
+bool TVarSocket::FuncIniSSL(TVariavel * v)
 {
     const char * err = AbreClienteSSL();
     Instr::ApagarVar(v);

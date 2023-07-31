@@ -1,0 +1,49 @@
+telatxt = 1
+log = 0
+err = 2
+
+classe banana
+classe limão
+classe uva
+classe tomate
+classe teste
+const iniclasse = criar(arg0)
+
+func mostra # Mostra o conteúdo de uma listaobj
+# arg0 = lista, arg1 = mensagem
+  telatxt tela
+  tela.msg(arg1 + "\n")
+  se arg0.total == 0
+    tela.msg("  Lista está vazia\n")
+  senao
+    tela.msg("  Lista contém: " + arg0.objini)
+    listaitem i = arg0.ini
+    epara i.depois, i, i.depois
+      tela.msg(", " + i.obj)
+    efim
+    tela.msg("\n")
+  fimse
+
+func ini # Chamado quando um ojeto da classe teste é criado
+  criar("banana") # Cria $banana
+  criar("limão")
+  criar("uva")
+  criar("tomate")
+  listaobj lista
+  mostra(lista, "listaobj lista")
+  lista.addfim($limão) # adiciona objeto limão na lista
+  mostra(lista, "lista.addfim($limão)")
+  lista.addfim($tomate, $uva)
+  mostra(lista, "lista.addfim($tomate, $uva) - adiciona no fim da lista")
+  lista.addini($banana, $tomate)
+  mostra(lista, "lista.addini($banana, $tomate) - adiciona no início da lista")
+  lista.remove
+  mostra(lista, "lista.remove - sem argumentos remove objetos duplicados")
+  lista.addfim(lista.objini)
+  mostra(lista, "lista.addfim(lista.objini) - adiciona primeiro objeto no fim da lista")
+  lista.ini.remove
+  mostra(lista, "lista.ini.remove - remove o primeiro objeto da lista")
+  lista.remove($banana, $limao)
+  mostra(lista, "lista.remove($banana, $limao) - com argumentos remove objetos da lista")
+  lista.limpar
+  mostra(lista, "lista.limpar - Tira todos os objetos da lista")

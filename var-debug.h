@@ -46,6 +46,19 @@ public:
     static TVarDebug * Inicio;   ///< Primeiro objeto
     TVarDebug * Antes;    ///< Objeto anterior
     TVarDebug * Depois;   ///< Próximo objeto
+
+private:
+    static bool FuncIni(TVariavel * v);    ///< Processa função Ini
+    static bool FuncExec(TVariavel * v);   ///< Processa função Exec
+    static bool FuncUtempo(TVariavel * v); ///< Processa função Utempo
+    static bool FuncStempo(TVariavel * v); ///< Processa função Stempo
+    static bool FuncMem(TVariavel * v);    ///< Processa função Mem
+    static bool FuncMemMax(TVariavel * v); ///< Processa função MemMax
+    static bool FuncFunc(TVariavel * v);   ///< Processa função Func
+    static bool FuncCmd(TVariavel * v);    ///< Processa função Cmd
+    static bool FuncPasso(TVariavel * v);  ///< Processa função Passo
+    static bool FuncVer(TVariavel * v);    ///< Processa função Ver
+    static bool FuncData(TVariavel * v);   ///< Processa função Data
 };
 
 //----------------------------------------------------------------------------
