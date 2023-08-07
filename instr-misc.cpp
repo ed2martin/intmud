@@ -35,66 +35,66 @@ const Instr::TListaFunc Instr::ListaFunc[] = {
     { "args",         Instr::FuncArgs, 0 },
     { "criar",        Instr::FuncCriar, 0 },
     { "este",         Instr::FuncEste, 0 },
-    { "int",          Instr::FuncNumero, 2 },
-    { "intabs",       Instr::FuncNumero, 1 },
+    { "int",          Instr::FuncInt, 0 },
+    { "intabs",       Instr::FuncIntAbs, 0 },
     { "intbit",       Instr::FuncIntBit, 0 },
     { "intbith",      Instr::FuncIntBitH, 0 },
     { "intchr",       Instr::FuncIntChr, 0 },
     { "intdist",      Instr::FuncIntDist, 0 },
     { "intdistdif",   Instr::FuncIntDist, 2 },
     { "intdistmai",   Instr::FuncIntDist, 1 },
-    { "intdiv",       Instr::FuncNumero, 3 },
+    { "intdiv",       Instr::FuncIntDiv, 0 },
     { "intmax",       Instr::FuncMax, 0 },
     { "intmin",       Instr::FuncMin, 0 },
-    { "intnome",      Instr::FuncInt, 0 },
-    { "intpos",       Instr::FuncNumero, 0 },
-    { "intsenha",     Instr::FuncInt, 1 },
+    { "intnome",      Instr::FuncIntNome, 0 },
+    { "intpos",       Instr::FuncIntPos, 0 },
+    { "intsenha",     Instr::FuncIntSenha, 0 },
     { "intsub",       Instr::FuncIntSub, 0 },
     { "intsublin",    Instr::FuncIntSubLin, 0 },
     { "inttotal",     Instr::FuncTotal, 0 },
-    { "matacos",      Instr::FuncNumero, 8 },
-    { "matasin",      Instr::FuncNumero, 7 },
-    { "matatan",      Instr::FuncNumero, 9 },
-    { "matbaixo",     Instr::FuncNumero, 14 },
-    { "matcima",      Instr::FuncNumero, 13 },
-    { "matcos",       Instr::FuncNumero, 5 },
-    { "matdeg",       Instr::FuncNumero, 16 },
-    { "matexp",       Instr::FuncNumero, 10 },
-    { "matlog",       Instr::FuncNumero, 11 },
-    { "matpi",        Instr::FuncConstante, 0 },
+    { "matacos",      Instr::FuncMatAcos, 0 },
+    { "matasin",      Instr::FuncMatAsin, 0 },
+    { "matatan",      Instr::FuncMatAtan, 0 },
+    { "matbaixo",     Instr::FuncMatBaixo, 0 },
+    { "matcima",      Instr::FuncMatCima, 0 },
+    { "matcos",       Instr::FuncMatCos, 0 },
+    { "matdeg",       Instr::FuncMatDeg, 0 },
+    { "matexp",       Instr::FuncMatExp, 0 },
+    { "matlog",       Instr::FuncMatLog, 0 },
+    { "matpi",        Instr::FuncMatPi, 0 },
     { "matpow",       Instr::FuncPow, 0 },
-    { "matrad",       Instr::FuncNumero, 15 },
-    { "matraiz",      Instr::FuncNumero, 12 },
-    { "matsin",       Instr::FuncNumero, 4 },
-    { "mattan",       Instr::FuncNumero, 6 },
-    { "objantes",     Instr::FuncAntesDepois, 0 },
-    { "objdepois",    Instr::FuncAntesDepois, 1 },
+    { "matrad",       Instr::FuncMatRad, 0 },
+    { "matraiz",      Instr::FuncMatRaiz, 0 },
+    { "matsin",       Instr::FuncMatSin, 0 },
+    { "mattan",       Instr::FuncMatTan, 0 },
+    { "objantes",     Instr::FuncObjAntes, 0 },
+    { "objdepois",    Instr::FuncObjDepois, 0 },
     { "rand",         Instr::FuncRand, 0 },
     { "ref",          Instr::FuncRef, 0 },
     { "txt",          Instr::FuncTxt, 0 },
-    { "txt1",         Instr::FuncTxt2, 0 },
-    { "txt2",         Instr::FuncTxt2, 1 },
+    { "txt1",         Instr::FuncTxt1, 0 },
+    { "txt2",         Instr::FuncTxt2, 0 },
     { "txtbit",       Instr::FuncTxtBit, 0 },
     { "txtbith",      Instr::FuncTxtBitH, 0 },
     { "txtchr",       Instr::FuncTxtChr, 0 },
-    { "txtcod",       Instr::FuncTxt2, 12 },
+    { "txtcod",       Instr::FuncTxtCod, 0 },
     { "txtconv",      Instr::FuncTxtConv, 0 },
     { "txtcopiamai",  Instr::FuncTxtCopiaMai, 0 },
-    { "txtcor",       Instr::FuncTxt2, 2 },
-    { "txtdec",       Instr::FuncTxt2, 13 },
-    { "txte",         Instr::FuncTxt2, 18 },
+    { "txtcor",       Instr::FuncTxtCor, 0 },
+    { "txtdec",       Instr::FuncTxtDec, 0 },
+    { "txte",         Instr::FuncTxtE, 0 },
     { "txtesp",       Instr::FuncEsp, 0 },
-    { "txtfiltro",    Instr::FuncTxt2, 7 },
+    { "txtfiltro",    Instr::FuncTxtFiltro, 0 },
     { "txtfim",       Instr::FuncTxtFim, 0 },
     { "txthex",       Instr::FuncTxtHex, 0 },
-    { "txtinvis",     Instr::FuncTxt2, 15 },
-    { "txtmai",       Instr::FuncTxt2, 3 },
-    { "txtmaiini",    Instr::FuncTxt2, 4 },
-    { "txtmaimin",    Instr::FuncTxt2, 6 },
-    { "txtmd5",       Instr::FuncTxt2, 10 },
-    { "txtmin",       Instr::FuncTxt2, 5 },
+    { "txtinvis",     Instr::FuncTxtInvis, 0 },
+    { "txtmai",       Instr::FuncTxtMai, 0 },
+    { "txtmaiini",    Instr::FuncTxtMaiIni, 0 },
+    { "txtmaimin",    Instr::FuncTxtMaiMin, 0 },
+    { "txtmd5",       Instr::FuncTxtMd5, 0 },
+    { "txtmin",       Instr::FuncTxtMin, 0 },
     { "txtmudamai",   Instr::FuncTxtMudaMai, 0 },
-    { "txtnome",      Instr::FuncTxt2, 11 },
+    { "txtnome",      Instr::FuncTxtNome, 0 },
     { "txtnum",       Instr::FuncTxtNum, 0 },
     { "txtproc",      Instr::FuncTxtProc, 0 },
     { "txtprocdif",   Instr::FuncTxtProc, 2 },
@@ -104,21 +104,21 @@ const Instr::TListaFunc Instr::ListaFunc[] = {
     { "txtprocmai",   Instr::FuncTxtProc, 1 },
     { "txtremove",    Instr::FuncTxtRemove, 0 },
     { "txtrepete",    Instr::FuncTxtRepete, 0 },
-    { "txtrev",       Instr::FuncTxt2, 20 },
-    { "txts",         Instr::FuncTxt2, 19 },
+    { "txtrev",       Instr::FuncTxtRev, 0 },
+    { "txts",         Instr::FuncTxtS, 0 },
     { "txtsepara",    Instr::FuncTxtSepara, 0 },
-    { "txtsha1",      Instr::FuncTxt2, 9 },
-    { "txtsha1bin",   Instr::FuncTxt2, 8 },
+    { "txtsha1",      Instr::FuncTxtSha1, 0 },
+    { "txtsha1bin",   Instr::FuncTxtSha1Bin, 0 },
     { "txtsub",       Instr::FuncTxt, 1 },
     { "txtsublin",    Instr::FuncTxt, 2 },
     { "txttroca",     Instr::FuncTxtTroca, 0 },
     { "txttrocadif",  Instr::FuncTxtTroca, 2 },
     { "txttrocamai",  Instr::FuncTxtTroca, 1 },
-    { "txturlcod",    Instr::FuncTxt2, 16 },
-    { "txturldec",    Instr::FuncTxt2, 17 },
-    { "txtvis",       Instr::FuncTxt2, 14 },
+    { "txturlcod",    Instr::FuncTxtUrlCod, 0 },
+    { "txturldec",    Instr::FuncTxtUrlDec, 0 },
+    { "txtvis",       Instr::FuncTxtVis, 0 },
     { "vartroca",     Instr::FuncVarTroca, 0 },
-    { "vartrocacod",  Instr::FuncVarTroca, 1 }
+    { "vartrocacod",  Instr::FuncVarTrocaCod, 0 }
 };
 
 //------------------------------------------------------------------------------
@@ -286,6 +286,34 @@ bool Instr::CriarVarInt(int valor)
 }
 
 //----------------------------------------------------------------------------
+/// Cria variável double com um valor definido
+/**
+ *  @param valor Valor numérico da variável
+ *  @return true se conseguiu criar, false se memória insuficiente */
+bool Instr::CriarVarDouble(double valor)
+{
+    int tam = TVariavel::Tamanho(InstrDouble);
+// Acerta alinhamento do endereço da variável
+    char * p = Instr::DadosTopo;
+    p += ((p - Instr::DadosPilha) & 1);
+    p += ((p - Instr::DadosPilha) & 2);
+// Verifica se memória suficiente
+    if (VarAtual >= VarFim - 1 || p + tam > Instr::DadosFim)
+      return false;
+// Prepara variável
+    VarAtual++;
+    VarAtual->endvar = p;
+    VarAtual->defvar = InstrDouble;
+    VarAtual->nomevar = InstrDouble;
+    VarAtual->tamanho = tam;
+    VarAtual->indice = 0;
+// Cria variável
+    Instr::DadosTopo = p + tam;
+    VarAtual->setDouble(valor);
+    return true;
+}
+
+//----------------------------------------------------------------------------
 /// Cria variável de texto no topo da pilha de variáveis (Instr::VarPilha)
 /**
  *  @param mens A mensagem que será retornada;
@@ -297,7 +325,7 @@ bool Instr::CriarVarInt(int valor)
 bool Instr::CriarVarTexto(const char * mens, int tammens)
 {
 // Acerta variáveis
-    if (VarAtual >= VarFim-1)
+    if (VarAtual >= VarFim - 1)
         return false;
 // Verifica espaço disponível (sem o 0 no final do texto)
     if (tammens < 0)
@@ -333,7 +361,7 @@ bool Instr::CriarVarTexto(const char * mens, int tammens)
  *  @return true se conseguiu criar, false se memória insuficiente */
 bool Instr::CriarVarObj(TObjeto * obj)
 {
-    if (VarAtual >= VarFim-1)
+    if (VarAtual >= VarFim - 1)
         return false;
     VarAtual++;
     if (obj)
@@ -357,7 +385,7 @@ bool Instr::CriarVarObj(TObjeto * obj)
 /** @return true se conseguiu criar, false se memória insuficiente */
 bool Instr::CriarVar(const char * def)
 {
-    if (VarAtual >= VarFim-1)
+    if (VarAtual >= VarFim - 1)
         return false;
 // Verifica se tamanho da variável é nulo
     int tam = TVariavel::Tamanho(def);

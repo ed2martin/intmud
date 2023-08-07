@@ -122,13 +122,8 @@ bool TIndiceItem::FuncObj(TVariavel * v)
         if (IndiceObj == nullptr)
             return false;
         TObjeto * obj = IndiceObj->Objeto;
-        if (obj == nullptr)
-            return false;
         Instr::ApagarVar(v);
-        if (!Instr::CriarVar(Instr::InstrVarObjeto))
-            return false;
-        Instr::VarAtual->setObj(obj);
-        return true;
+        return Instr::CriarVarObj(obj);
     }
 // Pelo menos um argumento
     for (TVariavel * v1 = v + 1; v1 <= Instr::VarAtual; v1++)
@@ -143,14 +138,9 @@ bool TIndiceItem::FuncObj(TVariavel * v)
             continue;
     // Obtém objeto
         TObjeto * obj = indice->Objeto;
-        if (obj == nullptr)
-            continue;
     // Retorna o objeto encontrado
         Instr::ApagarVar(v);
-        if (!Instr::CriarVar(Instr::InstrVarObjeto))
-            return false;
-        Instr::VarAtual->setObj(obj);
-        return true;
+        return Instr::CriarVarObj(obj);
     }
     return false;
 }

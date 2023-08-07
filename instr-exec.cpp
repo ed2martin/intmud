@@ -1042,9 +1042,8 @@ bool Instr::ExecX()
                 unsigned int x = Num32(FuncAtual->expr + 1);
                 if (x & 0x80000000)
                 {
-                    if (!CriarVar(InstrDouble))
+                    if (!CriarVarDouble(x))
                         return RetornoErro(2);
-                    VarAtual->setDouble(x);
                 }
                 else if (!CriarVarInt(x))
                     return RetornoErro(2);
@@ -1067,9 +1066,8 @@ bool Instr::ExecX()
         case ex_num32hexn:
             if (*((unsigned char*)FuncAtual->expr + 4) & 0x80)
             {
-                if (!CriarVar(InstrDouble))
+                if (!CriarVarDouble(-(double)Num32(FuncAtual->expr+1)))
                     return RetornoErro(2);
-                VarAtual->setDouble(-(double)Num32(FuncAtual->expr+1));
             }
             else if (!CriarVarInt( -(int)Num32(FuncAtual->expr+1) ))
                 return RetornoErro(2);
@@ -1095,7 +1093,8 @@ bool Instr::ExecX()
                 if (VarAtual->tamanho == 0 || VarAtual->defvar[2] != cReal2)
                 {
                     ApagarVar(VarAtual);
-                    CriarVar(InstrDouble);
+                    CriarVarDouble(valor);
+                    break;
                 }
                 VarAtual->setDouble(valor);
                 break;
@@ -1179,9 +1178,8 @@ bool Instr::ExecX()
                 {
                     double valor = -VarAtual->getDouble();
                     ApagarVar(VarAtual);
-                    if (!CriarVar(InstrDouble))
+                    if (!CriarVarDouble(valor))
                         return RetornoErro(2);
-                    VarAtual->setDouble(valor);
                 }
             }
             break;
@@ -1270,9 +1268,8 @@ bool Instr::ExecX()
                 double valor = VarAtual->getDouble();                         \
                 VarAtual->setDouble(valor + (somavar));                       \
                 ApagarVar(VarAtual);                                          \
-                if (!CriarVar(InstrDouble))                                   \
+                if (!CriarVarDouble(valor + (somaresult)))                    \
                     return RetornoErro(2);                                    \
-                VarAtual->setDouble(valor + (somaresult));                    \
                 break;                                                        \
             }                                                                 \
             else                                                              \
@@ -1305,14 +1302,12 @@ bool Instr::ExecX()
                                                                               \
                 TVariavel variavel_varfunc = VarAtual[0];                     \
                 ApagarVar(VarAtual);                                          \
-                if (!CriarVar(InstrDouble))                                   \
+                if (!CriarVarDouble(somaresult))                              \
                     return RetornoErro(2);                                    \
-                VarAtual->setDouble(somaresult);                              \
                 VarAtual++;                                                   \
                 VarAtual[0] = variavel_varfunc;                               \
-                if (!CriarVar(InstrDouble))                                   \
+                if (!CriarVarDouble(somavar))                                 \
                     return RetornoErro(2);                                    \
-                VarAtual->setDouble(somavar);                                 \
                 VarAtual++;                                                   \
                 VarAtual[0] = variavel_varfunc;                               \
                 break;                                                        \
@@ -1357,11 +1352,12 @@ bool Instr::ExecX()
                 double valor = VarAtual[-1].getDouble() *
                                VarAtual[0].getDouble();
                 ApagarVar(VarAtual);
-                if (VarAtual->tamanho == 0 || VarAtual->defvar!=InstrDouble)
+                if (VarAtual->tamanho == 0 || VarAtual->defvar != InstrDouble)
                 {
                     ApagarVar(VarAtual);
-                    if (!CriarVar(InstrDouble))
+                    if (!CriarVarDouble(valor))
                         return RetornoErro(2);
+                    break;
                 }
                 VarAtual->setDouble(valor);
                 break;
@@ -1381,8 +1377,9 @@ bool Instr::ExecX()
                 if (VarAtual->tamanho == 0 || VarAtual->defvar != InstrDouble)
                 {
                     ApagarVar(VarAtual);
-                    if (!CriarVar(InstrDouble))
+                    if (!CriarVarDouble(valor1))
                         return RetornoErro(2);
+                    break;
                 }
                 VarAtual->setDouble(valor1);
                 break;
@@ -1419,8 +1416,9 @@ bool Instr::ExecX()
                     if (VarAtual->tamanho == 0 || VarAtual->defvar != InstrDouble)
                     {
                         ApagarVar(VarAtual);
-                        if (!CriarVar(InstrDouble))
+                        if (!CriarVarDouble(valor))
                             return RetornoErro(2);
+                        break;
                     }
                     VarAtual->setDouble(valor);
                 }
@@ -1441,8 +1439,9 @@ bool Instr::ExecX()
                     if (VarAtual->tamanho == 0 || VarAtual->defvar != InstrDouble)
                     {
                         ApagarVar(VarAtual);
-                        if (!CriarVar(InstrDouble))
+                        if (!CriarVarDouble(valor))
                             return RetornoErro(2);
+                        break;
                     }
                     VarAtual->setDouble(valor);
                     break;
@@ -1555,8 +1554,9 @@ bool Instr::ExecX()
                 if (VarAtual->tamanho == 0 || VarAtual->defvar != InstrDouble)
                 {
                     ApagarVar(VarAtual);
-                    if (!CriarVar(InstrDouble))
+                    if (!CriarVarDouble(valor))
                         return RetornoErro(2);
+                    break;
                 }
                 VarAtual->setDouble(valor);
                 break;

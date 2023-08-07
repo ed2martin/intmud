@@ -48,6 +48,7 @@ public:
     bool FuncAddFim1(TVariavel * v);
     bool FuncRemove(TVariavel * v);
     bool FuncRand(TVariavel * v);
+    bool FuncInverter(TVariavel * v);
     bool FuncLimpar(TVariavel * v);
     bool FuncApagar(TVariavel * v);
     bool FuncPossui(TVariavel * v);

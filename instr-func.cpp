@@ -67,7 +67,6 @@ bool Instr::FuncArgs(TVariavel * v, int valor)
 }
 
 //----------------------------------------------------------------------------
-/// Criar objeto (criar)
 bool Instr::FuncCriar(TVariavel * v, int valor)
 {
     if (VarAtual <= v)
@@ -132,7 +131,6 @@ bool Instr::FuncCriar(TVariavel * v, int valor)
 }
 
 //----------------------------------------------------------------------------
-/// Apagar objeto (apagar)
 bool Instr::FuncApagar(TVariavel * v, int valor)
 {
     for (TVariavel * var = v + 1; var <= VarAtual; var++)
@@ -145,135 +143,152 @@ bool Instr::FuncApagar(TVariavel * v, int valor)
 }
 
 //----------------------------------------------------------------------------
-/// Funções chamadas como constantes
-bool Instr::FuncConstante(TVariavel * v, int valor)
+bool Instr::FuncMatPi(TVariavel * v, int valor)
 {
     ApagarVar(v);
-    switch(valor)
-    {
-    case 0: // matpi()
-        if (!CriarVar(InstrDouble))
-            return false;
-        VarAtual->setDouble(M_PI);
-        return true;
-    }
-    return false;
+    return CriarVarDouble(M_PI);
 }
 
 //----------------------------------------------------------------------------
-/// Objeto "este"
 bool Instr::FuncEste(TVariavel * v, int valor)
 {
     ApagarVar(v);
-    if (!CriarVar(InstrVarObjeto))
-        return false;
-    VarAtual->setObj(FuncAtual->este);
-    return true;
+    return Instr::CriarVarObj(FuncAtual->este);
 }
 
 //----------------------------------------------------------------------------
-/// Funções que lidam com números (intpos, intabs e int)
-bool Instr::FuncNumero(TVariavel * v, int valor)
+static inline double NumeroDouble(TVariavel * v)
 {
     double numero = 0;
-    for (TVariavel * var = v + 1; var <= VarAtual; var++)
+    for (TVariavel * var = v + 1; var <= Instr::VarAtual; var++)
         numero += var->getDouble();
-    ApagarVar(v);
-    switch (valor)
-    {
-    case 0: // intpos()
-        if (!CriarVar(InstrDouble))
-            return false;
-        VarAtual->setDouble(numero < 0 ? 0 : numero);
-        return true;
-    case 1: // intabs()
-        if (!CriarVar(InstrDouble))
-            return false;
-        VarAtual->setDouble(numero < 0 ? -numero : numero);
-        return true;
-    case 2: // int()
-        numero = round(numero);
-        if (numero >= (double)-0x7FFFFFFF && numero <= (double)0x7FFFFFFF)
-            return CriarVarInt((int)numero);
-        if (!CriarVar(InstrDouble))
-            return false;
-        VarAtual->setDouble(numero);
-        return true;
-    case 3: // intdiv()
-        numero = trunc(numero);
-        if (numero >= (double)-0x7FFFFFFF && numero <= (double)0x7FFFFFFF)
-            return CriarVarInt((int)numero);
-        if (!CriarVar(InstrDouble))
-            return false;
-        VarAtual->setDouble(numero);
-        return true;
-    case 4: // matsin()
-        if (!CriarVar(InstrDouble))
-            return false;
-        VarAtual->setDouble(sin(numero));
-        return true;
-    case 5: // matcos()
-        if (!CriarVar(InstrDouble))
-            return false;
-        VarAtual->setDouble(cos(numero));
-        return true;
-    case 6: // mattan()
-        if (!CriarVar(InstrDouble))
-            return false;
-        VarAtual->setDouble(tan(numero));
-        return true;
-    case 7: // matasin()
-        if (!CriarVar(InstrDouble))
-            return false;
-        VarAtual->setDouble(asin(numero));
-        return true;
-    case 8: // matacos()
-        if (!CriarVar(InstrDouble))
-            return false;
-        VarAtual->setDouble(acos(numero));
-        return true;
-    case 9: // matatan()
-        if (!CriarVar(InstrDouble))
-            return false;
-        VarAtual->setDouble(atan(numero));
-        return true;
-    case 10: // matexp()
-        if (!CriarVar(InstrDouble))
-            return false;
-        VarAtual->setDouble(exp(numero));
-        return true;
-    case 11: // matlog()
-        if (!CriarVar(InstrDouble))
-            return false;
-        VarAtual->setDouble(log(numero));
-        return true;
-    case 12: // matraiz()
-        if (!CriarVar(InstrDouble))
-            return false;
-        VarAtual->setDouble(sqrt(numero));
-        return true;
-    case 13: // matcima()
-        if (!CriarVar(InstrDouble))
-            return false;
-        VarAtual->setDouble(ceil(numero));
-        return true;
-    case 14: // matbaixo()
-        if (!CriarVar(InstrDouble))
-            return false;
-        VarAtual->setDouble(floor(numero));
-        return true;
-    case 15: // matrad()
-        if (!CriarVar(InstrDouble))
-            return false;
-        VarAtual->setDouble(numero / 180 * M_PI);
-        return true;
-    case 16: // matdeg()
-        if (!CriarVar(InstrDouble))
-            return false;
-        VarAtual->setDouble(numero / M_PI * 180);
-        return true;
-    }
-    return false;
+    Instr::ApagarVar(v);
+    return numero;
+}
+
+//----------------------------------------------------------------------------
+bool Instr::FuncIntPos(TVariavel * v, int valor)
+{
+    double numero = NumeroDouble(v);
+    return CriarVarDouble(numero < 0 ? 0 : numero);
+}
+
+//----------------------------------------------------------------------------
+bool Instr::FuncIntAbs(TVariavel * v, int valor)
+{
+    double numero = NumeroDouble(v);
+    return CriarVarDouble(numero < 0 ? -numero : numero);
+}
+
+//----------------------------------------------------------------------------
+bool Instr::FuncInt(TVariavel * v, int valor)
+{
+    double numero = NumeroDouble(v);
+    numero = round(numero);
+    if (numero >= (double)-0x7FFFFFFF && numero <= (double)0x7FFFFFFF)
+        return CriarVarInt((int)numero);
+    return CriarVarDouble(numero);
+}
+
+//----------------------------------------------------------------------------
+bool Instr::FuncIntDiv(TVariavel * v, int valor)
+{
+    double numero = NumeroDouble(v);
+    numero = trunc(numero);
+    if (numero >= (double)-0x7FFFFFFF && numero <= (double)0x7FFFFFFF)
+        return CriarVarInt((int)numero);
+    return CriarVarDouble(numero);
+}
+
+//----------------------------------------------------------------------------
+bool Instr::FuncMatSin(TVariavel * v, int valor)
+{
+    double numero = NumeroDouble(v);
+    return CriarVarDouble(sin(numero));
+}
+
+//----------------------------------------------------------------------------
+bool Instr::FuncMatCos(TVariavel * v, int valor)
+{
+    double numero = NumeroDouble(v);
+    return CriarVarDouble(cos(numero));
+}
+
+//----------------------------------------------------------------------------
+bool Instr::FuncMatTan(TVariavel * v, int valor)
+{
+    double numero = NumeroDouble(v);
+    return CriarVarDouble(tan(numero));
+}
+
+//----------------------------------------------------------------------------
+bool Instr::FuncMatAsin(TVariavel * v, int valor)
+{
+    double numero = NumeroDouble(v);
+    return CriarVarDouble(asin(numero));
+}
+
+//----------------------------------------------------------------------------
+bool Instr::FuncMatAcos(TVariavel * v, int valor)
+{
+    double numero = NumeroDouble(v);
+    return CriarVarDouble(acos(numero));
+}
+
+//----------------------------------------------------------------------------
+bool Instr::FuncMatAtan(TVariavel * v, int valor)
+{
+    double numero = NumeroDouble(v);
+    return CriarVarDouble(atan(numero));
+}
+
+//----------------------------------------------------------------------------
+bool Instr::FuncMatExp(TVariavel * v, int valor)
+{
+    double numero = NumeroDouble(v);
+    return CriarVarDouble(exp(numero));
+}
+
+//----------------------------------------------------------------------------
+bool Instr::FuncMatLog(TVariavel * v, int valor)
+{
+    double numero = NumeroDouble(v);
+    return CriarVarDouble(log(numero));
+}
+
+//----------------------------------------------------------------------------
+bool Instr::FuncMatRaiz(TVariavel * v, int valor)
+{
+    double numero = NumeroDouble(v);
+    return CriarVarDouble(sqrt(numero));
+}
+
+//----------------------------------------------------------------------------
+bool Instr::FuncMatCima(TVariavel * v, int valor)
+{
+    double numero = NumeroDouble(v);
+    return CriarVarDouble(ceil(numero));
+}
+
+//----------------------------------------------------------------------------
+bool Instr::FuncMatBaixo(TVariavel * v, int valor)
+{
+    double numero = NumeroDouble(v);
+    return CriarVarDouble(floor(numero));
+}
+
+//----------------------------------------------------------------------------
+bool Instr::FuncMatRad(TVariavel * v, int valor)
+{
+    double numero = NumeroDouble(v);
+    return CriarVarDouble(numero / 180 * M_PI);
+}
+
+//----------------------------------------------------------------------------
+bool Instr::FuncMatDeg(TVariavel * v, int valor)
+{
+    double numero = NumeroDouble(v);
+    return CriarVarDouble(numero / M_PI * 180);
 }
 
 //----------------------------------------------------------------------------
@@ -284,10 +299,7 @@ bool Instr::FuncPow(TVariavel * v, int valor)
         return false;
     double numero = pow(v[1].getDouble(), v[2].getDouble());
     ApagarVar(v);
-    if (!CriarVar(InstrDouble))
-        return false;
-    VarAtual->setDouble(numero);
-    return true;
+    return CriarVarDouble(numero);
 }
 
 //----------------------------------------------------------------------------
@@ -571,13 +583,8 @@ bool Instr::FuncRef(TVariavel * v, int valor)
     TObjeto * obj = nullptr;
     for (TVariavel * var = v + 1; var <= VarAtual && obj == nullptr; var++)
         obj = var->getObj();
-    if (obj == nullptr)
-        return false;
     ApagarVar(v);
-    if (!CriarVar(InstrVarObjeto))
-        return false;
-    VarAtual->setObj(obj);
-    return true;
+    return Instr::CriarVarObj(obj);
 }
 
 //----------------------------------------------------------------------------
@@ -735,9 +742,9 @@ bool Instr::FuncTxt(TVariavel * v, int valor)
     char mens[BUF_MENS];    // Resultado
     char * destino = mens;
 // Obtém ini, tam e txt conforme os argumentos
-    if (VarAtual >= v+3)
+    if (VarAtual >= v + 3)
         tam = v[3].getInt();
-    if (tam>0)
+    if (tam > 0)
     {
         if (VarAtual >= v + 2)
         {
@@ -801,7 +808,7 @@ bool Instr::FuncTxt(TVariavel * v, int valor)
     }
 // Anota o texto
     ApagarVar(v);
-    return CriarVarTexto(mens, destino-mens);
+    return CriarVarTexto(mens, destino - mens);
 }
 
 //----------------------------------------------------------------------------
@@ -834,404 +841,540 @@ bool Instr::FuncTxtFim(TVariavel * v, int valor)
 }
 
 //----------------------------------------------------------------------------
-/// Funções de texto: txt1, txt2, txtcor, etc.
+bool Instr::FuncTxt1(TVariavel * v, int valor)
+{
+    const char * txt = (VarAtual >= v + 1 ? v[1].getTxt() : "");
+    char mens[BUF_MENS];
+    char * destino = mens;
+    while (*txt==' ')
+        txt++;
+    while (*txt && *txt!=' ' && destino<mens+sizeof(mens))
+        *destino++ = *txt++;
+    ApagarVar(v);
+    return CriarVarTexto(mens, destino - mens);
+}
+
+//----------------------------------------------------------------------------
 bool Instr::FuncTxt2(TVariavel * v, int valor)
 {
-    const char * txt = "";  // Texto
-    char mens[BUF_MENS];    // Resultado
+    const char * txt = (VarAtual >= v + 1 ? v[1].getTxt() : "");
+    char mens[BUF_MENS];
     char * destino = mens;
+    while (*txt == ' ') txt++;
+    while (*txt && *txt != ' ') txt++;
+    while (*txt == ' ') txt++;
+    while (*txt && destino < mens + sizeof(mens))
+        *destino++ = *txt++;
+    ApagarVar(v);
+    return CriarVarTexto(mens, destino - mens);
+}
 
-    if (VarAtual >= v + 1)
-        txt = v[1].getTxt();
-// Obtém o texto
-    switch (valor)
+//----------------------------------------------------------------------------
+bool Instr::FuncTxtCor(TVariavel * v, int valor)
+{
+    const char * txt = (VarAtual >= v + 1 ? v[1].getTxt() : "");
+    char mens[BUF_MENS];
+    char * destino = mens;
+    while (*txt && destino < mens + sizeof(mens))
     {
-    case 0: // txt1
-        while (*txt == ' ')
-            txt++;
-        while (*txt && *txt != ' ' && destino < mens + sizeof(mens))
-            *destino++ = *txt++;
-        break;
-    case 1: // txt2
-        while (*txt == ' ') txt++;
-        while (*txt && *txt != ' ') txt++;
-        while (*txt == ' ') txt++;
-        while (*txt && destino < mens + sizeof(mens))
-            *destino++ = *txt++;
-        break;
-    case 2: // txtcor
-        while (*txt && destino < mens + sizeof(mens))
+        switch (*txt)
         {
+        case ex_barra_b:
+            txt++;
+            break;
+        case ex_barra_c:
+            if ((txt[1] >= '0' && txt[1] <= '9') ||
+                    (txt[1] >= 'A' && txt[1] <= 'J') ||
+                    (txt[1] >= 'a' && txt[1] <= 'j'))
+                txt += 2;
+            else
+                txt++;
+            break;
+        case ex_barra_d:
+            if (txt[1] >= '0' && txt[1] <= '7')
+                txt += 2;
+            else
+                txt++;
+            break;
+        default:
+            *destino++ = *txt++;
+        }
+    }
+    ApagarVar(v);
+    return CriarVarTexto(mens, destino - mens);
+}
+
+//----------------------------------------------------------------------------
+bool Instr::FuncTxtMai(TVariavel * v, int valor)
+{
+    const char * txt = (VarAtual >= v + 1 ? v[1].getTxt() : "");
+    char mens[BUF_MENS];
+    char * destino = mens;
+    while (*txt && destino < mens + sizeof(mens) - 1)
+        switch (*txt)
+        {
+        FUNCTXT_CORES
+        default: *destino++ = tabMAI[*(unsigned char*)txt++];
+        }
+    ApagarVar(v);
+    return CriarVarTexto(mens, destino - mens);
+}
+
+//----------------------------------------------------------------------------
+bool Instr::FuncTxtMaiIni(TVariavel * v, int valor)
+{
+    const char * txt = (VarAtual >= v + 1 ? v[1].getTxt() : "");
+    char mens[BUF_MENS];
+    char * destino = mens;
+    while (*txt && destino < mens + sizeof(mens) - 1)
+    {
+        while (*txt && *(unsigned char*)txt < '0' &&
+                destino < mens + sizeof(mens) - 1)
             switch (*txt)
             {
-            case ex_barra_b:
-                txt++;
-                break;
-            case ex_barra_c:
-                if ((txt[1] >= '0' && txt[1] <= '9') ||
-                        (txt[1] >= 'A' && txt[1] <= 'J') ||
-                        (txt[1] >= 'a' && txt[1] <= 'j'))
-                    txt += 2;
-                else
-                    txt++;
-                break;
-            case ex_barra_d:
-                if (txt[1] >= '0' && txt[1] <= '7')
-                    txt += 2;
-                else
-                    txt++;
-                break;
-            default:
-                *destino++ = *txt++;
+            FUNCTXT_CORES
+            default: *destino++ = *txt++;
             }
-        }
-        break;
-    case 3: // txtmai
-        while (*txt && destino < mens + sizeof(mens) - 1)
+        if (*txt && destino < mens + sizeof(mens) - 1)
             switch (*txt)
             {
             FUNCTXT_CORES
             default: *destino++ = tabMAI[*(unsigned char*)txt++];
             }
-        break;
-    case 4: // txtmaiini
-        while (*txt && destino < mens + sizeof(mens) - 1)
+        while (*txt && *txt != '.' && destino < mens + sizeof(mens) - 1)
+            *destino++ = *txt++;
+    }
+    ApagarVar(v);
+    return CriarVarTexto(mens, destino - mens);
+}
+
+//----------------------------------------------------------------------------
+bool Instr::FuncTxtMin(TVariavel * v, int valor)
+{
+    const char * txt = (VarAtual >= v + 1 ? v[1].getTxt() : "");
+    char mens[BUF_MENS];
+    char * destino = mens;
+    while (*txt && destino < mens + sizeof(mens) - 1)
+        switch (*txt)
         {
-            while (*txt && *(unsigned char*)txt < '0' &&
-                    destino < mens + sizeof(mens) - 1)
-                switch (*txt)
-                {
-                FUNCTXT_CORES
-                default: *destino++ = *txt++;
-                }
-            if (*txt && destino < mens + sizeof(mens) - 1)
-                switch (*txt)
-                {
-                FUNCTXT_CORES
-                default: *destino++ = tabMAI[*(unsigned char*)txt++];
-                }
-            while (*txt && *txt != '.' && destino < mens + sizeof(mens) - 1)
-                *destino++ = *txt++;
+        FUNCTXT_CORES
+        default: *destino++ = tabMIN[*(unsigned char*)txt++];
         }
-        break;
-    case 5: // txtmin
-        while (*txt && destino < mens + sizeof(mens) - 1)
+    ApagarVar(v);
+    return CriarVarTexto(mens, destino - mens);
+}
+
+//----------------------------------------------------------------------------
+bool Instr::FuncTxtMaiMin(TVariavel * v, int valor)
+{
+    const char * txt = (VarAtual >= v + 1 ? v[1].getTxt() : "");
+    char mens[BUF_MENS];
+    char * destino = mens;
+    while (*txt && destino < mens + sizeof(mens) - 1)
+    {
+        while (*txt && *(unsigned char*)txt<'0' &&
+                destino < mens + sizeof(mens) - 1)
+            switch (*txt)
+            {
+            FUNCTXT_CORES
+            default: *destino++ = *txt++;
+            }
+        if (*txt && destino < mens + sizeof(mens) - 1)
+            switch (*txt)
+            {
+            FUNCTXT_CORES
+            default: *destino++ = tabMAI[*(unsigned char*)txt++];
+            }
+        while (*txt && *txt != '.' && destino < mens + sizeof(mens) - 1)
             switch (*txt)
             {
             FUNCTXT_CORES
             default: *destino++ = tabMIN[*(unsigned char*)txt++];
             }
-        break;
-    case 6: // txtmaimin
-        while (*txt && destino < mens + sizeof(mens) - 1)
-        {
-            while (*txt && *(unsigned char*)txt<'0' &&
-                    destino < mens + sizeof(mens) - 1)
-                switch (*txt)
-                {
-                FUNCTXT_CORES
-                default: *destino++ = *txt++;
-                }
-            if (*txt && destino < mens + sizeof(mens) - 1)
-                switch (*txt)
-                {
-                FUNCTXT_CORES
-                default: *destino++ = tabMAI[*(unsigned char*)txt++];
-                }
-            while (*txt && *txt != '.' && destino < mens + sizeof(mens) - 1)
-                switch (*txt)
-                {
-                FUNCTXT_CORES
-                default: *destino++ = tabMIN[*(unsigned char*)txt++];
-                }
-        }
-        break;
-    case 7: // txtfiltro
-        destino = txtFiltro(destino, txt, sizeof(mens));
-        break;
-    case 8: // txtsha1bin
-        {
-            unsigned char digest[20];
-            SHA_CTX shaInfo;
-            SHAInit(&shaInfo);
-            SHAUpdate(&shaInfo, (unsigned char *)txt, strlen(txt));
-            SHAFinal(digest, &shaInfo);
-            for (int x = 0; x < 20; x += 4)
-            {
-                unsigned int valor = digest[x]     * 0x1000000+
-                                     digest[x + 1] * 0x10000+
-                                     digest[x + 2] * 0x100+
-                                     digest[x + 3];
-                for (int y = 0; y < 5; y++)
-                {
-                    *destino++ = (valor & 0x3F) + 0x21;
-                    valor >>= 6;
-                }
-            }
-            *destino++ = (digest[0] & 3) +
-                         (digest[4] & 3) * 4 +
-                         (digest[8] & 3) * 16 + 0x21;
-            *destino++ = (digest[12] & 3) +
-                         (digest[16] & 3) * 4 + 0x21;
-            break;
-        }
-    case 9: // txtsha1
-        {
-            unsigned char digest[20];
-            SHA_CTX shaInfo;
-            SHAInit(&shaInfo);
-            SHAUpdate(&shaInfo, (unsigned char *)txt, strlen(txt));
-            SHAFinal(digest, &shaInfo);
-            for (int x = 0; x < 20; x++)
-            {
-                int valor = digest[x] >> 4;
-                *destino++ = (valor < 10 ? valor + '0' : valor + 'a' - 10);
-                valor = digest[x] & 0x0F;
-                *destino++ = (valor < 10 ? valor + '0' : valor + 'a' - 10);
-            }
-            break;
-        }
-    case 10: // txtmd5
-        {
-            unsigned char digest[16];
-            cvs_MD5Context md5Info;
-            cvs_MD5Init(&md5Info);
-            cvs_MD5Update(&md5Info, (unsigned char *)txt, strlen(txt));
-            cvs_MD5Final(digest, &md5Info);
-            for (int x = 0; x < 16; x++)
-            {
-                int valor = digest[x] >> 4;
-                *destino++ = (valor < 10 ? valor + '0' : valor + 'a' - 10);
-                valor = digest[x] & 0x0F;
-                *destino++ = (valor < 10 ? valor + '0' : valor + 'a' - 10);
-            }
-            break;
-        }
-    case 11: // txtnome
-        destino = txtNome(destino, txt, sizeof(mens));
-        break;
-    case 12: // txtcod
-        while (*txt && destino < mens + sizeof(mens)-2)
-        {
-            unsigned char ch = tabTXTCOD[*(unsigned char*)txt];
-            if (ch)
-                *destino++ = '@', *destino++ = ch;
-            else //if (tabNOMES1[*(unsigned char*)txt])
-                *destino++ = *txt;
-            txt++;
-        }
-        break;
-    case 13: // txtdec
-        while (*txt && destino < mens + sizeof(mens) - 1)
-        {
-            if (*txt != '@')
-                *destino++ = *txt++;
-            else if (txt[1])
-            {
-                unsigned char ch = tabTXTDEC[*(unsigned char*)(txt + 1)];
-                if (ch)
-                    *destino++ = ch;
-                txt+=2;
-            }
-            else
-                break;
-        }
-        break;
-    case 14: // txtvis
-        for (; *txt && destino < mens + sizeof(mens)-2; txt++)
-            switch (*txt)
-            {
-            case Instr::ex_barra_b:
-                destino[0] = '\\', destino[1] = 'b', destino += 2;
-                break;
-            case Instr::ex_barra_c:
-                destino[0] = '\\', destino[1] = 'c', destino += 2;
-                break;
-            case Instr::ex_barra_d:
-                destino[0] = '\\', destino[1] = 'd', destino += 2;
-                break;
-            case Instr::ex_barra_n:
-                destino[0] = '\\', destino[1] = 'n', destino += 2;
-                break;
-            case '\"':
-            case '\\':
-                *destino++ = '\\';
-            default:
-                *destino++ = *txt;
-            }
-        break;
-    case 15: // txtinvis
-        for (; *txt && destino < mens + sizeof(mens) - 1; txt++)
-        {
-            if (*txt != '\\')
-            {
-                *destino++ = *txt;
-                continue;
-            }
-            txt++;
-            if (*txt == 0)
-                break;
-            switch (*txt)
-            {
-            case 'B':
-            case 'b': *destino++ = Instr::ex_barra_b; break;
-            case 'C':
-            case 'c': *destino++ = Instr::ex_barra_c; break;
-            case 'D':
-            case 'd': *destino++ = Instr::ex_barra_d; break;
-            case 'N':
-            case 'n': *destino++ = Instr::ex_barra_n; break;
-            default: *destino++ = *txt;
-            }
-        }
-        break;
-    case 16: // txturlcod
-      {
-        bool ini = true;
-        while (*txt && destino < mens + sizeof(mens)-3)
-        {
-            char ch = *txt++;
-            if (ch == ex_barra_n)
-            {
-                *destino++ = (ini ? '?' : '&');
-                ini = false;
-            }
-            else if (ch == ' ')
-                *destino++ = '+';
-            else if ((ch >= '0' && ch <= '9') || (ch >= 'A' && ch <= 'Z') ||
-                    (ch >= 'a' && ch <= 'z') ||
-                    ch == '=' || ch == '-' || ch == '/' || ch == '.')
-                *destino++ = ch;
-            else
-            {
-                switch (ch)
-                {
-                case ex_barra_b: ch = 1; break;
-                case ex_barra_c: ch = 2; break;
-                case ex_barra_d: ch = 3; break;
-                }
-                int parte = (ch >> 4) & 15;
-                destino[0] = '%';
-                destino[1] = (parte < 10 ? parte + '0' : parte + '7');
-                parte = ch & 15;
-                destino[2] = (parte < 10 ? parte + '0' : parte + '7');
-                destino += 3;
-            }
-        }
-        break;
-      }
-    case 17: // txturldec
-      {
-        bool ini = true;
-        while (*txt && destino < mens + sizeof(mens) - 1)
-        {
-            char ch = *txt++;
-            if (ch == '+')
-                *destino++ = ' ';
-            else if (ch == '?')
-            {
-                *destino++ = (ini ? ex_barra_n : '?');
-                ini = false;
-            }
-            else if (ch == '&')
-                *destino++ = (ini ? '&' : ex_barra_n);
-            else if (ch != '%')
-                *destino++ = ch;
-            else
-            {
-                int cod;
-            // Primeiro dígito
-                if (txt[0] >= '0' && txt[0] <= '9')
-                    cod = (txt[0] - '0') * 16;
-                else if ((txt[0] | 0x20) >= 'a' && (txt[0] | 0x20) <= 'f')
-                    cod = ((txt[0] | 0x20) - 'W') * 16;
-                else
-                {
-                    *destino++ = ch;
-                    continue;
-                }
-            // Segundo dígito
-                if (txt[1] >= '0' && txt[1] <= '9')
-                    cod += txt[1] - '0';
-                else if ((txt[1] | 0x20) >= 'a' && (txt[1] | 0x20) <= 'f')
-                    cod += (txt[1] | 0x20) - 'W';
-                else
-                {
-                    *destino++ = ch;
-                    continue;
-                }
-            // Obtém e anota caracter
-                if (cod >= 32)
-                    *destino++ = cod;
-                else
-                    switch (cod)
-                    {
-                    case 1: *destino++ = ex_barra_b; break;
-                    case 2: *destino++ = ex_barra_c; break;
-                    case 3: *destino++ = ex_barra_d; break;
-                    case 10: *destino++ = ex_barra_n; break;
-                    }
-                txt+=2;
-            }
-        } // for
-        break;
-      }
-    case 18: // txte
-        while (*txt && destino < mens + sizeof(mens) - 1)
-        {
-            *destino = (*txt != '_' ? *txt : ' ');
-            destino++, txt++;
-        }
-        break;
-    case 19: // txts
-        while (*txt && destino < mens + sizeof(mens) - 1)
-        {
-            *destino = (*txt != ' ' ? *txt : '_');
-            destino++, txt++;
-        }
-        break;
-    case 20: // txtrev
-      {
-        unsigned int total = strlen(txt);
-        if (total > sizeof(mens) - 1)
-            total = sizeof(mens) - 1;
-        const char * t = txt + total;
-        for (t--; t >= txt; t--)
-        {
-            char ch = *t;
-            if (ch == ex_barra_c)
-            {
-                if ((t[1] >= '0' && t[1] <= '9') ||
-                    (t[1] >= 'A' && t[1] <= 'J') ||
-                    (t[1] >= 'a' && t[1] <= 'j'))
-                {
-                    destino[-1] = ex_barra_c;
-                    *destino++ = t[1];
-                    continue;
-                }
-            }
-            else if (ch == ex_barra_d)
-            {
-                if (t[1] >= '0' && t[1] <= '7') \
-                {
-                    destino[-1] = ex_barra_d;
-                    *destino++ = t[1];
-                    continue;
-                }
-            }
-            *destino++ = ch;
-        }
-        break;
-      }
-    default:
-        return false;
     }
     ApagarVar(v);
-    return CriarVarTexto(mens, destino-mens);
+    return CriarVarTexto(mens, destino - mens);
 }
 
 //----------------------------------------------------------------------------
-/// Função txtmudamai - alterna entre letras maiúsculas e minúsculas
+bool Instr::FuncTxtFiltro(TVariavel * v, int valor)
+{
+    const char * txt = (VarAtual >= v + 1 ? v[1].getTxt() : "");
+    char mens[BUF_MENS];
+    char * destino = mens;
+        destino = txtFiltro(destino, txt, sizeof(mens));
+    ApagarVar(v);
+    return CriarVarTexto(mens, destino - mens);
+}
+
+//----------------------------------------------------------------------------
+bool Instr::FuncTxtSha1Bin(TVariavel * v, int valor)
+{
+    const char * txt = (VarAtual >= v + 1 ? v[1].getTxt() : "");
+    char mens[BUF_MENS];
+    char * destino = mens;
+    unsigned char digest[20];
+    SHA_CTX shaInfo;
+    SHAInit(&shaInfo);
+    SHAUpdate(&shaInfo, (unsigned char *)txt, strlen(txt));
+    SHAFinal(digest, &shaInfo);
+    for (int x = 0; x < 20; x += 4)
+    {
+        unsigned int valor = digest[x]     * 0x1000000+
+                             digest[x + 1] * 0x10000+
+                             digest[x + 2] * 0x100+
+                             digest[x + 3];
+        for (int y = 0; y < 5; y++)
+        {
+            *destino++ = (valor & 0x3F) + 0x21;
+            valor >>= 6;
+        }
+    }
+    *destino++ = (digest[0] & 3) +
+                  (digest[4] & 3) * 4 +
+                  (digest[8] & 3) * 16 + 0x21;
+    *destino++ = (digest[12] & 3) +
+                  (digest[16] & 3) * 4 + 0x21;
+    ApagarVar(v);
+    return CriarVarTexto(mens, destino - mens);
+}
+
+//----------------------------------------------------------------------------
+bool Instr::FuncTxtSha1(TVariavel * v, int valor)
+{
+    const char * txt = (VarAtual >= v + 1 ? v[1].getTxt() : "");
+    char mens[BUF_MENS];
+    char * destino = mens;
+    unsigned char digest[20];
+    SHA_CTX shaInfo;
+    SHAInit(&shaInfo);
+    SHAUpdate(&shaInfo, (unsigned char *)txt, strlen(txt));
+    SHAFinal(digest, &shaInfo);
+    for (int x = 0; x < 20; x++)
+    {
+        int valor = digest[x] >> 4;
+        *destino++ = (valor < 10 ? valor + '0' : valor + 'a' - 10);
+        valor = digest[x] & 0x0F;
+        *destino++ = (valor < 10 ? valor + '0' : valor + 'a' - 10);
+    }
+    ApagarVar(v);
+    return CriarVarTexto(mens, destino - mens);
+}
+
+//----------------------------------------------------------------------------
+bool Instr::FuncTxtMd5(TVariavel * v, int valor)
+{
+    const char * txt = (VarAtual >= v + 1 ? v[1].getTxt() : "");
+    char mens[BUF_MENS];
+    char * destino = mens;
+    unsigned char digest[16];
+    cvs_MD5Context md5Info;
+    cvs_MD5Init(&md5Info);
+    cvs_MD5Update(&md5Info, (unsigned char *)txt, strlen(txt));
+    cvs_MD5Final(digest, &md5Info);
+    for (int x = 0; x < 16; x++)
+    {
+        int valor = digest[x] >> 4;
+        *destino++ = (valor < 10 ? valor + '0' : valor + 'a' - 10);
+        valor = digest[x] & 0x0F;
+        *destino++ = (valor < 10 ? valor + '0' : valor + 'a' - 10);
+    }
+    ApagarVar(v);
+    return CriarVarTexto(mens, destino - mens);
+}
+
+//----------------------------------------------------------------------------
+bool Instr::FuncTxtNome(TVariavel * v, int valor)
+{
+    const char * txt = (VarAtual >= v + 1 ? v[1].getTxt() : "");
+    char mens[BUF_MENS];
+    char * destino = mens;
+    destino = txtNome(destino, txt, sizeof(mens));
+    ApagarVar(v);
+    return CriarVarTexto(mens, destino - mens);
+}
+
+
+//----------------------------------------------------------------------------
+bool Instr::FuncTxtCod(TVariavel * v, int valor)
+{
+    const char * txt = (VarAtual >= v + 1 ? v[1].getTxt() : "");
+    char mens[BUF_MENS];
+    char * destino = mens;
+    while (*txt && destino < mens + sizeof(mens)-2)
+    {
+        unsigned char ch = tabTXTCOD[*(unsigned char*)txt];
+        if (ch)
+            *destino++ = '@', *destino++ = ch;
+        else //if (tabNOMES1[*(unsigned char*)txt])
+            *destino++ = *txt;
+        txt++;
+    }
+    ApagarVar(v);
+    return CriarVarTexto(mens, destino - mens);
+}
+
+//----------------------------------------------------------------------------
+bool Instr::FuncTxtDec(TVariavel * v, int valor)
+{
+    const char * txt = (VarAtual >= v + 1 ? v[1].getTxt() : "");
+    char mens[BUF_MENS];
+    char * destino = mens;
+    while (*txt && destino < mens + sizeof(mens) - 1)
+    {
+        if (*txt != '@')
+            *destino++ = *txt++;
+        else if (txt[1])
+        {
+            unsigned char ch = tabTXTDEC[*(unsigned char*)(txt + 1)];
+            if (ch)
+                *destino++ = ch;
+            txt += 2;
+        }
+        else
+            break;
+    }
+    ApagarVar(v);
+    return CriarVarTexto(mens, destino - mens);
+}
+
+//----------------------------------------------------------------------------
+bool Instr::FuncTxtVis(TVariavel * v, int valor)
+{
+    const char * txt = (VarAtual >= v + 1 ? v[1].getTxt() : "");
+    char mens[BUF_MENS];
+    char * destino = mens;
+    for (; *txt && destino < mens + sizeof(mens)-2; txt++)
+        switch (*txt)
+        {
+        case Instr::ex_barra_b:
+            destino[0] = '\\', destino[1] = 'b', destino += 2;
+            break;
+        case Instr::ex_barra_c:
+            destino[0] = '\\', destino[1] = 'c', destino += 2;
+            break;
+        case Instr::ex_barra_d:
+            destino[0] = '\\', destino[1] = 'd', destino += 2;
+            break;
+        case Instr::ex_barra_n:
+            destino[0] = '\\', destino[1] = 'n', destino += 2;
+            break;
+        case '\"':
+        case '\\':
+            *destino++ = '\\';
+        default:
+            *destino++ = *txt;
+        }
+    ApagarVar(v);
+    return CriarVarTexto(mens, destino - mens);
+}
+
+//----------------------------------------------------------------------------
+bool Instr::FuncTxtInvis(TVariavel * v, int valor)
+{
+    const char * txt = (VarAtual >= v + 1 ? v[1].getTxt() : "");
+    char mens[BUF_MENS];
+    char * destino = mens;
+    for (; *txt && destino < mens + sizeof(mens) - 1; txt++)
+    {
+        if (*txt != '\\')
+        {
+            *destino++ = *txt;
+            continue;
+        }
+        txt++;
+        if (*txt == 0)
+            break;
+        switch (*txt)
+        {
+        case 'B':
+        case 'b': *destino++ = Instr::ex_barra_b; break;
+        case 'C':
+        case 'c': *destino++ = Instr::ex_barra_c; break;
+        case 'D':
+        case 'd': *destino++ = Instr::ex_barra_d; break;
+        case 'N':
+        case 'n': *destino++ = Instr::ex_barra_n; break;
+        default: *destino++ = *txt;
+        }
+    }
+    ApagarVar(v);
+    return CriarVarTexto(mens, destino - mens);
+}
+
+//----------------------------------------------------------------------------
+bool Instr::FuncTxtUrlCod(TVariavel * v, int valor)
+{
+    const char * txt = (VarAtual >= v + 1 ? v[1].getTxt() : "");
+    char mens[BUF_MENS];
+    char * destino = mens;
+    bool ini = true;
+    while (*txt && destino < mens + sizeof(mens)-3)
+    {
+        char ch = *txt++;
+        if (ch == ex_barra_n)
+        {
+            *destino++ = (ini ? '?' : '&');
+            ini = false;
+        }
+        else if (ch == ' ')
+            *destino++ = '+';
+        else if ((ch >= '0' && ch <= '9') || (ch >= 'A' && ch <= 'Z') ||
+                (ch >= 'a' && ch <= 'z') ||
+                ch == '=' || ch == '-' || ch == '/' || ch == '.')
+            *destino++ = ch;
+        else
+        {
+            switch (ch)
+            {
+            case ex_barra_b: ch = 1; break;
+            case ex_barra_c: ch = 2; break;
+            case ex_barra_d: ch = 3; break;
+            }
+            int parte = (ch >> 4) & 15;
+            destino[0] = '%';
+            destino[1] = (parte < 10 ? parte + '0' : parte + '7');
+            parte = ch & 15;
+            destino[2] = (parte < 10 ? parte + '0' : parte + '7');
+            destino += 3;
+        }
+    }
+    ApagarVar(v);
+    return CriarVarTexto(mens, destino - mens);
+}
+
+//----------------------------------------------------------------------------
+bool Instr::FuncTxtUrlDec(TVariavel * v, int valor)
+{
+    const char * txt = (VarAtual >= v + 1 ? v[1].getTxt() : "");
+    char mens[BUF_MENS];
+    char * destino = mens;
+    bool ini = true;
+    while (*txt && destino < mens + sizeof(mens) - 1)
+    {
+        char ch = *txt++;
+        if (ch == '+')
+            *destino++ = ' ';
+        else if (ch == '?')
+        {
+            *destino++ = (ini ? ex_barra_n : '?');
+            ini = false;
+        }
+        else if (ch == '&')
+            *destino++ = (ini ? '&' : ex_barra_n);
+        else if (ch != '%')
+            *destino++ = ch;
+        else
+        {
+            int cod;
+        // Primeiro dígito
+            if (txt[0] >= '0' && txt[0] <= '9')
+                cod = (txt[0] - '0') * 16;
+            else if ((txt[0] | 0x20) >= 'a' && (txt[0] | 0x20) <= 'f')
+                cod = ((txt[0] | 0x20) - 'W') * 16;
+            else
+            {
+                *destino++ = ch;
+                continue;
+            }
+        // Segundo dígito
+            if (txt[1] >= '0' && txt[1] <= '9')
+                cod += txt[1] - '0';
+            else if ((txt[1] | 0x20) >= 'a' && (txt[1] | 0x20) <= 'f')
+                cod += (txt[1] | 0x20) - 'W';
+            else
+            {
+                *destino++ = ch;
+                continue;
+            }
+        // Obtém e anota caracter
+            if (cod >= 32)
+                *destino++ = cod;
+            else
+                switch (cod)
+                {
+                case 1: *destino++ = ex_barra_b; break;
+                case 2: *destino++ = ex_barra_c; break;
+                case 3: *destino++ = ex_barra_d; break;
+                case 10: *destino++ = ex_barra_n; break;
+                }
+            txt += 2;
+        }
+    } // for
+    ApagarVar(v);
+    return CriarVarTexto(mens, destino - mens);
+}
+
+//----------------------------------------------------------------------------
+bool Instr::FuncTxtE(TVariavel * v, int valor)
+{
+    const char * txt = (VarAtual >= v + 1 ? v[1].getTxt() : "");
+    char mens[BUF_MENS];
+    char * destino = mens;
+    while (*txt && destino < mens + sizeof(mens) - 1)
+    {
+        *destino = (*txt != '_' ? *txt : ' ');
+        destino++, txt++;
+    }
+    ApagarVar(v);
+    return CriarVarTexto(mens, destino - mens);
+}
+
+//----------------------------------------------------------------------------
+bool Instr::FuncTxtS(TVariavel * v, int valor)
+{
+    const char * txt = (VarAtual >= v + 1 ? v[1].getTxt() : "");
+    char mens[BUF_MENS];
+    char * destino = mens;
+    while (*txt && destino < mens + sizeof(mens) - 1)
+    {
+        *destino = (*txt != ' ' ? *txt : '_');
+        destino++, txt++;
+    }
+    ApagarVar(v);
+    return CriarVarTexto(mens, destino - mens);
+}
+
+//----------------------------------------------------------------------------
+bool Instr::FuncTxtRev(TVariavel * v, int valor)
+{
+    const char * txt = (VarAtual >= v + 1 ? v[1].getTxt() : "");
+    char mens[BUF_MENS];
+    char * destino = mens;
+    unsigned int total = strlen(txt);
+    if (total > sizeof(mens) - 1)
+        total = sizeof(mens) - 1;
+    const char * t = txt + total;
+    for (t--; t >= txt; t--)
+    {
+        char ch = *t;
+        if (ch == ex_barra_c)
+        {
+            if ((t[1] >= '0' && t[1] <= '9') ||
+                (t[1] >= 'A' && t[1] <= 'J') ||
+                (t[1] >= 'a' && t[1] <= 'j'))
+            {
+                destino[-1] = ex_barra_c;
+                *destino++ = t[1];
+                continue;
+            }
+        }
+        else if (ch == ex_barra_d)
+        {
+            if (t[1] >= '0' && t[1] <= '7') \
+            {
+                destino[-1] = ex_barra_d;
+                *destino++ = t[1];
+                continue;
+            }
+        }
+        *destino++ = ch;
+    }
+    ApagarVar(v);
+    return CriarVarTexto(mens, destino - mens);
+}
+
+//----------------------------------------------------------------------------
 bool Instr::FuncTxtMudaMai(TVariavel * v, int valor)
 {
     const char * txt = "";  // Texto
@@ -1286,7 +1429,6 @@ bool Instr::FuncTxtMudaMai(TVariavel * v, int valor)
 }
 
 //----------------------------------------------------------------------------
-/// Função txtcopiamai - copia tipo de letra entre maiúscula e minúscula
 bool Instr::FuncTxtCopiaMai(TVariavel * v, int valor)
 {
     char mens[BUF_MENS];    // Resultado
@@ -1317,7 +1459,6 @@ bool Instr::FuncTxtCopiaMai(TVariavel * v, int valor)
 }
 
 //----------------------------------------------------------------------------
-/// Função txtesp
 bool Instr::FuncEsp(TVariavel * v, int valor)
 {
     static char * texto = nullptr;
@@ -1344,7 +1485,6 @@ bool Instr::FuncEsp(TVariavel * v, int valor)
 }
 
 //----------------------------------------------------------------------------
-/// Função txtrepete
 bool Instr::FuncTxtRepete(TVariavel * v, int valor)
 {
     const char * txt = "";  // Texto
@@ -1373,25 +1513,17 @@ bool Instr::FuncTxtRepete(TVariavel * v, int valor)
 }
 
 //----------------------------------------------------------------------------
-/// Funções intnome e intsenha
-bool Instr::FuncInt(TVariavel * v, int valor)
+bool Instr::FuncIntNome(TVariavel * v, int valor1)
 {
-    const char * txt = "";  // Texto
-    if (VarAtual >= v + 1)
-        txt = v[1].getTxt();
-// Obtém o valor
-    switch (valor)
-    {
-    case 0: // intnome
-        valor = verifNome(txt);
-        break;
-    case 1: // intsenha
-        valor = verifSenha(txt);
-        break;
-    default:
-        valor = 0;
-    }
-// Retorna o valor
+    int valor = verifNome(VarAtual >= v + 1 ? v[1].getTxt() : "");
+    ApagarVar(v);
+    return CriarVarInt(valor);
+}
+
+//----------------------------------------------------------------------------
+bool Instr::FuncIntSenha(TVariavel * v, int valor1)
+{
+    int valor = verifSenha(VarAtual >= v + 1 ? v[1].getTxt() : "");
     ApagarVar(v);
     return CriarVarInt(valor);
 }
@@ -2213,32 +2345,32 @@ bool Instr::FuncTxtSepara(TVariavel * v, int valor)
 }
 
 //----------------------------------------------------------------------------
-/// Funções objantes e objdepois
-bool Instr::FuncAntesDepois(TVariavel * v, int valor)
+bool Instr::FuncObjAntes(TVariavel * v, int valor)
 {
     if (VarAtual < v + 1)
         return false;
-// Obtém objeto
     TObjeto * obj = v[1].getObj();
     if (obj == nullptr)
         return false;
-// Obtém objeto anterior ou próximo
-    if (valor == 0)
-        obj = obj->Antes;
-    else
-        obj = obj->Depois;
-// Anota objeto
-    if (obj == nullptr)
-        return false;
+    obj = obj->Antes;
     ApagarVar(v);
-    if (!CriarVar(InstrVarObjeto))
-        return false;
-    VarAtual->setObj(obj);
-    return true;
+    return Instr::CriarVarObj(obj);
 }
 
 //----------------------------------------------------------------------------
-/// Função inttotal
+bool Instr::FuncObjDepois(TVariavel * v, int valor)
+{
+    if (VarAtual < v + 1)
+        return false;
+    TObjeto * obj = v[1].getObj();
+    if (obj == nullptr)
+        return false;
+    obj = obj->Depois;
+    ApagarVar(v);
+    return Instr::CriarVarObj(obj);
+}
+
+//----------------------------------------------------------------------------
 bool Instr::FuncTotal(TVariavel * v, int valor)
 {
     int tamanho = 0;

@@ -25,6 +25,7 @@ bool ChecaHerda(const char * instr, const char * nomeclasse);
 const char * ProximaInstr(const char * instr, const char * texto, int tamanho);
 
 bool CriarVarInt(int valor);
+bool CriarVarDouble(double valor);
 bool CriarVarTexto(const char * mens, int tammens=-1);
 bool CriarVarObj(TObjeto * obj);
 bool CriarVar(const char * defvar);
@@ -48,11 +49,27 @@ void ExecFim();
 
 bool FuncArg(TVariavel * v, int valor);
 bool FuncArgs(TVariavel * v, int valor);
-bool FuncCriar(TVariavel * v, int valor);
-bool FuncApagar(TVariavel * v, int valor);
-bool FuncConstante(TVariavel * v, int valor);
-bool FuncEste(TVariavel * v, int valor);
-bool FuncNumero(TVariavel * v, int valor);
+bool FuncCriar(TVariavel * v, int valor); ///< Criar objeto (função criar)
+bool FuncApagar(TVariavel * v, int valor); ///< Apagar objeto (função apagar)
+bool FuncMatPi(TVariavel * v, int valor); ///< Função matpi
+bool FuncEste(TVariavel * v, int valor); ///< Objeto "este"
+bool FuncIntPos(TVariavel * v, int valor); ///< Função intpos
+bool FuncIntAbs(TVariavel * v, int valor); ///< Função intabs
+bool FuncInt(TVariavel * v, int valor); ///< Função int
+bool FuncIntDiv(TVariavel * v, int valor); ///< Função intdiv
+bool FuncMatSin(TVariavel * v, int valor); ///< Função matsin
+bool FuncMatCos(TVariavel * v, int valor); ///< Função matcos
+bool FuncMatTan(TVariavel * v, int valor); ///< Função mattan
+bool FuncMatAsin(TVariavel * v, int valor); ///< Função matasin
+bool FuncMatAcos(TVariavel * v, int valor); ///< Função matacos
+bool FuncMatAtan(TVariavel * v, int valor); ///< Função matatan
+bool FuncMatExp(TVariavel * v, int valor); ///< Função matexp
+bool FuncMatLog(TVariavel * v, int valor); ///< Função matlog
+bool FuncMatRaiz(TVariavel * v, int valor); ///< Função matraiz
+bool FuncMatCima(TVariavel * v, int valor); ///< Função matcima
+bool FuncMatBaixo(TVariavel * v, int valor); ///< Função matbaixo
+bool FuncMatRad(TVariavel * v, int valor); ///< Função matrad
+bool FuncMatDeg(TVariavel * v, int valor); ///< Função matdeg
 bool FuncPow(TVariavel * v, int valor);
 bool FuncIntBit(TVariavel * v, int valor);
 bool FuncIntBitH(TVariavel * v, int valor);
@@ -68,12 +85,33 @@ bool FuncIntSub(TVariavel * v, int valor);
 bool FuncIntSubLin(TVariavel * v, int valor);
 bool FuncTxt(TVariavel * v, int valor);
 bool FuncTxtFim(TVariavel * v, int valor);
-bool FuncTxt2(TVariavel * v, int valor);
-bool FuncTxtMudaMai(TVariavel * v, int valor);
-bool FuncTxtCopiaMai(TVariavel * v, int valor);
-bool FuncEsp(TVariavel * v, int valor);
-bool FuncTxtRepete(TVariavel * v, int valor);
-bool FuncInt(TVariavel * v, int valor);
+bool FuncTxt1(TVariavel * v, int valor); ///< Função txt1
+bool FuncTxt2(TVariavel * v, int valor); ///< Função txt2
+bool FuncTxtCor(TVariavel * v, int valor); ///< Função txtcor
+bool FuncTxtMai(TVariavel * v, int valor); ///< Função txtmai
+bool FuncTxtMaiIni(TVariavel * v, int valor); ///< Função txtmaiini
+bool FuncTxtMin(TVariavel * v, int valor); ///< Função txtmin
+bool FuncTxtMaiMin(TVariavel * v, int valor); ///< Função txtmaimin
+bool FuncTxtFiltro(TVariavel * v, int valor); ///< Função txtfiltro
+bool FuncTxtSha1Bin(TVariavel * v, int valor); ///< Função txtsha1bin
+bool FuncTxtSha1(TVariavel * v, int valor); ///< Função txtsha1
+bool FuncTxtMd5(TVariavel * v, int valor); ///< Função txtms5
+bool FuncTxtNome(TVariavel * v, int valor); ///< Função txtnome
+bool FuncTxtInvis(TVariavel * v, int valor); ///< Função txtinvis
+bool FuncTxtCod(TVariavel * v, int valor); ///< Função txtcod
+bool FuncTxtDec(TVariavel * v, int valor); ///< Função txtdec
+bool FuncTxtVis(TVariavel * v, int valor); ///< Função txtvis
+bool FuncTxtUrlCod(TVariavel * v, int valor); ///< Função txturlcod
+bool FuncTxtUrlDec(TVariavel * v, int valor); ///< Função txturldec
+bool FuncTxtE(TVariavel * v, int valor); ///< Função txte
+bool FuncTxtS(TVariavel * v, int valor); ///< Função txts
+bool FuncTxtRev(TVariavel * v, int valor); ///< Função txtrev
+bool FuncTxtMudaMai(TVariavel * v, int valor); ///< Função txtmudamai
+bool FuncTxtCopiaMai(TVariavel * v, int valor); ///< Função txtcopiamai
+bool FuncEsp(TVariavel * v, int valor); ///< Função txtesp
+bool FuncTxtRepete(TVariavel * v, int valor); ///< Função txtrepete
+bool FuncIntNome(TVariavel * v, int valor); ///< Função intnome
+bool FuncIntSenha(TVariavel * v, int valor); ///< Função intsenha
 bool FuncTxtRemove(TVariavel * v, int valor);
 bool FuncTxtConv(TVariavel * v, int valor);
 bool FuncTxtChr(TVariavel * v, int valor);
@@ -83,9 +121,11 @@ bool FuncTxtProc(TVariavel * v, int valor);
 bool FuncTxtProcLin(TVariavel * v, int valor);
 bool FuncTxtTroca(TVariavel * v, int valor);
 bool FuncTxtSepara(TVariavel * v, int valor);
-bool FuncAntesDepois(TVariavel * v, int valor);
-bool FuncTotal(TVariavel * v, int valor);
-bool FuncVarTroca(TVariavel * v, int valor);
+bool FuncObjAntes(TVariavel * v, int valor); ///< Função objantes
+bool FuncObjDepois(TVariavel * v, int valor); ///< Função objdepois
+bool FuncTotal(TVariavel * v, int valor); ///< Função inttotal
+bool FuncVarTroca(TVariavel * v, int valor); ///< Função vartroca
+bool FuncVarTrocaCod(TVariavel * v, int valor); ///< Função vartrocacod
 
 //----------------------------------------------------------------------------
 // Variáveis predefinidas

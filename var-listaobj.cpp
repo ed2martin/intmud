@@ -269,6 +269,7 @@ bool TListaObj::Func(TVariavel * v, const char * nome)
         { "apagar",    &TListaObj::FuncApagar },
         { "fim",       &TListaObj::FuncFim },
         { "ini",       &TListaObj::FuncIni },
+        { "inverter",  &TListaObj::FuncInverter },
         { "limpar",    &TListaObj::FuncLimpar },
         { "objfim",    &TListaObj::FuncObjFim },
         { "objini",    &TListaObj::FuncObjIni },
@@ -349,10 +350,7 @@ bool TListaObj::FuncObjLista(TVariavel * v)
         return false;
     TObjeto * obj = Objeto;
     Instr::ApagarVar(v);
-    if (!Instr::CriarVar(Instr::InstrVarObjeto))
-        return false;
-    Instr::VarAtual->setObj(obj);
-    return true;
+    return Instr::CriarVarObj(obj);
 }
 
 //----------------------------------------------------------------------------
@@ -371,11 +369,7 @@ bool TListaObj::FuncObjIni(TVariavel * v)
     }
     TObjeto * obj = (lista ? lista->Objeto : nullptr);
     Instr::ApagarVar(v);
-    if (!Instr::CriarVar(Instr::InstrVarObjeto))
-        return false;
-    if (obj)
-        Instr::VarAtual->setObj(obj);
-    return true;
+    return Instr::CriarVarObj(obj);
 }
 
 //----------------------------------------------------------------------------
@@ -394,11 +388,7 @@ bool TListaObj::FuncObjFim(TVariavel * v)
     }
     TObjeto * obj = (lista ? lista->Objeto : nullptr);
     Instr::ApagarVar(v);
-    if (!Instr::CriarVar(Instr::InstrVarObjeto))
-        return false;
-    if (obj)
-        Instr::VarAtual->setObj(obj);
-    return true;
+    return Instr::CriarVarObj(obj);
 }
 
 //----------------------------------------------------------------------------
@@ -566,6 +556,23 @@ bool TListaObj::FuncRand(TVariavel * v)
 // Desaloca memória
     if (lista != lx)
         delete[] lista;
+    DEBUG1
+    return false;
+}
+
+//----------------------------------------------------------------------------
+bool TListaObj::FuncInverter(TVariavel * v)
+{
+    TListaX * obj = Inicio;
+    Inicio = Fim;
+    Fim = obj;
+    while (obj)
+    {
+        TListaX * obj2 = obj->ListaDepois;
+        obj->ListaDepois = obj->ListaAntes;
+        obj->ListaAntes = obj2;
+        obj = obj2;
+    }
     DEBUG1
     return false;
 }
@@ -763,13 +770,8 @@ bool TListaItem::FuncObj(TVariavel * v)
     if (ListaX == nullptr)
         return false;
     TObjeto * obj = ListaX->Objeto;
-    if (obj == nullptr)
-        return false;
     Instr::ApagarVar(v); // Nota: pode apagar o próprio listaitem
-    if (!Instr::CriarVar(Instr::InstrVarObjeto))
-        return false;
-    Instr::VarAtual->setObj(obj);
-    return true;
+    return Instr::CriarVarObj(obj);
 }
 
 //----------------------------------------------------------------------------
@@ -779,13 +781,8 @@ bool TListaItem::FuncObjLista(TVariavel * v)
     if (ListaX == nullptr)
         return false;
     TObjeto * obj = ListaX->Lista->Objeto;
-    if (obj == nullptr)
-        return false;
     Instr::ApagarVar(v); // Nota: pode apagar o próprio listaitem
-    if (!Instr::CriarVar(Instr::InstrVarObjeto))
-        return false;
-    Instr::VarAtual->setObj(obj);
-    return true;
+    return Instr::CriarVarObj(obj);
 }
 
 //----------------------------------------------------------------------------

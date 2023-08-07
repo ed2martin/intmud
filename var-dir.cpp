@@ -265,10 +265,7 @@ bool TVarDir::FuncTamanho(TVariavel * v)
         break;
     }
     Instr::ApagarVar(v);
-    if (!Instr::CriarVar(Instr::InstrDouble))
-        return false;
-    Instr::VarAtual->setDouble(tam);
-    return true;
+    return Instr::CriarVarDouble(tam);
 }
 
 //------------------------------------------------------------------------------

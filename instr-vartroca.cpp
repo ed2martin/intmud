@@ -19,14 +19,14 @@
 
 //----------------------------------------------------------------------------
 // Retorna o caracter para a função vartroca
-static int CaractTxtVar(const char * str)
+static inline int CaractTxtVar(const char * str)
 {
     return TABELA_COMPARAVAR[*(unsigned char*)str];
 }
 
 //----------------------------------------------------------------------------
 // Retorna o caracter para a função vartrocacod - do texto
-static int CaractOrigem(const char * str)
+static inline int CaractOrigem(const char * str)
 {
     unsigned char ch = tabTXTCOD[*(unsigned char*)str];
     if (ch)
@@ -36,7 +36,7 @@ static int CaractOrigem(const char * str)
 
 //----------------------------------------------------------------------------
 // Retorna o caracter para a função vartrocacod - do nome da função
-static int CaractFunc(const char * str)
+static inline int CaractFunc(const char * str)
 {
     int ch = TABELA_COMPARAVAR[*(unsigned char*)str] * 0x100;
     if (str[0] != '@')
@@ -45,16 +45,17 @@ static int CaractFunc(const char * str)
 }
 
 //----------------------------------------------------------------------------
-/// Função vartroca
-bool Instr::FuncVarTroca(TVariavel * v, int valor)
+// Função vartroca se valor=0 ou vartrocacod se valor!=0
+static inline bool StaticVarTroca(TVariavel * v, int valor)
 {
-    if (VarAtual < v + 3)
+    if (Instr::VarAtual < v + 3)
         return false;
-    if (FuncAtual >= FuncFim - 2 || FuncAtual->este == nullptr)
+    if (Instr::FuncAtual >= Instr::FuncFim - 2 ||
+            Instr::FuncAtual->este == nullptr)
         return false;
 
 // Variáveis
-    TClasse * c = FuncAtual->este->Classe;
+    TClasse * c = Instr::FuncAtual->este->Classe;
     const char * origem; // Primeiro argumento - texto original
     char mens[BUF_MENS]; // Aonde jogar o texto codificado
     int porcent = 100; // Porcentagem da possibilidade de troca
@@ -62,19 +63,20 @@ bool Instr::FuncVarTroca(TVariavel * v, int valor)
     int espacocont = 0; // Contador de espaços entre trocas
 
 // Obtém porcentagem e espaço entre trocas
-    if (VarAtual >= v + 4)
+    if (Instr::VarAtual >= v + 4)
     {
         porcent = v[4].getInt();
         if (porcent <= 0) // Nenhuma possibilidade de troca
         {
             char * p = copiastr(mens, v[1].getTxt(), sizeof(mens));
-            ApagarVar(v);
-            return CriarVarTexto(mens, p-mens);
+            Instr::ApagarVar(v);
+            return Instr::CriarVarTexto(mens, p-mens);
         }
-        if (VarAtual >= v+5)
+        if (Instr::VarAtual >= v+5)
         {
             espaco = v[5].getInt();
-            if (espaco < 0) espaco=0;
+            if (espaco < 0)
+                espaco=0;
         }
     }
 
@@ -117,15 +119,15 @@ bool Instr::FuncVarTroca(TVariavel * v, int valor)
 #endif
 
 // Cabeçalho da instrução
-    mens[2] = cConstExpr; // Tipo de instrução
+    mens[2] = Instr::cConstExpr; // Tipo de instrução
     mens[Instr::endAlin] = 0;
     mens[Instr::endProp] = 0;
     mens[Instr::endIndice] = Instr::endNome + 2; // Aonde começam os dados da constante
     mens[Instr::endVetor] = 0; // Não é vetor
     mens[Instr::endExtra] = 0;
     mens[Instr::endNome] = '+'; // Nome da variável
-    mens[Instr::endNome+1] = 0;
-    mens[Instr::endNome+2] = ex_txt;
+    mens[Instr::endNome + 1] = 0;
+    mens[Instr::endNome + 2] = Instr::ex_txt;
     char * destino = mens + Instr::endNome + 3;
     char * dest_ini = 0;// Endereço do início da variável ex_txt em destino
                         // 0=não anotou nenhuma variável
@@ -272,21 +274,21 @@ bool Instr::FuncVarTroca(TVariavel * v, int valor)
 #endif
         origem = pontvar;
     // Se for variável, copia texto
-        if (defvar[2] != cFunc && defvar[2] != cVarFunc &&
-                defvar[2] != cConstExpr && defvar[2] != cConstVar)
+        if (defvar[2] != Instr::cFunc && defvar[2] != Instr::cVarFunc &&
+                defvar[2] != Instr::cConstExpr && defvar[2] != Instr::cConstVar)
         {
             TVariavel v;
             indvar = c->IndiceVar[indvar];
             v.defvar = defvar;
             v.tamanho = 0;
             v.numbit = indvar >> 24;
-            if (defvar[2] == cConstTxt || // Constante
-                    defvar[2] == cConstNum)
+            if (defvar[2] == Instr::cConstTxt || // Constante
+                    defvar[2] == Instr::cConstNum)
                 v.endvar = 0;
             else if (indvar & 0x400000) // Variável da classe
                 v.endvar = c->Vars + (indvar & 0x3FFFFF);
             else    // Variável do objeto
-                v.endvar = FuncAtual->este->Vars + (indvar & 0x3FFFFF);
+                v.endvar = Instr::FuncAtual->este->Vars + (indvar & 0x3FFFFF);
             const char * o = v.getTxt();
             while (*o && destino < mens + sizeof(mens) - 4)
                 *destino++ = *o++;
@@ -304,13 +306,13 @@ bool Instr::FuncVarTroca(TVariavel * v, int valor)
         else   // Não é texto vazio
         {
             *destino++ = 0;
-            *destino++ = exo_add;
+            *destino++ = Instr::exo_add;
         }
     // Anota variável
-        destino[0] = ex_varini;
+        destino[0] = Instr::ex_varini;
         destino = copiastr(destino + 1, defvar + Instr::endNome);
-        destino[0] = ex_arg;
-        destino[1] = ex_txt;
+        destino[0] = Instr::ex_arg;
+        destino[1] = Instr::ex_txt;
         destino += 2;
         if (tamtxt)
         {
@@ -318,25 +320,25 @@ bool Instr::FuncVarTroca(TVariavel * v, int valor)
             destino += tamtxt;
         }
         destino[0] = 0;
-        destino[1] = ex_ponto;
-        destino[2] = ex_varfim;
-        destino[3] = exo_add;
-        destino[4] = ex_txt;
+        destino[1] = Instr::ex_ponto;
+        destino[2] = Instr::ex_varfim;
+        destino[3] = Instr::exo_add;
+        destino[4] = Instr::ex_txt;
         destino += 5;
         dest_ini = destino;
     }
 
     destino[0] = 0;
-    destino[1] = exo_add;
-    destino[2] = ex_fim;
+    destino[1] = Instr::exo_add;
+    destino[2] = Instr::ex_fim;
     destino += 3;
 
 // Texto puro, sem substituições
     if (dest_ini == 0)
     {
         const char * texto = mens + Instr::endNome + 3;
-        ApagarVar(v);
-        bool b = CriarVarTexto(texto, destino - texto - 3);
+        Instr::ApagarVar(v);
+        bool b = Instr::CriarVarTexto(texto, destino - texto - 3);
 #if 0
         printf("vartxt txt: %s\n", (char*)VarAtual->endvar);
         fflush(stdout);
@@ -350,16 +352,16 @@ bool Instr::FuncVarTroca(TVariavel * v, int valor)
     mens[1] = total >> 8;
 
 // Acerta variáveis
-    ApagarVar(v);
-    if (DadosFim - DadosTopo < total)
+    Instr::ApagarVar(v);
+    if (Instr::DadosFim - Instr::DadosTopo < total)
         return false;
-    VarAtual++;
-    VarAtual->Limpar();
-    VarAtual->defvar = DadosTopo;
-    VarAtual->endvar = DadosTopo;
-    VarAtual->tamanho = total;
-    memcpy(DadosTopo, mens, total);
-    DadosTopo += total;
+    Instr::VarAtual++;
+    Instr::VarAtual->Limpar();
+    Instr::VarAtual->defvar = Instr::DadosTopo;
+    Instr::VarAtual->endvar = Instr::DadosTopo;
+    Instr::VarAtual->tamanho = total;
+    memcpy(Instr::DadosTopo, mens, total);
+    Instr::DadosTopo += total;
 
 // Mostra o que codificou
 #if 0
@@ -378,17 +380,29 @@ bool Instr::FuncVarTroca(TVariavel * v, int valor)
 #endif
 
 // Acerta função
-    FuncAtual++;
-    FuncAtual->nome = VarAtual->defvar;
-    FuncAtual->linha = VarAtual->defvar;
-    FuncAtual->este = FuncAtual[-1].este;
-    FuncAtual->expr = VarAtual->defvar + Instr::endNome + 2;
-    FuncAtual->inivar = VarAtual + 1;
-    FuncAtual->fimvar = VarAtual + 1;
-    FuncAtual->numarg = 0;
-    FuncAtual->tipo = 0;
-    FuncAtual->indent = 0;
-    FuncAtual->objdebug = FuncAtual[-1].objdebug;
-    FuncAtual->funcdebug = FuncAtual[-1].funcdebug;
+    Instr::FuncAtual++;
+    Instr::FuncAtual->nome = Instr::VarAtual->defvar;
+    Instr::FuncAtual->linha = Instr::VarAtual->defvar;
+    Instr::FuncAtual->este = Instr::FuncAtual[-1].este;
+    Instr::FuncAtual->expr = Instr::VarAtual->defvar + Instr::endNome + 2;
+    Instr::FuncAtual->inivar = Instr::VarAtual + 1;
+    Instr::FuncAtual->fimvar = Instr::VarAtual + 1;
+    Instr::FuncAtual->numarg = 0;
+    Instr::FuncAtual->tipo = 0;
+    Instr::FuncAtual->indent = 0;
+    Instr::FuncAtual->objdebug = Instr::FuncAtual[-1].objdebug;
+    Instr::FuncAtual->funcdebug = Instr::FuncAtual[-1].funcdebug;
     return true;
+}
+
+//----------------------------------------------------------------------------
+bool Instr::FuncVarTroca(TVariavel * v, int valor)
+{
+    return StaticVarTroca(v, 0);
+}
+
+//----------------------------------------------------------------------------
+bool Instr::FuncVarTrocaCod(TVariavel * v, int valor)
+{
+    return StaticVarTroca(v, 1);
 }
