@@ -2293,7 +2293,7 @@ exo_compara_sair:
                             break;
                         }
                             // Processa função interna
-                        if (func->Func(v + 1, func->valor))
+                        if (func->Func(v + 1))
                         {
                             v->setTxt("");
                             f->expr = CopiaVarNome(v, f->expr);
@@ -2338,7 +2338,7 @@ exo_compara_sair:
                             break;
                         }
                             // Processa função interna
-                        if (func->Func(v + 1, func->valor))
+                        if (func->Func(v + 1))
                         {
                             v->setTxt("");
                             f->expr = CopiaVarNome(v, f->expr);

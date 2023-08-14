@@ -396,13 +396,5 @@ static inline bool StaticVarTroca(TVariavel * v, int valor)
 }
 
 //----------------------------------------------------------------------------
-bool Instr::FuncVarTroca(TVariavel * v, int valor)
-{
-    return StaticVarTroca(v, 0);
-}
-
-//----------------------------------------------------------------------------
-bool Instr::FuncVarTrocaCod(TVariavel * v, int valor)
-{
-    return StaticVarTroca(v, 1);
-}
+bool Instr::FuncVarTroca(TVariavel * v) { return StaticVarTroca(v, 0); }
+bool Instr::FuncVarTrocaCod(TVariavel * v) { return StaticVarTroca(v, 1); }
