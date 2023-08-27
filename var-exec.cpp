@@ -166,7 +166,7 @@ void TObjExec::Receber()
             bufRec[pontRec] = 0;
             pontRec = 0;
             if (VarExec)
-                VarExec->FuncEvento("msg", bufRec, dado == 13 || dado == 10);
+                VarExec->GeraEvento("msg", bufRec, dado == 13 || dado == 10);
         }
         if (lido != sizeof(buf))
             break;
@@ -175,7 +175,7 @@ void TObjExec::Receber()
     if (pontRec != 0 && VarExec != nullptr)
     {
         bufRec[pontRec] = 0;
-        VarExec->FuncEvento("msg", bufRec, 0);
+        VarExec->GeraEvento("msg", bufRec, 0);
     }
 }
 
@@ -199,7 +199,7 @@ void TObjExec::Fd_Set(fd_set * set_entrada, fd_set * set_saida)
         // Verifica evento env
             if (ev_env && obj->VarExec)
             {
-                obj->VarExec->FuncEvento("env", nullptr, -1);
+                obj->VarExec->GeraEvento("env", nullptr, -1);
                 continue;
             }
         // Checa se deve apagar o objeto, passa para o próximo
@@ -246,7 +246,7 @@ void TObjExec::ProcEventos(fd_set * set_entrada, fd_set * set_saida)
             continue;
         obj->Receber(); // Recebe dados pendentes
         if (obj->VarExec)
-            obj->VarExec->FuncEvento("fechou", nullptr, obj->CodRetorno);
+            obj->VarExec->GeraEvento("fechou", nullptr, obj->CodRetorno);
         if (obj->VarExec)
         {
             obj->VarExec->ObjExec = nullptr; // Indica que o programa fechou
@@ -280,9 +280,9 @@ void TVarExec::EndObjeto(TClasse * c, TObjeto * o)
 }
 
 //------------------------------------------------------------------------------
-void TVarExec::FuncEvento(const char * evento, const char * texto, int valor)
+void TVarExec::GeraEvento(const char * evento, const char * texto, int valor)
 {
-    //printf("FuncEvento [%s] [%s]\n", evento, texto); fflush(stdout);
+    //printf("GeraEvento [%s] [%s]\n", evento, texto); fflush(stdout);
     bool prossegue = false;
 // Definido em objeto: prepara para executar
     if (b_objeto)
@@ -314,79 +314,105 @@ void TVarExec::FuncEvento(const char * evento, const char * texto, int valor)
 //------------------------------------------------------------------------------
 bool TVarExec::Func(TVariavel * v, const char * nome)
 {
-// Envia mensagem
-    if (comparaZ(nome, "msg") == 0)
+// Lista das funções de arqexec
+// Deve obrigatoriamente estar em letras minúsculas e ordem alfabética
+    static const struct {
+        const char * Nome;
+        bool (TVarExec::*Func)(TVariavel * v); } ExecFunc[] = {
+        { "aberto",    &TVarExec::FuncAberto },
+        { "abrir",     &TVarExec::FuncAbrir },
+        { "fechar",    &TVarExec::FuncFechar },
+        { "msg",       &TVarExec::FuncMsg }  };
+// Procura a função correspondente e executa
+    int ini = 0;
+    int fim = sizeof(ExecFunc) / sizeof(ExecFunc[0]) - 1;
+    char mens[80];
+    copiastrmin(mens, nome, sizeof(mens));
+    while (ini <= fim)
     {
-        if (ObjExec == nullptr || Instr::VarAtual != v + 1)
-            return false;
-        bool enviou = ObjExec->Enviar(v[1].getTxt());
-        Instr::ApagarVar(v);
-        return Instr::CriarVarInt(enviou);
-    }
-// Começa a executar
-    if (comparaZ(nome, "abrir") == 0)
-    {
-        if (Instr::VarAtual < v + 1)
-            return false;
-        if (ObjExec)
-        {
-            ObjExec->VarExec = nullptr;
-            ObjExec = nullptr;
-        }
-        const char * cmd = v[1].getTxt();
-        if (cmd == nullptr || *cmd == 0)
-            return false;
-        if (!opcao_completo)
-        {
-            int tamcmd = strlen(cmd);
-            TArqExec * obj = TArqExec::ExecIni();
-            for (; obj; obj = obj->ExecProximo())
-            {
-                const char * nome = obj->ExecNome();
-                int tamnome = strlen(nome);
-                if (tamnome == 0)
-                    continue;
-                if (nome[tamnome - 1] == '*')
-                {
-                    tamnome--;
-                    if (tamcmd < tamnome)
-                        continue;
-                }
-                else if (tamcmd != tamnome)
-                    continue;
-                if (memcmp(cmd, nome, tamnome) == 0)
-                    break;
-            }
-            if (obj == nullptr)
-            {
-                Instr::ApagarVar(v);
-                return Instr::CriarVarTexto("ArqExec não pode executar isso");
-            }
-        }
-        int visivel = (Instr::VarAtual >= v+2 ? v[2].getInt() : 0);
-        ObjExec = new TObjExec(this);
-        const char * err = ObjExec->Abrir(cmd, visivel == 1);
-        Instr::ApagarVar(v);
-        if (err)
-            delete ObjExec;
-        return Instr::CriarVarTexto(err ? err : "");
-    }
-// Encerra a execução
-    if (comparaZ(nome, "fechar") == 0)
-    {
-        if (ObjExec)
-        {
-            ObjExec->VarExec = nullptr;
-            ObjExec = nullptr;
-        }
-        return false;
-    }
-// Checa se está aberto
-    if (comparaZ(nome, "aberto") == 0)
-    {
-        bool aberto = (ObjExec != nullptr);
-        Instr::ApagarVar(v);
-        return Instr::CriarVarInt(aberto);
+        int meio = (ini + fim) / 2;
+        int resultado = strcmp(mens, ExecFunc[meio].Nome);
+        if (resultado == 0) // Se encontrou...
+            return (this->*ExecFunc[meio].Func)(v);
+        if (resultado < 0) fim = meio - 1; else ini = meio + 1;
     }
     return false;
+}
+
+//----------------------------------------------------------------------------
+bool TVarExec::FuncMsg(TVariavel * v)
+{
+    if (ObjExec == nullptr || Instr::VarAtual != v + 1)
+        return false;
+    bool enviou = ObjExec->Enviar(v[1].getTxt());
+    Instr::ApagarVar(v);
+    return Instr::CriarVarInt(enviou);
+}
+
+//----------------------------------------------------------------------------
+bool TVarExec::FuncAbrir(TVariavel * v)
+{
+    if (Instr::VarAtual < v + 1)
+        return false;
+    if (ObjExec)
+    {
+        ObjExec->VarExec = nullptr;
+        ObjExec = nullptr;
+    }
+    const char * cmd = v[1].getTxt();
+    if (cmd == nullptr || *cmd == 0)
+        return false;
+    if (!opcao_completo)
+    {
+        int tamcmd = strlen(cmd);
+        TArqExec * obj = TArqExec::ExecIni();
+        for (; obj; obj = obj->ExecProximo())
+        {
+            const char * nome = obj->ExecNome();
+            int tamnome = strlen(nome);
+            if (tamnome == 0)
+                continue;
+            if (nome[tamnome - 1] == '*')
+            {
+                tamnome--;
+                if (tamcmd < tamnome)
+                    continue;
+            }
+            else if (tamcmd != tamnome)
+                continue;
+            if (memcmp(cmd, nome, tamnome) == 0)
+                break;
+        }
+        if (obj == nullptr)
+        {
+            Instr::ApagarVar(v);
+            return Instr::CriarVarTexto("ArqExec não pode executar isso");
+        }
+    }
+    int visivel = (Instr::VarAtual >= v+2 ? v[2].getInt() : 0);
+    ObjExec = new TObjExec(this);
+    const char * err = ObjExec->Abrir(cmd, visivel == 1);
+    Instr::ApagarVar(v);
+    if (err)
+        delete ObjExec;
+    return Instr::CriarVarTexto(err ? err : "");
+}
+
+//----------------------------------------------------------------------------
+bool TVarExec::FuncFechar(TVariavel * v)
+{
+    if (ObjExec)
+    {
+        ObjExec->VarExec = nullptr;
+        ObjExec = nullptr;
+    }
+    return false;
+}
+
+//----------------------------------------------------------------------------
+bool TVarExec::FuncAberto(TVariavel * v)
+{
+    bool aberto = (ObjExec != nullptr);
+    Instr::ApagarVar(v);
+    return Instr::CriarVarInt(aberto);
 }

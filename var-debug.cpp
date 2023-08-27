@@ -110,7 +110,7 @@ void TVarDebug::FuncEvento(const char * evento, const char * texto)
 //------------------------------------------------------------------------------
 bool TVarDebug::Func(TVariavel * v, const char * nome)
 {
-// Lista das funções de varmem
+// Lista das funções de debug
 // Deve obrigatoriamente estar em letras minúsculas e ordem alfabética
     static const struct {
         const char * Nome;

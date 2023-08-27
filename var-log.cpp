@@ -96,105 +96,148 @@ void TVarLog::Fechar()
 //------------------------------------------------------------------------------
 bool TVarLog::Func(TVariavel * v, const char * nome)
 {
-// Mensagem no log
-    if (comparaZ(nome, "msg")==0)
+// Lista das funções de arqlog
+// Deve obrigatoriamente estar em letras minúsculas e ordem alfabética
+    static const struct {
+        const char * Nome;
+        bool (TVarLog::*Func)(TVariavel * v); } ExecFunc[] = {
+        { "abrir",     &TVarLog::FuncAbrir },
+        { "existe",    &TVarLog::FuncExiste },
+        { "fechar",    &TVarLog::FuncFechar },
+        { "msg",       &TVarLog::FuncMsg },
+        { "valido",    &TVarLog::FuncValido }  };
+// Procura a função correspondente e executa
+    int ini = 0;
+    int fim = sizeof(ExecFunc) / sizeof(ExecFunc[0]) - 1;
+    char mens[80];
+    copiastrmin(mens, nome, sizeof(mens));
+    while (ini <= fim)
     {
-        if (arq<0)
-            return false;
-        for (TVariavel * v1 = v+1; v1<=Instr::VarAtual; v1++)
+        int meio = (ini + fim) / 2;
+        int resultado = strcmp(mens, ExecFunc[meio].Nome);
+        if (resultado == 0) // Se encontrou...
+            return (this->*ExecFunc[meio].Func)(v);
+        if (resultado < 0) fim = meio - 1; else ini = meio + 1;
+    }
+    return false;
+}
+
+//----------------------------------------------------------------------------
+bool TVarLog::FuncMsg(TVariavel * v)
+{
+    if (arq<0)
+        return false;
+    for (TVariavel * v1 = v+1; v1<=Instr::VarAtual; v1++)
+    {
+        const char * txt = v1->getTxt();
+        while (true)
         {
-            const char * txt = v1->getTxt();
-            while (true)
+            while (*txt==Instr::ex_barra_n)
+                txt++;
+            if (*txt==0)
+                break;
+            if (pontlog>=(int)sizeof(buflog)-500)
             {
-                while (*txt==Instr::ex_barra_n)
-                    txt++;
-                if (*txt==0)
-                    break;
-                if (pontlog>=(int)sizeof(buflog)-500)
-                {
-                    safe_write(arq, buflog, pontlog);
-                    pontlog=0;
-                }
-                for (int x=0; x<490 && *txt && *txt!=Instr::ex_barra_n; x++)
-                    switch (*txt)
-                    {
-                    case Instr::ex_barra_b:
-                        txt++;
-                        break;
-                    case Instr::ex_barra_c:
-                        if ((txt[1]>='0' && txt[1]<='9') ||
-                                (txt[1]>='A' && txt[1]<='J') ||
-                                (txt[1]>='a' && txt[1]<='j'))
-                            txt += 2;
-                        else
-                            txt++;
-                        break;
-                    case Instr::ex_barra_d:
-                        if (txt[1]>='0' && txt[1]<='7')
-                            txt += 2;
-                        else
-                            txt++;
-                        break;
-                    default:
-                        buflog[pontlog++] = *txt++;
-                    }
-                buflog[pontlog++] = '\n';
+                safe_write(arq, buflog, pontlog);
+                pontlog=0;
             }
+            for (int x=0; x<490 && *txt && *txt!=Instr::ex_barra_n; x++)
+                switch (*txt)
+                {
+                case Instr::ex_barra_b:
+                    txt++;
+                    break;
+                case Instr::ex_barra_c:
+                    if ((txt[1]>='0' && txt[1]<='9') ||
+                            (txt[1]>='A' && txt[1]<='J') ||
+                            (txt[1]>='a' && txt[1]<='j'))
+                        txt += 2;
+                    else
+                        txt++;
+                    break;
+                case Instr::ex_barra_d:
+                    if (txt[1]>='0' && txt[1]<='7')
+                        txt += 2;
+                    else
+                        txt++;
+                    break;
+                default:
+                    buflog[pontlog++] = *txt++;
+                }
+            buflog[pontlog++] = '\n';
         }
-        return false;
     }
-// Fechar arquivo
-    if (comparaZ(nome, "fechar")==0)
+    return false;
+}
+
+//----------------------------------------------------------------------------
+bool TVarLog::FuncFechar(TVariavel * v)
+{
+    Fechar();
+    return false;
+}
+
+//----------------------------------------------------------------------------
+bool TVarLog::FuncValido(TVariavel * v)
+{
+    char arqnome[300] = ""; // Nome do arquivo; nulo se não for válido
+    if (Instr::VarAtual >= v + 1)
     {
-        Fechar();
-        return false;
-    }
-// Obtém o nome do arquivo
-    char arqnome[512]; // Nome do arquivo; nulo se não for válido
-    *arqnome=0;
-    if (Instr::VarAtual >= v+1)
-    {
-        copiastr(arqnome, v[1].getTxt(), sizeof(arqnome)-4);
-    // Verifica se nome permitido
-        if (!arqvalido(arqnome))
+        copiastr(arqnome, v[1].getTxt(), sizeof(arqnome) - 4);
+        if (!arqvalido(arqnome, false))
             *arqnome=0;
-        else
-        {
-            int tam = strlen(arqnome);
-            if (tam >= 4) // Tamanho suficiente
-                if (comparaZ(arqnome+tam-4, ".log") == 0) // Extensão correta
-                    tam -= 4;
-            strcpy(arqnome + tam, ".log"); // Acerta a extensão
-        }
     }
-// Checa se nome de arquivo é válido
-    if (comparaZ(nome, "valido")==0)
+    Instr::ApagarVar(v);
+    return Instr::CriarVarInt(*arqnome != 0);
+}
+
+//----------------------------------------------------------------------------
+bool TVarLog::FuncExiste(TVariavel * v)
+{
+    char arqnome[300] = ""; // Nome do arquivo; nulo se não for válido
+    if (Instr::VarAtual >= v + 1)
     {
-        Instr::ApagarVar(v);
-        return Instr::CriarVarInt(*arqnome != 0);
+        copiastr(arqnome, v[1].getTxt(), sizeof(arqnome) - 4);
+        if (!arqvalido(arqnome, false))
+            *arqnome=0;
     }
-// Checa se arquivo existe
-    if (comparaZ(nome, "existe")==0)
+    Instr::ApagarVar(v);
+    if (*arqnome == 0)
+        return Instr::CriarVarInt(0);
+    int tam = strlen(arqnome);
+    if (tam >= 4) // Tamanho suficiente
+        if (comparaZ(arqnome + tam - 4, ".log") == 0) // Extensão correta
+            tam -= 4;
+    strcpy(arqnome + tam, ".log"); // Acerta a extensão
+    struct stat buf;
+    if (*arqnome && stat(arqnome, &buf) < 0)
+        *arqnome = 0;
+    return Instr::CriarVarInt(*arqnome != 0);
+}
+
+//----------------------------------------------------------------------------
+bool TVarLog::FuncAbrir(TVariavel * v)
+{
+    char arqnome[300] = ""; // Nome do arquivo; nulo se não for válido
+    if (Instr::VarAtual >= v + 1)
     {
-        struct stat buf;
-        Instr::ApagarVar(v);
-        if (*arqnome && stat(arqnome, &buf)<0)
+        copiastr(arqnome, v[1].getTxt(), sizeof(arqnome) - 4);
+        if (!arqvalido(arqnome, false))
             *arqnome = 0;
-        return Instr::CriarVarInt(*arqnome != 0);
     }
-// Abrir arquivo
-    if (comparaZ(nome, "abrir")==0)
+    if (*arqnome)
     {
-        int descr = -1;
-    // Variável int no topo da pilha
-        Instr::ApagarVar(v);
-        if (!Instr::CriarVarInt(0))
-            return false;
+    // Acerta o nome do arquivo
+        int tam = strlen(arqnome);
+        if (tam >= 4) // Tamanho suficiente
+            if (comparaZ(arqnome + tam - 4, ".log") == 0) // Extensão correta
+                tam -= 4;
+        strcpy(arqnome + tam, ".log"); // Acerta a extensão
     // Abre arquivo
-        if (*arqnome)
-            descr = open(arqnome, O_WRONLY|O_CREAT|O_APPEND, (mode_t)0666);
-    // Se conseguiu abrir arquivo...
-        if (descr >= 0)
+        int descr = open(arqnome, O_WRONLY|O_CREAT|O_APPEND, (mode_t)0666);
+        if (descr < 0)
+            *arqnome = 0;
+        else
         {
         // Fecha arquivo
             Fechar();
@@ -207,10 +250,8 @@ bool TVarLog::Func(TVariavel * v, const char * nome)
             Inicio = this;
             if (Depois)
                 Depois->Antes = this;
-        // Valor de retorno é 1
-            Instr::VarAtual->setInt(1);
         }
-        return true;
     }
-    return false;
+    Instr::ApagarVar(v);
+    return Instr::CriarVarInt(*arqnome != 0);
 }

@@ -29,7 +29,7 @@ char TBlocoVar::txtnum[80] = "";
 //----------------------------------------------------------------------------
 bool TTextoVar::Func(TVariavel * v, const char * nome)
 {
-// Lista das funções de indiceitem
+// Lista das funções de textovar
 // Deve obrigatoriamente estar em letras minúsculas e ordem alfabética
     static const struct {
         const char * Nome;

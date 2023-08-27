@@ -10,6 +10,15 @@ class TObjeto;
 class TVarTelaTxt
 {
 private:
+    bool FuncMsg(TVariavel * v);    ///< Processa função Msg
+    bool FuncPosx(TVariavel * v);   ///< Processa função Posx
+    bool FuncTecla(TVariavel * v);  ///< Processa função Tecla
+    bool FuncProto(TVariavel * v);  ///< Processa função Proto
+    bool FuncLimpa(TVariavel * v);  ///< Processa função Limpa
+    bool FuncTexto(TVariavel * v);  ///< Processa função Texto
+    bool FuncTotal(TVariavel * v);  ///< Processa função Total
+    bool FuncLinha(TVariavel * v);  ///< Processa função Linha
+
     static void Escrever(const char * texto, int tamanho = -1);
         ///< Envia um texto para o console
     static void CursorEditor();

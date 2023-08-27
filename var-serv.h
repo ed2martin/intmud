@@ -61,7 +61,12 @@ public:
     unsigned char indice;   ///< Índice no vetor
 
 private:
-    bool modossl;           ///< Se deve usar conexão segura (SSL)
+    bool FuncFechar(TVariavel * v);    ///< Processa função Fechar
+    bool FuncAbrir(TVariavel * v);     ///< Processa função Abrir
+    bool FuncAbrirSSL(TVariavel * v);  ///< Processa função AbrirSSL
+    bool FuncIniSSL(TVariavel * v);    ///< Processa função IniSSL
+
+    bool modossl;               ///< Se deve usar conexão segura (SSL)
     int  sock;                  ///< Socket; menor que 0 se estiver fechado
     static TVarServ * varObj;   ///< Usado para saber se objeto foi apagado
     static TVarServ * Inicio;   ///< Primeiro objeto (com sock>=0)

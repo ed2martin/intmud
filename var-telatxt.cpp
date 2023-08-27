@@ -771,137 +771,180 @@ bool TVarTelaTxt::FuncEvento(const char * evento, const char * texto)
 //------------------------------------------------------------------------------
 bool TVarTelaTxt::Func(TVariavel * v, const char * nome)
 {
-// Envia mensagem
-    if (comparaZ(nome, "msg")==0)
+// Lista das funções de telatxt
+// Deve obrigatoriamente estar em letras minúsculas e ordem alfabética
+    static const struct {
+        const char * Nome;
+        bool (TVarTelaTxt::*Func)(TVariavel * v); } ExecFunc[] = {
+        { "limpa",        &TVarTelaTxt::FuncLimpa },
+        { "linha",        &TVarTelaTxt::FuncLinha },
+        { "msg",          &TVarTelaTxt::FuncMsg },
+        { "posx",         &TVarTelaTxt::FuncPosx },
+        { "proto",        &TVarTelaTxt::FuncProto },
+        { "tecla",        &TVarTelaTxt::FuncTecla },
+        { "texto",        &TVarTelaTxt::FuncTexto },
+        { "total",        &TVarTelaTxt::FuncTotal }  };
+// Procura a função correspondente e executa
+    int ini = 0;
+    int fim = sizeof(ExecFunc) / sizeof(ExecFunc[0]) - 1;
+    char mens[80];
+    copiastrmin(mens, nome, sizeof(mens));
+    while (ini <= fim)
     {
-        if (Console==0)
-            return false;
-        for (TVariavel * obj=v+1; obj<=Instr::VarAtual; obj++)
-        {
-            const char * texto = obj->getTxt();
-            while (true)
-            {
-                const char * p = texto;
-                while (*(unsigned char*)p >= ' ')
-                    p++;
-                if (p != texto)
-                {
-                    Escrever(texto, p-texto);
-                    texto = p;
-                }
-                if (*texto==0)
-                    break;
-                switch (*texto++)
-                {
-                case Instr::ex_barra_n:
-                    Escrever("\n", 1);
-                    break;
-                case Instr::ex_barra_b:
-                    CorTela = 0x70;
-                    break;
-                case Instr::ex_barra_c:
-                    {
-                        char ch = *texto;
-                        if (ch>='0' && ch<='9')
-                        {
-                            CorTela = (CorTela & 0x0F) +
-                                    (ch - '0') * 0x10;
-                            texto++;
-                            break;
-                        }
-                        switch (ch | 0x20)
-                        {
-                        case 'a': CorTela=(CorTela|0xF0)-0x50; texto++; break;
-                        case 'b': CorTela=(CorTela|0xF0)-0x40; texto++; break;
-                        case 'c': CorTela=(CorTela|0xF0)-0x30; texto++; break;
-                        case 'd': CorTela=(CorTela|0xF0)-0x20; texto++; break;
-                        case 'e': CorTela=(CorTela|0xF0)-0x10; texto++; break;
-                        case 'f': CorTela=(CorTela|0xF0);      texto++; break;
-                        case 'g': CorTela |=  0x100; texto++; break;
-                        case 'h': CorTela &= ~0x100; texto++; break;
-                        case 'i': CorTela |=  0x200; texto++; break;
-                        case 'j': CorTela &= ~0x200; texto++; break;
-                        case 'k': CorTela |=  0x400; texto++; break;
-                        case 'l': CorTela &= ~0x400; texto++; break;
-                        case 'm':
-                        case 'n':
-                        case 'o': texto++; break;
-                        case 'p': Console->Beep(); texto++; break;
-                        }
-                        break;
-                    }
-                case Instr::ex_barra_d:
-                    if (*texto>='0' && *texto<='7')
-                    {
-                        CorTela = (CorTela & ~15) +
-                                  (*texto - '0');
-                        texto++;
-                    }
-                } // switch
-            } // while
-        } // for
-        return false;
-    }
-// Posição do cursor
-    if (comparaZ(nome, "posx")==0)
-    {
-        Instr::ApagarVar(v);
-        return Instr::CriarVarInt(ColEscreve>=0xFFFF ? 0 : ColEscreve);
-    }
-// Processa tecla
-    if (comparaZ(nome, "tecla")==0)
-    {
-        if (Console==0)
-            return false;
-        for (TVariavel * obj=v+1; obj<=Instr::VarAtual; obj++)
-        {
-            const char * texto = obj->getTxt();
-            if (*texto)
-                ProcTecla(texto);
-        }
-        return false;
-    }
-// Variável proto
-    if (comparaZ(nome, "proto")==0)
-    {
-        Instr::ApagarVar(v);
-        return Instr::CriarVarInt(Console ? 1 : 0);
-    }
-// Limpa a tela
-    if (comparaZ(nome, "limpa")==0)
-    {
-        if (Console==0)
-            return false;
-        Console->CorTxt(0x70);
-        Console->LimpaTela();
-        Console->CursorPosic(1,0);
-        Console->CorTxt(CONSOLE_COR_LINHA);
-        Console->LimpaFim();  // Preenche do cursor até o fim da linha
-        LinhaFinal = 0;
-        LinhaPosic = 0;
-        ColPosic = 0;
-        ColEscreve = 0;
-        int total = tam_linha - col_linha;
-        if (total > 0)
-            Console->EnvTxt(txt_linha + col_linha,
-                            total<(int)Console->ColTotal-1 ? total : Console->ColTotal-1);
-        Console->CursorCol(ColEditor - Console->ColAtual);
-        memset(TelaBuf, ' ', Console->LinTotal * Console->ColTotal);
-        return false;
-    }
-// Variáveis
-    int x = 0;
-    if (comparaZ(nome, "texto")==0)
-        x = TelaTxtTexto;
-    else if (comparaZ(nome, "total")==0)
-        x = TelaTxtTotal;
-    else if (comparaZ(nome, "linha")==0)
-        x = TelaTxtLinha;
-    if (x)
-    {
-        Instr::ApagarVar(v+1);
-        Instr::VarAtual->numfunc = x;
-        return true;
+        int meio = (ini + fim) / 2;
+        int resultado = strcmp(mens, ExecFunc[meio].Nome);
+        if (resultado == 0) // Se encontrou...
+            return (this->*ExecFunc[meio].Func)(v);
+        if (resultado < 0) fim = meio - 1; else ini = meio + 1;
     }
     return false;
+}
+
+//------------------------------------------------------------------------------
+bool TVarTelaTxt::FuncMsg(TVariavel * v)
+{
+    if (Console==0)
+        return false;
+    for (TVariavel * obj=v+1; obj<=Instr::VarAtual; obj++)
+    {
+        const char * texto = obj->getTxt();
+        while (true)
+        {
+            const char * p = texto;
+            while (*(unsigned char*)p >= ' ')
+                p++;
+            if (p != texto)
+            {
+                Escrever(texto, p-texto);
+                texto = p;
+            }
+            if (*texto==0)
+                break;
+            switch (*texto++)
+            {
+            case Instr::ex_barra_n:
+                Escrever("\n", 1);
+                break;
+            case Instr::ex_barra_b:
+                CorTela = 0x70;
+                break;
+            case Instr::ex_barra_c:
+                {
+                    char ch = *texto;
+                    if (ch>='0' && ch<='9')
+                    {
+                        CorTela = (CorTela & 0x0F) +
+                                (ch - '0') * 0x10;
+                        texto++;
+                        break;
+                    }
+                    switch (ch | 0x20)
+                    {
+                    case 'a': CorTela=(CorTela|0xF0)-0x50; texto++; break;
+                    case 'b': CorTela=(CorTela|0xF0)-0x40; texto++; break;
+                    case 'c': CorTela=(CorTela|0xF0)-0x30; texto++; break;
+                    case 'd': CorTela=(CorTela|0xF0)-0x20; texto++; break;
+                    case 'e': CorTela=(CorTela|0xF0)-0x10; texto++; break;
+                    case 'f': CorTela=(CorTela|0xF0);      texto++; break;
+                    case 'g': CorTela |=  0x100; texto++; break;
+                    case 'h': CorTela &= ~0x100; texto++; break;
+                    case 'i': CorTela |=  0x200; texto++; break;
+                    case 'j': CorTela &= ~0x200; texto++; break;
+                    case 'k': CorTela |=  0x400; texto++; break;
+                    case 'l': CorTela &= ~0x400; texto++; break;
+                    case 'm':
+                    case 'n':
+                    case 'o': texto++; break;
+                    case 'p': Console->Beep(); texto++; break;
+                    }
+                    break;
+                }
+            case Instr::ex_barra_d:
+                if (*texto>='0' && *texto<='7')
+                {
+                    CorTela = (CorTela & ~15) +
+                                (*texto - '0');
+                    texto++;
+                }
+            } // switch
+        } // while
+    } // for
+    return false;
+}
+
+//------------------------------------------------------------------------------
+bool TVarTelaTxt::FuncPosx(TVariavel * v)
+{
+    int valor = (ColEscreve >= 0xFFFF ? 0 : ColEscreve);
+    Instr::ApagarVar(v);
+    return Instr::CriarVarInt(valor);
+}
+
+//------------------------------------------------------------------------------
+bool TVarTelaTxt::FuncTecla(TVariavel * v)
+{
+    if (Console==0)
+        return false;
+    for (TVariavel * obj=v+1; obj<=Instr::VarAtual; obj++)
+    {
+        const char * texto = obj->getTxt();
+        if (*texto)
+            ProcTecla(texto);
+    }
+    return false;
+}
+
+//------------------------------------------------------------------------------
+bool TVarTelaTxt::FuncProto(TVariavel * v)
+{
+    int valor = (Console ? 1 : 0);
+    Instr::ApagarVar(v);
+    return Instr::CriarVarInt(valor);
+}
+
+//------------------------------------------------------------------------------
+bool TVarTelaTxt::FuncLimpa(TVariavel * v)
+{
+    if (Console==0)
+        return false;
+    Console->CorTxt(0x70);
+    Console->LimpaTela();
+    Console->CursorPosic(1,0);
+    Console->CorTxt(CONSOLE_COR_LINHA);
+    Console->LimpaFim();  // Preenche do cursor até o fim da linha
+    LinhaFinal = 0;
+    LinhaPosic = 0;
+    ColPosic = 0;
+    ColEscreve = 0;
+    int total = tam_linha - col_linha;
+    if (total > 0)
+        Console->EnvTxt(txt_linha + col_linha,
+                        total<(int)Console->ColTotal-1 ? total : Console->ColTotal-1);
+    Console->CursorCol(ColEditor - Console->ColAtual);
+    memset(TelaBuf, ' ', Console->LinTotal * Console->ColTotal);
+    return false;
+}
+
+//------------------------------------------------------------------------------
+bool TVarTelaTxt::FuncTexto(TVariavel * v)
+{
+    Instr::ApagarVar(v + 1);
+    Instr::VarAtual->numfunc = TelaTxtTexto;
+    return true;
+}
+
+//------------------------------------------------------------------------------
+bool TVarTelaTxt::FuncTotal(TVariavel * v)
+{
+    Instr::ApagarVar(v + 1);
+    Instr::VarAtual->numfunc = TelaTxtTotal;
+    return true;
+}
+
+//------------------------------------------------------------------------------
+bool TVarTelaTxt::FuncLinha(TVariavel * v)
+{
+    Instr::ApagarVar(v + 1);
+    Instr::VarAtual->numfunc = TelaTxtLinha;
+    return true;
 }

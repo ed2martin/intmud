@@ -13,6 +13,12 @@ public:
     static int TempoEspera(int tempodecorrido);
     bool Func(TVariavel * v, const char * nome); ///< Função da variável
 private:
+    bool FuncMsg(TVariavel * v);    ///< Processa função Msg
+    bool FuncFechar(TVariavel * v); ///< Processa função Fechar
+    bool FuncValido(TVariavel * v); ///< Processa função Valido
+    bool FuncExiste(TVariavel * v); ///< Processa função Existe
+    bool FuncAbrir(TVariavel * v);  ///< Processa função Abrir
+
     void Fechar();      ///< Fecha arquivo
     static int Tempo;   ///< Quanto tempo para atualizar arquivos
     static TVarLog * Inicio; ///< Primeiro objeto com arq>=0

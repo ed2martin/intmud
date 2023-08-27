@@ -411,59 +411,95 @@ void TVarServ::ExecEvento(int localSocket, SSL * sslSocket)
 //------------------------------------------------------------------------------
 bool TVarServ::Func(TVariavel * v, const char * nome)
 {
-// Fecha Socket
-    if (comparaZ(nome, "fechar")==0)
+// Lista das funções de serv
+// Deve obrigatoriamente estar em letras minúsculas e ordem alfabética
+    static const struct {
+        const char * Nome;
+        bool (TVarServ::*Func)(TVariavel * v); } ExecFunc[] = {
+        { "abrir",        &TVarServ::FuncAbrir },
+        { "abrirssl",     &TVarServ::FuncAbrirSSL },
+        { "fechar",       &TVarServ::FuncFechar },
+        { "inissl",       &TVarServ::FuncIniSSL }  };
+// Procura a função correspondente e executa
+    int ini = 0;
+    int fim = sizeof(ExecFunc) / sizeof(ExecFunc[0]) - 1;
+    char mens[80];
+    copiastrmin(mens, nome, sizeof(mens));
+    while (ini <= fim)
     {
-        Fechar();
-        return false;
-    }
-// Abre porta
-    int tipoabrir = 0;
-    if (comparaZ(nome, "abrir")==0)
-        tipoabrir = 1;
-    else if (comparaZ(nome, "abrirssl")==0)
-        tipoabrir = 2;
-    if (tipoabrir)
-    {
-        if (Instr::VarAtual - v < 2)
-            return false;
-        int porta = v[2].getInt();
-        const char * ender = v[1].getTxt();
-        if (porta < 0 || porta > 65535 ||
-                (tipoabrir == 2 && ssl_ctx_servidor==0))
-        {
-            Instr::ApagarVar(v);
-            return Instr::CriarVarInt(0);
-        }
-    //printf("%s %d -> %d\n\n", ender, porta, Instr::VarAtual->getInt()); fflush(stdout);
-        modossl = (tipoabrir > 1);
-        int valor = Abrir(ender, porta);
-        Instr::ApagarVar(v);
-        return Instr::CriarVarInt(valor);
-    }
-// Abre biblioteca SSL
-    if (comparaZ(nome, "inissl")==0)
-    {
-        if (Instr::VarAtual - v < 2)
-            return false;
-        if (ssl_ctx_servidor)
-        {
-            Instr::ApagarVar(v);
-            return Instr::CriarVarTexto("");
-        }
-        char arq_crt[0x100];
-        char arq_key[0x100];
-        copiastr(arq_crt, v[1].getTxt(), sizeof(arq_crt));
-        copiastr(arq_key, v[2].getTxt(), sizeof(arq_key));
-        if (!arqvalido(arq_crt, true))
-            return "Nome do arquivo CRT não é permitido";
-        if (!arqvalido(arq_key, true))
-            return "Nome do arquivo KEY não é permitido";
-        const char * err = AbreServidorSSL(arq_crt, arq_key);
-        Instr::ApagarVar(v);
-        return Instr::CriarVarTexto(err ? err : "");
+        int meio = (ini + fim) / 2;
+        int resultado = strcmp(mens, ExecFunc[meio].Nome);
+        if (resultado == 0) // Se encontrou...
+            return (this->*ExecFunc[meio].Func)(v);
+        if (resultado < 0) fim = meio - 1; else ini = meio + 1;
     }
     return false;
+}
+
+//------------------------------------------------------------------------------
+bool TVarServ::FuncFechar(TVariavel * v)
+{
+    Fechar();
+    return false;
+}
+
+//------------------------------------------------------------------------------
+bool TVarServ::FuncAbrir(TVariavel * v)
+{
+    if (Instr::VarAtual - v < 2)
+        return false;
+    int porta = v[2].getInt();
+    const char * ender = v[1].getTxt();
+    int valor = 0;
+    if (porta >= 0 && porta <= 65535)
+    {
+        modossl = false;
+        valor = Abrir(ender, porta);
+//printf("%s %d -> %d\n\n", ender, porta, valor); fflush(stdout);
+    }
+    Instr::ApagarVar(v);
+    return Instr::CriarVarInt(valor);
+}
+
+//------------------------------------------------------------------------------
+bool TVarServ::FuncAbrirSSL(TVariavel * v)
+{
+    if (Instr::VarAtual - v < 2)
+        return false;
+    int porta = v[2].getInt();
+    const char * ender = v[1].getTxt();
+    int valor = 0;
+    if (porta >= 0 && porta <= 65535 && ssl_ctx_servidor)
+    {
+        modossl = true;
+        valor = Abrir(ender, porta);
+//printf("%s %d -> %d\n\n", ender, porta, valor); fflush(stdout);
+    }
+    Instr::ApagarVar(v);
+    return Instr::CriarVarInt(valor);
+}
+
+//------------------------------------------------------------------------------
+bool TVarServ::FuncIniSSL(TVariavel * v)
+{
+    if (Instr::VarAtual - v < 2)
+        return false;
+    if (ssl_ctx_servidor)
+    {
+        Instr::ApagarVar(v);
+        return Instr::CriarVarTexto("");
+    }
+    char arq_crt[0x100];
+    char arq_key[0x100];
+    copiastr(arq_crt, v[1].getTxt(), sizeof(arq_crt));
+    copiastr(arq_key, v[2].getTxt(), sizeof(arq_key));
+    if (!arqvalido(arq_crt, true))
+        return "Nome do arquivo CRT não é permitido";
+    if (!arqvalido(arq_key, true))
+        return "Nome do arquivo KEY não é permitido";
+    const char * err = AbreServidorSSL(arq_crt, arq_key);
+    Instr::ApagarVar(v);
+    return Instr::CriarVarTexto(err ? err : "");
 }
 
 //------------------------------------------------------------------------------

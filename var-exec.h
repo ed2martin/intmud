@@ -93,12 +93,17 @@ public:
     unsigned char indice;   ///< Índice no vetor
 
 private:
-    void FuncEvento(const char * evento, const char * texto, int valor);
+    void GeraEvento(const char * evento, const char * texto, int valor);
         ///< Executa uma função
         /**< @param evento Nome do evento (ex. "msg")
          *   @param texto Texto do primeiro argumento, 0=nenhum texto
          *   @param valor Segundo argumento, <0 = nenhum valor
          *   @note O objeto pode ser apagado nessa função */
+
+    bool FuncMsg(TVariavel * v);    ///< Processa função Msg
+    bool FuncAbrir(TVariavel * v);  ///< Processa função Abrir
+    bool FuncFechar(TVariavel * v); ///< Processa função Fechar
+    bool FuncAberto(TVariavel * v); ///< Processa função Aberto
 
     TObjExec * ObjExec;     ///< Programa atual
 

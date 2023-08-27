@@ -37,6 +37,7 @@ public:
     TObjeto * Objeto;       ///< Objeto em que a lista foi definida
     unsigned int Total;     ///< Quantidade de itens da lista
 
+private:
     bool FuncIni(TVariavel * v);
     bool FuncFim(TVariavel * v);
     bool FuncObjLista(TVariavel * v);
@@ -71,6 +72,7 @@ public:
     const char * defvar;    ///< Definição da variável; usado em var-sav.cpp
     unsigned int indice;    ///< Índice da variável
 
+private:
     bool FuncTotal(TVariavel * v);
     bool FuncObj(TVariavel * v);
     bool FuncObjLista(TVariavel * v);

@@ -51,7 +51,7 @@ int TVarTxt::getValor()
 //------------------------------------------------------------------------------
 bool TVarTxt::Func(TVariavel * v, const char * nome)
 {
-// Lista das funções de varmem
+// Lista das funções de arqtxt
 // Deve obrigatoriamente estar em letras minúsculas e ordem alfabética
     static const struct {
         const char * Nome;
@@ -286,7 +286,6 @@ bool TVarTxt::FuncValido(TVariavel * v)
 //------------------------------------------------------------------------------
 bool TVarTxt::FuncExiste(TVariavel * v)
 {
-// Obtém o nome do arquivo
     char arqnome[300] = ""; // Nome do arquivo; nulo se não for válido
     if (Instr::VarAtual >= v+1)
     {

@@ -57,7 +57,7 @@ void TVarDir::Apagar()
 //------------------------------------------------------------------------------
 bool TVarDir::Func(TVariavel * v, const char * nome)
 {
-// Lista das funções de varmem
+// Lista das funções de arqdir
 // Deve obrigatoriamente estar em letras minúsculas e ordem alfabética
     static const struct {
         const char * Nome;
