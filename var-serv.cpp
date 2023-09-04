@@ -43,8 +43,8 @@
 
 //#define DEBUG_CRIAR  // Mostra objetos criados e apagados
 
-TVarServ * TVarServ::Inicio = 0;
-TVarServ * TVarServ::varObj = 0;
+TVarServ * TVarServ::Inicio = nullptr;
+TVarServ * TVarServ::varObj = nullptr;
 
 //------------------------------------------------------------------------------
 TVarServObj::TVarServObj(TVarServ * serv, int s)
@@ -55,7 +55,7 @@ TVarServObj::TVarServObj(TVarServ * serv, int s)
 // Coloca na lista ligada
     Serv = serv;
     Antes = Serv->ServFim;
-    Depois = 0;
+    Depois = nullptr;
     (Antes ? Antes->Depois : Serv->ServInicio) = this;
     Serv->ServFim = this;
 // Acerta outras variáveis
@@ -82,7 +82,7 @@ TVarServObj::~TVarServObj()
     if (sock >= 0)
         close(sock);
 #ifdef DEBUG_CRIAR
-    printf("delete TVarServObj%s%s\n", sock>=0 ? " socket" : "",
+    printf("delete TVarServObj%s%s\n", sock >= 0 ? " socket" : "",
          sockssl ? " ssl" : ""); fflush(stdout);
 #endif
 }
@@ -108,10 +108,10 @@ void TVarServ::Apagar()
 //------------------------------------------------------------------------------
 void TVarServ::Fechar()
 {
-    if (sock<0)
+    if (sock < 0)
         return;
     close(sock);
-    sock=-1;
+    sock = -1;
     (Antes ? Antes->Depois : Inicio) = Depois;
     if (Depois)
         Depois->Antes = Antes;
@@ -124,7 +124,7 @@ void TVarServ::Fechar()
 //------------------------------------------------------------------------------
 void TVarServ::Mover(TVarServ * destino)
 {
-    if (sock>=0)
+    if (sock >= 0)
     {
         (Antes ? Antes->Depois : Inicio) = destino;
         if (Depois)
@@ -139,9 +139,9 @@ void TVarServ::Mover(TVarServ * destino)
 void TVarServ::EndObjeto(TClasse * c, TObjeto * o)
 {
     if (o)
-        endobjeto=o, b_objeto=true;
+        endobjeto = o, b_objeto = true;
     else
-        endclasse=c, b_objeto=false;
+        endclasse = c, b_objeto = false;
 }
 
 //------------------------------------------------------------------------------
@@ -159,7 +159,7 @@ bool TVarServ::Abrir(const char * ender, unsigned short porta)
     // Windows: Cria socket
         if ( (sock = socket(PF_INET, SOCK_STREAM, 0)) == INVALID_SOCKET )
         {
-            sock=-1;
+            sock = -1;
             break;
         }
         //BOOL iopcoes = 1;
@@ -172,7 +172,7 @@ bool TVarServ::Abrir(const char * ender, unsigned short porta)
         strSock.sin_addr.s_addr = htonl(INADDR_ANY);
         if (*ender)
         {
-            strSock.sin_addr.s_addr=inet_addr(ender);
+            strSock.sin_addr.s_addr = inet_addr(ender);
             if ( strSock.sin_addr.s_addr == INADDR_NONE )
             {
                 if ( (hnome=gethostbyname(ender)) == NULL )
@@ -191,14 +191,14 @@ bool TVarServ::Abrir(const char * ender, unsigned short porta)
             break;
 
     // Windows: Modo de não bloqueio
-        unsigned long argp=1; // 0=bloquear  1=nao bloquear
-        if ( ioctlsocket(sock, FIONBIO, &argp) !=0 )
+        unsigned long argp = 1; // 0=bloquear  1=nao bloquear
+        if ( ioctlsocket(sock, FIONBIO, &argp) != 0 )
             break;
 #else
     // Unix: Cria socket
         int  iopcoes = 1;
         ACCEPT_TYPE_ARG3 tamanho = sizeof(iopcoes);
-        if ( (sock = socket(PF_INET, SOCK_STREAM, 0)) <0 )
+        if ( (sock = socket(PF_INET, SOCK_STREAM, 0)) < 0 )
             break;
         setsockopt(sock, SOL_SOCKET, SO_REUSEADDR, &iopcoes, tamanho);
 
@@ -209,7 +209,7 @@ bool TVarServ::Abrir(const char * ender, unsigned short porta)
         if (*ender)
             if (inet_aton(ender, &strSock.sin_addr) == 0)
             {
-                if ( (hnome=gethostbyname(ender)) == NULL )
+                if ( (hnome = gethostbyname(ender)) == nullptr )
                     break;
                 strSock.sin_addr = (*(struct in_addr *)hnome->h_addr);
             }
@@ -217,11 +217,11 @@ bool TVarServ::Abrir(const char * ender, unsigned short porta)
     // Unix: Seleciona a porta
         strSock.sin_port = htons(porta);
         if ( bind(sock, (struct sockaddr *)&strSock,
-                            sizeof(struct sockaddr))<0)
+                            sizeof(struct sockaddr)) < 0)
             break;
 
     // Unix: Escuta na porta selecionada
-        if (listen(sock, 15)<0)
+        if (listen(sock, 15) < 0)
             break;
 
     // Unix: Modo de não bloqueio
@@ -229,7 +229,7 @@ bool TVarServ::Abrir(const char * ender, unsigned short porta)
 #endif
 
     // Coloca na lista ligada
-        Antes = 0;
+        Antes = nullptr;
         Depois = Inicio;
         if (Depois)
             Depois->Antes = this;
@@ -240,9 +240,9 @@ bool TVarServ::Abrir(const char * ender, unsigned short porta)
 // Ocorreu algum erro
     // UNIX: o erro está em strerror(errno)
     // Windows: chamar WSAGetLastError() e obter o erro de uma tabela
-    if (sock>=0)
+    if (sock >= 0)
         close(sock);
-    sock=-1;
+    sock = -1;
     return false;
 }
 
@@ -270,7 +270,7 @@ void TVarServ::ProcEventos(fd_set * set_entrada, int tempo)
     for (TVarServ * obj = Inicio; obj; )
     {
     // Verifica se tem conexões pendentes
-        if (FD_ISSET(obj->sock, set_entrada)==0)
+        if (FD_ISSET(obj->sock, set_entrada) == 0)
         {
             obj = obj->Depois;
             continue;
@@ -282,15 +282,15 @@ void TVarServ::ProcEventos(fd_set * set_entrada, int tempo)
             struct sockaddr_in SockStr_in;
 #ifdef __WIN32__
             int tamsock = sizeof(SockStr_in);
-            unsigned int localSocket=accept(obj->sock,
+            unsigned int localSocket = accept(obj->sock,
                 (struct sockaddr *)&SockStr_in, &tamsock);
-            if (localSocket==INVALID_SOCKET)
+            if (localSocket == INVALID_SOCKET)
                 break;
 #else
             ACCEPT_TYPE_ARG3 tamsock = sizeof(SockStr_in);
-            int localSocket=accept(obj->sock,
+            int localSocket = accept(obj->sock,
                 (ACCEPT_TYPE_ARG2)&SockStr_in, &tamsock);
-            if (localSocket<0)
+            if (localSocket < 0)
                 break;
 #endif
             TSocket::SockConfig(localSocket); // Acerta socket
@@ -330,7 +330,7 @@ void TVarServ::ProcEventos(fd_set * set_entrada, int tempo)
                 SSL * local_ssl = x->sockssl;
                 TVarServObj * x2 = x->Depois;
                 x->sock = -1;
-                x->sockssl = 0;
+                x->sockssl = nullptr;
                 delete x;
             // Passa para o próximo objeto
                 x = x2;
@@ -384,7 +384,7 @@ void TVarServ::ExecEvento(int localSocket, SSL * sslSocket)
         sprintf(mens, "%s_socket", defvar+Instr::endNome);
         prossegue = Instr::ExecIni(endclasse, mens);
     }
-    if (prossegue==false)
+    if (prossegue == false)
     {
         if (sslSocket)
         {
@@ -505,5 +505,5 @@ bool TVarServ::FuncIniSSL(TVariavel * v)
 //------------------------------------------------------------------------------
 int TVarServ::getValor()
 {
-    return sock>=0;
+    return sock >= 0;
 }

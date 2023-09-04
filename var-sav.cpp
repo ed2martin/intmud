@@ -42,9 +42,9 @@ int TVarSav::HoraReg = 0;
 //int TVarSav::Dia = 0;
 //int TVarSav::Hora = 0;
 //int TVarSav::Min = 0;
-int TVarSav::TempoSav=0;
-TVarSavArq * TVarSavArq::Inicio = 0;
-TVarSavArq * TVarSavArq::Fim = 0;
+int TVarSav::TempoSav = 0;
+TVarSavArq * TVarSavArq::Inicio = nullptr;
+TVarSavArq * TVarSavArq::Fim = nullptr;
 
 //----------------------------------------------------------------------------
 // Acerta variáveis
@@ -70,11 +70,11 @@ void TVarSav::ProcEventos(int tempoespera)
     //printf("%d\n", (int)HoraReg); fflush(stdout);
 // Checa arquivos SAV pendentes
     TempoSav += tempoespera;
-    if (TempoSav<0)
-        TempoSav=0;
-    if (TempoSav>=10)
+    if (TempoSav < 0)
+        TempoSav = 0;
+    if (TempoSav >= 10)
     {
-        TempoSav=0;
+        TempoSav = 0;
         TVarSavDir::Checa();
     }
 }
@@ -84,7 +84,7 @@ void TVarSav::Senha(char * senhacodif, const char * senha, char fator)
 {
 // Checa se fator nulo
     *senhacodif++ = fator;
-    if (fator==0)
+    if (fator == 0)
     {
         *senhacodif = 0;
         return;
@@ -92,25 +92,25 @@ void TVarSav::Senha(char * senhacodif, const char * senha, char fator)
 // Prepara a senha
     unsigned char mens[512];
     unsigned int tam = strlen(senha);
-    if (tam > sizeof(mens)-1)
-        tam = sizeof(mens)-1;
+    if (tam > sizeof(mens) - 1)
+        tam = sizeof(mens) - 1;
     mens[0] = fator;
-    memcpy(mens+1, senha, tam);
+    memcpy(mens + 1, senha, tam);
 // Codifica
     unsigned char digest[20];
     SHA_CTX shaInfo;
     SHAInit(&shaInfo);
-    SHAUpdate(&shaInfo, mens, tam+1);
+    SHAUpdate(&shaInfo, mens, tam + 1);
     SHAFinal(digest, &shaInfo);
 // Anota na string
-    for (int x=0; x<20; x+=4)
+    for (int x = 0; x < 20; x += 4)
     {
         unsigned int valor = digest[x]   * 0x1000000+
-                             digest[x+1] * 0x10000+
-                             digest[x+2] * 0x100+
-                             digest[x+3];
-        for (int b=0; b<5; valor/=90,b++)
-            *senhacodif++ = (char)(valor%90+33);
+                             digest[x + 1] * 0x10000+
+                             digest[x + 2] * 0x100+
+                             digest[x + 3];
+        for (int b = 0; b < 5; valor /= 90, b++)
+            *senhacodif++ = (char)(valor % 90 + 33);
     }
     *senhacodif = 0;
 }
@@ -122,14 +122,14 @@ int TVarSav::Tempo(const char * arqnome)
     TArqLer arqler;
     if (!arqler.Abrir(arqnome))
         return -1;
-    while (arqler.Linha(mens, sizeof(mens), false)>0)
+    while (arqler.Linha(mens, sizeof(mens), false) > 0)
     {
-        if (strcmp(mens, "+++")==0)
+        if (strcmp(mens, "+++") == 0)
             break;
-        if (compara(mens, "data=",5)!=0)
+        if (compara(mens, "data=",5) != 0)
             continue;
-        int tempo = TxtToInt(mens+5) - HoraReg;
-        return (tempo<0 ? 0 : tempo);
+        int tempo = TxtToInt(mens + 5) - HoraReg;
+        return (tempo < 0 ? 0 : tempo);
     }
     return -1;
 }
@@ -184,7 +184,7 @@ bool TVarSav::FuncLimpar(TVariavel * v)
     }
     char mens[512];
     copiastr(mens, v[1].getTxt(), sizeof(mens));
-    if (*mens==0)
+    if (*mens == 0)
         strcpy(mens, ".");
     Instr::ApagarVar(v);
 // Se inválido: retorna 0
@@ -206,10 +206,10 @@ bool TVarSav::FuncLimpou(TVariavel * v)
     char mens[BUF_MENS];
     char * p = mens;
     *p++ = (TVarSavDir::ChecaPend() ? '1' : '0');
-    *p=0;
+    *p = 0;
     while (TVarSavArq::Inicio)
     {
-        p = mprintf(p, mens+sizeof(mens)-p, "%c%s",
+        p = mprintf(p, mens + sizeof(mens) - p, "%c%s",
                 Instr::ex_barra_n, TVarSavArq::Inicio->Nome);
         delete TVarSavArq::Inicio;
     }
@@ -445,7 +445,7 @@ bool TVarSav::ObterVar(TVariavel * var, TObjeto * obj, const char * nomevar)
     while (*nomevar && *nomevar!='.')
         if (d < nome + sizeof(nome) - 1)
             *d++ = *nomevar++;
-    *d=0;
+    *d = 0;
 
 // Obtém o índice o vetor
     if (*nomevar=='.')
@@ -455,9 +455,9 @@ bool TVarSav::ObterVar(TVariavel * var, TObjeto * obj, const char * nomevar)
 // Obtém a posição da variável na classe
     TClasse * c = obj->Classe;
     int indice = c->IndiceNome(nome);
-    if (indice<0)
+    if (indice < 0)
     {
-        var->defvar = 0;
+        var->defvar = nullptr;
         return false;
     }
 
@@ -466,10 +466,10 @@ bool TVarSav::ObterVar(TVariavel * var, TObjeto * obj, const char * nomevar)
     indice = c->IndiceVar[indice];
     var->numbit = indice >> 24;
     var->indice = indvar;
-    if (TVariavel::Tamanho(var->defvar)==0 ||
+    if (TVariavel::Tamanho(var->defvar) == 0 ||
             indice & 0x400000) // Variável da classe
     {
-        var->defvar = 0;
+        var->defvar = nullptr;
         return false;
     }
     // Variável do objeto
@@ -481,10 +481,10 @@ bool TVarSav::ObterVar(TVariavel * var, TObjeto * obj, const char * nomevar)
             (indvar && indvar >=
             (unsigned char)var->defvar[Instr::endVetor]))
     {
-        var->defvar = 0;
+        var->defvar = nullptr;
         return false;
     }
-    //printf(" [%s] [%d]\n", var.defvar+Instr::endNome, indvar); fflush(stdout);
+    //printf(" [%s] [%d]\n", var.defvar + Instr::endNome, indvar); fflush(stdout);
     return true;
 }
 
@@ -494,10 +494,10 @@ int TVarSav::Ler(TVariavel * v, const char * arqnome)
     unsigned int quantidade = MAX_OBJ; // Número máximo de objetos
     char mens[8192];
     TArqLer arqler;
-    if (Instr::VarAtual >= v+3)
+    if (Instr::VarAtual >= v + 3)
         quantidade = v[2].getInt();
-    if (*arqnome==0 ||  // Arquivo inválido
-            Instr::VarAtual < v+2 || // Menos de dois argumentos
+    if (*arqnome == 0 ||  // Arquivo inválido
+            Instr::VarAtual < v + 2 || // Menos de dois argumentos
             quantidade <= 0 ||  // Número de objetos <=0
             v[2].defvar[2] != Instr::cListaObj || // Não é listaobj
             !arqler.Abrir(arqnome))  // Não conseguiu abrir arquivo
@@ -509,14 +509,14 @@ int TVarSav::Ler(TVariavel * v, const char * arqnome)
     if (quantidade > MAX_OBJ)
         quantidade = MAX_OBJ;
 // Avança até a lista dos tipos de objetos
-    while (arqler.Linha(mens, sizeof(mens), false)>0)
-        if (strcmp(mens, "+++")==0)
+    while (arqler.Linha(mens, sizeof(mens), false) > 0)
+        if (strcmp(mens, "+++") == 0)
             break;
 // Cria objetos na listaobj se necessário
-    while (arqler.Linha(mens, sizeof(mens), false)>0)
+    while (arqler.Linha(mens, sizeof(mens), false) > 0)
     {
         //printf("1> %s\n", mens); fflush(stdout);
-        if (strcmp(mens, "+++")==0)
+        if (strcmp(mens, "+++") == 0)
             break;
         if (bufobj.size() >= quantidade)
             continue;
@@ -530,9 +530,9 @@ int TVarSav::Ler(TVariavel * v, const char * arqnome)
     // Obtém a classe
         TClasse * c = TClasse::Procura(mens);
     // Classe inválida: não cria objeto
-        if (c==0)
+        if (c == nullptr)
         {
-            bufobj.push_back(NULL);
+            bufobj.push_back(nullptr);
             continue;
         }
     // Classe válida: cria objeto e adiciona na lista
@@ -541,49 +541,49 @@ int TVarSav::Ler(TVariavel * v, const char * arqnome)
         bufobj.push_back(obj);
     }
 // Lê objetos
-    TListaX * listaitem_fim = 0;
-    TTextoTxt * textotxt_obj = 0; // textotxt que falta anota \n no final
-    TTextoVar * textovar_obj = 0; // Para anotar texto em textovar
-    TTextoObj * textoobj_obj = 0; // Para anotar texto em textoobj
+    TListaX * listaitem_fim = nullptr;
+    TTextoTxt * textotxt_obj = nullptr; // textotxt que falta anota \n no final
+    TTextoVar * textovar_obj = nullptr; // Para anotar texto em textovar
+    TTextoObj * textoobj_obj = nullptr; // Para anotar texto em textoobj
     char mensvar[65100];       // Texto que será anotado
     char * pmensvar = mensvar; // Aonde adicionar texto
     TVariavel var;
-    var.defvar = 0;
+    var.defvar = nullptr;
     quantidade = bufobj.size();
     unsigned int numobj = 0;
-    while (arqler.Linha(mens, sizeof(mens), false)>0)
+    while (arqler.Linha(mens, sizeof(mens), false) > 0)
     {
     // Próximo objeto
-        if (strcmp(mens, "+++")==0)
+        if (strcmp(mens, "+++") == 0)
         {
-            var.defvar = 0;
+            var.defvar = nullptr;
             numobj++;
             if (numobj >= quantidade)
                 break;
             continue;
         }
     // Verifica se objeto válido
-        if (bufobj[numobj]==0)
+        if (bufobj[numobj] == 0)
             continue;
     // Separa nome da variável, índice e valor
         char * p = mens;
-        while (*p && *p!='=')
+        while (*p && *p != '=')
             p++;
-        if (*p!='=')
+        if (*p != '=')
             continue;
         *p++ = 0;
     // Obtém a variável
-        if (mens[0]!='.' || mens[1]!=0)
+        if (mens[0] != '.' || mens[1] != 0)
         {
             ObterVar(&var, bufobj[numobj], mens);
-            listaitem_fim = 0;
+            listaitem_fim = nullptr;
             if (textotxt_obj)
             {
                 textotxt_obj->AddTexto("\n", 1);
-                textotxt_obj=0;
+                textotxt_obj = nullptr;
             }
         }
-        if (var.defvar==0)
+        if (var.defvar == nullptr)
             continue;
     // Anota valor na variável
         switch (var.Tipo())
@@ -602,7 +602,7 @@ int TVarSav::Ler(TVariavel * v, const char * arqnome)
                 char * d = mens;
                 for (; *p; p++)
                 {
-                    if (*p != '\\' || p[1]==0)
+                    if (*p != '\\' || p[1] == 0)
                         *d++ = *p;
                     else switch (*++p)
                     {
@@ -617,17 +617,17 @@ int TVarSav::Ler(TVariavel * v, const char * arqnome)
                     case '\\': *d++ = '\\'; break;
                     }
                 }
-                *d=0;
+                *d = 0;
                 var.setTxt(mens);
             }
             break;
     // Referência a objetos
         case varObj:
             {
-                unsigned int indice = (p[0]-0x21) * 0x40 + (p[1]-0x21);
-                if (p[0]<0x21 || p[0]>=0x61 || p[1]<0x21 || p[1]>=0x61 ||
+                unsigned int indice = (p[0] - 0x21) * 0x40 + (p[1] - 0x21);
+                if (p[0] < 0x21 || p[0] >= 0x61 || p[1] < 0x21 || p[1] >= 0x61 ||
                         indice >= quantidade)
-                    var.setObj(0);
+                    var.setObj(nullptr);
                 else
                     var.setObj(bufobj[indice]);
                 break;
@@ -635,7 +635,7 @@ int TVarSav::Ler(TVariavel * v, const char * arqnome)
     // Checa outros tipos de variáveis
         default:
     // ListaObj
-            if (var.defvar[2]==Instr::cListaObj)
+            if (var.defvar[2] == Instr::cListaObj)
             {
                 TListaObj * lobj = var.end_listaobj + var.indice;
             // Limpa a lista
@@ -649,24 +649,27 @@ int TVarSav::Ler(TVariavel * v, const char * arqnome)
                 while (*p)
                 {
                 // Obtém número do objeto
-                    unsigned int subobj=0;
-                    for (; *p>='0' && *p<='9'; p++)
+                    unsigned int subobj = 0;
+                    for (; *p >= '0' && *p <= '9'; p++)
                         subobj = subobj * 10 + *p - '0';
                 // Verifica se adicionar novo objeto
-                    if (*p!='.')
+                    if (*p != '.')
                     {
                         if (subobj < quantidade && bufobj[subobj])
                             listaitem_fim = lobj->AddFim(bufobj[subobj]);
                         else
-                            listaitem_fim = 0;
-                        while (*p && *p!='\'') p++;
-                        if (*p) p++;
+                            listaitem_fim = nullptr;
+                        while (*p && *p!='\'')
+                            p++;
+                        if (*p)
+                            p++;
                         continue;
                     }
                 // Adicionar referência a objeto
                     p++;
                     char * nomeobj = p;
-                    while (*p && *p!='\'') p++;
+                    while (*p && *p!='\'')
+                        p++;
                     char ch = *p;
                     *p++ = 0;
                     TVariavel varitem;
@@ -674,40 +677,40 @@ int TVarSav::Ler(TVariavel * v, const char * arqnome)
                       if (ObterVar(&varitem, bufobj[subobj], nomeobj))
                         if (varitem.defvar[2] == Instr::cListaItem)
                         varitem.end_listaitem[varitem.indice].MudarRef(listaitem_fim);
-                    if (ch==0)
+                    if (ch == 0)
                         break;
                 }
                 break;
             }
     // TextoTxt
-            if (var.defvar[2]==Instr::cTextoTxt)
+            if (var.defvar[2] == Instr::cTextoTxt)
             {
                 TTextoTxt * txtobj = var.end_textotxt + var.indice;
             // Outro textotxt: anota \n no fim do anterior
                 if (textotxt_obj && textotxt_obj != txtobj)
                 {
                     textotxt_obj->AddTexto("\n", 1);
-                    textotxt_obj=0;
+                    textotxt_obj = nullptr;
                 }
             // Limpar textotxt
-                if ((*p|0x20)=='l')
+                if ((*p | 0x20) == 'l')
                 {
                     p++;
                     txtobj->Limpar();
-                    textotxt_obj=0;
+                    textotxt_obj = nullptr;
                 }
             // Anotar textopos
-                if ((*p|0x20)=='p')
+                if ((*p | 0x20) == 'p')
                 {
                 // Obtém número do objeto
                     TVariavel varitem;
-                    unsigned int subobj=0;
-                    for (p++; *p>='0' && *p<='9'; p++)
+                    unsigned int subobj = 0;
+                    for (p++; *p >= '0' && *p <= '9'; p++)
                         subobj = subobj * 10 + *p - '0';
                 // Obtém a variável textopos
-                    if (*p!='.' ||
-                        subobj > quantidade || bufobj[subobj]==0 ||
-                        ObterVar(&varitem, bufobj[subobj], p+1)==0 ||
+                    if (*p != '.' ||
+                        subobj > quantidade || bufobj[subobj] == nullptr ||
+                        ObterVar(&varitem, bufobj[subobj], p + 1) == 0 ||
                         varitem.defvar[2] != Instr::cTextoPos)
                         break;
                     TTextoPos * pos = varitem.end_textopos + varitem.indice;
@@ -715,7 +718,7 @@ int TVarSav::Ler(TVariavel * v, const char * arqnome)
                     if (textotxt_obj)
                     {
                         textotxt_obj->AddTexto("\n", 1);
-                        textotxt_obj=0;
+                        textotxt_obj = nullptr;
                     }
                 // Aponta textopos para o final de textotxt
                     pos->MudarTxt(txtobj);
@@ -726,12 +729,12 @@ int TVarSav::Ler(TVariavel * v, const char * arqnome)
                     break;
                 }
             // Anotar texto em textotxt
-                if ((*p|0x20)=='t')
+                if ((*p | 0x20) == 't')
                 {
                     char * d = mens;
                     for (p++; *p; p++)
                     {
-                        if (*p != '\\' || p[1]==0)
+                        if (*p != '\\' || p[1] == 0)
                             *d++ = *p;
                         else switch (*++p)
                         {
@@ -746,18 +749,18 @@ int TVarSav::Ler(TVariavel * v, const char * arqnome)
                         case '\\': *d++ = '\\'; break;
                         }
                     }
-                    if (d!=mens)
+                    if (d != mens)
                     {
-                        textotxt_obj = (d[-1]==Instr::ex_barra_n ?
-                                        0 : txtobj);
-                        txtobj->AddTexto(mens, d-mens);
+                        textotxt_obj = (d[-1] == Instr::ex_barra_n ?
+                                        nullptr : txtobj);
+                        txtobj->AddTexto(mens, d - mens);
                     }
                     break;
                 }
                 break;
             }
     // TextoVar
-            if (var.defvar[2]==Instr::cTextoVar)
+            if (var.defvar[2] == Instr::cTextoVar)
             {
                 TTextoVar * txtvar = var.end_textovar + var.indice;
             // Outro textovar: anota texto e inicializa textovar
@@ -770,7 +773,7 @@ int TVarSav::Ler(TVariavel * v, const char * arqnome)
             // Acrescenta texto
                 for (; *p; p++)
                 {
-                    if (*p != '\\' || p[1]==0)
+                    if (*p != '\\' || p[1] == 0)
                     {
                         *pmensvar = *p;
                         if (pmensvar < mensvar + sizeof(mensvar))
@@ -797,21 +800,21 @@ int TVarSav::Ler(TVariavel * v, const char * arqnome)
                     if (!completo)
                         continue;
                 // Acerta o texto
-                    *pmensvar=0;
+                    *pmensvar = 0;
                     pmensvar = mensvar;
                 // Procura um sinal de igual
                     char * texto = mensvar;
-                    while (*texto && *texto!='=')
+                    while (*texto && *texto != '=')
                     {
                         if (*texto == 0x1F)
                             *texto = '=';
                         texto++;
                     }
-                    if (*texto==0)
+                    if (*texto == 0)
                         continue;
                 // Marca o fim do nome da variável
                     *texto++ = 0;
-                    for (char * p1=texto; *p1; p1++)
+                    for (char * p1 = texto; *p1; p1++)
                         if (*p1 == 0x1F)
                             *p1 = '=';
                 // Cria a variável
@@ -831,7 +834,7 @@ int TVarSav::Ler(TVariavel * v, const char * arqnome)
                 break;
             }
     // TextoObj
-            if (var.defvar[2]==Instr::cTextoObj)
+            if (var.defvar[2] == Instr::cTextoObj)
             {
                 TTextoObj * txtobj = var.end_textoobj + var.indice;
             // Outro textoobj: inicializa textoobj
@@ -845,28 +848,28 @@ int TVarSav::Ler(TVariavel * v, const char * arqnome)
                 {
                 // Procura um sinal de igual
                     char * nomevar = p;
-                    while (*p && *p!='=')
+                    while (*p && *p != '=')
                         p++;
-                    if (*p==0)
+                    if (*p == 0)
                         break;
                 // Marca o fim do nome da variável
                     *p++ = 0;
                 // Obtém número do objeto
-                    unsigned int subobj=0;
-                    for (; *p>='0' && *p<='9'; p++)
+                    unsigned int subobj = 0;
+                    for (; *p >= '0' && *p <= '9'; p++)
                         subobj = subobj * 10 + *p - '0';
                 // Adiciona variável
                     if (*nomevar && subobj < quantidade)
                         if (bufobj[subobj])
                             txtobj->Mudar(nomevar, bufobj[subobj]);
                 // Passa para a próxima variável
-                    if (*p=='\'')
+                    if (*p == '\'')
                         p++;
                 }
                 break;
             }
     // DataHora
-            if (var.defvar[2]==Instr::cDataHora)
+            if (var.defvar[2] == Instr::cDataHora)
                 var.end_datahora[var.indice].LerSav(p);
         } // switch
     } // while
@@ -879,17 +882,17 @@ int TVarSav::Ler(TVariavel * v, const char * arqnome)
 //----------------------------------------------------------------------------
 int TVarSav::Salvar(TVariavel * v, const char * arqnome, bool senhacod)
 {
-    if (*arqnome==0 ||  // Arquivo inválido
-            Instr::VarAtual < v+4 || // Menos de 4 argumentos
+    if (*arqnome == 0 ||  // Arquivo inválido
+            Instr::VarAtual < v + 4 || // Menos de 4 argumentos
             v[2].defvar[2] != Instr::cListaObj) // Não é listaobj
         return 0;
 // Cria arquivo
     FILE * arq = fopen("intmud-temp.txt", "w");
-    if (arq==0)
+    if (arq == nullptr)
         return 0;
 // Anota a quantidade de dias para expirar
     int valor = v[3].getInt();
-    if (valor>=1)
+    if (valor >= 1)
         fprintf(arq, "data=%d\n", HoraReg + valor * 1440);
 // Anota a senha
     const char * senha = v[4].getTxt();
@@ -899,7 +902,7 @@ int TVarSav::Salvar(TVariavel * v, const char * arqnome, bool senhacod)
         if (senhacod)
         {
             char * p = mens;
-            for (; p < mens+sizeof(mens)-1 && *senha; senha++)
+            for (; p < mens + sizeof(mens) - 1 && *senha; senha++)
                 if (*senha >= 33 && *senha < 128)
                     *p++ = *senha;
             *p = 0;
@@ -920,7 +923,7 @@ int TVarSav::Salvar(TVariavel * v, const char * arqnome, bool senhacod)
         TObjeto * obj = litem->Objeto;
     // Checa se objeto já está em bufobj
         unsigned int num = obj->NumeroSav;
-        if (num>=total || bufobj[num]!=obj)
+        if (num >= total || bufobj[num] != obj)
         {
         // Acerta variáveis
             obj->NumeroSav = total;
@@ -931,12 +934,12 @@ int TVarSav::Salvar(TVariavel * v, const char * arqnome, bool senhacod)
     }
 // Anota as variáveis dos objetos
     unsigned int quantidade = bufobj.size();
-    for (unsigned int numobj=0; numobj<quantidade; numobj++)
+    for (unsigned int numobj = 0; numobj < quantidade; numobj++)
     {
         fprintf(arq, "+++\n");
         TClasse * c = bufobj[numobj]->Classe;
             // Procura todas as variáveis
-        for (unsigned int x=0; x<c->NumVar; x++)
+        for (unsigned int x = 0; x < c->NumVar; x++)
         {
         // Verifica se é "sav" e não é "comum"
             if ((c->InstrVar[x][Instr::endProp] & 3) != 2)
@@ -947,7 +950,7 @@ int TVarSav::Salvar(TVariavel * v, const char * arqnome, bool senhacod)
             int posic = c->IndiceVar[x];
             var.numbit = posic >> 24;
             var.indice = 0;
-            if (TVariavel::Tamanho(var.defvar)==0 ||
+            if (TVariavel::Tamanho(var.defvar) == 0 ||
                     (posic & 0x400000)) // Variável da classe
                 continue;
             // Variável do objeto
@@ -961,11 +964,11 @@ int TVarSav::Salvar(TVariavel * v, const char * arqnome, bool senhacod)
                 do {
                     if (var.indice)
                         fprintf(arq, "%s.%d=%d\n",
-                                var.defvar+Instr::endNome,
+                                var.defvar + Instr::endNome,
                                 var.indice, var.getInt());
                     else
                         fprintf(arq, "%s=%d\n",
-                                var.defvar+Instr::endNome,
+                                var.defvar + Instr::endNome,
                                 var.getInt());
                 } while (++var.indice < posic);
                 break;
@@ -974,11 +977,11 @@ int TVarSav::Salvar(TVariavel * v, const char * arqnome, bool senhacod)
                 do {
                     if (var.indice)
                         fprintf(arq, "%s.%d=%.16g\n",
-                                var.defvar+Instr::endNome,
+                                var.defvar + Instr::endNome,
                                 var.indice, var.getDouble());
                     else
                         fprintf(arq, "%s=%.16g\n",
-                                var.defvar+Instr::endNome,
+                                var.defvar + Instr::endNome,
                                 var.getDouble());
                 } while (++var.indice < posic);
                 break;
@@ -988,24 +991,24 @@ int TVarSav::Salvar(TVariavel * v, const char * arqnome, bool senhacod)
                     char mens[4096];
                     const char * o = var.getTxt();
                     char * d = mens;
-                    for (; *o && d<mens+sizeof(mens)-2; o++)
+                    for (; *o && d<mens + sizeof(mens) - 2; o++)
                         switch (*o)
                         {
-                        case Instr::ex_barra_n: *d++='\\'; *d++='n'; break;
-                        case Instr::ex_barra_b: *d++='\\'; *d++='b'; break;
-                        case Instr::ex_barra_c: *d++='\\'; *d++='c'; break;
-                        case Instr::ex_barra_d: *d++='\\'; *d++='d'; break;
-                        case '\\': *d++='\\';
+                        case Instr::ex_barra_n: *d++ = '\\'; *d++ = 'n'; break;
+                        case Instr::ex_barra_b: *d++ = '\\'; *d++ = 'b'; break;
+                        case Instr::ex_barra_c: *d++ = '\\'; *d++ = 'c'; break;
+                        case Instr::ex_barra_d: *d++ = '\\'; *d++ = 'd'; break;
+                        case '\\': *d++ = '\\';
                         default: *d++ = *o;
                         }
-                    *d=0;
+                    *d = 0;
                     if (var.indice)
                         fprintf(arq, "%s.%d=%s\n",
-                                var.defvar+Instr::endNome,
+                                var.defvar + Instr::endNome,
                                 var.indice, mens);
                     else
                         fprintf(arq, "%s=%s\n",
-                                var.defvar+Instr::endNome,
+                                var.defvar + Instr::endNome,
                                 mens);
                 } while (++var.indice < posic);
                 break;
@@ -1017,20 +1020,20 @@ int TVarSav::Salvar(TVariavel * v, const char * arqnome, bool senhacod)
                     if (obj)
                     {
                         unsigned int num = obj->NumeroSav;
-                        if (num<quantidade && bufobj[num]==obj)
+                        if (num<quantidade && bufobj[num] == obj)
                         {
-                            mens[0] = (num/0x40)+0x21;
-                            mens[1] = (num%0x40)+0x21;
+                            mens[0] = (num / 0x40) + 0x21;
+                            mens[1] = (num % 0x40) + 0x21;
                             mens[2] = 0;
                         }
                     }
                     if (var.indice)
                         fprintf(arq, "%s.%d=%s\n",
-                                var.defvar+Instr::endNome,
+                                var.defvar + Instr::endNome,
                                 var.indice, mens);
                     else
                         fprintf(arq, "%s=%s\n",
-                                var.defvar+Instr::endNome,
+                                var.defvar + Instr::endNome,
                                 mens);
                 } while (++var.indice < posic);
                 break;
@@ -1047,18 +1050,18 @@ int TVarSav::Salvar(TVariavel * v, const char * arqnome, bool senhacod)
                     TListaX * listax = lobj->Inicio;
                     if (var.indice)
                         sprintf(d, "%s.%d=",
-                                var.defvar+Instr::endNome, var.indice);
+                                var.defvar + Instr::endNome, var.indice);
                     else
-                        sprintf(d, "%s=", var.defvar+Instr::endNome);
+                        sprintf(d, "%s=", var.defvar + Instr::endNome);
                     while (*d)
                         d++;
-                    if (listax==0)
+                    if (listax == nullptr)
                         *d++ = '\'';
-                    for (; listax; listax=listax->ListaDepois)
+                    for (; listax; listax = listax->ListaDepois)
                     {
                     // Obtém o número do objeto
                         unsigned int num = listax->Objeto->NumeroSav;
-                        if (num>=quantidade || bufobj[num]!=listax->Objeto)
+                        if (num>=quantidade || bufobj[num] != listax->Objeto)
                             continue;
                     // Verifica se tem espaço em mens
                         if (d >= mens + 150)
@@ -1071,21 +1074,22 @@ int TVarSav::Salvar(TVariavel * v, const char * arqnome, bool senhacod)
                             *d++ = '\'';
                     // Anota o número do objeto
                         sprintf(d, "%d", num);
-                        while (*d) d++;
+                        while (*d)
+                            d++;
                     // Anota objetos listaitem
                         TListaItem * listaitem = listax->ListaItem;
                         for (; listaitem; listaitem = listaitem->Depois)
                         {
                         // Verifica se está marcado como sav
-                            if ((listaitem->defvar[Instr::endProp] & 2)==0)
+                            if ((listaitem->defvar[Instr::endProp] & 2) == 0)
                                 continue;
                         // Verifica se lista pertence a algum objeto
-                            if (listaitem->Objeto==0)
+                            if (listaitem->Objeto == nullptr)
                                 continue;
                         // Verifica se objeto da listaitem será salvo
                             unsigned int nitem = listaitem->Objeto->NumeroSav;
-                            if (nitem>=quantidade ||
-                                    bufobj[nitem]!=listaitem->Objeto)
+                            if (nitem >= quantidade ||
+                                    bufobj[nitem] != listaitem->Objeto)
                                 continue;
                         // Verifica se tem espaço em mens
                             if (d >= mens + 150)
@@ -1099,11 +1103,11 @@ int TVarSav::Salvar(TVariavel * v, const char * arqnome, bool senhacod)
                         // Anota dados da listaitem
                             if (listaitem->indice)
                                 sprintf(d, "%d.%s.%d", nitem,
-                                        listaitem->defvar+Instr::endNome,
+                                        listaitem->defvar + Instr::endNome,
                                         listaitem->indice);
                             else
                                 sprintf(d, "%d.%s", nitem,
-                                        listaitem->defvar+Instr::endNome);
+                                        listaitem->defvar + Instr::endNome);
                             while (*d) d++;
                         }
                     }
@@ -1119,14 +1123,14 @@ int TVarSav::Salvar(TVariavel * v, const char * arqnome, bool senhacod)
                     TTextoTxt * txtobj = var.end_textotxt + var.indice;
                     if (var.indice)
                         sprintf(d, "%s.%d=lt",
-                                var.defvar+Instr::endNome, var.indice);
+                                var.defvar + Instr::endNome, var.indice);
                     else
-                        sprintf(d, "%s=lt", var.defvar+Instr::endNome);
+                        sprintf(d, "%s=lt", var.defvar + Instr::endNome);
                     while (*d)
                         d++;
                 // Anota texto
                     TTextoBloco * bl = txtobj->Inicio;
-                    char * ppos = (bl ? bl->Texto : 0);
+                    char * ppos = (bl ? bl->Texto : nullptr);
                     int tampos = (bl ? bl->Bytes : 0);
                     unsigned int pos_atual = 0;
                     unsigned int pos_proc = 0;
@@ -1135,21 +1139,21 @@ int TVarSav::Salvar(TVariavel * v, const char * arqnome, bool senhacod)
                     // Anota variáveis textopos
                         if (pos_atual == pos_proc)
                         {
-                            bool textovazio = (pos_atual==0);
+                            bool textovazio = (pos_atual == 0);
                             pos_proc = txtobj->Bytes + 1;
                             for (TTextoPos * posobj = txtobj->Posic; posobj;
                                     posobj=posobj->Depois)
                             {
                             // Verifica se está marcado como sav
-                                if ((posobj->defvar[Instr::endProp] & 2)==0)
+                                if ((posobj->defvar[Instr::endProp] & 2) == 0)
                                     continue;
                             // Verifica se já passou pela posição
                                 if (posobj->PosicTxt < pos_atual)
                                     continue;
                             // Verifica se textopos será salvo
                                 unsigned int nitem = posobj->Objeto->NumeroSav;
-                                if (nitem>=quantidade ||
-                                        bufobj[nitem]!=posobj->Objeto)
+                                if (nitem >= quantidade ||
+                                        bufobj[nitem] != posobj->Objeto)
                                     continue;
                             // Acerta lin_proc
                                 if (posobj->PosicTxt != pos_atual)
@@ -1166,11 +1170,11 @@ int TVarSav::Salvar(TVariavel * v, const char * arqnome, bool senhacod)
                                 textovazio = true;
                                 if (posobj->indice)
                                     sprintf(d, "p%d.%s.%d\n", nitem,
-                                            posobj->defvar+Instr::endNome,
+                                            posobj->defvar + Instr::endNome,
                                             posobj->indice);
                                 else
                                     sprintf(d, "p%d.%s\n", nitem,
-                                            posobj->defvar+Instr::endNome);
+                                            posobj->defvar + Instr::endNome);
                                 fprintf(arq, "%s", mens);
                                 d = copiastr(mens, ".=t");
                             }
@@ -1179,7 +1183,7 @@ int TVarSav::Salvar(TVariavel * v, const char * arqnome, bool senhacod)
                     // Passa para o próximo bloco se necessário
                         if (tampos <= 0)
                         {
-                            if (bl==0 || bl->Depois==0)
+                            if (bl == nullptr || bl->Depois == nullptr)
                                 break;
                             bl = bl->Depois;
                             ppos = bl->Texto;
@@ -1195,17 +1199,17 @@ int TVarSav::Salvar(TVariavel * v, const char * arqnome, bool senhacod)
                     // Anota um byte
                         switch (*ppos)
                         {
-                        case Instr::ex_barra_n: *d++='\\'; *d++='n'; break;
-                        case Instr::ex_barra_b: *d++='\\'; *d++='b'; break;
-                        case Instr::ex_barra_c: *d++='\\'; *d++='c'; break;
-                        case Instr::ex_barra_d: *d++='\\'; *d++='d'; break;
-                        case '\\': *d++='\\';
+                        case Instr::ex_barra_n: *d++ = '\\'; *d++ = 'n'; break;
+                        case Instr::ex_barra_b: *d++ = '\\'; *d++ = 'b'; break;
+                        case Instr::ex_barra_c: *d++ = '\\'; *d++ = 'c'; break;
+                        case Instr::ex_barra_d: *d++ = '\\'; *d++ = 'd'; break;
+                        case '\\': *d++ = '\\';
                         default: *d++ = *ppos;
                         }
                         ppos++, tampos--;
                     }
                     *d = 0;
-                    if (strcmp(mens, ".=t")!=0)
+                    if (strcmp(mens, ".=t") != 0)
                         fprintf(arq, "%s\\f\n", mens);
                 } while (++var.indice < posic);
                 break;
@@ -1218,25 +1222,25 @@ int TVarSav::Salvar(TVariavel * v, const char * arqnome, bool senhacod)
                     TTextoVar * txtvar = var.end_textovar + var.indice;
                     if (var.indice)
                         sprintf(d, "%s.%d=",
-                                var.defvar+Instr::endNome, var.indice);
+                                var.defvar + Instr::endNome, var.indice);
                     else
-                        sprintf(d, "%s=", var.defvar+Instr::endNome);
+                        sprintf(d, "%s=", var.defvar + Instr::endNome);
                     while (*d)
                         d++;
                     TBlocoVar * bl = txtvar->RBroot;
                     if (bl)
                         bl = bl->RBfirst();
-                    for (; bl; bl=TBlocoVar::RBnext(bl))
+                    for (; bl; bl = TBlocoVar::RBnext(bl))
                     {
                     // Obtém o conteúdo da variável
                         char txttemp[10];
-                        const char * var_conteudo = 0;
+                        const char * var_conteudo = nullptr;
                         if (bl->TipoVar() == TextoVarTipoRef)
                         {
                             // Obtém o número do objeto
                             TObjeto * obj = bl->getObj();
                             unsigned int num = obj->NumeroSav;
-                            if (num>=quantidade || bufobj[num]!=obj)
+                            if (num>=quantidade || bufobj[num] != obj)
                                 continue;
                             sprintf(txttemp, "%d", num);
                             var_conteudo = txttemp;
@@ -1250,18 +1254,18 @@ int TVarSav::Salvar(TVariavel * v, const char * arqnome, bool senhacod)
                         {
                             switch (*p)
                             {
-                            case Instr::ex_barra_n: *d++='\\'; *d++='n'; break;
-                            case Instr::ex_barra_b: *d++='\\'; *d++='b'; break;
-                            case Instr::ex_barra_c: *d++='\\'; *d++='c'; break;
-                            case Instr::ex_barra_d: *d++='\\'; *d++='d'; break;
-                            case '=': *d++='\\'; *d++='='; break;
-                            case '\\': *d++='\\'; *d++='\\'; break;
+                            case Instr::ex_barra_n: *d++ = '\\'; *d++ = 'n'; break;
+                            case Instr::ex_barra_b: *d++ = '\\'; *d++ = 'b'; break;
+                            case Instr::ex_barra_c: *d++ = '\\'; *d++ = 'c'; break;
+                            case Instr::ex_barra_d: *d++ = '\\'; *d++ = 'd'; break;
+                            case '=': *d++ = '\\'; *d++ = '='; break;
+                            case '\\': *d++ = '\\'; *d++ = '\\'; break;
                             default: *d++ = *p;
                             }
                             p++;
-                            if (d-mens < 150)
+                            if (d - mens < 150)
                                 continue;
-                            *d=0;
+                            *d = 0;
                             fprintf(arq, "%s\\f\n", mens);
                             d = copiastr(mens, ".=");
                         }
@@ -1271,7 +1275,7 @@ int TVarSav::Salvar(TVariavel * v, const char * arqnome, bool senhacod)
                             p = bl->Tipo();
                         else
                             p = "";
-                        for (int cont=0; cont<10 && *p; cont++)
+                        for (int cont = 0; cont < 10 && *p; cont++)
                             *d++ = *p++;
                         *d++ = '=';
                     // Conteúdo da variável
@@ -1280,17 +1284,17 @@ int TVarSav::Salvar(TVariavel * v, const char * arqnome, bool senhacod)
                         {
                             switch (*p)
                             {
-                            case Instr::ex_barra_n: *d++='\\'; *d++='n'; break;
-                            case Instr::ex_barra_b: *d++='\\'; *d++='b'; break;
-                            case Instr::ex_barra_c: *d++='\\'; *d++='c'; break;
-                            case Instr::ex_barra_d: *d++='\\'; *d++='d'; break;
-                            case '\\': *d++='\\'; *d++='\\'; break;
+                            case Instr::ex_barra_n: *d++ = '\\'; *d++ = 'n'; break;
+                            case Instr::ex_barra_b: *d++ = '\\'; *d++ = 'b'; break;
+                            case Instr::ex_barra_c: *d++ = '\\'; *d++ = 'c'; break;
+                            case Instr::ex_barra_d: *d++ = '\\'; *d++ = 'd'; break;
+                            case '\\': *d++ = '\\'; *d++ = '\\'; break;
                             default: *d++ = *p;
                             }
                             p++;
-                            if (d-mens < 150)
+                            if (d - mens < 150)
                                 continue;
-                            *d=0;
+                            *d = 0;
                             fprintf(arq, "%s\\f\n", mens);
                             d = copiastr(mens, ".=");
                         }
@@ -1298,7 +1302,7 @@ int TVarSav::Salvar(TVariavel * v, const char * arqnome, bool senhacod)
                         *d++ = '0';
                         vazio = false;
                     }
-                    *d=0;
+                    *d = 0;
                     if (!vazio)
                         fprintf(arq, "%s\\f\n", mens);
                 } while (++var.indice < posic);
@@ -1311,9 +1315,9 @@ int TVarSav::Salvar(TVariavel * v, const char * arqnome, bool senhacod)
                     TTextoObj * txtobj = var.end_textoobj + var.indice;
                     if (var.indice)
                         sprintf(d, "%s.%d=",
-                                var.defvar+Instr::endNome, var.indice);
+                                var.defvar + Instr::endNome, var.indice);
                     else
-                        sprintf(d, "%s=", var.defvar+Instr::endNome);
+                        sprintf(d, "%s=", var.defvar + Instr::endNome);
                     while (*d)
                         d++;
                     TBlocoObj * bl = txtobj->RBroot;
@@ -1324,7 +1328,7 @@ int TVarSav::Salvar(TVariavel * v, const char * arqnome, bool senhacod)
                     {
                     // Obtém o número do objeto
                         unsigned int num = bl->Objeto->NumeroSav;
-                        if (num>=quantidade || bufobj[num]!=bl->Objeto)
+                        if (num >= quantidade || bufobj[num] != bl->Objeto)
                             continue;
                     // Verifica se tem espaço em mens
                         if (d >= mens + 150)
@@ -1340,10 +1344,11 @@ int TVarSav::Salvar(TVariavel * v, const char * arqnome, bool senhacod)
                             *d++ = '\'';
                     // Anota o número do objeto
                         sprintf(d, "%s=%d", bl->NomeVar, num);
-                        while (*d) d++;
+                        while (*d)
+                            d++;
                     }
                     *d=0;
-                    if (strcmp(mens, ".=")!=0)
+                    if (strcmp(mens, ".=") != 0)
                         fprintf(arq, "%s\n", mens);
                 } while (++var.indice < posic);
                 break;
@@ -1354,11 +1359,11 @@ int TVarSav::Salvar(TVariavel * v, const char * arqnome, bool senhacod)
                     var.end_datahora[var.indice].SalvarSav(mens);
                     if (var.indice)
                         fprintf(arq, "%s.%d=%s\n",
-                                var.defvar+Instr::endNome,
+                                var.defvar + Instr::endNome,
                                 var.indice, mens);
                     else
                         fprintf(arq, "%s=%s\n",
-                                var.defvar+Instr::endNome, mens);
+                                var.defvar + Instr::endNome, mens);
                 } while (++var.indice < posic);
                 break;
               }
@@ -1388,9 +1393,9 @@ void TVarSavDir::NovoDir(const char * nomedir)
     while (y)
     {
         int i = strcmp(nomedir, y->Nome);
-        if (i==0)
+        if (i == 0)
             return;
-        if (i<0)
+        if (i < 0)
             y = y->RBleft;
         else
             y = y->RBright;
@@ -1406,18 +1411,18 @@ TVarSavDir::TVarSavDir(const char * nomedir)
     printf("Novo dir: %s\n", nomedir); fflush(stdout);
 #endif
 // Aloca memória em Nome
-    int tam = strlen(nomedir)+1;
+    int tam = strlen(nomedir) + 1;
     Nome = new char[tam];
     memcpy(Nome, nomedir, tam);
 // Coloca na RBT
     RBinsert();
 // Coloca na lista ligada
-    if (Inicio==0)
-        Inicio=this;
+    if (Inicio == nullptr)
+        Inicio = this;
     if (Fim)
-        Fim->Proximo=this;
-    Fim=this;
-    Proximo=0;
+        Fim->Proximo = this;
+    Fim = this;
+    Proximo = nullptr;
 }
 
 //----------------------------------------------------------------------------
@@ -1435,23 +1440,23 @@ TVarSavDir::~TVarSavDir()
 // Via de regra TVarSavDir só apaga o primeiro elemento da lista
     assert(Inicio==this);
     Inicio=Proximo;
-    if (Fim==this)
-        Fim=0;
+    if (Fim == this)
+        Fim = nullptr;
 }
 
 //----------------------------------------------------------------------------
 bool TVarSavDir::Checa()
 {
-    static DIR * dir = 0;
-    for (int x=0; x<10; x++)
+    static DIR * dir = nullptr;
+    for (int x = 0; x < 10; x++)
     {
     // Abre diretório se não estiver aberto
-        if (dir==0)
+        if (dir == nullptr)
         {
-            if (Inicio==0)
+            if (Inicio == nullptr)
                 return false;
             dir = opendir(Inicio->Nome);
-            if (dir==0)
+            if (dir == nullptr)
                 delete Inicio;
             continue;
         }
@@ -1459,22 +1464,22 @@ bool TVarSavDir::Checa()
         {
     // Lê o próximo arquivo
             dirent * sdir = readdir(dir);
-            if (sdir==0)
+            if (sdir == nullptr)
             {
                 delete Inicio;
                 closedir(dir);
-                dir=0;
+                dir = nullptr;
                 break;
             }
     // Checa se é arquivo .sav
             char * pont = sdir->d_name;
             while (*pont)
                 pont++;
-            pont-=4;
+            pont -= 4;
             if (pont <= sdir->d_name)
                 continue;
-            if ( pont[0]!='.' || (pont[1]|0x20)!='s' ||
-                 (pont[2]|0x20)!='a' || (pont[3]|0x20)!='v' )
+            if ( pont[0] != '.' || (pont[1] | 0x20) != 's' ||
+                 (pont[2] | 0x20) != 'a' || (pont[3] | 0x20) != 'v' )
                 continue;
     // Apaga arquivo se expirou
             char arq[2048];
@@ -1508,7 +1513,7 @@ void TVarSavDir::ChecaTudo()
 //----------------------------------------------------------------------------
 bool TVarSavDir::ChecaPend()
 {
-    return (Inicio!=0);
+    return (Inicio != nullptr);
 }
 
 //----------------------------------------------------------------------------
@@ -1521,7 +1526,7 @@ int TVarSavDir::RBcomp(TVarSavDir * x, TVarSavDir * y)
 TVarSavArq::TVarSavArq(const char * nome)
 {
     Antes = Fim;
-    Depois = 0;
+    Depois = nullptr;
     (Antes ? Antes->Depois : Inicio) = this;
     Fim = this;
     copiastr(Nome, nome, sizeof(Nome));
@@ -1534,9 +1539,9 @@ TVarSavArq::~TVarSavArq()
 }
 
 //----------------------------------------------------------------------------
-TVarSavDir * TVarSavDir::Inicio=0;
-TVarSavDir * TVarSavDir::Fim=0;
-TVarSavDir * TVarSavDir::RBroot=0;
+TVarSavDir * TVarSavDir::Inicio = nullptr;
+TVarSavDir * TVarSavDir::Fim = nullptr;
+TVarSavDir * TVarSavDir::RBroot = nullptr;
 #define CLASS TVarSavDir    // Nome da classe
 #define RBmask 1 // Máscara para bit 0
 #include "rbt.cpp.h"

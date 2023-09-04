@@ -19,7 +19,7 @@
 bool TVarNomeObj::Func(TVariavel * v, const char * nome)
 {
 // Checa texto
-    if (comparaZ(nome, "nome")==0)
+    if (comparaZ(nome, "nome") == 0)
     {
         Achou = 0;
         if (Total <= 0 || Instr::VarAtual - v < 1)
@@ -32,13 +32,14 @@ bool TVarNomeObj::Func(TVariavel * v, const char * nome)
         {
             char mens[4096];
             const char * txt = v[1].getTxt();
-            while (*txt==' ') txt++;
+            while (*txt == ' ')
+                txt++;
             char * p = mens;
-            for (; *txt && p<mens+sizeof(mens)-1; p++,txt++)
+            for (; *txt && p < mens+sizeof(mens) - 1; p++,txt++)
                 *p = tabNOMEOBJ[*(unsigned char*)(txt)];
             *p=0;
             // Checa fim do nome
-            if (*mens==0)
+            if (*mens == 0)
             {
                 Instr::ApagarVar(v);
                 return Instr::CriarVarInt(0);
@@ -52,20 +53,24 @@ bool TVarNomeObj::Func(TVariavel * v, const char * nome)
                 while (true)
                 {
                     const char * str = txt;
-                    while (*str && *str!=' ' && *str==*lista)
+                    while (*str && *str != ' ' && *str == *lista)
                         str++, lista++;
-                    if (*str==0 || *str==' ') // Encontrou
+                    if (*str == 0 || *str == ' ') // Encontrou
                         break;
-                    while (*lista && *lista!=' ') lista++;
-                    while (*lista==' ') lista++;
-                    if (*lista==0) // Fim da lista: não encontrou
+                    while (*lista && *lista != ' ')
+                        lista++;
+                    while (*lista == ' ')
+                        lista++;
+                    if (*lista == 0) // Fim da lista: não encontrou
                     {
                         Instr::ApagarVar(v);
                         return Instr::CriarVarInt(0);
                     }
                 }
-                while (*txt && *txt!=' ') txt++;
-                while (*txt==' ') txt++;
+                while (*txt && *txt != ' ')
+                    txt++;
+                while (*txt == ' ')
+                    txt++;
             }
         }
     // Checa se é o item inicial
@@ -90,72 +95,72 @@ bool TVarNomeObj::Func(TVariavel * v, const char * nome)
 // Inicialização
     if (comparaZ(nome, "ini")==0)
     {
-        Inicio=0;
-        Total=0;
+        Inicio = 0;
+        Total = 0;
     // Checa o número de variáveis
         if (Instr::VarAtual - v < 1)
             return false;
     // Obtém o texto que se refere a todos os itens
         char nometudo[200];
         *nometudo = 0;
-        if (Instr::VarAtual >= v+3)
+        if (Instr::VarAtual >= v + 3)
         {
             const char * o = v[3].getTxt();
             char * d = nometudo;
-            for (; *o && d < nometudo + sizeof(nometudo) - 1; o++,d++)
+            for (; *o && d < nometudo + sizeof(nometudo) - 1; o++, d++)
                 *d = tabNOMEOBJ[*(unsigned char*)o];
             *d = 0;
         }
     // Obtém o texto
         Inicio = 0;
         const char * txt = v[1].getTxt();
-        while (*txt==' ')
+        while (*txt == ' ')
             txt++;
         if (*nometudo)
         {
             const char * p1 = txt;
             const char * p2 = nometudo;
             while (*p1 && tabNOMEOBJ[*(unsigned char*)p1] == *p2)
-                p1++,p2++;
-            if (*p1=='.' && *p2==0)
-                Total=0x7FFFFFFF, txt=p1+1;
+                p1++, p2++;
+            if (*p1 == '.' && *p2 == 0)
+                Total = 0x7FFFFFFF, txt = p1 + 1;
         }
         if (Total == 0)
-            while (*txt>='0' && *txt<='9')
+            while (*txt >= '0' && *txt <= '9')
             {
             // Obtém o número
                 const char * p = txt;
                 int num = TxtToInt(p);
-                while (*p>='0' && *p<='9')
+                while (*p >= '0' && *p <= '9')
                     p++;
             // O número é zero
-                if (num==0)
+                if (num == 0)
                     break;
             // É a quantidade de itens
-                if (*p==' ' && Total==0)
+                if (*p == ' ' && Total == 0)
                 {
-                    while (*p==' ')
+                    while (*p == ' ')
                         p++;
-                    if (*p==0)  // Somente o número não pode ser quantidade
+                    if (*p == 0)  // Somente o número não pode ser quantidade
                         break;
-                    txt=p;
-                    Total=num;
+                    txt = p;
+                    Total = num;
                     continue;
                 }
             // É o número do primeiro item
-                if (*p=='.')
-                    Inicio=num-1, txt=p+1;
+                if (*p == '.')
+                    Inicio = num - 1, txt = p + 1;
             // É o nome do item
                 break;
             }
     // Copia o texto
         {
-            while (*txt==' ')
+            while (*txt == ' ')
                 txt++;
             char * p = NomeObj;
-            for (; *txt && p<NomeObj+sizeof(NomeObj)-1; p++,txt++)
+            for (; *txt && p < NomeObj+sizeof(NomeObj) - 1; p++, txt++)
                 *p = tabNOMEOBJ[*(unsigned char*)(txt)];
-            *p=0;
+            *p = 0;
         }
     // Checa se o texto é nulo
         if (*NomeObj == 0)
@@ -164,8 +169,8 @@ bool TVarNomeObj::Func(TVariavel * v, const char * nome)
             return false;
         }
     // Checa se digitou a palavra que corresponde a todos os itens
-        if (Instr::VarAtual >= v+3)
-            if (strcmp(NomeObj, nometudo)==0)
+        if (Instr::VarAtual >= v + 3)
+            if (strcmp(NomeObj, nometudo) == 0)
             {
                 *NomeObj = 0;
                 if (Total <= 0)

@@ -19,12 +19,12 @@
 #include "misc.h"
 
 int TVarLog::Tempo = 20;
-TVarLog * TVarLog::Inicio = 0;
+TVarLog * TVarLog::Inicio = nullptr;
 
 //------------------------------------------------------------------------------
 void TVarLog::Criar()
 {
-    arq=-1;
+    arq = -1;
 }
 
 //------------------------------------------------------------------------------
@@ -36,7 +36,7 @@ void TVarLog::Apagar()
 //------------------------------------------------------------------------------
 void TVarLog::Mover(TVarLog * destino)
 {
-    if (arq==-1)
+    if (arq == -1)
     {
         destino->arq = -1;
         return;
@@ -51,7 +51,7 @@ void TVarLog::Mover(TVarLog * destino)
 //------------------------------------------------------------------------------
 int TVarLog::getValor()
 {
-    return (arq>=0 ? 1 : 0);
+    return (arq >= 0 ? 1 : 0);
 }
 
 //------------------------------------------------------------------------------
@@ -60,29 +60,29 @@ int TVarLog::TempoEspera(int tempodecorrido)
 // Atualiza tempo
     Tempo -= tempodecorrido;
 // Grava dados pendentes se tempo expirou
-    if (Tempo<=0)
+    if (Tempo <= 0)
     {
-        for (TVarLog * obj = Inicio; obj; obj=obj->Depois)
+        for (TVarLog * obj = Inicio; obj; obj = obj->Depois)
             if (obj->pontlog)
             {
                 safe_write(obj->arq, obj->buflog, obj->pontlog);
                 obj->pontlog = 0;
             }
-        Tempo=20;
+        Tempo = 20;
         return 600;
     }
 // Obtém quanto tempo para gravar dados pendentes
-    for (TVarLog * obj = Inicio; obj; obj=obj->Depois)
+    for (TVarLog * obj = Inicio; obj; obj = obj->Depois)
         if (obj->pontlog)
             return Tempo;
-    Tempo=20;
+    Tempo = 20;
     return 600;
 }
 
 //------------------------------------------------------------------------------
 void TVarLog::Fechar()
 {
-    if (arq<0)
+    if (arq < 0)
         return;
     if (pontlog)
         safe_write(arq, buflog, pontlog);
@@ -90,7 +90,7 @@ void TVarLog::Fechar()
     arq=-1;
     (Antes ? Antes->Depois : Inicio) = Depois;
     if (Depois)
-        Depois->Antes = 0;
+        Depois->Antes = nullptr;
 }
 
 //------------------------------------------------------------------------------
@@ -125,38 +125,38 @@ bool TVarLog::Func(TVariavel * v, const char * nome)
 //----------------------------------------------------------------------------
 bool TVarLog::FuncMsg(TVariavel * v)
 {
-    if (arq<0)
+    if (arq < 0)
         return false;
-    for (TVariavel * v1 = v+1; v1<=Instr::VarAtual; v1++)
+    for (TVariavel * v1 = v + 1; v1 <= Instr::VarAtual; v1++)
     {
         const char * txt = v1->getTxt();
         while (true)
         {
-            while (*txt==Instr::ex_barra_n)
+            while (*txt == Instr::ex_barra_n)
                 txt++;
-            if (*txt==0)
+            if (*txt == 0)
                 break;
-            if (pontlog>=(int)sizeof(buflog)-500)
+            if (pontlog >= (int)sizeof(buflog) - 500)
             {
                 safe_write(arq, buflog, pontlog);
-                pontlog=0;
+                pontlog = 0;
             }
-            for (int x=0; x<490 && *txt && *txt!=Instr::ex_barra_n; x++)
+            for (int x = 0; x < 490 && *txt && *txt != Instr::ex_barra_n; x++)
                 switch (*txt)
                 {
                 case Instr::ex_barra_b:
                     txt++;
                     break;
                 case Instr::ex_barra_c:
-                    if ((txt[1]>='0' && txt[1]<='9') ||
-                            (txt[1]>='A' && txt[1]<='J') ||
-                            (txt[1]>='a' && txt[1]<='j'))
+                    if ((txt[1] >= '0' && txt[1] <= '9') ||
+                            (txt[1] >= 'A' && txt[1] <= 'J') ||
+                            (txt[1] >= 'a' && txt[1] <= 'j'))
                         txt += 2;
                     else
                         txt++;
                     break;
                 case Instr::ex_barra_d:
-                    if (txt[1]>='0' && txt[1]<='7')
+                    if (txt[1] >= '0' && txt[1] <= '7')
                         txt += 2;
                     else
                         txt++;
@@ -185,7 +185,7 @@ bool TVarLog::FuncValido(TVariavel * v)
     {
         copiastr(arqnome, v[1].getTxt(), sizeof(arqnome) - 4);
         if (!arqvalido(arqnome, false))
-            *arqnome=0;
+            *arqnome = 0;
     }
     Instr::ApagarVar(v);
     return Instr::CriarVarInt(*arqnome != 0);
@@ -199,7 +199,7 @@ bool TVarLog::FuncExiste(TVariavel * v)
     {
         copiastr(arqnome, v[1].getTxt(), sizeof(arqnome) - 4);
         if (!arqvalido(arqnome, false))
-            *arqnome=0;
+            *arqnome = 0;
     }
     Instr::ApagarVar(v);
     if (*arqnome == 0)
@@ -245,7 +245,7 @@ bool TVarLog::FuncAbrir(TVariavel * v)
             arq = descr;
             pontlog = 0;
         // Insere na lista ligada
-            Antes = 0;
+            Antes = nullptr;
             Depois = Inicio;
             Inicio = this;
             if (Depois)

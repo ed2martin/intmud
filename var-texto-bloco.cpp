@@ -22,7 +22,7 @@ void TTextoTxt::TextoIni()
 {
     IniBloco();
     Linhas = Bytes = 0;
-    for (TTextoBloco * obj = Inicio; obj; obj=obj->Depois)
+    for (TTextoBloco * obj = Inicio; obj; obj = obj->Depois)
         obj->Bytes = obj->Linhas = 0;
     Fim = Inicio;
 }
@@ -30,7 +30,7 @@ void TTextoTxt::TextoIni()
 //----------------------------------------------------------------------------
 void TTextoTxt::TextoAnota(const char * txt, int total)
 {
-    if (total<=0)
+    if (total <= 0)
         return;
     const int bytes_por_bloco = sizeof(TTextoBloco::Texto);
     int lin;
@@ -89,22 +89,22 @@ void TTextoTxt::TextoFim()
 void TTextoTxt::Ordena(int modo, const char *txt1, const char * txt2)
 {
 // Checa se tem algo para ordenar
-    if (Linhas==0)
+    if (Linhas == 0)
         return;
     int totalbytes = Bytes + 1;
     if (modo >= 1)
         totalbytes += Linhas*4;
 // Até 8191 bytes: ordena sem alocar memória com new (mais rápido)
-    if (totalbytes <= 8192 && Linhas<=512)
+    if (totalbytes <= 8192 && Linhas <= 512)
     {
         char txt[8192];
-        char *lin[512*4];
+        char *lin[512 * 4];
         OrdenaSub(modo, txt, lin, txt1, txt2);
         return;
     }
 // Mais de 8191 bytes: aloca memória com new
     char * txt = new char[totalbytes];
-    char ** lin = new char*[Linhas*2];
+    char ** lin = new char*[Linhas * 2];
     OrdenaSub(modo, txt, lin, txt1, txt2);
     delete[] lin;
     delete[] txt;
@@ -132,10 +132,10 @@ void TTextoTxt::OrdenaSub(int modo, char * texto, char** linha,
     while (numlin < totallin)
     {
     // Se modo>=1: conta quantos objetos e anota cabeçalho
-        if (modo>=1)
+        if (modo >= 1)
         {
         // Obtém quantidade de objetos
-            unsigned int valor=0;
+            unsigned int valor = 0;
             if (*pontobj < '0' || *pontobj > '9')
             {
                 while (*pontobj != Instr::ex_barra_n)
@@ -147,9 +147,9 @@ void TTextoTxt::OrdenaSub(int modo, char * texto, char** linha,
             while (true)
             {
                 char ch = *pontobj;
-                if (ch<'0' || ch>'9')
+                if (ch < '0' || ch > '9')
                     break;
-                valor = valor*10+ch-'0';
+                valor = valor * 10 + ch - '0';
                 ORDENASUB_AVANCA
             }
         // Checa se é número seguido de espaço
@@ -188,7 +188,7 @@ void TTextoTxt::OrdenaSub(int modo, char * texto, char** linha,
     }
 
 // Verifica se sobrou alguma linha
-    if (numlin==0)
+    if (numlin == 0)
     {
         Limpar();
         return;
@@ -203,27 +203,27 @@ void TTextoTxt::OrdenaSub(int modo, char * texto, char** linha,
 // Ordena; resultado em var1
     char ** var1 = linha;
     char ** var2 = linha + numlin;
-    for (unsigned int a=1; a<numlin; a+=a)
+    for (unsigned int a = 1; a < numlin; a += a)
     {
         char ** pont = var2;
         var2 = var1;
         var1 = pont;
-        int lido=0;
-        for (unsigned int b=0; b<numlin; )
+        int lido = 0;
+        for (unsigned int b = 0; b<numlin; )
         {
-            unsigned int b1=b, b2=b+a;
+            unsigned int b1 = b, b2 = b + a;
             b = b2;
-            while (b1<b && b2<b+a && b2<numlin)
+            while (b1 < b && b2 < b + a && b2 < numlin)
             {
                 if (comparaZ(var2[b1], var2[b2]) > 0)
                     var1[lido++] = var2[b2++];
                 else
                     var1[lido++] = var2[b1++];
             }
-            while (b1<b && b1<numlin)
+            while (b1 < b && b1 < numlin)
                 var1[lido++] = var2[b1++];
             b += a;
-            while (b2<b && b2<numlin)
+            while (b2 < b && b2 < numlin)
                 var1[lido++] = var2[b2++];
         }
     }
@@ -232,8 +232,8 @@ void TTextoTxt::OrdenaSub(int modo, char * texto, char** linha,
     if (modo <= 0)
     {
         TextoIni();
-        for (unsigned int x=0; x<numlin; x++)
-            TextoAnota(var1[x], strlen(var1[x])+1);
+        for (unsigned int x = 0; x<numlin; x++)
+            TextoAnota(var1[x], strlen(var1[x]) + 1);
         TextoFim();
         return;
     }
@@ -242,26 +242,26 @@ void TTextoTxt::OrdenaSub(int modo, char * texto, char** linha,
     if (modo <= 2)
     {
         TextoIni();
-        for (unsigned int x=0; x<numlin; )
+        for (unsigned int x = 0; x < numlin; )
         {
-            unsigned int soma=0;
+            unsigned int soma = 0;
             unsigned int y = x;
             char * txtcomp = var1[x];
             do
             {
-                soma += Num32(var1[y]-4);
+                soma += Num32(var1[y] - 4);
                 y++;
-            } while (y<numlin && comparaZ(txtcomp, var1[y])==0);
+            } while (y<numlin && comparaZ(txtcomp, var1[y]) == 0);
             x = y;
-            if (modo==1)
+            if (modo == 1)
             {
                 char mens[80];
                 mprintf(mens, sizeof(mens), "%u ", soma);
                 TextoAnota(mens, strlen(mens));
             }
-            else if (soma==0)
+            else if (soma == 0)
                 continue;
-            else if (soma>1)
+            else if (soma > 1)
             {
                 char mens[512];
                 if (soma >= 0xFF000000)
@@ -269,36 +269,36 @@ void TTextoTxt::OrdenaSub(int modo, char * texto, char** linha,
                 mprintf(mens, sizeof(mens), "%s%u%s ", txt1, soma, txt2);
                 TextoAnota(mens, strlen(mens));
             }
-            TextoAnota(txtcomp, strlen(txtcomp)+1);
+            TextoAnota(txtcomp, strlen(txtcomp) + 1);
         }
         TextoFim();
         return;
     }
 
 // Obtém as quantidades
-    for (unsigned int x=0; x<numlin; )
+    for (unsigned int x = 0; x < numlin; )
     {
-        unsigned int soma=0;
+        unsigned int soma = 0;
         unsigned int y = x;
         do
         {
-            soma += Num32(var1[y]-4);
+            soma += Num32(var1[y] - 4);
             y++;
-        } while (y<numlin && comparaZ(var1[x], var1[y])==0);
+        } while (y<numlin && comparaZ(var1[x], var1[y]) == 0);
         if (soma >= 0xFF000000)
             soma = 0xFEFFFFFF;
         var1[x][-4] = soma;
         var1[x][-3] = soma >> 8;
         var1[x][-2] = soma >> 16;
         var1[x][-1] = soma >> 24;
-        for (x++; x<y; x++)
+        for (x++; x < y; x++)
             var1[x][-1] = 0xFF;
     }
 
 // Resultado na ordem original
     TextoIni();
     char * txt = texto;
-    for (unsigned int x=0; x<numlin; x++)
+    for (unsigned int x = 0; x<numlin; x++)
     {
         char * txtlin = txt;
         txt += 4;
@@ -308,21 +308,21 @@ void TTextoTxt::OrdenaSub(int modo, char * texto, char** linha,
         if ((unsigned char)txtlin[3] == 0xFF)
             continue;
         unsigned int soma = Num32(txtlin);
-        if (modo==3)
+        if (modo == 3)
         {
             char mens[80];
             mprintf(mens, sizeof(mens), "%u ", soma);
             TextoAnota(mens, strlen(mens));
         }
-        else if (soma==0)
+        else if (soma == 0)
             continue;
-        else if (soma>1)
+        else if (soma > 1)
         {
             char mens[512];
             mprintf(mens, sizeof(mens), "%s%u%s ", txt1, soma, txt2);
             TextoAnota(mens, strlen(mens));
         }
-        TextoAnota(txtlin+4, txt-txtlin-4);
+        TextoAnota(txtlin + 4, txt-txtlin - 4);
     }
     TextoFim();
 }
@@ -331,11 +331,11 @@ void TTextoTxt::OrdenaSub(int modo, char * texto, char** linha,
 void TTextoTxt::DivideLin(unsigned int min, unsigned int max, bool cores)
 {
 // Verifica se tem como truncar
-    if (min>max) min=max;
-    if (min<2)   return;
+    if (min > max) min = max;
+    if (min < 2)   return;
 
 // Verifica se texto está vazio
-    if (Inicio==0)
+    if (Inicio == nullptr)
         return;
 
 // Cria bloco no início
@@ -343,7 +343,7 @@ void TTextoTxt::DivideLin(unsigned int min, unsigned int max, bool cores)
 
 // Procura menor posição
     unsigned int bytepos = Bytes;
-    for (TTextoPos * pos = Posic; pos; pos=pos->Depois)
+    for (TTextoPos * pos = Posic; pos; pos = pos->Depois)
         if (bytepos > pos->PosicTxt)
             bytepos = pos->PosicTxt;
 
@@ -351,7 +351,7 @@ void TTextoTxt::DivideLin(unsigned int min, unsigned int max, bool cores)
     unsigned int col = 0; // Coluna atual
     char charcor = 0;   // Para lidar com definições de cores
 
-    char * espaco_p = 0; // Aonde encontrou espaço para dividir a linha
+    char * espaco_p = nullptr; // Aonde encontrou espaço para dividir a linha
     TTextoBloco * espaco_obj = 0; // Objeto correspondente
     unsigned int espaco_byte = 0;  // Número do byte a partir do início do texto
 
@@ -370,7 +370,7 @@ void TTextoTxt::DivideLin(unsigned int min, unsigned int max, bool cores)
         if (ler_tam <= 0)
         {
             ler_obj = ler_obj->Depois;
-            if (ler_obj==0)
+            if (ler_obj == nullptr)
                 break;
             ler_tam = ler_obj->Bytes;
             ler_pont = ler_obj->Texto;
@@ -382,39 +382,39 @@ void TTextoTxt::DivideLin(unsigned int min, unsigned int max, bool cores)
         switch (ch)
         {
         case Instr::ex_barra_n:
-            charcor=0;
-            col=0, dest_obj->Linhas++;
+            charcor = 0;
+            col = 0, dest_obj->Linhas++;
             break;
         case Instr::ex_barra_b:
             if (cores)
             {
-                charcor=0;
+                charcor = 0;
                 break;
             }
         case Instr::ex_barra_c:
         case Instr::ex_barra_d:
             if (cores)
             {
-                charcor=ch;
+                charcor = ch;
                 break;
             }
         default:
             if (charcor)
             {
-                if (ch>='0' && ch<='7')
+                if (ch >= '0' && ch <= '7')
                 {
-                    charcor=0;
+                    charcor = 0;
                     break;
                 }
-                if (charcor==Instr::ex_barra_d && (
-                        (ch>='0' && ch<='9') ||
-                        (ch>='A' && ch<='J') ||
-                        (ch>='a' && ch<='j')))
+                if (charcor == Instr::ex_barra_d && (
+                        (ch >= '0' && ch <= '9') ||
+                        (ch >= 'A' && ch <= 'J') ||
+                        (ch >= 'a' && ch <= 'j')))
                 {
-                    charcor=0;
+                    charcor = 0;
                     break;
                 }
-                charcor=0;
+                charcor = 0;
             }
         // Checa se atingiu o tamanho da linha
             if (++col < min)
@@ -422,7 +422,7 @@ void TTextoTxt::DivideLin(unsigned int min, unsigned int max, bool cores)
         // Antes da coluna máxima: procura último espaço
             if (col < max)
             {
-                if (ch==' ')
+                if (ch == ' ')
                 {
                     espaco_p = dest_p;
                     espaco_byte = dest_byte;
@@ -434,8 +434,8 @@ void TTextoTxt::DivideLin(unsigned int min, unsigned int max, bool cores)
             {
                 col = dest_byte - espaco_byte - 1;
                 *espaco_p = Instr::ex_barra_n;
-                espaco_p = 0;
-                for (TTextoPos * pos = Posic; pos; pos=pos->Depois)
+                espaco_p = nullptr;
+                for (TTextoPos * pos = Posic; pos; pos = pos->Depois)
                     if (pos->PosicTxt > espaco_byte)
                         pos->LinhaTxt++;
                 espaco_obj->Linhas++;
@@ -445,7 +445,7 @@ void TTextoTxt::DivideLin(unsigned int min, unsigned int max, bool cores)
             else
             {
         // Anota ex_barra_n
-                col=0, dest_obj->Linhas++;
+                col = 0, dest_obj->Linhas++;
                 *dest_p++ = Instr::ex_barra_n;
                 if (dest_p >= dest_obj->Texto + sizeof(dest_obj->Texto))
                 {
@@ -509,7 +509,7 @@ void TTextoTxt::DivideLin(unsigned int min, unsigned int max, bool cores)
 // Apaga blocos após o último
     while (dest_obj->Depois)
         dest_obj = dest_obj->Depois, dest_obj->Bytes = dest_obj->Linhas = 0;
-    while (Fim->Bytes==0)
+    while (Fim->Bytes == 0)
         Fim->Apagar();
 }
 
@@ -517,20 +517,20 @@ void TTextoTxt::DivideLin(unsigned int min, unsigned int max, bool cores)
 void TTextoTxt::Rand()
 {
 // Checa se tem mais de uma linha
-    if (Linhas<=1)
+    if (Linhas <= 1)
         return;
     int totalbytes = Bytes + 1;
 // Até 8191 bytes: ordena sem alocar memória com new (mais rápido)
-    if (totalbytes <= 8192 && Linhas<=512)
+    if (totalbytes <= 8192 && Linhas <= 512)
     {
         char txt[8192];
-        char *lin[512*4];
+        char *lin[512 * 4];
         RandSub(txt, lin);
         return;
     }
 // Mais de 8191 bytes: aloca memória com new
     char * txt = new char[totalbytes];
-    char ** lin = new char*[Linhas*2];
+    char ** lin = new char*[Linhas * 2];
     RandSub(txt, lin);
     delete[] lin;
     delete[] txt;
@@ -541,7 +541,7 @@ void TTextoTxt::RandSub(char * texto, char** linha)
 {
 // Lê texto de textotxt
     char * p = texto;
-    for (TTextoBloco * obj = Inicio; obj; obj=obj->Depois)
+    for (TTextoBloco * obj = Inicio; obj; obj = obj->Depois)
     {
         memcpy(p, obj->Texto, obj->Bytes);
         p += obj->Bytes;
@@ -553,8 +553,8 @@ void TTextoTxt::RandSub(char * texto, char** linha)
     unsigned int numlin = 1;
     linha[0] = texto;
     for (p=texto; *p; p++)
-        if (*p==Instr::ex_barra_n)
-            linha[numlin++] = p+1, *p=0;
+        if (*p == Instr::ex_barra_n)
+            linha[numlin++] = p + 1, *p = 0;
     assert(numlin == Linhas);
 
     //for (unsigned int x=0; x<numlin; x++) puts(linha[x]);
@@ -562,10 +562,10 @@ void TTextoTxt::RandSub(char * texto, char** linha)
 
 // Altera textotxt
     TextoIni();
-    for (unsigned int x=0; x<numlin; x++)
+    for (unsigned int x = 0; x < numlin; x++)
     {
         unsigned int novalin = circle_random() % (numlin-x) + x;
-        TextoAnota(linha[novalin], strlen(linha[novalin])+1);
+        TextoAnota(linha[novalin], strlen(linha[novalin]) + 1);
         linha[novalin] = linha[x];
     }
     TextoFim();
@@ -575,7 +575,7 @@ void TTextoTxt::RandSub(char * texto, char** linha)
 void TTextoTxt::TxtRemove(int opcoes)
 {
 // Checa se tem alguma linha
-    if (Linhas<1)
+    if (Linhas < 1)
         return;
     int totalbytes = Bytes + 1;
 // Até 8191 bytes: ordena sem alocar memória com new (mais rápido)
@@ -596,7 +596,7 @@ void TTextoTxt::TxtRemoveSub(char * texto, int opcoes)
 {
 // Lê texto de textotxt
     char * p = texto;
-    for (TTextoBloco * obj = Inicio; obj; obj=obj->Depois)
+    for (TTextoBloco * obj = Inicio; obj; obj = obj->Depois)
     {
         memcpy(p, obj->Texto, obj->Bytes);
         p += obj->Bytes;
@@ -609,18 +609,18 @@ void TTextoTxt::TxtRemoveSub(char * texto, int opcoes)
     while (*o)
     {
         char * p = o;
-        while (*p && *p!=Instr::ex_barra_n)
+        while (*p && *p != Instr::ex_barra_n)
             p++;
         char ch = *p;
         *p++ = 0; // Zero no fim da linha
         d = txtRemove(d, o, p-o, opcoes) + 1; // Converte e anota
         o = p; // Avança origem para próxima linha
-        if (ch==0) // Checa se é fim do texto
+        if (ch == 0) // Checa se é fim do texto
             break;
     }
 
 // Altera textotxt
     TextoIni();
-    TextoAnota(texto, d-texto);
+    TextoAnota(texto, d - texto);
     TextoFim();
 }

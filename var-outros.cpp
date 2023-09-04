@@ -22,12 +22,12 @@
 
 //#define DEBUG  // Mostrar e testar vetores de TVarIntTempo
 
-TVarIntTempo ** TVarIntTempo::VetMenos = 0;
-TVarIntTempo ** TVarIntTempo::VetMais = 0;
+TVarIntTempo ** TVarIntTempo::VetMenos = nullptr;
+TVarIntTempo ** TVarIntTempo::VetMais = nullptr;
 unsigned int TVarIntTempo::TempoMenos = 0;
 unsigned int TVarIntTempo::TempoMais = 0;
-TVarIntExec * TVarIntExec::Inicio = 0;
-TVarIntExec * TVarIntExec::Fim = 0;
+TVarIntExec * TVarIntExec::Inicio = nullptr;
+TVarIntExec * TVarIntExec::Fim = nullptr;
 
 //------------------------------------------------------------------------------
 /*
@@ -37,7 +37,7 @@ void DebugRef()
  {
   for (TObjeto * obj = cl->ObjetoIni; obj; obj=obj->Depois)
   {
-   TVarRef * vantes = 0;
+   TVarRef * vantes = nullptr;
    for (TVarRef * v1 = obj->VarRefIni; v1; v1=v1->Depois)
    {
     assert(v1->Pont == obj);
@@ -52,7 +52,7 @@ void DebugRef()
 void MostraRef(TVarRef * r)
 {
     printf("  this = %p\n", r);
-    if (r==0)
+    if (r == nullptr)
         return;
     printf("  Antes = %p\n", r->Antes);
     printf("  Depois = %p\n", r->Depois);
@@ -84,7 +84,7 @@ void TVarRef::MudarPont(TObjeto * obj)
 // Coloca na lista
     if (obj)
     {
-        Antes = 0;
+        Antes = nullptr;
         Depois = obj->VarRefIni;
         if (Depois)
             Depois->Antes = this;
@@ -112,8 +112,8 @@ int TVarIncDec::getInc(int numfunc)
 {
     if (valor < 0)
         return (numfunc ? -valor : valor);
-    unsigned int v = TempoIni + INTTEMPO_MAX*INTTEMPO_MAX - valor;
-    return (v >= INTTEMPO_MAX*INTTEMPO_MAX ? INTTEMPO_MAX*INTTEMPO_MAX-1 : v);
+    unsigned int v = TempoIni + INTTEMPO_MAX * INTTEMPO_MAX - valor;
+    return (v >= INTTEMPO_MAX * INTTEMPO_MAX ? INTTEMPO_MAX * INTTEMPO_MAX - 1 : v);
 }
 
 //------------------------------------------------------------------------------
@@ -122,68 +122,68 @@ int TVarIncDec::getDec(int numfunc)
     if (valor < 0)
         return (numfunc ? -valor : valor);
     unsigned int v = valor - TempoIni;
-    return (v >= INTTEMPO_MAX*INTTEMPO_MAX ? 0 : v);
+    return (v >= INTTEMPO_MAX * INTTEMPO_MAX ? 0 : v);
 }
 
 //------------------------------------------------------------------------------
 void TVarIncDec::setInc(int numfunc, int v)
 {
 // Acerta o sinal se for função abs
-    if (numfunc && (getInc(0)<0) != (v<0))
+    if (numfunc && (getInc(0) < 0) != (v < 0))
         v = -v;
 // Contagem parada
     if (v < 0)
     {
-        if (v <= -INTTEMPO_MAX*INTTEMPO_MAX)
-            valor = -INTTEMPO_MAX*INTTEMPO_MAX+1;
+        if (v <= -INTTEMPO_MAX * INTTEMPO_MAX)
+            valor = -INTTEMPO_MAX * INTTEMPO_MAX + 1;
         else
             valor = v;
         return;
     }
 // Contagem andando
-    if (v >= INTTEMPO_MAX*INTTEMPO_MAX)
-        v = INTTEMPO_MAX*INTTEMPO_MAX-1;
-    valor = TempoIni + INTTEMPO_MAX*INTTEMPO_MAX - v;
+    if (v >= INTTEMPO_MAX * INTTEMPO_MAX)
+        v = INTTEMPO_MAX * INTTEMPO_MAX - 1;
+    valor = TempoIni + INTTEMPO_MAX * INTTEMPO_MAX - v;
 }
 
 //------------------------------------------------------------------------------
 void TVarIncDec::setDec(int numfunc, int v)
 {
 // Acerta o sinal se for função abs
-    if (numfunc && (getDec(0)<0) != (v<0))
+    if (numfunc && (getDec(0) < 0) != (v < 0))
         v = -v;
 // Contagem parada
     if (v < 0)
     {
-        if (v <= -INTTEMPO_MAX*INTTEMPO_MAX)
-            valor = -INTTEMPO_MAX*INTTEMPO_MAX+1;
+        if (v <= -INTTEMPO_MAX * INTTEMPO_MAX)
+            valor = -INTTEMPO_MAX * INTTEMPO_MAX + 1;
         else
             valor = v;
         return;
     }
 // Contagem andando
-    if (v >= INTTEMPO_MAX*INTTEMPO_MAX)
-        v = INTTEMPO_MAX*INTTEMPO_MAX-1;
+    if (v >= INTTEMPO_MAX * INTTEMPO_MAX)
+        v = INTTEMPO_MAX * INTTEMPO_MAX - 1;
     valor = TempoIni + v;
 }
 
 //------------------------------------------------------------------------------
 bool TVarIncDec::FuncInc(TVariavel * v, const char * nome)
 {
-    if (comparaZ(nome, "abs")==0)
+    if (comparaZ(nome, "abs") == 0)
     {
-        Instr::ApagarVar(v+1);
+        Instr::ApagarVar(v + 1);
         Instr::VarAtual->numfunc = 1;
         return true;
     }
-    if (comparaZ(nome, "pos")==0)
+    if (comparaZ(nome, "pos") == 0)
     {
         int valor = getInc(0);
         if (valor<0)
             setInc(0, -valor);
         return false;
     }
-    if (comparaZ(nome, "neg")==0)
+    if (comparaZ(nome, "neg") == 0)
     {
         int valor = getInc(0);
         if (valor>0)
@@ -196,20 +196,20 @@ bool TVarIncDec::FuncInc(TVariavel * v, const char * nome)
 //------------------------------------------------------------------------------
 bool TVarIncDec::FuncDec(TVariavel * v, const char * nome)
 {
-    if (comparaZ(nome, "abs")==0)
+    if (comparaZ(nome, "abs") == 0)
     {
-        Instr::ApagarVar(v+1);
+        Instr::ApagarVar(v + 1);
         Instr::VarAtual->numfunc = 1;
         return true;
     }
-    if (comparaZ(nome, "pos")==0)
+    if (comparaZ(nome, "pos") == 0)
     {
         int valor = getDec(0);
         if (valor<0)
             setDec(0, -valor);
         return false;
     }
-    if (comparaZ(nome, "neg")==0)
+    if (comparaZ(nome, "neg") == 0)
     {
         int valor = getDec(0);
         if (valor>0)
@@ -222,18 +222,18 @@ bool TVarIncDec::FuncDec(TVariavel * v, const char * nome)
 //------------------------------------------------------------------------------
 bool TVarIncDec::FuncVetorInc(TVariavel * v, const char * nome)
 {
-    if (comparaZ(nome, "limpar")!=0)
+    if (comparaZ(nome, "limpar") != 0)
         return false;
     const int total = (unsigned char)v->defvar[Instr::endVetor];
     int numero = 0;
     if (Instr::VarAtual > v)
     {
         numero = v[1].getInt();
-        if (numero >= INTTEMPO_MAX*INTTEMPO_MAX)
-            numero = INTTEMPO_MAX*INTTEMPO_MAX-1;
+        if (numero >= INTTEMPO_MAX * INTTEMPO_MAX)
+            numero = INTTEMPO_MAX * INTTEMPO_MAX - 1;
     }
-    numero = TempoIni + INTTEMPO_MAX*INTTEMPO_MAX - numero;
-    for (int x=0; x<total; x++)
+    numero = TempoIni + INTTEMPO_MAX * INTTEMPO_MAX - numero;
+    for (int x = 0; x < total; x++)
         this[x].valor = numero;
     return false;
 }
@@ -241,18 +241,18 @@ bool TVarIncDec::FuncVetorInc(TVariavel * v, const char * nome)
 //------------------------------------------------------------------------------
 bool TVarIncDec::FuncVetorDec(TVariavel * v, const char * nome)
 {
-    if (comparaZ(nome, "limpar")!=0)
+    if (comparaZ(nome, "limpar") != 0)
         return false;
     const int total = (unsigned char)v->defvar[Instr::endVetor];
     int numero = 0;
     if (Instr::VarAtual > v)
     {
         numero = v[1].getInt();
-        if (numero >= INTTEMPO_MAX*INTTEMPO_MAX)
-            numero = INTTEMPO_MAX*INTTEMPO_MAX-1;
+        if (numero >= INTTEMPO_MAX * INTTEMPO_MAX)
+            numero = INTTEMPO_MAX * INTTEMPO_MAX - 1;
     }
     numero = TempoIni + numero;
-    for (int x=0; x<total; x++)
+    for (int x = 0; x < total; x++)
         this[x].valor = numero;
     return false;
 }
@@ -264,8 +264,8 @@ void TVarIntTempo::PreparaIni()
         return;
     VetMenos = new TVarIntTempo*[INTTEMPO_MAX];
     VetMais = new TVarIntTempo*[INTTEMPO_MAX];
-    memset(VetMenos, 0, sizeof(TVarIntTempo*)*INTTEMPO_MAX);
-    memset(VetMais, 0, sizeof(TVarIntTempo*)*INTTEMPO_MAX);
+    memset(VetMenos, 0, sizeof(TVarIntTempo*) * INTTEMPO_MAX);
+    memset(VetMais, 0, sizeof(TVarIntTempo*) * INTTEMPO_MAX);
 }
 
 //------------------------------------------------------------------------------
@@ -276,7 +276,7 @@ int TVarIntTempo::TempoEspera()
 #endif
     int menos = TempoMenos;
     int total = 0;
-    for (; menos<INTTEMPO_MAX && total<600; menos++,total++)
+    for (; menos < INTTEMPO_MAX && total < 600; menos++, total++)
         if (VetMenos[menos])
             return total;
     return total;
@@ -292,7 +292,7 @@ void TVarIntTempo::ProcEventos(int TempoDecorrido)
     {
     // Avança TempoMenos
     // Move objetos de VetMais para VetMenos se necessário
-        if (TempoMenos < INTTEMPO_MAX-1)
+        if (TempoMenos < INTTEMPO_MAX - 1)
             TempoMenos++;
         else
         {
@@ -301,12 +301,12 @@ void TVarIntTempo::ProcEventos(int TempoDecorrido)
             while (true)
             {
                 TVarIntTempo * obj = VetMais[TempoMais];
-                if (obj==0)
+                if (obj == nullptr)
                     break;
             // Move objeto da lista ligada VetMais para VetMenos
                 VetMais[TempoMais] = obj->Depois;
                 int menos = obj->IndiceMenos;
-                obj->Antes = 0;
+                obj->Antes = nullptr;
                 obj->Depois = VetMenos[menos];
                 VetMenos[menos] = obj;
                 if (obj->Depois)
@@ -323,7 +323,8 @@ void TVarIntTempo::ProcEventos(int TempoDecorrido)
                 TVarIntTempo * x = obj1->Depois;
                 obj1->Depois = obj1->Antes;
                 obj1->Antes = x;
-                if (x==0) break;
+                if (x == nullptr)
+                    break;
                 obj1 = x;
             }
             VetMenos[TempoMenos] = obj1;
@@ -332,13 +333,13 @@ void TVarIntTempo::ProcEventos(int TempoDecorrido)
         while (true)
         {
             TVarIntTempo * obj = VetMenos[TempoMenos];
-            if (obj==0)
+            if (obj == nullptr)
                 break;
         // Tira objeto da lista ligada
             VetMenos[TempoMenos] = obj->Depois;
             if (obj->Depois)
-                obj->Depois->Antes = 0;
-            obj->Depois = 0;
+                obj->Depois->Antes = nullptr;
+            obj->Depois = nullptr;
         // Gera evento
             bool prossegue = false;
             if (obj->b_objeto)
@@ -353,7 +354,7 @@ void TVarIntTempo::ProcEventos(int TempoDecorrido)
                 sprintf(mens, "%s_exec", obj->defvar + Instr::endNome);
                 prossegue = Instr::ExecIni(obj->endclasse, mens);
             }
-            if (prossegue==false)
+            if (prossegue == false)
                 continue;
                 // Cria argumento: índice
             Instr::ExecArg(obj->indice);
@@ -369,12 +370,12 @@ int TVarIntTempo::getValor(int numfunc)
 {
     if (parado)
         return (numfunc ? -ValorParado : ValorParado);
-    if (Antes==0 && VetMenos[IndiceMenos]!=this &&
-                    VetMais[IndiceMais]!=this)
+    if (Antes == nullptr && VetMenos[IndiceMenos] != this &&
+                    VetMais[IndiceMais] != this)
         return 0;
     int valor = ((IndiceMais - TempoMais) * INTTEMPO_MAX +
             IndiceMenos - TempoMenos);
-    if (valor<0)
+    if (valor < 0)
         valor += INTTEMPO_MAX * INTTEMPO_MAX;
     return valor;
 }
@@ -387,7 +388,7 @@ void TVarIntTempo::setValor(int numfunc, int valor)
     DebugVet(false);
 #endif
 // Acerta o sinal se for função abs
-    if (numfunc && (getValor(0)<0) != (valor<0))
+    if (numfunc && (getValor(0) < 0) != (valor < 0))
         valor = -valor;
 // Retira da lista
     if (!parado)
@@ -399,9 +400,9 @@ void TVarIntTempo::setValor(int numfunc, int valor)
         else if (VetMais[IndiceMais]==this)
             VetMais[IndiceMais] = Depois;
         if (Depois)
-            Depois->Antes = Antes, Depois=0;
+            Depois->Antes = Antes, Depois = nullptr;
     }
-    Antes = 0;
+    Antes = nullptr;
 #ifdef DEBUG
     DebugVet(false);
 #endif
@@ -409,7 +410,7 @@ void TVarIntTempo::setValor(int numfunc, int valor)
 // Valores negativos
     if (valor <= 0)
     {
-        if (valor==0)
+        if (valor == 0)
             return;
         parado = true;
         if (valor <= -INTTEMPO_MAX * INTTEMPO_MAX)
@@ -451,9 +452,9 @@ void TVarIntTempo::Mover(TVarIntTempo * destino)
             Depois->Antes = destino;
         if (Antes)
             Antes->Depois = destino;
-        else if (VetMenos[IndiceMenos]==this)
+        else if (VetMenos[IndiceMenos] == this)
             VetMenos[IndiceMenos] = destino;
-        else if (VetMais[IndiceMais]==this)
+        else if (VetMais[IndiceMais] == this)
             VetMais[IndiceMais] = destino;
 #ifdef DEBUG
         DebugVet(false);
@@ -466,31 +467,31 @@ void TVarIntTempo::Mover(TVarIntTempo * destino)
 void TVarIntTempo::EndObjeto(TClasse * c, TObjeto * o)
 {
     if (o)
-        endobjeto=o, b_objeto=true;
+        endobjeto = o, b_objeto = true;
     else
-        endclasse=c, b_objeto=false;
+        endclasse = c, b_objeto = false;
 }
 
 //------------------------------------------------------------------------------
 bool TVarIntTempo::Func(TVariavel * v, const char * nome)
 {
-    if (comparaZ(nome, "abs")==0)
+    if (comparaZ(nome, "abs") == 0)
     {
-        Instr::ApagarVar(v+1);
+        Instr::ApagarVar(v + 1);
         Instr::VarAtual->numfunc = 1;
         return true;
     }
-    if (comparaZ(nome, "pos")==0)
+    if (comparaZ(nome, "pos") == 0)
     {
         int valor = getValor(0);
-        if (valor<0)
+        if (valor < 0)
             setValor(0, -valor);
         return false;
     }
-    if (comparaZ(nome, "neg")==0)
+    if (comparaZ(nome, "neg") == 0)
     {
         int valor = getValor(0);
-        if (valor>0)
+        if (valor > 0)
             setValor(0, -valor);
         return false;
     }
@@ -500,11 +501,11 @@ bool TVarIntTempo::Func(TVariavel * v, const char * nome)
 //------------------------------------------------------------------------------
 bool TVarIntTempo::FuncVetor(TVariavel * v, const char * nome)
 {
-    if (comparaZ(nome, "limpar")!=0)
+    if (comparaZ(nome, "limpar") != 0)
         return false;
     const int total = (unsigned char)v->defvar[Instr::endVetor];
     const int numero = (Instr::VarAtual <= v ? 0 : v[1].getInt());
-    for (int x=0; x<total; x++)
+    for (int x = 0; x < total; x++)
         this[x].setValor(0, numero);
     return false;
 }
@@ -514,12 +515,12 @@ void TVarIntTempo::DebugVet(bool mostrar)
 {
     if (mostrar)
         printf("VetMenos: ");
-    for (int x=0; x<INTTEMPO_MAX; x++)
+    for (int x = 0; x < INTTEMPO_MAX; x++)
         if (VetMenos[x])
         {
-            int y=0;
-            TVarIntTempo * objini=0, * obj=VetMenos[x];
-            for (; obj; obj=obj->Depois)
+            int y = 0;
+            TVarIntTempo * objini = nullptr, * obj=VetMenos[x];
+            for (; obj; obj = obj->Depois)
             {
                 assert(obj->Antes == objini);
                 objini = obj, y++;
@@ -529,12 +530,12 @@ void TVarIntTempo::DebugVet(bool mostrar)
         }
     if (mostrar)
         printf("\nVetMais: ");
-    for (int x=0; x<INTTEMPO_MAX; x++)
+    for (int x = 0; x < INTTEMPO_MAX; x++)
         if (VetMais[x])
         {
-            int y=0;
-            TVarIntTempo * objini=0, * obj=VetMais[x];
-            for (; obj; obj=obj->Depois)
+            int y = 0;
+            TVarIntTempo * objini = nullptr, * obj=VetMais[x];
+            for (; obj; obj = obj->Depois)
             {
                 assert(obj->Antes == objini);
                 objini = obj, y++;
@@ -553,16 +554,16 @@ void TVarIntExec::ProcEventos()
     {
     // Verifica se tem objeto na lista
         TVarIntExec * obj = Inicio;
-        if (obj==0)
+        if (obj == nullptr)
             return;
 
     // Retira objeto da lista
         Inicio = obj->Depois;
         if (Inicio)
-            Inicio->Antes = 0;
+            Inicio->Antes = nullptr;
         else
-            Fim = 0;
-        obj->Depois = 0;
+            Fim = nullptr;
+        obj->Depois = nullptr;
 
     // Gera evento
         if (obj->b_objeto)
@@ -590,24 +591,24 @@ void TVarIntExec::ProcEventos()
 //------------------------------------------------------------------------------
 int TVarIntExec::getValor()
 {
-    return (Antes || Inicio==this);
+    return (Antes || Inicio == this);
 }
 
 //------------------------------------------------------------------------------
 void TVarIntExec::setValor(int valor)
 {
-    if (Antes || Inicio==this) // Se a variável for 1
+    if (Antes || Inicio == this) // Se a variável for 1
     {
         if (valor)
             return;
         (Antes ? Antes->Depois : Inicio) = Depois;
         (Depois ? Depois->Antes : Fim) = Antes;
-        Antes = Depois = 0;
+        Antes = Depois = nullptr;
     }
     else if (valor) // Se a variável for 0 e valor não for 0
     {
         Antes = Fim;
-        Depois = 0;
+        Depois = nullptr;
         (Antes ? Antes->Depois : Inicio) = this;
         Fim = this;
     }
@@ -616,7 +617,7 @@ void TVarIntExec::setValor(int valor)
 //------------------------------------------------------------------------------
 void TVarIntExec::Mover(TVarIntExec * destino)
 {
-    if (Antes || Inicio==this)
+    if (Antes || Inicio == this)
     {
         (Antes ? Antes->Depois : Inicio) = destino;
         (Depois ? Depois->Antes : Fim) = destino;
@@ -628,9 +629,9 @@ void TVarIntExec::Mover(TVarIntExec * destino)
 void TVarIntExec::EndObjeto(TClasse * c, TObjeto * o)
 {
     if (o)
-        endobjeto=o, b_objeto=true;
+        endobjeto = o, b_objeto = true;
     else
-        endclasse=c, b_objeto=false;
+        endclasse = c, b_objeto = false;
 }
 
 //------------------------------------------------------------------------------
@@ -642,21 +643,21 @@ bool FuncVetorTxt(TVariavel * v, const char * nome)
     if (v->defvar[2] == Instr::cTxt2)
         tamvar += 256;
 // Texto do vetor
-    if (comparaZ(nome, "texto")==0)
+    if (comparaZ(nome, "texto") == 0)
     {
     // Obtém índice inicial e a quantidade de variáveis
         int ini = 0;
         int total = numvar;
-        if (Instr::VarAtual >= v+1)
+        if (Instr::VarAtual >= v + 1)
         {
             ini = v[1].getInt();
-            if (ini<0)
-                ini=0;
-            if (Instr::VarAtual >= v+2)
+            if (ini < 0)
+                ini = 0;
+            if (Instr::VarAtual >= v + 2)
             {
                 total = v[2].getInt() + 1;
-                if (total>numvar)
-                    total=numvar;
+                if (total > numvar)
+                    total = numvar;
             }
         }
         total -= ini;
@@ -669,16 +670,16 @@ bool FuncVetorTxt(TVariavel * v, const char * nome)
             return false;
     // Anota o texto
         char * destino = Instr::DadosTopo;
-        for (; total>0; total--,origem+=tamvar)
+        for (; total > 0; total--, origem += tamvar)
         {
             //printf("texto = ["); fflush(stdout);
-            //for (const char * x=origem; *x; x++)
+            //for (const char * x = origem; *x; x++)
             //    if (*(signed char*)x >= ' ')
             //        putchar(*x);
             //    else
             //        printf("(%02X)", *(unsigned char*)x);
             //printf("]\n"); fflush(stdout);
-            for (const char * o = origem; *o && destino < Instr::DadosFim-1; )
+            for (const char * o = origem; *o && destino < Instr::DadosFim - 1; )
                 *destino++ = *o++;
         }
         *destino++ = 0;
@@ -689,17 +690,17 @@ bool FuncVetorTxt(TVariavel * v, const char * nome)
         return true;
     }
 // Divide em palavras
-    if (comparaZ(nome, "palavras")==0)
+    if (comparaZ(nome, "palavras") == 0)
     {
     // Obtém número de palavras (parâmetro de entrada)
         int total = numvar;
-        if (Instr::VarAtual < v+1)
+        if (Instr::VarAtual < v + 1)
             return false;
-        if (Instr::VarAtual >= v+2)
+        if (Instr::VarAtual >= v + 2)
         {
             total = v[2].getInt();
-            if (total>numvar)
-                total=numvar;
+            if (total > numvar)
+                total = numvar;
         }
     // Copia o texto obtendo o número de palavras
         int palavras = 0;
@@ -707,33 +708,33 @@ bool FuncVetorTxt(TVariavel * v, const char * nome)
         char * destino = v->end_char;
         for (; total>1; total--)
         {
-            while (*origem==' ' || *origem==Instr::ex_barra_n)
+            while (*origem == ' ' || *origem == Instr::ex_barra_n)
                 origem++;
-            if (*origem==0)
+            if (*origem == 0)
                 break;
             char * d = destino;
             destino += tamvar, palavras++;
             for (; *origem && *origem!=' ' &&
-                    *origem!=Instr::ex_barra_n; origem++)
-                if (d<destino-1)
+                    *origem != Instr::ex_barra_n; origem++)
+                if (d < destino - 1)
                     *d++ = *origem;
             *d = 0;
         }
     // Copia o último texto
-        while (*origem==' ' || *origem==Instr::ex_barra_n)
+        while (*origem==' ' || *origem == Instr::ex_barra_n)
             origem++;
         if (*origem)
         {
             char * d = destino;
             destino += tamvar, palavras++;
-            while (*origem && d<destino-1)
+            while (*origem && d < destino - 1)
                 *d++ = *origem++;
-            while (*origem==' ' || *origem==Instr::ex_barra_n)
+            while (*origem == ' ' || *origem == Instr::ex_barra_n)
                 origem++;
-            if (*origem==0)
+            if (*origem == 0)
             {
-                for (d--; d>=destino-tamvar; d--)
-                    if (*d!=' ' && *d!=Instr::ex_barra_n)
+                for (d--; d >= destino - tamvar; d--)
+                    if (*d != ' ' && *d != Instr::ex_barra_n)
                         break;
                 d++;
             }
@@ -741,44 +742,44 @@ bool FuncVetorTxt(TVariavel * v, const char * nome)
         }
     // Limpa próximas variáveis do vetor
         for (; palavras < numvar; destino += tamvar, numvar--)
-            *destino=0;
+            *destino = 0;
     // Retorna o número de palavras
         Instr::ApagarVar(v);
         return Instr::CriarVarInt(palavras);
     }
 // Divide em linhas
-    if (comparaZ(nome, "linhas")==0)
+    if (comparaZ(nome, "linhas") == 0)
     {
     // Obtém número mínimo de colunas (parâmetro de entrada)
         int colunas = tamvar - 1;
-        if (Instr::VarAtual < v+1)
+        if (Instr::VarAtual < v + 1)
             return false;
-        if (Instr::VarAtual >= v+2)
+        if (Instr::VarAtual >= v + 2)
         {
             colunas = v[2].getInt();
-            if (colunas>tamvar-1)
-                colunas=tamvar-1;
-            if (colunas<0)
-                colunas=0;
+            if (colunas > tamvar - 1)
+                colunas = tamvar - 1;
+            if (colunas < 0)
+                colunas = 0;
         }
     // Copia o texto
         const char * origem = v[1].getTxt();
         char * destino = v->end_char;
         int linha = 0;  // Número de linhas copiadas
-        colunas -= tamvar-1; // Quantas colunas recuar do final do texto
-        while (linha<numvar)
+        colunas -= tamvar - 1; // Quantas colunas recuar do final do texto
+        while (linha < numvar)
         {
             char * d = destino;
-            linha++, destino+=tamvar;
+            linha++, destino += tamvar;
         // Copia linha
-            while (*origem && *origem!=Instr::ex_barra_n && d<destino)
+            while (*origem && *origem != Instr::ex_barra_n && d < destino)
                 *d++ = *origem++;
         // Linha cabe na variável
-            if (d<destino)
+            if (d < destino)
             {
-                *d=0;
+                *d = 0;
             // Fim da linha
-                if (*origem==Instr::ex_barra_n)
+                if (*origem == Instr::ex_barra_n)
                 {
                     origem++;
                     continue;
@@ -787,57 +788,57 @@ bool FuncVetorTxt(TVariavel * v, const char * nome)
                 break;
             }
         // Obtém aonde deve dividir a linha
-            d--,origem--; // Recua um caracter
+            d--, origem--; // Recua um caracter
             int x;
-            for (x=-1; x>=colunas; x--)
-                if (origem[x]==' ')
+            for (x = -1; x >= colunas; x--)
+                if (origem[x] == ' ')
                     break;
-            if (x<colunas)
-                for (x=-1; x>=colunas; x--)
-                    if (origem[x]=='.')
+            if (x < colunas)
+                for (x = -1; x >= colunas; x--)
+                    if (origem[x] == '.')
                         break;
         // Divide a linha
-            if (x>=colunas)
+            if (x >= colunas)
             {
                 x++;
                 origem += x;
                 d += x;
             }
-            *d=0;
+            *d = 0;
         }
     // Limpa próximas variáveis do vetor
         for (; linha < numvar; destino += tamvar, numvar--)
-            *destino=0;
+            *destino = 0;
     // Retorna o número de palavras
         Instr::ApagarVar(v);
         return Instr::CriarVarInt(linha);
     }
 // Limpa as variáveis do vetor
-    if (comparaZ(nome, "limpar")==0)
+    if (comparaZ(nome, "limpar") == 0)
     {
         char * destino = v->end_char;
         const char * texto = "";
         if (Instr::VarAtual > v)
             texto = v[1].getTxt();
-        for (; numvar>0; numvar--, destino+=tamvar)
+        for (; numvar > 0; numvar--, destino += tamvar)
             copiastr(destino, texto, tamvar);
         return false;
     }
 // Junta texto
-    if (comparaZ(nome, "juntar")==0)
+    if (comparaZ(nome, "juntar") == 0)
     {
     // Obtém o texto delimitador
         int total = numvar;
         char mens[4096];
-        *mens=0;
-        if (Instr::VarAtual >= v+1)
+        *mens = 0;
+        if (Instr::VarAtual >= v + 1)
         {
             copiastr(mens, v[1].getTxt(), sizeof(mens));
-            if (Instr::VarAtual >= v+2)
+            if (Instr::VarAtual >= v + 2)
             {
                 total = v[2].getInt();
-                if (total>numvar)
-                    total=numvar;
+                if (total > numvar)
+                    total = numvar;
             }
         }
     // Cria variável
@@ -849,7 +850,7 @@ bool FuncVetorTxt(TVariavel * v, const char * nome)
             return false;
     // Anota o texto
         char * destino = Instr::DadosTopo;
-        for (; total>0; total--,origem+=tamvar)
+        for (; total > 0; total--, origem += tamvar)
         {
             for (const char * o = origem; *o && destino < Instr::DadosFim-1; )
                 *destino++ = *o++;
@@ -867,28 +868,28 @@ bool FuncVetorTxt(TVariavel * v, const char * nome)
     }
 // Separa texto
     int valor = 10;
-    if (comparaZ(nome, "separar")==0)
-        valor=0;
-    else if (comparaZ(nome, "separarmai")==0)
-        valor=1;
-    else if (comparaZ(nome, "separardif")==0)
-        valor=2;
-    if (valor!=10)
+    if (comparaZ(nome, "separar") == 0)
+        valor = 0;
+    else if (comparaZ(nome, "separarmai") == 0)
+        valor = 1;
+    else if (comparaZ(nome, "separardif") == 0)
+        valor = 2;
+    if (valor != 10)
     {
         int indice = 0;
         int indmax = numvar;
         char * destino = v->end_char;
         while (true)
         {
-            if (Instr::VarAtual < v+2)
+            if (Instr::VarAtual < v + 2)
                 break;
-            if (Instr::VarAtual >= v+3)
+            if (Instr::VarAtual >= v + 3)
             {
                 indmax = v[3].getInt();
                 if (indmax<1)
                     break;
-                if (indmax>numvar)
-                    indmax=numvar;
+                if (indmax > numvar)
+                    indmax = numvar;
             }
         // Obtém delimitador
             TProcurar proc;
@@ -903,14 +904,14 @@ bool FuncVetorTxt(TVariavel * v, const char * nome)
             while (true)
             {
                 indice++;
-                int posic = (indice>=indmax ? -1 : proc.Proc(origem, tam));
-                if (posic<0) // Não encontrou
+                int posic = (indice >= indmax ? -1 : proc.Proc(origem, tam));
+                if (posic < 0) // Não encontrou
                 {
                     copiastr(destino, origem, tamvar);
                     destino += tamvar;
                     break;
                 }
-                int total = (posic < tamvar-1 ? posic : tamvar-1);
+                int total = (posic < tamvar - 1 ? posic : tamvar - 1);
                 memcpy(destino, origem, total);
                 destino[total] = 0;
                 origem += posic + tampadrao;
@@ -921,21 +922,21 @@ bool FuncVetorTxt(TVariavel * v, const char * nome)
         }
         // Limpa próximas variáveis do vetor
         for (; indice < numvar; destino += tamvar, numvar--)
-            *destino=0;
+            *destino = 0;
         // Retorna o número de variáveis
         Instr::ApagarVar(v);
         return Instr::CriarVarInt(indice);
     }
 // TxtRemove
-    if (comparaZ(nome, "txtremove")==0)
+    if (comparaZ(nome, "txtremove") == 0)
     {
-        if (Instr::VarAtual < v+1)
+        if (Instr::VarAtual < v + 1)
             return false;
         int remove = txtRemove(v[1].getTxt()); // O que deve remover
-        if (remove==0)
+        if (remove == 0)
             return false;
         char * destino = v->end_char;
-        for (; numvar>0; numvar--, destino+=tamvar)
+        for (; numvar > 0; numvar--, destino += tamvar)
             txtRemove(destino, destino, tamvar, remove);
         return false;
     }
@@ -947,7 +948,7 @@ bool FuncVetorTxt(TVariavel * v, const char * nome)
 //------------------------------------------------------------------------------
 bool FuncVetorInt1(TVariavel * v, const char * nome)
 {
-    if (comparaZ(nome, "limpar")==0)
+    if (comparaZ(nome, "limpar") == 0)
     {
         unsigned int total = (unsigned char)v->defvar[Instr::endVetor];
         unsigned char * p = (unsigned char*)v->end_char;
@@ -957,32 +958,32 @@ bool FuncVetorInt1(TVariavel * v, const char * nome)
         {
             if (bitmask > 1)
             {
-                for (; total>0 && bitmask; total--,bitmask<<=1)
+                for (; total > 0 && bitmask; total--, bitmask <<= 1)
                     *p |= bitmask;
                 p++;
             }
-            while (total>=8)
-                *p++=0xFF, total-=8;
-            for (bitmask=1; total>0; total--,bitmask<<=1)
+            while (total >= 8)
+                *p++ = 0xFF, total -= 8;
+            for (bitmask = 1; total > 0; total--, bitmask <<= 1)
                 *p |= bitmask;
             return false;
         }
     // Preencher com 0
         if (bitmask > 1)
         {
-            for (; total>0 && bitmask; total--,bitmask<<=1)
+            for (; total > 0 && bitmask; total--, bitmask <<= 1)
                 *p &= ~bitmask;
             p++;
         }
-        while (total>=8)
-            *p++=0, total-=8;
-        for (bitmask=1; total>0; total--,bitmask<<=1)
+        while (total >= 8)
+            *p++ = 0, total -= 8;
+        for (bitmask = 1; total > 0; total--, bitmask <<= 1)
             *p &= ~bitmask;
         return false;
     }
-    if (comparaZ(nome, "bits")==0)
+    if (comparaZ(nome, "bits") == 0)
     {
-        Instr::ApagarVar(v+1);
+        Instr::ApagarVar(v + 1);
         v->indice = 0;
         v->numfunc = 1;
         return true;
@@ -1000,10 +1001,10 @@ int GetVetorInt1(TVariavel * v)
     if (total > 32)
         total = 32;
 // Primeiro byte
-    if (total>0 && bitnum)
+    if (total > 0 && bitnum)
     {
         valor = *p++ >> bitnum;
-        bitnum = 8-bitnum;
+        bitnum = 8 - bitnum;
         switch (total)
         {
         case 1: valor &= 1; break;
@@ -1017,7 +1018,7 @@ int GetVetorInt1(TVariavel * v)
         total -= bitnum;
     }
 // Demais bytes
-    for (; total>0 && bitnum<32; total-=8,bitnum+=8)
+    for (; total > 0 && bitnum < 32; total -= 8,bitnum += 8)
     {
         switch (total)
         {
@@ -1061,13 +1062,13 @@ void SetVetorInt1(TVariavel * v, int valor)
         {
             *p &= ~bitmask;
             *p |= (valor & bitmask);
-            p++, total-=8, valor>>=8;
+            p++, total -= 8, valor >>= 8;
             continue;
         }
     // Bits não estão alinhados
         *p &= ~(bitmask << bitnum);
         *p |= (valor & bitmask) << bitnum;
-        p++, total-=8-bitnum, valor>>=8-bitnum;
+        p++, total -= 8 - bitnum, valor >>= 8 - bitnum;
         bitnum = 0;
     }
 }
@@ -1075,7 +1076,7 @@ void SetVetorInt1(TVariavel * v, int valor)
 //------------------------------------------------------------------------------
 bool FuncVetorInt8(TVariavel * v, const char * nome)
 {
-    if (comparaZ(nome, "limpar")!=0)
+    if (comparaZ(nome, "limpar") != 0)
         return false;
     char * ender = v->end_char;
     const int total = (unsigned char)v->defvar[Instr::endVetor];
@@ -1083,9 +1084,9 @@ bool FuncVetorInt8(TVariavel * v, const char * nome)
     if (Instr::VarAtual > v)
     {
         valor = v[1].getInt();
-        if (valor<-0x80)
+        if (valor < -0x80)
             valor = -0x80;
-        else if (valor>0x7F)
+        else if (valor > 0x7F)
             valor = 0x7F;
     }
     memset(ender, valor, total);
@@ -1095,7 +1096,7 @@ bool FuncVetorInt8(TVariavel * v, const char * nome)
 //------------------------------------------------------------------------------
 bool FuncVetorUInt8(TVariavel * v, const char * nome)
 {
-    if (comparaZ(nome, "limpar")!=0)
+    if (comparaZ(nome, "limpar") != 0)
         return false;
     char * ender = v->end_char;
     const int total = (unsigned char)v->defvar[Instr::endVetor];
@@ -1103,9 +1104,9 @@ bool FuncVetorUInt8(TVariavel * v, const char * nome)
     if (Instr::VarAtual > v)
     {
         valor = v[1].getInt();
-        if (valor<0)
+        if (valor < 0)
             valor = 0;
-        else if (valor>0xFF)
+        else if (valor > 0xFF)
             valor = 0xFF;
     }
     memset(ender, valor, total);
@@ -1115,7 +1116,7 @@ bool FuncVetorUInt8(TVariavel * v, const char * nome)
 //------------------------------------------------------------------------------
 bool FuncVetorInt16(TVariavel * v, const char * nome)
 {
-    if (comparaZ(nome, "limpar")!=0)
+    if (comparaZ(nome, "limpar") != 0)
         return false;
     short * ender = v->end_short;
     const int total = (unsigned char)v->defvar[Instr::endVetor];
@@ -1123,15 +1124,15 @@ bool FuncVetorInt16(TVariavel * v, const char * nome)
     if (Instr::VarAtual > v)
     {
         valor = v[1].getInt();
-        if (valor<-0x8000)
+        if (valor < -0x8000)
             valor = -0x8000;
-        else if (valor>0x7FFF)
+        else if (valor > 0x7FFF)
             valor = 0x7FFF;
     }
-    if (valor==0)
-        memset(ender, 0, 2*total);
+    if (valor == 0)
+        memset(ender, 0, 2 * total);
     else
-        for (int x=0; x<total; x++)
+        for (int x = 0; x < total; x++)
             ender[x] = valor;
     return false;
 }
@@ -1139,7 +1140,7 @@ bool FuncVetorInt16(TVariavel * v, const char * nome)
 //------------------------------------------------------------------------------
 bool FuncVetorUInt16(TVariavel * v, const char * nome)
 {
-    if (comparaZ(nome, "limpar")!=0)
+    if (comparaZ(nome, "limpar") != 0)
         return false;
     unsigned short * ender = v->end_ushort;
     const int total = (unsigned char)v->defvar[Instr::endVetor];
@@ -1147,15 +1148,15 @@ bool FuncVetorUInt16(TVariavel * v, const char * nome)
     if (Instr::VarAtual > v)
     {
         valor = v[1].getInt();
-        if (valor<0)
+        if (valor < 0)
             valor = 0;
-        else if (valor>0xFFFF)
+        else if (valor > 0xFFFF)
             valor = 0xFFFF;
     }
-    if (valor==0)
-        memset(ender, 0, 2*total);
+    if (valor == 0)
+        memset(ender, 0, 2 * total);
     else
-        for (int x=0; x<total; x++)
+        for (int x = 0; x < total; x++)
             ender[x] = valor;
     return false;
 }
@@ -1168,10 +1169,10 @@ bool FuncVetorInt32(TVariavel * v, const char * nome)
     int * ender = v->end_int;
     const int total = (unsigned char)v->defvar[Instr::endVetor];
     const int valor = (Instr::VarAtual <= v ? 0 : v[1].getInt());
-    if (valor==0)
-        memset(ender, 0, 4*total);
+    if (valor == 0)
+        memset(ender, 0, 4 * total);
     else
-        for (int x=0; x<total; x++)
+        for (int x = 0; x < total; x++)
             ender[x] = valor;
     return false;
 }
@@ -1179,7 +1180,7 @@ bool FuncVetorInt32(TVariavel * v, const char * nome)
 //------------------------------------------------------------------------------
 bool FuncVetorUInt32(TVariavel * v, const char * nome)
 {
-    if (comparaZ(nome, "limpar")!=0)
+    if (comparaZ(nome, "limpar") != 0)
         return false;
     unsigned int * ender = v->end_uint;
     const int total = (unsigned char)v->defvar[Instr::endVetor];
@@ -1192,10 +1193,10 @@ bool FuncVetorUInt32(TVariavel * v, const char * nome)
         else if (val_double > 0)
             valor = (unsigned int)val_double;
     }
-    if (valor==0)
-        memset(ender, 0, 4*total);
+    if (valor == 0)
+        memset(ender, 0, 4 * total);
     else
-        for (int x=0; x<total; x++)
+        for (int x = 0; x < total; x++)
             ender[x] = valor;
     return false;
 }
@@ -1208,7 +1209,7 @@ bool FuncVetorReal(TVariavel * v, const char * nome)
     float * ender = v->end_float;
     const int total = (unsigned char)v->defvar[Instr::endVetor];
     const float valor = (Instr::VarAtual <= v ? 0 : v[1].getDouble());
-    for (int x=0; x<total; x++)
+    for (int x = 0; x < total; x++)
         ender[x] = valor;
     return false;
 }
@@ -1216,12 +1217,12 @@ bool FuncVetorReal(TVariavel * v, const char * nome)
 //------------------------------------------------------------------------------
 bool FuncVetorReal2(TVariavel * v, const char * nome)
 {
-    if (comparaZ(nome, "limpar")!=0)
+    if (comparaZ(nome, "limpar") != 0)
         return false;
     double * ender = v->end_double;
     const int total = (unsigned char)v->defvar[Instr::endVetor];
     const double valor = (Instr::VarAtual <= v ? 0 : v[1].getDouble());
-    for (int x=0; x<total; x++)
+    for (int x = 0; x < total; x++)
         ender[x] = valor;
     return false;
 }

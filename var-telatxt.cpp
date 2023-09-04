@@ -52,11 +52,11 @@ void TVarTelaTxt::Escrever(const char * texto, int tamanho)
         Console->CursorIni();
     Console->CorTxt(CorTela);
 // Tamanho do texto
-    if (tamanho<0)
+    if (tamanho < 0)
         tamanho = strlen(texto);
 // Envia texto
     char * pbuf = TelaBuf + TelaLin * Console->ColTotal + ColEscreve;
-    for (; tamanho>0; texto++,tamanho--)
+    for (; tamanho > 0; texto++, tamanho--)
     {
         if (ColEscreve >= Console->ColTotal)
         {
@@ -80,7 +80,7 @@ void TVarTelaTxt::Escrever(const char * texto, int tamanho)
             if (ColEscreve != 0xFFFF && *texto=='\n')
                 texto++,tamanho--;
             ColEscreve = 0;
-            if (tamanho==0)
+            if (tamanho == 0)
                 break;
         }
         //printf("[%c]", *texto);
@@ -101,7 +101,7 @@ void TVarTelaTxt::Escrever(const char * texto, int tamanho)
 //---------------------------------------------------------------------------
 void TVarTelaTxt::CursorEditor()
 {
-    if (LinhaFinal == Console->LinAtual+1)
+    if (LinhaFinal == Console->LinAtual + 1)
         Console->EnvTxt("\n", 1);
     else
         Console->CursorLin(LinhaFinal - Console->LinAtual);
@@ -112,10 +112,10 @@ void TVarTelaTxt::CursorEditor()
 //---------------------------------------------------------------------------
 void TVarTelaTxt::ProcTecla(const char * texto)
 {
-    if (texto==0)
+    if (texto == nullptr)
         return;
 // Tecla normal (texto)
-    if (texto[0] && texto[1]==0)
+    if (texto[0] && texto[1] == 0)
     {
         CursorEditor();
     // Verifica se tem espaço na linha
@@ -131,7 +131,7 @@ void TVarTelaTxt::ProcTecla(const char * texto)
             antes = valor;
         }
     // Não está no fim da linha na tela
-        if (ColEditor < Console->ColTotal-2)
+        if (ColEditor < Console->ColTotal - 2)
         {
             ColEditor++;
             if (col_linha + ColEditor < tam_linha)
@@ -150,18 +150,18 @@ void TVarTelaTxt::ProcTecla(const char * texto)
     }
 // Passa para letras maiúsculas
     char texto1[20];
-    for (unsigned int x=0; x<sizeof(texto1)-1; x++)
+    for (unsigned int x = 0; x < sizeof(texto1) - 1; x++)
         texto1[x] = tabMAI[*(unsigned char *)(texto + x)];
-    texto1[sizeof(texto1)-1] = 0;
+    texto1[sizeof(texto1) - 1] = 0;
 // Mouse
-    if (memcmp(texto1, "MOUSE", 5)==0 && texto1[5]>='1' && texto1[5]<='3')
+    if (memcmp(texto1, "MOUSE", 5) == 0 && texto1[5] >= '1' && texto1[5] <= '3')
     {
-        const char * p = texto1+6;
-        long posx=0, posy=0;
-        while (*p==' ') p++;
+        const char * p = texto1 + 6;
+        long posx = 0, posy = 0;
+        while (*p == ' ') p++;
         posx = strtol(p, 0, 10);
-        while (*p && *p!=' ') p++;
-        while (*p==' ') p++;
+        while (*p && *p != ' ') p++;
+        while (*p == ' ') p++;
         posy = strtol(p, 0, 10);
         LinhaPosic = posy;
         if (posy)
@@ -169,14 +169,14 @@ void TVarTelaTxt::ProcTecla(const char * texto)
         else
         {
             int max = tam_linha - col_linha;
-            if (posx>max) posx=max;
-            if (posx<0) posx=0;
+            if (posx > max) posx = max;
+            if (posx < 0) posx = 0;
             ColEditor = posx;
         }
         return;
     }
 // Cima
-    if (strcmp(texto1, "UP")==0)
+    if (strcmp(texto1, "UP") == 0)
     {
         if (LinhaPosic < LinhaFinal)
             LinhaPosic++;
@@ -184,7 +184,7 @@ void TVarTelaTxt::ProcTecla(const char * texto)
         return;
     }
 // Baixo
-    if (strcmp(texto1, "DOWN")==0)
+    if (strcmp(texto1, "DOWN") == 0)
     {
         if (LinhaPosic > 0)
             LinhaPosic--;
@@ -192,9 +192,9 @@ void TVarTelaTxt::ProcTecla(const char * texto)
         return;
     }
 // Esquerda
-    if (strcmp(texto1, "LEFT")==0)
+    if (strcmp(texto1, "LEFT") == 0)
     {
-        if (LinhaPosic==0)
+        if (LinhaPosic == 0)
         {
             CursorEditor();
             ProcTeclaCursor(ColEditor + col_linha - 1);
@@ -204,9 +204,9 @@ void TVarTelaTxt::ProcTecla(const char * texto)
         return;
     }
 // Direita
-    if (strcmp(texto1, "RIGHT")==0)
+    if (strcmp(texto1, "RIGHT") == 0)
     {
-        if (LinhaPosic==0)
+        if (LinhaPosic == 0)
         {
             ProcTeclaCursor(ColEditor + col_linha + 1);
             CursorEditor();
@@ -216,7 +216,7 @@ void TVarTelaTxt::ProcTecla(const char * texto)
         return;
     }
 // ENTER
-    if (strcmp(texto1, "ENTER")==0)
+    if (strcmp(texto1, "ENTER") == 0)
     {
         col_linha = 0;
         tam_linha = 0;
@@ -227,32 +227,32 @@ void TVarTelaTxt::ProcTecla(const char * texto)
         return;
     }
 // Control + esquerda
-    if (strcmp(texto1, "C LEFT")==0)
+    if (strcmp(texto1, "C LEFT") == 0)
     {
         if (LinhaPosic)
         {
             int linnum = TelaLin + 1 - LinhaPosic + Console->LinTotal;
             linnum %= Console->LinTotal;
             const char * pbuf = TelaBuf + linnum * Console->ColTotal;
-            while (ColPosic > 0 && pbuf[ColPosic-1]==' ')
+            while (ColPosic > 0 && pbuf[ColPosic - 1] == ' ')
                 ColPosic--;
-            while (ColPosic > 0 && pbuf[ColPosic-1]!=' ')
+            while (ColPosic > 0 && pbuf[ColPosic - 1] != ' ')
                 ColPosic--;
             return;
         }
         CursorEditor();
         int col = ColEditor + col_linha - 1;
-        for (; col>=0; col--)
+        for (; col >= 0; col--)
             if (txt_linha[col] >= '0')
                 break;
-        for (; col>=0; col--)
+        for (; col >= 0; col--)
             if (txt_linha[col] < '0')
                 break;
-        ProcTeclaCursor(col+1);
+        ProcTeclaCursor(col + 1);
         return;
     }
 // Control + direita
-    if (strcmp(texto1, "C RIGHT")==0)
+    if (strcmp(texto1, "C RIGHT") == 0)
     {
         if (LinhaPosic)
         {
@@ -260,9 +260,9 @@ void TVarTelaTxt::ProcTecla(const char * texto)
             linnum %= Console->LinTotal;
             const char * pbuf = TelaBuf + linnum * Console->ColTotal;
             const unsigned int colmax = Console->ColTotal;
-            while (ColPosic+1 < colmax && pbuf[ColPosic]!=' ')
+            while (ColPosic + 1 < colmax && pbuf[ColPosic] != ' ')
                 ColPosic++;
-            while (ColPosic+1 < colmax && pbuf[ColPosic]==' ')
+            while (ColPosic + 1 < colmax && pbuf[ColPosic] == ' ')
                 ColPosic++;
             return;
         }
@@ -278,7 +278,7 @@ void TVarTelaTxt::ProcTecla(const char * texto)
         return;
     }
 // Home
-    if (strcmp(texto1, "HOME")==0)
+    if (strcmp(texto1, "HOME") == 0)
     {
         if (LinhaPosic)
             ColPosic = 0;
@@ -287,7 +287,7 @@ void TVarTelaTxt::ProcTecla(const char * texto)
         return;
     }
 // End
-    if (strcmp(texto1, "END")==0)
+    if (strcmp(texto1, "END") == 0)
     {
         if (LinhaPosic)
             ColPosic = Console->ColTotal - 1;
@@ -296,14 +296,14 @@ void TVarTelaTxt::ProcTecla(const char * texto)
         return;
     }
 // DEL
-    if (strcmp(texto1, "DEL")==0)
+    if (strcmp(texto1, "DEL") == 0)
     {
         if (col_linha + ColEditor >= tam_linha)
             return;
     // Altera a linha
         tam_linha--;
         for (unsigned int x=col_linha + ColEditor; x<tam_linha; x++)
-            txt_linha[x] = txt_linha[x+1];
+            txt_linha[x] = txt_linha[x + 1];
     // Resultado na tela
         CursorEditor();        // Cursor na linha de edição
         Console->ApagaCol(1); // Apaga 1 caracter
@@ -313,20 +313,20 @@ void TVarTelaTxt::ProcTecla(const char * texto)
         Console->CursorCol(move);
         Console->EnvTxt(txt_linha + col_linha + Console->ColTotal - 2, 1); // Mostra caracter
         Console->LimpaFim(); // Limpa da posição do cursor até o final
-        Console->CursorCol(-move-1);
+        Console->CursorCol(-move - 1);
         return;
     }
 // Backspace
-    if (strcmp(texto1, "BACK")==0)
+    if (strcmp(texto1, "BACK") == 0)
     {
         if (col_linha + ColEditor <= 0)
             return;
     // Altera a linha
         tam_linha--;
         for (unsigned int x=col_linha + ColEditor - 1; x<tam_linha; x++)
-            txt_linha[x] = txt_linha[x+1];
+            txt_linha[x] = txt_linha[x + 1];
     // Resultado na tela
-        if (ColEditor==0)
+        if (ColEditor == 0)
         {
             col_linha--;
             return;
@@ -341,7 +341,7 @@ void TVarTelaTxt::ProcTecla(const char * texto)
         Console->EnvTxt(txt_linha + col_linha + Console->ColTotal - 2, 1);
                     // Mostra caracter
         Console->LimpaFim(); // Limpa da posição do cursor até o final
-        Console->CursorCol(-move-1);
+        Console->CursorCol(-move - 1);
         return;
     }
 }
@@ -363,7 +363,7 @@ void TVarTelaTxt::ProcTeclaCursor(int coluna)
         int move = -coluna;
         coluna = 0;
         col_linha -= move;
-        if (move < (int)Console->ColTotal-1) // Cabe na tela
+        if (move < (int)Console->ColTotal - 1) // Cabe na tela
         {
             Console->CursorIni();
             Console->InsereCol(move);
@@ -373,12 +373,12 @@ void TVarTelaTxt::ProcTeclaCursor(int coluna)
             redesenha = true;
     }
 // Mover para direita
-    if (coluna > (int)Console->ColTotal-2)
+    if (coluna > (int)Console->ColTotal - 2)
     {
-        int move = coluna - (Console->ColTotal-2);
-        coluna = Console->ColTotal-2;
+        int move = coluna - (Console->ColTotal - 2);
+        coluna = Console->ColTotal - 2;
         col_linha += move;
-        if (move < (int)Console->ColTotal-1) // Cabe na tela
+        if (move < (int)Console->ColTotal - 1) // Cabe na tela
         {
             Console->CursorIni();
             Console->ApagaCol(move);
@@ -396,8 +396,8 @@ void TVarTelaTxt::ProcTeclaCursor(int coluna)
     if (redesenha)
     {
         int total = tam_linha - col_linha;
-        if (total > (int)Console->ColTotal-1)
-            total = (int)Console->ColTotal-1;
+        if (total > (int)Console->ColTotal - 1)
+            total = (int)Console->ColTotal - 1;
         Console->CursorIni();
         Console->EnvTxt(txt_linha + col_linha, total);
         Console->LimpaFim();
@@ -410,7 +410,7 @@ void TVarTelaTxt::ProcTeclaCursor(int coluna)
 //---------------------------------------------------------------------------
 void TVarTelaTxt::ProcFim()
 {
-    if (Console==0)
+    if (Console == nullptr)
         return;
 // Posicionar na linha de edição
     if (LinhaPosic == 0)
@@ -419,7 +419,7 @@ void TVarTelaTxt::ProcFim()
     else
     {
         Console->CursorLin(LinhaFinal - LinhaPosic - Console->LinAtual);
-        if (ColPosic==0 && Console->ColAtual)
+        if (ColPosic == 0 && Console->ColAtual)
             Console->CursorIni();
         else
             Console->CursorCol(ColPosic - Console->ColAtual);
@@ -430,7 +430,7 @@ void TVarTelaTxt::ProcFim()
 //------------------------------------------------------------------------------
 void TVarTelaTxt::Criar()
 {
-    Antes = 0;
+    Antes = nullptr;
     Depois = Inicio;
     if (Inicio)
         Inicio->Antes = this;
@@ -443,8 +443,8 @@ void TVarTelaTxt::Apagar()
     (Antes ? Antes->Depois : Inicio) = Depois;
     if (Depois)
         Depois->Antes = Antes;
-    if (ObjAtual==this)
-        ObjAtual=Depois;
+    if (ObjAtual == this)
+        ObjAtual = Depois;
 }
 
 //------------------------------------------------------------------------------
@@ -462,9 +462,9 @@ void TVarTelaTxt::Mover(TVarTelaTxt * destino)
 void TVarTelaTxt::EndObjeto(TClasse * c, TObjeto * o)
 {
     if (o)
-        endobjeto=o, b_objeto=true;
+        endobjeto = o, b_objeto = true;
     else
-        endclasse=c, b_objeto=false;
+        endclasse = c, b_objeto = false;
 }
 
 //------------------------------------------------------------------------------
@@ -481,7 +481,7 @@ int TVarTelaTxt::getTipo(int numfunc)
 //------------------------------------------------------------------------------
 int TVarTelaTxt::getValor(int numfunc)
 {
-    if (Console==0)
+    if (Console == nullptr)
         return 0;
     switch (numfunc)
     {
@@ -498,7 +498,7 @@ int TVarTelaTxt::getValor(int numfunc)
 //------------------------------------------------------------------------------
 void TVarTelaTxt::setValor(int numfunc, int valor)
 {
-    if (Console==0)
+    if (Console == nullptr)
         return;
     switch (numfunc)
     {
@@ -548,7 +548,7 @@ void TVarTelaTxt::setValor(int numfunc, int valor)
 const char * TVarTelaTxt::getTxt(int numfunc)
 {
     static char txtnum[20];
-    if (Console==0)
+    if (Console == nullptr)
         return "";
     switch (numfunc)
     {
@@ -567,13 +567,13 @@ const char * TVarTelaTxt::getTxt(int numfunc)
 //------------------------------------------------------------------------------
 void TVarTelaTxt::setTxt(int numfunc, const char * txt)
 {
-    txt_linha[tam_linha]=0;
-    if (Console==0 || strcmp(txt_linha, txt)==0)
+    txt_linha[tam_linha] = 0;
+    if (Console == nullptr || strcmp(txt_linha, txt) == 0)
         return;
     switch (numfunc)
     {
     case TelaTxtTexto:
-        if (*txt==0)
+        if (*txt == 0)
         {
             tam_linha = 0;
             col_linha = 0xFFF;
@@ -593,7 +593,7 @@ void TVarTelaTxt::setTxt(int numfunc, const char * txt)
 //------------------------------------------------------------------------------
 void TVarTelaTxt::addTxt(int numfunc, const char * txt)
 {
-    if (Console==0 || *txt==0)
+    if (Console == nullptr || *txt == 0)
         return;
     char * destino;
     switch (numfunc)
@@ -609,15 +609,15 @@ void TVarTelaTxt::addTxt(int numfunc, const char * txt)
                 txt++;
                 break;
             case Instr::ex_barra_c:
-                if ((txt[1]>='0' && txt[1]<='9') ||
-                        (txt[1]>='A' && txt[1]<='J') ||
-                        (txt[1]>='a' && txt[1]<='j'))
+                if ((txt[1] >= '0' && txt[1] <= '9') ||
+                        (txt[1] >= 'A' && txt[1] <= 'J') ||
+                        (txt[1] >= 'a' && txt[1] <= 'j'))
                     txt += 2;
                 else
                     txt++;
                 break;
             case Instr::ex_barra_d:
-                if (txt[1]>='0' && txt[1]<='7')
+                if (txt[1] >= '0' && txt[1] <= '7')
                     txt += 2;
                 else
                     txt++;
@@ -641,12 +641,12 @@ void TVarTelaTxt::addTxt(int numfunc, const char * txt)
 //------------------------------------------------------------------------------
 bool TVarTelaTxt::Inic()
 {
-    if (Console==0)
+    if (Console == nullptr)
         return true;
     if (!Console->Inic())
     {
         delete Console;
-        Console = 0;
+        Console = nullptr;
         return false;
     }
 // Acerta linha de edição
@@ -668,14 +668,14 @@ bool TVarTelaTxt::Inic()
 //------------------------------------------------------------------------------
 void TVarTelaTxt::Fim()
 {
-    if (Console==0)
+    if (Console == nullptr)
         return;
     if (TelaBuf)
     {
         delete[] TelaBuf;
-        TelaBuf = 0;
+        TelaBuf = nullptr;
     }
-    for (; LinhaPosic>0; LinhaPosic--)
+    for (; LinhaPosic > 0; LinhaPosic--)
         putchar('\n');
     Console->Fim();
 }
@@ -683,29 +683,29 @@ void TVarTelaTxt::Fim()
 //------------------------------------------------------------------------------
 void TVarTelaTxt::Processa()
 {
-    if (Console==0)
+    if (Console == nullptr)
         return;
     while (true)
     {
     // Lê tecla
         char mens[2048];
         const char * p = Console->LerTecla();
-        if (p==0)
+        if (p == nullptr)
             break;
         //Console->Escrever(p);
     // Altera posição Y se for evento do mouse
-        if (memcmp(p, "MOUSE", 5)==0 && p[5])
+        if (memcmp(p, "MOUSE", 5) == 0 && p[5])
         {
             long valor;
             char * d = mens + 5;
             copiastr(mens, p, 100);
             while (*d && *d!=' ') d++;
-            while (*d==' ') d++;
+            while (*d == ' ') d++;
             while (*d && *d!=' ') d++;
-            while (*d==' ') d++;
+            while (*d == ' ') d++;
             valor = strtol(d, 0, 10); // Obtém a posição Y
             valor = LinhaFinal - valor;
-            if (valor<0) valor=0;
+            if (valor < 0) valor = 0;
             sprintf(d, "%d", (int)valor); // Anota a posição Y
             p = mens;
         }
@@ -713,7 +713,7 @@ void TVarTelaTxt::Processa()
         if (FuncEvento("tecla", p))
             continue;
     // Processa teclas exceto ENTER
-        if (comparaZ(p, "ENTER")!=0)
+        if (comparaZ(p, "ENTER") != 0)
         {
             ProcTecla(p);
             continue;
@@ -728,7 +728,7 @@ void TVarTelaTxt::Processa()
 //------------------------------------------------------------------------------
 bool TVarTelaTxt::FuncEvento(const char * evento, const char * texto)
 {
-    if (Console==0)
+    if (Console == nullptr)
         return false;
     //printf("FuncEvento [%s] [%s]\n", evento, texto); fflush(stdout);
     for (TVarTelaTxt * vobj = Inicio; vobj;)
@@ -803,9 +803,9 @@ bool TVarTelaTxt::Func(TVariavel * v, const char * nome)
 //------------------------------------------------------------------------------
 bool TVarTelaTxt::FuncMsg(TVariavel * v)
 {
-    if (Console==0)
+    if (Console == nullptr)
         return false;
-    for (TVariavel * obj=v+1; obj<=Instr::VarAtual; obj++)
+    for (TVariavel * obj = v + 1; obj <= Instr::VarAtual; obj++)
     {
         const char * texto = obj->getTxt();
         while (true)
@@ -818,7 +818,7 @@ bool TVarTelaTxt::FuncMsg(TVariavel * v)
                 Escrever(texto, p-texto);
                 texto = p;
             }
-            if (*texto==0)
+            if (*texto == 0)
                 break;
             switch (*texto++)
             {
@@ -831,7 +831,7 @@ bool TVarTelaTxt::FuncMsg(TVariavel * v)
             case Instr::ex_barra_c:
                 {
                     char ch = *texto;
-                    if (ch>='0' && ch<='9')
+                    if (ch >= '0' && ch <= '9')
                     {
                         CorTela = (CorTela & 0x0F) +
                                 (ch - '0') * 0x10;
@@ -840,12 +840,12 @@ bool TVarTelaTxt::FuncMsg(TVariavel * v)
                     }
                     switch (ch | 0x20)
                     {
-                    case 'a': CorTela=(CorTela|0xF0)-0x50; texto++; break;
-                    case 'b': CorTela=(CorTela|0xF0)-0x40; texto++; break;
-                    case 'c': CorTela=(CorTela|0xF0)-0x30; texto++; break;
-                    case 'd': CorTela=(CorTela|0xF0)-0x20; texto++; break;
-                    case 'e': CorTela=(CorTela|0xF0)-0x10; texto++; break;
-                    case 'f': CorTela=(CorTela|0xF0);      texto++; break;
+                    case 'a': CorTela = (CorTela | 0xF0) - 0x50; texto++; break;
+                    case 'b': CorTela = (CorTela | 0xF0) - 0x40; texto++; break;
+                    case 'c': CorTela = (CorTela | 0xF0) - 0x30; texto++; break;
+                    case 'd': CorTela = (CorTela | 0xF0) - 0x20; texto++; break;
+                    case 'e': CorTela = (CorTela | 0xF0) - 0x10; texto++; break;
+                    case 'f': CorTela = (CorTela | 0xF0); texto++; break;
                     case 'g': CorTela |=  0x100; texto++; break;
                     case 'h': CorTela &= ~0x100; texto++; break;
                     case 'i': CorTela |=  0x200; texto++; break;
@@ -860,10 +860,9 @@ bool TVarTelaTxt::FuncMsg(TVariavel * v)
                     break;
                 }
             case Instr::ex_barra_d:
-                if (*texto>='0' && *texto<='7')
+                if (*texto >= '0' && *texto <= '7')
                 {
-                    CorTela = (CorTela & ~15) +
-                                (*texto - '0');
+                    CorTela = (CorTela & ~15) + (*texto - '0');
                     texto++;
                 }
             } // switch
@@ -883,9 +882,9 @@ bool TVarTelaTxt::FuncPosx(TVariavel * v)
 //------------------------------------------------------------------------------
 bool TVarTelaTxt::FuncTecla(TVariavel * v)
 {
-    if (Console==0)
+    if (Console == nullptr)
         return false;
-    for (TVariavel * obj=v+1; obj<=Instr::VarAtual; obj++)
+    for (TVariavel * obj = v + 1; obj <= Instr::VarAtual; obj++)
     {
         const char * texto = obj->getTxt();
         if (*texto)
@@ -905,11 +904,11 @@ bool TVarTelaTxt::FuncProto(TVariavel * v)
 //------------------------------------------------------------------------------
 bool TVarTelaTxt::FuncLimpa(TVariavel * v)
 {
-    if (Console==0)
+    if (Console == nullptr)
         return false;
     Console->CorTxt(0x70);
     Console->LimpaTela();
-    Console->CursorPosic(1,0);
+    Console->CursorPosic(1, 0);
     Console->CorTxt(CONSOLE_COR_LINHA);
     Console->LimpaFim();  // Preenche do cursor até o fim da linha
     LinhaFinal = 0;
@@ -919,7 +918,8 @@ bool TVarTelaTxt::FuncLimpa(TVariavel * v)
     int total = tam_linha - col_linha;
     if (total > 0)
         Console->EnvTxt(txt_linha + col_linha,
-                        total<(int)Console->ColTotal-1 ? total : Console->ColTotal-1);
+                        total < (int)Console->ColTotal - 1 ? total :
+                        Console->ColTotal-1);
     Console->CursorCol(ColEditor - Console->ColAtual);
     memset(TelaBuf, ' ', Console->LinTotal * Console->ColTotal);
     return false;

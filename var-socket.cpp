@@ -43,8 +43,8 @@ SocketOpcTelnet = 4,
 SocketPosX
 };
 
-TVarSocket * TObjSocket::varObj = 0;
-TDNSSocket * TDNSSocket::Inicio = 0;
+TVarSocket * TObjSocket::varObj = nullptr;
+TDNSSocket * TDNSSocket::Inicio = nullptr;
 
 //------------------------------------------------------------------------------
 TObjSocket::TObjSocket()
@@ -53,9 +53,9 @@ TObjSocket::TObjSocket()
     printf("new TObjSocket\n"); fflush(stdout);
 #endif
 // Acerta variáveis
-    CorEnvia=0x70;
-    ColunaEnvia=0;
-    Inicio=0;
+    CorEnvia = 0x70;
+    ColunaEnvia = 0;
+    Inicio = nullptr;
 }
 
 //------------------------------------------------------------------------------
@@ -71,16 +71,16 @@ TObjSocket::~TObjSocket()
 void TObjSocket::RetiraVarSocket()
 {
 // Retira dos objetos TVarSocket
-// Nota: não pode chamar Inicio->MudarSock(0) porque
+// Nota: não pode chamar Inicio->MudarSock(nullptr) porque
 // isso executaria um segundo delete[] em TObjSocket
     while (Inicio)
     {
         TVarSocket * s = Inicio->Depois;
-        Inicio->Socket = 0;
-        Inicio->Antes = 0;
-        Inicio->Depois = 0;
+        Inicio->Socket = nullptr;
+        Inicio->Antes = nullptr;
+        Inicio->Depois = nullptr;
         if (TObjSocket::varObj == Inicio)
-            TObjSocket::varObj = 0;
+            TObjSocket::varObj = nullptr;
         Inicio = s;
     }
 }
@@ -127,19 +127,19 @@ bool TObjSocket::Enviar(const char * mensagem, int codigo)
         case Instr::ex_barra_c: // Cor dos caracteres
             {
                 unsigned char ch = *(++mensagem);
-                if (ch>='0' && ch<='9')
+                if (ch >= '0' && ch <= '9')
                 {
                     agora = (agora & ~0xF0) | (ch-'0') * 16;
                     break;
                 }
                 switch (ch | 0x20)
                 {
-                case 'a': agora=(agora|0xF0)-0x50; break;
-                case 'b': agora=(agora|0xF0)-0x40; break;
-                case 'c': agora=(agora|0xF0)-0x30; break;
-                case 'd': agora=(agora|0xF0)-0x20; break;
-                case 'e': agora=(agora|0xF0)-0x10; break;
-                case 'f': agora=(agora|0xF0);      break;
+                case 'a': agora = (agora | 0xF0) - 0x50; break;
+                case 'b': agora = (agora | 0xF0) - 0x40; break;
+                case 'c': agora = (agora | 0xF0) - 0x30; break;
+                case 'd': agora = (agora | 0xF0) - 0x20; break;
+                case 'e': agora = (agora | 0xF0) - 0x10; break;
+                case 'f': agora = (agora | 0xF0); break;
                 case 'g': agora |=  0x100; break;
                 case 'h': agora &= ~0x100; break;
                 case 'i': agora |=  0x200; break;
@@ -155,7 +155,7 @@ bool TObjSocket::Enviar(const char * mensagem, int codigo)
                         destino[0] = 1;
                         destino[1] = agora;
                         destino[2] = agora >> 8;
-                        destino+=3;
+                        destino += 3;
                         antes = agora;
                     }
                     if (destino > fim)
@@ -168,9 +168,9 @@ bool TObjSocket::Enviar(const char * mensagem, int codigo)
                 break;
             }
         case Instr::ex_barra_d: // Cor de fundo
-            if (mensagem[1]>='0' && mensagem[1]<='7')
+            if (mensagem[1] >= '0' && mensagem[1] <= '7')
             {
-                agora = (agora & ~0x0F) | (mensagem[1]-'0');
+                agora = (agora & ~0x0F) | (mensagem[1] - '0');
                 mensagem++;
             }
             break;
@@ -180,13 +180,13 @@ bool TObjSocket::Enviar(const char * mensagem, int codigo)
                 destino[0] = 1;
                 destino[1] = agora;
                 destino[2] = agora >> 8;
-                destino+=3;
+                destino += 3;
                 antes = agora;
             }
             if (destino > fim)
                 return false;
             *destino++ = '\n';
-            coluna=0;
+            coluna = 0;
             break;
         default:
             if (*(unsigned char*)mensagem < ' ')
@@ -196,7 +196,7 @@ bool TObjSocket::Enviar(const char * mensagem, int codigo)
                 destino[0] = 1;
                 destino[1] = agora;
                 destino[2] = agora >> 8;
-                destino+=3;
+                destino += 3;
                 antes = agora;
             }
             if (destino > fim)
@@ -215,12 +215,12 @@ bool TObjSocket::Enviar(const char * mensagem, int codigo)
         destino[2] = agora >> 8;
         destino += 3;
     }
-    *destino=0;
+    *destino = 0;
 
 // Mostra o que está enviando
 #ifdef DEBUG_MSG
     for (const char * x=mens; *x; x++)
-        if (*x!=1)
+        if (*x != 1)
             putchar(*x);
         else
             { x++; printf("[%d]", (unsigned char)x[0]); }
@@ -247,10 +247,10 @@ void TObjSocket::FuncFechou(const char * txt)
             TObjeto * end = varObj->endobjeto;
             char mens[80];
             int indice = varObj->indice;
-            sprintf(mens, "%s_fechou", varObj->defvar+Instr::endNome);
-            varObj->MudarSock(0);
+            sprintf(mens, "%s_fechou", varObj->defvar + Instr::endNome);
+            varObj->MudarSock(nullptr);
                 // A partir daqui varObj pode ser nulo
-            if (Instr::ExecIni(end, mens)==false)
+            if (Instr::ExecIni(end, mens) == false)
                 end->MarcarApagar();
             else
             {
@@ -265,10 +265,10 @@ void TObjSocket::FuncFechou(const char * txt)
             TClasse * end = varObj->endclasse;
             char mens[80];
             int indice = varObj->indice;
-            sprintf(mens, "%s_fechou", varObj->defvar+Instr::endNome);
-            varObj->MudarSock(0);
+            sprintf(mens, "%s_fechou", varObj->defvar + Instr::endNome);
+            varObj->MudarSock(nullptr);
                 // A partir daqui varObj pode ser nulo
-            if (Instr::ExecIni(end, mens)==false)
+            if (Instr::ExecIni(end, mens) == false)
                 continue;
             Instr::ExecArg(txt);
             Instr::ExecArg(indice);
@@ -276,7 +276,7 @@ void TObjSocket::FuncFechou(const char * txt)
             Instr::ExecFim();
         }
         else
-            varObj->MudarSock(0);
+            varObj->MudarSock(nullptr);
     }
 }
 
@@ -291,14 +291,14 @@ void TObjSocket::FuncEvento(const char * evento, const char * texto, int v1, int
         if (vobj->b_objeto)
         {
             char mens[80];
-            sprintf(mens, "%s_%s", vobj->defvar+Instr::endNome, evento);
+            sprintf(mens, "%s_%s", vobj->defvar + Instr::endNome, evento);
             prossegue = Instr::ExecIni(vobj->endobjeto, mens);
         }
     // Definido em classe: prepara para executar
         else if (vobj->endclasse)
         {
             char mens[80];
-            sprintf(mens, "%s_%s", vobj->defvar+Instr::endNome, evento);
+            sprintf(mens, "%s_%s", vobj->defvar + Instr::endNome, evento);
             prossegue = Instr::ExecIni(vobj->endclasse, mens);
         }
     // Executa
@@ -307,9 +307,9 @@ void TObjSocket::FuncEvento(const char * evento, const char * texto, int v1, int
         {
             if (texto)
                 Instr::ExecArg(texto);
-            if (v1>=0)
+            if (v1 >= 0)
                 Instr::ExecArg(v1);
-            if (v2>=0)
+            if (v2 >= 0)
                 Instr::ExecArg(v2);
             Instr::ExecArg(vobj->indice);
             Instr::ExecX();
@@ -323,10 +323,10 @@ void TObjSocket::FuncEvento(const char * evento, const char * texto, int v1, int
 //------------------------------------------------------------------------------
 void TVarSocket::Apagar()
 {
-    for (TDNSSocket * obj = TDNSSocket::Inicio; obj; obj=obj->Depois)
+    for (TDNSSocket * obj = TDNSSocket::Inicio; obj; obj = obj->Depois)
         if (obj->Socket == this)
-            obj->Socket = 0;
-    MudarSock(0);
+            obj->Socket = nullptr;
+    MudarSock(nullptr);
 }
 
 //------------------------------------------------------------------------------
@@ -341,7 +341,7 @@ void TVarSocket::MudarSock(TObjSocket * obj)
         (Antes ? Antes->Depois : Socket->Inicio) = Depois;
         if (Depois)
             Depois->Antes = Antes;
-        if (Socket->Inicio == 0)
+        if (Socket->Inicio == nullptr)
             Socket->Fechar();
     // Acerta TObjSocket::varObj
         if (TObjSocket::varObj == this)
@@ -350,7 +350,7 @@ void TVarSocket::MudarSock(TObjSocket * obj)
 // Coloca na lista
     if (obj)
     {
-        Antes = 0;
+        Antes = nullptr;
         Depois = obj->Inicio;
         if (Depois)
             Depois->Antes = this;
@@ -371,7 +371,7 @@ void TVarSocket::Mover(TVarSocket * destino)
     }
     if (TObjSocket::varObj == this)
         TObjSocket::varObj = destino;
-    for (TDNSSocket * obj = TDNSSocket::Inicio; obj; obj=obj->Depois)
+    for (TDNSSocket * obj = TDNSSocket::Inicio; obj; obj = obj->Depois)
         if (obj->Socket == this)
             obj->Socket = destino;
     memmove(destino, this, sizeof(TVarSocket));
@@ -381,9 +381,9 @@ void TVarSocket::Mover(TVarSocket * destino)
 void TVarSocket::EndObjeto(TClasse * c, TObjeto * o)
 {
     if (o)
-        endobjeto=o, b_objeto=true;
+        endobjeto = o, b_objeto = true;
     else
-        endclasse=c, b_objeto=false;
+        endclasse = c, b_objeto = false;
 }
 
 //------------------------------------------------------------------------------
@@ -438,11 +438,11 @@ bool TVarSocket::Func(TVariavel * v, const char * nome)
 // Envia mensagem: de longe é a função mais usada
 bool TVarSocket::FuncMsg(TVariavel * v)
 {
-    if (Socket==0)
+    if (Socket == nullptr)
         return false;
     bool enviou = true;
-    int codigo = (Instr::VarAtual > v+1 ? v[2].getInt() : 1);
-    if (Instr::VarAtual >= v+1)
+    int codigo = (Instr::VarAtual > v + 1 ? v[2].getInt() : 1);
+    if (Instr::VarAtual >= v + 1)
         enviou = Socket->Enviar(v[1].getTxt(), codigo);
     Instr::ApagarVar(v);
     return Instr::CriarVarInt(enviou);
@@ -452,7 +452,7 @@ bool TVarSocket::FuncMsg(TVariavel * v)
 /// Conecta
 bool TVarSocket::FuncAbrir(TVariavel * v)
 {
-    MudarSock(0);
+    MudarSock(nullptr);
     if (Instr::VarAtual - v < 2)
         return false;
     int porta = v[2].getInt();
@@ -464,14 +464,14 @@ bool TVarSocket::FuncAbrir(TVariavel * v)
     if (s)
         MudarSock(s);
     Instr::ApagarVar(v);
-    return Instr::CriarVarInt(s!=0);
+    return Instr::CriarVarInt(s != nullptr);
 }
 
 //----------------------------------------------------------------------------
 /// Conecta
 bool TVarSocket::FuncAbrirSsl(TVariavel * v)
 {
-    MudarSock(0);
+    MudarSock(nullptr);
     if (Instr::VarAtual - v < 2)
         return false;
     int porta = v[2].getInt();
@@ -609,11 +609,11 @@ bool TVarSocket::FuncNomeIP(TVariavel * v)
     struct hostent *hnome;
     const char * ender = v[1].getTxt();
 #ifdef __WIN32__
-    memset(&conSock,0,sizeof(conSock));
-    conSock.sin_addr.s_addr=inet_addr(ender);
+    memset(&conSock, 0, sizeof(conSock));
+    conSock.sin_addr.s_addr = inet_addr(ender);
     if ( conSock.sin_addr.s_addr == INADDR_NONE )
     {
-        if ( (hnome=gethostbyname(ender)) == NULL )
+        if ( (hnome=gethostbyname(ender)) == nullptr )
         {
             Instr::ApagarVar(v);
             return Instr::CriarVarTexto("");
@@ -624,7 +624,7 @@ bool TVarSocket::FuncNomeIP(TVariavel * v)
     memset(&conSock.sin_zero, 0, 8);
     if (inet_aton(ender, &conSock.sin_addr) == 0)
     {
-        if ( (hnome=gethostbyname(ender)) == NULL )
+        if ( (hnome=gethostbyname(ender)) == nullptr )
         {
             Instr::ApagarVar(v);
             return Instr::CriarVarTexto("");
@@ -646,8 +646,8 @@ bool TVarSocket::FuncIPNome(TVariavel * v)
     struct hostent *hnome;
     const char * ender = v[1].getTxt();
 #ifdef __WIN32__
-    memset(&conSock,0,sizeof(conSock));
-    conSock.sin_addr.s_addr=inet_addr(ender);
+    memset(&conSock, 0, sizeof(conSock));
+    conSock.sin_addr.s_addr = inet_addr(ender);
     if ( conSock.sin_addr.s_addr == INADDR_NONE )
         hnome = gethostbyname(ender);
     else
@@ -662,7 +662,7 @@ bool TVarSocket::FuncIPNome(TVariavel * v)
                             sizeof(conSock.sin_addr), AF_INET );
 #endif
     Instr::ApagarVar(v);
-    return Instr::CriarVarTexto(hnome == NULL ? "" : hnome->h_name);
+    return Instr::CriarVarTexto(hnome == nullptr ? "" : hnome->h_name);
 }
 
 //----------------------------------------------------------------------------
@@ -703,7 +703,7 @@ int TVarSocket::getTipo(int numfunc)
 //------------------------------------------------------------------------------
 int TVarSocket::getValor(int numfunc)
 {
-    if (Socket==0)
+    if (Socket == nullptr)
         return 0;
     switch (numfunc)
     {
@@ -716,17 +716,17 @@ int TVarSocket::getValor(int numfunc)
 //------------------------------------------------------------------------------
 void TVarSocket::setValor(int numfunc, int valor)
 {
-    if (Socket==0)
+    if (Socket == nullptr)
         return;
     switch (numfunc)
     {
     case 0:
-        MudarSock(0);
+        MudarSock(nullptr);
         break;
     case SocketPosX:
         break;
     default:
-        Socket->Variavel(numfunc, valor<0 ? 0 : valor);
+        Socket->Variavel(numfunc, valor < 0 ? 0 : valor);
     }
 }
 
@@ -738,7 +738,7 @@ static DWORD WINAPI TDNSSocket_Resolve(LPVOID lpParam)
     TDNSSocket * obj = static_cast<TDNSSocket *>(lpParam);
     struct sockaddr_in conSock;
     struct hostent *hnome;
-    memset(&conSock,0,sizeof(conSock));
+    memset(&conSock, 0, sizeof(conSock));
     conSock.sin_addr.s_addr=inet_addr(obj->nomeini);
     if ( conSock.sin_addr.s_addr == INADDR_NONE )
     {
@@ -755,7 +755,7 @@ static DWORD WINAPI TDNSSocket_Resolve(LPVOID lpParam)
                             sizeof(conSock.sin_addr), AF_INET );
         copiastr(obj->ip, inet_ntoa(conSock.sin_addr));
     }
-    copiastr(obj->nome, hnome==NULL ? "" : hnome->h_name, sizeof(obj->nome));
+    copiastr(obj->nome, hnome == nullptr ? "" : hnome->h_name, sizeof(obj->nome));
     return 0;
 }
 #endif
@@ -771,7 +771,7 @@ static DWORD WINAPI TDNSSocket_Resolve(LPVOID lpParam)
     while (true)
     {
         pid = waitpid(-1, &status, WNOHANG);
-        if (pid<0 && errno!=ECHILD) // -1 significa que ocorreu algum erro
+        if (pid < 0 && errno != ECHILD) // -1 significa que ocorreu algum erro
         {
             //perror("waitpid");
             break;
@@ -789,7 +789,7 @@ static DWORD WINAPI TDNSSocket_Resolve(LPVOID lpParam)
 TDNSSocket::TDNSSocket(TVarSocket * var, const char * ender)
 {
     Socket = var;
-    Antes = 0;
+    Antes = nullptr;
     Depois = Inicio;
     if (Depois)
         Depois->Antes = this;
@@ -803,9 +803,9 @@ TDNSSocket::TDNSSocket(TVarSocket * var, const char * ender)
     if (*nomeini == 0)
         return;
 #ifdef __WIN32__
-    hthread = CreateThread(NULL, 0, &TDNSSocket_Resolve,
-                           reinterpret_cast<DWORD*>(this), 0, NULL);
-    if (hthread == NULL)
+    hthread = CreateThread(nullptr, 0, &TDNSSocket_Resolve,
+                           reinterpret_cast<DWORD*>(this), 0, nullptr);
+    if (hthread == nullptr)
         *nomeini = 0;
 #else
         // Cria pipes
@@ -848,7 +848,7 @@ TDNSSocket::TDNSSocket(TVarSocket * var, const char * ender)
         char mens[1024];
         char * p = mprintf(mens, sizeof(mens), "%s%c%s",
                 hnome==NULL ? "" : hnome->h_name, 0, ip);
-        safe_write(descrpipe[1], mens, p-mens+1);
+        safe_write(descrpipe[1], mens, p - mens + 1);
         _exit(EXIT_SUCCESS);
     }
     close(descrpipe[1]);
@@ -871,7 +871,7 @@ TDNSSocket::~TDNSSocket()
 void TDNSSocket::Fd_Set(fd_set * set_entrada)
 {
 #ifndef __WIN32__
-    for (TDNSSocket * obj = Inicio; obj; obj=obj->Depois)
+    for (TDNSSocket * obj = Inicio; obj; obj = obj->Depois)
         FD_SET(obj->recdescr, set_entrada);
 #endif
 }
@@ -892,35 +892,35 @@ void TDNSSocket::ProcEventos(fd_set * set_entrada)
         CloseHandle(obj->hthread);
 #else
         char mens[1024];
-        int resposta =  read(obj->recdescr, mens, sizeof(mens)-2);
-        if (resposta<0 && (errno==EINTR || errno==EWOULDBLOCK))
+        int resposta =  read(obj->recdescr, mens, sizeof(mens) - 2);
+        if (resposta < 0 && (errno==EINTR || errno==EWOULDBLOCK))
         {
             obj = obj->Depois;
             continue;
         }
         close(obj->recdescr);
-        if (resposta<0)
-            resposta=0;
+        if (resposta < 0)
+            resposta = 0;
         memset(mens + resposta, 0, 2);
         copiastr(obj->nome, mens, sizeof(obj->nome));
-        copiastr(obj->ip, mens+strlen(mens)+1, sizeof(obj->ip));
+        copiastr(obj->ip, mens+strlen(mens) + 1, sizeof(obj->ip));
 #endif
     // Checa se pode gerar evento
         TVarSocket * vobj = obj->Socket;
-        if (vobj == 0)
+        if (vobj == nullptr)
             ;
     // Definido em objeto: prepara para executar
         else if (vobj->b_objeto)
         {
             char mens[80];
-            sprintf(mens, "%s_eventoip", vobj->defvar+Instr::endNome);
+            sprintf(mens, "%s_eventoip", vobj->defvar + Instr::endNome);
             prossegue = Instr::ExecIni(vobj->endobjeto, mens);
         }
     // Definido em classe: prepara para executar
         else if (vobj->endclasse)
         {
             char mens[80];
-            sprintf(mens, "%s_eventoip", vobj->defvar+Instr::endNome);
+            sprintf(mens, "%s_eventoip", vobj->defvar + Instr::endNome);
             prossegue = Instr::ExecIni(vobj->endclasse, mens);
         }
     // Executa
