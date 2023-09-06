@@ -40,7 +40,7 @@ intexec exec_sala # Para criar salas
 #
 # Para o comando RESET
 textovar clnome # Texto das classes
-textovar clini # Classes que precisam ser inicializadas (chamar função iniclasse)
+textotxt clini # Classes que precisam ser inicializadas (chamar função iniclasse)
 intexec clreset1
 intexec clreset2
 intexec clreset3
@@ -420,7 +420,7 @@ func cmd_reset
       int32 total = clnome.total
       clnome.v[total] = t.remove(1000000)
       continuar p2.texto == este
-      clini.[p2.texto] = 1
+      clini.addfim(p2.texto)
       p2.apagar(p2.texto)
     efim
   efim
@@ -451,10 +451,8 @@ func clreset2_exec # Adiciona conteúdo nas classes
 func clreset3_exec # Chama função iniclasse
   debug dbg
   clreset3 = 1
-  enquanto 1
-    txt100 nome = clini.ini
-    sair !nome
-    clini.mudar(nome + "=")
+  enquanto clini.linhas
+    refvar nome = clini.remove
     [nome]:iniclasse(nome)
     dbg.ini
   efim
