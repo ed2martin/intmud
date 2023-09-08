@@ -3,7 +3,7 @@ inttempo resetcont # Tempo para o próximo reset
 const iniclasse = arg0 != "area" && !$[arg0] && criar(arg0)
 #
 # Ordem que deve organizar as constantes:
-const admordem = "a_nome\na_autor\na_tempo\na_reset\na_txtreset\n\
+const admordem = "a_nome a_autor a_tempo a_reset a_txtreset\n\
 a_regiao a_regiaoori a_retornarsala"
 
 func ini
@@ -547,7 +547,7 @@ func mensporta1 # Envia mensagem sobre porta abrindo/fechando
     sair
   casose "2"
     p.iniherdainv("h_cmd_trancar")
-    refvar s1 = r.som_tranc_[arg0]
+    refvar s1 = som_tranc_[arg0]
     refvar m1 = arg2 ?? msg_tranc3_[arg0]
     sair !m1
     epara l.addfim(dentro2), l, l.ini.remove
@@ -556,7 +556,7 @@ func mensporta1 # Envia mensagem sobre porta abrindo/fechando
     sair
   casose "3"
     p.iniherdainv("h_cmd_destrancar")
-    refvar s1 = r.som_destr_[arg0]
+    refvar s1 = som_destr_[arg0]
     refvar m1 = arg2 ?? msg_destr3_[arg0]
     sair !m1
     epara l.addfim(dentro2), l, l.ini.remove
@@ -593,7 +593,7 @@ func mensporta2 # Envia mensagem sobre alguém abrindo/fechando uma porta
     sair
   casose "2"
     p.iniherdainv("h_cmd_trancar")
-    refvar s1 = r.som_tranc_[arg0]
+    refvar s1 = som_tranc_[arg0]
     refvar m1 = arg2 ?? msg_tranc1_[arg0] ?? $[p.texto].m_porta_trancou1
     refvar m2 = arg3 ?? msg_tranc2_[arg0] ?? $[p.texto].m_porta_trancou2
     epara l.addfim(dentro2), l, l.ini.remove
@@ -602,7 +602,7 @@ func mensporta2 # Envia mensagem sobre alguém abrindo/fechando uma porta
     sair
   casose "3"
     p.iniherdainv("h_cmd_destrancar")
-    refvar s1 = r.som_destr_[arg0]
+    refvar s1 = som_destr_[arg0]
     refvar m1 = arg2 ?? msg_destr1_[arg0] ?? $[p.texto].m_porta_destrancou1
     refvar m2 = arg3 ?? msg_destr2_[arg0] ?? $[p.texto].m_porta_destrancou2
     epara l.addfim(dentro2), l, l.ini.remove
