@@ -23,7 +23,7 @@
 //------------------------------------------------------------------------------
 void TVarTxt::Criar()
 {
-    arq=0;
+    arq = nullptr;
 }
 
 //------------------------------------------------------------------------------
@@ -36,16 +36,16 @@ void TVarTxt::Apagar()
 //------------------------------------------------------------------------------
 void TVarTxt::Fechar()
 {
-    if (arq==0)
+    if (arq == nullptr)
         return;
     fclose(arq);
-    arq=0;
+    arq = nullptr;
 }
 
 //------------------------------------------------------------------------------
 int TVarTxt::getValor()
 {
-    return (arq!=0);
+    return (arq != nullptr);
 }
 
 //------------------------------------------------------------------------------
@@ -75,9 +75,9 @@ bool TVarTxt::Func(TVariavel * v, const char * nome)
     {
         int meio = (ini+fim)/2;
         int resultado = strcmp(mens, ExecFunc[meio].Nome);
-        if (resultado==0) // Se encontrou...
+        if (resultado == 0) // Se encontrou...
             return (this->*ExecFunc[meio].Func)(v);
-        if (resultado<0) fim=meio-1; else ini=meio+1;
+        if (resultado < 0) fim = meio - 1; else ini = meio + 1;
     }
     return false;
 }
@@ -86,7 +86,7 @@ bool TVarTxt::Func(TVariavel * v, const char * nome)
 bool TVarTxt::FuncLer(TVariavel * v)
 {
     char mens[BUF_MENS];
-    int pmens=0;
+    int pmens = 0;
 // Lê o texto do arquivo
     if (arq) // Se o arquivo está aberto...
     {
@@ -97,18 +97,18 @@ bool TVarTxt::FuncLer(TVariavel * v)
                 tam = v[1].getInt();
             if (tam < 0)
                 tam = 0;
-            if (tam > (int)sizeof(mens)/2)
-                tam = (int)sizeof(mens)/2;
+            if (tam > (int)sizeof(mens) / 2)
+                tam = (int)sizeof(mens) / 2;
             tam *= 2;
             while (pmens<tam)
             {
                 int lido = fgetc(arq);
-                if (lido==EOF)
+                if (lido == EOF)
                     break;
                 char ch = ((lido >> 4) & 15);
-                mens[pmens++] = (ch < 10 ? ch+'0' : ch+'a'-10);
+                mens[pmens++] = (ch < 10 ? ch + '0' : ch + 'a' - 10);
                 ch = (lido & 15);
-                mens[pmens++] = (ch < 10 ? ch+'0' : ch+'a'-10);
+                mens[pmens++] = (ch < 10 ? ch + '0' : ch + 'a' - 10);
             }
         }
         else if (Instr::VarAtual > v) // Ler o tamanho especificado
@@ -116,12 +116,12 @@ bool TVarTxt::FuncLer(TVariavel * v)
             int tam = v[1].getInt();
             if (tam > (int)sizeof(mens))
                 tam = (int)sizeof(mens);
-            while (pmens<tam)
+            while (pmens < tam)
             {
                 int lido = fgetc(arq);
-                if (lido==EOF)
+                if (lido == EOF)
                     break;
-                if (lido=='\n')
+                if (lido == '\n')
                     mens[pmens++] = Instr::ex_barra_n;
                 else if (lido >= ' ')
                     mens[pmens++] = lido;
@@ -131,7 +131,7 @@ bool TVarTxt::FuncLer(TVariavel * v)
             while (pmens < (int)sizeof(mens))
             {
                 int lido = fgetc(arq);
-                if (lido==EOF || lido=='\n')
+                if (lido == EOF || lido == '\n')
                     break;
                 if (lido >= ' ')
                     mens[pmens++] = lido;
@@ -145,13 +145,13 @@ bool TVarTxt::FuncLer(TVariavel * v)
 //------------------------------------------------------------------------------
 bool TVarTxt::FuncEscr(TVariavel * v)
 {
-    if (arq==0)
+    if (arq == nullptr)
         return false;
-    for (TVariavel * v1 = v+1; v1<=Instr::VarAtual; v1++)
+    for (TVariavel * v1 = v + 1; v1 <= Instr::VarAtual; v1++)
     {
         const char * txt = v1->getTxt();
         char mens[BUF_MENS];
-        int pmens=0;
+        int pmens = 0;
         if (ModoBinario)
         {
             int valor = 1;
@@ -170,7 +170,7 @@ bool TVarTxt::FuncEscr(TVariavel * v)
                     continue;
                 if (valor < 0x100)
                     continue;
-                mens[pmens++] = valor, valor=1;
+                mens[pmens++] = valor, valor = 1;
                 if (pmens >= (int)sizeof(mens))
                 {
                     fwrite(mens, 1, pmens, arq);
@@ -194,15 +194,15 @@ bool TVarTxt::FuncEscr(TVariavel * v)
                 txt++;
                 break;
             case Instr::ex_barra_c:
-                if ((txt[1]>='0' && txt[1]<='9') ||
-                        (txt[1]>='A' && txt[1]<='J') ||
-                        (txt[1]>='a' && txt[1]<='j'))
+                if ((txt[1] >= '0' && txt[1] <= '9') ||
+                        (txt[1] >= 'A' && txt[1] <= 'J') ||
+                        (txt[1] >= 'a' && txt[1] <= 'j'))
                     txt += 2;
                 else
                     txt++;
                 break;
             case Instr::ex_barra_d:
-                if (txt[1]>='0' && txt[1]<='7')
+                if (txt[1] >= '0' && txt[1] <= '7')
                     txt += 2;
                 else
                     txt++;
@@ -224,7 +224,7 @@ bool TVarTxt::FuncEscr(TVariavel * v)
 //------------------------------------------------------------------------------
 bool TVarTxt::FuncEof(TVariavel * v)
 {
-    int result = (arq == 0 || feof(arq));
+    int result = (arq == nullptr || feof(arq));
 #ifdef DEBUG
     printf("EOF = %d\n", result);
     fflush(stdout);
@@ -236,11 +236,11 @@ bool TVarTxt::FuncEof(TVariavel * v)
 //------------------------------------------------------------------------------
 bool TVarTxt::FuncPos(TVariavel * v)
 {
-    if (arq && Instr::VarAtual >= v+1)
+    if (arq && Instr::VarAtual >= v + 1)
     {
         int pos = v[1].getInt();
         int modo = 0;
-        if (Instr::VarAtual >= v+2)
+        if (Instr::VarAtual >= v + 2)
             modo = v[2].getInt();
         switch (modo)
         {
@@ -273,11 +273,11 @@ bool TVarTxt::FuncFlush(TVariavel * v)
 bool TVarTxt::FuncValido(TVariavel * v)
 {
     char arqnome[300] = ""; // Nome do arquivo; nulo se não for válido
-    if (Instr::VarAtual >= v+1)
+    if (Instr::VarAtual >= v + 1)
     {
-        copiastr(arqnome, v[1].getTxt(), sizeof(arqnome)-4);
+        copiastr(arqnome, v[1].getTxt(), sizeof(arqnome) - 4);
         if (!arqvalido(arqnome, false))
-            *arqnome=0;
+            *arqnome = 0;
     }
     Instr::ApagarVar(v);
     return Instr::CriarVarInt(*arqnome != 0);
@@ -287,15 +287,15 @@ bool TVarTxt::FuncValido(TVariavel * v)
 bool TVarTxt::FuncExiste(TVariavel * v)
 {
     char arqnome[300] = ""; // Nome do arquivo; nulo se não for válido
-    if (Instr::VarAtual >= v+1)
+    if (Instr::VarAtual >= v + 1)
     {
-        copiastr(arqnome, v[1].getTxt(), sizeof(arqnome)-4);
+        copiastr(arqnome, v[1].getTxt(), sizeof(arqnome) - 4);
         if (!arqvalido(arqnome, false))
-            *arqnome=0;
+            *arqnome = 0;
     }
     Instr::ApagarVar(v);
     struct stat buf;
-    if (*arqnome && stat(arqnome, &buf)<0)
+    if (*arqnome && stat(arqnome, &buf) < 0)
         *arqnome = 0;
     return Instr::CriarVarInt(*arqnome != 0);
 }
@@ -306,18 +306,18 @@ bool TVarTxt::FuncAbrir(TVariavel * v)
 // Obtém o nome do arquivo
     char arqnome[300] = ""; // Nome do arquivo; nulo se não for válido
     bool escrita = false;
-    if (Instr::VarAtual >= v+1)
+    if (Instr::VarAtual >= v + 1)
     {
-        copiastr(arqnome, v[1].getTxt(), sizeof(arqnome)-4);
+        copiastr(arqnome, v[1].getTxt(), sizeof(arqnome) - 4);
     // Verifica se nome permitido
         if (arqvalido(arqnome, true))
             escrita = true;
         else if (!arqvalido(arqnome, false))
-            *arqnome=0;
+            *arqnome = 0;
     }
-    FILE * descr = 0;
+    FILE * descr = nullptr;
     int modo = -1;
-    if (*arqnome && Instr::VarAtual >= v+2)
+    if (*arqnome && Instr::VarAtual >= v + 2)
         modo = v[2].getInt();
 // Abre arquivo
     switch (modo)
@@ -356,7 +356,7 @@ bool TVarTxt::FuncAbrir(TVariavel * v)
     fflush(stdout);
 #endif
 // Se conseguiu abrir arquivo...
-    if (descr != 0)
+    if (descr != nullptr)
     {
         if (arq)
             fclose(arq);
@@ -364,7 +364,7 @@ bool TVarTxt::FuncAbrir(TVariavel * v)
     }
 // Resultado
     Instr::ApagarVar(v);
-    return Instr::CriarVarInt(descr != 0);
+    return Instr::CriarVarInt(descr != nullptr);
 }
 
 //------------------------------------------------------------------------------
@@ -372,16 +372,16 @@ bool TVarTxt::FuncTruncar(TVariavel * v)
 {
 // Obtém o nome do arquivo
     char arqnome[300] = ""; // Nome do arquivo; nulo se não for válido
-    if (Instr::VarAtual >= v+1)
+    if (Instr::VarAtual >= v + 1)
     {
-        copiastr(arqnome, v[1].getTxt(), sizeof(arqnome)-4);
+        copiastr(arqnome, v[1].getTxt(), sizeof(arqnome) - 4);
         if (!arqvalido(arqnome, true)) // Verifica se nome permitido
             *arqnome=0;
     }
     int descr = -1;
     int tamanho = 0;
 // Obtém novo tamanho do arquivo
-    if (Instr::VarAtual >= v+2)
+    if (Instr::VarAtual >= v + 2)
         tamanho = v[2].getInt();
 // Variável int no topo da pilha
     Instr::ApagarVar(v);
