@@ -15,6 +15,7 @@
 #include "objeto.h"
 #include "variavel.h"
 #include "instr.h"
+#include "instr-enum.h"
 #include "arqmapa.h"
 #include "misc.h"
 

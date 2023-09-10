@@ -23,7 +23,7 @@
 #endif
 //#include "config.h"
 #include "misc.h"
-#include "instr.h"
+#include "instr-enum.h"
 
 unsigned long TempoIni;
 char * arqnome = nullptr;

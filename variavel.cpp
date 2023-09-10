@@ -15,6 +15,7 @@
 #include <assert.h>
 #include "variavel.h"
 #include "instr.h"
+#include "instr-enum.h"
 #include "classe.h"
 #include "objeto.h"
 #include "var-listaobj.h"
@@ -37,6 +38,10 @@
 #include "var-indiceobj.h"
 #include "var-datahora.h"
 #include "var-outros.h"
+#include "var-ref.h"
+#include "var-incdec.h"
+#include "var-inttempo.h"
+#include "var-intexec.h"
 #include "misc.h"
 
 //#define DEBUG_CRIAR // Mostra quando uma variável é criada ou apagada

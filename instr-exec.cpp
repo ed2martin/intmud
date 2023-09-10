@@ -13,6 +13,7 @@
 #include <math.h>
 #include <assert.h>
 #include "instr.h"
+#include "instr-enum.h"
 #include "variavel.h"
 #include "var-log.h"
 #include "classe.h"

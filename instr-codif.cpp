@@ -12,6 +12,7 @@
 #include <string.h>
 #include <assert.h>
 #include "instr.h"
+#include "instr-enum.h"
 #include "classe.h"
 #include "mudarclasse.h"
 #include "misc.h"

@@ -12,6 +12,8 @@
 #include <string.h>
 #include <assert.h>
 #include "instr.h"
+#include "instr-enum.h"
+#include "instr-func.h"
 #include "objeto.h"
 #include "variavel.h"
 #include "random.h"
@@ -396,5 +398,5 @@ static inline bool StaticVarTroca(TVariavel * v, int valor)
 }
 
 //----------------------------------------------------------------------------
-bool Instr::FuncVarTroca(TVariavel * v) { return StaticVarTroca(v, 0); }
-bool Instr::FuncVarTrocaCod(TVariavel * v) { return StaticVarTroca(v, 1); }
+bool InstrFunc::FuncVarTroca(TVariavel * v) { return StaticVarTroca(v, 0); }
+bool InstrFunc::FuncVarTrocaCod(TVariavel * v) { return StaticVarTroca(v, 1); }

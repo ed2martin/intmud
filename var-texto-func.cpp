@@ -15,6 +15,7 @@
 #include "variavel.h"
 #include "procurar.h"
 #include "instr.h"
+#include "instr-enum.h"
 #include "misc.h"
 #include "sha1.h"
 #include "md5.h"

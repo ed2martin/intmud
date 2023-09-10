@@ -15,6 +15,7 @@
 #include "console.h"
 #include "variavel.h"
 #include "instr.h"
+#include "instr-enum.h"
 #include "misc.h"
 
 #define CONSOLE_MAX 1024

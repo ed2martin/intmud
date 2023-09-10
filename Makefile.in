@@ -109,7 +109,9 @@ am_intmud_OBJECTS = main.$(OBJEXT) classe.$(OBJEXT) objeto.$(OBJEXT) \
 	instr-exec.$(OBJEXT) instr-func.$(OBJEXT) \
 	instr-vartroca.$(OBJEXT) instr-misc.$(OBJEXT) socket.$(OBJEXT) \
 	console.$(OBJEXT) var-telatxt.$(OBJEXT) var-socket.$(OBJEXT) \
-	var-serv.$(OBJEXT) var-outros.$(OBJEXT) var-listaobj.$(OBJEXT) \
+	var-serv.$(OBJEXT) var-ref.$(OBJEXT) var-incdec.$(OBJEXT) \
+	var-inttempo.$(OBJEXT) var-intexec.$(OBJEXT) \
+	var-outros.$(OBJEXT) var-listaobj.$(OBJEXT) \
 	var-texto.$(OBJEXT) var-texto-bloco.$(OBJEXT) \
 	var-texto-func.$(OBJEXT) var-textovar.$(OBJEXT) \
 	var-textoobj.$(OBJEXT) var-nomeobj.$(OBJEXT) var-log.$(OBJEXT) \
@@ -151,9 +153,11 @@ am__depfiles_remade = ./$(DEPDIR)/arqler.Po ./$(DEPDIR)/arqmapa.Po \
 	./$(DEPDIR)/var-arqmem.Po ./$(DEPDIR)/var-arqprog.Po \
 	./$(DEPDIR)/var-datahora.Po ./$(DEPDIR)/var-debug.Po \
 	./$(DEPDIR)/var-dir.Po ./$(DEPDIR)/var-exec.Po \
-	./$(DEPDIR)/var-indiceobj.Po ./$(DEPDIR)/var-listaobj.Po \
-	./$(DEPDIR)/var-log.Po ./$(DEPDIR)/var-nomeobj.Po \
-	./$(DEPDIR)/var-outros.Po ./$(DEPDIR)/var-prog.Po \
+	./$(DEPDIR)/var-incdec.Po ./$(DEPDIR)/var-indiceobj.Po \
+	./$(DEPDIR)/var-intexec.Po ./$(DEPDIR)/var-inttempo.Po \
+	./$(DEPDIR)/var-listaobj.Po ./$(DEPDIR)/var-log.Po \
+	./$(DEPDIR)/var-nomeobj.Po ./$(DEPDIR)/var-outros.Po \
+	./$(DEPDIR)/var-prog.Po ./$(DEPDIR)/var-ref.Po \
 	./$(DEPDIR)/var-sav.Po ./$(DEPDIR)/var-serv.Po \
 	./$(DEPDIR)/var-socket.Po ./$(DEPDIR)/var-telatxt.Po \
 	./$(DEPDIR)/var-texto-bloco.Po ./$(DEPDIR)/var-texto-func.Po \
@@ -332,15 +336,17 @@ EXTRA_DIST = doc/* mud/*.int mud/*/*.txt mud/*/*.int casa/*.int casa/*.txt teste
 intmud_SOURCES = main.cpp classe.cpp classe.h objeto.cpp objeto.h \
 	variavel.cpp variavel.h arqmapa.cpp arqmapa.h instr-codif.cpp \
 	instr-decod.cpp instr-mostra.cpp instr-exec.cpp instr-func.cpp \
-	instr-vartroca.cpp instr-misc.cpp instr.h socket.cpp socket.h \
-	console.cpp console.h var-telatxt.cpp var-telatxt.h \
-	var-socket.cpp var-socket.h var-serv.cpp var-serv.h \
-	var-outros.cpp var-outros.h var-listaobj.cpp var-listaobj.h \
-	var-texto.cpp var-texto-bloco.cpp var-texto-func.cpp \
-	var-texto.h var-textovar.cpp var-textovar.h var-textoobj.cpp \
-	var-textoobj.h var-nomeobj.cpp var-nomeobj.h var-log.cpp \
-	var-log.h var-sav.cpp var-sav.h var-txt.cpp var-txt.h \
-	var-arqmem.cpp var-arqmem.h var-dir.cpp var-dir.h \
+	instr-vartroca.cpp instr-misc.cpp instr.h instr-enum.h \
+	instr-func.h socket.cpp socket.h console.cpp console.h \
+	var-telatxt.cpp var-telatxt.h var-socket.cpp var-socket.h \
+	var-serv.cpp var-serv.h var-ref.cpp var-ref.h var-incdec.cpp \
+	var-incdec.h var-inttempo.cpp var-inttempo.h var-intexec.cpp \
+	var-intexec.h var-outros.cpp var-outros.h var-listaobj.cpp \
+	var-listaobj.h var-texto.cpp var-texto-bloco.cpp \
+	var-texto-func.cpp var-texto.h var-textovar.cpp var-textovar.h \
+	var-textoobj.cpp var-textoobj.h var-nomeobj.cpp var-nomeobj.h \
+	var-log.cpp var-log.h var-sav.cpp var-sav.h var-txt.cpp \
+	var-txt.h var-arqmem.cpp var-arqmem.h var-dir.cpp var-dir.h \
 	var-indiceobj.cpp var-indiceobj.h var-prog.cpp var-prog.h \
 	var-arqprog.cpp var-arqprog.h var-debug.cpp var-debug.h \
 	getrss.cpp var-datahora.cpp var-datahora.h exec.cpp exec.h \
@@ -484,12 +490,16 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/var-debug.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/var-dir.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/var-exec.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/var-incdec.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/var-indiceobj.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/var-intexec.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/var-inttempo.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/var-listaobj.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/var-log.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/var-nomeobj.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/var-outros.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/var-prog.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/var-ref.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/var-sav.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/var-serv.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/var-socket.Po@am__quote@ # am--include-marker
@@ -824,12 +834,16 @@ distclean: distclean-am
 	-rm -f ./$(DEPDIR)/var-debug.Po
 	-rm -f ./$(DEPDIR)/var-dir.Po
 	-rm -f ./$(DEPDIR)/var-exec.Po
+	-rm -f ./$(DEPDIR)/var-incdec.Po
 	-rm -f ./$(DEPDIR)/var-indiceobj.Po
+	-rm -f ./$(DEPDIR)/var-intexec.Po
+	-rm -f ./$(DEPDIR)/var-inttempo.Po
 	-rm -f ./$(DEPDIR)/var-listaobj.Po
 	-rm -f ./$(DEPDIR)/var-log.Po
 	-rm -f ./$(DEPDIR)/var-nomeobj.Po
 	-rm -f ./$(DEPDIR)/var-outros.Po
 	-rm -f ./$(DEPDIR)/var-prog.Po
+	-rm -f ./$(DEPDIR)/var-ref.Po
 	-rm -f ./$(DEPDIR)/var-sav.Po
 	-rm -f ./$(DEPDIR)/var-serv.Po
 	-rm -f ./$(DEPDIR)/var-socket.Po
@@ -917,12 +931,16 @@ maintainer-clean: maintainer-clean-am
 	-rm -f ./$(DEPDIR)/var-debug.Po
 	-rm -f ./$(DEPDIR)/var-dir.Po
 	-rm -f ./$(DEPDIR)/var-exec.Po
+	-rm -f ./$(DEPDIR)/var-incdec.Po
 	-rm -f ./$(DEPDIR)/var-indiceobj.Po
+	-rm -f ./$(DEPDIR)/var-intexec.Po
+	-rm -f ./$(DEPDIR)/var-inttempo.Po
 	-rm -f ./$(DEPDIR)/var-listaobj.Po
 	-rm -f ./$(DEPDIR)/var-log.Po
 	-rm -f ./$(DEPDIR)/var-nomeobj.Po
 	-rm -f ./$(DEPDIR)/var-outros.Po
 	-rm -f ./$(DEPDIR)/var-prog.Po
+	-rm -f ./$(DEPDIR)/var-ref.Po
 	-rm -f ./$(DEPDIR)/var-sav.Po
 	-rm -f ./$(DEPDIR)/var-serv.Po
 	-rm -f ./$(DEPDIR)/var-socket.Po

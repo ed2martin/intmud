@@ -29,6 +29,7 @@
 #include "objeto.h"
 #include "arqler.h"
 #include "instr.h"
+#include "instr-enum.h"
 #include "misc.h"
 #include "random.h"
 #include "sha1.h"

@@ -14,6 +14,7 @@
 #include "var-texto.h"
 #include "variavel.h"
 #include "instr.h"
+#include "instr-enum.h"
 #include "random.h"
 #include "misc.h"
 

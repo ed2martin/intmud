@@ -15,6 +15,7 @@
 #include "variavel.h"
 #include "objeto.h"
 #include "instr.h"
+#include "instr-enum.h"
 #include "random.h"
 #include "misc.h"
 

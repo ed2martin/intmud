@@ -23,6 +23,7 @@
 #include "objeto.h"
 #include "variavel.h"
 #include "instr.h"
+#include "instr-enum.h"
 #include "misc.h"
 
 TVarDebug * TVarDebug::Inicio = nullptr;

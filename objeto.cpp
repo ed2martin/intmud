@@ -14,11 +14,12 @@
 #include "classe.h"
 #include "objeto.h"
 #include "variavel.h"
-#include "var-outros.h"
+#include "var-ref.h"
 #include "var-listaobj.h"
 #include "var-textoobj.h"
 #include "var-textovar.h"
 #include "instr.h"
+#include "instr-enum.h"
 
 //#define DEBUG_CRIAR // Mostra objetos criados e apagados
 

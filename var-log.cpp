@@ -16,6 +16,7 @@
 #include "var-log.h"
 #include "variavel.h"
 #include "instr.h"
+#include "instr-enum.h"
 #include "misc.h"
 
 int TVarLog::Tempo = 20;

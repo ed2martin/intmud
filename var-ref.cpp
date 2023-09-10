@@ -1,0 +1,94 @@
+/* Este arquivo é software livre; você pode redistribuir e/ou
+ * modificar nos termos das licenças GPL ou LGPL. Vide arquivos
+ * COPYING e COPYING2.
+ *
+ * This file is free software; you can redistribute it and/or
+ * modify it under the terms of the GPL or the LGP licenses.
+ * See files COPYING e COPYING2.
+ */
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <assert.h>
+#include "variavel.h"
+#include "objeto.h"
+#include "var-ref.h"
+
+//------------------------------------------------------------------------------
+/*
+void DebugRef()
+{
+ for (TClasse * cl = TClasse::RBfirst(); cl; cl=TClasse::RBnext(cl))
+ {
+  for (TObjeto * obj = cl->ObjetoIni; obj; obj=obj->Depois)
+  {
+   TVarRef * vantes = nullptr;
+   for (TVarRef * v1 = obj->VarRefIni; v1; v1=v1->Depois)
+   {
+    assert(v1->Pont == obj);
+    assert(v1->Antes == vantes);
+    vantes = v1;
+   }
+  }
+ }
+}
+
+//------------------------------------------------------------------------------
+void MostraRef(TVarRef * r)
+{
+    printf("  this = %p\n", r);
+    if (r == nullptr)
+        return;
+    printf("  Antes = %p\n", r->Antes);
+    printf("  Depois = %p\n", r->Depois);
+    printf("  Pont = %p\n", r->Pont);
+    if (r->Pont)
+        printf("  Pont->VarRefIni = %p\n", r->Pont->VarRefIni);
+    if (r->Antes)
+        printf("  Antes->Depois = %p\n", r->Antes->Depois);
+    if (r->Depois)
+        printf("  Depois->Antes = %p\n", r->Depois->Antes);
+    fflush(stdout);
+}
+*/
+
+//------------------------------------------------------------------------------
+void TVarRef::MudarPont(TObjeto * obj)
+{
+// Verifica se o endereço vai mudar
+    if (obj == Pont)
+        return;
+    //printf("ANTES\n"); MostraRef(this); fflush(stdout);
+// Retira da lista
+    if (Pont)
+    {
+        (Antes ? Antes->Depois : Pont->VarRefIni) = Depois;
+        if (Depois)
+            Depois->Antes = Antes;
+    }
+// Coloca na lista
+    if (obj)
+    {
+        Antes = nullptr;
+        Depois = obj->VarRefIni;
+        if (Depois)
+            Depois->Antes = this;
+        obj->VarRefIni = this;
+    }
+// Atualiza ponteiro
+    Pont = obj;
+    //printf("DEPOIS\n"); MostraRef(this); fflush(stdout);
+}
+
+//------------------------------------------------------------------------------
+void TVarRef::Mover(TVarRef * destino)
+{
+    if (Pont)
+    {
+        (Antes ? Antes->Depois : Pont->VarRefIni) = destino;
+        if (Depois)
+            Depois->Antes = destino;
+    }
+    memmove(destino, this, sizeof(TVarRef));
+}

@@ -35,6 +35,7 @@
 #include "classe.h"
 #include "arqmapa.h"
 #include "instr.h"
+#include "instr-enum.h"
 #include "variavel.h"
 #include "socket.h"
 #include "console.h"
@@ -42,7 +43,8 @@
 #include "var-exec.h"
 #include "var-sav.h"
 #include "var-serv.h"
-#include "var-outros.h"
+#include "var-intexec.h"
+#include "var-inttempo.h"
 #include "var-listaobj.h"
 #include "var-texto.h"
 #include "var-textovar.h"
@@ -51,6 +53,8 @@
 #include "var-arqprog.h"
 #include "random.h"
 #include "misc.h"
+
+#define TESPERA_MAX 30  // Tempo máximo que pode esperar (10 = 1 segundo)
 
 // ulimit -S -c 200000
 //#define CORE    // Para gerar arquivos core

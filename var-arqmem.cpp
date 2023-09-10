@@ -15,6 +15,7 @@
 #include "variavel.h"
 #include "instr.h"
 #include "misc.h"
+#include "instr-enum.h"
 
 //#define DEBUG  // Checar arqmem e usar blocos de tamanho pequeno
 

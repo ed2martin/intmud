@@ -30,6 +30,7 @@
 #include "classe.h"
 #include "objeto.h"
 #include "instr.h"
+#include "instr-enum.h"
 #include "misc.h"
 
 //#define DEBUG_CRIAR  // Mostra objetos criados e apagados

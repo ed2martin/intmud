@@ -13,6 +13,8 @@
 #include <math.h>
 #include <assert.h>
 #include "instr.h"
+#include "instr-enum.h"
+#include "instr-func.h"
 #include "classe.h"
 #include "objeto.h"
 #include "variavel.h"
@@ -25,8 +27,10 @@
 // Funções predefinidas do programa interpretado
 // Vide TListaFunc, em instr.h
 
+using namespace Instr;
+
 //----------------------------------------------------------------------------
-// Usado em bool Instr::FuncTxt2() para copiar caracteres de cores
+// Usado em bool InstrFunc::FuncTxt2() para copiar caracteres de cores
 #define FUNCTXT_CORES \
     case ex_barra_b:  \
         *destino++ = *txt++;  \
@@ -59,26 +63,26 @@ static inline bool StaticArg(TVariavel * v, int valor)
 }
 
 //----------------------------------------------------------------------------
-bool Instr::FuncArg0(TVariavel * v) { return StaticArg(v, 0); }
-bool Instr::FuncArg1(TVariavel * v) { return StaticArg(v, 1); }
-bool Instr::FuncArg2(TVariavel * v) { return StaticArg(v, 2); }
-bool Instr::FuncArg3(TVariavel * v) { return StaticArg(v, 3); }
-bool Instr::FuncArg4(TVariavel * v) { return StaticArg(v, 4); }
-bool Instr::FuncArg5(TVariavel * v) { return StaticArg(v, 5); }
-bool Instr::FuncArg6(TVariavel * v) { return StaticArg(v, 6); }
-bool Instr::FuncArg7(TVariavel * v) { return StaticArg(v, 7); }
-bool Instr::FuncArg8(TVariavel * v) { return StaticArg(v, 8); }
-bool Instr::FuncArg9(TVariavel * v) { return StaticArg(v, 9); }
+bool InstrFunc::FuncArg0(TVariavel * v) { return StaticArg(v, 0); }
+bool InstrFunc::FuncArg1(TVariavel * v) { return StaticArg(v, 1); }
+bool InstrFunc::FuncArg2(TVariavel * v) { return StaticArg(v, 2); }
+bool InstrFunc::FuncArg3(TVariavel * v) { return StaticArg(v, 3); }
+bool InstrFunc::FuncArg4(TVariavel * v) { return StaticArg(v, 4); }
+bool InstrFunc::FuncArg5(TVariavel * v) { return StaticArg(v, 5); }
+bool InstrFunc::FuncArg6(TVariavel * v) { return StaticArg(v, 6); }
+bool InstrFunc::FuncArg7(TVariavel * v) { return StaticArg(v, 7); }
+bool InstrFunc::FuncArg8(TVariavel * v) { return StaticArg(v, 8); }
+bool InstrFunc::FuncArg9(TVariavel * v) { return StaticArg(v, 9); }
 
 //----------------------------------------------------------------------------
-bool Instr::FuncArgs(TVariavel * v)
+bool InstrFunc::FuncArgs(TVariavel * v)
 {
     ApagarVar(v);
     return CriarVarInt(FuncAtual->numarg);
 }
 
 //----------------------------------------------------------------------------
-bool Instr::FuncCriar(TVariavel * v)
+bool InstrFunc::FuncCriar(TVariavel * v)
 {
     if (VarAtual <= v)
         return false;
@@ -142,7 +146,7 @@ bool Instr::FuncCriar(TVariavel * v)
 }
 
 //----------------------------------------------------------------------------
-bool Instr::FuncApagar(TVariavel * v)
+bool InstrFunc::FuncApagar(TVariavel * v)
 {
     for (TVariavel * var = v + 1; var <= VarAtual; var++)
     {
@@ -154,14 +158,14 @@ bool Instr::FuncApagar(TVariavel * v)
 }
 
 //----------------------------------------------------------------------------
-bool Instr::FuncMatPi(TVariavel * v)
+bool InstrFunc::FuncMatPi(TVariavel * v)
 {
     ApagarVar(v);
     return CriarVarDouble(M_PI);
 }
 
 //----------------------------------------------------------------------------
-bool Instr::FuncEste(TVariavel * v)
+bool InstrFunc::FuncEste(TVariavel * v)
 {
     ApagarVar(v);
     return Instr::CriarVarObj(FuncAtual->este);
@@ -178,21 +182,21 @@ static inline double NumeroDouble(TVariavel * v)
 }
 
 //----------------------------------------------------------------------------
-bool Instr::FuncIntPos(TVariavel * v)
+bool InstrFunc::FuncIntPos(TVariavel * v)
 {
     double numero = NumeroDouble(v);
     return CriarVarDouble(numero < 0 ? 0 : numero);
 }
 
 //----------------------------------------------------------------------------
-bool Instr::FuncIntAbs(TVariavel * v)
+bool InstrFunc::FuncIntAbs(TVariavel * v)
 {
     double numero = NumeroDouble(v);
     return CriarVarDouble(numero < 0 ? -numero : numero);
 }
 
 //----------------------------------------------------------------------------
-bool Instr::FuncInt(TVariavel * v)
+bool InstrFunc::FuncInt(TVariavel * v)
 {
     double numero = NumeroDouble(v);
     numero = round(numero);
@@ -202,7 +206,7 @@ bool Instr::FuncInt(TVariavel * v)
 }
 
 //----------------------------------------------------------------------------
-bool Instr::FuncIntDiv(TVariavel * v)
+bool InstrFunc::FuncIntDiv(TVariavel * v)
 {
     double numero = NumeroDouble(v);
     numero = trunc(numero);
@@ -212,98 +216,98 @@ bool Instr::FuncIntDiv(TVariavel * v)
 }
 
 //----------------------------------------------------------------------------
-bool Instr::FuncMatSin(TVariavel * v)
+bool InstrFunc::FuncMatSin(TVariavel * v)
 {
     double numero = NumeroDouble(v);
     return CriarVarDouble(sin(numero));
 }
 
 //----------------------------------------------------------------------------
-bool Instr::FuncMatCos(TVariavel * v)
+bool InstrFunc::FuncMatCos(TVariavel * v)
 {
     double numero = NumeroDouble(v);
     return CriarVarDouble(cos(numero));
 }
 
 //----------------------------------------------------------------------------
-bool Instr::FuncMatTan(TVariavel * v)
+bool InstrFunc::FuncMatTan(TVariavel * v)
 {
     double numero = NumeroDouble(v);
     return CriarVarDouble(tan(numero));
 }
 
 //----------------------------------------------------------------------------
-bool Instr::FuncMatAsin(TVariavel * v)
+bool InstrFunc::FuncMatAsin(TVariavel * v)
 {
     double numero = NumeroDouble(v);
     return CriarVarDouble(asin(numero));
 }
 
 //----------------------------------------------------------------------------
-bool Instr::FuncMatAcos(TVariavel * v)
+bool InstrFunc::FuncMatAcos(TVariavel * v)
 {
     double numero = NumeroDouble(v);
     return CriarVarDouble(acos(numero));
 }
 
 //----------------------------------------------------------------------------
-bool Instr::FuncMatAtan(TVariavel * v)
+bool InstrFunc::FuncMatAtan(TVariavel * v)
 {
     double numero = NumeroDouble(v);
     return CriarVarDouble(atan(numero));
 }
 
 //----------------------------------------------------------------------------
-bool Instr::FuncMatExp(TVariavel * v)
+bool InstrFunc::FuncMatExp(TVariavel * v)
 {
     double numero = NumeroDouble(v);
     return CriarVarDouble(exp(numero));
 }
 
 //----------------------------------------------------------------------------
-bool Instr::FuncMatLog(TVariavel * v)
+bool InstrFunc::FuncMatLog(TVariavel * v)
 {
     double numero = NumeroDouble(v);
     return CriarVarDouble(log(numero));
 }
 
 //----------------------------------------------------------------------------
-bool Instr::FuncMatRaiz(TVariavel * v)
+bool InstrFunc::FuncMatRaiz(TVariavel * v)
 {
     double numero = NumeroDouble(v);
     return CriarVarDouble(sqrt(numero));
 }
 
 //----------------------------------------------------------------------------
-bool Instr::FuncMatCima(TVariavel * v)
+bool InstrFunc::FuncMatCima(TVariavel * v)
 {
     double numero = NumeroDouble(v);
     return CriarVarDouble(ceil(numero));
 }
 
 //----------------------------------------------------------------------------
-bool Instr::FuncMatBaixo(TVariavel * v)
+bool InstrFunc::FuncMatBaixo(TVariavel * v)
 {
     double numero = NumeroDouble(v);
     return CriarVarDouble(floor(numero));
 }
 
 //----------------------------------------------------------------------------
-bool Instr::FuncMatRad(TVariavel * v)
+bool InstrFunc::FuncMatRad(TVariavel * v)
 {
     double numero = NumeroDouble(v);
     return CriarVarDouble(numero / 180 * M_PI);
 }
 
 //----------------------------------------------------------------------------
-bool Instr::FuncMatDeg(TVariavel * v)
+bool InstrFunc::FuncMatDeg(TVariavel * v)
 {
     double numero = NumeroDouble(v);
     return CriarVarDouble(numero / M_PI * 180);
 }
 
 //----------------------------------------------------------------------------
-bool Instr::FuncMatPow(TVariavel * v)
+bool InstrFunc::FuncMatPow(TVariavel * v)
 {
     if (VarAtual != v + 2)
         return false;
@@ -313,7 +317,7 @@ bool Instr::FuncMatPow(TVariavel * v)
 }
 
 //----------------------------------------------------------------------------
-bool Instr::FuncIntBit(TVariavel * v)
+bool InstrFunc::FuncIntBit(TVariavel * v)
 {
     int result = 0;
     for (TVariavel * var = v + 1; var <= VarAtual; var++)
@@ -342,7 +346,7 @@ bool Instr::FuncIntBit(TVariavel * v)
 }
 
 //----------------------------------------------------------------------------
-bool Instr::FuncTxtBit(TVariavel * v)
+bool InstrFunc::FuncTxtBit(TVariavel * v)
 {
     if (VarAtual < v + 1)
         return false;
@@ -369,7 +373,7 @@ bool Instr::FuncTxtBit(TVariavel * v)
 }
 
 //----------------------------------------------------------------------------
-bool Instr::FuncIntBitH(TVariavel * v)
+bool InstrFunc::FuncIntBitH(TVariavel * v)
 {
     char mens[BUF_MENS];
     int  inicio = BUF_MENS - 1;
@@ -415,7 +419,7 @@ bool Instr::FuncIntBitH(TVariavel * v)
 }
 
 //----------------------------------------------------------------------------
-bool Instr::FuncTxtBitH(TVariavel * v)
+bool InstrFunc::FuncTxtBitH(TVariavel * v)
 {
     char mens[BUF_MENS];    // Resultado
     char * destino = mens;
@@ -466,7 +470,7 @@ bool Instr::FuncTxtBitH(TVariavel * v)
 }
 
 //----------------------------------------------------------------------------
-bool Instr::FuncTxtHex(TVariavel * v)
+bool InstrFunc::FuncTxtHex(TVariavel * v)
 {
     if (VarAtual < v + 2)
         return false;
@@ -493,7 +497,7 @@ bool Instr::FuncTxtHex(TVariavel * v)
 }
 
 //----------------------------------------------------------------------------
-bool Instr::FuncIntMax(TVariavel * v)
+bool InstrFunc::FuncIntMax(TVariavel * v)
 {
     if (VarAtual <= v + 1)
     {
@@ -516,7 +520,7 @@ bool Instr::FuncIntMax(TVariavel * v)
 }
 
 //----------------------------------------------------------------------------
-bool Instr::FuncIntMin(TVariavel * v)
+bool InstrFunc::FuncIntMin(TVariavel * v)
 {
     if (VarAtual <= v + 1)
     {
@@ -539,7 +543,7 @@ bool Instr::FuncIntMin(TVariavel * v)
 }
 
 //----------------------------------------------------------------------------
-bool Instr::FuncRand(TVariavel * v)
+bool InstrFunc::FuncRand(TVariavel * v)
 {
     int result = 0;
     if (VarAtual == v + 1)
@@ -579,7 +583,7 @@ bool Instr::FuncRand(TVariavel * v)
 }
 
 //----------------------------------------------------------------------------
-bool Instr::FuncRef(TVariavel * v)
+bool InstrFunc::FuncRef(TVariavel * v)
 {
     TObjeto * obj = nullptr;
     for (TVariavel * var = v + 1; var <= VarAtual && obj == nullptr; var++)
@@ -589,7 +593,7 @@ bool Instr::FuncRef(TVariavel * v)
 }
 
 //----------------------------------------------------------------------------
-bool Instr::FuncTxtNum(TVariavel * v)
+bool InstrFunc::FuncTxtNum(TVariavel * v)
 {
     char mens[80];      // Resultado
     int  flags = 0;     // bit 0=1 -> usar notação científica
@@ -693,7 +697,7 @@ bool Instr::FuncTxtNum(TVariavel * v)
 }
 
 //----------------------------------------------------------------------------
-bool Instr::FuncIntSub(TVariavel * v)
+bool InstrFunc::FuncIntSub(TVariavel * v)
 {
     int total = 0;
     if (VarAtual >= v + 1)
@@ -712,7 +716,7 @@ bool Instr::FuncIntSub(TVariavel * v)
 }
 
 //----------------------------------------------------------------------------
-bool Instr::FuncIntSubLin(TVariavel * v)
+bool InstrFunc::FuncIntSubLin(TVariavel * v)
 {
     int total = 0;
     if (VarAtual >= v + 1)
@@ -809,12 +813,12 @@ static inline bool StaticTxt(TVariavel * v, int valor)
 }
 
 //----------------------------------------------------------------------------
-bool Instr::FuncTxt(TVariavel * v) { return StaticTxt(v, 0); }
-bool Instr::FuncTxtSub(TVariavel * v) { return StaticTxt(v, 1); }
-bool Instr::FuncTxtSubLin(TVariavel * v) { return StaticTxt(v, 2); }
+bool InstrFunc::FuncTxt(TVariavel * v) { return StaticTxt(v, 0); }
+bool InstrFunc::FuncTxtSub(TVariavel * v) { return StaticTxt(v, 1); }
+bool InstrFunc::FuncTxtSubLin(TVariavel * v) { return StaticTxt(v, 2); }
 
 //----------------------------------------------------------------------------
-bool Instr::FuncTxtFim(TVariavel * v)
+bool InstrFunc::FuncTxtFim(TVariavel * v)
 {
     int tam = 0x10000;  // Tamanho
     char mens[BUF_MENS];    // Resultado
@@ -842,7 +846,7 @@ bool Instr::FuncTxtFim(TVariavel * v)
 }
 
 //----------------------------------------------------------------------------
-bool Instr::FuncTxt1(TVariavel * v)
+bool InstrFunc::FuncTxt1(TVariavel * v)
 {
     const char * txt = (VarAtual >= v + 1 ? v[1].getTxt() : "");
     char mens[BUF_MENS];
@@ -856,7 +860,7 @@ bool Instr::FuncTxt1(TVariavel * v)
 }
 
 //----------------------------------------------------------------------------
-bool Instr::FuncTxt2(TVariavel * v)
+bool InstrFunc::FuncTxt2(TVariavel * v)
 {
     const char * txt = (VarAtual >= v + 1 ? v[1].getTxt() : "");
     char mens[BUF_MENS];
@@ -871,7 +875,7 @@ bool Instr::FuncTxt2(TVariavel * v)
 }
 
 //----------------------------------------------------------------------------
-bool Instr::FuncTxtCor(TVariavel * v)
+bool InstrFunc::FuncTxtCor(TVariavel * v)
 {
     const char * txt = (VarAtual >= v + 1 ? v[1].getTxt() : "");
     char mens[BUF_MENS];
@@ -906,7 +910,7 @@ bool Instr::FuncTxtCor(TVariavel * v)
 }
 
 //----------------------------------------------------------------------------
-bool Instr::FuncTxtMai(TVariavel * v)
+bool InstrFunc::FuncTxtMai(TVariavel * v)
 {
     const char * txt = (VarAtual >= v + 1 ? v[1].getTxt() : "");
     char mens[BUF_MENS];
@@ -922,7 +926,7 @@ bool Instr::FuncTxtMai(TVariavel * v)
 }
 
 //----------------------------------------------------------------------------
-bool Instr::FuncTxtMaiIni(TVariavel * v)
+bool InstrFunc::FuncTxtMaiIni(TVariavel * v)
 {
     const char * txt = (VarAtual >= v + 1 ? v[1].getTxt() : "");
     char mens[BUF_MENS];
@@ -950,7 +954,7 @@ bool Instr::FuncTxtMaiIni(TVariavel * v)
 }
 
 //----------------------------------------------------------------------------
-bool Instr::FuncTxtMin(TVariavel * v)
+bool InstrFunc::FuncTxtMin(TVariavel * v)
 {
     const char * txt = (VarAtual >= v + 1 ? v[1].getTxt() : "");
     char mens[BUF_MENS];
@@ -966,7 +970,7 @@ bool Instr::FuncTxtMin(TVariavel * v)
 }
 
 //----------------------------------------------------------------------------
-bool Instr::FuncTxtMaiMin(TVariavel * v)
+bool InstrFunc::FuncTxtMaiMin(TVariavel * v)
 {
     const char * txt = (VarAtual >= v + 1 ? v[1].getTxt() : "");
     char mens[BUF_MENS];
@@ -998,7 +1002,7 @@ bool Instr::FuncTxtMaiMin(TVariavel * v)
 }
 
 //----------------------------------------------------------------------------
-bool Instr::FuncTxtFiltro(TVariavel * v)
+bool InstrFunc::FuncTxtFiltro(TVariavel * v)
 {
     const char * txt = (VarAtual >= v + 1 ? v[1].getTxt() : "");
     char mens[BUF_MENS];
@@ -1009,7 +1013,7 @@ bool Instr::FuncTxtFiltro(TVariavel * v)
 }
 
 //----------------------------------------------------------------------------
-bool Instr::FuncTxtSha1Bin(TVariavel * v)
+bool InstrFunc::FuncTxtSha1Bin(TVariavel * v)
 {
     const char * txt = (VarAtual >= v + 1 ? v[1].getTxt() : "");
     char mens[BUF_MENS];
@@ -1041,7 +1045,7 @@ bool Instr::FuncTxtSha1Bin(TVariavel * v)
 }
 
 //----------------------------------------------------------------------------
-bool Instr::FuncTxtSha1(TVariavel * v)
+bool InstrFunc::FuncTxtSha1(TVariavel * v)
 {
     const char * txt = (VarAtual >= v + 1 ? v[1].getTxt() : "");
     char mens[BUF_MENS];
@@ -1063,7 +1067,7 @@ bool Instr::FuncTxtSha1(TVariavel * v)
 }
 
 //----------------------------------------------------------------------------
-bool Instr::FuncTxtMd5(TVariavel * v)
+bool InstrFunc::FuncTxtMd5(TVariavel * v)
 {
     const char * txt = (VarAtual >= v + 1 ? v[1].getTxt() : "");
     char mens[BUF_MENS];
@@ -1085,7 +1089,7 @@ bool Instr::FuncTxtMd5(TVariavel * v)
 }
 
 //----------------------------------------------------------------------------
-bool Instr::FuncTxtNome(TVariavel * v)
+bool InstrFunc::FuncTxtNome(TVariavel * v)
 {
     const char * txt = (VarAtual >= v + 1 ? v[1].getTxt() : "");
     char mens[BUF_MENS];
@@ -1097,7 +1101,7 @@ bool Instr::FuncTxtNome(TVariavel * v)
 
 
 //----------------------------------------------------------------------------
-bool Instr::FuncTxtCod(TVariavel * v)
+bool InstrFunc::FuncTxtCod(TVariavel * v)
 {
     const char * txt = (VarAtual >= v + 1 ? v[1].getTxt() : "");
     char mens[BUF_MENS];
@@ -1116,7 +1120,7 @@ bool Instr::FuncTxtCod(TVariavel * v)
 }
 
 //----------------------------------------------------------------------------
-bool Instr::FuncTxtDec(TVariavel * v)
+bool InstrFunc::FuncTxtDec(TVariavel * v)
 {
     const char * txt = (VarAtual >= v + 1 ? v[1].getTxt() : "");
     char mens[BUF_MENS];
@@ -1140,7 +1144,7 @@ bool Instr::FuncTxtDec(TVariavel * v)
 }
 
 //----------------------------------------------------------------------------
-bool Instr::FuncTxtVis(TVariavel * v)
+bool InstrFunc::FuncTxtVis(TVariavel * v)
 {
     const char * txt = (VarAtual >= v + 1 ? v[1].getTxt() : "");
     char mens[BUF_MENS];
@@ -1171,7 +1175,7 @@ bool Instr::FuncTxtVis(TVariavel * v)
 }
 
 //----------------------------------------------------------------------------
-bool Instr::FuncTxtInvis(TVariavel * v)
+bool InstrFunc::FuncTxtInvis(TVariavel * v)
 {
     const char * txt = (VarAtual >= v + 1 ? v[1].getTxt() : "");
     char mens[BUF_MENS];
@@ -1204,7 +1208,7 @@ bool Instr::FuncTxtInvis(TVariavel * v)
 }
 
 //----------------------------------------------------------------------------
-bool Instr::FuncTxtUrlCod(TVariavel * v)
+bool InstrFunc::FuncTxtUrlCod(TVariavel * v)
 {
     const char * txt = (VarAtual >= v + 1 ? v[1].getTxt() : "");
     char mens[BUF_MENS];
@@ -1245,7 +1249,7 @@ bool Instr::FuncTxtUrlCod(TVariavel * v)
 }
 
 //----------------------------------------------------------------------------
-bool Instr::FuncTxtUrlDec(TVariavel * v)
+bool InstrFunc::FuncTxtUrlDec(TVariavel * v)
 {
     const char * txt = (VarAtual >= v + 1 ? v[1].getTxt() : "");
     char mens[BUF_MENS];
@@ -1307,7 +1311,7 @@ bool Instr::FuncTxtUrlDec(TVariavel * v)
 }
 
 //----------------------------------------------------------------------------
-bool Instr::FuncTxtE(TVariavel * v)
+bool InstrFunc::FuncTxtE(TVariavel * v)
 {
     const char * txt = (VarAtual >= v + 1 ? v[1].getTxt() : "");
     char mens[BUF_MENS];
@@ -1322,7 +1326,7 @@ bool Instr::FuncTxtE(TVariavel * v)
 }
 
 //----------------------------------------------------------------------------
-bool Instr::FuncTxtS(TVariavel * v)
+bool InstrFunc::FuncTxtS(TVariavel * v)
 {
     const char * txt = (VarAtual >= v + 1 ? v[1].getTxt() : "");
     char mens[BUF_MENS];
@@ -1337,7 +1341,7 @@ bool Instr::FuncTxtS(TVariavel * v)
 }
 
 //----------------------------------------------------------------------------
-bool Instr::FuncTxtRev(TVariavel * v)
+bool InstrFunc::FuncTxtRev(TVariavel * v)
 {
     const char * txt = (VarAtual >= v + 1 ? v[1].getTxt() : "");
     char mens[BUF_MENS];
@@ -1376,7 +1380,7 @@ bool Instr::FuncTxtRev(TVariavel * v)
 }
 
 //----------------------------------------------------------------------------
-bool Instr::FuncTxtMudaMai(TVariavel * v)
+bool InstrFunc::FuncTxtMudaMai(TVariavel * v)
 {
     const char * txt = "";  // Texto
     char mens[BUF_MENS];    // Resultado
@@ -1430,7 +1434,7 @@ bool Instr::FuncTxtMudaMai(TVariavel * v)
 }
 
 //----------------------------------------------------------------------------
-bool Instr::FuncTxtCopiaMai(TVariavel * v)
+bool InstrFunc::FuncTxtCopiaMai(TVariavel * v)
 {
     char mens[BUF_MENS];    // Resultado
     char * destino = mens;
@@ -1460,7 +1464,7 @@ bool Instr::FuncTxtCopiaMai(TVariavel * v)
 }
 
 //----------------------------------------------------------------------------
-bool Instr::FuncEsp(TVariavel * v)
+bool InstrFunc::FuncEsp(TVariavel * v)
 {
     static char * texto = nullptr;
     int esp = 0;
@@ -1486,7 +1490,7 @@ bool Instr::FuncEsp(TVariavel * v)
 }
 
 //----------------------------------------------------------------------------
-bool Instr::FuncTxtRepete(TVariavel * v)
+bool InstrFunc::FuncTxtRepete(TVariavel * v)
 {
     const char * txt = "";  // Texto
     char mens[BUF_MENS];    // Resultado
@@ -1514,7 +1518,7 @@ bool Instr::FuncTxtRepete(TVariavel * v)
 }
 
 //----------------------------------------------------------------------------
-bool Instr::FuncIntNome(TVariavel * v)
+bool InstrFunc::FuncIntNome(TVariavel * v)
 {
     int valor = verifNome(VarAtual >= v + 1 ? v[1].getTxt() : "");
     ApagarVar(v);
@@ -1522,7 +1526,7 @@ bool Instr::FuncIntNome(TVariavel * v)
 }
 
 //----------------------------------------------------------------------------
-bool Instr::FuncIntSenha(TVariavel * v)
+bool InstrFunc::FuncIntSenha(TVariavel * v)
 {
     int valor = verifSenha(VarAtual >= v + 1 ? v[1].getTxt() : "");
     ApagarVar(v);
@@ -1530,7 +1534,7 @@ bool Instr::FuncIntSenha(TVariavel * v)
 }
 
 //----------------------------------------------------------------------------
-bool Instr::FuncTxtRemove(TVariavel * v)
+bool InstrFunc::FuncTxtRemove(TVariavel * v)
 {
     char mens[BUF_MENS]; // Resultado
     if (VarAtual < v + 2)
@@ -1548,7 +1552,7 @@ bool Instr::FuncTxtRemove(TVariavel * v)
 }
 
 //----------------------------------------------------------------------------
-bool Instr::FuncTxtConv(TVariavel * v)
+bool InstrFunc::FuncTxtConv(TVariavel * v)
 {
     if (VarAtual != v + 2)
         return false;
@@ -1962,7 +1966,7 @@ bool Instr::FuncTxtConv(TVariavel * v)
 }
 
 //----------------------------------------------------------------------------
-bool Instr::FuncTxtChr(TVariavel * v)
+bool InstrFunc::FuncTxtChr(TVariavel * v)
 {
     char mens[2];
     int valor = 0;
@@ -1987,7 +1991,7 @@ bool Instr::FuncTxtChr(TVariavel * v)
 }
 
 //----------------------------------------------------------------------------
-bool Instr::FuncIntChr(TVariavel * v)
+bool InstrFunc::FuncIntChr(TVariavel * v)
 {
     const char * p = "";
     if (VarAtual >= v + 1)
@@ -2077,9 +2081,9 @@ static inline bool StaticIntDist(TVariavel * v, int valor)
 }
 
 //----------------------------------------------------------------------------
-bool Instr::FuncIntDist(TVariavel * v) { return StaticIntDist(v, 0); }
-bool Instr::FuncIntDistMai(TVariavel * v) { return StaticIntDist(v, 1); }
-bool Instr::FuncIntDistDif(TVariavel * v) { return StaticIntDist(v, 2); }
+bool InstrFunc::FuncIntDist(TVariavel * v) { return StaticIntDist(v, 0); }
+bool InstrFunc::FuncIntDistMai(TVariavel * v) { return StaticIntDist(v, 1); }
+bool InstrFunc::FuncIntDistDif(TVariavel * v) { return StaticIntDist(v, 2); }
 
 //----------------------------------------------------------------------------
 static inline bool StaticTxtProc(TVariavel * v, int valor)
@@ -2114,9 +2118,9 @@ static inline bool StaticTxtProc(TVariavel * v, int valor)
 }
 
 //----------------------------------------------------------------------------
-bool Instr::FuncTxtProc(TVariavel * v) { return StaticTxtProc(v, 0); }
-bool Instr::FuncTxtProcMai(TVariavel * v) { return StaticTxtProc(v, 1); }
-bool Instr::FuncTxtProcDif(TVariavel * v) { return StaticTxtProc(v, 2); }
+bool InstrFunc::FuncTxtProc(TVariavel * v) { return StaticTxtProc(v, 0); }
+bool InstrFunc::FuncTxtProcMai(TVariavel * v) { return StaticTxtProc(v, 1); }
+bool InstrFunc::FuncTxtProcDif(TVariavel * v) { return StaticTxtProc(v, 2); }
 
 //----------------------------------------------------------------------------
 static inline bool StaticProcLin(TVariavel * v, int valor)
@@ -2228,9 +2232,9 @@ static inline bool StaticProcLin(TVariavel * v, int valor)
 }
 
 //----------------------------------------------------------------------------
-bool Instr::FuncTxtProcLin(TVariavel * v) { return StaticProcLin(v, 0); }
-bool Instr::FuncTxtProcLinMai(TVariavel * v) { return StaticProcLin(v, 1); }
-bool Instr::FuncTxtProcLinDif(TVariavel * v) { return StaticProcLin(v, 2); }
+bool InstrFunc::FuncTxtProcLin(TVariavel * v) { return StaticProcLin(v, 0); }
+bool InstrFunc::FuncTxtProcLinMai(TVariavel * v) { return StaticProcLin(v, 1); }
+bool InstrFunc::FuncTxtProcLinDif(TVariavel * v) { return StaticProcLin(v, 2); }
 
 //----------------------------------------------------------------------------
 /// Troca texto (txttroca)
@@ -2266,12 +2270,12 @@ static inline bool StaticTxtTroca(TVariavel * v, int valor)
 }
 
 //----------------------------------------------------------------------------
-bool Instr::FuncTxtTroca(TVariavel * v) { return StaticTxtTroca(v, 0); }
-bool Instr::FuncTxtTrocaMai(TVariavel * v) { return StaticTxtTroca(v, 1); }
-bool Instr::FuncTxtTrocaDif(TVariavel * v) { return StaticTxtTroca(v, 2); }
+bool InstrFunc::FuncTxtTroca(TVariavel * v) { return StaticTxtTroca(v, 0); }
+bool InstrFunc::FuncTxtTrocaMai(TVariavel * v) { return StaticTxtTroca(v, 1); }
+bool InstrFunc::FuncTxtTrocaDif(TVariavel * v) { return StaticTxtTroca(v, 2); }
 
 //----------------------------------------------------------------------------
-bool Instr::FuncTxtSepara(TVariavel * v)
+bool InstrFunc::FuncTxtSepara(TVariavel * v)
 {
     const char * txt = "";  // Texto
     char mens[BUF_MENS];    // Resultado
@@ -2368,7 +2372,7 @@ bool Instr::FuncTxtSepara(TVariavel * v)
 }
 
 //----------------------------------------------------------------------------
-bool Instr::FuncObjAntes(TVariavel * v)
+bool InstrFunc::FuncObjAntes(TVariavel * v)
 {
     if (VarAtual < v + 1)
         return false;
@@ -2381,7 +2385,7 @@ bool Instr::FuncObjAntes(TVariavel * v)
 }
 
 //----------------------------------------------------------------------------
-bool Instr::FuncObjDepois(TVariavel * v)
+bool InstrFunc::FuncObjDepois(TVariavel * v)
 {
     if (VarAtual < v + 1)
         return false;
@@ -2394,7 +2398,7 @@ bool Instr::FuncObjDepois(TVariavel * v)
 }
 
 //----------------------------------------------------------------------------
-bool Instr::FuncTotal(TVariavel * v)
+bool InstrFunc::FuncTotal(TVariavel * v)
 {
     int tamanho = 0;
     TObjeto * obj = nullptr;
