@@ -18,7 +18,7 @@
 #include "arqmapa.h"
 #include "console.h"
 #include "var-arqprog.h"
-#include "var-exec.h"
+#include "var-arqexec.h"
 #include "instr.h"
 #include "instr-enum.h"
 #include "misc.h"

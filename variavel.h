@@ -13,11 +13,11 @@ class TTextoTxt;
 class TTextoPos;
 class TTextoVar;
 class TTextoObj;
-class TVarDir;
+class TVarArqDir;
 class TVarArqProg;
-class TVarExec;
-class TVarLog;
-class TVarTxt;
+class TVarArqExec;
+class TVarArqLog;
+class TVarArqTxt;
 class TVarArqMem;
 class TVarNomeObj;
 class TVarTelaTxt;
@@ -153,11 +153,11 @@ public:
         TVarIncDec   * end_incdec;   ///< Instr::cIntInc e Instr::cIntDec
         float        * end_float;    ///< Instr::cReal
         double       * end_double;   ///< Instr::cReal2
-        TVarDir      * end_dir;      ///< Instr::cArqDir
-        TVarLog      * end_log;      ///< Instr::cArqLog
+        TVarArqDir   * end_arqdir;   ///< Instr::cArqDir
+        TVarArqLog   * end_arqlog;   ///< Instr::cArqLog
         TVarArqProg  * end_arqprog;  ///< Instr::cArqProg
-        TVarExec     * end_exec;     ///< Instr::cArqExec
-        TVarTxt      * end_txt;      ///< Instr::cArqTxt
+        TVarArqExec  * end_arqexec;  ///< Instr::cArqExec
+        TVarArqTxt   * end_arqtxt;   ///< Instr::cArqTxt
         TVarArqMem   * end_arqmem;   ///< Instr::cArqMem
         TVarIntTempo * end_inttempo; ///< Instr::cIntTempo
         TVarIntExec  * end_intexec;  ///< Instr::cIntExec

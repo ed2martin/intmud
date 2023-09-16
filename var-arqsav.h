@@ -1,5 +1,5 @@
-#ifndef VAR_SAV_H
-#define VAR_SAV_H
+#ifndef VAR_ARQSAV_H
+#define VAR_ARQSAV_H
 
 //----------------------------------------------------------------------------
 class TVariavel;

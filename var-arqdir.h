@@ -1,5 +1,5 @@
-#ifndef VAR_DIR_H
-#define VAR_DIR_H
+#ifndef VAR_ARQDIR_H
+#define VAR_ARQDIR_H
 
 #include <dirent.h>
 #ifdef __WIN32__
@@ -8,7 +8,7 @@
 
 //----------------------------------------------------------------------------
 class TVariavel;
-class TVarDir /// Variável arqdir
+class TVarArqDir /// Variável arqdir
 {
 public:
     void Criar();

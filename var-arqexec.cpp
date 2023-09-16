@@ -12,7 +12,7 @@
 #include <string.h>
 #include <assert.h>
 #include "exec.h"
-#include "var-exec.h"
+#include "var-arqexec.h"
 #include "variavel.h"
 #include "classe.h"
 #include "objeto.h"
@@ -46,11 +46,11 @@ TArqExec::~TArqExec()
 }
 
 //------------------------------------------------------------------------------
-TObjExec::TObjExec(TVarExec * var)
+TObjExec::TObjExec(TVarArqExec * var)
 {
     assert(var->ObjExec == nullptr);
     var->ObjExec = this;
-    VarExec = var;
+    VarArqExec = var;
     pontEnv = 0;
     dadoRecebido = 0;
 // Coloca na lista ligada
@@ -64,8 +64,8 @@ TObjExec::TObjExec(TVarExec * var)
 //------------------------------------------------------------------------------
 TObjExec::~TObjExec()
 {
-    if (VarExec)
-        VarExec->ObjExec = nullptr;
+    if (VarArqExec)
+        VarArqExec->ObjExec = nullptr;
 // Retira da lista ligada
     (Antes ? Antes->Depois : Inicio) = Depois;
     if (Depois)
@@ -166,17 +166,17 @@ void TObjExec::Receber()
             dadoRecebido = dado;
             bufRec[pontRec] = 0;
             pontRec = 0;
-            if (VarExec)
-                VarExec->GeraEvento("msg", bufRec, dado == 13 || dado == 10);
+            if (VarArqExec)
+                VarArqExec->GeraEvento("msg", bufRec, dado == 13 || dado == 10);
         }
         if (lido != sizeof(buf))
             break;
     }
 
-    if (pontRec != 0 && VarExec != nullptr)
+    if (pontRec != 0 && VarArqExec != nullptr)
     {
         bufRec[pontRec] = 0;
-        VarExec->GeraEvento("msg", bufRec, 0);
+        VarArqExec->GeraEvento("msg", bufRec, 0);
     }
 }
 
@@ -198,13 +198,13 @@ void TObjExec::Fd_Set(fd_set * set_entrada, fd_set * set_saida)
                 ev_env = (obj->pontEnv <= 0);
             }
         // Verifica evento env
-            if (ev_env && obj->VarExec)
+            if (ev_env && obj->VarArqExec)
             {
-                obj->VarExec->GeraEvento("env", nullptr, -1);
+                obj->VarArqExec->GeraEvento("env", nullptr, -1);
                 continue;
             }
         // Checa se deve apagar o objeto, passa para o próximo
-            if (obj->VarExec == nullptr)
+            if (obj->VarArqExec == nullptr)
             {
                 TObjExec * proximo = obj->Depois;
                 delete obj;
@@ -239,40 +239,40 @@ void TObjExec::ProcEventos(fd_set * set_entrada, fd_set * set_saida)
     {
     // Checa se chegou alguma coisa
         obj->Receber();
-        if (obj->VarExec == nullptr)
+        if (obj->VarArqExec == nullptr)
             continue;
 
     // Checa se o programa fechou
         if (obj->InfoProg() == 1)
             continue;
         obj->Receber(); // Recebe dados pendentes
-        if (obj->VarExec)
-            obj->VarExec->GeraEvento("fechou", nullptr, obj->CodRetorno);
-        if (obj->VarExec)
+        if (obj->VarArqExec)
+            obj->VarArqExec->GeraEvento("fechou", nullptr, obj->CodRetorno);
+        if (obj->VarArqExec)
         {
-            obj->VarExec->ObjExec = nullptr; // Indica que o programa fechou
-            obj->VarExec = nullptr;
+            obj->VarArqExec->ObjExec = nullptr; // Indica que o programa fechou
+            obj->VarArqExec = nullptr;
         }
     }
 }
 
 //------------------------------------------------------------------------------
-void TVarExec::Apagar()
+void TVarArqExec::Apagar()
 {
     if (ObjExec)
-        ObjExec->VarExec = nullptr;
+        ObjExec->VarArqExec = nullptr;
 }
 
 //------------------------------------------------------------------------------
-void TVarExec::Mover(TVarExec * destino)
+void TVarArqExec::Mover(TVarArqExec * destino)
 {
     if (ObjExec)
-        ObjExec->VarExec = destino;
-    memmove(destino, this, sizeof(TVarExec));
+        ObjExec->VarArqExec = destino;
+    memmove(destino, this, sizeof(TVarArqExec));
 }
 
 //------------------------------------------------------------------------------
-void TVarExec::EndObjeto(TClasse * c, TObjeto * o)
+void TVarArqExec::EndObjeto(TClasse * c, TObjeto * o)
 {
     if (o)
         endobjeto = o, b_objeto = true;
@@ -281,7 +281,7 @@ void TVarExec::EndObjeto(TClasse * c, TObjeto * o)
 }
 
 //------------------------------------------------------------------------------
-void TVarExec::GeraEvento(const char * evento, const char * texto, int valor)
+void TVarArqExec::GeraEvento(const char * evento, const char * texto, int valor)
 {
     //printf("GeraEvento [%s] [%s]\n", evento, texto); fflush(stdout);
     bool prossegue = false;
@@ -313,17 +313,17 @@ void TVarExec::GeraEvento(const char * evento, const char * texto, int valor)
 }
 
 //------------------------------------------------------------------------------
-bool TVarExec::Func(TVariavel * v, const char * nome)
+bool TVarArqExec::Func(TVariavel * v, const char * nome)
 {
 // Lista das funções de arqexec
 // Deve obrigatoriamente estar em letras minúsculas e ordem alfabética
     static const struct {
         const char * Nome;
-        bool (TVarExec::*Func)(TVariavel * v); } ExecFunc[] = {
-        { "aberto",    &TVarExec::FuncAberto },
-        { "abrir",     &TVarExec::FuncAbrir },
-        { "fechar",    &TVarExec::FuncFechar },
-        { "msg",       &TVarExec::FuncMsg }  };
+        bool (TVarArqExec::*Func)(TVariavel * v); } ExecFunc[] = {
+        { "aberto",    &TVarArqExec::FuncAberto },
+        { "abrir",     &TVarArqExec::FuncAbrir },
+        { "fechar",    &TVarArqExec::FuncFechar },
+        { "msg",       &TVarArqExec::FuncMsg }  };
 // Procura a função correspondente e executa
     int ini = 0;
     int fim = sizeof(ExecFunc) / sizeof(ExecFunc[0]) - 1;
@@ -341,7 +341,7 @@ bool TVarExec::Func(TVariavel * v, const char * nome)
 }
 
 //----------------------------------------------------------------------------
-bool TVarExec::FuncMsg(TVariavel * v)
+bool TVarArqExec::FuncMsg(TVariavel * v)
 {
     if (ObjExec == nullptr || Instr::VarAtual != v + 1)
         return false;
@@ -351,13 +351,13 @@ bool TVarExec::FuncMsg(TVariavel * v)
 }
 
 //----------------------------------------------------------------------------
-bool TVarExec::FuncAbrir(TVariavel * v)
+bool TVarArqExec::FuncAbrir(TVariavel * v)
 {
     if (Instr::VarAtual < v + 1)
         return false;
     if (ObjExec)
     {
-        ObjExec->VarExec = nullptr;
+        ObjExec->VarArqExec = nullptr;
         ObjExec = nullptr;
     }
     const char * cmd = v[1].getTxt();
@@ -400,18 +400,18 @@ bool TVarExec::FuncAbrir(TVariavel * v)
 }
 
 //----------------------------------------------------------------------------
-bool TVarExec::FuncFechar(TVariavel * v)
+bool TVarArqExec::FuncFechar(TVariavel * v)
 {
     if (ObjExec)
     {
-        ObjExec->VarExec = nullptr;
+        ObjExec->VarArqExec = nullptr;
         ObjExec = nullptr;
     }
     return false;
 }
 
 //----------------------------------------------------------------------------
-bool TVarExec::FuncAberto(TVariavel * v)
+bool TVarArqExec::FuncAberto(TVariavel * v)
 {
     bool aberto = (ObjExec != nullptr);
     Instr::ApagarVar(v);

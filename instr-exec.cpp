@@ -15,7 +15,7 @@
 #include "instr.h"
 #include "instr-enum.h"
 #include "variavel.h"
-#include "var-log.h"
+#include "var-arqlog.h"
 #include "classe.h"
 #include "objeto.h"
 #include "var-prog.h"
@@ -701,7 +701,7 @@ bool Instr::ExecX()
                 break;
             case cTerminar: // Encerra o programa
                 TSocket::SairPend();
-                TVarLog::TempoEspera(1000);
+                TVarArqLog::TempoEspera(1000);
                 Termina();
             default:  // Instrução desconhecida
                 assert(0);

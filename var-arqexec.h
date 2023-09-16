@@ -1,5 +1,5 @@
-#ifndef VAR_EXEC_H
-#define VAR_EXEC_H
+#ifndef VAR_ARQEXEC_H
+#define VAR_ARQEXEC_H
 
 #ifdef __WIN32__
  #include <windows.h>
@@ -38,11 +38,11 @@ private:
 class TClasse;
 class TObjeto;
 class TVariavel;
-class TVarExec;
+class TVarArqExec;
 class TObjExec : public TExec /// Um programa sendo executado por ArqExec
 {
 public:
-    TObjExec(TVarExec * var);   ///< Construtor
+    TObjExec(TVarArqExec * var);   ///< Construtor
     virtual ~TObjExec();        ///< Destrutor
     bool Enviar(const char * mensagem);
         ///< Envia mensagem
@@ -51,7 +51,7 @@ public:
     static void ProcEventos(fd_set * set_entrada, fd_set * set_saida);
 
 private:
-    TVarExec * VarExec;         ///< Objeto TVarExec associado a este objeto
+    TVarArqExec * VarArqExec;      ///< Objeto TVarArqExec associado a este objeto
 
 // Para enviar mensagens
     void EnvPend();             ///< Envia dados pendentes
@@ -72,15 +72,15 @@ private:
     TObjExec * Antes;  ///< Objeto anterior da lista ligada
     TObjExec * Depois; ///< Próximo objeto da lista ligada
 
-    friend class TVarExec;
+    friend class TVarArqExec;
 };
 
 //------------------------------------------------------------------------------
-class TVarExec /// Uma variável ArqExec
+class TVarArqExec /// Uma variável ArqExec
 {
 public:
     void Apagar();          ///< Apaga objeto
-    void Mover(TVarExec * destino);  ///< Move TVarExec para outro lugar
+    void Mover(TVarArqExec * destino);  ///< Move TVarArqExec para outro lugar
     void EndObjeto(TClasse * c, TObjeto * o);
     bool Func(TVariavel * v, const char * nome); ///< Função da variável
 

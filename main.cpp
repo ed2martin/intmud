@@ -40,15 +40,15 @@
 #include "socket.h"
 #include "console.h"
 #include "exec.h"
-#include "var-exec.h"
-#include "var-sav.h"
+#include "var-arqexec.h"
+#include "var-arqsav.h"
 #include "var-serv.h"
 #include "var-intexec.h"
 #include "var-inttempo.h"
 #include "var-listaobj.h"
 #include "var-texto.h"
 #include "var-textovar.h"
-#include "var-log.h"
+#include "var-arqlog.h"
 #include "var-telatxt.h"
 #include "var-arqprog.h"
 #include "random.h"
@@ -332,7 +332,7 @@ int main(int argc, char *argv[])
 
     // Grava logs pendentes
     // Obtém tempo de espera conforme TVarLog
-        espera = TVarLog::TempoEspera(espera);
+        espera = TVarArqLog::TempoEspera(espera);
 
     // Prepara variáveis para select()
     // Acerta tempo de espera conforme TVarServ

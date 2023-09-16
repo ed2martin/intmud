@@ -18,7 +18,7 @@
 #ifdef __WIN32__
  #include <windows.h>
 #endif
-#include "var-dir.h"
+#include "var-arqdir.h"
 #include "variavel.h"
 #include "instr.h"
 #include "misc.h"
@@ -30,7 +30,7 @@
 #endif
 
 //------------------------------------------------------------------------------
-void TVarDir::Criar()
+void TVarArqDir::Criar()
 {
 #ifdef __WIN32__
     wdir = INVALID_HANDLE_VALUE;
@@ -40,7 +40,7 @@ void TVarDir::Criar()
 }
 
 //------------------------------------------------------------------------------
-void TVarDir::Apagar()
+void TVarArqDir::Apagar()
 {
 #ifdef __WIN32__
     if (wdir != INVALID_HANDLE_VALUE)
@@ -55,27 +55,27 @@ void TVarDir::Apagar()
 
 
 //------------------------------------------------------------------------------
-bool TVarDir::Func(TVariavel * v, const char * nome)
+bool TVarArqDir::Func(TVariavel * v, const char * nome)
 {
 // Lista das funções de arqdir
 // Deve obrigatoriamente estar em letras minúsculas e ordem alfabética
     static const struct {
         const char * Nome;
-        bool (TVarDir::*Func)(TVariavel * v); } ExecFunc[] = {
-        { "abrir",        &TVarDir::FuncAbrir },
-        { "apagar",       &TVarDir::FuncApagar },
-        { "apagardir",    &TVarDir::FuncApagarDir },
-        { "atempo",       &TVarDir::FuncAtempo },
-        { "barra",        &TVarDir::FuncBarra },
-        { "criardir",     &TVarDir::FuncCriarDir },
-        { "depois",       &TVarDir::FuncDepois },
-        { "fechar",       &TVarDir::FuncFechar },
-        { "lin",          &TVarDir::FuncLin },
-        { "mtempo",       &TVarDir::FuncMtempo },
-        { "renomear",     &TVarDir::FuncRenomear },
-        { "tamanho",      &TVarDir::FuncTamanho },
-        { "texto",        &TVarDir::FuncTexto },
-        { "tipo",         &TVarDir::FuncTipo } };
+        bool (TVarArqDir::*Func)(TVariavel * v); } ExecFunc[] = {
+        { "abrir",        &TVarArqDir::FuncAbrir },
+        { "apagar",       &TVarArqDir::FuncApagar },
+        { "apagardir",    &TVarArqDir::FuncApagarDir },
+        { "atempo",       &TVarArqDir::FuncAtempo },
+        { "barra",        &TVarArqDir::FuncBarra },
+        { "criardir",     &TVarArqDir::FuncCriarDir },
+        { "depois",       &TVarArqDir::FuncDepois },
+        { "fechar",       &TVarArqDir::FuncFechar },
+        { "lin",          &TVarArqDir::FuncLin },
+        { "mtempo",       &TVarArqDir::FuncMtempo },
+        { "renomear",     &TVarArqDir::FuncRenomear },
+        { "tamanho",      &TVarArqDir::FuncTamanho },
+        { "texto",        &TVarArqDir::FuncTexto },
+        { "tipo",         &TVarArqDir::FuncTipo } };
 // Procura a função correspondente e executa
     int ini = 0;
     int fim = sizeof(ExecFunc) / sizeof(ExecFunc[0]) - 1;
@@ -93,7 +93,7 @@ bool TVarDir::Func(TVariavel * v, const char * nome)
 }
 
 //------------------------------------------------------------------------------
-bool TVarDir::FuncLin(TVariavel * v)
+bool TVarArqDir::FuncLin(TVariavel * v)
 {
     bool b = DIR_VALIDO;
     Instr::ApagarVar(v);
@@ -101,21 +101,21 @@ bool TVarDir::FuncLin(TVariavel * v)
 }
 
 //------------------------------------------------------------------------------
-bool TVarDir::FuncTexto(TVariavel * v)
+bool TVarArqDir::FuncTexto(TVariavel * v)
 {
     Instr::ApagarVar(v);
     return Instr::CriarVarTexto(DIR_VALIDO ? arqdir : "");
 }
 
 //------------------------------------------------------------------------------
-bool TVarDir::FuncDepois(TVariavel * v)
+bool TVarArqDir::FuncDepois(TVariavel * v)
 {
     Proximo();
     return false;
 }
 
 //------------------------------------------------------------------------------
-bool TVarDir::FuncBarra(TVariavel * v)
+bool TVarArqDir::FuncBarra(TVariavel * v)
 {
     const char * txt = "";  // Texto
     char mens[BUF_MENS];    // Resultado
@@ -142,7 +142,7 @@ bool TVarDir::FuncBarra(TVariavel * v)
 
 //------------------------------------------------------------------------------
 // Abrir/Fechar diretório
-bool TVarDir::FuncAbrir(TVariavel * v)
+bool TVarArqDir::FuncAbrir(TVariavel * v)
 {
     char mens[512];
 // Fecha diretório
@@ -190,7 +190,7 @@ bool TVarDir::FuncAbrir(TVariavel * v)
 }
 
 //------------------------------------------------------------------------------
-bool TVarDir::FuncFechar(TVariavel * v)
+bool TVarArqDir::FuncFechar(TVariavel * v)
 {
     Apagar();
     return false;
@@ -198,7 +198,7 @@ bool TVarDir::FuncFechar(TVariavel * v)
 
 //------------------------------------------------------------------------------
 // Atributos do arquivo
-bool TVarDir::FuncTipo(TVariavel * v)
+bool TVarArqDir::FuncTipo(TVariavel * v)
 {
 // Sem argumentos: entrada encontrada em abrir()
     if (Instr::VarAtual < v + 1)
@@ -234,7 +234,7 @@ bool TVarDir::FuncTipo(TVariavel * v)
 }
 
 //------------------------------------------------------------------------------
-bool TVarDir::FuncTamanho(TVariavel * v)
+bool TVarArqDir::FuncTamanho(TVariavel * v)
 {
     char mens[512];
     double tam = 0;
@@ -325,7 +325,7 @@ static inline void VarDirObtemTempo(char * nomearq, char * buffer, int tipo)
 }
 
 //------------------------------------------------------------------------------
-bool TVarDir::FuncMtempo(TVariavel * v)
+bool TVarArqDir::FuncMtempo(TVariavel * v)
 {
     char buffer[256] = "";
     char nomearq[1024];
@@ -339,7 +339,7 @@ bool TVarDir::FuncMtempo(TVariavel * v)
 }
 
 //------------------------------------------------------------------------------
-bool TVarDir::FuncAtempo(TVariavel * v)
+bool TVarArqDir::FuncAtempo(TVariavel * v)
 {
     char buffer[256] = "";
     char nomearq[1024];
@@ -353,7 +353,7 @@ bool TVarDir::FuncAtempo(TVariavel * v)
 }
 
 //------------------------------------------------------------------------------
-bool TVarDir::FuncApagarDir(TVariavel * v)
+bool TVarArqDir::FuncApagarDir(TVariavel * v)
 {
     char mens[512];
     if (Instr::VarAtual < v+1)
@@ -374,7 +374,7 @@ bool TVarDir::FuncApagarDir(TVariavel * v)
 }
 
 //------------------------------------------------------------------------------
-bool TVarDir::FuncCriarDir(TVariavel * v)
+bool TVarArqDir::FuncCriarDir(TVariavel * v)
 {
     char mens[512];
     if (Instr::VarAtual < v+1)
@@ -400,7 +400,7 @@ bool TVarDir::FuncCriarDir(TVariavel * v)
 
 //------------------------------------------------------------------------------
 // Apgar arquivo
-bool TVarDir::FuncApagar(TVariavel * v)
+bool TVarArqDir::FuncApagar(TVariavel * v)
 {
     char mens[512];
     if (Instr::VarAtual < v+1)
@@ -421,7 +421,7 @@ bool TVarDir::FuncApagar(TVariavel * v)
 
 //------------------------------------------------------------------------------
 // Renomear arquivo/diretório
-bool TVarDir::FuncRenomear(TVariavel * v)
+bool TVarArqDir::FuncRenomear(TVariavel * v)
 {
     char antes[512], depois[512];
     if (Instr::VarAtual < v + 2)
@@ -447,7 +447,7 @@ bool TVarDir::FuncRenomear(TVariavel * v)
 }
 
 //------------------------------------------------------------------------------
-void TVarDir::Proximo()
+void TVarArqDir::Proximo()
 {
 #ifdef __WIN32__
     WIN32_FIND_DATA ffd;

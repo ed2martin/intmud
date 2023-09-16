@@ -13,7 +13,7 @@
 #include <fcntl.h>
 #include <unistd.h>
 #include <sys/stat.h>
-#include "var-txt.h"
+#include "var-arqtxt.h"
 #include "variavel.h"
 #include "instr.h"
 #include "instr-enum.h"
@@ -22,20 +22,20 @@
 //#define DEBUG
 
 //------------------------------------------------------------------------------
-void TVarTxt::Criar()
+void TVarArqTxt::Criar()
 {
     arq = nullptr;
 }
 
 //------------------------------------------------------------------------------
-void TVarTxt::Apagar()
+void TVarArqTxt::Apagar()
 {
     if (arq)
         fclose(arq);
 }
 
 //------------------------------------------------------------------------------
-void TVarTxt::Fechar()
+void TVarArqTxt::Fechar()
 {
     if (arq == nullptr)
         return;
@@ -44,29 +44,29 @@ void TVarTxt::Fechar()
 }
 
 //------------------------------------------------------------------------------
-int TVarTxt::getValor()
+int TVarArqTxt::getValor()
 {
     return (arq != nullptr);
 }
 
 //------------------------------------------------------------------------------
-bool TVarTxt::Func(TVariavel * v, const char * nome)
+bool TVarArqTxt::Func(TVariavel * v, const char * nome)
 {
 // Lista das funções de arqtxt
 // Deve obrigatoriamente estar em letras minúsculas e ordem alfabética
     static const struct {
         const char * Nome;
-        bool (TVarTxt::*Func)(TVariavel * v); } ExecFunc[] = {
-        { "abrir",        &TVarTxt::FuncAbrir },
-        { "eof",          &TVarTxt::FuncEof },
-        { "escr",         &TVarTxt::FuncEscr },
-        { "existe",       &TVarTxt::FuncExiste },
-        { "fechar",       &TVarTxt::FuncFechar },
-        { "flush",        &TVarTxt::FuncFlush },
-        { "ler",          &TVarTxt::FuncLer },
-        { "pos",          &TVarTxt::FuncPos },
-        { "truncar",      &TVarTxt::FuncTruncar },
-        { "valido",       &TVarTxt::FuncValido }  };
+        bool (TVarArqTxt::*Func)(TVariavel * v); } ExecFunc[] = {
+        { "abrir",        &TVarArqTxt::FuncAbrir },
+        { "eof",          &TVarArqTxt::FuncEof },
+        { "escr",         &TVarArqTxt::FuncEscr },
+        { "existe",       &TVarArqTxt::FuncExiste },
+        { "fechar",       &TVarArqTxt::FuncFechar },
+        { "flush",        &TVarArqTxt::FuncFlush },
+        { "ler",          &TVarArqTxt::FuncLer },
+        { "pos",          &TVarArqTxt::FuncPos },
+        { "truncar",      &TVarArqTxt::FuncTruncar },
+        { "valido",       &TVarArqTxt::FuncValido }  };
 // Procura a função correspondente e executa
     int ini = 0;
     int fim = sizeof(ExecFunc) / sizeof(ExecFunc[0]) - 1;
@@ -84,7 +84,7 @@ bool TVarTxt::Func(TVariavel * v, const char * nome)
 }
 
 //------------------------------------------------------------------------------
-bool TVarTxt::FuncLer(TVariavel * v)
+bool TVarArqTxt::FuncLer(TVariavel * v)
 {
     char mens[BUF_MENS];
     int pmens = 0;
@@ -144,7 +144,7 @@ bool TVarTxt::FuncLer(TVariavel * v)
 }
 
 //------------------------------------------------------------------------------
-bool TVarTxt::FuncEscr(TVariavel * v)
+bool TVarArqTxt::FuncEscr(TVariavel * v)
 {
     if (arq == nullptr)
         return false;
@@ -223,7 +223,7 @@ bool TVarTxt::FuncEscr(TVariavel * v)
 }
 
 //------------------------------------------------------------------------------
-bool TVarTxt::FuncEof(TVariavel * v)
+bool TVarArqTxt::FuncEof(TVariavel * v)
 {
     int result = (arq == nullptr || feof(arq));
 #ifdef DEBUG
@@ -235,7 +235,7 @@ bool TVarTxt::FuncEof(TVariavel * v)
 }
 
 //------------------------------------------------------------------------------
-bool TVarTxt::FuncPos(TVariavel * v)
+bool TVarArqTxt::FuncPos(TVariavel * v)
 {
     if (arq && Instr::VarAtual >= v + 1)
     {
@@ -256,14 +256,14 @@ bool TVarTxt::FuncPos(TVariavel * v)
 }
 
 //------------------------------------------------------------------------------
-bool TVarTxt::FuncFechar(TVariavel * v)
+bool TVarArqTxt::FuncFechar(TVariavel * v)
 {
     Fechar();
     return false;
 }
 
 //------------------------------------------------------------------------------
-bool TVarTxt::FuncFlush(TVariavel * v)
+bool TVarArqTxt::FuncFlush(TVariavel * v)
 {
     if (arq)
         fflush(arq);
@@ -271,7 +271,7 @@ bool TVarTxt::FuncFlush(TVariavel * v)
 }
 
 //------------------------------------------------------------------------------
-bool TVarTxt::FuncValido(TVariavel * v)
+bool TVarArqTxt::FuncValido(TVariavel * v)
 {
     char arqnome[300] = ""; // Nome do arquivo; nulo se não for válido
     if (Instr::VarAtual >= v + 1)
@@ -285,7 +285,7 @@ bool TVarTxt::FuncValido(TVariavel * v)
 }
 
 //------------------------------------------------------------------------------
-bool TVarTxt::FuncExiste(TVariavel * v)
+bool TVarArqTxt::FuncExiste(TVariavel * v)
 {
     char arqnome[300] = ""; // Nome do arquivo; nulo se não for válido
     if (Instr::VarAtual >= v + 1)
@@ -302,7 +302,7 @@ bool TVarTxt::FuncExiste(TVariavel * v)
 }
 
 //------------------------------------------------------------------------------
-bool TVarTxt::FuncAbrir(TVariavel * v)
+bool TVarArqTxt::FuncAbrir(TVariavel * v)
 {
 // Obtém o nome do arquivo
     char arqnome[300] = ""; // Nome do arquivo; nulo se não for válido
@@ -369,7 +369,7 @@ bool TVarTxt::FuncAbrir(TVariavel * v)
 }
 
 //------------------------------------------------------------------------------
-bool TVarTxt::FuncTruncar(TVariavel * v)
+bool TVarArqTxt::FuncTruncar(TVariavel * v)
 {
 // Obtém o nome do arquivo
     char arqnome[300] = ""; // Nome do arquivo; nulo se não for válido

@@ -13,29 +13,29 @@
 #include <fcntl.h>
 #include <unistd.h>
 #include <sys/stat.h>
-#include "var-log.h"
+#include "var-arqlog.h"
 #include "variavel.h"
 #include "instr.h"
 #include "instr-enum.h"
 #include "misc.h"
 
-int TVarLog::Tempo = 20;
-TVarLog * TVarLog::Inicio = nullptr;
+int TVarArqLog::Tempo = 20;
+TVarArqLog * TVarArqLog::Inicio = nullptr;
 
 //------------------------------------------------------------------------------
-void TVarLog::Criar()
+void TVarArqLog::Criar()
 {
     arq = -1;
 }
 
 //------------------------------------------------------------------------------
-void TVarLog::Apagar()
+void TVarArqLog::Apagar()
 {
     Fechar();
 }
 
 //------------------------------------------------------------------------------
-void TVarLog::Mover(TVarLog * destino)
+void TVarArqLog::Mover(TVarArqLog * destino)
 {
     if (arq == -1)
     {
@@ -45,25 +45,25 @@ void TVarLog::Mover(TVarLog * destino)
     (Antes ? Antes->Depois : Inicio) = destino;
     if (Depois)
         Depois->Antes = destino;
-    int total = sizeof(TVarLog) - sizeof(buflog) + pontlog;
+    int total = sizeof(TVarArqLog) - sizeof(buflog) + pontlog;
     memmove(destino, this, total);
 }
 
 //------------------------------------------------------------------------------
-int TVarLog::getValor()
+int TVarArqLog::getValor()
 {
     return (arq >= 0 ? 1 : 0);
 }
 
 //------------------------------------------------------------------------------
-int TVarLog::TempoEspera(int tempodecorrido)
+int TVarArqLog::TempoEspera(int tempodecorrido)
 {
 // Atualiza tempo
     Tempo -= tempodecorrido;
 // Grava dados pendentes se tempo expirou
     if (Tempo <= 0)
     {
-        for (TVarLog * obj = Inicio; obj; obj = obj->Depois)
+        for (TVarArqLog * obj = Inicio; obj; obj = obj->Depois)
             if (obj->pontlog)
             {
                 safe_write(obj->arq, obj->buflog, obj->pontlog);
@@ -73,7 +73,7 @@ int TVarLog::TempoEspera(int tempodecorrido)
         return 600;
     }
 // Obtém quanto tempo para gravar dados pendentes
-    for (TVarLog * obj = Inicio; obj; obj = obj->Depois)
+    for (TVarArqLog * obj = Inicio; obj; obj = obj->Depois)
         if (obj->pontlog)
             return Tempo;
     Tempo = 20;
@@ -81,7 +81,7 @@ int TVarLog::TempoEspera(int tempodecorrido)
 }
 
 //------------------------------------------------------------------------------
-void TVarLog::Fechar()
+void TVarArqLog::Fechar()
 {
     if (arq < 0)
         return;
@@ -95,18 +95,18 @@ void TVarLog::Fechar()
 }
 
 //------------------------------------------------------------------------------
-bool TVarLog::Func(TVariavel * v, const char * nome)
+bool TVarArqLog::Func(TVariavel * v, const char * nome)
 {
 // Lista das funções de arqlog
 // Deve obrigatoriamente estar em letras minúsculas e ordem alfabética
     static const struct {
         const char * Nome;
-        bool (TVarLog::*Func)(TVariavel * v); } ExecFunc[] = {
-        { "abrir",     &TVarLog::FuncAbrir },
-        { "existe",    &TVarLog::FuncExiste },
-        { "fechar",    &TVarLog::FuncFechar },
-        { "msg",       &TVarLog::FuncMsg },
-        { "valido",    &TVarLog::FuncValido }  };
+        bool (TVarArqLog::*Func)(TVariavel * v); } ExecFunc[] = {
+        { "abrir",     &TVarArqLog::FuncAbrir },
+        { "existe",    &TVarArqLog::FuncExiste },
+        { "fechar",    &TVarArqLog::FuncFechar },
+        { "msg",       &TVarArqLog::FuncMsg },
+        { "valido",    &TVarArqLog::FuncValido }  };
 // Procura a função correspondente e executa
     int ini = 0;
     int fim = sizeof(ExecFunc) / sizeof(ExecFunc[0]) - 1;
@@ -124,7 +124,7 @@ bool TVarLog::Func(TVariavel * v, const char * nome)
 }
 
 //----------------------------------------------------------------------------
-bool TVarLog::FuncMsg(TVariavel * v)
+bool TVarArqLog::FuncMsg(TVariavel * v)
 {
     if (arq < 0)
         return false;
@@ -172,14 +172,14 @@ bool TVarLog::FuncMsg(TVariavel * v)
 }
 
 //----------------------------------------------------------------------------
-bool TVarLog::FuncFechar(TVariavel * v)
+bool TVarArqLog::FuncFechar(TVariavel * v)
 {
     Fechar();
     return false;
 }
 
 //----------------------------------------------------------------------------
-bool TVarLog::FuncValido(TVariavel * v)
+bool TVarArqLog::FuncValido(TVariavel * v)
 {
     char arqnome[300] = ""; // Nome do arquivo; nulo se não for válido
     if (Instr::VarAtual >= v + 1)
@@ -193,7 +193,7 @@ bool TVarLog::FuncValido(TVariavel * v)
 }
 
 //----------------------------------------------------------------------------
-bool TVarLog::FuncExiste(TVariavel * v)
+bool TVarArqLog::FuncExiste(TVariavel * v)
 {
     char arqnome[300] = ""; // Nome do arquivo; nulo se não for válido
     if (Instr::VarAtual >= v + 1)
@@ -217,7 +217,7 @@ bool TVarLog::FuncExiste(TVariavel * v)
 }
 
 //----------------------------------------------------------------------------
-bool TVarLog::FuncAbrir(TVariavel * v)
+bool TVarArqLog::FuncAbrir(TVariavel * v)
 {
     char arqnome[300] = ""; // Nome do arquivo; nulo se não for válido
     if (Instr::VarAtual >= v + 1)

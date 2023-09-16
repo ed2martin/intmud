@@ -1,11 +1,11 @@
-#ifndef VAR_TXT_H
-#define VAR_TXT_H
+#ifndef VAR_ARQTXT_H
+#define VAR_ARQTXT_H
 
 #include <stdio.h>
 
 //----------------------------------------------------------------------------
 class TVariavel;
-class TVarTxt /// Variável arqtxt
+class TVarArqTxt /// Variável arqtxt
 {
 public:
     void Criar();           ///< Chamado ao criar objeto
