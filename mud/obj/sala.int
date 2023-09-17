@@ -56,7 +56,6 @@ const s_titulo = "Sem nome"
 const s_desc = ""
 const s_item = 5 # Quantos minutos para começar a apagar itens
 inttempo t_item # Tempo para começar a apagar itens da sala
-const s_noite = s_desc(arg0) # Inicialmente descrição de noite e de dia são iguais
 const s_gritar = s_falar(arg0) # Mensagem ao gritar; se estiver vazia, pode gritar
 const volmax = config:s_volmax
 const objmax = config:s_objmax
@@ -318,11 +317,10 @@ func descsala # Retorna descrição da sala
     senao dirsala("entrar", arg0).s_morre || dirsala("sair", arg0).s_morre
       t.addfim(config:perigomsg)
     fimse
-# t.addfim("\b\c6" + txt(este, 2) + " " + s_titulo(arg0) + "\b")
     refvar titulo = txt(var.z_titulo ?? s_titulo(arg0))
     titulo && t.addfim("\b\c6" + titulo + "\b")
     se arg1 & 1
-      t.addfim(var.z_desc ?? $mensjog.txt(misc:luz ? s_desc(arg0) : s_noite(arg0), arg0))
+      t.addfim(var.z_desc ?? $mensjog.txt((!misc:luz ? s_noite(arg0)) ?? s_desc(arg0), arg0))
     fimse
     se arg1 & 2
       refvar s = txtsai(arg0)

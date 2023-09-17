@@ -253,8 +253,8 @@ func escr
     epara r = item.obj.dono, r.dono, r = r.dono
     efim
     continuar area != r.s_area
-    refvar titulo = item.obj.dono.var.z_titulo
-    t0.addfim(item.obj.nome + "    " + (titulo ? titulo : item.obj.dono.s_titulo(arg0)))
+    refvar titulo = item.obj.dono.var.z_titulo ?? item.obj.dono.s_titulo(arg0)
+    t0.addfim(item.obj.nome + "    " + titulo)
   efim
   t0.txtmostra
   arg0.msg2(t0.remove(1000))
@@ -287,7 +287,8 @@ func escr
     se int(dono.porta_[nome]) >= 2
       t.addfim(txt(txtmai(nome) + "       ", 0, 8) + m_dir_fechado)
     senao sala.visivel(arg0)
-      t.addfim(txt(txtmai(nome) + "       ", 0, 8) + sala.s_titulo(arg0))
+      refvar titulo = sala.var.z_titulo ?? sala.s_titulo(arg0)
+      t.addfim(txt(txtmai(nome) + "       ", 0, 8) + titulo)
     senao
       t.addfim(txt(txtmai(nome) + "       ", 0, 8) + m_dir_escuro)
     fimse
@@ -372,7 +373,7 @@ func escr
     nomeobj n
     n.ini(arg1, 1)
     epara i = r.dentro2.ini, i, i.depois
-      continuar !i.obj.e_nome || !n.nome(i.obj.e_nome)
+      continuar !txtcor(i.obj.e_nome) || !n.nome(txtcor(i.obj.e_nome))
       textotxt t
       txt100 lin = "Efeito " + i.obj.e_nome + ", duração "
       lin += i.obj.t_duracao ? txt(int(i.obj.t_duracao / 10)) : " indeterminada"
