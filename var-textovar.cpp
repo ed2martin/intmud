@@ -27,6 +27,18 @@ unsigned int TBlocoVarDec::TempoMais = 0;
 char TBlocoVar::txtnum[80] = "";
 
 //----------------------------------------------------------------------------
+const TVarInfo * TTextoVar::Inicializa()
+{
+    TBlocoVarDec::PreparaIni();
+    static const TVarInfo var(
+        FTamanho,
+        FTamanhoVetor,
+        TVarInfo::FTipoOutros,
+        TVarInfo::FFuncVetorFalse);
+    return &var;
+}
+
+//----------------------------------------------------------------------------
 bool TTextoVar::Func(TVariavel * v, const char * nome)
 {
 // Lista das funções de textovar
@@ -512,6 +524,19 @@ void TBlocoVar::MoveTextoVar(TTextoVar * textovar)
         RBright->MoveTextoVar(textovar);
 }
 
+//------------------------------------------------------------------------------
+int TTextoVar::FTamanho(const char * instr)
+{
+    return sizeof(TTextoVar);
+}
+
+//------------------------------------------------------------------------------
+int TTextoVar::FTamanhoVetor(const char * instr)
+{
+    int total = (unsigned char)instr[Instr::endVetor];
+    return (total ? total : 1) * sizeof(TTextoVar);
+}
+
 //----------------------------------------------------------------------------
 TBlocoVar * TTextoVar::Procura(const char * texto)
 {
@@ -608,6 +633,17 @@ TBlocoVar * TTextoVar::ProcDepois(const char * texto)
 }
 
 //----------------------------------------------------------------------------
+const TVarInfo * TTextoVarSub::Inicializa()
+{
+    static const TVarInfo var(
+        FTamanho,
+        FTamanhoVetor,
+        FTipo,
+        TVarInfo::FFuncVetorFalse);
+    return &var;
+}
+
+//----------------------------------------------------------------------------
 void TTextoVarSub::Criar(TTextoVar * var, const char * nome, bool checatipo)
 {
 // Acerta variável conforme o nome
@@ -664,6 +700,25 @@ void TTextoVarSub::Mover(TTextoVarSub * destino)
             Depois->Antes = destino;
     }
     memmove(destino, this, sizeof(TTextoVarSub));
+}
+
+//------------------------------------------------------------------------------
+int TTextoVarSub::FTamanho(const char * instr)
+{
+    return sizeof(TTextoVarSub);
+}
+
+//------------------------------------------------------------------------------
+int TTextoVarSub::FTamanhoVetor(const char * instr)
+{
+    int total = (unsigned char)instr[Instr::endVetor];
+    return (total ? total : 1) * sizeof(TTextoVarSub);
+}
+
+//----------------------------------------------------------------------------
+TVarTipo TTextoVarSub::FTipo(TVariavel * v)
+{
+    return (TVarTipo)v->numfunc;
 }
 
 //----------------------------------------------------------------------------

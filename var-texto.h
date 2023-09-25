@@ -3,6 +3,8 @@
 
 //----------------------------------------------------------------------------
 class TVariavel;
+class TVarInfo;
+enum TVarTipo : unsigned char;
 class TBlocoPos;
 class TTextoPos;
 class TTextoBloco;
@@ -11,6 +13,8 @@ class TObjeto;
 class TTextoTxt  /// Variáveis TextoTxt
 {
 public:
+    static const TVarInfo * Inicializa();
+        ///< Inicializa variável e retorna informações
     void Apagar();          ///< Apaga objeto
     void Limpar();          ///< Apaga o texto do objeto
     void Mover(TTextoTxt * destino); ///< Move objeto para outro lugar
@@ -83,6 +87,9 @@ public:
     bool FuncClipSalvar(TVariavel * v);
 
 private:
+    static int FTamanho(const char * instr);
+    static int FTamanhoVetor(const char * instr);
+
     void OrdenaSub(int modo, char * texto, char** linha,
             const char *txt1, const char * txt2);
             ///< Chamado por Ordena(), para ordenar linhas
@@ -133,6 +140,8 @@ public:
 class TTextoPos : public TBlocoPos /// Variáveis TextoPos
 {
 public:
+    static const TVarInfo * Inicializa();
+        ///< Inicializa variável e retorna informações
     void Apagar();
             ///< Apaga objeto
     void Mover(TTextoPos * destino);
@@ -145,7 +154,7 @@ public:
             ///< Operador de atribuição igual
     bool Func(TVariavel * v, const char * nome);
             ///< Função da variável
-    static int getTipo(int numfunc);
+    static TVarTipo FTipo(TVariavel * v);
             ///< Retorna o tipo de variável
     int  getValor(int numfunc);
             ///< Ler valor numérico da variável
@@ -162,6 +171,7 @@ public:
     const char * defvar;    ///< Definição da variável; usado em var-sav.cpp
     unsigned int indice;    ///< Índice da variável
 
+private:
     bool FuncAntes(TVariavel * v, int valor);
     bool FuncDepois(TVariavel * v, int valor);
     bool FuncLin(TVariavel * v, int valor);
@@ -175,6 +185,9 @@ public:
     bool FuncJuntar(TVariavel * v, int valor);
     bool FuncTxtProc(TVariavel * v, int valor);
     bool FuncMd5Sha1(TVariavel * v, int valor);
+
+    static int FTamanho(const char * instr);
+    static int FTamanhoVetor(const char * instr);
 };
 
 //----------------------------------------------------------------------------

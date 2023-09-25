@@ -77,6 +77,17 @@ const char * TArqIncluir::ArqNome()
 }
 
 //----------------------------------------------------------------------------
+const TVarInfo * TVarArqProg::Inicializa()
+{
+    static const TVarInfo var(
+        FTamanho,
+        FTamanhoVetor,
+        TVarInfo::FTipoOutros,
+        TVarInfo::FFuncVetorFalse);
+    return &var;
+}
+
+//----------------------------------------------------------------------------
 void TVarArqProg::Criar()
 {
 #ifdef __WIN32__
@@ -324,4 +335,17 @@ bool TVarArqProg::FuncTexto(TVariavel * v)
     copiastr(arq, Arquivo, sizeof(arq));
     Instr::ApagarVar(v);
     return Instr::CriarVarTexto(arq);
+}
+
+//------------------------------------------------------------------------------
+int TVarArqProg::FTamanho(const char * instr)
+{
+    return sizeof(TVarArqProg);
+}
+
+//------------------------------------------------------------------------------
+int TVarArqProg::FTamanhoVetor(const char * instr)
+{
+    int total = (unsigned char)instr[Instr::endVetor];
+    return (total ? total : 1) * sizeof(TVarArqProg);
 }

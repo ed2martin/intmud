@@ -3,11 +3,15 @@
 
 #include <stdio.h>
 
-//----------------------------------------------------------------------------
 class TVariavel;
+class TVarInfo;
+
+//----------------------------------------------------------------------------
 class TVarArqTxt /// Variável arqtxt
 {
 public:
+    static const TVarInfo * Inicializa();
+        ///< Inicializa variável e retorna informações
     void Criar();           ///< Chamado ao criar objeto
     void Apagar();          ///< Apaga objeto
     int  getValor();        ///< Ler valor numérico da variável
@@ -23,6 +27,9 @@ private:
     bool FuncExiste(TVariavel * v);       ///< Processa função Existe
     bool FuncAbrir(TVariavel * v);        ///< Processa função Abrir
     bool FuncTruncar(TVariavel * v);      ///< Processa função Truncar
+
+    static int FTamanho(const char * instr);
+    static int FTamanhoVetor(const char * instr);
 
     void Fechar();      ///< Fecha arquivo
     FILE * arq;         ///< Para acessar o arquivo

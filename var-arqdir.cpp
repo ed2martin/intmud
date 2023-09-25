@@ -29,6 +29,17 @@
  #define DIR_VALIDO (dir != nullptr)
 #endif
 
+//----------------------------------------------------------------------------
+const TVarInfo * TVarArqDir::Inicializa()
+{
+    static const TVarInfo var(
+        FTamanho,
+        FTamanhoVetor,
+        TVarInfo::FTipoOutros,
+        TVarInfo::FFuncVetorFalse);
+    return &var;
+}
+
 //------------------------------------------------------------------------------
 void TVarArqDir::Criar()
 {
@@ -52,7 +63,6 @@ void TVarArqDir::Apagar()
     dir = nullptr;
 #endif
 }
-
 
 //------------------------------------------------------------------------------
 bool TVarArqDir::Func(TVariavel * v, const char * nome)
@@ -486,4 +496,17 @@ void TVarArqDir::Proximo()
     closedir(dir);
     dir = nullptr;
 #endif
+}
+
+//------------------------------------------------------------------------------
+int TVarArqDir::FTamanho(const char * instr)
+{
+    return sizeof(TVarArqDir);
+}
+
+//------------------------------------------------------------------------------
+int TVarArqDir::FTamanhoVetor(const char * instr)
+{
+    int total = (unsigned char)instr[Instr::endVetor];
+    return (total ? total : 1) * sizeof(TVarArqDir);
 }

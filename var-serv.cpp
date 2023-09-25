@@ -88,6 +88,17 @@ TVarServObj::~TVarServObj()
 #endif
 }
 
+//----------------------------------------------------------------------------
+const TVarInfo * TVarServ::Inicializa()
+{
+    static const TVarInfo var(
+        FTamanho,
+        FTamanhoVetor,
+        TVarInfo::FTipoOutros,
+        TVarInfo::FFuncVetorFalse);
+    return &var;
+}
+
 //------------------------------------------------------------------------------
 void TVarServ::Criar()
 {
@@ -507,4 +518,17 @@ bool TVarServ::FuncIniSSL(TVariavel * v)
 int TVarServ::getValor()
 {
     return sock >= 0;
+}
+
+//------------------------------------------------------------------------------
+int TVarServ::FTamanho(const char * instr)
+{
+    return sizeof(TVarServ);
+}
+
+//------------------------------------------------------------------------------
+int TVarServ::FTamanhoVetor(const char * instr)
+{
+    int total = (unsigned char)instr[Instr::endVetor];
+    return (total ? total : 1) * sizeof(TVarServ);
 }

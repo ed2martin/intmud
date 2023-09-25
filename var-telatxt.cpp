@@ -43,6 +43,17 @@ char * TVarTelaTxt::txt_linha = new char[CONSOLE_MAX];
 TVarTelaTxt * TVarTelaTxt::Inicio = 0;
 TVarTelaTxt * TVarTelaTxt::ObjAtual = 0;
 
+//----------------------------------------------------------------------------
+const TVarInfo * TVarTelaTxt::Inicializa()
+{
+    static const TVarInfo var(
+        FTamanho,
+        FTamanhoVetor,
+        FTipo,
+        TVarInfo::FFuncVetorFalse);
+    return &var;
+}
+
 //---------------------------------------------------------------------------
 void TVarTelaTxt::Escrever(const char * texto, int tamanho)
 {
@@ -469,9 +480,9 @@ void TVarTelaTxt::EndObjeto(TClasse * c, TObjeto * o)
 }
 
 //------------------------------------------------------------------------------
-int TVarTelaTxt::getTipo(int numfunc)
+TVarTipo TVarTelaTxt::FTipo(TVariavel * v)
 {
-    switch (numfunc)
+    switch (v->numfunc)
     {
     case 0: return varOutros;
     case TelaTxtTexto: return varTxt;
@@ -948,4 +959,17 @@ bool TVarTelaTxt::FuncLinha(TVariavel * v)
     Instr::ApagarVar(v + 1);
     Instr::VarAtual->numfunc = TelaTxtLinha;
     return true;
+}
+
+//------------------------------------------------------------------------------
+int TVarTelaTxt::FTamanho(const char * instr)
+{
+    return sizeof(TVarTelaTxt);
+}
+
+//------------------------------------------------------------------------------
+int TVarTelaTxt::FTamanhoVetor(const char * instr)
+{
+    int total = (unsigned char)instr[Instr::endVetor];
+    return (total ? total : 1) * sizeof(TVarTelaTxt);
 }

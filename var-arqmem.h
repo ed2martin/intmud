@@ -1,8 +1,10 @@
 #ifndef VAR_ARQMEM_H
 #define VAR_ARQMEM_H
 
-//----------------------------------------------------------------------------
 class TVariavel;
+class TVarInfo;
+
+//----------------------------------------------------------------------------
 class TVarArqMem
 {
 private:
@@ -44,7 +46,12 @@ private:
     bool FuncTamanho(TVariavel * v);      ///< Processa função Tamanho
     bool FuncTruncar(TVariavel * v);      ///< Processa função Truncar
 
+    static int FTamanho(const char * instr);
+    static int FTamanhoVetor(const char * instr);
+
 public:
+    static const TVarInfo * Inicializa();
+        ///< Inicializa variável e retorna informações
     TVarArqMem() { Criar(); }  ///< Construtor
     ~TVarArqMem() { Apagar(); } ///< Destrutor
     void Criar();           ///< Chamado ao criar objeto

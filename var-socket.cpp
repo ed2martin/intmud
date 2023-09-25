@@ -321,6 +321,17 @@ void TObjSocket::FuncEvento(const char * evento, const char * texto, int v1, int
     } // for (TVarSocket ...
 }
 
+//----------------------------------------------------------------------------
+const TVarInfo * TVarSocket::Inicializa()
+{
+    static const TVarInfo var(
+        FTamanho,
+        FTamanhoVetor,
+        FTipo,
+        TVarInfo::FFuncVetorFalse);
+    return &var;
+}
+
 //------------------------------------------------------------------------------
 void TVarSocket::Apagar()
 {
@@ -696,9 +707,9 @@ bool TVarSocket::FuncIniSSL(TVariavel * v)
 }
 
 //------------------------------------------------------------------------------
-int TVarSocket::getTipo(int numfunc)
+TVarTipo TVarSocket::FTipo(TVariavel * v)
 {
-    return (numfunc ? varInt : varOutros);
+    return (v->numfunc ? varInt : varOutros);
 }
 
 //------------------------------------------------------------------------------
@@ -729,6 +740,19 @@ void TVarSocket::setValor(int numfunc, int valor)
     default:
         Socket->Variavel(numfunc, valor < 0 ? 0 : valor);
     }
+}
+
+//------------------------------------------------------------------------------
+int TVarSocket::FTamanho(const char * instr)
+{
+    return sizeof(TVarSocket);
+}
+
+//------------------------------------------------------------------------------
+int TVarSocket::FTamanhoVetor(const char * instr)
+{
+    int total = (unsigned char)instr[Instr::endVetor];
+    return (total ? total : 1) * sizeof(TVarSocket);
 }
 
 //------------------------------------------------------------------------------

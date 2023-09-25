@@ -3,6 +3,8 @@
 
 //----------------------------------------------------------------------------
 class TVariavel;
+class TVarInfo;
+enum TVarTipo : unsigned char;
 class TClasse;
 class TObjeto;
 
@@ -11,6 +13,8 @@ class TObjeto;
 class TVarDebug /// Variáveis Debug
 {
 public:
+    static const TVarInfo * Inicializa();
+        ///< Inicializa variável e retorna informações
     void Criar();           ///< Cria objeto
             /**< Após criado, acertar defvar, indice e chamar EndObjeto() */
     void Apagar();          ///< Apaga objeto
@@ -23,7 +27,7 @@ public:
 
     static bool Func(TVariavel * v, const char * nome);
         ///< Função da variável
-    static int  getTipo(int numfunc);
+    static TVarTipo FTipo(TVariavel * v);
         ///< Retorna o tipo de variável
     static int  getInt(int numfunc);
         ///< Ler valor numérico da variável como int
@@ -59,6 +63,9 @@ private:
     static bool FuncPasso(TVariavel * v);  ///< Processa função Passo
     static bool FuncVer(TVariavel * v);    ///< Processa função Ver
     static bool FuncData(TVariavel * v);   ///< Processa função Data
+
+    static int FTamanho(const char * instr);
+    static int FTamanhoVetor(const char * instr);
 };
 
 //----------------------------------------------------------------------------

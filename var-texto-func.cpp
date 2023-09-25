@@ -1233,9 +1233,9 @@ bool TTextoPos::FuncMd5Sha1(TVariavel * v, int valor)
 }
 
 //----------------------------------------------------------------------------
-int TTextoPos::getTipo(int numfunc)
+TVarTipo TTextoPos::FTipo(TVariavel * v)
 {
-    return (numfunc ? varInt : varOutros);
+    return (v->numfunc ? varInt : varOutros);
 }
 
 //----------------------------------------------------------------------------

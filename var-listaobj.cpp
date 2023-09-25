@@ -36,6 +36,17 @@ unsigned long TGrupoX::Tempo = 0;
 TListaX * TListaX::EndMover = nullptr;
 
 //----------------------------------------------------------------------------
+const TVarInfo * TListaObj::Inicializa()
+{
+    static const TVarInfo var(
+        FTamanho,
+        FTamanhoVetor,
+        TVarInfo::FTipoOutros,
+        TVarInfo::FFuncVetorFalse);
+    return &var;
+}
+
+//----------------------------------------------------------------------------
 void TListaObj::Apagar()
 {
     if (Objeto)
@@ -663,6 +674,30 @@ bool TListaObj::FuncTotal(TVariavel * v)
     return Instr::CriarVarInt(x);
 }
 
+//------------------------------------------------------------------------------
+int TListaObj::FTamanho(const char * instr)
+{
+    return sizeof(TListaObj);
+}
+
+//------------------------------------------------------------------------------
+int TListaObj::FTamanhoVetor(const char * instr)
+{
+    int total = (unsigned char)instr[Instr::endVetor];
+    return (total ? total : 1) * sizeof(TListaObj);
+}
+
+//----------------------------------------------------------------------------
+const TVarInfo * TListaItem::Inicializa()
+{
+    static const TVarInfo var(
+        FTamanho,
+        FTamanhoVetor,
+        TVarInfo::FTipoOutros,
+        TVarInfo::FFuncVetorFalse);
+    return &var;
+}
+
 //----------------------------------------------------------------------------
 void TListaItem::Apagar()
 {
@@ -961,6 +996,19 @@ bool TListaItem::FuncAddDepois1(TVariavel * v)
         return false;
     Instr::VarAtual->end_listaitem->MudarRef(valor);
     return true;
+}
+
+//------------------------------------------------------------------------------
+int TListaItem::FTamanho(const char * instr)
+{
+    return sizeof(TListaItem);
+}
+
+//------------------------------------------------------------------------------
+int TListaItem::FTamanhoVetor(const char * instr)
+{
+    int total = (unsigned char)instr[Instr::endVetor];
+    return (total ? total : 1) * sizeof(TListaItem);
 }
 
 //----------------------------------------------------------------------------

@@ -1,6 +1,7 @@
 #ifndef VARIAVEL_H
 #define VARIAVEL_H
 
+#include "instr-enum.h"
 class TClasse;
 class TObjeto;
 class TVarRef;
@@ -30,16 +31,47 @@ class TIndiceItem;
 class TVarDataHora;
 class TTextoVarSub;
 class TTextoObjSub;
+class TVariavel;
 
 //----------------------------------------------------------------------------
 /// Tipo de variável
-enum TVarTipo
+enum TVarTipo : unsigned char
 {
     varOutros,  ///< Desconhecido
     varInt,     ///< Variável int
     varDouble,  ///< Variável double
     varTxt,     ///< Texto (const char*)
     varObj      ///< Referência (TObjeto*) e "NULO" (se TObjeto* = 0)
+};
+
+//----------------------------------------------------------------------------
+/// Informações e funções de cada variável
+class TVarInfo
+{
+private:
+    int (*FTamanho)(const char * instr);
+    int (*FTamanhoVetor)(const char * instr);
+    TVarTipo (*FTipo)(TVariavel * v);
+    bool (*FFuncVetor)(TVariavel * v, const char * nome);
+
+public:
+    /// Construtor usado ao criar TVariavel::VarInfo
+    TVarInfo();
+    /// Construtor usado nas variáveis da linguagem
+    TVarInfo(int (*fTamanho)(const char * instr),
+            int (*fTamanhoVetor)(const char * instr),
+            TVarTipo (*fTipo)(TVariavel * v),
+            bool (*fFuncVetor)(TVariavel * v, const char * nome));
+
+    static int FTamanho0(const char * instr);
+    static TVarTipo FTipoOutros(TVariavel * v);
+    static TVarTipo FTipoInt(TVariavel * v);
+    static TVarTipo FTipoDouble(TVariavel * v);
+    static TVarTipo FTipoTxt(TVariavel * v);
+    static TVarTipo FTipoObj(TVariavel * v);
+    static bool FFuncVetorFalse(TVariavel * v, const char * nome);
+
+    friend TVariavel;
 };
 
 //----------------------------------------------------------------------------
@@ -50,36 +82,67 @@ enum TVarTipo
 class TVariavel /// Acesso às variáveis
 {
 public:
+    static void Inicializa(); ///< Inicializa as variáveis; chamado em main.cpp
     TVariavel();        ///< Construtor
     void Limpar();      ///< Limpa todos os campos do objeto
 
 // Dados da variável
-    static int Tamanho(const char * instr);
-        ///< Obtém o tamanho de uma variável na memória
-        /**< @param instr Instrução codificada por Instr::Codif
-             @return Tamanho da variável (0=não ocupa lugar na memória)
-             @note  Se for vetor, retorna o tamanho do vetor na memória */
 
-    int TamanhoVetor();
-        ///< Obtém o tamanho do vetor de variáveis conforme TVariavel::defvar
+    ///< Obtém o tamanho de uma variável na memória
+    /**< @param instr Instrução codificada por Instr::Codif
+     *   @return Tamanho da variável (0=não ocupa lugar na memória)
+     *   @note  Se for vetor, retorna o tamanho do vetor na memória */
+    static inline int Tamanho(const char * instr)
+    {
+        unsigned char cmd = (unsigned char)instr[2];
+        if (cmd < Instr::cTotalComandos)
+            return VarInfo[cmd].FTamanho(instr);
+        return 0;
+    }
 
-    TVarTipo Tipo();
-        ///< Obtém o tipo mais apropriado para expressões numéricas
-        /**< Usa  TVariavel::defvar  e  TVariavel::endvar
-             @return Tipo de variável */
+    /// Obtém o tamanho do vetor de variáveis conforme TVariavel::defvar
+    inline int TamanhoVetor()
+    {
+        unsigned char cmd = (unsigned char)defvar[2];
+        if (cmd < Instr::cTotalComandos)
+            return VarInfo[cmd].FTamanhoVetor(defvar);
+        return 0;
+    }
+
+    /// Obtém o tipo mais apropriado para expressões numéricas
+    /** Usa  TVariavel::defvar  e  TVariavel::endvar
+     *  @return Tipo de variável */
+    inline TVarTipo Tipo()
+    {
+        if (indice == 0xFF) // Vetor
+            return varOutros;
+        unsigned char cmd = (unsigned char)defvar[2];
+        if (cmd < Instr::cTotalComandos)
+            return VarInfo[cmd].FTipo(this);
+        return varOutros;
+    }
 
 // Construtor/destrutor/mover
-    void Criar(TClasse * c, TObjeto * o);
-        ///< Criar variável: acerta dados da variável na memória
-        /**< Usa  TVariavel::defvar  e  TVariavel::endvar
-             @note Criar uma variável significa:
-                - Alocar memória para a variável
-                - Chamar TVariavel::Criar()  */
 
-    void Apagar();
-        ///< Apagar variável: remove dados da variável na memória
-        /**< Usa  TVariavel::defvar  e  TVariavel::endvar
-             @note Não libera memória alocada (não executa delete) */
+    /// Criar variável: acerta dados da variável na memória
+    /** Usa  TVariavel::defvar  e  TVariavel::endvar
+     *  @note Criar uma variável significa:
+     *    - Alocar memória para a variável
+     *    - Chamar TVariavel::Criar()  */
+    inline void Criar(TClasse * c, TObjeto * o)
+    {
+        Redim(c, o, 0, defvar[Instr::endVetor] ?
+                (unsigned char)defvar[Instr::endVetor] : 1);
+    }
+
+    /// Apagar variável: remove dados da variável na memória
+    /** Usa  TVariavel::defvar  e  TVariavel::endvar
+     *  @note Não libera memória alocada (não executa delete) */
+    inline void Apagar()
+    {
+        Redim(0, 0, defvar[Instr::endVetor] ?
+                (unsigned char)defvar[Instr::endVetor] : 1, 0);
+    }
 
     void Redim(TClasse * c, TObjeto * o, unsigned int antes, unsigned int depois);
         ///< Redimensiona vetor na memória
@@ -188,6 +251,9 @@ public:
         ///< Índice no vetor ou 0 se não for vetor ou 0xFF se for o vetor
     unsigned char numbit;  ///< Número do primeiro bit de 0 a 7, se int1
     unsigned short numfunc; ///< Para uso da variável; inicialmente é zero
+
+private:
+    static TVarInfo * VarInfo;
 };
 
 //----------------------------------------------------------------------------

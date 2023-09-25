@@ -21,6 +21,17 @@
 //#define DEBUG_MEM // Mostra variáveis criadas e apagadas
 
 //----------------------------------------------------------------------------
+const TVarInfo * TTextoObj::Inicializa()
+{
+    static const TVarInfo var(
+        FTamanho,
+        FTamanhoVetor,
+        TVarInfo::FTipoOutros,
+        TVarInfo::FFuncVetorFalse);
+    return &var;
+}
+
+//----------------------------------------------------------------------------
 bool TTextoObj::Func(TVariavel * v, const char * nome)
 {
 // Lista das funções de indiceitem
@@ -477,6 +488,30 @@ void TTextoObj::Mudar(const char * nomevar, TObjeto * obj)
     }
 }
 
+//------------------------------------------------------------------------------
+int TTextoObj::FTamanho(const char * instr)
+{
+    return sizeof(TTextoObj);
+}
+
+//------------------------------------------------------------------------------
+int TTextoObj::FTamanhoVetor(const char * instr)
+{
+    int total = (unsigned char)instr[Instr::endVetor];
+    return (total ? total : 1) * sizeof(TTextoObj);
+}
+
+//------------------------------------------------------------------------------
+const TVarInfo * TTextoObjSub::Inicializa()
+{
+    static const TVarInfo var(
+        FTamanho,
+        FTamanhoVetor,
+        TVarInfo::FTipoObj,
+        TVarInfo::FFuncVetorFalse);
+    return &var;
+}
+
 //----------------------------------------------------------------------------
 void TTextoObjSub::Criar(TTextoObj * var)
 {
@@ -531,6 +566,19 @@ void TTextoObjSub::setObj(TObjeto * obj)
 {
     if (TextoObj)
         TextoObj->Mudar(NomeVar, obj);
+}
+
+//------------------------------------------------------------------------------
+int TTextoObjSub::FTamanho(const char * instr)
+{
+    return sizeof(TTextoObjSub);
+}
+
+//------------------------------------------------------------------------------
+int TTextoObjSub::FTamanhoVetor(const char * instr)
+{
+    int total = (unsigned char)instr[Instr::endVetor];
+    return (total ? total : 1) * sizeof(TTextoObjSub);
 }
 
 //----------------------------------------------------------------------------

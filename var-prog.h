@@ -1,9 +1,9 @@
 #ifndef VAR_PROG_H
 #define VAR_PROG_H
 
-//----------------------------------------------------------------------------
 #include "classe.h"
 class TVariavel;
+class TVarInfo;
 class TClasse;
 class TObjeto;
 class TArqMapa;
@@ -31,6 +31,8 @@ enum TProgConsulta ///< O que consultar, TVarProg::consulta
 class TVarProg /// Variáveis Prog
 {
 public:
+    static const TVarInfo * Inicializa();
+        ///< Inicializa variável e retorna informações
     void Criar();           ///< Cria objeto
     void Apagar();          ///< Apaga objeto
     void Mover(TVarProg * destino); ///< Move objeto para outro lugar
@@ -82,6 +84,9 @@ private:
     bool FuncClFim(TVariavel * v);        ///< Processa função ClFim
     bool FuncClAntes(TVariavel * v);      ///< Processa função ClAntes
     bool FuncClDepois(TVariavel * v);     ///< Processa função ClDepois
+
+    static int FTamanho(const char * instr);
+    static int FTamanhoVetor(const char * instr);
 
     void MudaConsulta(TProgConsulta valor);
         ///< Muda o valor da variável consulta

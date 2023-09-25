@@ -28,14 +28,21 @@ unsigned int TVarIntTempo::TempoMais = 0;
 //#define DEBUG  // Mostrar e testar vetores de TVarIntTempo
 
 //------------------------------------------------------------------------------
-void TVarIntTempo::PreparaIni()
+const TVarInfo * TVarIntTempo::Inicializa()
 {
-    if (TVarIntTempo::VetMenos)
-        return;
-    VetMenos = new TVarIntTempo*[INTTEMPO_MAX];
-    VetMais = new TVarIntTempo*[INTTEMPO_MAX];
-    memset(VetMenos, 0, sizeof(TVarIntTempo*) * INTTEMPO_MAX);
-    memset(VetMais, 0, sizeof(TVarIntTempo*) * INTTEMPO_MAX);
+    if (TVarIntTempo::VetMenos == nullptr)
+    {
+        VetMenos = new TVarIntTempo*[INTTEMPO_MAX];
+        VetMais = new TVarIntTempo*[INTTEMPO_MAX];
+        memset(VetMenos, 0, sizeof(TVarIntTempo*) * INTTEMPO_MAX);
+        memset(VetMais, 0, sizeof(TVarIntTempo*) * INTTEMPO_MAX);
+    }
+    static const TVarInfo var(
+        FTamanho,
+        FTamanhoVetor,
+        TVarInfo::FTipoInt,
+        FuncVetor);
+    return &var;
 }
 
 //------------------------------------------------------------------------------
@@ -275,9 +282,23 @@ bool TVarIntTempo::FuncVetor(TVariavel * v, const char * nome)
         return false;
     const int total = (unsigned char)v->defvar[Instr::endVetor];
     const int numero = (Instr::VarAtual <= v ? 0 : v[1].getInt());
+    TVarIntTempo * ender = reinterpret_cast<TVarIntTempo*>(v->endvar);
     for (int x = 0; x < total; x++)
-        this[x].setValor(0, numero);
+        ender[x].setValor(0, numero);
     return false;
+}
+
+//------------------------------------------------------------------------------
+int TVarIntTempo::FTamanho(const char * instr)
+{
+    return sizeof(TVarIntTempo);
+}
+
+//------------------------------------------------------------------------------
+int TVarIntTempo::FTamanhoVetor(const char * instr)
+{
+    int total = (unsigned char)instr[Instr::endVetor];
+    return (total ? total : 1) * sizeof(TVarIntTempo);
 }
 
 //------------------------------------------------------------------------------

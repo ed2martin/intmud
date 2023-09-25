@@ -1,11 +1,16 @@
 #ifndef VAR_DATAHORA_H
 #define VAR_DATAHORA_H
 
-//----------------------------------------------------------------------------
 class TVariavel;
+class TVarInfo;
+enum TVarTipo : unsigned char;
+
+//----------------------------------------------------------------------------
 class TVarDataHora /// Data e hora
 {
 public:
+    static const TVarInfo * Inicializa();
+        ///< Inicializa variável e retorna informações
     void Criar();
             ///< Chamado ao criar objeto
     void Mover(TVarDataHora * destino);
@@ -16,7 +21,7 @@ public:
             ///< Operador de atribuição igual
     bool Func(TVariavel * v, const char * nome);
             ///< Função da variável
-    static int getTipo(int numfunc);
+    static TVarTipo FTipo(TVariavel * v);
             ///< Retorna o tipo de variável
     int  getInt(int numfunc);
             ///< Ler o valor numérico da variável como int
@@ -40,6 +45,10 @@ public:
     unsigned char Hora;     ///< Variável hora
     unsigned char Min;      ///< Variável min
     unsigned char Seg;      ///< Variável seg
+
+private:
+    static int FTamanho(const char * instr);
+    static int FTamanhoVetor(const char * instr);
 };
 
 //----------------------------------------------------------------------------

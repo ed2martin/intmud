@@ -64,6 +64,17 @@ DataHoraNumSeg,
 DataHoraNumTotal
 };
 
+//----------------------------------------------------------------------------
+const TVarInfo * TVarDataHora::Inicializa()
+{
+    static const TVarInfo var(
+        FTamanho,
+        FTamanhoVetor,
+        FTipo,
+        TVarInfo::FFuncVetorFalse);
+    return &var;
+}
+
 //------------------------------------------------------------------------------
 void TVarDataHora::Criar()
 {
@@ -270,9 +281,9 @@ bool TVarDataHora::Func(TVariavel * v, const char * nome)
 }
 
 //------------------------------------------------------------------------------
-int TVarDataHora::getTipo(int numfunc)
+TVarTipo TVarDataHora::FTipo(TVariavel * v)
 {
-    switch (numfunc)
+    switch (v->numfunc)
     {
     case 0: return varOutros;
     case DataHoraNumTotal: return varDouble;
@@ -517,4 +528,17 @@ int TVarDataHora::DiasMes()
     if (Mes < 8)
         return 30 + Mes % 2;
     return 31 - Mes % 2;
+}
+
+//------------------------------------------------------------------------------
+int TVarDataHora::FTamanho(const char * instr)
+{
+    return sizeof(TVarDataHora);
+}
+
+//------------------------------------------------------------------------------
+int TVarDataHora::FTamanhoVetor(const char * instr)
+{
+    int total = (unsigned char)instr[Instr::endVetor];
+    return (total ? total : 1) * sizeof(TVarDataHora);
 }

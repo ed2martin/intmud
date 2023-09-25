@@ -141,8 +141,9 @@ bool TVarIncDec::FuncVetorInc(TVariavel * v, const char * nome)
             numero = INTTEMPO_MAX * INTTEMPO_MAX - 1;
     }
     numero = TempoIni + INTTEMPO_MAX * INTTEMPO_MAX - numero;
+    TVarIncDec * ender = reinterpret_cast<TVarIncDec*>(v->endvar);
     for (int x = 0; x < total; x++)
-        this[x].valor = numero;
+        ender[x].valor = numero;
     return false;
 }
 
@@ -160,7 +161,43 @@ bool TVarIncDec::FuncVetorDec(TVariavel * v, const char * nome)
             numero = INTTEMPO_MAX * INTTEMPO_MAX - 1;
     }
     numero = TempoIni + numero;
+    TVarIncDec * ender = reinterpret_cast<TVarIncDec*>(v->endvar);
     for (int x = 0; x < total; x++)
-        this[x].valor = numero;
+        ender[x].valor = numero;
     return false;
+}
+
+//------------------------------------------------------------------------------
+int TVarIncDec::FTamanho(const char * instr)
+{
+    return sizeof(TVarIncDec);
+}
+
+//------------------------------------------------------------------------------
+int TVarIncDec::FTamanhoVetor(const char * instr)
+{
+    int total = (unsigned char)instr[Instr::endVetor];
+    return (total ? total : 1) * sizeof(TVarIncDec);
+}
+
+//------------------------------------------------------------------------------
+const TVarInfo * TVarIncDec::InicializaInc()
+{
+    static const TVarInfo var(
+        FTamanho,
+        FTamanhoVetor,
+        TVarInfo::FTipoInt,
+        FuncVetorInc);
+    return &var;
+}
+
+//------------------------------------------------------------------------------
+const TVarInfo * TVarIncDec::InicializaDec()
+{
+    static const TVarInfo var(
+        FTamanho,
+        FTamanhoVetor,
+        TVarInfo::FTipoInt,
+        FuncVetorDec);
+    return &var;
 }

@@ -2,6 +2,7 @@
 #define VAR_INTTEMPO_H
 
 class TVariavel;
+class TVarInfo;
 class TObjeto;
 
 //----------------------------------------------------------------------------
@@ -9,7 +10,8 @@ class TObjeto;
 class TVarIntTempo /// Variáveis inttempo
 {
 public:
-    static void PreparaIni();
+    static const TVarInfo * Inicializa();
+        ///< Inicializa variável e retorna informações
     static int TempoEspera();
     static void ProcEventos(int TempoDecorrido);
     int  getValor(int numfunc); ///< Ler valor da variável
@@ -17,7 +19,7 @@ public:
     void Mover(TVarIntTempo * destino); ///< Move para outro lugar
     void EndObjeto(TClasse * c, TObjeto * o);
     bool Func(TVariavel * v, const char * nome); ///< Funções de inttempo
-    bool FuncVetor(TVariavel * v, const char * nome); ///< Funções de vetores
+    static bool FuncVetor(TVariavel * v, const char * nome); ///< Funções de vetores
 
     const char * defvar;///< Como foi definida a variável
     union {
@@ -29,6 +31,9 @@ public:
     bool parado;            ///< Se o contador está parado
 
 private:
+    static int FTamanho(const char * instr);
+    static int FTamanhoVetor(const char * instr);
+
     static void DebugVet(bool mostrar); ///< Checa se listas ligadas estão OK
     unsigned short IndiceMenos;   ///< Índice em VetMenos
     unsigned short IndiceMais;    ///< Índice em VetMais

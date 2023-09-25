@@ -1,16 +1,19 @@
 #ifndef VAR_LISTAOBJ_H
 #define VAR_LISTAOBJ_H
 
-//----------------------------------------------------------------------------
 class TListaItem;
 class TListaX;
 class TClasse;
 class TObjeto;
 class TVariavel;
+class TVarInfo;
 
+//----------------------------------------------------------------------------
 class TListaObj /// Variáveis ListaObj
 {
 public:
+    static const TVarInfo * Inicializa();
+        ///< Inicializa variável e retorna informações
     void Apagar();          ///< Apaga objeto
     void Mover(TListaObj * destino); ///< Move TListaObj para outro lugar
     TListaX * AddInicio(TObjeto * obj);
@@ -54,12 +57,17 @@ private:
     bool FuncApagar(TVariavel * v);
     bool FuncPossui(TVariavel * v);
     bool FuncTotal(TVariavel * v);
+
+    static int FTamanho(const char * instr);
+    static int FTamanhoVetor(const char * instr);
 };
 
 //----------------------------------------------------------------------------
 class TListaItem /// Variável ListaItem, usada para acessar ListaObj
 {
 public:
+    static const TVarInfo * Inicializa();
+        ///< Inicializa variável e retorna informações
     void Apagar();          ///< Apaga objeto
     void Mover(TListaItem * destino); ///< Move TListaItem para outro lugar
     bool Func(TVariavel * v, const char * nome); ///< Função da variável
@@ -87,6 +95,9 @@ private:
     bool FuncAddDepois(TVariavel * v);
     bool FuncAddAntes1(TVariavel * v);
     bool FuncAddDepois1(TVariavel * v);
+
+    static int FTamanho(const char * instr);
+    static int FTamanhoVetor(const char * instr);
 };
 
 //----------------------------------------------------------------------------

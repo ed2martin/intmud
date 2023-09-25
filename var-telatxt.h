@@ -1,8 +1,9 @@
 #ifndef VAR_TELATXT_H
 #define VAR_TELATXT_H
 
-//----------------------------------------------------------------------------
 class TVariavel;
+class TVarInfo;
+enum TVarTipo : unsigned char;
 class TClasse;
 class TObjeto;
 
@@ -62,13 +63,19 @@ private:
     static char * txt_linha; ///< Linha sendo editada
 
 public:
+    static const TVarInfo * Inicializa();
+        ///< Inicializa variável e retorna informações
     void Criar();           ///< Cria objeto
             /**< Após criado, acertar defvar, indice e chamar EndObjeto() */
     void Apagar();          ///< Apaga objeto
     void Mover(TVarTelaTxt * destino); ///< Move TVarSock para outro lugar
     void EndObjeto(TClasse * c, TObjeto * o);
     bool Func(TVariavel * v, const char * nome); ///< Função da variável
-    static int getTipo(int numfunc);
+
+    static int FTamanho(const char * instr);
+    static int FTamanhoVetor(const char * instr);
+
+    static TVarTipo FTipo(TVariavel * v);
                             ///< Retorna o tipo de variável
     int  getValor(int numfunc);
                             ///< Ler o valor numérico da variável

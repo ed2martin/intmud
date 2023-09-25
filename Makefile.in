@@ -111,18 +111,18 @@ am_intmud_OBJECTS = main.$(OBJEXT) classe.$(OBJEXT) objeto.$(OBJEXT) \
 	console.$(OBJEXT) var-telatxt.$(OBJEXT) var-socket.$(OBJEXT) \
 	var-serv.$(OBJEXT) var-ref.$(OBJEXT) var-incdec.$(OBJEXT) \
 	var-inttempo.$(OBJEXT) var-intexec.$(OBJEXT) \
-	var-outros.$(OBJEXT) var-listaobj.$(OBJEXT) \
-	var-texto.$(OBJEXT) var-texto-bloco.$(OBJEXT) \
-	var-texto-func.$(OBJEXT) var-textovar.$(OBJEXT) \
-	var-textoobj.$(OBJEXT) var-nomeobj.$(OBJEXT) \
-	var-arqlog.$(OBJEXT) var-arqsav.$(OBJEXT) var-arqtxt.$(OBJEXT) \
-	var-arqmem.$(OBJEXT) var-arqdir.$(OBJEXT) \
-	var-indiceobj.$(OBJEXT) var-prog.$(OBJEXT) \
-	var-arqprog.$(OBJEXT) var-debug.$(OBJEXT) getrss.$(OBJEXT) \
-	var-datahora.$(OBJEXT) exec.$(OBJEXT) var-arqexec.$(OBJEXT) \
-	mudarclasse.$(OBJEXT) arqler.$(OBJEXT) misc.$(OBJEXT) \
-	procurar.$(OBJEXT) random.$(OBJEXT) sha1.$(OBJEXT) \
-	md5.$(OBJEXT) ssl.$(OBJEXT)
+	var-basico.$(OBJEXT) var-outros.$(OBJEXT) \
+	var-listaobj.$(OBJEXT) var-texto.$(OBJEXT) \
+	var-texto-bloco.$(OBJEXT) var-texto-func.$(OBJEXT) \
+	var-textovar.$(OBJEXT) var-textoobj.$(OBJEXT) \
+	var-nomeobj.$(OBJEXT) var-arqlog.$(OBJEXT) \
+	var-arqsav.$(OBJEXT) var-arqtxt.$(OBJEXT) var-arqmem.$(OBJEXT) \
+	var-arqdir.$(OBJEXT) var-indiceobj.$(OBJEXT) \
+	var-prog.$(OBJEXT) var-arqprog.$(OBJEXT) var-debug.$(OBJEXT) \
+	getrss.$(OBJEXT) var-datahora.$(OBJEXT) exec.$(OBJEXT) \
+	var-arqexec.$(OBJEXT) mudarclasse.$(OBJEXT) arqler.$(OBJEXT) \
+	misc.$(OBJEXT) procurar.$(OBJEXT) random.$(OBJEXT) \
+	sha1.$(OBJEXT) md5.$(OBJEXT) ssl.$(OBJEXT)
 intmud_OBJECTS = $(am_intmud_OBJECTS)
 intmud_LDADD = $(LDADD)
 AM_V_P = $(am__v_P_@AM_V@)
@@ -154,17 +154,17 @@ am__depfiles_remade = ./$(DEPDIR)/arqler.Po ./$(DEPDIR)/arqmapa.Po \
 	./$(DEPDIR)/var-arqdir.Po ./$(DEPDIR)/var-arqexec.Po \
 	./$(DEPDIR)/var-arqlog.Po ./$(DEPDIR)/var-arqmem.Po \
 	./$(DEPDIR)/var-arqprog.Po ./$(DEPDIR)/var-arqsav.Po \
-	./$(DEPDIR)/var-arqtxt.Po ./$(DEPDIR)/var-datahora.Po \
-	./$(DEPDIR)/var-debug.Po ./$(DEPDIR)/var-incdec.Po \
-	./$(DEPDIR)/var-indiceobj.Po ./$(DEPDIR)/var-intexec.Po \
-	./$(DEPDIR)/var-inttempo.Po ./$(DEPDIR)/var-listaobj.Po \
-	./$(DEPDIR)/var-nomeobj.Po ./$(DEPDIR)/var-outros.Po \
-	./$(DEPDIR)/var-prog.Po ./$(DEPDIR)/var-ref.Po \
-	./$(DEPDIR)/var-serv.Po ./$(DEPDIR)/var-socket.Po \
-	./$(DEPDIR)/var-telatxt.Po ./$(DEPDIR)/var-texto-bloco.Po \
-	./$(DEPDIR)/var-texto-func.Po ./$(DEPDIR)/var-texto.Po \
-	./$(DEPDIR)/var-textoobj.Po ./$(DEPDIR)/var-textovar.Po \
-	./$(DEPDIR)/variavel.Po
+	./$(DEPDIR)/var-arqtxt.Po ./$(DEPDIR)/var-basico.Po \
+	./$(DEPDIR)/var-datahora.Po ./$(DEPDIR)/var-debug.Po \
+	./$(DEPDIR)/var-incdec.Po ./$(DEPDIR)/var-indiceobj.Po \
+	./$(DEPDIR)/var-intexec.Po ./$(DEPDIR)/var-inttempo.Po \
+	./$(DEPDIR)/var-listaobj.Po ./$(DEPDIR)/var-nomeobj.Po \
+	./$(DEPDIR)/var-outros.Po ./$(DEPDIR)/var-prog.Po \
+	./$(DEPDIR)/var-ref.Po ./$(DEPDIR)/var-serv.Po \
+	./$(DEPDIR)/var-socket.Po ./$(DEPDIR)/var-telatxt.Po \
+	./$(DEPDIR)/var-texto-bloco.Po ./$(DEPDIR)/var-texto-func.Po \
+	./$(DEPDIR)/var-texto.Po ./$(DEPDIR)/var-textoobj.Po \
+	./$(DEPDIR)/var-textovar.Po ./$(DEPDIR)/variavel.Po
 am__mv = mv -f
 CXXCOMPILE = $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) \
 	$(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS)
@@ -342,19 +342,20 @@ intmud_SOURCES = main.cpp classe.cpp classe.h objeto.cpp objeto.h \
 	var-telatxt.cpp var-telatxt.h var-socket.cpp var-socket.h \
 	var-serv.cpp var-serv.h var-ref.cpp var-ref.h var-incdec.cpp \
 	var-incdec.h var-inttempo.cpp var-inttempo.h var-intexec.cpp \
-	var-intexec.h var-outros.cpp var-outros.h var-listaobj.cpp \
-	var-listaobj.h var-texto.cpp var-texto-bloco.cpp \
-	var-texto-func.cpp var-texto.h var-textovar.cpp var-textovar.h \
-	var-textoobj.cpp var-textoobj.h var-nomeobj.cpp var-nomeobj.h \
-	var-arqlog.cpp var-arqlog.h var-arqsav.cpp var-arqsav.h \
-	var-arqtxt.cpp var-arqtxt.h var-arqmem.cpp var-arqmem.h \
-	var-arqdir.cpp var-arqdir.h var-indiceobj.cpp var-indiceobj.h \
-	var-prog.cpp var-prog.h var-arqprog.cpp var-arqprog.h \
-	var-debug.cpp var-debug.h getrss.cpp var-datahora.cpp \
-	var-datahora.h exec.cpp exec.h var-arqexec.cpp var-arqexec.h \
-	mudarclasse.cpp mudarclasse.h arqler.cpp arqler.h misc.cpp \
-	misc.h procurar.cpp procurar.h random.cpp random.h sha1.cpp \
-	sha1.h md5.cpp md5.h ssl.cpp ssl.h rbt.cpp.h
+	var-intexec.h var-basico.cpp var-basico.h var-outros.cpp \
+	var-outros.h var-listaobj.cpp var-listaobj.h var-texto.cpp \
+	var-texto-bloco.cpp var-texto-func.cpp var-texto.h \
+	var-textovar.cpp var-textovar.h var-textoobj.cpp \
+	var-textoobj.h var-nomeobj.cpp var-nomeobj.h var-arqlog.cpp \
+	var-arqlog.h var-arqsav.cpp var-arqsav.h var-arqtxt.cpp \
+	var-arqtxt.h var-arqmem.cpp var-arqmem.h var-arqdir.cpp \
+	var-arqdir.h var-indiceobj.cpp var-indiceobj.h var-prog.cpp \
+	var-prog.h var-arqprog.cpp var-arqprog.h var-debug.cpp \
+	var-debug.h getrss.cpp var-datahora.cpp var-datahora.h \
+	exec.cpp exec.h var-arqexec.cpp var-arqexec.h mudarclasse.cpp \
+	mudarclasse.h arqler.cpp arqler.h misc.cpp misc.h procurar.cpp \
+	procurar.h random.cpp random.h sha1.cpp sha1.h md5.cpp md5.h \
+	ssl.cpp ssl.h rbt.cpp.h
 AM_CXXFLAGS = -Wall -fno-exceptions -fno-rtti
 all: config.h
 	$(MAKE) $(AM_MAKEFLAGS) all-am
@@ -492,6 +493,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/var-arqprog.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/var-arqsav.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/var-arqtxt.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/var-basico.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/var-datahora.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/var-debug.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/var-incdec.Po@am__quote@ # am--include-marker
@@ -836,6 +838,7 @@ distclean: distclean-am
 	-rm -f ./$(DEPDIR)/var-arqprog.Po
 	-rm -f ./$(DEPDIR)/var-arqsav.Po
 	-rm -f ./$(DEPDIR)/var-arqtxt.Po
+	-rm -f ./$(DEPDIR)/var-basico.Po
 	-rm -f ./$(DEPDIR)/var-datahora.Po
 	-rm -f ./$(DEPDIR)/var-debug.Po
 	-rm -f ./$(DEPDIR)/var-incdec.Po
@@ -933,6 +936,7 @@ maintainer-clean: maintainer-clean-am
 	-rm -f ./$(DEPDIR)/var-arqprog.Po
 	-rm -f ./$(DEPDIR)/var-arqsav.Po
 	-rm -f ./$(DEPDIR)/var-arqtxt.Po
+	-rm -f ./$(DEPDIR)/var-basico.Po
 	-rm -f ./$(DEPDIR)/var-datahora.Po
 	-rm -f ./$(DEPDIR)/var-debug.Po
 	-rm -f ./$(DEPDIR)/var-incdec.Po

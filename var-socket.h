@@ -9,8 +9,9 @@
  #include <netinet/in.h>
 #endif
 
-//----------------------------------------------------------------------------
 class TVariavel;
+class TVarInfo;
+enum TVarTipo : unsigned char;
 class TVarSocket;
 class TClasse;
 class TObjeto;
@@ -122,6 +123,8 @@ private:
 class TVarSocket /// Variáveis Socket
 {
 public:
+    static const TVarInfo * Inicializa();
+        ///< Inicializa variável e retorna informações
     void Apagar();          ///< Apaga objeto
     void MudarSock(TObjSocket * socket); ///< Muda a variável TVarSocket::Socket
     void Mover(TVarSocket * destino); ///< Move TVarSock para outro lugar
@@ -146,7 +149,10 @@ public:
     bool FuncIPNome(TVariavel * v);
     bool FuncIPValido(TVariavel * v);
     bool FuncIniSSL(TVariavel * v);
-    static int getTipo(int numfunc);
+    static int FTamanho(const char * instr);
+    static int FTamanhoVetor(const char * instr);
+
+    static TVarTipo FTipo(TVariavel * v);
                             ///< Retorna o tipo de variável
     int  getValor(int numfunc);
                             ///< Ler valor numérico da variável

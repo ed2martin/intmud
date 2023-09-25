@@ -29,6 +29,17 @@ static const int tamanhobloco = 1024;
 #endif
 
 //----------------------------------------------------------------------------
+const TVarInfo * TVarArqMem::Inicializa()
+{
+    static const TVarInfo var(
+        FTamanho,
+        FTamanhoVetor,
+        TVarInfo::FTipoOutros,
+        TVarInfo::FFuncVetorFalse);
+    return &var;
+}
+
+//----------------------------------------------------------------------------
 void TVarArqMem::Criar()
 {
     Inicio = Fim = PosBloco = nullptr;
@@ -682,4 +693,17 @@ void TVarArqMem::Debug()
         }
         assert(bl2->Depois == nullptr);
     }
+}
+
+//------------------------------------------------------------------------------
+int TVarArqMem::FTamanho(const char * instr)
+{
+    return sizeof(TVarArqMem);
+}
+
+//------------------------------------------------------------------------------
+int TVarArqMem::FTamanhoVetor(const char * instr)
+{
+    int total = (unsigned char)instr[Instr::endVetor];
+    return (total ? total : 1) * sizeof(TVarArqMem);
 }

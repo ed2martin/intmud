@@ -2,6 +2,7 @@
 #define VAR_INTEXEC_H
 
 class TVariavel;
+class TVarInfo;
 class TObjeto;
 
 //----------------------------------------------------------------------------
@@ -9,6 +10,8 @@ class TObjeto;
 class TVarIntExec /// Variáveis intexec
 {
 public:
+    static const TVarInfo * Inicializa();
+        ///< Inicializa variável e retorna informações
     static void ProcEventos(); ///< Processa eventos pendentes
     int  getValor(); ///< Ler valor da variável
     void setValor(int valor); ///< Mudar valor da variável
@@ -24,6 +27,9 @@ public:
     unsigned char indice;   ///< Índice no vetor
 
 private:
+    static int FTamanho(const char * instr);
+    static int FTamanhoVetor(const char * instr);
+
     TVarIntExec * Antes;        ///< Objeto anterior na lista ligada
     TVarIntExec * Depois;        ///< Próximo objeto na lista ligada
     static TVarIntExec * Inicio; ///< Primeiro item da lista ligada

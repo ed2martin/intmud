@@ -38,6 +38,7 @@ private:
 class TClasse;
 class TObjeto;
 class TVariavel;
+class TVarInfo;
 class TVarArqExec;
 class TObjExec : public TExec /// Um programa sendo executado por ArqExec
 {
@@ -79,6 +80,8 @@ private:
 class TVarArqExec /// Uma variável ArqExec
 {
 public:
+    static const TVarInfo * Inicializa();
+        ///< Inicializa variável e retorna informações
     void Apagar();          ///< Apaga objeto
     void Mover(TVarArqExec * destino);  ///< Move TVarArqExec para outro lugar
     void EndObjeto(TClasse * c, TObjeto * o);
@@ -104,6 +107,9 @@ private:
     bool FuncAbrir(TVariavel * v);  ///< Processa função Abrir
     bool FuncFechar(TVariavel * v); ///< Processa função Fechar
     bool FuncAberto(TVariavel * v); ///< Processa função Aberto
+
+    static int FTamanho(const char * instr);
+    static int FTamanhoVetor(const char * instr);
 
     TObjExec * ObjExec;     ///< Programa atual
 

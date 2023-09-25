@@ -15,6 +15,17 @@
 #include "instr.h"
 #include "misc.h"
 
+//----------------------------------------------------------------------------
+const TVarInfo * TVarNomeObj::Inicializa()
+{
+    static const TVarInfo var(
+        FTamanho,
+        FTamanhoVetor,
+        TVarInfo::FTipoOutros,
+        TVarInfo::FFuncVetorFalse);
+    return &var;
+}
+
 //------------------------------------------------------------------------------
 bool TVarNomeObj::Func(TVariavel * v, const char * nome)
 {
@@ -191,4 +202,17 @@ bool TVarNomeObj::Func(TVariavel * v, const char * nome)
 int TVarNomeObj::getValor()
 {
     return Achou;
+}
+
+//------------------------------------------------------------------------------
+int TVarNomeObj::FTamanho(const char * instr)
+{
+    return sizeof(TVarNomeObj);
+}
+
+//------------------------------------------------------------------------------
+int TVarNomeObj::FTamanhoVetor(const char * instr)
+{
+    int total = (unsigned char)instr[Instr::endVetor];
+    return (total ? total : 1) * sizeof(TVarNomeObj);
 }

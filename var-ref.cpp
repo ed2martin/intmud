@@ -53,6 +53,17 @@ void MostraRef(TVarRef * r)
 }
 */
 
+//----------------------------------------------------------------------------
+const TVarInfo * TVarRef::Inicializa()
+{
+    static const TVarInfo var(
+        FTamanho,
+        FTamanhoVetor,
+        TVarInfo::FTipoObj,
+        TVarInfo::FFuncVetorFalse);
+    return &var;
+}
+
 //------------------------------------------------------------------------------
 void TVarRef::MudarPont(TObjeto * obj)
 {
@@ -91,4 +102,17 @@ void TVarRef::Mover(TVarRef * destino)
             Depois->Antes = destino;
     }
     memmove(destino, this, sizeof(TVarRef));
+}
+
+//------------------------------------------------------------------------------
+int TVarRef::FTamanho(const char * instr)
+{
+    return sizeof(TVarRef);
+}
+
+//------------------------------------------------------------------------------
+int TVarRef::FTamanhoVetor(const char * instr)
+{
+    int total = (unsigned char)instr[Instr::endVetor];
+    return (total ? total : 1) * sizeof(TVarRef);
 }

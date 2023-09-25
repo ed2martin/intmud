@@ -49,6 +49,17 @@ int TextoAnotaLin(char * destino, const char * origem, int total)
 }
 
 //----------------------------------------------------------------------------
+const TVarInfo * TTextoTxt::Inicializa()
+{
+    static const TVarInfo var(
+        FTamanho,
+        FTamanhoVetor,
+        TVarInfo::FTipoOutros,
+        TVarInfo::FFuncVetorFalse);
+    return &var;
+}
+
+//----------------------------------------------------------------------------
 void TTextoTxt::Apagar()
 {
 // Otimização, no caso de precisar mover algum bloco que será apagado
@@ -144,6 +155,30 @@ void TTextoTxt::AddTexto(const char * texto, unsigned int tamtexto)
     }
 }
 
+//------------------------------------------------------------------------------
+int TTextoTxt::FTamanho(const char * instr)
+{
+    return sizeof(TTextoTxt);
+}
+
+//------------------------------------------------------------------------------
+int TTextoTxt::FTamanhoVetor(const char * instr)
+{
+    int total = (unsigned char)instr[Instr::endVetor];
+    return (total ? total : 1) * sizeof(TTextoTxt);
+}
+
+//----------------------------------------------------------------------------
+const TVarInfo * TTextoPos::Inicializa()
+{
+    static const TVarInfo var(
+        FTamanho,
+        FTamanhoVetor,
+        FTipo,
+        TVarInfo::FFuncVetorFalse);
+    return &var;
+}
+
 //----------------------------------------------------------------------------
 void TTextoPos::Apagar()
 {
@@ -195,6 +230,19 @@ void TTextoPos::MudarTxt(TTextoTxt * obj)
 // Atualiza ponteiro
     TextoTxt = obj;
     Bloco = nullptr;
+}
+
+//------------------------------------------------------------------------------
+int TTextoPos::FTamanho(const char * instr)
+{
+    return sizeof(TTextoPos);
+}
+
+//------------------------------------------------------------------------------
+int TTextoPos::FTamanhoVetor(const char * instr)
+{
+    int total = (unsigned char)instr[Instr::endVetor];
+    return (total ? total : 1) * sizeof(TTextoPos);
 }
 
 //----------------------------------------------------------------------------

@@ -1,13 +1,17 @@
 #ifndef VAR_INDICEOBJ_H
 #define VAR_INDICEOBJ_H
 
-//----------------------------------------------------------------------------
-class TObjeto;
 class TVariavel;
+class TVarInfo;
+class TObjeto;
 class TIndiceObj;
+
+//----------------------------------------------------------------------------
 class TIndiceItem /// Variável IndiceItem
 {
 public:
+    static const TVarInfo * Inicializa();
+        ///< Inicializa variável e retorna informações
     void Apagar();          ///< Apaga objeto
     void Mover(TIndiceItem * destino); ///< Move para outro lugar
     int  getValor();        ///< Ler valor numérico da variável
@@ -24,6 +28,9 @@ public:
     bool FuncFim(TVariavel * v);
 
 private:
+    static int FTamanho(const char * instr);
+    static int FTamanhoVetor(const char * instr);
+
     TIndiceItem * Antes;    ///< Objeto anterior
     TIndiceItem * Depois;   ///< Próximo objeto
     TIndiceObj * IndiceObj; ///< Qual variável está apontando
@@ -36,6 +43,8 @@ private:
 class TIndiceObj /// Variável IndiceObj
 {
 public:
+    static const TVarInfo * Inicializa();
+        ///< Inicializa variável e retorna informações
     void Apagar();          ///< Apaga objeto
     void Mover(TIndiceObj * destino); ///< Move para outro lugar
     const char * getNome();     ///< Lê o texto
@@ -70,6 +79,9 @@ private:
 
     char Nome[65];          ///< Texto da variável
     TIndiceItem * IndiceItem; ///< Primeiro indiceitem apontando para esse objeto
+
+    static int FTamanho(const char * instr);
+    static int FTamanhoVetor(const char * instr);
 
     friend class TIndiceItem;
 };

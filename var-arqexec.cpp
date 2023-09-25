@@ -256,6 +256,17 @@ void TObjExec::ProcEventos(fd_set * set_entrada, fd_set * set_saida)
     }
 }
 
+//----------------------------------------------------------------------------
+const TVarInfo * TVarArqExec::Inicializa()
+{
+    static const TVarInfo var(
+        FTamanho,
+        FTamanhoVetor,
+        TVarInfo::FTipoOutros,
+        TVarInfo::FFuncVetorFalse);
+    return &var;
+}
+
 //------------------------------------------------------------------------------
 void TVarArqExec::Apagar()
 {
@@ -416,4 +427,17 @@ bool TVarArqExec::FuncAberto(TVariavel * v)
     bool aberto = (ObjExec != nullptr);
     Instr::ApagarVar(v);
     return Instr::CriarVarInt(aberto);
+}
+
+//------------------------------------------------------------------------------
+int TVarArqExec::FTamanho(const char * instr)
+{
+    return sizeof(TVarArqExec);
+}
+
+//------------------------------------------------------------------------------
+int TVarArqExec::FTamanhoVetor(const char * instr)
+{
+    int total = (unsigned char)instr[Instr::endVetor];
+    return (total ? total : 1) * sizeof(TVarArqExec);
 }

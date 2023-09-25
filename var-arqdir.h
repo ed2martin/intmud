@@ -6,11 +6,15 @@
 #include <windows.h>
 #endif
 
-//----------------------------------------------------------------------------
 class TVariavel;
+class TVarInfo;
+
+//----------------------------------------------------------------------------
 class TVarArqDir /// Variável arqdir
 {
 public:
+    static const TVarInfo * Inicializa();
+            ///< Inicializa variável e retorna informações
     void Criar();
             ///< Chamado ao criar objeto
     void Apagar();
@@ -41,6 +45,9 @@ private:
     bool FuncCriarDir(TVariavel * v);
     bool FuncApagar(TVariavel * v);
     bool FuncRenomear(TVariavel * v);
+
+    static int FTamanho(const char * instr);
+    static int FTamanhoVetor(const char * instr);
 };
 
 //----------------------------------------------------------------------------

@@ -3,6 +3,7 @@
 
 //----------------------------------------------------------------------------
 class TVariavel;
+class TVarInfo;
 class TObjeto;
 class TTextoObjSub;
 class TBlocoObj;
@@ -10,6 +11,8 @@ class TBlocoObj;
 class TTextoObj  /// Variáveis TextoObj
 {
 public:
+    static const TVarInfo * Inicializa();
+        ///< Inicializa variável e retorna informações
     void Apagar();          ///< Apaga objeto
     void Limpar();          ///< Apaga o texto do objeto
     void Mover(TTextoObj * destino);
@@ -31,6 +34,7 @@ public:
     bool Func(TVariavel * v, const char * nome);
         ///< Função da variável
 
+private:
     bool FuncValor(TVariavel * v);
     bool FuncValorIni(TVariavel * v);
     bool FuncValorFim(TVariavel * v);
@@ -44,6 +48,10 @@ public:
     bool FuncApagar(TVariavel * v);
     bool FuncTotal(TVariavel * v);
 
+    static int FTamanho(const char * instr);
+    static int FTamanhoVetor(const char * instr);
+
+public:
     TBlocoObj * RBroot;  ///< Objeto raiz da RBT
     TTextoObjSub * Inicio; ///< Primeiro objeto TTextoObjSub
     TObjeto * Objeto;       ///< Objeto em que o textoobj lista foi definido
@@ -54,6 +62,8 @@ public:
 class TTextoObjSub /// Para acessar uma variável de textoobj
 {
 public:
+    static const TVarInfo * Inicializa();
+        ///< Inicializa variável e retorna informações
     void Criar(TTextoObj * var); ///< Adiciona objeto em um textoobj
     void Apagar();      ///< Retira objeto de um textoobj
     void Mover(TTextoObjSub * destino);
@@ -66,6 +76,10 @@ public:
     TTextoObjSub * Antes;       ///< Objeto anterior
     TTextoObjSub * Depois;      ///< Próximo objeto
     char NomeVar[64];           ///< Nome da variável
+
+private:
+    static int FTamanho(const char * instr);
+    static int FTamanhoVetor(const char * instr);
 };
 
 //----------------------------------------------------------------------------

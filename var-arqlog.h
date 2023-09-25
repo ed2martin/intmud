@@ -1,11 +1,15 @@
 #ifndef VAR_ARQLOG_H
 #define VAR_ARQLOG_H
 
-//----------------------------------------------------------------------------
 class TVariavel;
+class TVarInfo;
+
+//----------------------------------------------------------------------------
 class TVarArqLog /// Variável arqlog
 {
 public:
+    static const TVarInfo * Inicializa();
+        ///< Inicializa variável e retorna informações
     void Criar();           ///< Chamado ao criar objeto
     void Apagar();          ///< Apaga objeto
     void Mover(TVarArqLog * destino); ///< Move para outro lugar
@@ -18,6 +22,9 @@ private:
     bool FuncValido(TVariavel * v); ///< Processa função Valido
     bool FuncExiste(TVariavel * v); ///< Processa função Existe
     bool FuncAbrir(TVariavel * v);  ///< Processa função Abrir
+
+    static int FTamanho(const char * instr);
+    static int FTamanhoVetor(const char * instr);
 
     void Fechar();      ///< Fecha arquivo
     static int Tempo;   ///< Quanto tempo para atualizar arquivos

@@ -17,6 +17,17 @@
 #include "misc.h"
 
 //----------------------------------------------------------------------------
+const TVarInfo * TIndiceItem::Inicializa()
+{
+    static const TVarInfo var(
+        FTamanho,
+        FTamanhoVetor,
+        TVarInfo::FTipoOutros,
+        TVarInfo::FFuncVetorFalse);
+    return &var;
+}
+
+//----------------------------------------------------------------------------
 void TIndiceItem::Apagar()
 {
     if (IndiceObj)
@@ -255,6 +266,30 @@ bool TIndiceItem::FuncFim(TVariavel * v)
     return false;
 }
 
+//------------------------------------------------------------------------------
+int TIndiceItem::FTamanho(const char * instr)
+{
+    return sizeof(TIndiceItem);
+}
+
+//------------------------------------------------------------------------------
+int TIndiceItem::FTamanhoVetor(const char * instr)
+{
+    int total = (unsigned char)instr[Instr::endVetor];
+    return (total ? total : 1) * sizeof(TIndiceItem);
+}
+
+//----------------------------------------------------------------------------
+const TVarInfo * TIndiceObj::Inicializa()
+{
+    static const TVarInfo var(
+        FTamanho,
+        FTamanhoVetor,
+        TVarInfo::FTipoTxt,
+        TVarInfo::FFuncVetorFalse);
+    return &var;
+}
+
 //----------------------------------------------------------------------------
 void TIndiceObj::Apagar()
 {
@@ -307,6 +342,19 @@ void TIndiceObj::setNome(const char * texto)
     copiastr(Nome, texto, sizeof(Nome));
     if (*Nome)
         RBinsert();
+}
+
+//------------------------------------------------------------------------------
+int TIndiceObj::FTamanho(const char * instr)
+{
+    return sizeof(TIndiceObj);
+}
+
+//------------------------------------------------------------------------------
+int TIndiceObj::FTamanhoVetor(const char * instr)
+{
+    int total = (unsigned char)instr[Instr::endVetor];
+    return (total ? total : 1) * sizeof(TIndiceObj);
 }
 
 //----------------------------------------------------------------------------

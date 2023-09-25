@@ -438,9 +438,7 @@ void Inicializa(const char * arg)
 // Inicializa variáveis
     tabASCinic();   // Prepara tabela ASCII
     circle_srandom(time(0)); // Para gerar números aleatórios
-    TVarIntTempo::PreparaIni(); // Variáveis inttempo
-    TBlocoVarDec::PreparaIni();
-    TExec::Inicializa();
+    TVariavel::Inicializa();
 
 // Obtém nome do programa: arqnome e arqinicio
     {

@@ -3,6 +3,12 @@
 
 #include "instr.h"
 
+class TVariavel;
+class TVarInfo;
+enum TVarTipo : unsigned char;
+class TTextoVarSub;
+class TBlocoVar;
+
 //----------------------------------------------------------------------------
 enum TextoVarTipo ///< Tipo de variável
 {
@@ -13,13 +19,11 @@ enum TextoVarTipo ///< Tipo de variável
 };
 
 //----------------------------------------------------------------------------
-class TVariavel;
-class TTextoVarSub;
-class TBlocoVar;
-
 class TTextoVar  /// Variáveis TextoVar
 {
 public:
+    static const TVarInfo * Inicializa();
+        ///< Inicializa variável e retorna informações
     void Apagar();          ///< Apaga objeto
     void Limpar();          ///< Apaga o texto do objeto
     void Mover(TTextoVar * destino);
@@ -48,6 +52,7 @@ public:
     bool Func(TVariavel * v, const char * nome);
         ///< Função da variável
 
+private:
     bool FuncValor(TVariavel * v);
     bool FuncValorIni(TVariavel * v);
     bool FuncValorFim(TVariavel * v);
@@ -61,6 +66,10 @@ public:
     bool FuncLimpar(TVariavel * v);
     bool FuncTotal(TVariavel * v);
 
+    static int FTamanho(const char * instr);
+    static int FTamanhoVetor(const char * instr);
+
+public:
     TBlocoVar * RBroot;  ///< Objeto raiz da RBT
     TTextoVarSub * Inicio; ///< Primeiro objeto TTextoVarSub
     int Total;  ///< Quantidade de variáveis
@@ -73,6 +82,8 @@ public:
 class TTextoVarSub /// Para acessar uma variável de TTextoVar
 {
 public:
+    static const TVarInfo * Inicializa();
+        ///< Inicializa variável e retorna informações
     void Criar(TTextoVar * var, const char * nome, bool checatipo);
         ///< Adiciona objeto em um TTextoVar
         /**< @param var Variável TextoVar
@@ -105,6 +116,11 @@ public:
     void setTxt(const char * txt); ///< Muda variável a partir de texto
     void addTxt(const char * txt); ///< Adiciona texto na variável
     void setObj(TObjeto * obj); ///< Muda variável a partir de referência
+
+private:
+    static int FTamanho(const char * instr);
+    static int FTamanhoVetor(const char * instr);
+    static TVarTipo FTipo(TVariavel * v);
 };
 
 //----------------------------------------------------------------------------

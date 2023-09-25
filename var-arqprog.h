@@ -8,8 +8,10 @@
 
 #define ARQINCLUIR_TAM 0x200 // Tamanho máximo dos nomes dos arquivos
 
-//----------------------------------------------------------------------------
 class TVariavel;
+class TVarInfo;
+
+//----------------------------------------------------------------------------
 class TArqIncluir
 {
 public:
@@ -45,6 +47,8 @@ private:
 class TVarArqProg
 {
 public:
+    static const TVarInfo * Inicializa();
+        ///< Inicializa variável e retorna informações
     TVarArqProg() { Criar(); }
     ~TVarArqProg() { Apagar(); }
     void Criar();
@@ -74,6 +78,9 @@ private:
     bool FuncDepois(TVariavel * v); ///< Processa função Depois
     bool FuncLin(TVariavel * v);    ///< Processa função Lin
     bool FuncTexto(TVariavel * v);  ///< Processa função Texto
+
+    static int FTamanho(const char * instr);
+    static int FTamanhoVetor(const char * instr);
 };
 
 //----------------------------------------------------------------------------

@@ -24,6 +24,17 @@
 //------------------------------------------------------------------------------
 TVarProg * TVarProg::Inicio = nullptr;
 
+//----------------------------------------------------------------------------
+const TVarInfo * TVarProg::Inicializa()
+{
+    static const TVarInfo var(
+        FTamanho,
+        FTamanhoVetor,
+        TVarInfo::FTipoOutros,
+        TVarInfo::FFuncVetorFalse);
+    return &var;
+}
+
 //------------------------------------------------------------------------------
 void TVarProg::Criar()
 {
@@ -1828,4 +1839,17 @@ bool TVarProg::FuncClDepois(TVariavel * v)
     Instr::ApagarVar(v);
     cl = cl->ArqDepois;
     return Instr::CriarVarTexto(cl == nullptr ? "" : cl->Nome);
+}
+
+//------------------------------------------------------------------------------
+int TVarProg::FTamanho(const char * instr)
+{
+    return sizeof(TVarProg);
+}
+
+//------------------------------------------------------------------------------
+int TVarProg::FTamanhoVetor(const char * instr)
+{
+    int total = (unsigned char)instr[Instr::endVetor];
+    return (total ? total : 1) * sizeof(TVarProg);
 }

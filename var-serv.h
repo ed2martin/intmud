@@ -9,8 +9,8 @@
 #endif
 #include "ssl.h"
 
-//----------------------------------------------------------------------------
 class TVariavel;
+class TVarInfo;
 class TClasse;
 class TObjeto;
 class TVarServ;
@@ -39,6 +39,8 @@ public:
 class TVarServ /// Variáveis Serv
 {
 public:
+    static const TVarInfo * Inicializa();
+        ///< Inicializa variável e retorna informações
     void Criar();           ///< Cria objeto
                             /**< @note Acertar também defvar, classe e objeto */
     void Apagar();          ///< Apaga objeto
@@ -65,6 +67,9 @@ private:
     bool FuncAbrir(TVariavel * v);     ///< Processa função Abrir
     bool FuncAbrirSSL(TVariavel * v);  ///< Processa função AbrirSSL
     bool FuncIniSSL(TVariavel * v);    ///< Processa função IniSSL
+
+    static int FTamanho(const char * instr);
+    static int FTamanhoVetor(const char * instr);
 
     bool modossl;               ///< Se deve usar conexão segura (SSL)
     int  sock;                  ///< Socket; menor que 0 se estiver fechado

@@ -21,6 +21,17 @@
 
 //#define DEBUG
 
+//----------------------------------------------------------------------------
+const TVarInfo * TVarArqTxt::Inicializa()
+{
+    static const TVarInfo var(
+        FTamanho,
+        FTamanhoVetor,
+        TVarInfo::FTipoOutros,
+        TVarInfo::FFuncVetorFalse);
+    return &var;
+}
+
 //------------------------------------------------------------------------------
 void TVarArqTxt::Criar()
 {
@@ -403,4 +414,17 @@ bool TVarArqTxt::FuncTruncar(TVariavel * v)
         Instr::VarAtual->setInt(1);
     }
     return true;
+}
+
+//------------------------------------------------------------------------------
+int TVarArqTxt::FTamanho(const char * instr)
+{
+    return sizeof(TVarArqTxt);
+}
+
+//------------------------------------------------------------------------------
+int TVarArqTxt::FTamanhoVetor(const char * instr)
+{
+    int total = (unsigned char)instr[Instr::endVetor];
+    return (total ? total : 1) * sizeof(TVarArqTxt);
 }

@@ -48,6 +48,17 @@ TVarSavArq * TVarSavArq::Inicio = nullptr;
 TVarSavArq * TVarSavArq::Fim = nullptr;
 
 //----------------------------------------------------------------------------
+const TVarInfo * TVarSav::Inicializa()
+{
+    static const TVarInfo var(
+        TVarInfo::FTamanho0,
+        TVarInfo::FTamanho0,
+        TVarInfo::FTipoOutros,
+        TVarInfo::FFuncVetorFalse);
+    return &var;
+}
+
+//----------------------------------------------------------------------------
 // Acerta variáveis
 void TVarSav::ProcEventos(int tempoespera)
 {

@@ -32,6 +32,17 @@ TVarDebug * TVarDebug::ObjAtual = nullptr;
 size_t getPeakRSS();
 size_t getCurrentRSS();
 
+//----------------------------------------------------------------------------
+const TVarInfo * TVarDebug::Inicializa()
+{
+    static const TVarInfo var(
+        FTamanho,
+        FTamanhoVetor,
+        FTipo,
+        TVarInfo::FFuncVetorFalse);
+    return &var;
+}
+
 //------------------------------------------------------------------------------
 void TVarDebug::Criar()
 {
@@ -345,9 +356,9 @@ bool TVarDebug::FuncData(TVariavel * v)
 }
 
 //----------------------------------------------------------------------------
-int TVarDebug::getTipo(int numfunc)
+TVarTipo TVarDebug::FTipo(TVariavel * v)
 {
-    switch (numfunc)
+    switch (v->numfunc)
     {
     case 0: return varOutros;
     case 1: return varInt;
@@ -461,4 +472,17 @@ void TVarDebug::Exec()
         return;
     FuncAtual->fimvar++;
     FuncAtual->numarg++;
+}
+
+//------------------------------------------------------------------------------
+int TVarDebug::FTamanho(const char * instr)
+{
+    return sizeof(TVarDebug);
+}
+
+//------------------------------------------------------------------------------
+int TVarDebug::FTamanhoVetor(const char * instr)
+{
+    int total = (unsigned char)instr[Instr::endVetor];
+    return (total ? total : 1) * sizeof(TVarDebug);
 }

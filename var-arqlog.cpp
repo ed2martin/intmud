@@ -22,6 +22,17 @@
 int TVarArqLog::Tempo = 20;
 TVarArqLog * TVarArqLog::Inicio = nullptr;
 
+//----------------------------------------------------------------------------
+const TVarInfo * TVarArqLog::Inicializa()
+{
+    static const TVarInfo var(
+        FTamanho,
+        FTamanhoVetor,
+        TVarInfo::FTipoOutros,
+        TVarInfo::FFuncVetorFalse);
+    return &var;
+}
+
 //------------------------------------------------------------------------------
 void TVarArqLog::Criar()
 {
@@ -255,4 +266,17 @@ bool TVarArqLog::FuncAbrir(TVariavel * v)
     }
     Instr::ApagarVar(v);
     return Instr::CriarVarInt(*arqnome != 0);
+}
+
+//------------------------------------------------------------------------------
+int TVarArqLog::FTamanho(const char * instr)
+{
+    return sizeof(TVarArqLog);
+}
+
+//------------------------------------------------------------------------------
+int TVarArqLog::FTamanhoVetor(const char * instr)
+{
+    int total = (unsigned char)instr[Instr::endVetor];
+    return (total ? total : 1) * sizeof(TVarArqLog);
 }

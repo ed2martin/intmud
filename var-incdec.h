@@ -2,6 +2,7 @@
 #define VAR_INCDEC_H
 
 class TVariavel;
+class TVarInfo;
 
 //----------------------------------------------------------------------------
 /** Trata das variáveis intinc e intdec */
@@ -16,11 +17,19 @@ public:
         ///< Funções de intinc
     bool FuncDec(TVariavel * v, const char * nome);
         ///< Funções de intdec
-    bool FuncVetorInc(TVariavel * v, const char * nome);
+    static bool FuncVetorInc(TVariavel * v, const char * nome);
         ///< Funções de vetores de intinc
-    bool FuncVetorDec(TVariavel * v, const char * nome);
+    static bool FuncVetorDec(TVariavel * v, const char * nome);
         ///< Funções de vetores de intdec
+
+    static const TVarInfo * InicializaInc();
+        ///< Retorna informações de intinc
+    static const TVarInfo * InicializaDec();
+        ///< Retorna informações de intdec
 private:
+    static int FTamanho(const char * instr);
+    static int FTamanhoVetor(const char * instr);
+
     int valor; ///< Tempo, usando tanto em intinc quanto em intdec
 };
 

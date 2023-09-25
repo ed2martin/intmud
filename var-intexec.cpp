@@ -22,6 +22,17 @@
 TVarIntExec * TVarIntExec::Inicio = nullptr;
 TVarIntExec * TVarIntExec::Fim = nullptr;
 
+//----------------------------------------------------------------------------
+const TVarInfo * TVarIntExec::Inicializa()
+{
+    static const TVarInfo var(
+        FTamanho,
+        FTamanhoVetor,
+        TVarInfo::FTipoInt,
+        TVarInfo::FFuncVetorFalse);
+    return &var;
+}
+
 //------------------------------------------------------------------------------
 void TVarIntExec::ProcEventos()
 {
@@ -107,4 +118,17 @@ void TVarIntExec::EndObjeto(TClasse * c, TObjeto * o)
         endobjeto = o, b_objeto = true;
     else
         endclasse = c, b_objeto = false;
+}
+
+//------------------------------------------------------------------------------
+int TVarIntExec::FTamanho(const char * instr)
+{
+    return sizeof(TVarIntExec);
+}
+
+//------------------------------------------------------------------------------
+int TVarIntExec::FTamanhoVetor(const char * instr)
+{
+    int total = (unsigned char)instr[Instr::endVetor];
+    return (total ? total : 1) * sizeof(TVarIntExec);
 }

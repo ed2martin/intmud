@@ -1,12 +1,16 @@
 #ifndef VAR_ARQSAV_H
 #define VAR_ARQSAV_H
 
-//----------------------------------------------------------------------------
 class TVariavel;
+class TVarInfo;
 class TObjeto;
+
+//----------------------------------------------------------------------------
 class TVarSav /// Variável arqsav
 {
 public:
+    static const TVarInfo * Inicializa();
+        ///< Inicializa variável e retorna informações
     static void ProcEventos(int tempoespera);
         ///< Processa eventos
     static bool Func(TVariavel * v, const char * nome);
@@ -53,6 +57,9 @@ private:
     static bool FuncSalvar(TVariavel * v);     ///< Processa função Salvar
     static bool FuncSalvarCod(TVariavel * v);  ///< Processa função SalvarCod
     static bool FuncApagar(TVariavel * v);     ///< Processa função Apagar
+
+    static int FTamanho(const char * instr);
+    static int FTamanhoVetor(const char * instr);
 };
 
 //----------------------------------------------------------------------------

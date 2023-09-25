@@ -37,6 +37,7 @@
 #include "var-debug.h"
 #include "var-indiceobj.h"
 #include "var-datahora.h"
+#include "var-basico.h"
 #include "var-outros.h"
 #include "var-ref.h"
 #include "var-incdec.h"
@@ -95,6 +96,141 @@
             return;                                 \
         }
 
+TVarInfo * TVariavel::VarInfo = nullptr;
+
+//----------------------------------------------------------------------------
+TVarInfo::TVarInfo()
+{
+    FTamanho = FTamanho0;
+    FTamanhoVetor = FTamanho0;
+    FTipo = FTipoOutros;
+    FFuncVetor = FFuncVetorFalse;
+}
+
+//----------------------------------------------------------------------------
+TVarInfo::TVarInfo(int (*fTamanho)(const char * instr),
+        int (*fTamanhoVetor)(const char * instr),
+        TVarTipo (*fTipo)(TVariavel * v),
+        bool (*fFuncVetor)(TVariavel * v, const char * nome))
+{
+    FTamanho = fTamanho;
+    FTamanhoVetor = fTamanhoVetor;
+    FTipo = fTipo;
+    FFuncVetor = fFuncVetor;
+}
+
+//----------------------------------------------------------------------------
+int TVarInfo::FTamanho0(const char * instr)
+{
+    return 0;
+}
+
+//----------------------------------------------------------------------------
+TVarTipo TVarInfo::FTipoOutros(TVariavel * v)
+{
+    return varOutros;
+}
+
+//----------------------------------------------------------------------------
+TVarTipo TVarInfo::FTipoInt(TVariavel * v)
+{
+    return varInt;
+}
+
+//----------------------------------------------------------------------------
+TVarTipo TVarInfo::FTipoDouble(TVariavel * v)
+{
+    return varDouble;
+}
+
+//----------------------------------------------------------------------------
+TVarTipo TVarInfo::FTipoTxt(TVariavel * v)
+{
+    return varTxt;
+}
+
+//----------------------------------------------------------------------------
+TVarTipo TVarInfo::FTipoObj(TVariavel * v)
+{
+    return varObj;
+}
+
+//----------------------------------------------------------------------------
+bool TVarInfo::FFuncVetorFalse(TVariavel * v, const char * nome)
+{
+    return false;
+}
+
+//----------------------------------------------------------------------------
+void TVariavel::Inicializa()
+{
+    if (VarInfo)
+        return;
+    VarInfo = new TVarInfo[Instr::cTotalComandos];
+
+    //TBlocoVarDec::PreparaIni();
+    TExec::Inicializa();
+
+// Variáveis
+    VarInfo[Instr::cTxt1] =     *VarBaseTxt1();
+    VarInfo[Instr::cTxt2] =     *VarBaseTxt2();
+    VarInfo[Instr::cInt1] =     *VarBaseInt1();
+    VarInfo[Instr::cInt8] =     *VarBaseInt8();
+    VarInfo[Instr::cUInt8] =    *VarBaseUInt8();
+    VarInfo[Instr::cInt16] =    *VarBaseInt16();
+    VarInfo[Instr::cUInt16] =   *VarBaseUInt16();
+    VarInfo[Instr::cInt32] =    *VarBaseInt32();
+    VarInfo[Instr::cUInt32] =   *VarBaseUInt32();
+    VarInfo[Instr::cReal] =     *VarBaseReal();
+    VarInfo[Instr::cReal2] =    *VarBaseReal2();
+    VarInfo[Instr::cConstNulo] =*VarOutrosConstNulo();
+    VarInfo[Instr::cConstTxt] = *VarOutrosConstTxt();
+    VarInfo[Instr::cConstNum] = *VarOutrosConstNum();
+    VarInfo[Instr::cConstExpr]= *VarOutrosConstExpr();
+    VarInfo[Instr::cConstVar] = *VarOutrosConstVar();
+    VarInfo[Instr::cFunc] =     *VarOutrosFunc();
+    VarInfo[Instr::cVarFunc] =  *VarOutrosVarFunc();
+    VarInfo[Instr::cIntInc] =   *TVarIncDec::InicializaInc();
+    VarInfo[Instr::cIntDec] =   *TVarIncDec::InicializaDec();
+    VarInfo[Instr::cRef] =      *TVarRef::Inicializa();
+
+// Variáveis extras
+    VarInfo[Instr::cListaObj] = *TListaObj::Inicializa();
+    VarInfo[Instr::cListaItem] =*TListaItem::Inicializa();
+    VarInfo[Instr::cTextoTxt] = *TTextoTxt::Inicializa();
+    VarInfo[Instr::cTextoPos] = *TTextoPos::Inicializa();
+    VarInfo[Instr::cTextoVar] = *TTextoVar::Inicializa();
+    VarInfo[Instr::cTextoObj] = *TTextoObj::Inicializa();
+    VarInfo[Instr::cNomeObj] =  *TVarNomeObj::Inicializa();
+    VarInfo[Instr::cArqDir] =   *TVarArqDir::Inicializa();
+    VarInfo[Instr::cArqLog] =   *TVarArqLog::Inicializa();
+    VarInfo[Instr::cArqProg] =  *TVarArqProg::Inicializa();
+    VarInfo[Instr::cArqExec] =  *TVarArqExec::Inicializa();
+    VarInfo[Instr::cArqSav] =   *TVarSav::Inicializa();
+    VarInfo[Instr::cArqTxt] =   *TVarArqTxt::Inicializa();
+    VarInfo[Instr::cArqMem] =   *TVarArqMem::Inicializa();
+    VarInfo[Instr::cIntTempo] = *TVarIntTempo::Inicializa();
+    VarInfo[Instr::cIntExec] =  *TVarIntExec::Inicializa();
+    VarInfo[Instr::cTelaTxt] =  *TVarTelaTxt::Inicializa();
+    VarInfo[Instr::cSocket] =   *TVarSocket::Inicializa();
+    VarInfo[Instr::cServ] =     *TVarServ::Inicializa();
+    VarInfo[Instr::cProg] =     *TVarProg::Inicializa();
+    VarInfo[Instr::cDebug] =    *TVarDebug::Inicializa();
+    VarInfo[Instr::cIndiceObj] = *TIndiceObj::Inicializa();
+    VarInfo[Instr::cIndiceItem] = *TIndiceItem::Inicializa();
+    VarInfo[Instr::cDataHora] = *TVarDataHora::Inicializa();
+
+    VarInfo[Instr::cTxtFixo] =   *VarOutrosTxtFixo();
+    VarInfo[Instr::cVarNome] =   *VarOutrosVarNome();
+    VarInfo[Instr::cVarInicio] = *VarOutrosVarInicio();
+    VarInfo[Instr::cVarIniFunc] =*VarOutrosVarIniFunc();
+    VarInfo[Instr::cVarClasse] = *VarOutrosVarClasse();
+    VarInfo[Instr::cVarObjeto] = *VarOutrosVarObjeto();
+    VarInfo[Instr::cVarInt] =    *VarOutrosVarInt();
+    VarInfo[Instr::cTextoVarSub] =*TTextoVarSub::Inicializa();
+    VarInfo[Instr::cTextoObjSub] =*TTextoObjSub::Inicializa();
+}
+
 //----------------------------------------------------------------------------
 TVariavel::TVariavel()
 {
@@ -117,170 +253,6 @@ void TVariavel::Limpar()
     indice = 0;
     numbit = 0;
     numfunc = 0;
-}
-
-//------------------------------------------------------------------------------
-int TVariavel::Tamanho(const char * instr)
-{
-    switch (instr[2])
-    {
-// Variáveis
-    case Instr::cTxt1:      return 2 + (unsigned char)instr[Instr::endExtra];
-    case Instr::cTxt2:      return 258 + (unsigned char)instr[Instr::endExtra];
-    case Instr::cInt1:
-    case Instr::cInt8:
-    case Instr::cUInt8:     return 1;
-    case Instr::cInt16:
-    case Instr::cUInt16:    return sizeof(short);
-    case Instr::cInt32:
-    case Instr::cUInt32:    return sizeof(int);
-    case Instr::cIntInc:
-    case Instr::cIntDec:    return sizeof(TVarIncDec);
-    case Instr::cReal:      return sizeof(float);
-    case Instr::cReal2:     return sizeof(double);
-    case Instr::cRef:       return sizeof(TVarRef);
-    case Instr::cConstNulo:
-    case Instr::cConstTxt:
-    case Instr::cConstNum:
-    case Instr::cConstExpr:
-    case Instr::cConstVar:
-    case Instr::cFunc:
-    case Instr::cVarFunc:   return 0;
-
-// Variáveis extras
-    case Instr::cListaObj:  return sizeof(TListaObj);
-    case Instr::cListaItem: return sizeof(TListaItem);
-    case Instr::cTextoTxt:  return sizeof(TTextoTxt);
-    case Instr::cTextoPos:  return sizeof(TTextoPos);
-    case Instr::cTextoVar:  return sizeof(TTextoVar);
-    case Instr::cTextoObj:  return sizeof(TTextoObj);
-    case Instr::cNomeObj:   return sizeof(TVarNomeObj);
-    case Instr::cArqDir:    return sizeof(TVarArqDir);
-    case Instr::cArqLog:    return sizeof(TVarArqLog);
-    case Instr::cArqProg:   return sizeof(TVarArqProg);
-    case Instr::cArqExec:   return sizeof(TVarArqExec);
-    case Instr::cArqSav:    return 0;
-    case Instr::cArqTxt:    return sizeof(TVarArqTxt);
-    case Instr::cArqMem:    return sizeof(TVarArqMem);
-    case Instr::cIntTempo:  return sizeof(TVarIntTempo);
-    case Instr::cIntExec:   return sizeof(TVarIntExec);
-    case Instr::cTelaTxt:   return sizeof(TVarTelaTxt);
-    case Instr::cSocket:    return sizeof(TVarSocket);
-    case Instr::cServ:      return sizeof(TVarServ);
-    case Instr::cProg:      return sizeof(TVarProg);
-    case Instr::cDebug:     return sizeof(TVarDebug);
-    case Instr::cIndiceObj: return sizeof(TIndiceObj);
-    case Instr::cIndiceItem: return sizeof(TIndiceItem);
-    case Instr::cDataHora:  return sizeof(TVarDataHora);
-
-    case Instr::cVarNome:   return VAR_NOME_TAM;
-    case Instr::cVarInicio:
-    case Instr::cVarIniFunc:
-    case Instr::cVarClasse:
-    case Instr::cVarObjeto:
-    case Instr::cVarInt:    return 0;
-    case Instr::cTextoVarSub: return sizeof(TTextoVarSub);
-    case Instr::cTextoObjSub: return sizeof(TTextoObjSub);
-    }
-    return 0;
-}
-
-//------------------------------------------------------------------------------
-int TVariavel::TamanhoVetor()
-{
-    int total = (unsigned char)defvar[Instr::endVetor];
-    if (total<=1)       // Uma variável
-        return Tamanho(defvar);
-    if (defvar[2]==Instr::cInt1) // Vetor de bits
-        return (total+7)/8;
-    return Tamanho(defvar) * total; // Outro tipo de vetor
-}
-
-//------------------------------------------------------------------------------
-TVarTipo TVariavel::Tipo()
-{
-    if (indice==0xFF) // Vetor
-        return varOutros;
-    switch (defvar[2])
-    {
-// Variáveis
-    case Instr::cTxt1:
-    case Instr::cTxt2:      return varTxt;
-    case Instr::cInt1:
-    case Instr::cInt8:
-    case Instr::cUInt8:
-    case Instr::cInt16:
-    case Instr::cUInt16:
-    case Instr::cInt32:     return varInt;
-    case Instr::cUInt32:    return varDouble;
-    case Instr::cIntInc:
-    case Instr::cIntDec:    return varInt;
-    case Instr::cReal:      return varDouble;
-    case Instr::cReal2:     return varDouble;
-    case Instr::cRef:       return varObj;
-    case Instr::cConstNulo: return varObj;
-    case Instr::cConstTxt:  return varTxt;
-    case Instr::cConstNum:  return varDouble;
-    case Instr::cConstExpr:
-    case Instr::cConstVar:
-    case Instr::cFunc:
-    case Instr::cVarFunc:   return varOutros;
-
-// Variáveis extras
-    case Instr::cListaObj:  return varOutros;
-    case Instr::cListaItem: return varOutros;
-    case Instr::cTextoTxt:  return varOutros;
-    case Instr::cTextoPos:
-        return (TVarTipo)TTextoPos::getTipo(numfunc);
-    case Instr::cTextoVar:  return varOutros;
-    case Instr::cTextoObj:  return varOutros;
-    case Instr::cNomeObj:   return varOutros;
-    case Instr::cArqDir:    return varOutros;
-    case Instr::cArqLog:    return varOutros;
-    case Instr::cArqProg:   return varOutros;
-    case Instr::cArqExec:   return varOutros;
-    case Instr::cArqSav:    return varOutros;
-    case Instr::cArqTxt:    return varOutros;
-    case Instr::cArqMem:    return varOutros;
-    case Instr::cIntTempo:  return varInt;
-    case Instr::cIntExec:   return varInt;
-    case Instr::cTelaTxt:
-        return (TVarTipo)TVarTelaTxt::getTipo(numfunc);
-    case Instr::cSocket:
-        return (TVarTipo)TVarSocket::getTipo(numfunc);
-    case Instr::cServ:      return varOutros;
-    case Instr::cProg:      return varOutros;
-    case Instr::cDebug:
-        return (TVarTipo)TVarDebug::getTipo(numfunc);
-    case Instr::cIndiceObj: return varTxt;
-    case Instr::cIndiceItem: return varOutros;
-    case Instr::cDataHora:
-        return (TVarTipo)TVarDataHora::getTipo(numfunc);
-    case Instr::cTxtFixo:
-    case Instr::cVarNome:
-    case Instr::cVarClasse: return varTxt;
-    case Instr::cVarObjeto: return varObj;
-    case Instr::cVarIniFunc:
-    case Instr::cVarInt:    return varInt;
-    case Instr::cTextoVarSub:
-        return (TVarTipo)numfunc;
-    case Instr::cTextoObjSub: return varObj;
-    }
-    return varOutros;
-}
-
-//------------------------------------------------------------------------------
-void TVariavel::Criar(TClasse * c, TObjeto * o)
-{
-    Redim(c, o, 0, defvar[Instr::endVetor] ?
-                   (unsigned char)defvar[Instr::endVetor] : 1);
-}
-
-//------------------------------------------------------------------------------
-void TVariavel::Apagar()
-{
-    Redim(0, 0, defvar[Instr::endVetor] ?
-                (unsigned char)defvar[Instr::endVetor] : 1, 0);
 }
 
 //------------------------------------------------------------------------------
@@ -1356,7 +1328,7 @@ const char * TVariavel::getTxt()
     case Instr::cTelaTxt:
         return end_telatxt[indice].getTxt(numfunc);
     case Instr::cSocket:
-        if (TVarSocket::getTipo(numfunc) != varInt)
+        if (TVarSocket::FTipo(this) != varInt)
             return "";
         sprintf(txtnum, "%d", getInt());
         return txtnum;
@@ -1372,7 +1344,7 @@ const char * TVariavel::getTxt()
     case Instr::cIndiceObj:
         return end_indiceobj[indice].getNome();
     case Instr::cDataHora:
-        if (end_datahora[indice].getTipo(numfunc) == varDouble)
+        if (TVarDataHora::FTipo(this) == varDouble)
             sprintf(txtnum, "%.0f", end_datahora[indice].getDouble(numfunc));
         else
             sprintf(txtnum, "%d", end_datahora[indice].getInt(numfunc));
@@ -1944,51 +1916,25 @@ void TVariavel::Igual(TVariavel * v)
 //------------------------------------------------------------------------------
 bool TVariavel::Func(const char * nome)
 {
-    if (indice==0xFF) // Vetor
+    if (indice == 0xFF) // Vetor
     {
         int valor = 0;
-        for (; *nome>='0' && *nome<='9'; nome++)
+        for (; *nome >= '0' && *nome <= '9'; nome++)
         {
             valor = valor * 10 + *nome - '0';
             if (valor >= 0xFF)
                 return false;
         }
-        if (*nome==0 && valor < (unsigned char)defvar[Instr::endVetor])
+        if (*nome == 0 && valor < (unsigned char)defvar[Instr::endVetor])
         {
             indice = valor;
             Instr::ApagarVar(this+1);
             return true;
         }
-        switch (defvar[2])
-        {
-        case Instr::cTxt1:
-        case Instr::cTxt2:
-            return FuncVetorTxt(this, nome);
-        case Instr::cInt1:
-            return FuncVetorInt1(this, nome);
-        case Instr::cInt8:
-            return FuncVetorInt8(this, nome);
-        case Instr::cUInt8:
-            return FuncVetorUInt8(this, nome);
-        case Instr::cInt16:
-            return FuncVetorInt16(this, nome);
-        case Instr::cUInt16:
-            return FuncVetorUInt16(this, nome);
-        case Instr::cInt32:
-            return FuncVetorInt32(this, nome);
-        case Instr::cUInt32:
-            return FuncVetorUInt32(this, nome);
-        case Instr::cIntInc:
-            return end_incdec->FuncVetorInc(this, nome);
-        case Instr::cIntDec:
-            return end_incdec->FuncVetorDec(this, nome);
-        case Instr::cIntTempo:
-            return end_inttempo->FuncVetor(this, nome);
-        case Instr::cReal:
-            return FuncVetorReal(this, nome);
-        case Instr::cReal2:
-            return FuncVetorReal2(this, nome);
-        }
+
+        unsigned char cmd = (unsigned char)defvar[2];
+        if (cmd < Instr::cTotalComandos)
+            return VarInfo[cmd].FFuncVetor(this, nome);
         return false;
     }
     switch (defvar[2])
