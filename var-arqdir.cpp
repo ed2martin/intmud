@@ -36,6 +36,7 @@ const TVarInfo * TVarArqDir::Inicializa()
         FTamanho,
         FTamanhoVetor,
         TVarInfo::FTipoOutros,
+        FRedim,
         TVarInfo::FFuncVetorFalse);
     return &var;
 }
@@ -147,7 +148,7 @@ bool TVarArqDir::FuncBarra(TVariavel * v)
         *destino++ = ch;
     }
     Instr::ApagarVar(v);
-    return Instr::CriarVarTexto(mens, destino-mens);
+    return Instr::CriarVarTexto(mens, destino - mens);
 }
 
 //------------------------------------------------------------------------------
@@ -220,11 +221,6 @@ bool TVarArqDir::FuncTipo(TVariavel * v)
         return Instr::CriarVarTexto(txt);
     }
 // Com argumento
-    if (Instr::VarAtual < v + 1)
-    {
-        Instr::ApagarVar(v);
-        return Instr::CriarVarTexto("?");
-    }
     struct stat buf;
     char mens[512];
     copiastr(mens, v[1].getTxt(), sizeof(mens));
@@ -509,4 +505,15 @@ int TVarArqDir::FTamanhoVetor(const char * instr)
 {
     int total = (unsigned char)instr[Instr::endVetor];
     return (total ? total : 1) * sizeof(TVarArqDir);
+}
+
+//------------------------------------------------------------------------------
+void TVarArqDir::FRedim(TVariavel * v, TClasse * c, TObjeto * o,
+        unsigned int antes, unsigned int depois)
+{
+    TVarArqDir * ref = reinterpret_cast<TVarArqDir*>(v->endvar);
+    for (; antes < depois; antes++)
+        ref[antes].Criar();
+    for (; depois < antes; depois++)
+        ref[depois].Apagar();
 }

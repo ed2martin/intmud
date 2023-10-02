@@ -71,15 +71,9 @@ const TVarInfo * TVarDataHora::Inicializa()
         FTamanho,
         FTamanhoVetor,
         FTipo,
+        FRedim,
         TVarInfo::FFuncVetorFalse);
     return &var;
-}
-
-//------------------------------------------------------------------------------
-void TVarDataHora::Criar()
-{
-    Ano = 1, Mes = 1, Dia = 1;
-    Hora = 0, Min = 0, Seg = 0;
 }
 
 //------------------------------------------------------------------------------
@@ -541,4 +535,17 @@ int TVarDataHora::FTamanhoVetor(const char * instr)
 {
     int total = (unsigned char)instr[Instr::endVetor];
     return (total ? total : 1) * sizeof(TVarDataHora);
+}
+
+//------------------------------------------------------------------------------
+void TVarDataHora::FRedim(TVariavel * v, TClasse * c, TObjeto * o,
+        unsigned int antes, unsigned int depois)
+{
+    TVarDataHora * ref = reinterpret_cast<TVarDataHora*>(v->endvar);
+    for (; antes < depois; antes++)
+    {
+        TVarDataHora * ref2 = ref + antes;
+        ref2->Ano = 1, ref2->Mes = 1, ref2->Dia = 1;
+        ref2->Hora = 0, ref2->Min = 0, ref2->Seg = 0;
+    }
 }

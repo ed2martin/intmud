@@ -3,6 +3,7 @@
 
 class TVariavel;
 class TVarInfo;
+class TClasse;
 class TObjeto;
 
 //----------------------------------------------------------------------------

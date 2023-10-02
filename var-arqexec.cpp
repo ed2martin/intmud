@@ -263,15 +263,9 @@ const TVarInfo * TVarArqExec::Inicializa()
         FTamanho,
         FTamanhoVetor,
         TVarInfo::FTipoOutros,
+        FRedim,
         TVarInfo::FFuncVetorFalse);
     return &var;
-}
-
-//------------------------------------------------------------------------------
-void TVarArqExec::Apagar()
-{
-    if (ObjExec)
-        ObjExec->VarArqExec = nullptr;
 }
 
 //------------------------------------------------------------------------------
@@ -440,4 +434,26 @@ int TVarArqExec::FTamanhoVetor(const char * instr)
 {
     int total = (unsigned char)instr[Instr::endVetor];
     return (total ? total : 1) * sizeof(TVarArqExec);
+}
+
+//------------------------------------------------------------------------------
+void TVarArqExec::FRedim(TVariavel * v, TClasse * c, TObjeto * o,
+        unsigned int antes, unsigned int depois)
+{
+    TVarArqExec * ref = reinterpret_cast<TVarArqExec*>(v->endvar);
+    if (antes < depois)
+    {
+        for (; antes < depois; antes++)
+        {
+            ref[antes].ObjExec = nullptr;
+            ref[antes].defvar = v->defvar;
+            ref[antes].indice = antes;
+            ref[antes].EndObjeto(c, o);
+        }
+    }
+    for (; depois < antes; depois++)
+    {
+        if (ref[depois].ObjExec)
+            ref[depois].ObjExec->VarArqExec = nullptr;
+    }
 }

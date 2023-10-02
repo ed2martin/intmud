@@ -104,6 +104,7 @@ TVarInfo::TVarInfo()
     FTamanho = FTamanho0;
     FTamanhoVetor = FTamanho0;
     FTipo = FTipoOutros;
+    FRedim = FRedim0;
     FFuncVetor = FFuncVetorFalse;
 }
 
@@ -111,11 +112,14 @@ TVarInfo::TVarInfo()
 TVarInfo::TVarInfo(int (*fTamanho)(const char * instr),
         int (*fTamanhoVetor)(const char * instr),
         TVarTipo (*fTipo)(TVariavel * v),
+        void (*fRedim)(TVariavel * v, TClasse * c, TObjeto * o,
+                unsigned int antes, unsigned int depois),
         bool (*fFuncVetor)(TVariavel * v, const char * nome))
 {
     FTamanho = fTamanho;
     FTamanhoVetor = fTamanhoVetor;
     FTipo = fTipo;
+    FRedim = fRedim;
     FFuncVetor = fFuncVetor;
 }
 
@@ -153,6 +157,13 @@ TVarTipo TVarInfo::FTipoTxt(TVariavel * v)
 TVarTipo TVarInfo::FTipoObj(TVariavel * v)
 {
     return varObj;
+}
+
+//----------------------------------------------------------------------------
+void TVarInfo::FRedim0(TVariavel * v, TClasse * c, TObjeto * o,
+            unsigned int antes, unsigned int depois)
+{
+    v->endvar = nullptr;
 }
 
 //----------------------------------------------------------------------------
@@ -253,247 +264,6 @@ void TVariavel::Limpar()
     indice = 0;
     numbit = 0;
     numfunc = 0;
-}
-
-//------------------------------------------------------------------------------
-void TVariavel::Redim(TClasse * c, TObjeto * o, unsigned int antes, unsigned int depois)
-{
-    if (antes==depois)
-        return;
-// Mostra o que vai fazer
-#ifdef DEBUG_CRIAR
-    if (depois>antes)
-        printf("Variável criada  (%d a %d) end=%p", antes, depois-1, endvar);
-    else
-        printf("Variável apagada (%d a %d) end=%p", depois, antes-1, endvar);
-    char mens[BUF_MENS];
-    if (Instr::Decod(mens, defvar, sizeof(mens)))
-        printf(" def=%p %s\n", defvar, mens);
-    else
-        printf(" ERRO: %s\n", mens);
-    fflush(stdout);
-#endif
-// Vetor de bits
-    if (defvar[2]==Instr::cInt1)
-    {
-    // Se deve apagar variáveis: retorna
-        if (depois<antes)
-            return;
-    // Obtém byte e bit inicial
-        antes += numbit;
-        depois += numbit;
-        char * end = end_char + antes/8;
-    // Avança bit a bit até o fim do primeiro byte
-        if (antes & 7)
-        {
-            for (; antes<depois && (antes&7); antes++)
-                *end &= ~(1 << (antes&7));
-            end++;
-        }
-    // Preenche bytes = 0
-        for (; antes+8 <= depois; antes+=8)
-            *end++ = 0;
-    // Avança bit a bit
-        for (int mask=1; antes<depois; antes++)
-            *end &= ~mask, mask<<=1;
-        return;
-    }
-// Obtém o tamanho de uma variável
-    int tam = Tamanho(defvar);
-    if (tam==0)
-    {
-        endvar=0;
-        return;
-    }
-// Acerta variável
-    if (depois>antes)
-        memset(end_char+antes*tam, 0, (depois-antes)*tam);
-    switch (defvar[2])
-    {
-    case Instr::cRef:
-        for (; depois<antes; depois++)
-            end_varref[depois].MudarPont(0);
-        break;
-    case Instr::cIntInc:
-        for (; antes<depois; antes++)
-            end_incdec[antes].setInc(0, 0);
-        break;
-    case Instr::cIntDec:
-        for (; antes<depois; antes++)
-            end_incdec[antes].setDec(0, 0);
-        break;
-    case Instr::cArqDir:
-        for (; antes<depois; antes++)
-            end_arqdir[antes].Criar();
-        for (; depois<antes; depois++)
-            end_arqdir[depois].Apagar();
-        break;
-    case Instr::cArqLog:
-        for (; antes<depois; antes++)
-            end_arqlog[antes].Criar();
-        for (; depois<antes; depois++)
-            end_arqlog[depois].Apagar();
-        break;
-    case Instr::cArqProg:
-        for (; antes<depois; antes++)
-            end_arqprog[antes].Criar();
-        for (; depois<antes; depois++)
-            end_arqprog[depois].Apagar();
-        break;
-    case Instr::cArqExec:
-        for (; antes<depois; antes++)
-        {
-            end_arqexec[antes].defvar = defvar;
-            end_arqexec[antes].indice = antes;
-            end_arqexec[antes].EndObjeto(c, o);
-        }
-        for (; depois<antes; depois++)
-            end_arqexec[depois].Apagar();
-        break;
-    case Instr::cArqTxt:
-        for (; antes<depois; antes++)
-            end_arqtxt[antes].Criar();
-        for (; depois<antes; depois++)
-            end_arqtxt[depois].Apagar();
-        break;
-    case Instr::cArqMem:
-        for (; antes<depois; antes++)
-            end_arqmem[antes].Criar();
-        for (; depois<antes; depois++)
-            end_arqmem[depois].Apagar();
-        break;
-    case Instr::cIntTempo:
-        for (; antes<depois; antes++)
-        {
-            end_inttempo[antes].defvar = defvar;
-            end_inttempo[antes].indice = antes;
-            end_inttempo[antes].EndObjeto(c, o);
-        }
-        for (; depois<antes; depois++)
-            end_inttempo[depois].setValor(0, 0);
-        break;
-    case Instr::cIntExec:
-        for (; antes<depois; antes++)
-        {
-            end_intexec[antes].defvar = defvar;
-            end_intexec[antes].indice = antes;
-            end_intexec[antes].EndObjeto(c, o);
-        }
-        for (; depois<antes; depois++)
-            end_intexec[depois].setValor(0);
-        break;
-    case Instr::cListaObj:
-        for (; antes<depois; antes++)
-            end_listaobj[antes].Objeto = o;
-        for (; depois<antes; depois++)
-            end_listaobj[depois].Apagar();
-        break;
-    case Instr::cListaItem:
-        for (; antes<depois; antes++)
-        {
-            end_listaitem[antes].Objeto = o;
-            end_listaitem[antes].defvar = defvar;
-            end_listaitem[antes].indice = antes;
-        }
-        for (; depois<antes; depois++)
-            end_listaitem[depois].Apagar();
-        break;
-    case Instr::cTextoTxt:
-        for (; depois<antes; depois++)
-            end_textotxt[depois].Apagar();
-        break;
-    case Instr::cTextoPos:
-        for (; antes<depois; antes++)
-        {
-            end_textopos[antes].Objeto = o;
-            end_textopos[antes].defvar = defvar;
-            end_textopos[antes].indice = antes;
-        }
-        for (; depois<antes; depois++)
-            end_textopos[depois].Apagar();
-        break;
-    case Instr::cTextoVar:
-        for (; depois<antes; depois++)
-            end_textovar[depois].Apagar();
-        break;
-    case Instr::cTextoObj:
-        for (; antes<depois; antes++)
-            end_textoobj[antes].Objeto = o;
-        for (; depois<antes; depois++)
-            end_textoobj[depois].Apagar();
-        break;
-    case Instr::cTelaTxt:
-        for (; antes<depois; antes++)
-        {
-            end_telatxt[antes].Criar();
-            end_telatxt[antes].defvar = defvar;
-            end_telatxt[antes].indice = antes;
-            end_telatxt[antes].EndObjeto(c, o);
-        }
-        for (; depois<antes; depois++)
-            end_telatxt[depois].Apagar();
-        break;
-    case Instr::cSocket:
-        for (; antes<depois; antes++)
-        {
-            end_socket[antes].defvar = defvar;
-            end_socket[antes].indice = antes;
-            end_socket[antes].EndObjeto(c, o);
-        }
-        for (; depois<antes; depois++)
-            end_socket[depois].Apagar();
-        break;
-    case Instr::cServ:
-        for (; antes<depois; antes++)
-        {
-            end_serv[antes].defvar = defvar;
-            end_serv[antes].indice = antes;
-            end_serv[antes].EndObjeto(c, o);
-            end_serv[antes].Criar();
-        }
-        for (; depois<antes; depois++)
-            end_serv[depois].Apagar();
-        break;
-    case Instr::cProg:
-        for (; antes<depois; antes++)
-            end_prog[antes].Criar();
-        for (; depois<antes; depois++)
-            end_prog[depois].Apagar();
-        break;
-    case Instr::cDebug:
-        for (; antes<depois; antes++)
-        {
-            end_debug[antes].Criar();
-            end_debug[antes].defvar = defvar;
-            end_debug[antes].indice = antes;
-            end_debug[antes].EndObjeto(c, o);
-        }
-        for (; depois<antes; depois++)
-            end_debug[depois].Apagar();
-        break;
-    case Instr::cIndiceObj:
-        for (; antes<depois; antes++)
-            end_indiceobj[antes].Objeto = o;
-        for (; depois<antes; depois++)
-            end_indiceobj[depois].Apagar();
-        break;
-    case Instr::cIndiceItem:
-        for (; depois<antes; depois++)
-            end_indiceitem[depois].Apagar();
-        break;
-    case Instr::cDataHora:
-        for (; antes<depois; antes++)
-            end_datahora[antes].Criar();
-        break;
-    case Instr::cTextoVarSub:
-        for (; depois<antes; depois++)
-            end_textovarsub[depois].Apagar();
-        break;
-    case Instr::cTextoObjSub:
-        for (; depois<antes; depois++)
-            end_textoobjsub[depois].Apagar();
-        break;
-    }
 }
 
 //------------------------------------------------------------------------------

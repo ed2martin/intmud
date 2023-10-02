@@ -70,6 +70,8 @@ private:
 
     static int FTamanho(const char * instr);
     static int FTamanhoVetor(const char * instr);
+    static void FRedim(TVariavel * v, TClasse * c, TObjeto * o,
+            unsigned int antes, unsigned int depois);
 
     bool modossl;               ///< Se deve usar conexão segura (SSL)
     int  sock;                  ///< Socket; menor que 0 se estiver fechado

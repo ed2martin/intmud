@@ -3,6 +3,8 @@
 
 class TVariavel;
 class TVarInfo;
+class TClasse;
+class TObjeto;
 
 //----------------------------------------------------------------------------
 class TVarArqLog /// Variável arqlog
@@ -25,6 +27,8 @@ private:
 
     static int FTamanho(const char * instr);
     static int FTamanhoVetor(const char * instr);
+    static void FRedim(TVariavel * v, TClasse * c, TObjeto * o,
+            unsigned int antes, unsigned int depois);
 
     void Fechar();      ///< Fecha arquivo
     static int Tempo;   ///< Quanto tempo para atualizar arquivos

@@ -52,8 +52,9 @@ private:
     int (*FTamanho)(const char * instr);
     int (*FTamanhoVetor)(const char * instr);
     TVarTipo (*FTipo)(TVariavel * v);
+    void (*FRedim)(TVariavel * v, TClasse * c, TObjeto * o,
+            unsigned int antes, unsigned int depois);
     bool (*FFuncVetor)(TVariavel * v, const char * nome);
-
 public:
     /// Construtor usado ao criar TVariavel::VarInfo
     TVarInfo();
@@ -61,6 +62,8 @@ public:
     TVarInfo(int (*fTamanho)(const char * instr),
             int (*fTamanhoVetor)(const char * instr),
             TVarTipo (*fTipo)(TVariavel * v),
+            void (*fRedim)(TVariavel * v, TClasse * c, TObjeto * o,
+                    unsigned int antes, unsigned int depois),
             bool (*fFuncVetor)(TVariavel * v, const char * nome));
 
     static int FTamanho0(const char * instr);
@@ -69,6 +72,8 @@ public:
     static TVarTipo FTipoDouble(TVariavel * v);
     static TVarTipo FTipoTxt(TVariavel * v);
     static TVarTipo FTipoObj(TVariavel * v);
+    static void FRedim0(TVariavel * v, TClasse * c, TObjeto * o,
+            unsigned int antes, unsigned int depois);
     static bool FFuncVetorFalse(TVariavel * v, const char * nome);
 
     friend TVariavel;
@@ -144,14 +149,37 @@ public:
                 (unsigned char)defvar[Instr::endVetor] : 1, 0);
     }
 
-    void Redim(TClasse * c, TObjeto * o, unsigned int antes, unsigned int depois);
-        ///< Redimensiona vetor na memória
-        /**< @param c Classe ao qual a variável pertence, 0 se nenhuma classe
-             @param o Objeto ao qual a variável pertence, 0 se nenhum objeto
-             @param antes Tamanho atual do vetor (quantidade de variáveis)
-             @param depois Novo tamanho do vetor (quantidade de variáveis)
-             @note Para diminuir o tamanho do vetor, c e o podem ser 0
-             @note Não libera memória alocada (não executa delete) */
+    /// Redimensiona vetor na memória
+    /** @param c Classe ao qual a variável pertence, 0 se nenhuma classe
+     *  @param o Objeto ao qual a variável pertence, 0 se nenhum objeto
+     *  @param antes Tamanho atual do vetor (quantidade de variáveis)
+     *  @param depois Novo tamanho do vetor (quantidade de variáveis)
+     *  @note Para diminuir o tamanho do vetor, c e o podem ser 0
+     *  @note Não libera memória alocada (não executa delete) */
+    inline void Redim(TClasse * c, TObjeto * o,
+            unsigned int antes, unsigned int depois)
+    {
+        if (antes == depois)
+            return;
+        // Mostra o que vai fazer
+        /*
+        if (depois > antes)
+            printf("Variável criada  (%d a %d) end=%p", antes, depois-1, endvar);
+        else
+            printf("Variável apagada (%d a %d) end=%p", depois, antes-1, endvar);
+        char mens[BUF_MENS];
+        if (Instr::Decod(mens, defvar, sizeof(mens)))
+            printf(" def=%p %s\n", defvar, mens);
+        else
+            printf(" ERRO: %s\n", mens);
+        fflush(stdout);
+        */
+        unsigned char cmd = (unsigned char)defvar[2];
+        if (cmd < Instr::cTotalComandos)
+            VarInfo[cmd].FRedim(this, c, o, antes, depois);
+        else
+            TVarInfo::FRedim0(this, c, o, antes, depois);
+    }
 
     void MoverEnd(void * destino, TClasse * c, TObjeto * o);
         ///< Move a variável para outra região da memória, mas não acerta defvar

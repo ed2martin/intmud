@@ -55,6 +55,7 @@ const TVarInfo * TTextoTxt::Inicializa()
         FTamanho,
         FTamanhoVetor,
         TVarInfo::FTipoOutros,
+        FRedim,
         TVarInfo::FFuncVetorFalse);
     return &var;
 }
@@ -168,6 +169,17 @@ int TTextoTxt::FTamanhoVetor(const char * instr)
     return (total ? total : 1) * sizeof(TTextoTxt);
 }
 
+//------------------------------------------------------------------------------
+void TTextoTxt::FRedim(TVariavel * v, TClasse * c, TObjeto * o,
+        unsigned int antes, unsigned int depois)
+{
+    TTextoTxt * ref = reinterpret_cast<TTextoTxt*>(v->endvar);
+    if (antes < depois)
+        memset(ref + antes, 0, (depois - antes) * sizeof(ref[0]));
+    for (; depois < antes; depois++)
+        ref[depois].Apagar();
+}
+
 //----------------------------------------------------------------------------
 const TVarInfo * TTextoPos::Inicializa()
 {
@@ -175,6 +187,7 @@ const TVarInfo * TTextoPos::Inicializa()
         FTamanho,
         FTamanhoVetor,
         FTipo,
+        FRedim,
         TVarInfo::FFuncVetorFalse);
     return &var;
 }
@@ -182,7 +195,7 @@ const TVarInfo * TTextoPos::Inicializa()
 //----------------------------------------------------------------------------
 void TTextoPos::Apagar()
 {
-    if (TextoTxt == 0)
+    if (TextoTxt == nullptr)
         return;
     (Antes ? Antes->Depois : TextoTxt->Posic) = Depois;
     if (Depois)
@@ -243,6 +256,22 @@ int TTextoPos::FTamanhoVetor(const char * instr)
 {
     int total = (unsigned char)instr[Instr::endVetor];
     return (total ? total : 1) * sizeof(TTextoPos);
+}
+
+//------------------------------------------------------------------------------
+void TTextoPos::FRedim(TVariavel * v, TClasse * c, TObjeto * o,
+        unsigned int antes, unsigned int depois)
+{
+    TTextoPos * ref = reinterpret_cast<TTextoPos*>(v->endvar);
+    for (; antes < depois; antes++)
+    {
+        ref[antes].TextoTxt = nullptr;
+        ref[antes].Objeto = o;
+        ref[antes].defvar = v->defvar;
+        ref[antes].indice = antes;
+    }
+    for (; depois < antes; depois++)
+        ref[depois].Apagar();
 }
 
 //----------------------------------------------------------------------------

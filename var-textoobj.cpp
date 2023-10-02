@@ -27,6 +27,7 @@ const TVarInfo * TTextoObj::Inicializa()
         FTamanho,
         FTamanhoVetor,
         TVarInfo::FTipoOutros,
+        FRedim,
         TVarInfo::FFuncVetorFalse);
     return &var;
 }
@@ -502,12 +503,29 @@ int TTextoObj::FTamanhoVetor(const char * instr)
 }
 
 //------------------------------------------------------------------------------
+void TTextoObj::FRedim(TVariavel * v, TClasse * c, TObjeto * o,
+        unsigned int antes, unsigned int depois)
+{
+    TTextoObj * ref = reinterpret_cast<TTextoObj*>(v->endvar);
+    for (; antes < depois; antes++)
+    {
+        ref[antes].RBroot = nullptr;
+        ref[antes].Inicio = nullptr;
+        ref[antes].Objeto = o;
+        ref[antes].Total = 0;
+    }
+    for (; depois < antes; depois++)
+        ref[depois].Apagar();
+}
+
+//------------------------------------------------------------------------------
 const TVarInfo * TTextoObjSub::Inicializa()
 {
     static const TVarInfo var(
         FTamanho,
         FTamanhoVetor,
         TVarInfo::FTipoObj,
+        FRedim,
         TVarInfo::FFuncVetorFalse);
     return &var;
 }
@@ -516,7 +534,7 @@ const TVarInfo * TTextoObjSub::Inicializa()
 void TTextoObjSub::Criar(TTextoObj * var)
 {
     TextoObj = var;
-    Antes = 0;
+    Antes = nullptr;
     Depois = var->Inicio;
     if (var->Inicio)
         var->Inicio->Antes = this;
@@ -526,7 +544,7 @@ void TTextoObjSub::Criar(TTextoObj * var)
 //----------------------------------------------------------------------------
 void TTextoObjSub::Apagar()
 {
-    if (TextoObj == 0)
+    if (TextoObj == nullptr)
         return;
     (Antes ? Antes->Depois : TextoObj->Inicio) = Depois;
     if (Depois)
@@ -579,6 +597,20 @@ int TTextoObjSub::FTamanhoVetor(const char * instr)
 {
     int total = (unsigned char)instr[Instr::endVetor];
     return (total ? total : 1) * sizeof(TTextoObjSub);
+}
+
+//------------------------------------------------------------------------------
+void TTextoObjSub::FRedim(TVariavel * v, TClasse * c, TObjeto * o,
+        unsigned int antes, unsigned int depois)
+{
+    TTextoObjSub * ref = reinterpret_cast<TTextoObjSub*>(v->endvar);
+    for (; antes < depois; antes++)
+    {
+        ref[antes].TextoObj = nullptr;
+        ref[antes].NomeVar[0] = 0;
+    }
+    for (; depois < antes; depois++)
+        ref[depois].Apagar();
 }
 
 //----------------------------------------------------------------------------

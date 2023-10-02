@@ -29,6 +29,7 @@ const TVarInfo * TVarIntExec::Inicializa()
         FTamanho,
         FTamanhoVetor,
         TVarInfo::FTipoInt,
+        FRedim,
         TVarInfo::FFuncVetorFalse);
     return &var;
 }
@@ -131,4 +132,21 @@ int TVarIntExec::FTamanhoVetor(const char * instr)
 {
     int total = (unsigned char)instr[Instr::endVetor];
     return (total ? total : 1) * sizeof(TVarIntExec);
+}
+
+//------------------------------------------------------------------------------
+void TVarIntExec::FRedim(TVariavel * v, TClasse * c, TObjeto * o,
+        unsigned int antes, unsigned int depois)
+{
+    TVarIntExec * ref = reinterpret_cast<TVarIntExec*>(v->endvar);
+    for (; antes < depois; antes++)
+    {
+        ref[antes].defvar = v->defvar;
+        ref[antes].indice = antes;
+        ref[antes].EndObjeto(c, o);
+        ref[antes].Antes = nullptr;
+        ref[antes].Depois = nullptr;
+    }
+    for (; depois < antes; depois++)
+        ref[depois].setValor(0);
 }

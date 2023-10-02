@@ -3,6 +3,8 @@
 
 class TVariavel;
 class TVarInfo;
+class TClasse;
+class TObjeto;
 
 //----------------------------------------------------------------------------
 /** Trata das variáveis do tipo NomeObj */
@@ -16,6 +18,8 @@ public:
 private:
     static int FTamanho(const char * instr);
     static int FTamanhoVetor(const char * instr);
+    static void FRedim(TVariavel * v, TClasse * c, TObjeto * o,
+            unsigned int antes, unsigned int depois);
 
     char NomeObj[64];   ///< Nome do item que está procurando
     int  Achou;         ///< Quantos itens achou na última busca

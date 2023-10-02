@@ -23,6 +23,7 @@ const TVarInfo * TIndiceItem::Inicializa()
         FTamanho,
         FTamanhoVetor,
         TVarInfo::FTipoOutros,
+        FRedim,
         TVarInfo::FFuncVetorFalse);
     return &var;
 }
@@ -279,6 +280,17 @@ int TIndiceItem::FTamanhoVetor(const char * instr)
     return (total ? total : 1) * sizeof(TIndiceItem);
 }
 
+//------------------------------------------------------------------------------
+void TIndiceItem::FRedim(TVariavel * v, TClasse * c, TObjeto * o,
+        unsigned int antes, unsigned int depois)
+{
+    TIndiceItem * ref = reinterpret_cast<TIndiceItem*>(v->endvar);
+    if (antes < depois)
+        memset(ref + antes, 0, (depois - antes) * sizeof(ref[0]));
+    for (; depois < antes; depois++)
+        ref[depois].Apagar();
+}
+
 //----------------------------------------------------------------------------
 const TVarInfo * TIndiceObj::Inicializa()
 {
@@ -286,6 +298,7 @@ const TVarInfo * TIndiceObj::Inicializa()
         FTamanho,
         FTamanhoVetor,
         TVarInfo::FTipoTxt,
+        FRedim,
         TVarInfo::FFuncVetorFalse);
     return &var;
 }
@@ -355,6 +368,21 @@ int TIndiceObj::FTamanhoVetor(const char * instr)
 {
     int total = (unsigned char)instr[Instr::endVetor];
     return (total ? total : 1) * sizeof(TIndiceObj);
+}
+
+//------------------------------------------------------------------------------
+void TIndiceObj::FRedim(TVariavel * v, TClasse * c, TObjeto * o,
+        unsigned int antes, unsigned int depois)
+{
+    TIndiceObj * ref = reinterpret_cast<TIndiceObj*>(v->endvar);
+    for (; antes < depois; antes++)
+    {
+        ref[antes].Objeto = o;
+        ref[antes].IndiceItem = nullptr;
+        ref[antes].Nome[0] = 0;
+    }
+    for (; depois < antes; depois++)
+        ref[depois].Apagar();
 }
 
 //----------------------------------------------------------------------------

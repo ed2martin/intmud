@@ -87,14 +87,14 @@ bool TVarIncDec::FuncInc(TVariavel * v, const char * nome)
     if (comparaZ(nome, "pos") == 0)
     {
         int valor = getInc(0);
-        if (valor<0)
+        if (valor < 0)
             setInc(0, -valor);
         return false;
     }
     if (comparaZ(nome, "neg") == 0)
     {
         int valor = getInc(0);
-        if (valor>0)
+        if (valor > 0)
             setInc(0, -valor);
         return false;
     }
@@ -113,14 +113,14 @@ bool TVarIncDec::FuncDec(TVariavel * v, const char * nome)
     if (comparaZ(nome, "pos") == 0)
     {
         int valor = getDec(0);
-        if (valor<0)
+        if (valor < 0)
             setDec(0, -valor);
         return false;
     }
     if (comparaZ(nome, "neg") == 0)
     {
         int valor = getDec(0);
-        if (valor>0)
+        if (valor > 0)
             setDec(0, -valor);
         return false;
     }
@@ -187,6 +187,7 @@ const TVarInfo * TVarIncDec::InicializaInc()
         FTamanho,
         FTamanhoVetor,
         TVarInfo::FTipoInt,
+        FRedimInc,
         FuncVetorInc);
     return &var;
 }
@@ -198,6 +199,25 @@ const TVarInfo * TVarIncDec::InicializaDec()
         FTamanho,
         FTamanhoVetor,
         TVarInfo::FTipoInt,
+        FRedimDec,
         FuncVetorDec);
     return &var;
+}
+
+//------------------------------------------------------------------------------
+void TVarIncDec::FRedimInc(TVariavel * v, TClasse * c, TObjeto * o,
+        unsigned int antes, unsigned int depois)
+{
+    TVarIncDec * ref = reinterpret_cast<TVarIncDec*>(v->endvar);
+    for (; antes < depois; antes++)
+        ref[antes].valor = TempoIni + INTTEMPO_MAX * INTTEMPO_MAX;
+}
+
+//------------------------------------------------------------------------------
+void TVarIncDec::FRedimDec(TVariavel * v, TClasse * c, TObjeto * o,
+        unsigned int antes, unsigned int depois)
+{
+    TVarIncDec * ref = reinterpret_cast<TVarIncDec*>(v->endvar);
+    for (; antes < depois; antes++)
+        ref[antes].valor = TempoIni;
 }

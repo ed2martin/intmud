@@ -33,6 +33,8 @@ public:
 private:
     static int FTamanho(const char * instr);
     static int FTamanhoVetor(const char * instr);
+    static void FRedim(TVariavel * v, TClasse * c, TObjeto * o,
+            unsigned int antes, unsigned int depois);
 
     static void DebugVet(bool mostrar); ///< Checa se listas ligadas estão OK
     unsigned short IndiceMenos;   ///< Índice em VetMenos

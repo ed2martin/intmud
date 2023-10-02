@@ -29,6 +29,10 @@ public:
 private:
     static int FTamanho(const char * instr);
     static int FTamanhoVetor(const char * instr);
+    static void FRedimInc(TVariavel * v, TClasse * c, TObjeto * o,
+            unsigned int antes, unsigned int depois);
+    static void FRedimDec(TVariavel * v, TClasse * c, TObjeto * o,
+            unsigned int antes, unsigned int depois);
 
     int valor; ///< Tempo, usando tanto em intinc quanto em intdec
 };

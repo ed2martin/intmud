@@ -29,6 +29,7 @@ const TVarInfo * TVarArqLog::Inicializa()
         FTamanho,
         FTamanhoVetor,
         TVarInfo::FTipoOutros,
+        FRedim,
         TVarInfo::FFuncVetorFalse);
     return &var;
 }
@@ -279,4 +280,15 @@ int TVarArqLog::FTamanhoVetor(const char * instr)
 {
     int total = (unsigned char)instr[Instr::endVetor];
     return (total ? total : 1) * sizeof(TVarArqLog);
+}
+
+//------------------------------------------------------------------------------
+void TVarArqLog::FRedim(TVariavel * v, TClasse * c, TObjeto * o,
+        unsigned int antes, unsigned int depois)
+{
+    TVarArqLog * ref = reinterpret_cast<TVarArqLog*>(v->endvar);
+    for (; antes < depois; antes++)
+        ref[antes].Criar();
+    for (; depois < antes; depois++)
+        ref[depois].Apagar();
 }

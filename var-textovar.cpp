@@ -34,6 +34,7 @@ const TVarInfo * TTextoVar::Inicializa()
         FTamanho,
         FTamanhoVetor,
         TVarInfo::FTipoOutros,
+        FRedim,
         TVarInfo::FFuncVetorFalse);
     return &var;
 }
@@ -537,6 +538,21 @@ int TTextoVar::FTamanhoVetor(const char * instr)
     return (total ? total : 1) * sizeof(TTextoVar);
 }
 
+//------------------------------------------------------------------------------
+void TTextoVar::FRedim(TVariavel * v, TClasse * c, TObjeto * o,
+        unsigned int antes, unsigned int depois)
+{
+    TTextoVar * ref = reinterpret_cast<TTextoVar*>(v->endvar);
+    for (; antes < depois; antes++)
+    {
+        ref[antes].RBroot = nullptr;
+        ref[antes].Inicio = nullptr;
+        ref[antes].Total = 0;
+    }
+    for (; depois < antes; depois++)
+        ref[depois].Apagar();
+}
+
 //----------------------------------------------------------------------------
 TBlocoVar * TTextoVar::Procura(const char * texto)
 {
@@ -639,6 +655,7 @@ const TVarInfo * TTextoVarSub::Inicializa()
         FTamanho,
         FTamanhoVetor,
         FTipo,
+        FRedim,
         TVarInfo::FFuncVetorFalse);
     return &var;
 }
@@ -713,6 +730,20 @@ int TTextoVarSub::FTamanhoVetor(const char * instr)
 {
     int total = (unsigned char)instr[Instr::endVetor];
     return (total ? total : 1) * sizeof(TTextoVarSub);
+}
+
+//------------------------------------------------------------------------------
+void TTextoVarSub::FRedim(TVariavel * v, TClasse * c, TObjeto * o,
+        unsigned int antes, unsigned int depois)
+{
+    TTextoVarSub * ref = reinterpret_cast<TTextoVarSub*>(v->endvar);
+    for (; antes < depois; antes++)
+    {
+        ref[antes].TextoVar = nullptr;
+        ref[antes].NomeVar[0] = 0;
+    }
+    for (; depois < antes; depois++)
+        ref[depois].Apagar();
 }
 
 //----------------------------------------------------------------------------

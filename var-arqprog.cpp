@@ -83,6 +83,7 @@ const TVarInfo * TVarArqProg::Inicializa()
         FTamanho,
         FTamanhoVetor,
         TVarInfo::FTipoOutros,
+        FRedim,
         TVarInfo::FFuncVetorFalse);
     return &var;
 }
@@ -95,6 +96,8 @@ void TVarArqProg::Criar()
 #else
     dir = nullptr;
 #endif
+    Incluir = nullptr;
+    *Arquivo = 0;
 }
 
 //----------------------------------------------------------------------------
@@ -348,4 +351,15 @@ int TVarArqProg::FTamanhoVetor(const char * instr)
 {
     int total = (unsigned char)instr[Instr::endVetor];
     return (total ? total : 1) * sizeof(TVarArqProg);
+}
+
+//------------------------------------------------------------------------------
+void TVarArqProg::FRedim(TVariavel * v, TClasse * c, TObjeto * o,
+        unsigned int antes, unsigned int depois)
+{
+    TVarArqProg * ref = reinterpret_cast<TVarArqProg*>(v->endvar);
+    for (; antes < depois; antes++)
+        ref[antes].Criar();
+    for (; depois < antes; depois++)
+        ref[depois].Apagar();
 }

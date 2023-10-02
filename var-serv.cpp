@@ -95,6 +95,7 @@ const TVarInfo * TVarServ::Inicializa()
         FTamanho,
         FTamanhoVetor,
         TVarInfo::FTipoOutros,
+        FRedim,
         TVarInfo::FFuncVetorFalse);
     return &var;
 }
@@ -127,8 +128,8 @@ void TVarServ::Fechar()
     (Antes ? Antes->Depois : Inicio) = Depois;
     if (Depois)
         Depois->Antes = Antes;
-    if (varObj==this)
-        varObj=Depois;
+    if (varObj == this)
+        varObj = Depois;
     while (ServInicio)
         delete ServInicio;
 }
@@ -531,4 +532,20 @@ int TVarServ::FTamanhoVetor(const char * instr)
 {
     int total = (unsigned char)instr[Instr::endVetor];
     return (total ? total : 1) * sizeof(TVarServ);
+}
+
+//------------------------------------------------------------------------------
+void TVarServ::FRedim(TVariavel * v, TClasse * c, TObjeto * o,
+        unsigned int antes, unsigned int depois)
+{
+    TVarServ * ref = reinterpret_cast<TVarServ*>(v->endvar);
+    for (; antes < depois; antes++)
+    {
+        ref[antes].defvar = v->defvar;
+        ref[antes].indice = antes;
+        ref[antes].EndObjeto(c, o);
+        ref[antes].Criar();
+    }
+    for (; depois < antes; depois++)
+        ref[depois].Apagar();
 }

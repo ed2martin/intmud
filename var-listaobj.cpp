@@ -42,6 +42,7 @@ const TVarInfo * TListaObj::Inicializa()
         FTamanho,
         FTamanhoVetor,
         TVarInfo::FTipoOutros,
+        FRedim,
         TVarInfo::FFuncVetorFalse);
     return &var;
 }
@@ -687,6 +688,22 @@ int TListaObj::FTamanhoVetor(const char * instr)
     return (total ? total : 1) * sizeof(TListaObj);
 }
 
+//------------------------------------------------------------------------------
+void TListaObj::FRedim(TVariavel * v, TClasse * c, TObjeto * o,
+        unsigned int antes, unsigned int depois)
+{
+    TListaObj * ref = reinterpret_cast<TListaObj*>(v->endvar);
+    for (; antes < depois; antes++)
+    {
+        ref[antes].Objeto = o;
+        ref[antes].Inicio = nullptr;
+        ref[antes].Fim = nullptr;
+        ref[antes].Total = 0;
+    }
+    for (; depois < antes; depois++)
+        ref[depois].Apagar();
+}
+
 //----------------------------------------------------------------------------
 const TVarInfo * TListaItem::Inicializa()
 {
@@ -694,6 +711,7 @@ const TVarInfo * TListaItem::Inicializa()
         FTamanho,
         FTamanhoVetor,
         TVarInfo::FTipoOutros,
+        FRedim,
         TVarInfo::FFuncVetorFalse);
     return &var;
 }
@@ -1009,6 +1027,22 @@ int TListaItem::FTamanhoVetor(const char * instr)
 {
     int total = (unsigned char)instr[Instr::endVetor];
     return (total ? total : 1) * sizeof(TListaItem);
+}
+
+//------------------------------------------------------------------------------
+void TListaItem::FRedim(TVariavel * v, TClasse * c, TObjeto * o,
+        unsigned int antes, unsigned int depois)
+{
+    TListaItem * ref = reinterpret_cast<TListaItem*>(v->endvar);
+    for (; antes < depois; antes++)
+    {
+        ref[antes].ListaX = nullptr;
+        ref[antes].Objeto = o;
+        ref[antes].defvar = v->defvar;
+        ref[antes].indice = antes;
+    }
+    for (; depois < antes; depois++)
+        ref[depois].Apagar();
 }
 
 //----------------------------------------------------------------------------

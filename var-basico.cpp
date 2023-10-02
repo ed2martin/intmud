@@ -676,12 +676,91 @@ static int VarBaseReal2_TamanhoVetor(const char * instr)
 }
 
 //------------------------------------------------------------------------------
+static void VarBaseTxt1_Redim(TVariavel * v, TClasse * c, TObjeto * o,
+        unsigned int antes, unsigned int depois)
+{
+    int tam = 2 + (unsigned char)v->defvar[Instr::endExtra];
+    char * ref = reinterpret_cast<char*>(v->endvar);
+    for (; antes < depois; antes++)
+        ref[antes * tam] = 0;
+}
+
+static void VarBaseTxt2_Redim(TVariavel * v, TClasse * c, TObjeto * o,
+        unsigned int antes, unsigned int depois)
+{
+    int tam = 258 + (unsigned char)v->defvar[Instr::endExtra];
+    char * ref = reinterpret_cast<char*>(v->endvar);
+    for (; antes < depois; antes++)
+        ref[antes * tam] = 0;
+}
+static void VarBaseInt1_Redim(TVariavel * v, TClasse * c, TObjeto * o,
+        unsigned int antes, unsigned int depois)
+{
+// Se deve apagar variáveis: retorna
+    if (antes >= depois)
+        return;
+// Obtém byte e bit inicial
+    antes += v->numbit;
+    depois += v->numbit;
+    char * end = reinterpret_cast<char*>(v->endvar) + antes/8;
+// Avança bit a bit até o fim do primeiro byte
+    if (antes & 7)
+    {
+        for (; antes < depois && (antes & 7); antes++)
+            *end &= ~(1 << (antes & 7));
+        end++;
+    }
+// Preenche bytes = 0
+    for (; antes + 8 <= depois; antes += 8)
+        *end++ = 0;
+// Avança bit a bit
+    for (int mask = 1; antes < depois; antes++)
+        *end &= ~mask, mask <<= 1;
+}
+static void VarBaseInt8_Redim(TVariavel * v, TClasse * c, TObjeto * o,
+        unsigned int antes, unsigned int depois)
+{
+    char * ref = reinterpret_cast<char*>(v->endvar);
+    if (antes < depois)
+        memset(ref + antes, 0, (depois - antes) * sizeof(ref[0]));
+}
+static void VarBaseInt16_Redim(TVariavel * v, TClasse * c, TObjeto * o,
+        unsigned int antes, unsigned int depois)
+{
+    short * ref = reinterpret_cast<short*>(v->endvar);
+    if (antes < depois)
+        memset(ref + antes, 0, (depois - antes) * sizeof(ref[0]));
+}
+static void VarBaseInt32_Redim(TVariavel * v, TClasse * c, TObjeto * o,
+        unsigned int antes, unsigned int depois)
+{
+    int * ref = reinterpret_cast<int*>(v->endvar);
+    if (antes < depois)
+        memset(ref + antes, 0, (depois - antes) * sizeof(ref[0]));
+}
+static void VarBaseReal_Redim(TVariavel * v, TClasse * c, TObjeto * o,
+        unsigned int antes, unsigned int depois)
+{
+    float * ref = reinterpret_cast<float*>(v->endvar);
+    if (antes < depois)
+        memset(ref + antes, 0, (depois - antes) * sizeof(ref[0]));
+}
+static void VarBaseReal2_Redim(TVariavel * v, TClasse * c, TObjeto * o,
+        unsigned int antes, unsigned int depois)
+{
+    double * ref = reinterpret_cast<double*>(v->endvar);
+    if (antes < depois)
+        memset(ref + antes, 0, (depois - antes) * sizeof(ref[0]));
+}
+
+//------------------------------------------------------------------------------
 const TVarInfo * VarBaseTxt1()
 {
     static const TVarInfo var(
         VarBaseTxt1_Tamanho,
         VarBaseTxt1_TamanhoVetor,
         TVarInfo::FTipoTxt,
+        VarBaseTxt1_Redim,
         VarBaseTxt_FuncVetor);
     return &var;
 }
@@ -692,6 +771,7 @@ const TVarInfo * VarBaseTxt2()
         VarBaseTxt2_Tamanho,
         VarBaseTxt2_TamanhoVetor,
         TVarInfo::FTipoTxt,
+        VarBaseTxt2_Redim,
         VarBaseTxt_FuncVetor);
     return &var;
 }
@@ -702,6 +782,7 @@ const TVarInfo * VarBaseInt1()
         VarBaseInt1_Tamanho,
         VarBaseInt1_TamanhoVetor,
         TVarInfo::FTipoInt,
+        VarBaseInt1_Redim,
         VarBaseInt1_FuncVetor);
     return &var;
 }
@@ -712,6 +793,7 @@ const TVarInfo * VarBaseInt8()
         VarBaseInt8_Tamanho,
         VarBaseInt8_TamanhoVetor,
         TVarInfo::FTipoInt,
+        VarBaseInt8_Redim,
         VarBaseInt8_FuncVetor);
     return &var;
 }
@@ -722,6 +804,7 @@ const TVarInfo * VarBaseUInt8()
         VarBaseInt8_Tamanho,
         VarBaseInt8_TamanhoVetor,
         TVarInfo::FTipoInt,
+        VarBaseInt8_Redim,
         VarBaseUInt8_FuncVetor);
     return &var;
 }
@@ -732,6 +815,7 @@ const TVarInfo * VarBaseInt16()
         VarBaseInt16_Tamanho,
         VarBaseInt16_TamanhoVetor,
         TVarInfo::FTipoInt,
+        VarBaseInt16_Redim,
         VarBaseInt16_FuncVetor);
     return &var;
 }
@@ -742,6 +826,7 @@ const TVarInfo * VarBaseUInt16()
         VarBaseInt16_Tamanho,
         VarBaseInt16_TamanhoVetor,
         TVarInfo::FTipoInt,
+        VarBaseInt16_Redim,
         VarBaseUInt16_FuncVetor);
     return &var;
 }
@@ -752,6 +837,7 @@ const TVarInfo * VarBaseInt32()
         VarBaseInt32_Tamanho,
         VarBaseInt32_TamanhoVetor,
         TVarInfo::FTipoInt,
+        VarBaseInt32_Redim,
         VarBaseInt32_FuncVetor);
     return &var;
 }
@@ -762,6 +848,7 @@ const TVarInfo * VarBaseUInt32()
         VarBaseInt32_Tamanho,
         VarBaseInt32_TamanhoVetor,
         TVarInfo::FTipoDouble,
+        VarBaseInt32_Redim,
         VarBaseUInt32_FuncVetor);
     return &var;
 }
@@ -772,6 +859,7 @@ const TVarInfo * VarBaseReal()
         VarBaseReal_Tamanho,
         VarBaseReal_TamanhoVetor,
         TVarInfo::FTipoDouble,
+        VarBaseReal_Redim,
         VarBaseReal_FuncVetor);
     return &var;
 }
@@ -782,6 +870,7 @@ const TVarInfo * VarBaseReal2()
         VarBaseReal2_Tamanho,
         VarBaseReal2_TamanhoVetor,
         TVarInfo::FTipoDouble,
+        VarBaseReal2_Redim,
         VarBaseReal2_FuncVetor);
     return &var;
 }

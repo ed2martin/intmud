@@ -4,6 +4,8 @@
 class TVariavel;
 class TVarInfo;
 enum TVarTipo : unsigned char;
+class TClasse;
+class TObjeto;
 
 //----------------------------------------------------------------------------
 class TVarDataHora /// Data e hora
@@ -11,8 +13,6 @@ class TVarDataHora /// Data e hora
 public:
     static const TVarInfo * Inicializa();
         ///< Inicializa variável e retorna informações
-    void Criar();
-            ///< Chamado ao criar objeto
     void Mover(TVarDataHora * destino);
             ///< Move para outro lugar
     int  Compara(TVarDataHora * v);
@@ -49,6 +49,8 @@ public:
 private:
     static int FTamanho(const char * instr);
     static int FTamanhoVetor(const char * instr);
+    static void FRedim(TVariavel * v, TClasse * c, TObjeto * o,
+            unsigned int antes, unsigned int depois);
 };
 
 //----------------------------------------------------------------------------

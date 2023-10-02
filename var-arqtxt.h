@@ -5,6 +5,8 @@
 
 class TVariavel;
 class TVarInfo;
+class TClasse;
+class TObjeto;
 
 //----------------------------------------------------------------------------
 class TVarArqTxt /// Variável arqtxt
@@ -30,6 +32,8 @@ private:
 
     static int FTamanho(const char * instr);
     static int FTamanhoVetor(const char * instr);
+    static void FRedim(TVariavel * v, TClasse * c, TObjeto * o,
+            unsigned int antes, unsigned int depois);
 
     void Fechar();      ///< Fecha arquivo
     FILE * arq;         ///< Para acessar o arquivo

@@ -82,7 +82,6 @@ class TVarArqExec /// Uma variável ArqExec
 public:
     static const TVarInfo * Inicializa();
         ///< Inicializa variável e retorna informações
-    void Apagar();          ///< Apaga objeto
     void Mover(TVarArqExec * destino);  ///< Move TVarArqExec para outro lugar
     void EndObjeto(TClasse * c, TObjeto * o);
     bool Func(TVariavel * v, const char * nome); ///< Função da variável
@@ -110,6 +109,8 @@ private:
 
     static int FTamanho(const char * instr);
     static int FTamanhoVetor(const char * instr);
+    static void FRedim(TVariavel * v, TClasse * c, TObjeto * o,
+            unsigned int antes, unsigned int depois);
 
     TObjExec * ObjExec;     ///< Programa atual
 

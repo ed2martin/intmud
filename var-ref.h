@@ -2,6 +2,7 @@
 #define VAR_REF_H
 
 class TVarInfo;
+class TClasse;
 class TObjeto;
 
 //----------------------------------------------------------------------------
@@ -19,6 +20,8 @@ public:
 private:
     static int FTamanho(const char * instr);
     static int FTamanhoVetor(const char * instr);
+    static void FRedim(TVariavel * v, TClasse * c, TObjeto * o,
+            unsigned int antes, unsigned int depois);
 };
 
 //----------------------------------------------------------------------------

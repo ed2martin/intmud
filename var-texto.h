@@ -8,6 +8,7 @@ enum TVarTipo : unsigned char;
 class TBlocoPos;
 class TTextoPos;
 class TTextoBloco;
+class TClasse;
 class TObjeto;
 
 class TTextoTxt  /// Variáveis TextoTxt
@@ -89,6 +90,8 @@ public:
 private:
     static int FTamanho(const char * instr);
     static int FTamanhoVetor(const char * instr);
+    static void FRedim(TVariavel * v, TClasse * c, TObjeto * o,
+            unsigned int antes, unsigned int depois);
 
     void OrdenaSub(int modo, char * texto, char** linha,
             const char *txt1, const char * txt2);
@@ -188,6 +191,8 @@ private:
 
     static int FTamanho(const char * instr);
     static int FTamanhoVetor(const char * instr);
+    static void FRedim(TVariavel * v, TClasse * c, TObjeto * o,
+            unsigned int antes, unsigned int depois);
 };
 
 //----------------------------------------------------------------------------

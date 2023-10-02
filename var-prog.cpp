@@ -31,6 +31,7 @@ const TVarInfo * TVarProg::Inicializa()
         FTamanho,
         FTamanhoVetor,
         TVarInfo::FTipoOutros,
+        FRedim,
         TVarInfo::FFuncVetorFalse);
     return &var;
 }
@@ -78,7 +79,7 @@ void TVarProg::LimparVar()
 // Retira todos os objetos da lista ligada
     for (TVarProg * obj = Inicio; obj; obj = obj->Depois)
         obj->consulta = prNada;
-    Inicio=0;
+    Inicio = nullptr;
 }
 
 //------------------------------------------------------------------------------
@@ -1852,4 +1853,15 @@ int TVarProg::FTamanhoVetor(const char * instr)
 {
     int total = (unsigned char)instr[Instr::endVetor];
     return (total ? total : 1) * sizeof(TVarProg);
+}
+
+//------------------------------------------------------------------------------
+void TVarProg::FRedim(TVariavel * v, TClasse * c, TObjeto * o,
+        unsigned int antes, unsigned int depois)
+{
+    TVarProg * ref = reinterpret_cast<TVarProg*>(v->endvar);
+    for (; antes < depois; antes++)
+        ref[antes].Criar();
+    for (; depois < antes; depois++)
+        ref[depois].Apagar();
 }

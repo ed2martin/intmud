@@ -41,6 +41,7 @@ const TVarInfo * TVarIntTempo::Inicializa()
         FTamanho,
         FTamanhoVetor,
         TVarInfo::FTipoInt,
+        FRedim,
         FuncVetor);
     return &var;
 }
@@ -172,9 +173,9 @@ void TVarIntTempo::setValor(int numfunc, int valor)
     {
         if (Antes)
             Antes->Depois = Depois;
-        else if (VetMenos[IndiceMenos]==this)
+        else if (VetMenos[IndiceMenos] == this)
             VetMenos[IndiceMenos] = Depois;
-        else if (VetMais[IndiceMais]==this)
+        else if (VetMais[IndiceMais] == this)
             VetMais[IndiceMais] = Depois;
         if (Depois)
             Depois->Antes = Antes, Depois = nullptr;
@@ -183,18 +184,16 @@ void TVarIntTempo::setValor(int numfunc, int valor)
 #ifdef DEBUG
     DebugVet(false);
 #endif
-    parado = false;
 // Valores negativos
     if (valor <= 0)
     {
-        if (valor == 0)
-            return;
         parado = true;
         if (valor <= -INTTEMPO_MAX * INTTEMPO_MAX)
             valor = -INTTEMPO_MAX * INTTEMPO_MAX + 1;
         ValorParado = valor;
         return;
     }
+    parado = false;
 // Valor máximo
     if (valor >= INTTEMPO_MAX * INTTEMPO_MAX)
         valor = INTTEMPO_MAX * INTTEMPO_MAX - 1;
@@ -299,6 +298,24 @@ int TVarIntTempo::FTamanhoVetor(const char * instr)
 {
     int total = (unsigned char)instr[Instr::endVetor];
     return (total ? total : 1) * sizeof(TVarIntTempo);
+}
+
+//------------------------------------------------------------------------------
+void TVarIntTempo::FRedim(TVariavel * v, TClasse * c, TObjeto * o,
+        unsigned int antes, unsigned int depois)
+{
+    TVarIntTempo * ref = reinterpret_cast<TVarIntTempo*>(v->endvar);
+    for (; antes < depois; antes++)
+    {
+        ref[antes].defvar = v->defvar;
+        ref[antes].indice = antes;
+        ref[antes].EndObjeto(c, o);
+        ref[antes].parado = true;
+        ref[antes].ValorParado = 0;
+    }
+    for (; depois < antes; depois++)
+        if (!ref[depois].parado)
+            ref[depois].setValor(0, 0);
 }
 
 //------------------------------------------------------------------------------

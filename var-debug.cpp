@@ -39,6 +39,7 @@ const TVarInfo * TVarDebug::Inicializa()
         FTamanho,
         FTamanhoVetor,
         FTipo,
+        FRedim,
         TVarInfo::FFuncVetorFalse);
     return &var;
 }
@@ -485,4 +486,20 @@ int TVarDebug::FTamanhoVetor(const char * instr)
 {
     int total = (unsigned char)instr[Instr::endVetor];
     return (total ? total : 1) * sizeof(TVarDebug);
+}
+
+//------------------------------------------------------------------------------
+void TVarDebug::FRedim(TVariavel * v, TClasse * c, TObjeto * o,
+        unsigned int antes, unsigned int depois)
+{
+    TVarDebug * ref = reinterpret_cast<TVarDebug*>(v->endvar);
+    for (; antes < depois; antes++)
+    {
+        ref[antes].Criar();
+        ref[antes].defvar = v->defvar;
+        ref[antes].indice = antes;
+        ref[antes].EndObjeto(c, o);
+    }
+    for (; depois < antes; depois++)
+        ref[depois].Apagar();
 }

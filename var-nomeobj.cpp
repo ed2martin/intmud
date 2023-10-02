@@ -22,6 +22,7 @@ const TVarInfo * TVarNomeObj::Inicializa()
         FTamanho,
         FTamanhoVetor,
         TVarInfo::FTipoOutros,
+        FRedim,
         TVarInfo::FFuncVetorFalse);
     return &var;
 }
@@ -104,7 +105,7 @@ bool TVarNomeObj::Func(TVariavel * v, const char * nome)
         return Instr::CriarVarInt(valor);
     }
 // Inicialização
-    if (comparaZ(nome, "ini")==0)
+    if (comparaZ(nome, "ini") == 0)
     {
         Inicio = 0;
         Total = 0;
@@ -215,4 +216,16 @@ int TVarNomeObj::FTamanhoVetor(const char * instr)
 {
     int total = (unsigned char)instr[Instr::endVetor];
     return (total ? total : 1) * sizeof(TVarNomeObj);
+}
+
+//------------------------------------------------------------------------------
+void TVarNomeObj::FRedim(TVariavel * v, TClasse * c, TObjeto * o,
+        unsigned int antes, unsigned int depois)
+{
+    TVarNomeObj * ref = reinterpret_cast<TVarNomeObj*>(v->endvar);
+    for (; antes < depois; antes++)
+    {
+        ref[antes].NomeObj[0] = 0;
+        ref[antes].Total = 0;
+    }
 }

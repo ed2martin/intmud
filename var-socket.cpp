@@ -328,6 +328,7 @@ const TVarInfo * TVarSocket::Inicializa()
         FTamanho,
         FTamanhoVetor,
         FTipo,
+        FRedim,
         TVarInfo::FFuncVetorFalse);
     return &var;
 }
@@ -753,6 +754,22 @@ int TVarSocket::FTamanhoVetor(const char * instr)
 {
     int total = (unsigned char)instr[Instr::endVetor];
     return (total ? total : 1) * sizeof(TVarSocket);
+}
+
+//------------------------------------------------------------------------------
+void TVarSocket::FRedim(TVariavel * v, TClasse * c, TObjeto * o,
+        unsigned int antes, unsigned int depois)
+{
+    TVarSocket * ref = reinterpret_cast<TVarSocket*>(v->endvar);
+    for (; antes < depois; antes++)
+    {
+        ref[antes].Socket = nullptr;
+        ref[antes].defvar = v->defvar;
+        ref[antes].indice = antes;
+        ref[antes].EndObjeto(c, o);
+    }
+    for (; depois < antes; depois++)
+        ref[depois].Apagar();
 }
 
 //------------------------------------------------------------------------------
