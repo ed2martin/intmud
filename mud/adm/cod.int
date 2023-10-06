@@ -459,7 +459,7 @@ func escr
     arg0.msg("\bDigite o nome da classe após ORDENACL")
   senao !p.existe(arg1)
     arg0.msg("\bClasse não existe: " + arg1)
-  senao ![arg1]:admordem
+  senao ![arg1]:admordem(arg1)
     arg0.msg("\bClasse não pode ser ordenada: " + arg1)
   senao
     criar("admmudou", arg1)
@@ -488,7 +488,7 @@ func escr
     debug d
     epara p.iniarq(arg1), p.lin, p.depois
       d.ini, total++
-      continuar ![p.texto]:admordem
+      continuar ![p.texto]:admordem(p.texto)
       criar("admmudou", p.texto), num++
     efim
     se !total

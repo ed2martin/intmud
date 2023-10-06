@@ -217,7 +217,7 @@ func ini
 func ordem_exec
   tantes = ""
   t.limpar
-  ++cont < 50 && t.addfim(txttroca([nomeclasse]:admordem, " ", "\n"))
+  ++cont < 50 && t.addfim(txttroca([nomeclasse]:admordem(nomeclasse), " ", "\n"))
   p.inifunccl(nomeclasse)
   enquanto t.linhas
     se p.existe(nomeclasse, t.ini.texto) != 1 || p.vartipo(nomeclasse, t.ini.texto) != "const"
