@@ -397,6 +397,23 @@ func passoeditor # Processamento de qualquer editor de texto
       fimse
     fimse
     ret 1
+  casose "bo" # Ordenar o bloco
+    int32 total
+    total = arg0.leditor2.linha - arg0.leditor1.linha + 1
+    se total <= 0
+      arg0.msg("Nada para ser ordenado")
+senao total == 1
+arg0.msg("Não se ordena uma única linha.")
+    senao
+      textotxt t
+      t.addfim(arg0.leditor1.textolin(total))
+t.ordena
+      arg0.leditor1.remove(total)
+      arg0.leditor1.add(t.ini, t.linhas)
+      arg0.leditor2.linha = arg0.leditor1.linha + t.linhas - 1
+        arg0.msg(txt(total) + " linhas ordenadas")
+      fimse
+    ret 1
   casose "bl" # Limpar o texto
     arg0.teditor.limpar
     arg0.msg("Texto apagado")
