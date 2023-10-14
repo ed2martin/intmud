@@ -226,8 +226,7 @@ func passoeditor # Processamento de qualquer editor de texto
     ret 1
   casose "s" # Sobe uma ou mais linhas
     arg0.leditor.linha == 0 && arg0.msg("Início do texto")
-    uint8 x
-    x = txtremove(txt(arg1, 1), "E")
+    uint8 x = txtremove(txt(arg1, 1), "E")
     x > 8 && (x = 8)
     x < 1 && (x = 1)
     enquanto x > 0
@@ -237,8 +236,7 @@ func passoeditor # Processamento de qualquer editor de texto
     efim
     ret 1
   casose "d"
-    uint8 x
-    x = txtremove(txt(arg1, 1), "E")
+    uint8 x = txtremove(txt(arg1, 1), "E")
     x > 8 && (x = 8)
     x < 1 && (x = 1)
     enquanto x > 0
@@ -379,8 +377,7 @@ func passoeditor # Processamento de qualquer editor de texto
     fimse
     ret 1
   casose "be" # Embelezar o bloco
-    int32 total
-    total = arg0.leditor2.linha - arg0.leditor1.linha + 1
+    refvar total = arg0.leditor2.linha - arg0.leditor1.linha + 1
     se total <= 0
       arg0.msg("Nada para ser embelezado")
     senao
@@ -389,7 +386,7 @@ func passoeditor # Processamento de qualquer editor de texto
       t.dividelin(57, 77)
       arg0.leditor1.remove(total)
       arg0.leditor1.add(t.ini, t.linhas)
-      arg0.leditor2.linha = arg0.leditor1.linha + t.linhas - 1
+      arg0.leditor2.depois(t.linhas - 1)
       se total == 1
         arg0.msg("Uma linha embelezada")
       senao
@@ -398,21 +395,20 @@ func passoeditor # Processamento de qualquer editor de texto
     fimse
     ret 1
   casose "bo" # Ordenar o bloco
-    int32 total
-    total = arg0.leditor2.linha - arg0.leditor1.linha + 1
+    refvar total = arg0.leditor2.linha - arg0.leditor1.linha + 1
     se total <= 0
       arg0.msg("Nada para ser ordenado")
-senao total == 1
-arg0.msg("Não se ordena uma única linha.")
+    senao total == 1
+      arg0.msg("Não se ordena uma única linha")
     senao
       textotxt t
       t.addfim(arg0.leditor1.textolin(total))
-t.ordena
+      t.ordena
       arg0.leditor1.remove(total)
       arg0.leditor1.add(t.ini, t.linhas)
-      arg0.leditor2.linha = arg0.leditor1.linha + t.linhas - 1
-        arg0.msg(txt(total) + " linhas ordenadas")
-      fimse
+      arg0.leditor2.depois(t.linhas - 1)
+      arg0.msg(txt(total) + " linhas ordenadas")
+    fimse
     ret 1
   casose "bl" # Limpar o texto
     arg0.teditor.limpar
@@ -440,8 +436,7 @@ t.ordena
     ret 1
   casofim
 # Checa número de linha
-  uint16 lin
-  lin = arg1
+  uint16 lin = arg1
   se arg1 == lin
     arg0.leditor.linha = lin - 1
     arg0.msg(txt(arg0.leditor.linha + 1) + " " + arg0.leditor.texto)
@@ -483,5 +478,7 @@ que contém dois espaços e a letra A\n\
 \c2BC\b  Copia bloco para a área de transferência\n\
 \c2BX\b  Move bloco para a área de transferência\n\
 \c2BV\b  Insere texto da área de transferência entre a linha atual e a anterior\n\
-\c2BT\b  Mostra o conteúdo da área de transferência\n\
-\c2BE\b  Embeleza o bloco marcado"
+\c2BE\b  Embeleza o bloco marcado\n\
+\c2BO\b  Coloca em ordem alfabética as linhas do bloco marcado\n\
+\c2BT\b  Mostra o conteúdo da área de transferência"
+
