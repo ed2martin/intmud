@@ -14,6 +14,7 @@
 #include "var-arqprog.h"
 #include "console.h"
 #include "variavel.h"
+#include "variavel-def.h"
 #include "instr.h"
 #include "instr-enum.h"
 #include "misc.h"
@@ -51,6 +52,8 @@ const TVarInfo * TVarTelaTxt::Inicializa()
         FTamanhoVetor,
         FTipo,
         FRedim,
+        FMoverEnd,
+        FMoverDef,
         TVarInfo::FFuncVetorFalse);
     return &var;
 }
@@ -989,4 +992,16 @@ void TVarTelaTxt::FRedim(TVariavel * v, TClasse * c, TObjeto * o,
     }
     for (; depois < antes; depois++)
         ref[depois].Apagar();
+}
+
+//------------------------------------------------------------------------------
+void TVarTelaTxt::FMoverEnd(TVariavel * v, void * destino, TClasse * c, TObjeto * o)
+{
+    VARIAVEL_MOVER_COMPLETO(TVarTelaTxt)
+}
+
+//------------------------------------------------------------------------------
+void TVarTelaTxt::FMoverDef(TVariavel * v)
+{
+    VARIAVEL_MOVERDEF(TVarTelaTxt)
 }

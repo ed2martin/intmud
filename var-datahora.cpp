@@ -20,6 +20,7 @@
 #endif
 #include "var-datahora.h"
 #include "variavel.h"
+#include "variavel-def.h"
 #include "instr.h"
 #include "misc.h"
 
@@ -72,6 +73,8 @@ const TVarInfo * TVarDataHora::Inicializa()
         FTamanhoVetor,
         FTipo,
         FRedim,
+        FMoverEnd,
+        TVarInfo::FMoverDef0,
         TVarInfo::FFuncVetorFalse);
     return &var;
 }
@@ -548,4 +551,10 @@ void TVarDataHora::FRedim(TVariavel * v, TClasse * c, TObjeto * o,
         ref2->Ano = 1, ref2->Mes = 1, ref2->Dia = 1;
         ref2->Hora = 0, ref2->Min = 0, ref2->Seg = 0;
     }
+}
+
+//------------------------------------------------------------------------------
+void TVarDataHora::FMoverEnd(TVariavel * v, void * destino, TClasse * c, TObjeto * o)
+{
+    VARIAVEL_MOVER_SIMPLES(TVarDataHora)
 }

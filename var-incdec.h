@@ -33,6 +33,8 @@ private:
             unsigned int antes, unsigned int depois);
     static void FRedimDec(TVariavel * v, TClasse * c, TObjeto * o,
             unsigned int antes, unsigned int depois);
+    static void FMoverEnd(TVariavel * v, void * destino,
+            TClasse * c, TObjeto * o);
 
     int valor; ///< Tempo, usando tanto em intinc quanto em intdec
 };

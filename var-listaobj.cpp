@@ -13,6 +13,7 @@
 #include <assert.h>
 #include "var-listaobj.h"
 #include "variavel.h"
+#include "variavel-def.h"
 #include "objeto.h"
 #include "instr.h"
 #include "instr-enum.h"
@@ -43,6 +44,8 @@ const TVarInfo * TListaObj::Inicializa()
         FTamanhoVetor,
         TVarInfo::FTipoOutros,
         FRedim,
+        FMoverEnd,
+        TVarInfo::FMoverDef0,
         TVarInfo::FFuncVetorFalse);
     return &var;
 }
@@ -63,8 +66,9 @@ void TListaObj::Apagar()
 }
 
 //----------------------------------------------------------------------------
-void TListaObj::Mover(TListaObj * destino)
+void TListaObj::Mover(TListaObj * destino, TObjeto * o)
 {
+    Objeto = o;
     // Acerta TListaX::Lista em todos os TListaX da lista
     for (TListaX * obj = Inicio; obj; obj = obj->ListaDepois)
         obj->Lista = destino;
@@ -704,6 +708,12 @@ void TListaObj::FRedim(TVariavel * v, TClasse * c, TObjeto * o,
         ref[depois].Apagar();
 }
 
+//------------------------------------------------------------------------------
+void TListaObj::FMoverEnd(TVariavel * v, void * destino, TClasse * c, TObjeto * o)
+{
+    VARIAVEL_MOVER_OBJETO(TListaObj)
+}
+
 //----------------------------------------------------------------------------
 const TVarInfo * TListaItem::Inicializa()
 {
@@ -712,6 +722,8 @@ const TVarInfo * TListaItem::Inicializa()
         FTamanhoVetor,
         TVarInfo::FTipoOutros,
         FRedim,
+        FMoverEnd,
+        FMoverDef,
         TVarInfo::FFuncVetorFalse);
     return &var;
 }
@@ -730,8 +742,9 @@ void TListaItem::Apagar()
 }
 
 //----------------------------------------------------------------------------
-void TListaItem::Mover(TListaItem * destino)
+void TListaItem::Mover(TListaItem * destino, TObjeto * o)
 {
+    Objeto = o;
     if (ListaX)
     {
         (Antes ? Antes->Depois : ListaX->ListaItem) = destino;
@@ -1043,6 +1056,18 @@ void TListaItem::FRedim(TVariavel * v, TClasse * c, TObjeto * o,
     }
     for (; depois < antes; depois++)
         ref[depois].Apagar();
+}
+
+//------------------------------------------------------------------------------
+void TListaItem::FMoverEnd(TVariavel * v, void * destino, TClasse * c, TObjeto * o)
+{
+    VARIAVEL_MOVER_OBJETO(TListaItem)
+}
+
+//------------------------------------------------------------------------------
+void TListaItem::FMoverDef(TVariavel * v)
+{
+    VARIAVEL_MOVERDEF(TListaItem)
 }
 
 //----------------------------------------------------------------------------

@@ -15,6 +15,7 @@
 #include <sys/stat.h>
 #include "var-arqlog.h"
 #include "variavel.h"
+#include "variavel-def.h"
 #include "instr.h"
 #include "instr-enum.h"
 #include "misc.h"
@@ -30,6 +31,8 @@ const TVarInfo * TVarArqLog::Inicializa()
         FTamanhoVetor,
         TVarInfo::FTipoOutros,
         FRedim,
+        FMoverEnd,
+        TVarInfo::FMoverDef0,
         TVarInfo::FFuncVetorFalse);
     return &var;
 }
@@ -291,4 +294,10 @@ void TVarArqLog::FRedim(TVariavel * v, TClasse * c, TObjeto * o,
         ref[antes].Criar();
     for (; depois < antes; depois++)
         ref[depois].Apagar();
+}
+
+//------------------------------------------------------------------------------
+void TVarArqLog::FMoverEnd(TVariavel * v, void * destino, TClasse * c, TObjeto * o)
+{
+    VARIAVEL_MOVER_SIMPLES(TVarArqLog)
 }

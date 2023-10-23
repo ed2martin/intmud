@@ -76,6 +76,9 @@ public:
     static int FTamanhoVetor(const char * instr);
     static void FRedim(TVariavel * v, TClasse * c, TObjeto * o,
             unsigned int antes, unsigned int depois);
+    static void FMoverEnd(TVariavel * v, void * destino,
+            TClasse * c, TObjeto * o);
+    static void FMoverDef(TVariavel * v);
 
     static TVarTipo FTipo(TVariavel * v);
                             ///< Retorna o tipo de variável

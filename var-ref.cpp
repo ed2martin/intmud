@@ -12,6 +12,7 @@
 #include <string.h>
 #include <assert.h>
 #include "variavel.h"
+#include "variavel-def.h"
 #include "objeto.h"
 #include "var-ref.h"
 
@@ -61,6 +62,8 @@ const TVarInfo * TVarRef::Inicializa()
         FTamanhoVetor,
         TVarInfo::FTipoObj,
         FRedim,
+        FMoverEnd,
+        TVarInfo::FMoverDef0,
         TVarInfo::FFuncVetorFalse);
     return &var;
 }
@@ -127,4 +130,10 @@ void TVarRef::FRedim(TVariavel * v, TClasse * c, TObjeto * o,
         ref[antes].Pont = nullptr;
     for (; depois < antes; depois++)
         ref[depois].MudarPont(nullptr);
+}
+
+//------------------------------------------------------------------------------
+void TVarRef::FMoverEnd(TVariavel * v, void * destino, TClasse * c, TObjeto * o)
+{
+    VARIAVEL_MOVER_SIMPLES(TVarRef)
 }

@@ -33,6 +33,8 @@ private:
     static int FTamanhoVetor(const char * instr);
     static void FRedim(TVariavel * v, TClasse * c, TObjeto * o,
             unsigned int antes, unsigned int depois);
+    static void FMoverEnd(TVariavel * v, void * destino,
+            TClasse * c, TObjeto * o);
 
     TIndiceItem * Antes;    ///< Objeto anterior
     TIndiceItem * Depois;   ///< Próximo objeto
@@ -49,7 +51,7 @@ public:
     static const TVarInfo * Inicializa();
         ///< Inicializa variável e retorna informações
     void Apagar();          ///< Apaga objeto
-    void Mover(TIndiceObj * destino); ///< Move para outro lugar
+    void Mover(TIndiceObj * destino, TObjeto * obj); ///< Move para outro lugar
     const char * getNome();     ///< Lê o texto
     void setNome(const char * texto); ///< Muda o texto
     static TIndiceObj * Procura(const char * nome);
@@ -87,6 +89,8 @@ private:
     static int FTamanhoVetor(const char * instr);
     static void FRedim(TVariavel * v, TClasse * c, TObjeto * o,
             unsigned int antes, unsigned int depois);
+    static void FMoverEnd(TVariavel * v, void * destino,
+            TClasse * c, TObjeto * o);
 
     friend class TIndiceItem;
 };

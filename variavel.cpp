@@ -45,57 +45,6 @@
 #include "var-intexec.h"
 #include "misc.h"
 
-//#define DEBUG_CRIAR // Mostra quando uma variável é criada ou apagada
-//#define DEBUG_MOVER // Mostra quando uma variável é movida
-
-//----------------------------------------------------------------------------
-// Usado em TVariavel::Mover()
-
-#define MOVER_SIMPLES(classenome) \
-        { \
-            classenome * o = (classenome *)endvar;  \
-            classenome * d = (classenome *)destino; \
-            int inc=1;                              \
-            if (destino > endvar)                   \
-                o+=vetor-1, d+=vetor-1, inc=-1;     \
-            for (; vetor; vetor--,o+=inc,d+=inc)    \
-                o->Mover(d);                        \
-            endvar = destino;                       \
-            return;                                 \
-        }
-
-#define MOVER_OBJETO(classenome) \
-        { \
-            classenome * o = (classenome *)endvar;  \
-            classenome * d = (classenome *)destino; \
-            int inc=1;                              \
-            if (destino > endvar)                   \
-                o+=vetor-1, d+=vetor-1, inc=-1;     \
-            for (; vetor; vetor--,o+=inc,d+=inc)    \
-            {                                       \
-                o->Objeto = objeto;                 \
-                o->Mover(d);                        \
-            }                                       \
-            endvar = destino;                       \
-            return;                                 \
-        }
-
-#define MOVER_COMPLETO(classenome) \
-        { \
-            classenome * o = (classenome *)endvar;  \
-            classenome * d = (classenome *)destino; \
-            int inc=1;                              \
-            if (destino > endvar)                   \
-                o+=vetor-1, d+=vetor-1, inc=-1;     \
-            for (; vetor; vetor--,o+=inc,d+=inc)    \
-            {                                       \
-                o->EndObjeto(classe, objeto);       \
-                o->Mover(d);                        \
-            }                                       \
-            endvar = destino;                       \
-            return;                                 \
-        }
-
 TVarInfo * TVariavel::VarInfo = nullptr;
 
 //----------------------------------------------------------------------------
@@ -105,6 +54,8 @@ TVarInfo::TVarInfo()
     FTamanhoVetor = FTamanho0;
     FTipo = FTipoOutros;
     FRedim = FRedim0;
+    FMoverEnd = FMoverEnd0;
+    FMoverDef = FMoverDef0;
     FFuncVetor = FFuncVetorFalse;
 }
 
@@ -114,12 +65,17 @@ TVarInfo::TVarInfo(int (*fTamanho)(const char * instr),
         TVarTipo (*fTipo)(TVariavel * v),
         void (*fRedim)(TVariavel * v, TClasse * c, TObjeto * o,
                 unsigned int antes, unsigned int depois),
+        void (*fMoverEnd)(TVariavel * v, void * destino,
+                TClasse * c, TObjeto * o),
+        void (*fMoverDef)(TVariavel * v),
         bool (*fFuncVetor)(TVariavel * v, const char * nome))
 {
     FTamanho = fTamanho;
     FTamanhoVetor = fTamanhoVetor;
     FTipo = fTipo;
     FRedim = fRedim;
+    FMoverEnd = fMoverEnd;
+    FMoverDef = fMoverDef;
     FFuncVetor = fFuncVetor;
 }
 
@@ -164,6 +120,16 @@ void TVarInfo::FRedim0(TVariavel * v, TClasse * c, TObjeto * o,
             unsigned int antes, unsigned int depois)
 {
     v->endvar = nullptr;
+}
+
+//----------------------------------------------------------------------------
+void TVarInfo::FMoverEnd0(TVariavel * v, void * destino, TClasse * c, TObjeto * o)
+{
+}
+
+//----------------------------------------------------------------------------
+void TVarInfo::FMoverDef0(TVariavel * v)
+{
 }
 
 //----------------------------------------------------------------------------
@@ -264,238 +230,6 @@ void TVariavel::Limpar()
     indice = 0;
     numbit = 0;
     numfunc = 0;
-}
-
-//------------------------------------------------------------------------------
-void TVariavel::MoverEnd(void * destino, TClasse * classe, TObjeto * objeto)
-{
-    if (destino==endvar)
-        return;
-    int vetor = (unsigned char)defvar[Instr::endVetor];
-    if (vetor==0)
-        vetor++;
-#ifdef DEBUG_MOVER
-    printf("Variável movida (0 a %d) de %p para %p",
-           vetor-1, endvar, destino);
-    char mens1[BUF_MENS];
-    if (Instr::Decod(mens1, defvar, sizeof(mens1)))
-        printf(" def=%p %s\n", defvar, mens1);
-    else
-        printf(" ERRO: %s\n", mens1);
-    fflush(stdout);
-#endif
-    switch (defvar[2])
-    {
-    case Instr::cInt1:
-        if (vetor <= 8)
-            *(char*)destino = *(char*)endvar;
-        else
-            memmove(destino, endvar, TamanhoVetor());
-        endvar = destino;
-        return;
-    case Instr::cInt8:
-    case Instr::cUInt8:
-        if (vetor <= 1)
-            *(char*)destino = *(char*)endvar;
-        else
-            memmove(destino, endvar, vetor);
-        endvar = destino;
-        return;
-    case Instr::cInt16:
-    case Instr::cUInt16:
-        if (vetor <= 1)
-        {
-            short x = *(short*)endvar;
-            *(short*)destino = x;
-        }
-        else
-            memmove(destino, endvar, vetor*sizeof(short));
-        endvar = destino;
-        return;
-    case Instr::cInt32:
-    case Instr::cUInt32:
-        if (vetor <= 1)
-        {
-            int x = *(int*)endvar;
-            *(int*)destino = x;
-        }
-        else
-            memmove(destino, endvar, vetor*sizeof(int));
-        endvar = destino;
-        return;
-    case Instr::cIntInc:
-    case Instr::cIntDec:
-        memmove(destino, endvar, vetor*sizeof(TVarIncDec));
-        endvar = destino;
-        return;
-    case Instr::cReal:
-        memmove(destino, endvar, vetor*sizeof(float));
-        endvar = destino;
-        return;
-    case Instr::cReal2:
-        memmove(destino, endvar, vetor*sizeof(double));
-        endvar = destino;
-        return;
-    case Instr::cRef:
-        MOVER_SIMPLES( TVarRef )
-    case Instr::cConstNulo:
-    case Instr::cConstTxt:
-    case Instr::cConstNum:
-    case Instr::cConstExpr:
-    case Instr::cConstVar:
-    case Instr::cFunc:
-    case Instr::cVarFunc:
-        endvar = destino;
-        return;
-
-// Variáveis extras
-    case Instr::cListaObj:
-        MOVER_OBJETO( TListaObj )
-    case Instr::cListaItem:
-        MOVER_OBJETO( TListaItem )
-    case Instr::cTextoTxt:
-        MOVER_SIMPLES( TTextoTxt )
-    case Instr::cTextoPos:
-        MOVER_OBJETO( TTextoPos )
-    case Instr::cTextoVar:
-        MOVER_SIMPLES( TTextoVar )
-    case Instr::cTextoObj:
-        MOVER_OBJETO( TTextoObj )
-    case Instr::cNomeObj:
-        memmove(destino, endvar, vetor*sizeof(TVarNomeObj));
-        endvar = destino;
-        return;
-    case Instr::cArqDir:
-        memmove(destino, endvar, vetor*sizeof(TVarArqDir));
-        endvar = destino;
-        return;
-    case Instr::cArqLog:
-        MOVER_SIMPLES( TVarArqLog )
-    case Instr::cArqProg:
-        memmove(destino, endvar, vetor*sizeof(TVarArqProg));
-        endvar = destino;
-        return;
-    case Instr::cArqExec:
-        MOVER_COMPLETO( TVarArqExec )
-    case Instr::cArqSav:
-        endvar = destino;
-        return;
-    case Instr::cArqTxt:
-        memmove(destino, endvar, vetor*sizeof(TVarArqTxt));
-        endvar = destino;
-        return;
-    case Instr::cArqMem:
-        memmove(destino, endvar, vetor*sizeof(TVarArqMem));
-        endvar = destino;
-        return;
-    case Instr::cIntTempo:
-        MOVER_COMPLETO( TVarIntTempo )
-    case Instr::cIntExec:
-        MOVER_COMPLETO( TVarIntExec )
-    case Instr::cTelaTxt:
-        MOVER_COMPLETO( TVarTelaTxt )
-    case Instr::cSocket:
-        MOVER_COMPLETO( TVarSocket )
-    case Instr::cServ:
-        MOVER_COMPLETO( TVarServ )
-    case Instr::cProg:
-        MOVER_SIMPLES( TVarProg )
-    case Instr::cDebug:
-        MOVER_COMPLETO( TVarDebug )
-    case Instr::cIndiceObj:
-        MOVER_OBJETO( TIndiceObj )
-    case Instr::cIndiceItem:
-        MOVER_SIMPLES( TIndiceItem )
-    case Instr::cDataHora:
-        MOVER_SIMPLES( TVarDataHora )
-
-// Outras variáveis
-    case Instr::cTxt1:
-    case Instr::cTxt2:
-        if (vetor>1)
-        {
-            memmove(destino, endvar, Tamanho(defvar)*vetor);
-            endvar = destino;
-            return;
-        }
-    case Instr::cTxtFixo:
-        memmove(destino, endvar, strlen((char*)endvar) + 1);
-        endvar = destino;
-        return;
-    case Instr::cVarNome:
-        memmove(destino, endvar, VAR_NOME_TAM);
-        endvar = destino;
-        return;
-    case Instr::cVarInicio:
-        endvar = destino;
-    case Instr::cVarIniFunc:
-    case Instr::cVarClasse:
-    case Instr::cVarObjeto:
-    case Instr::cVarInt:
-        return;
-    case Instr::cTextoVarSub:
-        MOVER_SIMPLES( TTextoVarSub )
-    case Instr::cTextoObjSub:
-        MOVER_SIMPLES( TTextoObjSub )
-    }
-    assert(0);
-}
-
-//------------------------------------------------------------------------------
-void TVariavel::MoverDef()
-{
-    int vetor = (unsigned char)defvar[Instr::endVetor];
-    if (vetor==0)
-        vetor++;
-#ifdef DEBUG_MOVER
-    printf("Variável mudou def (0 a %d) end=%p", vetor-1, endvar);
-    char mens1[BUF_MENS];
-    if (Instr::Decod(mens1, defvar, sizeof(mens1)))
-        printf(" def=%p %s\n", defvar, mens1);
-    else
-        printf(" ERRO: %s\n", mens1);
-    fflush(stdout);
-#endif
-    int cont;
-    switch (defvar[2])
-    {
-    case Instr::cArqExec:
-        for (cont=0; cont<vetor; cont++)
-            end_arqexec[cont].defvar = defvar;
-        break;
-    case Instr::cIntTempo:
-        for (cont=0; cont<vetor; cont++)
-            end_inttempo[cont].defvar = defvar;
-        break;
-    case Instr::cIntExec:
-        for (cont=0; cont<vetor; cont++)
-            end_intexec[cont].defvar = defvar;
-        break;
-    case Instr::cListaItem:
-        for (cont=0; cont<vetor; cont++)
-            end_listaitem[cont].defvar = defvar;
-        break;
-    case Instr::cTextoPos:
-        for (cont=0; cont<vetor; cont++)
-            end_textopos[cont].defvar = defvar;
-        break;
-    case Instr::cTelaTxt:
-        for (cont=0; cont<vetor; cont++)
-            end_telatxt[cont].defvar = defvar;
-        break;
-    case Instr::cSocket:
-        for (cont=0; cont<vetor; cont++)
-            end_socket[cont].defvar = defvar;
-        break;
-    case Instr::cServ:
-        for (cont=0; cont<vetor; cont++)
-            end_serv[cont].defvar = defvar;
-        break;
-    case Instr::cDebug:
-        for (cont=0; cont<vetor; cont++)
-            end_debug[cont].defvar = defvar;
-        break;
-    }
 }
 
 //------------------------------------------------------------------------------

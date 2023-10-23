@@ -14,6 +14,7 @@
 #include "var-prog.h"
 #include "var-arqprog.h"
 #include "variavel.h"
+#include "variavel-def.h"
 #include "classe.h"
 #include "mudarclasse.h"
 #include "arqmapa.h"
@@ -32,6 +33,8 @@ const TVarInfo * TVarProg::Inicializa()
         FTamanhoVetor,
         TVarInfo::FTipoOutros,
         FRedim,
+        FMoverEnd,
+        TVarInfo::FMoverDef0,
         TVarInfo::FFuncVetorFalse);
     return &var;
 }
@@ -1864,4 +1867,10 @@ void TVarProg::FRedim(TVariavel * v, TClasse * c, TObjeto * o,
         ref[antes].Criar();
     for (; depois < antes; depois++)
         ref[depois].Apagar();
+}
+
+//------------------------------------------------------------------------------
+void TVarProg::FMoverEnd(TVariavel * v, void * destino, TClasse * c, TObjeto * o)
+{
+    VARIAVEL_MOVER_SIMPLES(TVarProg)
 }

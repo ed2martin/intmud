@@ -92,6 +92,8 @@ private:
     static int FTamanhoVetor(const char * instr);
     static void FRedim(TVariavel * v, TClasse * c, TObjeto * o,
             unsigned int antes, unsigned int depois);
+    static void FMoverEnd(TVariavel * v, void * destino,
+            TClasse * c, TObjeto * o);
 
     void OrdenaSub(int modo, char * texto, char** linha,
             const char *txt1, const char * txt2);
@@ -147,7 +149,7 @@ public:
         ///< Inicializa variável e retorna informações
     void Apagar();
             ///< Apaga objeto
-    void Mover(TTextoPos * destino);
+    void Mover(TTextoPos * destino, TObjeto * o);
             ///< Move objeto para outro lugar
     void MudarTxt(TTextoTxt * obj);
             ///< Associa objeto a TTextoTxt sem texto, desassocia se obj==0
@@ -193,6 +195,9 @@ private:
     static int FTamanhoVetor(const char * instr);
     static void FRedim(TVariavel * v, TClasse * c, TObjeto * o,
             unsigned int antes, unsigned int depois);
+    static void FMoverEnd(TVariavel * v, void * destino,
+            TClasse * c, TObjeto * o);
+    static void FMoverDef(TVariavel * v);
 };
 
 //----------------------------------------------------------------------------

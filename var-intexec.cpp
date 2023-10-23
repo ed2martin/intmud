@@ -12,6 +12,7 @@
 #include <string.h>
 //#include <errno.h>
 #include "variavel.h"
+#include "variavel-def.h"
 #include "instr.h"
 #include "instr-enum.h"
 #include "classe.h"
@@ -30,6 +31,8 @@ const TVarInfo * TVarIntExec::Inicializa()
         FTamanhoVetor,
         TVarInfo::FTipoInt,
         FRedim,
+        FMoverEnd,
+        FMoverDef,
         TVarInfo::FFuncVetorFalse);
     return &var;
 }
@@ -149,4 +152,16 @@ void TVarIntExec::FRedim(TVariavel * v, TClasse * c, TObjeto * o,
     }
     for (; depois < antes; depois++)
         ref[depois].setValor(0);
+}
+
+//------------------------------------------------------------------------------
+void TVarIntExec::FMoverEnd(TVariavel * v, void * destino, TClasse * c, TObjeto * o)
+{
+    VARIAVEL_MOVER_COMPLETO(TVarIntExec)
+}
+
+//------------------------------------------------------------------------------
+void TVarIntExec::FMoverDef(TVariavel * v)
+{
+    VARIAVEL_MOVERDEF(TVarIntExec)
 }

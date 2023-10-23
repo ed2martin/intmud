@@ -23,6 +23,8 @@ const TVarInfo * TVarNomeObj::Inicializa()
         FTamanhoVetor,
         TVarInfo::FTipoOutros,
         FRedim,
+        FMoverEnd,
+        TVarInfo::FMoverDef0,
         TVarInfo::FFuncVetorFalse);
     return &var;
 }
@@ -228,4 +230,11 @@ void TVarNomeObj::FRedim(TVariavel * v, TClasse * c, TObjeto * o,
         ref[antes].NomeObj[0] = 0;
         ref[antes].Total = 0;
     }
+}
+
+//------------------------------------------------------------------------------
+void TVarNomeObj::FMoverEnd(TVariavel * v, void * destino, TClasse * c, TObjeto * o)
+{
+    int total = (unsigned char)v->defvar[Instr::endVetor];
+    memmove(destino, v->endvar, (total ? total : 1) * sizeof(TVarNomeObj));
 }

@@ -14,6 +14,7 @@
 #include "exec.h"
 #include "var-arqexec.h"
 #include "variavel.h"
+#include "variavel-def.h"
 #include "classe.h"
 #include "objeto.h"
 #include "instr.h"
@@ -264,6 +265,8 @@ const TVarInfo * TVarArqExec::Inicializa()
         FTamanhoVetor,
         TVarInfo::FTipoOutros,
         FRedim,
+        FMoverEnd,
+        FMoverDef,
         TVarInfo::FFuncVetorFalse);
     return &var;
 }
@@ -456,4 +459,16 @@ void TVarArqExec::FRedim(TVariavel * v, TClasse * c, TObjeto * o,
         if (ref[depois].ObjExec)
             ref[depois].ObjExec->VarArqExec = nullptr;
     }
+}
+
+//------------------------------------------------------------------------------
+void TVarArqExec::FMoverEnd(TVariavel * v, void * destino, TClasse * c, TObjeto * o)
+{
+    VARIAVEL_MOVER_COMPLETO(TVarArqExec)
+}
+
+//------------------------------------------------------------------------------
+void TVarArqExec::FMoverDef(TVariavel * v)
+{
+    VARIAVEL_MOVERDEF(TVarArqExec)
 }

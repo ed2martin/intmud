@@ -14,6 +14,7 @@
 #include <assert.h>
 #include "var-textovar.h"
 #include "variavel.h"
+#include "variavel-def.h"
 #include "classe.h"
 #include "objeto.h"
 #include "instr.h"
@@ -35,6 +36,8 @@ const TVarInfo * TTextoVar::Inicializa()
         FTamanhoVetor,
         TVarInfo::FTipoOutros,
         FRedim,
+        FMoverEnd,
+        TVarInfo::FMoverDef0,
         TVarInfo::FFuncVetorFalse);
     return &var;
 }
@@ -553,6 +556,12 @@ void TTextoVar::FRedim(TVariavel * v, TClasse * c, TObjeto * o,
         ref[depois].Apagar();
 }
 
+//------------------------------------------------------------------------------
+void TTextoVar::FMoverEnd(TVariavel * v, void * destino, TClasse * c, TObjeto * o)
+{
+    VARIAVEL_MOVER_SIMPLES(TTextoVar)
+}
+
 //----------------------------------------------------------------------------
 TBlocoVar * TTextoVar::Procura(const char * texto)
 {
@@ -656,6 +665,8 @@ const TVarInfo * TTextoVarSub::Inicializa()
         FTamanhoVetor,
         FTipo,
         FRedim,
+        FMoverEnd,
+        TVarInfo::FMoverDef0,
         TVarInfo::FFuncVetorFalse);
     return &var;
 }
@@ -744,6 +755,12 @@ void TTextoVarSub::FRedim(TVariavel * v, TClasse * c, TObjeto * o,
     }
     for (; depois < antes; depois++)
         ref[depois].Apagar();
+}
+
+//------------------------------------------------------------------------------
+void TTextoVarSub::FMoverEnd(TVariavel * v, void * destino, TClasse * c, TObjeto * o)
+{
+    VARIAVEL_MOVER_SIMPLES(TTextoVarSub)
 }
 
 //----------------------------------------------------------------------------

@@ -54,6 +54,8 @@ private:
     TVarTipo (*FTipo)(TVariavel * v);
     void (*FRedim)(TVariavel * v, TClasse * c, TObjeto * o,
             unsigned int antes, unsigned int depois);
+    void (*FMoverEnd)(TVariavel * v, void * destino, TClasse * c, TObjeto * o);
+    void (*FMoverDef)(TVariavel * v);
     bool (*FFuncVetor)(TVariavel * v, const char * nome);
 public:
     /// Construtor usado ao criar TVariavel::VarInfo
@@ -64,6 +66,9 @@ public:
             TVarTipo (*fTipo)(TVariavel * v),
             void (*fRedim)(TVariavel * v, TClasse * c, TObjeto * o,
                     unsigned int antes, unsigned int depois),
+            void (*fMoverEnd)(TVariavel * v, void * destino,
+                    TClasse * c, TObjeto * o),
+            void (*fMoverDef)(TVariavel * v),
             bool (*fFuncVetor)(TVariavel * v, const char * nome));
 
     static int FTamanho0(const char * instr);
@@ -74,6 +79,9 @@ public:
     static TVarTipo FTipoObj(TVariavel * v);
     static void FRedim0(TVariavel * v, TClasse * c, TObjeto * o,
             unsigned int antes, unsigned int depois);
+    static void FMoverEnd0(TVariavel * v, void * destino,
+            TClasse * c, TObjeto * o);
+    static void FMoverDef0(TVariavel * v);
     static bool FFuncVetorFalse(TVariavel * v, const char * nome);
 
     friend TVariavel;
@@ -162,7 +170,7 @@ public:
         if (antes == depois)
             return;
         // Mostra o que vai fazer
-        /*
+#if 0
         if (depois > antes)
             printf("Variável criada  (%d a %d) end=%p", antes, depois-1, endvar);
         else
@@ -173,7 +181,7 @@ public:
         else
             printf(" ERRO: %s\n", mens);
         fflush(stdout);
-        */
+#endif
         unsigned char cmd = (unsigned char)defvar[2];
         if (cmd < Instr::cTotalComandos)
             VarInfo[cmd].FRedim(this, c, o, antes, depois);
@@ -181,17 +189,48 @@ public:
             TVarInfo::FRedim0(this, c, o, antes, depois);
     }
 
-    void MoverEnd(void * destino, TClasse * c, TObjeto * o);
-        ///< Move a variável para outra região da memória, mas não acerta defvar
-        /**< Usa:
-             - TVariavel::defvar = definição da variável
-             - TVariavel::endvar = endereço atual   */
+    /// Move a variável para outra região da memória, mas não acerta defvar
+    /** Usa:
+     *    - TVariavel::defvar = definição da variável
+     *    - TVariavel::endvar = endereço atual  */
+    inline void MoverEnd(void * destino, TClasse * c, TObjeto * o)
+    {
+        if (destino == endvar)
+            return;
+#if 0
+        printf("Variável movida de %p para %p", endvar, destino);
+        char mens1[BUF_MENS];
+        if (Instr::Decod(mens1, defvar, sizeof(mens1)))
+            printf(" def=%p %s\n", defvar, mens1);
+        else
+            printf(" ERRO: %s\n", mens1);
+        fflush(stdout);
+#endif
+        unsigned char cmd = (unsigned char)defvar[2];
+        if (cmd < Instr::cTotalComandos)
+            VarInfo[cmd].FMoverEnd(this, destino, c, o);
+        endvar = destino;
+    }
 
-    void MoverDef();
-        ///< Acerta variável porque defvar mudou
-        /**< Usa:
-             - TVariavel::defvar = definição da variável
-             - TVariavel::endvar = endereço atual   */
+    /// Acerta variável porque defvar mudou
+    /** Usa:
+     *    - TVariavel::defvar = definição da variável
+     *    - TVariavel::endvar = endereço atual   */
+    inline void MoverDef()
+    {
+        unsigned char cmd = (unsigned char)defvar[2];
+        /*
+        printf("Variável mudou def end=%p", endvar);
+        char mens1[BUF_MENS];
+        if (Instr::Decod(mens1, defvar, sizeof(mens1)))
+            printf(" def=%p %s\n", defvar, mens1);
+        else
+            printf(" ERRO: %s\n", mens1);
+        fflush(stdout);
+        */
+        if (cmd < Instr::cTotalComandos)
+            VarInfo[cmd].FMoverDef(this);
+    }
 
 // Funções get
     bool getBool();         ///< Obtém o valor "bool" da variável

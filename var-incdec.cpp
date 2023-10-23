@@ -9,6 +9,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include "variavel.h"
 #include "instr.h"
 #include "instr-enum.h"
@@ -188,6 +189,8 @@ const TVarInfo * TVarIncDec::InicializaInc()
         FTamanhoVetor,
         TVarInfo::FTipoInt,
         FRedimInc,
+        FMoverEnd,
+        TVarInfo::FMoverDef0,
         FuncVetorInc);
     return &var;
 }
@@ -200,6 +203,8 @@ const TVarInfo * TVarIncDec::InicializaDec()
         FTamanhoVetor,
         TVarInfo::FTipoInt,
         FRedimDec,
+        FMoverEnd,
+        TVarInfo::FMoverDef0,
         FuncVetorDec);
     return &var;
 }
@@ -220,4 +225,11 @@ void TVarIncDec::FRedimDec(TVariavel * v, TClasse * c, TObjeto * o,
     TVarIncDec * ref = reinterpret_cast<TVarIncDec*>(v->endvar);
     for (; antes < depois; antes++)
         ref[antes].valor = TempoIni;
+}
+
+//------------------------------------------------------------------------------
+void TVarIncDec::FMoverEnd(TVariavel * v, void * destino, TClasse * c, TObjeto * o)
+{
+    int total = (unsigned char)v->defvar[Instr::endVetor];
+    memmove(destino, v->endvar, (total ? total : 1) * sizeof(TVarIncDec));
 }

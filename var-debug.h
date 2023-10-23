@@ -68,6 +68,9 @@ private:
     static int FTamanhoVetor(const char * instr);
     static void FRedim(TVariavel * v, TClasse * c, TObjeto * o,
             unsigned int antes, unsigned int depois);
+    static void FMoverEnd(TVariavel * v, void * destino,
+            TClasse * c, TObjeto * o);
+    static void FMoverDef(TVariavel * v);
 };
 
 //----------------------------------------------------------------------------

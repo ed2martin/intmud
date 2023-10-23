@@ -22,6 +22,7 @@
 #include "mudarclasse.h"
 #include "objeto.h"
 #include "variavel.h"
+#include "variavel-def.h"
 #include "instr.h"
 #include "instr-enum.h"
 #include "misc.h"
@@ -40,6 +41,8 @@ const TVarInfo * TVarDebug::Inicializa()
         FTamanhoVetor,
         FTipo,
         FRedim,
+        FMoverEnd,
+        FMoverDef,
         TVarInfo::FFuncVetorFalse);
     return &var;
 }
@@ -502,4 +505,16 @@ void TVarDebug::FRedim(TVariavel * v, TClasse * c, TObjeto * o,
     }
     for (; depois < antes; depois++)
         ref[depois].Apagar();
+}
+
+//------------------------------------------------------------------------------
+void TVarDebug::FMoverEnd(TVariavel * v, void * destino, TClasse * c, TObjeto * o)
+{
+    VARIAVEL_MOVER_COMPLETO(TVarDebug)
+}
+
+//------------------------------------------------------------------------------
+void TVarDebug::FMoverDef(TVariavel * v)
+{
+    VARIAVEL_MOVERDEF(TVarDebug)
 }

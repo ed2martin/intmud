@@ -55,6 +55,8 @@ const TVarInfo * TVarSav::Inicializa()
         TVarInfo::FTamanho0,
         TVarInfo::FTipoOutros,
         TVarInfo::FRedim0,
+        TVarInfo::FMoverEnd0,
+        TVarInfo::FMoverDef0,
         TVarInfo::FFuncVetorFalse);
     return &var;
 }

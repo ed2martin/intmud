@@ -37,6 +37,20 @@ static void VarOutrosVarNome_Redim(TVariavel * v, TClasse * c, TObjeto * o,
 }
 
 //----------------------------------------------------------------------------
+static void VarOutrosVarNome_MoverEnd(TVariavel * v, void * destino,
+        TClasse * c, TObjeto * o)
+{
+    memmove(destino, v->endvar, VarOutrosVarNome_TamanhoVetor(v->defvar));
+}
+
+//----------------------------------------------------------------------------
+static void VarOutrosTxtFixo_MoverEnd(TVariavel * v, void * destino,
+        TClasse * c, TObjeto * o)
+{
+    memmove(destino, v->endvar, strlen((char*)v->endvar) + 1);
+}
+
+//----------------------------------------------------------------------------
 const TVarInfo * VarOutrosConstNulo()
 {
     static const TVarInfo var(
@@ -44,6 +58,8 @@ const TVarInfo * VarOutrosConstNulo()
         TVarInfo::FTamanho0,
         TVarInfo::FTipoObj,
         TVarInfo::FRedim0,
+        TVarInfo::FMoverEnd0,
+        TVarInfo::FMoverDef0,
         TVarInfo::FFuncVetorFalse);
     return &var;
 }
@@ -55,6 +71,8 @@ const TVarInfo * VarOutrosConstTxt()
         TVarInfo::FTamanho0,
         TVarInfo::FTipoTxt,
         TVarInfo::FRedim0,
+        TVarInfo::FMoverEnd0,
+        TVarInfo::FMoverDef0,
         TVarInfo::FFuncVetorFalse);
     return &var;
 }
@@ -66,6 +84,8 @@ const TVarInfo * VarOutrosConstNum()
         TVarInfo::FTamanho0,
         TVarInfo::FTipoDouble,
         TVarInfo::FRedim0,
+        TVarInfo::FMoverEnd0,
+        TVarInfo::FMoverDef0,
         TVarInfo::FFuncVetorFalse);
     return &var;
 }
@@ -77,6 +97,8 @@ const TVarInfo * VarOutrosConstExpr()
         TVarInfo::FTamanho0,
         TVarInfo::FTipoOutros,
         TVarInfo::FRedim0,
+        TVarInfo::FMoverEnd0,
+        TVarInfo::FMoverDef0,
         TVarInfo::FFuncVetorFalse);
     return &var;
 }
@@ -88,6 +110,8 @@ const TVarInfo * VarOutrosConstVar()
         TVarInfo::FTamanho0,
         TVarInfo::FTipoOutros,
         TVarInfo::FRedim0,
+        TVarInfo::FMoverEnd0,
+        TVarInfo::FMoverDef0,
         TVarInfo::FFuncVetorFalse);
     return &var;
 }
@@ -99,6 +123,8 @@ const TVarInfo * VarOutrosFunc()
         TVarInfo::FTamanho0,
         TVarInfo::FTipoOutros,
         TVarInfo::FRedim0,
+        TVarInfo::FMoverEnd0,
+        TVarInfo::FMoverDef0,
         TVarInfo::FFuncVetorFalse);
     return &var;
 }
@@ -110,6 +136,8 @@ const TVarInfo * VarOutrosVarFunc()
         TVarInfo::FTamanho0,
         TVarInfo::FTipoOutros,
         TVarInfo::FRedim0,
+        TVarInfo::FMoverEnd0,
+        TVarInfo::FMoverDef0,
         TVarInfo::FFuncVetorFalse);
     return &var;
 }
@@ -121,6 +149,8 @@ const TVarInfo * VarOutrosTxtFixo()
         TVarInfo::FTamanho0,
         TVarInfo::FTipoTxt,
         TVarInfo::FRedim0,
+        VarOutrosTxtFixo_MoverEnd,
+        TVarInfo::FMoverDef0,
         TVarInfo::FFuncVetorFalse);
     return &var;
 }
@@ -132,6 +162,8 @@ const TVarInfo * VarOutrosVarNome()
         VarOutrosVarNome_TamanhoVetor,
         TVarInfo::FTipoTxt,
         VarOutrosVarNome_Redim,
+        VarOutrosVarNome_MoverEnd,
+        TVarInfo::FMoverDef0,
         TVarInfo::FFuncVetorFalse);
     return &var;
 }
@@ -143,6 +175,8 @@ const TVarInfo * VarOutrosVarInicio()
         TVarInfo::FTamanho0,
         TVarInfo::FTipoOutros,
         TVarInfo::FRedim0,
+        TVarInfo::FMoverEnd0,
+        TVarInfo::FMoverDef0,
         TVarInfo::FFuncVetorFalse);
     return &var;
 }
@@ -154,6 +188,8 @@ const TVarInfo * VarOutrosVarIniFunc()
         TVarInfo::FTamanho0,
         TVarInfo::FTipoInt,
         TVarInfo::FRedim0,
+        TVarInfo::FMoverEnd0,
+        TVarInfo::FMoverDef0,
         TVarInfo::FFuncVetorFalse);
     return &var;
 }
@@ -165,6 +201,8 @@ const TVarInfo * VarOutrosVarClasse()
         TVarInfo::FTamanho0,
         TVarInfo::FTipoTxt,
         TVarInfo::FRedim0,
+        TVarInfo::FMoverEnd0,
+        TVarInfo::FMoverDef0,
         TVarInfo::FFuncVetorFalse);
     return &var;
 }
@@ -176,6 +214,8 @@ const TVarInfo * VarOutrosVarObjeto()
         TVarInfo::FTamanho0,
         TVarInfo::FTipoObj,
         TVarInfo::FRedim0,
+        TVarInfo::FMoverEnd0,
+        TVarInfo::FMoverDef0,
         TVarInfo::FFuncVetorFalse);
     return &var;
 }
@@ -187,6 +227,8 @@ const TVarInfo * VarOutrosVarInt()
         TVarInfo::FTamanho0,
         TVarInfo::FTipoInt,
         TVarInfo::FRedim0,
+        TVarInfo::FMoverEnd0,
+        TVarInfo::FMoverDef0,
         TVarInfo::FFuncVetorFalse);
     return &var;
 }

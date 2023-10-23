@@ -754,6 +754,48 @@ static void VarBaseReal2_Redim(TVariavel * v, TClasse * c, TObjeto * o,
 }
 
 //------------------------------------------------------------------------------
+void VarBaseTxt1_MoverEnd(TVariavel * v, void * destino, TClasse * c, TObjeto * o)
+{
+    int total = (unsigned char)v->defvar[Instr::endVetor];
+    if (total == 0)
+        memmove(destino, v->endvar, strlen((char*)v->endvar) + 1);
+    else
+        memmove(destino, v->endvar, VarBaseTxt1_TamanhoVetor(v->defvar));
+}
+void VarBaseTxt2_MoverEnd(TVariavel * v, void * destino, TClasse * c, TObjeto * o)
+{
+    int total = (unsigned char)v->defvar[Instr::endVetor];
+    if (total == 0)
+        memmove(destino, v->endvar, strlen((char*)v->endvar) + 1);
+    else
+        memmove(destino, v->endvar, VarBaseTxt2_TamanhoVetor(v->defvar));
+}
+void VarBaseInt1_MoverEnd(TVariavel * v, void * destino, TClasse * c, TObjeto * o)
+{
+    memmove(destino, v->endvar, VarBaseInt1_TamanhoVetor(v->defvar));
+}
+void VarBaseInt8_MoverEnd(TVariavel * v, void * destino, TClasse * c, TObjeto * o)
+{
+    memmove(destino, v->endvar, VarBaseInt8_TamanhoVetor(v->defvar));
+}
+void VarBaseInt16_MoverEnd(TVariavel * v, void * destino, TClasse * c, TObjeto * o)
+{
+    memmove(destino, v->endvar, VarBaseInt16_TamanhoVetor(v->defvar));
+}
+void VarBaseInt32_MoverEnd(TVariavel * v, void * destino, TClasse * c, TObjeto * o)
+{
+    memmove(destino, v->endvar, VarBaseInt32_TamanhoVetor(v->defvar));
+}
+void VarBaseReal_MoverEnd(TVariavel * v, void * destino, TClasse * c, TObjeto * o)
+{
+    memmove(destino, v->endvar, VarBaseReal_TamanhoVetor(v->defvar));
+}
+void VarBaseReal2_MoverEnd(TVariavel * v, void * destino, TClasse * c, TObjeto * o)
+{
+    memmove(destino, v->endvar, VarBaseReal2_TamanhoVetor(v->defvar));
+}
+
+//------------------------------------------------------------------------------
 const TVarInfo * VarBaseTxt1()
 {
     static const TVarInfo var(
@@ -761,6 +803,8 @@ const TVarInfo * VarBaseTxt1()
         VarBaseTxt1_TamanhoVetor,
         TVarInfo::FTipoTxt,
         VarBaseTxt1_Redim,
+        VarBaseTxt1_MoverEnd,
+        TVarInfo::FMoverDef0,
         VarBaseTxt_FuncVetor);
     return &var;
 }
@@ -772,6 +816,8 @@ const TVarInfo * VarBaseTxt2()
         VarBaseTxt2_TamanhoVetor,
         TVarInfo::FTipoTxt,
         VarBaseTxt2_Redim,
+        VarBaseTxt2_MoverEnd,
+        TVarInfo::FMoverDef0,
         VarBaseTxt_FuncVetor);
     return &var;
 }
@@ -783,6 +829,8 @@ const TVarInfo * VarBaseInt1()
         VarBaseInt1_TamanhoVetor,
         TVarInfo::FTipoInt,
         VarBaseInt1_Redim,
+        VarBaseInt1_MoverEnd,
+        TVarInfo::FMoverDef0,
         VarBaseInt1_FuncVetor);
     return &var;
 }
@@ -794,6 +842,8 @@ const TVarInfo * VarBaseInt8()
         VarBaseInt8_TamanhoVetor,
         TVarInfo::FTipoInt,
         VarBaseInt8_Redim,
+        VarBaseInt8_MoverEnd,
+        TVarInfo::FMoverDef0,
         VarBaseInt8_FuncVetor);
     return &var;
 }
@@ -805,6 +855,8 @@ const TVarInfo * VarBaseUInt8()
         VarBaseInt8_TamanhoVetor,
         TVarInfo::FTipoInt,
         VarBaseInt8_Redim,
+        VarBaseInt8_MoverEnd,
+        TVarInfo::FMoverDef0,
         VarBaseUInt8_FuncVetor);
     return &var;
 }
@@ -816,6 +868,8 @@ const TVarInfo * VarBaseInt16()
         VarBaseInt16_TamanhoVetor,
         TVarInfo::FTipoInt,
         VarBaseInt16_Redim,
+        VarBaseInt16_MoverEnd,
+        TVarInfo::FMoverDef0,
         VarBaseInt16_FuncVetor);
     return &var;
 }
@@ -827,6 +881,8 @@ const TVarInfo * VarBaseUInt16()
         VarBaseInt16_TamanhoVetor,
         TVarInfo::FTipoInt,
         VarBaseInt16_Redim,
+        VarBaseInt16_MoverEnd,
+        TVarInfo::FMoverDef0,
         VarBaseUInt16_FuncVetor);
     return &var;
 }
@@ -838,6 +894,8 @@ const TVarInfo * VarBaseInt32()
         VarBaseInt32_TamanhoVetor,
         TVarInfo::FTipoInt,
         VarBaseInt32_Redim,
+        VarBaseInt32_MoverEnd,
+        TVarInfo::FMoverDef0,
         VarBaseInt32_FuncVetor);
     return &var;
 }
@@ -849,6 +907,8 @@ const TVarInfo * VarBaseUInt32()
         VarBaseInt32_TamanhoVetor,
         TVarInfo::FTipoDouble,
         VarBaseInt32_Redim,
+        VarBaseInt32_MoverEnd,
+        TVarInfo::FMoverDef0,
         VarBaseUInt32_FuncVetor);
     return &var;
 }
@@ -860,6 +920,8 @@ const TVarInfo * VarBaseReal()
         VarBaseReal_TamanhoVetor,
         TVarInfo::FTipoDouble,
         VarBaseReal_Redim,
+        VarBaseReal_MoverEnd,
+        TVarInfo::FMoverDef0,
         VarBaseReal_FuncVetor);
     return &var;
 }
@@ -871,6 +933,8 @@ const TVarInfo * VarBaseReal2()
         VarBaseReal2_TamanhoVetor,
         TVarInfo::FTipoDouble,
         VarBaseReal2_Redim,
+        VarBaseReal2_MoverEnd,
+        TVarInfo::FMoverDef0,
         VarBaseReal2_FuncVetor);
     return &var;
 }

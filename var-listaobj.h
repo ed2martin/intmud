@@ -15,7 +15,8 @@ public:
     static const TVarInfo * Inicializa();
         ///< Inicializa variável e retorna informações
     void Apagar();          ///< Apaga objeto
-    void Mover(TListaObj * destino); ///< Move TListaObj para outro lugar
+    void Mover(TListaObj * destino, TObjeto * o);
+        ///< Move TListaObj para outro lugar
     TListaX * AddInicio(TObjeto * obj);
         ///< Adiciona objeto no início da lista
     TListaX * AddFim(TObjeto * obj);
@@ -62,6 +63,8 @@ private:
     static int FTamanhoVetor(const char * instr);
     static void FRedim(TVariavel * v, TClasse * c, TObjeto * o,
             unsigned int antes, unsigned int depois);
+    static void FMoverEnd(TVariavel * v, void * destino,
+            TClasse * c, TObjeto * o);
 };
 
 //----------------------------------------------------------------------------
@@ -71,7 +74,8 @@ public:
     static const TVarInfo * Inicializa();
         ///< Inicializa variável e retorna informações
     void Apagar();          ///< Apaga objeto
-    void Mover(TListaItem * destino); ///< Move TListaItem para outro lugar
+    void Mover(TListaItem * destino, TObjeto * o);
+        ///< Move TListaItem para outro lugar
     bool Func(TVariavel * v, const char * nome); ///< Função da variável
     int  getValor();        ///< Ler valor numérico da variável
     void MudarRef(TListaX * lista); ///< Muda referência de ListaX
@@ -102,6 +106,9 @@ private:
     static int FTamanhoVetor(const char * instr);
     static void FRedim(TVariavel * v, TClasse * c, TObjeto * o,
             unsigned int antes, unsigned int depois);
+    static void FMoverEnd(TVariavel * v, void * destino,
+            TClasse * c, TObjeto * o);
+    static void FMoverDef(TVariavel * v);
 };
 
 //----------------------------------------------------------------------------

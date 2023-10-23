@@ -12,6 +12,7 @@
 #include <string.h>
 #include "var-indiceobj.h"
 #include "variavel.h"
+#include "variavel-def.h"
 #include "objeto.h"
 #include "instr.h"
 #include "misc.h"
@@ -24,6 +25,8 @@ const TVarInfo * TIndiceItem::Inicializa()
         FTamanhoVetor,
         TVarInfo::FTipoOutros,
         FRedim,
+        FMoverEnd,
+        TVarInfo::FMoverDef0,
         TVarInfo::FFuncVetorFalse);
     return &var;
 }
@@ -68,7 +71,7 @@ TIndiceObj * TIndiceItem::getIndiceObj()
 //----------------------------------------------------------------------------
 void TIndiceItem::MudarRef(TIndiceObj * indice)
 {
-    if (indice==IndiceObj)
+    if (indice == IndiceObj)
         return;
     if (IndiceObj)
     {
@@ -291,6 +294,12 @@ void TIndiceItem::FRedim(TVariavel * v, TClasse * c, TObjeto * o,
         ref[depois].Apagar();
 }
 
+//------------------------------------------------------------------------------
+void TIndiceItem::FMoverEnd(TVariavel * v, void * destino, TClasse * c, TObjeto * o)
+{
+    VARIAVEL_MOVER_SIMPLES(TIndiceItem)
+}
+
 //----------------------------------------------------------------------------
 const TVarInfo * TIndiceObj::Inicializa()
 {
@@ -299,6 +308,8 @@ const TVarInfo * TIndiceObj::Inicializa()
         FTamanhoVetor,
         TVarInfo::FTipoTxt,
         FRedim,
+        FMoverEnd,
+        TVarInfo::FMoverDef0,
         TVarInfo::FFuncVetorFalse);
     return &var;
 }
@@ -313,8 +324,9 @@ void TIndiceObj::Apagar()
 }
 
 //----------------------------------------------------------------------------
-void TIndiceObj::Mover(TIndiceObj * destino)
+void TIndiceObj::Mover(TIndiceObj * destino, TObjeto * o)
 {
+    Objeto = o;
     // Acerta TIndiceItem::IndiceObj em todos os TIndiceItem
     for (TIndiceItem * obj = IndiceItem; obj; obj = obj->Depois)
         obj->IndiceObj = destino;
@@ -383,6 +395,12 @@ void TIndiceObj::FRedim(TVariavel * v, TClasse * c, TObjeto * o,
     }
     for (; depois < antes; depois++)
         ref[depois].Apagar();
+}
+
+//------------------------------------------------------------------------------
+void TIndiceObj::FMoverEnd(TVariavel * v, void * destino, TClasse * c, TObjeto * o)
+{
+    VARIAVEL_MOVER_OBJETO(TIndiceObj)
 }
 
 //----------------------------------------------------------------------------

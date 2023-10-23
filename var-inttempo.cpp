@@ -13,6 +13,7 @@
 #include <errno.h>
 #include <assert.h>
 #include "variavel.h"
+#include "variavel-def.h"
 #include "instr.h"
 #include "instr-enum.h"
 #include "classe.h"
@@ -42,6 +43,8 @@ const TVarInfo * TVarIntTempo::Inicializa()
         FTamanhoVetor,
         TVarInfo::FTipoInt,
         FRedim,
+        FMoverEnd,
+        FMoverDef,
         FuncVetor);
     return &var;
 }
@@ -353,4 +356,16 @@ void TVarIntTempo::DebugVet(bool mostrar)
         }
     if (mostrar)
         { printf("\n"); fflush(stdout); }
+}
+
+//------------------------------------------------------------------------------
+void TVarIntTempo::FMoverEnd(TVariavel * v, void * destino, TClasse * c, TObjeto * o)
+{
+    VARIAVEL_MOVER_COMPLETO(TVarIntTempo)
+}
+
+//------------------------------------------------------------------------------
+void TVarIntTempo::FMoverDef(TVariavel * v)
+{
+    VARIAVEL_MOVERDEF(TVarIntTempo)
 }

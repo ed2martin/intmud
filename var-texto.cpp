@@ -13,6 +13,7 @@
 #include <assert.h>
 #include "var-texto.h"
 #include "variavel.h"
+#include "variavel-def.h"
 #include "instr.h"
 #include "instr-enum.h"
 #include "misc.h"
@@ -56,6 +57,8 @@ const TVarInfo * TTextoTxt::Inicializa()
         FTamanhoVetor,
         TVarInfo::FTipoOutros,
         FRedim,
+        FMoverEnd,
+        TVarInfo::FMoverDef0,
         TVarInfo::FFuncVetorFalse);
     return &var;
 }
@@ -180,6 +183,12 @@ void TTextoTxt::FRedim(TVariavel * v, TClasse * c, TObjeto * o,
         ref[depois].Apagar();
 }
 
+//------------------------------------------------------------------------------
+void TTextoTxt::FMoverEnd(TVariavel * v, void * destino, TClasse * c, TObjeto * o)
+{
+    VARIAVEL_MOVER_SIMPLES(TTextoTxt)
+}
+
 //----------------------------------------------------------------------------
 const TVarInfo * TTextoPos::Inicializa()
 {
@@ -188,6 +197,8 @@ const TVarInfo * TTextoPos::Inicializa()
         FTamanhoVetor,
         FTipo,
         FRedim,
+        FMoverEnd,
+        FMoverDef,
         TVarInfo::FFuncVetorFalse);
     return &var;
 }
@@ -203,8 +214,9 @@ void TTextoPos::Apagar()
 }
 
 //----------------------------------------------------------------------------
-void TTextoPos::Mover(TTextoPos * destino)
+void TTextoPos::Mover(TTextoPos * destino, TObjeto * o)
 {
+    Objeto = o;
     if (TextoTxt)
     {
         (Antes ? Antes->Depois : TextoTxt->Posic) = destino;
@@ -272,6 +284,18 @@ void TTextoPos::FRedim(TVariavel * v, TClasse * c, TObjeto * o,
     }
     for (; depois < antes; depois++)
         ref[depois].Apagar();
+}
+
+//------------------------------------------------------------------------------
+void TTextoPos::FMoverEnd(TVariavel * v, void * destino, TClasse * c, TObjeto * o)
+{
+    VARIAVEL_MOVER_OBJETO(TTextoPos)
+}
+
+//------------------------------------------------------------------------------
+void TTextoPos::FMoverDef(TVariavel * v)
+{
+    VARIAVEL_MOVERDEF(TTextoPos)
 }
 
 //----------------------------------------------------------------------------

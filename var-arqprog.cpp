@@ -84,6 +84,8 @@ const TVarInfo * TVarArqProg::Inicializa()
         FTamanhoVetor,
         TVarInfo::FTipoOutros,
         FRedim,
+        FMoverEnd,
+        TVarInfo::FMoverDef0,
         TVarInfo::FFuncVetorFalse);
     return &var;
 }
@@ -362,4 +364,11 @@ void TVarArqProg::FRedim(TVariavel * v, TClasse * c, TObjeto * o,
         ref[antes].Criar();
     for (; depois < antes; depois++)
         ref[depois].Apagar();
+}
+
+//------------------------------------------------------------------------------
+void TVarArqProg::FMoverEnd(TVariavel * v, void * destino, TClasse * c, TObjeto * o)
+{
+    int total = (unsigned char)v->defvar[Instr::endVetor];
+    memmove(destino, v->endvar, (total ? total : 1) * sizeof(TVarArqProg));
 }

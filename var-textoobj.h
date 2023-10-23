@@ -16,7 +16,7 @@ public:
         ///< Inicializa variável e retorna informações
     void Apagar();          ///< Apaga objeto
     void Limpar();          ///< Apaga o texto do objeto
-    void Mover(TTextoObj * destino);
+    void Mover(TTextoObj * destino, TObjeto * o);
         ///< Move objeto para outro lugar
     TBlocoObj * Procura(const char * texto);
         ///< Procura um objeto TIndiceObj a partir do nome
@@ -53,6 +53,8 @@ private:
     static int FTamanhoVetor(const char * instr);
     static void FRedim(TVariavel * v, TClasse * c, TObjeto * o,
             unsigned int antes, unsigned int depois);
+    static void FMoverEnd(TVariavel * v, void * destino,
+            TClasse * c, TObjeto * o);
 
 public:
     TBlocoObj * RBroot;  ///< Objeto raiz da RBT
@@ -85,6 +87,8 @@ private:
     static int FTamanhoVetor(const char * instr);
     static void FRedim(TVariavel * v, TClasse * c, TObjeto * o,
             unsigned int antes, unsigned int depois);
+    static void FMoverEnd(TVariavel * v, void * destino,
+            TClasse * c, TObjeto * o);
 };
 
 //----------------------------------------------------------------------------

@@ -27,6 +27,7 @@
 #include "var-socket.h"
 #include "socket.h"
 #include "variavel.h"
+#include "variavel-def.h"
 #include "classe.h"
 #include "objeto.h"
 #include "instr.h"
@@ -329,6 +330,8 @@ const TVarInfo * TVarSocket::Inicializa()
         FTamanhoVetor,
         FTipo,
         FRedim,
+        FMoverEnd,
+        FMoverDef,
         TVarInfo::FFuncVetorFalse);
     return &var;
 }
@@ -770,6 +773,18 @@ void TVarSocket::FRedim(TVariavel * v, TClasse * c, TObjeto * o,
     }
     for (; depois < antes; depois++)
         ref[depois].Apagar();
+}
+
+//------------------------------------------------------------------------------
+void TVarSocket::FMoverEnd(TVariavel * v, void * destino, TClasse * c, TObjeto * o)
+{
+    VARIAVEL_MOVER_COMPLETO(TVarSocket)
+}
+
+//------------------------------------------------------------------------------
+void TVarSocket::FMoverDef(TVariavel * v)
+{
+    VARIAVEL_MOVERDEF(TVarSocket)
 }
 
 //------------------------------------------------------------------------------

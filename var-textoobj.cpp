@@ -14,6 +14,7 @@
 #include <assert.h>
 #include "var-textoobj.h"
 #include "variavel.h"
+#include "variavel-def.h"
 #include "objeto.h"
 #include "instr.h"
 #include "misc.h"
@@ -28,6 +29,8 @@ const TVarInfo * TTextoObj::Inicializa()
         FTamanhoVetor,
         TVarInfo::FTipoOutros,
         FRedim,
+        FMoverEnd,
+        TVarInfo::FMoverDef0,
         TVarInfo::FFuncVetorFalse);
     return &var;
 }
@@ -342,8 +345,9 @@ void TTextoObj::Limpar()
 }
 
 //----------------------------------------------------------------------------
-void TTextoObj::Mover(TTextoObj * destino)
+void TTextoObj::Mover(TTextoObj * destino, TObjeto * o)
 {
+    Objeto = o;
     if (RBroot)
         RBroot->MoveTextoObj(destino);
     for (TTextoObjSub * obj = Inicio; obj; obj=obj->Depois)
@@ -519,6 +523,12 @@ void TTextoObj::FRedim(TVariavel * v, TClasse * c, TObjeto * o,
 }
 
 //------------------------------------------------------------------------------
+void TTextoObj::FMoverEnd(TVariavel * v, void * destino, TClasse * c, TObjeto * o)
+{
+    VARIAVEL_MOVER_OBJETO(TTextoObj)
+}
+
+//------------------------------------------------------------------------------
 const TVarInfo * TTextoObjSub::Inicializa()
 {
     static const TVarInfo var(
@@ -526,6 +536,8 @@ const TVarInfo * TTextoObjSub::Inicializa()
         FTamanhoVetor,
         TVarInfo::FTipoObj,
         FRedim,
+        FMoverEnd,
+        TVarInfo::FMoverDef0,
         TVarInfo::FFuncVetorFalse);
     return &var;
 }
@@ -611,6 +623,12 @@ void TTextoObjSub::FRedim(TVariavel * v, TClasse * c, TObjeto * o,
     }
     for (; depois < antes; depois++)
         ref[depois].Apagar();
+}
+
+//------------------------------------------------------------------------------
+void TTextoObjSub::FMoverEnd(TVariavel * v, void * destino, TClasse * c, TObjeto * o)
+{
+    VARIAVEL_MOVER_SIMPLES(TTextoObjSub)
 }
 
 //----------------------------------------------------------------------------
