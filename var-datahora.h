@@ -21,8 +21,6 @@ public:
             ///< Operador de atribuição igual
     bool Func(TVariavel * v, const char * nome);
             ///< Função da variável
-    static TVarTipo FTipo(TVariavel * v);
-            ///< Retorna o tipo de variável
     int  getInt(int numfunc);
             ///< Ler o valor numérico da variável como int
     double getDouble(int numfunc);
@@ -49,10 +47,15 @@ public:
 private:
     static int FTamanho(const char * instr);
     static int FTamanhoVetor(const char * instr);
+    static TVarTipo FTipo(TVariavel * v);
     static void FRedim(TVariavel * v, TClasse * c, TObjeto * o,
             unsigned int antes, unsigned int depois);
     static void FMoverEnd(TVariavel * v, void * destino,
             TClasse * c, TObjeto * o);
+    static bool FGetBool(TVariavel * v);
+    static int FGetInt(TVariavel * v);
+    static double FGetDouble(TVariavel * v);
+    static const char * FGetTxt(TVariavel * v);
 };
 
 //----------------------------------------------------------------------------

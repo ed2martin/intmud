@@ -33,6 +33,11 @@ const TVarInfo * TVarArqLog::Inicializa()
         FRedim,
         FMoverEnd,
         TVarInfo::FMoverDef0,
+        FGetBool,
+        FGetInt,
+        FGetDouble,
+        FGetTxt,
+        TVarInfo::FGetObjNulo,
         TVarInfo::FFuncVetorFalse);
     return &var;
 }
@@ -301,3 +306,9 @@ void TVarArqLog::FMoverEnd(TVariavel * v, void * destino, TClasse * c, TObjeto *
 {
     VARIAVEL_MOVER_SIMPLES(TVarArqLog)
 }
+
+//------------------------------------------------------------------------------
+bool TVarArqLog::FGetBool(TVariavel * v) VARIAVEL_FGETINT0(TVarArqLog)
+int TVarArqLog::FGetInt(TVariavel * v) VARIAVEL_FGETINT0(TVarArqLog)
+double TVarArqLog::FGetDouble(TVariavel * v) VARIAVEL_FGETINT0(TVarArqLog)
+const char * TVarArqLog::FGetTxt(TVariavel * v) VARIAVEL_FGETTXT0(TVarArqLog)

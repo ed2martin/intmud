@@ -1177,33 +1177,10 @@ int DoubleToInt(double valor)
 }
 
 //------------------------------------------------------------------------------
-unsigned short Num16(const char * x)
-{
-    return ((unsigned int)(unsigned char)x[1] << 8) + (unsigned char) x[0];
-}
-
-//------------------------------------------------------------------------------
-unsigned int Num24(const char * x)
-{
-    return ((unsigned int)(unsigned char)x[2] << 16) +
-           ((unsigned int)(unsigned char)x[1] << 8) +
-           (unsigned char)x[0];
-}
-
-//------------------------------------------------------------------------------
-unsigned int Num32(const char * x)
-{
-    return ((unsigned int)(unsigned char)x[3] << 24) +
-           ((unsigned int)(unsigned char)x[2] << 16) +
-           ((unsigned int)(unsigned char)x[1] << 8) +
-           (unsigned char)x[0];
-}
-
-//------------------------------------------------------------------------------
 TAddBuffer::TAddBuffer()
 {
     PosAtual = 0;
-    Total=0;
+    Total = 0;
     Inicio = Atual = 0;
     Buf = nullptr;
 }

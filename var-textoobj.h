@@ -74,7 +74,7 @@ public:
     void Mover(TTextoObjSub * destino);
         ///< Move bloco para outro lugar
 
-    int getInt();               ///< Retorna valor como int
+    int getValor();             ///< Retorna valor como int
     TObjeto * getObj();         ///< Retorna valor como TObjeto
     void setObj(TObjeto * obj); ///< Muda o valor
     TTextoObj * TextoObj;       ///< A qual textoobj pertence
@@ -89,6 +89,11 @@ private:
             unsigned int antes, unsigned int depois);
     static void FMoverEnd(TVariavel * v, void * destino,
             TClasse * c, TObjeto * o);
+    static bool FGetBool(TVariavel * v);
+    static int FGetInt(TVariavel * v);
+    static double FGetDouble(TVariavel * v);
+    static const char * FGetTxt(TVariavel * v);
+    static TObjeto * FGetObj(TVariavel * v);
 };
 
 //----------------------------------------------------------------------------

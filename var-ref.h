@@ -24,6 +24,11 @@ private:
             unsigned int antes, unsigned int depois);
     static void FMoverEnd(TVariavel * v, void * destino,
             TClasse * c, TObjeto * o);
+    static bool FGetBool(TVariavel * v);
+    static int FGetInt(TVariavel * v);
+    static double FGetDouble(TVariavel * v);
+    static const char * FGetTxt(TVariavel * v);
+    static TObjeto * FGetObj(TVariavel * v);
 };
 
 //----------------------------------------------------------------------------

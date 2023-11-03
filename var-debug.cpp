@@ -43,6 +43,11 @@ const TVarInfo * TVarDebug::Inicializa()
         FRedim,
         FMoverEnd,
         FMoverDef,
+        FGetBool,
+        FGetInt,
+        FGetDouble,
+        FGetTxt,
+        TVarInfo::FGetObjNulo,
         TVarInfo::FFuncVetorFalse);
     return &var;
 }
@@ -360,17 +365,6 @@ bool TVarDebug::FuncData(TVariavel * v)
 }
 
 //----------------------------------------------------------------------------
-TVarTipo TVarDebug::FTipo(TVariavel * v)
-{
-    switch (v->numfunc)
-    {
-    case 0: return varOutros;
-    case 1: return varInt;
-    }
-    return varDouble;
-}
-
-//----------------------------------------------------------------------------
 int TVarDebug::getInt(int numfunc)
 {
     if (numfunc == 1)
@@ -491,6 +485,17 @@ int TVarDebug::FTamanhoVetor(const char * instr)
     return (total ? total : 1) * sizeof(TVarDebug);
 }
 
+//----------------------------------------------------------------------------
+TVarTipo TVarDebug::FTipo(TVariavel * v)
+{
+    switch (v->numfunc)
+    {
+    case 0: return varOutros;
+    case 1: return varInt;
+    }
+    return varDouble;
+}
+
 //------------------------------------------------------------------------------
 void TVarDebug::FRedim(TVariavel * v, TClasse * c, TObjeto * o,
         unsigned int antes, unsigned int depois)
@@ -517,4 +522,30 @@ void TVarDebug::FMoverEnd(TVariavel * v, void * destino, TClasse * c, TObjeto * 
 void TVarDebug::FMoverDef(TVariavel * v)
 {
     VARIAVEL_MOVERDEF(TVarDebug)
+}
+
+//------------------------------------------------------------------------------
+bool TVarDebug::FGetBool(TVariavel * v)
+{
+    return getInt(v->numfunc);
+}
+
+//------------------------------------------------------------------------------
+int TVarDebug::FGetInt(TVariavel * v)
+{
+    return getInt(v->numfunc);
+}
+
+//------------------------------------------------------------------------------
+double TVarDebug::FGetDouble(TVariavel * v)
+{
+    return getDouble(v->numfunc);
+}
+
+//------------------------------------------------------------------------------
+const char * TVarDebug::FGetTxt(TVariavel * v)
+{
+    char * buf = TVarInfo::BufferTxt();
+    sprintf(buf, "%d", getInt(v->numfunc));
+    return buf;
 }

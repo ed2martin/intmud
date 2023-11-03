@@ -46,6 +46,8 @@
 #include "misc.h"
 
 TVarInfo * TVariavel::VarInfo = nullptr;
+char * TVarInfo::EndBufferTxt = new char[0x400];
+unsigned short TVarInfo::NumBufferTxt = 0;
 
 //----------------------------------------------------------------------------
 TVarInfo::TVarInfo()
@@ -56,6 +58,11 @@ TVarInfo::TVarInfo()
     FRedim = FRedim0;
     FMoverEnd = FMoverEnd0;
     FMoverDef = FMoverDef0;
+    FGetBool = FGetBoolFalse;
+    FGetInt = FGetInt0;
+    FGetDouble = FGetDouble0;
+    FGetTxt = FGetTxtVazio;
+    FGetObj = FGetObjNulo;
     FFuncVetor = FFuncVetorFalse;
 }
 
@@ -68,6 +75,11 @@ TVarInfo::TVarInfo(int (*fTamanho)(const char * instr),
         void (*fMoverEnd)(TVariavel * v, void * destino,
                 TClasse * c, TObjeto * o),
         void (*fMoverDef)(TVariavel * v),
+        bool (*fGetBool)(TVariavel * v),
+        int (*fGetInt)(TVariavel * v),
+        double (*fGetDouble)(TVariavel * v),
+        const char * (*fGetTxt)(TVariavel * v),
+        TObjeto * (*fGetObj)(TVariavel * v),
         bool (*fFuncVetor)(TVariavel * v, const char * nome))
 {
     FTamanho = fTamanho;
@@ -77,66 +89,34 @@ TVarInfo::TVarInfo(int (*fTamanho)(const char * instr),
     FMoverEnd = fMoverEnd;
     FMoverDef = fMoverDef;
     FFuncVetor = fFuncVetor;
+    FGetBool = fGetBool;
+    FGetInt = fGetInt;
+    FGetDouble = fGetDouble;
+    FGetTxt = fGetTxt;
+    FGetObj = fGetObj;
 }
 
 //----------------------------------------------------------------------------
-int TVarInfo::FTamanho0(const char * instr)
-{
-    return 0;
-}
-
-//----------------------------------------------------------------------------
-TVarTipo TVarInfo::FTipoOutros(TVariavel * v)
-{
-    return varOutros;
-}
-
-//----------------------------------------------------------------------------
-TVarTipo TVarInfo::FTipoInt(TVariavel * v)
-{
-    return varInt;
-}
-
-//----------------------------------------------------------------------------
-TVarTipo TVarInfo::FTipoDouble(TVariavel * v)
-{
-    return varDouble;
-}
-
-//----------------------------------------------------------------------------
-TVarTipo TVarInfo::FTipoTxt(TVariavel * v)
-{
-    return varTxt;
-}
-
-//----------------------------------------------------------------------------
-TVarTipo TVarInfo::FTipoObj(TVariavel * v)
-{
-    return varObj;
-}
-
-//----------------------------------------------------------------------------
+int TVarInfo::FTamanho0(const char * instr) { return 0; }
+TVarTipo TVarInfo::FTipoOutros(TVariavel * v) { return varOutros; }
+TVarTipo TVarInfo::FTipoInt(TVariavel * v) { return varInt; }
+TVarTipo TVarInfo::FTipoDouble(TVariavel * v) { return varDouble; }
+TVarTipo TVarInfo::FTipoTxt(TVariavel * v) { return varTxt; }
+TVarTipo TVarInfo::FTipoObj(TVariavel * v) { return varObj; }
 void TVarInfo::FRedim0(TVariavel * v, TClasse * c, TObjeto * o,
             unsigned int antes, unsigned int depois)
 {
     v->endvar = nullptr;
 }
-
-//----------------------------------------------------------------------------
-void TVarInfo::FMoverEnd0(TVariavel * v, void * destino, TClasse * c, TObjeto * o)
-{
-}
-
-//----------------------------------------------------------------------------
-void TVarInfo::FMoverDef0(TVariavel * v)
-{
-}
-
-//----------------------------------------------------------------------------
-bool TVarInfo::FFuncVetorFalse(TVariavel * v, const char * nome)
-{
-    return false;
-}
+void TVarInfo::FMoverEnd0(TVariavel * v, void * destino,
+        TClasse * c, TObjeto * o) {}
+void TVarInfo::FMoverDef0(TVariavel * v) {}
+bool TVarInfo::FGetBoolFalse(TVariavel * v) { return false; }
+int TVarInfo::FGetInt0(TVariavel * v) { return 0; }
+double TVarInfo::FGetDouble0(TVariavel * v) { return 0; }
+const char * TVarInfo::FGetTxtVazio(TVariavel * v) { return ""; }
+TObjeto * TVarInfo::FGetObjNulo(TVariavel * v) { return nullptr; }
+bool TVarInfo::FFuncVetorFalse(TVariavel * v, const char * nome) { return false; }
 
 //----------------------------------------------------------------------------
 void TVariavel::Inicializa()
@@ -230,681 +210,6 @@ void TVariavel::Limpar()
     indice = 0;
     numbit = 0;
     numfunc = 0;
-}
-
-//------------------------------------------------------------------------------
-bool TVariavel::getBool()
-{
-    if (indice==0xFF) // Vetor
-        return false;
-    switch (defvar[2])
-    {
-// Variáveis
-    case Instr::cTxt1:
-    case Instr::cTxt2:
-        if (indice==0)
-            return (end_char[0] != 0);
-        return (end_char[indice * Tamanho(defvar)] != 0);
-    case Instr::cTxtFixo:
-        return (*end_char != 0);
-    case Instr::cInt8:
-    case Instr::cUInt8:
-        return (end_char[indice] != 0);
-    case Instr::cInt1:
-        if (numfunc)
-            return GetVetorInt1(this);
-        if (indice)
-        {
-            int ind2 = indice + numbit;
-            return end_char[ind2/8] & (1 << (ind2 & 7));
-        }
-        return (end_char[0] & (1 << numbit));
-    case Instr::cInt16:
-    case Instr::cUInt16:
-        return end_short[indice];
-    case Instr::cInt32:
-    case Instr::cUInt32:
-        return end_int[indice];
-    case Instr::cIntInc:
-        return end_incdec[indice].getInc(numfunc);
-    case Instr::cIntDec:
-        return end_incdec[indice].getDec(numfunc);
-    case Instr::cReal:
-        return (end_float[indice] != 0);
-    case Instr::cReal2:
-        return (end_double[indice] != 0);
-    case Instr::cConstNulo:
-        return 0;
-    case Instr::cConstTxt:
-        return defvar[(unsigned char)defvar[Instr::endIndice] + 1] != 0;
-    case Instr::cConstNum:
-        {
-            const char * origem = defvar + defvar[Instr::endIndice];
-            switch (*origem)
-            {
-            case Instr::ex_num1:
-                return true;
-            case Instr::ex_num0:
-                return false;
-            case Instr::ex_num8n:
-            case Instr::ex_num8p:
-            case Instr::ex_num8hexn:
-            case Instr::ex_num8hexp:
-                return origem[1]!=0;
-            case Instr::ex_num16n:
-            case Instr::ex_num16p:
-            case Instr::ex_num16hexn:
-            case Instr::ex_num16hexp:
-                return origem[1]!=0 || origem[2]!=0;
-            case Instr::ex_num32n:
-            case Instr::ex_num32p:
-            case Instr::ex_num32hexn:
-            case Instr::ex_num32hexp:
-                return origem[1]!=0 || origem[2]!=0 ||
-                       origem[3]!=0 || origem[4]!=0;
-            default:
-                assert(0);
-            }
-        }
-    case Instr::cConstExpr:
-    case Instr::cConstVar:
-    case Instr::cFunc:
-    case Instr::cVarFunc:
-        return 0;
-
-// Variáveis extras
-    case Instr::cListaObj:
-        return end_listaobj[indice].getValor();
-    case Instr::cListaItem:
-        return end_listaitem[indice].getValor();
-    case Instr::cTextoTxt:
-        return end_textotxt[indice].getValor();
-    case Instr::cTextoPos:
-        return end_textopos[indice].getValor(numfunc);
-    case Instr::cTextoVar:
-    case Instr::cTextoObj:
-        return 0;
-    case Instr::cNomeObj:
-        return end_nomeobj[indice].getValor();
-    case Instr::cArqDir:
-        return 0;
-    case Instr::cArqLog:
-        return end_arqlog[indice].getValor();
-    case Instr::cArqProg:
-    case Instr::cArqExec:
-    case Instr::cArqSav:
-        return 0;
-    case Instr::cArqTxt:
-        return end_arqtxt[indice].getValor();
-    case Instr::cArqMem:
-        return 0;
-    case Instr::cIntTempo:
-        return end_inttempo[indice].getValor(numfunc);
-    case Instr::cIntExec:
-        return end_intexec[indice].getValor();
-    case Instr::cTelaTxt:
-        return end_telatxt[indice].getValor(numfunc);
-    case Instr::cSocket:
-        return end_socket[indice].getValor(numfunc);
-    case Instr::cServ:
-        return end_serv[indice].getValor();
-    case Instr::cProg:
-        return end_prog[indice].getValor();
-    case Instr::cDebug:
-        return TVarDebug::getInt(numfunc);
-    case Instr::cIndiceObj:
-        return end_indiceobj[indice].getNome()[0] != 0;
-    case Instr::cIndiceItem:
-        return end_indiceitem[indice].getValor();
-    case Instr::cDataHora:
-        return end_datahora[indice].getInt(numfunc);
-    case Instr::cRef:
-        return end_varref[indice].Pont != 0;
-    case Instr::cVarObjeto:
-        return (endvar!=0);
-    case Instr::cVarIniFunc:
-    case Instr::cVarInt:
-        return (valor_int!=0);
-    case Instr::cTextoVarSub:
-        return end_textovarsub[indice].getBool();
-    case Instr::cTextoObjSub:
-        return end_textoobjsub[indice].getInt();
-    }
-    return 0;
-}
-
-//------------------------------------------------------------------------------
-int TVariavel::getInt()
-{
-    if (indice==0xFF) // Vetor
-        return 0;
-    switch (defvar[2])
-    {
-// Variáveis
-    case Instr::cTxt1:
-    case Instr::cTxt2:
-        if (indice)
-            return TxtToInt(&end_char[indice * Tamanho(defvar)]);
-    case Instr::cTxtFixo:
-        return TxtToInt(end_char);
-    case Instr::cInt1:
-        return (numfunc ? GetVetorInt1(this) : getBool());
-    case Instr::cInt8:
-        return (signed char)end_char[indice];
-    case Instr::cUInt8:
-        return (unsigned char)end_char[indice];
-    case Instr::cInt16:
-        return end_short[indice];
-    case Instr::cUInt16:
-        return end_ushort[indice];
-    case Instr::cInt32:
-        return end_int[indice];
-    case Instr::cUInt32:
-        return (end_uint[indice] > 0x7FFFFFFF ?
-                0x7FFFFFFF : end_uint[indice]);
-    case Instr::cIntInc:
-        return end_incdec[indice].getInc(numfunc);
-    case Instr::cIntDec:
-        return end_incdec[indice].getDec(numfunc);
-    case Instr::cReal:
-        return DoubleToInt(end_float[indice]);
-    case Instr::cReal2:
-        return DoubleToInt(end_double[indice]);
-    case Instr::cConstNulo:
-        return 0;
-    case Instr::cConstTxt:
-        return TxtToInt(defvar + defvar[Instr::endIndice] + 1);
-    case Instr::cConstNum:
-        {
-            unsigned int valor = 0;
-            bool negativo = false;
-            const char * origem = defvar + defvar[Instr::endIndice];
-            switch (*origem)
-            {
-            case Instr::ex_num1:
-                valor=1;
-            case Instr::ex_num0:
-                origem++;
-                break;
-            case Instr::ex_num8n:
-            case Instr::ex_num8hexn:
-                negativo=true;
-            case Instr::ex_num8p:
-            case Instr::ex_num8hexp:
-                valor=(unsigned char)origem[1];
-                origem+=2;
-                break;
-            case Instr::ex_num16n:
-            case Instr::ex_num16hexn:
-                negativo=true;
-            case Instr::ex_num16p:
-            case Instr::ex_num16hexp:
-                valor=Num16(origem+1);
-                origem+=3;
-                break;
-            case Instr::ex_num32n:
-            case Instr::ex_num32hexn:
-                negativo=true;
-            case Instr::ex_num32p:
-            case Instr::ex_num32hexp:
-                valor=Num32(origem+1);
-                origem+=5;
-                break;
-            default:
-                assert(0);
-            }
-            while (*origem>=Instr::ex_div1 && *origem<=Instr::ex_div6)
-                switch (*origem++)
-                {
-                case Instr::ex_div1: valor/=10; break;
-                case Instr::ex_div2: valor/=100; break;
-                case Instr::ex_div3: valor/=1000; break;
-                case Instr::ex_div4: valor/=10000; break;
-                case Instr::ex_div5: valor/=100000; break;
-                case Instr::ex_div6: valor/=1000000; break;
-                }
-            if (negativo)
-                return (valor<0x80000000LL ? -valor : -0x80000000);
-            return (valor<0x7FFFFFFFLL ? valor : 0x7FFFFFFF);
-        }
-    case Instr::cConstExpr:
-    case Instr::cConstVar:
-    case Instr::cFunc:
-    case Instr::cVarFunc:
-        return 0;
-    case Instr::cVarIniFunc:
-    case Instr::cVarInt:
-        return valor_int;
-
-// Variáveis extras
-    case Instr::cListaObj:
-        return end_listaobj[indice].getValor();
-    case Instr::cListaItem:
-        return end_listaitem[indice].getValor();
-    case Instr::cTextoTxt:
-        return end_textotxt[indice].getValor();
-    case Instr::cTextoPos:
-        return end_textopos[indice].getValor(numfunc);
-    case Instr::cTextoVar:
-    case Instr::cTextoObj:
-        return 0;
-    case Instr::cNomeObj:
-        return end_nomeobj[indice].getValor();
-    case Instr::cArqDir:
-        return 0;
-    case Instr::cArqLog:
-        return end_arqlog[indice].getValor();
-    case Instr::cArqProg:
-    case Instr::cArqExec:
-    case Instr::cArqSav:
-        return 0;
-    case Instr::cArqTxt:
-        return end_arqtxt[indice].getValor();
-    case Instr::cArqMem:
-        return 0;
-    case Instr::cIntTempo:
-        return end_inttempo[indice].getValor(numfunc);
-    case Instr::cIntExec:
-        return end_intexec[indice].getValor();
-    case Instr::cTelaTxt:
-        return end_telatxt[indice].getValor(numfunc);
-    case Instr::cSocket:
-        return end_socket[indice].getValor(numfunc);
-    case Instr::cServ:
-        return end_serv[indice].getValor();
-    case Instr::cProg:
-        return end_prog[indice].getValor();
-    case Instr::cDebug:
-        return TVarDebug::getInt(numfunc);
-    case Instr::cIndiceObj:
-        return TxtToInt(end_indiceobj[indice].getNome());
-    case Instr::cIndiceItem:
-        return end_indiceitem[indice].getValor();
-    case Instr::cDataHora:
-        return end_datahora[indice].getInt(numfunc);
-
-    case Instr::cRef:
-        return end_varref[indice].Pont != 0;
-    case Instr::cVarObjeto:
-        return (endvar!=0);
-    case Instr::cTextoVarSub:
-        return end_textovarsub[indice].getInt();
-    case Instr::cTextoObjSub:
-        return end_textoobjsub[indice].getInt();
-    }
-    return 0;
-}
-
-//------------------------------------------------------------------------------
-double TVariavel::getDouble()
-{
-    if (indice==0xFF) // Vetor
-        return 0;
-    switch (defvar[2])
-    {
-// Variáveis
-    case Instr::cTxt1:
-    case Instr::cTxt2:
-        if (indice)
-            return TxtToDouble(&end_char[indice * Tamanho(defvar)]);
-    case Instr::cTxtFixo:
-        return TxtToDouble(end_char);
-    case Instr::cInt1:
-        return (numfunc ? GetVetorInt1(this) : getBool());
-    case Instr::cInt8:
-        return (signed char)end_char[indice];
-    case Instr::cUInt8:
-        return (unsigned char)end_char[indice];
-    case Instr::cInt16:
-        return end_short[indice];
-    case Instr::cUInt16:
-        return end_ushort[indice];
-    case Instr::cInt32:
-        return end_int[indice];
-    case Instr::cUInt32:
-        return end_uint[indice];
-    case Instr::cIntInc:
-        return end_incdec[indice].getInc(numfunc);
-    case Instr::cIntDec:
-        return end_incdec[indice].getDec(numfunc);
-    case Instr::cReal:
-        return end_float[indice];
-    case Instr::cReal2:
-        return end_double[indice];
-    case Instr::cConstNulo:
-        return 0;
-    case Instr::cConstTxt:
-        return TxtToDouble(defvar + defvar[Instr::endIndice] + 1);
-    case Instr::cConstNum:
-        {
-            double valor = 0;
-            bool negativo = false;
-            const char * origem = defvar + defvar[Instr::endIndice];
-            switch (*origem)
-            {
-            case Instr::ex_num1:
-                valor=1;
-            case Instr::ex_num0:
-                origem++;
-                break;
-            case Instr::ex_num8n:
-            case Instr::ex_num8hexn:
-                negativo=true;
-            case Instr::ex_num8p:
-            case Instr::ex_num8hexp:
-                valor=(unsigned char)origem[1];
-                origem+=2;
-                break;
-            case Instr::ex_num16n:
-            case Instr::ex_num16hexn:
-                negativo=true;
-            case Instr::ex_num16p:
-            case Instr::ex_num16hexp:
-                valor=Num16(origem+1);
-                origem+=3;
-                break;
-            case Instr::ex_num32n:
-            case Instr::ex_num32hexn:
-                negativo=true;
-            case Instr::ex_num32p:
-            case Instr::ex_num32hexp:
-                valor=Num32(origem+1);
-                origem+=5;
-                break;
-            default:
-                assert(0);
-            }
-            while (*origem>=Instr::ex_div1 && *origem<=Instr::ex_div6)
-                switch (*origem++)
-                {
-                case Instr::ex_div1: valor/=10; break;
-                case Instr::ex_div2: valor/=100; break;
-                case Instr::ex_div3: valor/=1000; break;
-                case Instr::ex_div4: valor/=10000; break;
-                case Instr::ex_div5: valor/=100000; break;
-                case Instr::ex_div6: valor/=1000000; break;
-                }
-            return (negativo ? -valor : valor);
-        }
-    case Instr::cConstExpr:
-    case Instr::cConstVar:
-    case Instr::cFunc:
-    case Instr::cVarFunc:
-        return 0;
-    case Instr::cVarIniFunc:
-    case Instr::cVarInt:
-        return valor_int;
-
-// Variáveis extras
-    case Instr::cListaObj:
-        return end_listaobj[indice].getValor();
-    case Instr::cListaItem:
-        return end_listaitem[indice].getValor();
-    case Instr::cTextoTxt:
-        return end_textotxt[indice].getValor();
-    case Instr::cTextoPos:
-        return end_textopos[indice].getValor(numfunc);
-    case Instr::cTextoVar:
-    case Instr::cTextoObj:
-        return 0;
-    case Instr::cNomeObj:
-        return end_nomeobj[indice].getValor();
-    case Instr::cArqDir:
-        return 0;
-    case Instr::cArqLog:
-        return end_arqlog[indice].getValor();
-    case Instr::cArqProg:
-    case Instr::cArqExec:
-    case Instr::cArqSav:
-        return 0;
-    case Instr::cArqTxt:
-        return end_arqtxt[indice].getValor();
-    case Instr::cArqMem:
-        return 0;
-    case Instr::cIntTempo:
-        return end_inttempo[indice].getValor(numfunc);
-    case Instr::cIntExec:
-        return end_intexec[indice].getValor();
-    case Instr::cTelaTxt:
-        return end_telatxt[indice].getValor(numfunc);
-    case Instr::cSocket:
-        return end_socket[indice].getValor(numfunc);
-    case Instr::cServ:
-        return end_serv[indice].getValor();
-    case Instr::cProg:
-        return end_prog[indice].getValor();
-    case Instr::cDebug:
-        return TVarDebug::getDouble(numfunc);
-    case Instr::cIndiceObj:
-        return TxtToDouble(end_indiceobj[indice].getNome());
-    case Instr::cIndiceItem:
-        return end_indiceitem[indice].getValor();
-    case Instr::cDataHora:
-        return end_datahora[indice].getDouble(numfunc);
-
-    case Instr::cRef:
-        return end_varref[indice].Pont != 0;
-    case Instr::cVarObjeto:
-        return (endvar!=0);
-    case Instr::cTextoVarSub:
-        return end_textovarsub[indice].getDouble();
-    case Instr::cTextoObjSub:
-        return end_textoobjsub[indice].getInt();
-    }
-    return 0;
-}
-
-//------------------------------------------------------------------------------
-const char * TVariavel::getTxt()
-{
-    static char txtnum[80];
-    if (indice==0xFF) // Vetor
-        return "";
-    switch (defvar[2])
-    {
-// Variáveis
-    case Instr::cTxt1:
-    case Instr::cTxt2:
-        if (indice)
-            return &end_char[indice * Tamanho(defvar)];
-    case Instr::cTxtFixo:
-    case Instr::cVarNome:
-        return end_char;
-    case Instr::cInt1:
-        if (numfunc==0)
-            return (getBool() ? "1" : "0");
-    case Instr::cInt8:
-    case Instr::cUInt8:
-    case Instr::cInt16:
-    case Instr::cUInt16:
-    case Instr::cInt32:
-    case Instr::cIntInc:
-    case Instr::cIntDec:
-    case Instr::cIntTempo:
-    case Instr::cIntExec:
-    case Instr::cArqLog:
-    case Instr::cArqTxt:
-    case Instr::cListaObj:
-    case Instr::cListaItem:
-    case Instr::cTextoTxt:
-    case Instr::cTextoPos:
-    case Instr::cNomeObj:
-    case Instr::cDebug:
-    case Instr::cIndiceItem:
-        sprintf(txtnum, "%d", getInt());
-        return txtnum;
-    case Instr::cUInt32:
-        sprintf(txtnum, "%u", end_uint[indice]);
-        return txtnum;
-    case Instr::cReal:
-    case Instr::cReal2:
-        DoubleToTxt(txtnum, getDouble());
-        return txtnum;
-    case Instr::cArqMem:
-    case Instr::cConstNulo:
-        return "";
-    case Instr::cConstTxt:
-        return defvar + defvar[Instr::endIndice] + 1;
-    case Instr::cConstNum:
-        {
-            unsigned int valor = 0; // Valor numérico sem sinal
-            bool negativo = false; // Se é negativo
-            int  virgula = 0;   // Casas após a vírgula
-            const char * origem = defvar + defvar[Instr::endIndice];
-        // Acerta variáveis valor e negativo
-            switch (*origem)
-            {
-            case Instr::ex_num1:
-                valor=1;
-            case Instr::ex_num0:
-                origem++;
-                break;
-            case Instr::ex_num8n:
-            case Instr::ex_num8hexn:
-                negativo=true;
-            case Instr::ex_num8p:
-            case Instr::ex_num8hexp:
-                valor=(unsigned char)origem[1];
-                origem+=2;
-                break;
-            case Instr::ex_num16n:
-            case Instr::ex_num16hexn:
-                negativo=true;
-            case Instr::ex_num16p:
-            case Instr::ex_num16hexp:
-                valor=Num16(origem+1);
-                origem+=3;
-                break;
-            case Instr::ex_num32n:
-            case Instr::ex_num32hexn:
-                negativo=true;
-            case Instr::ex_num32p:
-            case Instr::ex_num32hexp:
-                valor=Num32(origem+1);
-                origem+=5;
-                break;
-            }
-        // Acerta variável virgula
-            while (*origem>=Instr::ex_div1 && *origem<=Instr::ex_div6)
-                switch (*origem++)
-                {
-                case Instr::ex_div1: virgula++; break;
-                case Instr::ex_div2: virgula+=2; break;
-                case Instr::ex_div3: virgula+=3; break;
-                case Instr::ex_div4: virgula+=4; break;
-                case Instr::ex_div5: virgula+=5; break;
-                case Instr::ex_div6: virgula+=6; break;
-                }
-            if (virgula>60)
-                virgula=60;
-        // Zero é sempre zero
-            if (valor==0)
-                return "0";
-        // Obtém em nome a string correspondente ao número
-            char mens[80];
-            char * d=mens, *destino=txtnum;
-            while (valor>0)
-                *d++=valor%10+'0', valor/=10;
-        // Obtém o número de dígitos
-            int digitos = d-mens;
-            if (digitos <= virgula)
-                digitos = virgula+1;
-        // Anota o número
-            if (negativo)
-                *destino++ = '-';
-            while (digitos>0)
-            {
-                if (digitos==virgula)
-                    *destino++ = '.';
-                digitos--;
-                *destino++ = (&mens[digitos]>=d ? '0' : mens[digitos]);
-            }
-            *destino=0;
-            return txtnum;
-        }
-    case Instr::cConstExpr:
-    case Instr::cConstVar:
-    case Instr::cFunc:
-    case Instr::cVarFunc:
-        return "";
-
-// Variáveis extras
-    case Instr::cTelaTxt:
-        return end_telatxt[indice].getTxt(numfunc);
-    case Instr::cSocket:
-        if (TVarSocket::FTipo(this) != varInt)
-            return "";
-        sprintf(txtnum, "%d", getInt());
-        return txtnum;
-    case Instr::cTextoVar:
-    case Instr::cTextoObj:
-    case Instr::cArqDir:
-    case Instr::cArqProg:
-    case Instr::cArqExec:
-    case Instr::cArqSav:
-    case Instr::cServ:
-    case Instr::cProg:
-        return "";
-    case Instr::cIndiceObj:
-        return end_indiceobj[indice].getNome();
-    case Instr::cDataHora:
-        if (TVarDataHora::FTipo(this) == varDouble)
-            sprintf(txtnum, "%.0f", end_datahora[indice].getDouble(numfunc));
-        else
-            sprintf(txtnum, "%d", end_datahora[indice].getInt(numfunc));
-        return txtnum;
-
-    case Instr::cRef:
-        if (end_varref[indice].Pont == 0)
-            break;
-        return end_varref[indice].Pont->Classe->Nome;
-    case Instr::cVarClasse:
-        if (endvar==0)
-            break;
-        return ((TClasse*)endvar)->Nome;
-    case Instr::cVarObjeto:
-        if (endvar==0)
-            break;
-        return ((TObjeto*)endvar)->Classe->Nome;
-    case Instr::cVarIniFunc:
-    case Instr::cVarInt:
-        sprintf(txtnum, "%d", valor_int);
-        return txtnum;
-    case Instr::cTextoVarSub:
-        return end_textovarsub[indice].getTxt();
-    case Instr::cTextoObjSub:
-        {
-            TObjeto * obj = end_textoobjsub[indice].getObj();
-            if (obj == 0)
-                break;
-            return obj->Classe->Nome;
-        }
-    }
-    return "";
-}
-
-//------------------------------------------------------------------------------
-TObjeto * TVariavel::getObj()
-{
-    if (indice==0xFF && defvar[Instr::endVetor]) // Vetor
-        return 0;
-    switch (defvar[2])
-    {
-    case Instr::cRef:
-        return end_varref[indice].Pont;
-    case Instr::cVarObjeto:
-        return (TObjeto*)endvar;
-    case Instr::cListaItem:
-        {
-            TListaX * l = end_listaitem[indice].ListaX;
-            return (l==0 ? 0 : l->Objeto);
-        }
-    case Instr::cTextoObjSub:
-        return end_textoobjsub[indice].getObj();
-    case Instr::cTextoVarSub:
-        return end_textovarsub[indice].getObj();
-    }
-    return 0;
 }
 
 //------------------------------------------------------------------------------
@@ -1325,13 +630,8 @@ void TVariavel::addTxt(const char * txt)
         end_telatxt[indice].addTxt(numfunc, txt);
         break;
     case Instr::cIndiceObj:
-        {
-            char mens[1024];
-            mprintf(mens, sizeof(mens), "%s%s",
-                    end_indiceobj[indice].getNome(), txt);
-            end_indiceobj[indice].setNome(mens);
-            break;
-        }
+        end_indiceobj[indice].addTxt(this, txt);
+        break;
     case Instr::cTextoVarSub:
         end_textovarsub[indice].addTxt(txt);
         break;

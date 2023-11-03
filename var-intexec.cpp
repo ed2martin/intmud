@@ -33,6 +33,11 @@ const TVarInfo * TVarIntExec::Inicializa()
         FRedim,
         FMoverEnd,
         FMoverDef,
+        FGetBool,
+        FGetInt,
+        FGetDouble,
+        FGetTxt,
+        TVarInfo::FGetObjNulo,
         TVarInfo::FFuncVetorFalse);
     return &var;
 }
@@ -165,3 +170,9 @@ void TVarIntExec::FMoverDef(TVariavel * v)
 {
     VARIAVEL_MOVERDEF(TVarIntExec)
 }
+
+//------------------------------------------------------------------------------
+bool TVarIntExec::FGetBool(TVariavel * v) VARIAVEL_FGETINT0(TVarIntExec)
+int TVarIntExec::FGetInt(TVariavel * v) VARIAVEL_FGETINT0(TVarIntExec)
+double TVarIntExec::FGetDouble(TVariavel * v) VARIAVEL_FGETINT0(TVarIntExec)
+const char * TVarIntExec::FGetTxt(TVariavel * v) VARIAVEL_FGETTXT0(TVarIntExec)

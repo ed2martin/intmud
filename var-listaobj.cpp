@@ -46,6 +46,11 @@ const TVarInfo * TListaObj::Inicializa()
         FRedim,
         FMoverEnd,
         TVarInfo::FMoverDef0,
+        FGetBool,
+        FGetInt,
+        FGetDouble,
+        FGetTxt,
+        TVarInfo::FGetObjNulo,
         TVarInfo::FFuncVetorFalse);
     return &var;
 }
@@ -714,6 +719,12 @@ void TListaObj::FMoverEnd(TVariavel * v, void * destino, TClasse * c, TObjeto * 
     VARIAVEL_MOVER_OBJETO(TListaObj)
 }
 
+//------------------------------------------------------------------------------
+bool TListaObj::FGetBool(TVariavel * v) VARIAVEL_FGETINT0(TListaObj)
+int TListaObj::FGetInt(TVariavel * v) VARIAVEL_FGETINT0(TListaObj)
+double TListaObj::FGetDouble(TVariavel * v) VARIAVEL_FGETINT0(TListaObj)
+const char * TListaObj::FGetTxt(TVariavel * v) VARIAVEL_FGETTXT0(TListaObj)
+
 //----------------------------------------------------------------------------
 const TVarInfo * TListaItem::Inicializa()
 {
@@ -724,6 +735,11 @@ const TVarInfo * TListaItem::Inicializa()
         FRedim,
         FMoverEnd,
         FMoverDef,
+        FGetBool,
+        FGetInt,
+        FGetDouble,
+        FGetTxt,
+        FGetObj,
         TVarInfo::FFuncVetorFalse);
     return &var;
 }
@@ -1068,6 +1084,20 @@ void TListaItem::FMoverEnd(TVariavel * v, void * destino, TClasse * c, TObjeto *
 void TListaItem::FMoverDef(TVariavel * v)
 {
     VARIAVEL_MOVERDEF(TListaItem)
+}
+
+//------------------------------------------------------------------------------
+bool TListaItem::FGetBool(TVariavel * v) VARIAVEL_FGETINT0(TListaItem)
+int TListaItem::FGetInt(TVariavel * v) VARIAVEL_FGETINT0(TListaItem)
+double TListaItem::FGetDouble(TVariavel * v) VARIAVEL_FGETINT0(TListaItem)
+const char * TListaItem::FGetTxt(TVariavel * v) VARIAVEL_FGETTXT0(TListaItem)
+
+//------------------------------------------------------------------------------
+TObjeto * TListaItem::FGetObj(TVariavel * v)
+{
+    TListaItem * ref = reinterpret_cast<TListaItem*>(v->endvar) + v->indice;
+    TListaX * l = ref->ListaX;
+    return (l ? l->Objeto : nullptr);
 }
 
 //----------------------------------------------------------------------------

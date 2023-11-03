@@ -15,6 +15,7 @@
 #include <sys/stat.h>
 #include "var-arqtxt.h"
 #include "variavel.h"
+#include "variavel-def.h"
 #include "instr.h"
 #include "instr-enum.h"
 #include "misc.h"
@@ -31,6 +32,11 @@ const TVarInfo * TVarArqTxt::Inicializa()
         FRedim,
         FMoverEnd,
         TVarInfo::FMoverDef0,
+        FGetBool,
+        FGetInt,
+        FGetDouble,
+        FGetTxt,
+        TVarInfo::FGetObjNulo,
         TVarInfo::FFuncVetorFalse);
     return &var;
 }
@@ -449,3 +455,9 @@ void TVarArqTxt::FMoverEnd(TVariavel * v, void * destino, TClasse * c, TObjeto *
     int total = (unsigned char)v->defvar[Instr::endVetor];
     memmove(destino, v->endvar, (total ? total : 1) * sizeof(TVarArqTxt));
 }
+
+//------------------------------------------------------------------------------
+bool TVarArqTxt::FGetBool(TVariavel * v) VARIAVEL_FGETINT0(TVarArqTxt)
+int TVarArqTxt::FGetInt(TVariavel * v) VARIAVEL_FGETINT0(TVarArqTxt)
+double TVarArqTxt::FGetDouble(TVariavel * v) VARIAVEL_FGETINT0(TVarArqTxt)
+const char * TVarArqTxt::FGetTxt(TVariavel * v) VARIAVEL_FGETTXT0(TVarArqTxt)

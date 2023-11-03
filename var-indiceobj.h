@@ -35,6 +35,10 @@ private:
             unsigned int antes, unsigned int depois);
     static void FMoverEnd(TVariavel * v, void * destino,
             TClasse * c, TObjeto * o);
+    static bool FGetBool(TVariavel * v);
+    static int FGetInt(TVariavel * v);
+    static double FGetDouble(TVariavel * v);
+    static const char * FGetTxt(TVariavel * v);
 
     TIndiceItem * Antes;    ///< Objeto anterior
     TIndiceItem * Depois;   ///< Próximo objeto
@@ -52,7 +56,7 @@ public:
         ///< Inicializa variável e retorna informações
     void Apagar();          ///< Apaga objeto
     void Mover(TIndiceObj * destino, TObjeto * obj); ///< Move para outro lugar
-    const char * getNome();     ///< Lê o texto
+    static void addTxt(TVariavel * v, const char * txt);
     void setNome(const char * texto); ///< Muda o texto
     static TIndiceObj * Procura(const char * nome);
         ///< Procura um objeto TIndiceObj a partir do nome
@@ -91,6 +95,10 @@ private:
             unsigned int antes, unsigned int depois);
     static void FMoverEnd(TVariavel * v, void * destino,
             TClasse * c, TObjeto * o);
+    static bool FGetBool(TVariavel * v);
+    static int FGetInt(TVariavel * v);
+    static double FGetDouble(TVariavel * v);
+    static const char * FGetTxt(TVariavel * v);
 
     friend class TIndiceItem;
 };

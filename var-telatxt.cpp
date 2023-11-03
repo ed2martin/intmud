@@ -54,6 +54,11 @@ const TVarInfo * TVarTelaTxt::Inicializa()
         FRedim,
         FMoverEnd,
         FMoverDef,
+        FGetBool,
+        FGetInt,
+        FGetDouble,
+        FGetTxt,
+        TVarInfo::FGetObjNulo,
         TVarInfo::FFuncVetorFalse);
     return &var;
 }
@@ -563,7 +568,6 @@ void TVarTelaTxt::setValor(int numfunc, int valor)
 //------------------------------------------------------------------------------
 const char * TVarTelaTxt::getTxt(int numfunc)
 {
-    static char txtnum[20];
     if (Console == nullptr)
         return "";
     switch (numfunc)
@@ -571,11 +575,17 @@ const char * TVarTelaTxt::getTxt(int numfunc)
     case TelaTxtTexto:
         return LerLinha();
     case TelaTxtTotal:
-        sprintf(txtnum, "%u", max_linha);
-        return txtnum;
+        {
+            char * txtnum = TVarInfo::BufferTxt();
+            sprintf(txtnum, "%u", max_linha);
+            return txtnum;
+        }
     case TelaTxtLinha:
-        sprintf(txtnum, "%d", LinhaPosic);
-        return txtnum;
+        {
+            char * txtnum = TVarInfo::BufferTxt();
+            sprintf(txtnum, "%d", LinhaPosic);
+            return txtnum;
+        }
     }
     return "";
 }
@@ -1004,4 +1014,17 @@ void TVarTelaTxt::FMoverEnd(TVariavel * v, void * destino, TClasse * c, TObjeto 
 void TVarTelaTxt::FMoverDef(TVariavel * v)
 {
     VARIAVEL_MOVERDEF(TVarTelaTxt)
+}
+
+
+//------------------------------------------------------------------------------
+bool TVarTelaTxt::FGetBool(TVariavel * v) VARIAVEL_FGETINT1(TVarTelaTxt)
+int TVarTelaTxt::FGetInt(TVariavel * v) VARIAVEL_FGETINT1(TVarTelaTxt)
+double TVarTelaTxt::FGetDouble(TVariavel * v) VARIAVEL_FGETINT1(TVarTelaTxt)
+
+//------------------------------------------------------------------------------
+const char * TVarTelaTxt::FGetTxt(TVariavel * v)
+{
+    TVarTelaTxt * ref = reinterpret_cast<TVarTelaTxt*>(v->endvar) + v->indice;
+    return ref->getTxt(v->numfunc);
 }

@@ -38,6 +38,10 @@ private:
     static void FMoverEnd(TVariavel * v, void * destino,
             TClasse * c, TObjeto * o);
     static void FMoverDef(TVariavel * v);
+    static bool FGetBool(TVariavel * v);
+    static int FGetInt(TVariavel * v);
+    static double FGetDouble(TVariavel * v);
+    static const char * FGetTxt(TVariavel * v);
 
     static void DebugVet(bool mostrar); ///< Checa se listas ligadas estão OK
     unsigned short IndiceMenos;   ///< Índice em VetMenos

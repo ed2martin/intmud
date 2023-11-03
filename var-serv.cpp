@@ -99,6 +99,11 @@ const TVarInfo * TVarServ::Inicializa()
         FRedim,
         FMoverEnd,
         FMoverDef,
+        FGetBool,
+        FGetInt,
+        FGetDouble,
+        FGetTxt,
+        TVarInfo::FGetObjNulo,
         TVarInfo::FFuncVetorFalse);
     return &var;
 }
@@ -564,3 +569,9 @@ void TVarServ::FMoverDef(TVariavel * v)
 {
     VARIAVEL_MOVERDEF(TVarServ)
 }
+
+//------------------------------------------------------------------------------
+bool TVarServ::FGetBool(TVariavel * v) VARIAVEL_FGETINT0(TVarServ)
+int TVarServ::FGetInt(TVariavel * v) VARIAVEL_FGETINT0(TVarServ)
+double TVarServ::FGetDouble(TVariavel * v) VARIAVEL_FGETINT0(TVarServ)
+const char * TVarServ::FGetTxt(TVariavel * v) VARIAVEL_FGETTXT0(TVarServ)

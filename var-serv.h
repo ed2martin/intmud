@@ -75,6 +75,10 @@ private:
     static void FMoverEnd(TVariavel * v, void * destino,
             TClasse * c, TObjeto * o);
     static void FMoverDef(TVariavel * v);
+    static bool FGetBool(TVariavel * v);
+    static int FGetInt(TVariavel * v);
+    static double FGetDouble(TVariavel * v);
+    static const char * FGetTxt(TVariavel * v);
 
     bool modossl;               ///< Se deve usar conexão segura (SSL)
     int  sock;                  ///< Socket; menor que 0 se estiver fechado

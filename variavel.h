@@ -56,7 +56,16 @@ private:
             unsigned int antes, unsigned int depois);
     void (*FMoverEnd)(TVariavel * v, void * destino, TClasse * c, TObjeto * o);
     void (*FMoverDef)(TVariavel * v);
+    bool (*FGetBool)(TVariavel * v);
+    int (*FGetInt)(TVariavel * v);
+    double (*FGetDouble)(TVariavel * v);
+    const char * (*FGetTxt)(TVariavel * v);
+    TObjeto * (*FGetObj)(TVariavel * v);
     bool (*FFuncVetor)(TVariavel * v, const char * nome);
+
+    static char * EndBufferTxt;
+    static unsigned short NumBufferTxt;
+
 public:
     /// Construtor usado ao criar TVariavel::VarInfo
     TVarInfo();
@@ -69,7 +78,18 @@ public:
             void (*fMoverEnd)(TVariavel * v, void * destino,
                     TClasse * c, TObjeto * o),
             void (*fMoverDef)(TVariavel * v),
+            bool (*fGetBool)(TVariavel * v),
+            int (*fGetInt)(TVariavel * v),
+            double (*fGetDouble)(TVariavel * v),
+            const char * (*fGetTxt)(TVariavel * v),
+            TObjeto * (*fGetObj)(TVariavel * v),
             bool (*fFuncVetor)(TVariavel * v, const char * nome));
+    /// Retorna um buffer de 0x100 bytes para ser usado para retornar texto
+    static inline char * BufferTxt()
+    {
+        NumBufferTxt = (NumBufferTxt + 0x100) & 0x300;
+        return EndBufferTxt + NumBufferTxt;
+    }
 
     static int FTamanho0(const char * instr);
     static TVarTipo FTipoOutros(TVariavel * v);
@@ -82,6 +102,11 @@ public:
     static void FMoverEnd0(TVariavel * v, void * destino,
             TClasse * c, TObjeto * o);
     static void FMoverDef0(TVariavel * v);
+    static bool FGetBoolFalse(TVariavel * v);
+    static int FGetInt0(TVariavel * v);
+    static double FGetDouble0(TVariavel * v);
+    static const char * FGetTxtVazio(TVariavel * v);
+    static TObjeto * FGetObjNulo(TVariavel * v);
     static bool FFuncVetorFalse(TVariavel * v, const char * nome);
 
     friend TVariavel;
@@ -219,7 +244,7 @@ public:
     inline void MoverDef()
     {
         unsigned char cmd = (unsigned char)defvar[2];
-        /*
+#if 0
         printf("Variável mudou def end=%p", endvar);
         char mens1[BUF_MENS];
         if (Instr::Decod(mens1, defvar, sizeof(mens1)))
@@ -227,17 +252,56 @@ public:
         else
             printf(" ERRO: %s\n", mens1);
         fflush(stdout);
-        */
+#endif
         if (cmd < Instr::cTotalComandos)
             VarInfo[cmd].FMoverDef(this);
     }
 
 // Funções get
-    bool getBool();         ///< Obtém o valor "bool" da variável
-    int getInt();           ///< Obtém o valor "int" da variável
-    double getDouble();     ///< Obtém o valor "double" da variável
-    const char * getTxt();  ///< Obtém o texto da variável
-    TObjeto * getObj();     ///< Obtém a referência da variável
+    /// Obtém o valor "bool" da variável
+    inline bool getBool()
+    {
+        unsigned char cmd = (unsigned char)defvar[2];
+        if (cmd < Instr::cTotalComandos && indice != 0xff)
+            return VarInfo[cmd].FGetBool(this);
+        return false;
+    }
+
+    /// Obtém o valor "int" da variável
+    inline int getInt()
+    {
+        unsigned char cmd = (unsigned char)defvar[2];
+        if (cmd < Instr::cTotalComandos && indice != 0xff)
+            return VarInfo[cmd].FGetInt(this);
+        return 0;
+    }
+
+    /// Obtém o valor "double" da variável
+    inline double getDouble()
+    {
+        unsigned char cmd = (unsigned char)defvar[2];
+        if (cmd < Instr::cTotalComandos && indice != 0xff)
+            return VarInfo[cmd].FGetDouble(this);
+        return 0;
+    }
+
+    /// Obtém o texto da variável
+    inline const char * getTxt()
+    {
+        unsigned char cmd = (unsigned char)defvar[2];
+        if (cmd < Instr::cTotalComandos && indice != 0xff)
+            return VarInfo[cmd].FGetTxt(this);
+        return "";
+    }
+
+    /// Obtém a referência da variável
+    inline TObjeto * getObj()
+    {
+        unsigned char cmd = (unsigned char)defvar[2];
+        if (cmd < Instr::cTotalComandos && indice != 0xff)
+            return VarInfo[cmd].FGetObj(this);
+        return nullptr;
+    }
 
 // Funções set
     void setInt(int valor); ///< Muda variável a partir de int
@@ -269,11 +333,13 @@ public:
          *         e para apagar variáveis locais */
     union {
         void * endvar;  ///< Endereço da variável na memória
-                        /** - É 0 se não for aplicável
+                        /** - É nullptr se não for aplicável
                          *  - Em vetores, endereço da primeira variável */
         const void * endfixo;
                     ///< Valor "const" de endvar
                     /**< Usar endfixo quando a variável não poderá ser mudada */
+        int  valor_int;  ///< endvar como int
+
         char * end_char; ///< endvar como char*
         TVarRef * end_varref;        ///< Instr::cRef
         signed   short * end_short;  ///< Instr::cInt16
@@ -306,7 +372,6 @@ public:
         TIndiceObj   * end_indiceobj; ///< Instr::cIndiceObj
         TIndiceItem  * end_indiceitem; ///< Instr::cIndiceItem
         TVarDataHora * end_datahora; ///< Instr::cDataHora
-        int  valor_int;              ///< Instr::cVarInt - endvar como int
         TTextoVarSub * end_textovarsub; ///< Instr::cTextoVarSub
         TTextoObjSub * end_textoobjsub; ///< Instr::cTextoObjSub
     };

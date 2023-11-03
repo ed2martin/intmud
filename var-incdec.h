@@ -35,6 +35,14 @@ private:
             unsigned int antes, unsigned int depois);
     static void FMoverEnd(TVariavel * v, void * destino,
             TClasse * c, TObjeto * o);
+    static bool FGetBoolInc(TVariavel * v);
+    static bool FGetBoolDec(TVariavel * v);
+    static int FGetIntInc(TVariavel * v);
+    static int FGetIntDec(TVariavel * v);
+    static double FGetDoubleInc(TVariavel * v);
+    static double FGetDoubleDec(TVariavel * v);
+    static const char * FGetTxtInc(TVariavel * v);
+    static const char * FGetTxtDec(TVariavel * v);
 
     int valor; ///< Tempo, usando tanto em intinc quanto em intdec
 };

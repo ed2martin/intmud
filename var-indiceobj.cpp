@@ -27,6 +27,11 @@ const TVarInfo * TIndiceItem::Inicializa()
         FRedim,
         FMoverEnd,
         TVarInfo::FMoverDef0,
+        FGetBool,
+        FGetInt,
+        FGetDouble,
+        FGetTxt,
+        TVarInfo::FGetObjNulo,
         TVarInfo::FFuncVetorFalse);
     return &var;
 }
@@ -300,6 +305,12 @@ void TIndiceItem::FMoverEnd(TVariavel * v, void * destino, TClasse * c, TObjeto 
     VARIAVEL_MOVER_SIMPLES(TIndiceItem)
 }
 
+//------------------------------------------------------------------------------
+bool TIndiceItem::FGetBool(TVariavel * v) VARIAVEL_FGETINT0(TIndiceItem)
+int TIndiceItem::FGetInt(TVariavel * v) VARIAVEL_FGETINT0(TIndiceItem)
+double TIndiceItem::FGetDouble(TVariavel * v) VARIAVEL_FGETINT0(TIndiceItem)
+const char * TIndiceItem::FGetTxt(TVariavel * v) VARIAVEL_FGETTXT0(TIndiceItem)
+
 //----------------------------------------------------------------------------
 const TVarInfo * TIndiceObj::Inicializa()
 {
@@ -310,6 +321,11 @@ const TVarInfo * TIndiceObj::Inicializa()
         FRedim,
         FMoverEnd,
         TVarInfo::FMoverDef0,
+        FGetBool,
+        FGetInt,
+        FGetDouble,
+        FGetTxt,
+        TVarInfo::FGetObjNulo,
         TVarInfo::FFuncVetorFalse);
     return &var;
 }
@@ -349,12 +365,6 @@ void TIndiceObj::Mover(TIndiceObj * destino, TObjeto * o)
     }
     // Move
     memmove(destino, this, sizeof(TIndiceObj));
-}
-
-//----------------------------------------------------------------------------
-const char * TIndiceObj::getNome()
-{
-    return Nome;
 }
 
 //----------------------------------------------------------------------------
@@ -401,6 +411,47 @@ void TIndiceObj::FRedim(TVariavel * v, TClasse * c, TObjeto * o,
 void TIndiceObj::FMoverEnd(TVariavel * v, void * destino, TClasse * c, TObjeto * o)
 {
     VARIAVEL_MOVER_OBJETO(TIndiceObj)
+}
+
+//----------------------------------------------------------------------------
+bool TIndiceObj::FGetBool(TVariavel * v)
+{
+    TIndiceObj * ref = reinterpret_cast<TIndiceObj*>(v->endvar) + v->indice;
+    return ref[0].Nome[0] != 0;
+}
+
+//----------------------------------------------------------------------------
+int TIndiceObj::FGetInt(TVariavel * v)
+{
+    TIndiceObj * ref = reinterpret_cast<TIndiceObj*>(v->endvar) + v->indice;
+    return TxtToInt(ref[0].Nome);
+}
+
+//----------------------------------------------------------------------------
+double TIndiceObj::FGetDouble(TVariavel * v)
+{
+    TIndiceObj * ref = reinterpret_cast<TIndiceObj*>(v->endvar) + v->indice;
+    return TxtToDouble(ref[0].Nome);
+}
+
+//----------------------------------------------------------------------------
+const char * TIndiceObj::FGetTxt(TVariavel * v)
+{
+    TIndiceObj * ref = reinterpret_cast<TIndiceObj*>(v->endvar) + v->indice;
+    return ref[0].Nome;
+}
+
+//----------------------------------------------------------------------------
+void TIndiceObj::addTxt(TVariavel * v, const char * txt)
+{
+    TIndiceObj * ref = reinterpret_cast<TIndiceObj*>(v->endvar) + v->indice;
+    char * dest = ref->Nome;
+    const char * fim = dest + sizeof(Nome) - 1;
+    while (*dest)
+        dest++;
+    while (*txt && dest < fim)
+        *dest++ = *txt++;
+    *dest = 0;
 }
 
 //----------------------------------------------------------------------------

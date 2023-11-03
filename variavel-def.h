@@ -78,4 +78,32 @@
             ref[cont].defvar = v->defvar;                  \
     }
 
+#define VARIAVEL_FGETINT0(classname) \
+{ \
+    classname * ref = reinterpret_cast<classname*>(v->endvar) + v->indice; \
+    return ref->getValor(); \
+}
+
+#define VARIAVEL_FGETINT1(classname) \
+{ \
+    classname * ref = reinterpret_cast<classname*>(v->endvar) + v->indice; \
+    return ref->getValor(v->numfunc); \
+}
+
+#define VARIAVEL_FGETTXT0(classname) \
+{ \
+    classname * ref = reinterpret_cast<classname*>(v->endvar) + v->indice; \
+    char * buf = TVarInfo::BufferTxt(); \
+    sprintf(buf, "%d", ref->getValor()); \
+    return buf; \
+}
+
+#define VARIAVEL_FGETTXT1(classname) \
+{ \
+    classname * ref = reinterpret_cast<classname*>(v->endvar) + v->indice; \
+    char * buf = TVarInfo::BufferTxt(); \
+    sprintf(buf, "%d", ref->getValor(v->numfunc)); \
+    return buf; \
+}
+
 #endif

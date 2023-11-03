@@ -75,6 +75,11 @@ const TVarInfo * TVarDataHora::Inicializa()
         FRedim,
         FMoverEnd,
         TVarInfo::FMoverDef0,
+        FGetBool,
+        FGetInt,
+        FGetDouble,
+        FGetTxt,
+        TVarInfo::FGetObjNulo,
         TVarInfo::FFuncVetorFalse);
     return &var;
 }
@@ -275,17 +280,6 @@ bool TVarDataHora::Func(TVariavel * v, const char * nome)
         return true;
     }
     return false;
-}
-
-//------------------------------------------------------------------------------
-TVarTipo TVarDataHora::FTipo(TVariavel * v)
-{
-    switch (v->numfunc)
-    {
-    case 0: return varOutros;
-    case DataHoraNumTotal: return varDouble;
-    default: return varInt;
-    }
 }
 
 //------------------------------------------------------------------------------
@@ -541,6 +535,17 @@ int TVarDataHora::FTamanhoVetor(const char * instr)
 }
 
 //------------------------------------------------------------------------------
+TVarTipo TVarDataHora::FTipo(TVariavel * v)
+{
+    switch (v->numfunc)
+    {
+    case 0: return varOutros;
+    case DataHoraNumTotal: return varDouble;
+    default: return varInt;
+    }
+}
+
+//------------------------------------------------------------------------------
 void TVarDataHora::FRedim(TVariavel * v, TClasse * c, TObjeto * o,
         unsigned int antes, unsigned int depois)
 {
@@ -557,4 +562,37 @@ void TVarDataHora::FRedim(TVariavel * v, TClasse * c, TObjeto * o,
 void TVarDataHora::FMoverEnd(TVariavel * v, void * destino, TClasse * c, TObjeto * o)
 {
     VARIAVEL_MOVER_SIMPLES(TVarDataHora)
+}
+
+//------------------------------------------------------------------------------
+bool TVarDataHora::FGetBool(TVariavel * v)
+{
+    TVarDataHora * ref = reinterpret_cast<TVarDataHora*>(v->endvar) + v->indice;
+    return ref->getInt(v->numfunc);
+}
+
+//------------------------------------------------------------------------------
+int TVarDataHora::FGetInt(TVariavel * v)
+{
+    TVarDataHora * ref = reinterpret_cast<TVarDataHora*>(v->endvar) + v->indice;
+    return ref->getInt(v->numfunc);
+}
+
+//------------------------------------------------------------------------------
+double TVarDataHora::FGetDouble(TVariavel * v)
+{
+    TVarDataHora * ref = reinterpret_cast<TVarDataHora*>(v->endvar) + v->indice;
+    return ref->getDouble(v->numfunc);
+}
+
+//------------------------------------------------------------------------------
+const char * TVarDataHora::FGetTxt(TVariavel * v)
+{
+    TVarDataHora * ref = reinterpret_cast<TVarDataHora*>(v->endvar) + v->indice;
+    char * buf = TVarInfo::BufferTxt();
+    if (FTipo(v) == varDouble)
+        sprintf(buf, "%.0f", ref->getDouble(v->numfunc));
+    else
+        sprintf(buf, "%d", ref->getInt(v->numfunc));
+    return buf;
 }

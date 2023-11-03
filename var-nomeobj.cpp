@@ -25,6 +25,11 @@ const TVarInfo * TVarNomeObj::Inicializa()
         FRedim,
         FMoverEnd,
         TVarInfo::FMoverDef0,
+        FGetBool,
+        FGetInt,
+        FGetDouble,
+        FGetTxt,
+        TVarInfo::FGetObjNulo,
         TVarInfo::FFuncVetorFalse);
     return &var;
 }
@@ -237,4 +242,31 @@ void TVarNomeObj::FMoverEnd(TVariavel * v, void * destino, TClasse * c, TObjeto 
 {
     int total = (unsigned char)v->defvar[Instr::endVetor];
     memmove(destino, v->endvar, (total ? total : 1) * sizeof(TVarNomeObj));
+}
+
+//------------------------------------------------------------------------------
+bool TVarNomeObj::FGetBool(TVariavel * v)
+{
+    return reinterpret_cast<TVarNomeObj*>(v->endvar)[ v->indice ].getValor();
+}
+
+//------------------------------------------------------------------------------
+int TVarNomeObj::FGetInt(TVariavel * v)
+{
+    return reinterpret_cast<TVarNomeObj*>(v->endvar)[ v->indice ].getValor();
+}
+
+//------------------------------------------------------------------------------
+double TVarNomeObj::FGetDouble(TVariavel * v)
+{
+    return reinterpret_cast<TVarNomeObj*>(v->endvar)[ v->indice ].getValor();
+}
+
+//------------------------------------------------------------------------------
+const char * TVarNomeObj::FGetTxt(TVariavel * v)
+{
+    TVarNomeObj * ref = reinterpret_cast<TVarNomeObj*>(v->endvar) + v->indice;
+    char * buf = TVarInfo::BufferTxt();
+    sprintf(buf, "%d", ref->getValor());
+    return buf;
 }

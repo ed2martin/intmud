@@ -12,6 +12,7 @@
 #include <string.h>
 #include <math.h>
 #include <assert.h>
+#include <limits>
 #include "instr.h"
 #include "instr-enum.h"
 #include "variavel.h"
@@ -1373,7 +1374,7 @@ bool Instr::ExecX()
                 if (valor2)
                     valor1 /= valor2;
                 else
-                    valor1 *= 1.0e1000;
+                    valor1 *= std::numeric_limits<double>::infinity();
                 ApagarVar(VarAtual);
                 if (VarAtual->tamanho == 0 || VarAtual->defvar != InstrDouble)
                 {

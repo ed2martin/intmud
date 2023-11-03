@@ -129,6 +129,11 @@ private:
             unsigned int antes, unsigned int depois);
     static void FMoverEnd(TVariavel * v, void * destino,
             TClasse * c, TObjeto * o);
+    static bool FGetBool(TVariavel * v);
+    static int FGetInt(TVariavel * v);
+    static double FGetDouble(TVariavel * v);
+    static const char * FGetTxt(TVariavel * v);
+    static TObjeto * FGetObj(TVariavel * v);
 };
 
 //----------------------------------------------------------------------------
@@ -181,8 +186,6 @@ public:
     const char * NomeVar;   ///< Nome da variável
     unsigned char RBcolour; ///< Bit 0=cor, bit 1: 0=RBT, 1=somente texto
     unsigned short Texto;   ///< NomeVar+Texto = texto após o nome da variável
-
-    static char txtnum[80]; ///< Quando é necessário converter número em texto
 };
 
 //----------------------------------------------------------------------------

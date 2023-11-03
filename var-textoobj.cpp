@@ -31,6 +31,11 @@ const TVarInfo * TTextoObj::Inicializa()
         FRedim,
         FMoverEnd,
         TVarInfo::FMoverDef0,
+        TVarInfo::FGetBoolFalse,
+        TVarInfo::FGetInt0,
+        TVarInfo::FGetDouble0,
+        TVarInfo::FGetTxtVazio,
+        TVarInfo::FGetObjNulo,
         TVarInfo::FFuncVetorFalse);
     return &var;
 }
@@ -538,6 +543,11 @@ const TVarInfo * TTextoObjSub::Inicializa()
         FRedim,
         FMoverEnd,
         TVarInfo::FMoverDef0,
+        FGetBool,
+        FGetInt,
+        FGetDouble,
+        FGetTxt,
+        FGetObj,
         TVarInfo::FFuncVetorFalse);
     return &var;
 }
@@ -577,7 +587,7 @@ void TTextoObjSub::Mover(TTextoObjSub * destino)
 }
 
 //----------------------------------------------------------------------------
-int TTextoObjSub::getInt()
+int TTextoObjSub::getValor()
 {
     if (TextoObj==0) return 0;
     return (TextoObj->Procura(NomeVar) != 0);
@@ -629,6 +639,18 @@ void TTextoObjSub::FRedim(TVariavel * v, TClasse * c, TObjeto * o,
 void TTextoObjSub::FMoverEnd(TVariavel * v, void * destino, TClasse * c, TObjeto * o)
 {
     VARIAVEL_MOVER_SIMPLES(TTextoObjSub)
+}
+
+//------------------------------------------------------------------------------
+bool TTextoObjSub::FGetBool(TVariavel * v) VARIAVEL_FGETINT0(TTextoObjSub)
+int TTextoObjSub::FGetInt(TVariavel * v) VARIAVEL_FGETINT0(TTextoObjSub)
+double TTextoObjSub::FGetDouble(TVariavel * v) VARIAVEL_FGETINT0(TTextoObjSub)
+const char * TTextoObjSub::FGetTxt(TVariavel * v) VARIAVEL_FGETTXT0(TTextoObjSub)
+
+//------------------------------------------------------------------------------
+TObjeto * TTextoObjSub::FGetObj(TVariavel * v)
+{
+    return reinterpret_cast<TTextoObjSub*>(v->endvar)[ v->indice].getObj();
 }
 
 //----------------------------------------------------------------------------

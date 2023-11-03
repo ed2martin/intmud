@@ -267,6 +267,11 @@ const TVarInfo * TVarArqExec::Inicializa()
         FRedim,
         FMoverEnd,
         FMoverDef,
+        TVarInfo::FGetBoolFalse,
+        TVarInfo::FGetInt0,
+        TVarInfo::FGetDouble0,
+        TVarInfo::FGetTxtVazio,
+        TVarInfo::FGetObjNulo,
         TVarInfo::FFuncVetorFalse);
     return &var;
 }

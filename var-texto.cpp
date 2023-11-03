@@ -59,6 +59,11 @@ const TVarInfo * TTextoTxt::Inicializa()
         FRedim,
         FMoverEnd,
         TVarInfo::FMoverDef0,
+        FGetBool,
+        FGetInt,
+        FGetDouble,
+        FGetTxt,
+        TVarInfo::FGetObjNulo,
         TVarInfo::FFuncVetorFalse);
     return &var;
 }
@@ -189,6 +194,12 @@ void TTextoTxt::FMoverEnd(TVariavel * v, void * destino, TClasse * c, TObjeto * 
     VARIAVEL_MOVER_SIMPLES(TTextoTxt)
 }
 
+//------------------------------------------------------------------------------
+bool TTextoTxt::FGetBool(TVariavel * v) VARIAVEL_FGETINT0(TTextoTxt)
+int TTextoTxt::FGetInt(TVariavel * v) VARIAVEL_FGETINT0(TTextoTxt)
+double TTextoTxt::FGetDouble(TVariavel * v) VARIAVEL_FGETINT0(TTextoTxt)
+const char * TTextoTxt::FGetTxt(TVariavel * v) VARIAVEL_FGETTXT0(TTextoTxt)
+
 //----------------------------------------------------------------------------
 const TVarInfo * TTextoPos::Inicializa()
 {
@@ -199,6 +210,11 @@ const TVarInfo * TTextoPos::Inicializa()
         FRedim,
         FMoverEnd,
         FMoverDef,
+        FGetBool,
+        FGetInt,
+        FGetDouble,
+        FGetTxt,
+        TVarInfo::FGetObjNulo,
         TVarInfo::FFuncVetorFalse);
     return &var;
 }
@@ -297,6 +313,12 @@ void TTextoPos::FMoverDef(TVariavel * v)
 {
     VARIAVEL_MOVERDEF(TTextoPos)
 }
+
+//------------------------------------------------------------------------------
+bool TTextoPos::FGetBool(TVariavel * v) VARIAVEL_FGETINT1(TTextoPos)
+int TTextoPos::FGetInt(TVariavel * v) VARIAVEL_FGETINT1(TTextoPos)
+double TTextoPos::FGetDouble(TVariavel * v) VARIAVEL_FGETINT1(TTextoPos)
+const char * TTextoPos::FGetTxt(TVariavel * v) VARIAVEL_FGETTXT1(TTextoPos)
 
 //----------------------------------------------------------------------------
 TTextoBloco * TTextoBloco::CriarAntes()

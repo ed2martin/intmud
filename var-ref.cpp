@@ -64,6 +64,11 @@ const TVarInfo * TVarRef::Inicializa()
         FRedim,
         FMoverEnd,
         TVarInfo::FMoverDef0,
+        FGetBool,
+        FGetInt,
+        FGetDouble,
+        FGetTxt,
+        FGetObj,
         TVarInfo::FFuncVetorFalse);
     return &var;
 }
@@ -136,4 +141,35 @@ void TVarRef::FRedim(TVariavel * v, TClasse * c, TObjeto * o,
 void TVarRef::FMoverEnd(TVariavel * v, void * destino, TClasse * c, TObjeto * o)
 {
     VARIAVEL_MOVER_SIMPLES(TVarRef)
+}
+
+//------------------------------------------------------------------------------
+bool TVarRef::FGetBool(TVariavel * v)
+{
+    return reinterpret_cast<TVarRef*>(v->endvar)[ v->indice ].Pont != nullptr;
+}
+
+//------------------------------------------------------------------------------
+int TVarRef::FGetInt(TVariavel * v)
+{
+    return reinterpret_cast<TVarRef*>(v->endvar)[ v->indice ].Pont != nullptr;
+}
+
+//------------------------------------------------------------------------------
+double TVarRef::FGetDouble(TVariavel * v)
+{
+    return reinterpret_cast<TVarRef*>(v->endvar)[ v->indice ].Pont != nullptr;
+}
+
+//------------------------------------------------------------------------------
+const char * TVarRef::FGetTxt(TVariavel * v)
+{
+    TObjeto * obj = reinterpret_cast<TVarRef*>(v->endvar)[ v->indice ].Pont;
+    return (obj == nullptr ? "" : obj->Classe->Nome);
+}
+
+//------------------------------------------------------------------------------
+TObjeto * TVarRef::FGetObj(TVariavel * v)
+{
+    return reinterpret_cast<TVarRef*>(v->endvar)[ v->indice].Pont;
 }

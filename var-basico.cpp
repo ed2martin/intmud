@@ -379,7 +379,7 @@ bool VarBaseInt1_FuncVetor(TVariavel * v, const char * nome)
 }
 
 //------------------------------------------------------------------------------
-int GetVetorInt1(TVariavel * v)
+static int GetVetorInt1(TVariavel * v)
 {
     unsigned int bitnum = v->numbit;
     unsigned char * p = reinterpret_cast<unsigned char*>(v->endvar);
@@ -420,6 +420,20 @@ int GetVetorInt1(TVariavel * v)
         }
     }
     return valor;
+}
+
+//------------------------------------------------------------------------------
+static inline int GetValorInt1(TVariavel * v)
+{
+    if (v->numfunc)
+        return GetVetorInt1(v);
+    char * p = reinterpret_cast<char*>(v->endvar);
+    if (v->indice)
+    {
+        int ind2 = v->indice + v->numbit;
+        return (bool)(p[ind2 / 8] & (1 << (ind2 & 7)));
+    }
+    return (bool)(p[0] & (1 << v->numbit));
 }
 
 //------------------------------------------------------------------------------
@@ -754,7 +768,7 @@ static void VarBaseReal2_Redim(TVariavel * v, TClasse * c, TObjeto * o,
 }
 
 //------------------------------------------------------------------------------
-void VarBaseTxt1_MoverEnd(TVariavel * v, void * destino, TClasse * c, TObjeto * o)
+static void VarBaseTxt1_MoverEnd(TVariavel * v, void * destino, TClasse * c, TObjeto * o)
 {
     int total = (unsigned char)v->defvar[Instr::endVetor];
     if (total == 0)
@@ -762,7 +776,7 @@ void VarBaseTxt1_MoverEnd(TVariavel * v, void * destino, TClasse * c, TObjeto * 
     else
         memmove(destino, v->endvar, VarBaseTxt1_TamanhoVetor(v->defvar));
 }
-void VarBaseTxt2_MoverEnd(TVariavel * v, void * destino, TClasse * c, TObjeto * o)
+static void VarBaseTxt2_MoverEnd(TVariavel * v, void * destino, TClasse * c, TObjeto * o)
 {
     int total = (unsigned char)v->defvar[Instr::endVetor];
     if (total == 0)
@@ -770,29 +784,244 @@ void VarBaseTxt2_MoverEnd(TVariavel * v, void * destino, TClasse * c, TObjeto * 
     else
         memmove(destino, v->endvar, VarBaseTxt2_TamanhoVetor(v->defvar));
 }
-void VarBaseInt1_MoverEnd(TVariavel * v, void * destino, TClasse * c, TObjeto * o)
+static void VarBaseInt1_MoverEnd(TVariavel * v, void * destino, TClasse * c, TObjeto * o)
 {
     memmove(destino, v->endvar, VarBaseInt1_TamanhoVetor(v->defvar));
 }
-void VarBaseInt8_MoverEnd(TVariavel * v, void * destino, TClasse * c, TObjeto * o)
+static void VarBaseInt8_MoverEnd(TVariavel * v, void * destino, TClasse * c, TObjeto * o)
 {
     memmove(destino, v->endvar, VarBaseInt8_TamanhoVetor(v->defvar));
 }
-void VarBaseInt16_MoverEnd(TVariavel * v, void * destino, TClasse * c, TObjeto * o)
+static void VarBaseInt16_MoverEnd(TVariavel * v, void * destino, TClasse * c, TObjeto * o)
 {
     memmove(destino, v->endvar, VarBaseInt16_TamanhoVetor(v->defvar));
 }
-void VarBaseInt32_MoverEnd(TVariavel * v, void * destino, TClasse * c, TObjeto * o)
+static void VarBaseInt32_MoverEnd(TVariavel * v, void * destino, TClasse * c, TObjeto * o)
 {
     memmove(destino, v->endvar, VarBaseInt32_TamanhoVetor(v->defvar));
 }
-void VarBaseReal_MoverEnd(TVariavel * v, void * destino, TClasse * c, TObjeto * o)
+static void VarBaseReal_MoverEnd(TVariavel * v, void * destino, TClasse * c, TObjeto * o)
 {
     memmove(destino, v->endvar, VarBaseReal_TamanhoVetor(v->defvar));
 }
-void VarBaseReal2_MoverEnd(TVariavel * v, void * destino, TClasse * c, TObjeto * o)
+static void VarBaseReal2_MoverEnd(TVariavel * v, void * destino, TClasse * c, TObjeto * o)
 {
     memmove(destino, v->endvar, VarBaseReal2_TamanhoVetor(v->defvar));
+}
+
+//------------------------------------------------------------------------------
+static bool VarBaseTxt1_GetBool(TVariavel * v)
+{
+    char * ref = reinterpret_cast<char*>(v->endvar);
+    if (v->indice)
+        ref += v->indice * (2 + (unsigned char)v->defvar[Instr::endExtra]);
+    return *ref != 0;
+}
+static bool VarBaseTxt2_GetBool(TVariavel * v)
+{
+    char * ref = reinterpret_cast<char*>(v->endvar);
+    if (v->indice)
+        ref += v->indice * (258 + (unsigned char)v->defvar[Instr::endExtra]);
+    return *ref != 0;
+}
+static bool VarBaseInt1_GetBool(TVariavel * v)
+{
+    return GetValorInt1(v);
+}
+static bool VarBaseInt8_GetBool(TVariavel * v)
+{
+    return reinterpret_cast<signed char*>(v->endvar)[v->indice];
+}
+static bool VarBaseInt16_GetBool(TVariavel * v)
+{
+    return reinterpret_cast<signed short*>(v->endvar)[v->indice];
+}
+static bool VarBaseInt32_GetBool(TVariavel * v)
+{
+    return reinterpret_cast<signed int*>(v->endvar)[v->indice];
+}
+static bool VarBaseReal_GetBool(TVariavel * v)
+{
+    return reinterpret_cast<float*>(v->endvar)[v->indice] != 0;
+}
+static bool VarBaseReal2_GetBool(TVariavel * v)
+{
+    return reinterpret_cast<double*>(v->endvar)[v->indice] != 0;
+}
+
+//------------------------------------------------------------------------------
+static int VarBaseTxt1_GetInt(TVariavel * v)
+{
+    char * ref = reinterpret_cast<char*>(v->endvar);
+    if (v->indice)
+        ref += v->indice * (2 + (unsigned char)v->defvar[Instr::endExtra]);
+    return TxtToInt(ref);
+}
+static int VarBaseTxt2_GetInt(TVariavel * v)
+{
+    char * ref = reinterpret_cast<char*>(v->endvar);
+    if (v->indice)
+        ref += v->indice * (258 + (unsigned char)v->defvar[Instr::endExtra]);
+    return TxtToInt(ref);
+}
+static int VarBaseInt1_GetInt(TVariavel * v)
+{
+    return GetValorInt1(v);
+}
+static int VarBaseInt8_GetInt(TVariavel * v)
+{
+    return reinterpret_cast<signed char*>(v->endvar)[v->indice];
+}
+static int VarBaseUInt8_GetInt(TVariavel * v)
+{
+    return reinterpret_cast<unsigned char*>(v->endvar)[v->indice];
+}
+static int VarBaseInt16_GetInt(TVariavel * v)
+{
+    return reinterpret_cast<signed short*>(v->endvar)[v->indice];
+}
+static int VarBaseUInt16_GetInt(TVariavel * v)
+{
+    return reinterpret_cast<unsigned short*>(v->endvar)[v->indice];
+}
+static int VarBaseInt32_GetInt(TVariavel * v)
+{
+    return reinterpret_cast<signed int*>(v->endvar)[v->indice];
+}
+static int VarBaseUInt32_GetInt(TVariavel * v)
+{
+    unsigned int valor = reinterpret_cast<unsigned int*>(v->endvar)[v->indice];
+    return (valor <= 0x7FFFFFFF ? valor : 0x7FFFFFFF);
+}
+static int VarBaseReal_GetInt(TVariavel * v)
+{
+    return DoubleToInt(reinterpret_cast<float*>(v->endvar)[v->indice]);
+}
+static int VarBaseReal2_GetInt(TVariavel * v)
+{
+    return DoubleToInt(reinterpret_cast<double*>(v->endvar)[v->indice]);
+}
+
+//------------------------------------------------------------------------------
+static double VarBaseTxt1_GetDouble(TVariavel * v)
+{
+    char * ref = reinterpret_cast<char*>(v->endvar);
+    if (v->indice)
+        ref += v->indice * (2 + (unsigned char)v->defvar[Instr::endExtra]);
+    return TxtToDouble(ref);
+}
+static double VarBaseTxt2_GetDouble(TVariavel * v)
+{
+    char * ref = reinterpret_cast<char*>(v->endvar);
+    if (v->indice)
+        ref += v->indice * (258 + (unsigned char)v->defvar[Instr::endExtra]);
+    return TxtToDouble(ref);
+}
+static double VarBaseInt1_GetDouble(TVariavel * v)
+{
+    return GetValorInt1(v);
+}
+static double VarBaseInt8_GetDouble(TVariavel * v)
+{
+    return reinterpret_cast<signed char*>(v->endvar)[v->indice];
+}
+static double VarBaseUInt8_GetDouble(TVariavel * v)
+{
+    return reinterpret_cast<unsigned char*>(v->endvar)[v->indice];
+}
+static double VarBaseInt16_GetDouble(TVariavel * v)
+{
+    return reinterpret_cast<signed short*>(v->endvar)[v->indice];
+}
+static double VarBaseUInt16_GetDouble(TVariavel * v)
+{
+    return reinterpret_cast<unsigned short*>(v->endvar)[v->indice];
+}
+static double VarBaseInt32_GetDouble(TVariavel * v)
+{
+    return reinterpret_cast<signed int*>(v->endvar)[v->indice];
+}
+static double VarBaseUInt32_GetDouble(TVariavel * v)
+{
+    return reinterpret_cast<unsigned int*>(v->endvar)[v->indice];
+}
+static double VarBaseReal_GetDouble(TVariavel * v)
+{
+    return reinterpret_cast<float*>(v->endvar)[v->indice];
+}
+static double VarBaseReal2_GetDouble(TVariavel * v)
+{
+    return reinterpret_cast<double*>(v->endvar)[v->indice];
+}
+
+//------------------------------------------------------------------------------
+static const char * VarBaseTxt1_GetTxt(TVariavel * v)
+{
+    char * ref = reinterpret_cast<char*>(v->endvar);
+    if (v->indice)
+        ref += v->indice * (2 + (unsigned char)v->defvar[Instr::endExtra]);
+    return ref;
+}
+static const char * VarBaseTxt2_GetTxt(TVariavel * v)
+{
+    char * ref = reinterpret_cast<char*>(v->endvar);
+    if (v->indice)
+        ref += v->indice * (258 + (unsigned char)v->defvar[Instr::endExtra]);
+    return ref;
+}
+static const char * VarBaseInt1_GetTxt(TVariavel * v)
+{
+    char * buf = TVarInfo::BufferTxt();
+    sprintf(buf, "%d", GetValorInt1(v));
+    return buf;
+}
+static const char * VarBaseInt8_GetTxt(TVariavel * v)
+{
+    char * buf = TVarInfo::BufferTxt();
+    sprintf(buf, "%d", reinterpret_cast<signed char*>(v->endvar)[v->indice]);
+    return buf;
+}
+static const char * VarBaseUInt8_GetTxt(TVariavel * v)
+{
+   char * buf = TVarInfo::BufferTxt();
+    sprintf(buf, "%d", reinterpret_cast<unsigned char*>(v->endvar)[v->indice]);
+    return buf;
+}
+static const char * VarBaseInt16_GetTxt(TVariavel * v)
+{
+    char * buf = TVarInfo::BufferTxt();
+    sprintf(buf, "%d", reinterpret_cast<signed short*>(v->endvar)[v->indice]);
+    return buf;
+}
+static const char * VarBaseUInt16_GetTxt(TVariavel * v)
+{
+    char * buf = TVarInfo::BufferTxt();
+    sprintf(buf, "%d", reinterpret_cast<unsigned short*>(v->endvar)[v->indice]);
+    return buf;
+}
+static const char * VarBaseInt32_GetTxt(TVariavel * v)
+{
+    char * buf = TVarInfo::BufferTxt();
+    sprintf(buf, "%d", reinterpret_cast<signed int*>(v->endvar)[v->indice]);
+    return buf;
+}
+static const char * VarBaseUInt32_GetTxt(TVariavel * v)
+{
+    char * buf = TVarInfo::BufferTxt();
+    sprintf(buf, "%u", reinterpret_cast<unsigned int*>(v->endvar)[v->indice]);
+    return buf;
+}
+static const char * VarBaseReal_GetTxt(TVariavel * v)
+{
+    char * buf = TVarInfo::BufferTxt();
+    DoubleToTxt(buf, reinterpret_cast<float*>(v->endvar)[v->indice]);
+    return buf;
+}
+static const char * VarBaseReal2_GetTxt(TVariavel * v)
+{
+    char * buf = TVarInfo::BufferTxt();
+    DoubleToTxt(buf, reinterpret_cast<double*>(v->endvar)[v->indice]);
+    return buf;
 }
 
 //------------------------------------------------------------------------------
@@ -805,6 +1034,11 @@ const TVarInfo * VarBaseTxt1()
         VarBaseTxt1_Redim,
         VarBaseTxt1_MoverEnd,
         TVarInfo::FMoverDef0,
+        VarBaseTxt1_GetBool,
+        VarBaseTxt1_GetInt,
+        VarBaseTxt1_GetDouble,
+        VarBaseTxt1_GetTxt,
+        TVarInfo::FGetObjNulo,
         VarBaseTxt_FuncVetor);
     return &var;
 }
@@ -818,6 +1052,11 @@ const TVarInfo * VarBaseTxt2()
         VarBaseTxt2_Redim,
         VarBaseTxt2_MoverEnd,
         TVarInfo::FMoverDef0,
+        VarBaseTxt2_GetBool,
+        VarBaseTxt2_GetInt,
+        VarBaseTxt2_GetDouble,
+        VarBaseTxt2_GetTxt,
+        TVarInfo::FGetObjNulo,
         VarBaseTxt_FuncVetor);
     return &var;
 }
@@ -831,6 +1070,11 @@ const TVarInfo * VarBaseInt1()
         VarBaseInt1_Redim,
         VarBaseInt1_MoverEnd,
         TVarInfo::FMoverDef0,
+        VarBaseInt1_GetBool,
+        VarBaseInt1_GetInt,
+        VarBaseInt1_GetDouble,
+        VarBaseInt1_GetTxt,
+        TVarInfo::FGetObjNulo,
         VarBaseInt1_FuncVetor);
     return &var;
 }
@@ -844,6 +1088,11 @@ const TVarInfo * VarBaseInt8()
         VarBaseInt8_Redim,
         VarBaseInt8_MoverEnd,
         TVarInfo::FMoverDef0,
+        VarBaseInt8_GetBool,
+        VarBaseInt8_GetInt,
+        VarBaseInt8_GetDouble,
+        VarBaseInt8_GetTxt,
+        TVarInfo::FGetObjNulo,
         VarBaseInt8_FuncVetor);
     return &var;
 }
@@ -857,6 +1106,11 @@ const TVarInfo * VarBaseUInt8()
         VarBaseInt8_Redim,
         VarBaseInt8_MoverEnd,
         TVarInfo::FMoverDef0,
+        VarBaseInt8_GetBool,
+        VarBaseUInt8_GetInt,
+        VarBaseUInt8_GetDouble,
+        VarBaseUInt8_GetTxt,
+        TVarInfo::FGetObjNulo,
         VarBaseUInt8_FuncVetor);
     return &var;
 }
@@ -870,6 +1124,11 @@ const TVarInfo * VarBaseInt16()
         VarBaseInt16_Redim,
         VarBaseInt16_MoverEnd,
         TVarInfo::FMoverDef0,
+        VarBaseInt16_GetBool,
+        VarBaseInt16_GetInt,
+        VarBaseInt16_GetDouble,
+        VarBaseInt16_GetTxt,
+        TVarInfo::FGetObjNulo,
         VarBaseInt16_FuncVetor);
     return &var;
 }
@@ -883,6 +1142,11 @@ const TVarInfo * VarBaseUInt16()
         VarBaseInt16_Redim,
         VarBaseInt16_MoverEnd,
         TVarInfo::FMoverDef0,
+        VarBaseInt16_GetBool,
+        VarBaseUInt16_GetInt,
+        VarBaseUInt16_GetDouble,
+        VarBaseUInt16_GetTxt,
+        TVarInfo::FGetObjNulo,
         VarBaseUInt16_FuncVetor);
     return &var;
 }
@@ -896,6 +1160,11 @@ const TVarInfo * VarBaseInt32()
         VarBaseInt32_Redim,
         VarBaseInt32_MoverEnd,
         TVarInfo::FMoverDef0,
+        VarBaseInt32_GetBool,
+        VarBaseInt32_GetInt,
+        VarBaseInt32_GetDouble,
+        VarBaseInt32_GetTxt,
+        TVarInfo::FGetObjNulo,
         VarBaseInt32_FuncVetor);
     return &var;
 }
@@ -909,6 +1178,11 @@ const TVarInfo * VarBaseUInt32()
         VarBaseInt32_Redim,
         VarBaseInt32_MoverEnd,
         TVarInfo::FMoverDef0,
+        VarBaseInt32_GetBool,
+        VarBaseUInt32_GetInt,
+        VarBaseUInt32_GetDouble,
+        VarBaseUInt32_GetTxt,
+        TVarInfo::FGetObjNulo,
         VarBaseUInt32_FuncVetor);
     return &var;
 }
@@ -922,6 +1196,11 @@ const TVarInfo * VarBaseReal()
         VarBaseReal_Redim,
         VarBaseReal_MoverEnd,
         TVarInfo::FMoverDef0,
+        VarBaseReal_GetBool,
+        VarBaseReal_GetInt,
+        VarBaseReal_GetDouble,
+        VarBaseReal_GetTxt,
+        TVarInfo::FGetObjNulo,
         VarBaseReal_FuncVetor);
     return &var;
 }
@@ -935,6 +1214,11 @@ const TVarInfo * VarBaseReal2()
         VarBaseReal2_Redim,
         VarBaseReal2_MoverEnd,
         TVarInfo::FMoverDef0,
+        VarBaseReal2_GetBool,
+        VarBaseReal2_GetInt,
+        VarBaseReal2_GetDouble,
+        VarBaseReal2_GetTxt,
+        TVarInfo::FGetObjNulo,
         VarBaseReal2_FuncVetor);
     return &var;
 }

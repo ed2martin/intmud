@@ -45,6 +45,11 @@ const TVarInfo * TVarIntTempo::Inicializa()
         FRedim,
         FMoverEnd,
         FMoverDef,
+        FGetBool,
+        FGetInt,
+        FGetDouble,
+        FGetTxt,
+        TVarInfo::FGetObjNulo,
         FuncVetor);
     return &var;
 }
@@ -369,3 +374,9 @@ void TVarIntTempo::FMoverDef(TVariavel * v)
 {
     VARIAVEL_MOVERDEF(TVarIntTempo)
 }
+
+//------------------------------------------------------------------------------
+bool TVarIntTempo::FGetBool(TVariavel * v) VARIAVEL_FGETINT1(TVarIntTempo)
+int TVarIntTempo::FGetInt(TVariavel * v) VARIAVEL_FGETINT1(TVarIntTempo)
+double TVarIntTempo::FGetDouble(TVariavel * v) VARIAVEL_FGETINT1(TVarIntTempo)
+const char * TVarIntTempo::FGetTxt(TVariavel * v) VARIAVEL_FGETTXT1(TVarIntTempo)

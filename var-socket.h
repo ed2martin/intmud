@@ -149,16 +149,20 @@ public:
     bool FuncIPNome(TVariavel * v);
     bool FuncIPValido(TVariavel * v);
     bool FuncIniSSL(TVariavel * v);
+
     static int FTamanho(const char * instr);
     static int FTamanhoVetor(const char * instr);
+    static TVarTipo FTipo(TVariavel * v);
     static void FRedim(TVariavel * v, TClasse * c, TObjeto * o,
             unsigned int antes, unsigned int depois);
     static void FMoverEnd(TVariavel * v, void * destino,
             TClasse * c, TObjeto * o);
     static void FMoverDef(TVariavel * v);
+    static bool FGetBool(TVariavel * v);
+    static int FGetInt(TVariavel * v);
+    static double FGetDouble(TVariavel * v);
+    static const char * FGetTxt(TVariavel * v);
 
-    static TVarTipo FTipo(TVariavel * v);
-                            ///< Retorna o tipo de variável
     int  getValor(int numfunc);
                             ///< Ler valor numérico da variável
     void setValor(int numfunc, int valor);

@@ -332,6 +332,11 @@ const TVarInfo * TVarSocket::Inicializa()
         FRedim,
         FMoverEnd,
         FMoverDef,
+        FGetBool,
+        FGetInt,
+        FGetDouble,
+        FGetTxt,
+        TVarInfo::FGetObjNulo,
         TVarInfo::FFuncVetorFalse);
     return &var;
 }
@@ -786,6 +791,12 @@ void TVarSocket::FMoverDef(TVariavel * v)
 {
     VARIAVEL_MOVERDEF(TVarSocket)
 }
+
+//------------------------------------------------------------------------------
+bool TVarSocket::FGetBool(TVariavel * v) VARIAVEL_FGETINT1(TVarSocket)
+int TVarSocket::FGetInt(TVariavel * v) VARIAVEL_FGETINT1(TVarSocket)
+double TVarSocket::FGetDouble(TVariavel * v) VARIAVEL_FGETINT1(TVarSocket)
+const char * TVarSocket::FGetTxt(TVariavel * v) VARIAVEL_FGETTXT1(TVarSocket)
 
 //------------------------------------------------------------------------------
 #ifdef __WIN32__

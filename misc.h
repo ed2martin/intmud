@@ -202,9 +202,28 @@ void DoubleToTxt(char * txt, double valor);
  *  - printf("%d\n", (int)v1); */
 int DoubleToInt(double valor);
 
-unsigned short Num16(const char * x); ///< Lê unsigned short de char[2]
-unsigned int Num24(const char * x); ///< Lê unsigned int de char[3]
-unsigned int Num32(const char * x); ///< Lê unsigned int de char[4]
+/// Lê unsigned short de char[2]
+inline unsigned short Num16(const char * x)
+{
+    return ((unsigned int)(unsigned char)x[1] << 8) + (unsigned char) x[0];
+}
+
+/// Lê unsigned short de char[3]
+inline unsigned int Num24(const char * x)
+{
+    return ((unsigned int)(unsigned char)x[2] << 16) +
+           ((unsigned int)(unsigned char)x[1] << 8) +
+           (unsigned char)x[0];
+}
+
+/// Lê unsigned short de char[4]
+inline unsigned int Num32(const char * x)
+{
+    return ((unsigned int)(unsigned char)x[3] << 24) +
+           ((unsigned int)(unsigned char)x[2] << 16) +
+           ((unsigned int)(unsigned char)x[1] << 8) +
+           (unsigned char)x[0];
+}
 
 //------------------------------------------------------------------------------
 class TAddBufferBloco /// Usado em AddBuffer

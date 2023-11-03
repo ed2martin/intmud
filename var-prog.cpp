@@ -35,6 +35,11 @@ const TVarInfo * TVarProg::Inicializa()
         FRedim,
         FMoverEnd,
         TVarInfo::FMoverDef0,
+        FGetBool,
+        FGetInt,
+        FGetDouble,
+        FGetTxt,
+        TVarInfo::FGetObjNulo,
         TVarInfo::FFuncVetorFalse);
     return &var;
 }
@@ -1874,3 +1879,9 @@ void TVarProg::FMoverEnd(TVariavel * v, void * destino, TClasse * c, TObjeto * o
 {
     VARIAVEL_MOVER_SIMPLES(TVarProg)
 }
+
+//------------------------------------------------------------------------------
+bool TVarProg::FGetBool(TVariavel * v) VARIAVEL_FGETINT0(TVarProg)
+int TVarProg::FGetInt(TVariavel * v) VARIAVEL_FGETINT0(TVarProg)
+double TVarProg::FGetDouble(TVariavel * v) VARIAVEL_FGETINT0(TVarProg)
+const char * TVarProg::FGetTxt(TVariavel * v) VARIAVEL_FGETTXT0(TVarProg)

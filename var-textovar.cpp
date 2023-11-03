@@ -25,7 +25,6 @@ TBlocoVarDec ** TBlocoVarDec::VetMenos = nullptr;
 TBlocoVarDec ** TBlocoVarDec::VetMais = nullptr;
 unsigned int TBlocoVarDec::TempoMenos = 0;
 unsigned int TBlocoVarDec::TempoMais = 0;
-char TBlocoVar::txtnum[80] = "";
 
 //----------------------------------------------------------------------------
 const TVarInfo * TTextoVar::Inicializa()
@@ -38,6 +37,11 @@ const TVarInfo * TTextoVar::Inicializa()
         FRedim,
         FMoverEnd,
         TVarInfo::FMoverDef0,
+        TVarInfo::FGetBoolFalse,
+        TVarInfo::FGetInt0,
+        TVarInfo::FGetDouble0,
+        TVarInfo::FGetTxtVazio,
+        TVarInfo::FGetObjNulo,
         TVarInfo::FFuncVetorFalse);
     return &var;
 }
@@ -667,6 +671,11 @@ const TVarInfo * TTextoVarSub::Inicializa()
         FRedim,
         FMoverEnd,
         TVarInfo::FMoverDef0,
+        FGetBool,
+        FGetInt,
+        FGetDouble,
+        FGetTxt,
+        FGetObj,
         TVarInfo::FFuncVetorFalse);
     return &var;
 }
@@ -767,6 +776,36 @@ void TTextoVarSub::FMoverEnd(TVariavel * v, void * destino, TClasse * c, TObjeto
 TVarTipo TTextoVarSub::FTipo(TVariavel * v)
 {
     return (TVarTipo)v->numfunc;
+}
+
+//----------------------------------------------------------------------------
+bool TTextoVarSub::FGetBool(TVariavel * v)
+{
+    return reinterpret_cast<TTextoVarSub*>(v->endvar)[ v->indice ].getBool();
+}
+
+//----------------------------------------------------------------------------
+int TTextoVarSub::FGetInt(TVariavel * v)
+{
+    return reinterpret_cast<TTextoVarSub*>(v->endvar)[ v->indice ].getInt();
+}
+
+//----------------------------------------------------------------------------
+double TTextoVarSub::FGetDouble(TVariavel * v)
+{
+    return reinterpret_cast<TTextoVarSub*>(v->endvar)[ v->indice ].getDouble();
+}
+
+//----------------------------------------------------------------------------
+const char * TTextoVarSub::FGetTxt(TVariavel * v)
+{
+    return reinterpret_cast<TTextoVarSub*>(v->endvar)[ v->indice ].getTxt();
+}
+
+//------------------------------------------------------------------------------
+TObjeto * TTextoVarSub::FGetObj(TVariavel * v)
+{
+    return reinterpret_cast<TTextoVarSub*>(v->endvar)[ v->indice ].getObj();
 }
 
 //----------------------------------------------------------------------------
@@ -1191,6 +1230,7 @@ double TBlocoVarNum::getDouble()
 //------------------------------------------------------------------------------
 const char * TBlocoVarNum::getTxt()
 {
+    char * txtnum = TVarInfo::BufferTxt();
     DoubleToTxt(txtnum, ValorDouble);
     return txtnum;
 }
@@ -1325,6 +1365,7 @@ double TBlocoVarDec::getDouble()
 //----------------------------------------------------------------------------
 const char * TBlocoVarDec::getTxt()
 {
+    char * txtnum = TVarInfo::BufferTxt();
     sprintf(txtnum, "%d", getInt());
     return txtnum;
 }

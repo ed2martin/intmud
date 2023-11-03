@@ -27,8 +27,6 @@ public:
 
     static bool Func(TVariavel * v, const char * nome);
         ///< Função da variável
-    static TVarTipo FTipo(TVariavel * v);
-        ///< Retorna o tipo de variável
     static int  getInt(int numfunc);
         ///< Ler valor numérico da variável como int
     static double getDouble(int numfunc);
@@ -66,11 +64,16 @@ private:
 
     static int FTamanho(const char * instr);
     static int FTamanhoVetor(const char * instr);
+    static TVarTipo FTipo(TVariavel * v);
     static void FRedim(TVariavel * v, TClasse * c, TObjeto * o,
             unsigned int antes, unsigned int depois);
     static void FMoverEnd(TVariavel * v, void * destino,
             TClasse * c, TObjeto * o);
     static void FMoverDef(TVariavel * v);
+    static bool FGetBool(TVariavel * v);
+    static int FGetInt(TVariavel * v);
+    static double FGetDouble(TVariavel * v);
+    static const char * FGetTxt(TVariavel * v);
 };
 
 //----------------------------------------------------------------------------

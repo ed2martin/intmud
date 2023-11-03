@@ -191,6 +191,11 @@ const TVarInfo * TVarIncDec::InicializaInc()
         FRedimInc,
         FMoverEnd,
         TVarInfo::FMoverDef0,
+        FGetBoolInc,
+        FGetIntInc,
+        FGetDoubleInc,
+        FGetTxtInc,
+        TVarInfo::FGetObjNulo,
         FuncVetorInc);
     return &var;
 }
@@ -205,6 +210,11 @@ const TVarInfo * TVarIncDec::InicializaDec()
         FRedimDec,
         FMoverEnd,
         TVarInfo::FMoverDef0,
+        FGetBoolDec,
+        FGetIntDec,
+        FGetDoubleDec,
+        FGetTxtDec,
+        TVarInfo::FGetObjNulo,
         FuncVetorDec);
     return &var;
 }
@@ -217,8 +227,6 @@ void TVarIncDec::FRedimInc(TVariavel * v, TClasse * c, TObjeto * o,
     for (; antes < depois; antes++)
         ref[antes].valor = TempoIni + INTTEMPO_MAX * INTTEMPO_MAX;
 }
-
-//------------------------------------------------------------------------------
 void TVarIncDec::FRedimDec(TVariavel * v, TClasse * c, TObjeto * o,
         unsigned int antes, unsigned int depois)
 {
@@ -232,4 +240,56 @@ void TVarIncDec::FMoverEnd(TVariavel * v, void * destino, TClasse * c, TObjeto *
 {
     int total = (unsigned char)v->defvar[Instr::endVetor];
     memmove(destino, v->endvar, (total ? total : 1) * sizeof(TVarIncDec));
+}
+
+//------------------------------------------------------------------------------
+bool TVarIncDec::FGetBoolInc(TVariavel * v)
+{
+    TVarIncDec * ref = reinterpret_cast<TVarIncDec*>(v->endvar) + v->indice;
+    return ref->getInc(v->numfunc);
+}
+bool TVarIncDec::FGetBoolDec(TVariavel * v)
+{
+    TVarIncDec * ref = reinterpret_cast<TVarIncDec*>(v->endvar) + v->indice;
+    return ref->getDec(v->numfunc);
+}
+
+//------------------------------------------------------------------------------
+int TVarIncDec::FGetIntInc(TVariavel * v)
+{
+    TVarIncDec * ref = reinterpret_cast<TVarIncDec*>(v->endvar) + v->indice;
+    return ref->getInc(v->numfunc);
+}
+int TVarIncDec::FGetIntDec(TVariavel * v)
+{
+    TVarIncDec * ref = reinterpret_cast<TVarIncDec*>(v->endvar) + v->indice;
+    return ref->getDec(v->numfunc);
+}
+
+//------------------------------------------------------------------------------
+double TVarIncDec::FGetDoubleInc(TVariavel * v)
+{
+    TVarIncDec * ref = reinterpret_cast<TVarIncDec*>(v->endvar) + v->indice;
+    return ref->getInc(v->numfunc);
+}
+double TVarIncDec::FGetDoubleDec(TVariavel * v)
+{
+    TVarIncDec * ref = reinterpret_cast<TVarIncDec*>(v->endvar) + v->indice;
+    return ref->getDec(v->numfunc);
+}
+
+//------------------------------------------------------------------------------
+const char * TVarIncDec::FGetTxtInc(TVariavel * v)
+{
+    TVarIncDec * ref = reinterpret_cast<TVarIncDec*>(v->endvar) + v->indice;
+    char * buf = TVarInfo::BufferTxt();
+    sprintf(buf, "%d", ref->getInc(v->numfunc));
+    return buf;
+}
+const char * TVarIncDec::FGetTxtDec(TVariavel * v)
+{
+    TVarIncDec * ref = reinterpret_cast<TVarIncDec*>(v->endvar) + v->indice;
+    char * buf = TVarInfo::BufferTxt();
+    sprintf(buf, "%d", ref->getDec(v->numfunc));
+    return buf;
 }

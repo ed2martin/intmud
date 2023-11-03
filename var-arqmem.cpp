@@ -38,6 +38,11 @@ const TVarInfo * TVarArqMem::Inicializa()
         FRedim,
         FMoverEnd,
         TVarInfo::FMoverDef0,
+        TVarInfo::FGetBoolFalse,
+        TVarInfo::FGetInt0,
+        TVarInfo::FGetDouble0,
+        TVarInfo::FGetTxtVazio,
+        TVarInfo::FGetObjNulo,
         TVarInfo::FFuncVetorFalse);
     return &var;
 }
