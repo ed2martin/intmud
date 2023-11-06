@@ -311,8 +311,7 @@ bool TTextoObj::FuncTotal(TVariavel * v)
     if (*txt==0)
     {
         total = Total;
-        Instr::ApagarVar(v);
-        return Instr::CriarVarInt(total);
+        return Instr::CriarVarInt(v, total);
     }
     TBlocoObj * ini = ProcIni(txt);
     if (ini)
@@ -322,8 +321,7 @@ bool TTextoObj::FuncTotal(TVariavel * v)
         while (ini && ini != fim)
             total++, ini=TBlocoObj::RBnext(ini);
     }
-    Instr::ApagarVar(v);
-    return Instr::CriarVarInt(total);
+    return Instr::CriarVarInt(v, total);
 }
 
 //----------------------------------------------------------------------------

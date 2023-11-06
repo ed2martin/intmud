@@ -114,8 +114,7 @@ bool TVarArqDir::Func(TVariavel * v, const char * nome)
 bool TVarArqDir::FuncLin(TVariavel * v)
 {
     bool b = DIR_VALIDO;
-    Instr::ApagarVar(v);
-    return Instr::CriarVarInt(b);
+    return Instr::CriarVarInt(v, b);
 }
 
 //------------------------------------------------------------------------------
@@ -277,8 +276,7 @@ bool TVarArqDir::FuncTamanho(TVariavel * v)
 #endif
         break;
     }
-    Instr::ApagarVar(v);
-    return Instr::CriarVarDouble(tam);
+    return Instr::CriarVarDouble(v, tam);
 }
 
 //------------------------------------------------------------------------------

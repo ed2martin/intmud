@@ -478,8 +478,7 @@ bool TVarServ::FuncAbrir(TVariavel * v)
         valor = Abrir(ender, porta);
 //printf("%s %d -> %d\n\n", ender, porta, valor); fflush(stdout);
     }
-    Instr::ApagarVar(v);
-    return Instr::CriarVarInt(valor);
+    return Instr::CriarVarInt(v, valor);
 }
 
 //------------------------------------------------------------------------------
@@ -496,8 +495,7 @@ bool TVarServ::FuncAbrirSSL(TVariavel * v)
         valor = Abrir(ender, porta);
 //printf("%s %d -> %d\n\n", ender, porta, valor); fflush(stdout);
     }
-    Instr::ApagarVar(v);
-    return Instr::CriarVarInt(valor);
+    return Instr::CriarVarInt(v, valor);
 }
 
 //------------------------------------------------------------------------------

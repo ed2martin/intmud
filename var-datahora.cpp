@@ -195,8 +195,7 @@ bool TVarDataHora::Func(TVariavel * v, const char * nome)
         return false;
     case 3: // Bissexto
         ini = BISSEXTO(Ano);
-        Instr::ApagarVar(v);
-        return Instr::CriarVarInt(ini);
+        return Instr::CriarVarInt(v, ini);
     case 4: // Depois
         if (Dia < DiasMes())
             Dia++;
@@ -211,8 +210,7 @@ bool TVarDataHora::Func(TVariavel * v, const char * nome)
         return true;
     case 6: // DiaSem
         ini = (DataNum() + 1) % 7;
-        Instr::ApagarVar(v);
-        return Instr::CriarVarInt(ini);
+        return Instr::CriarVarInt(v, ini);
     case 7: // Hora
         Instr::ApagarVar(v + 1);
         Instr::VarAtual->numfunc = DataHoraHora;

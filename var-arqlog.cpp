@@ -208,8 +208,7 @@ bool TVarArqLog::FuncValido(TVariavel * v)
         if (!arqvalido(arqnome, false))
             *arqnome = 0;
     }
-    Instr::ApagarVar(v);
-    return Instr::CriarVarInt(*arqnome != 0);
+    return Instr::CriarVarInt(v, *arqnome != 0);
 }
 
 //----------------------------------------------------------------------------
@@ -222,9 +221,8 @@ bool TVarArqLog::FuncExiste(TVariavel * v)
         if (!arqvalido(arqnome, false))
             *arqnome = 0;
     }
-    Instr::ApagarVar(v);
     if (*arqnome == 0)
-        return Instr::CriarVarInt(0);
+        return Instr::CriarVarInt(v, 0);
     int tam = strlen(arqnome);
     if (tam >= 4) // Tamanho suficiente
         if (comparaZ(arqnome + tam - 4, ".log") == 0) // Extensão correta
@@ -233,7 +231,7 @@ bool TVarArqLog::FuncExiste(TVariavel * v)
     struct stat buf;
     if (*arqnome && stat(arqnome, &buf) < 0)
         *arqnome = 0;
-    return Instr::CriarVarInt(*arqnome != 0);
+    return Instr::CriarVarInt(v, *arqnome != 0);
 }
 
 //----------------------------------------------------------------------------
@@ -273,8 +271,7 @@ bool TVarArqLog::FuncAbrir(TVariavel * v)
                 Depois->Antes = this;
         }
     }
-    Instr::ApagarVar(v);
-    return Instr::CriarVarInt(*arqnome != 0);
+    return Instr::CriarVarInt(v, *arqnome != 0);
 }
 
 //------------------------------------------------------------------------------

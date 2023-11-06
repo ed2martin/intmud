@@ -42,10 +42,7 @@ bool TVarNomeObj::Func(TVariavel * v, const char * nome)
     {
         Achou = 0;
         if (Total <= 0 || Instr::VarAtual - v < 1)
-        {
-            Instr::ApagarVar(v);
-            return Instr::CriarVarInt(0);
-        }
+            return Instr::CriarVarInt(v, 0);
     // Prepara variáveis
         if (*NomeObj)
         {
@@ -59,10 +56,7 @@ bool TVarNomeObj::Func(TVariavel * v, const char * nome)
             *p=0;
             // Checa fim do nome
             if (*mens == 0)
-            {
-                Instr::ApagarVar(v);
-                return Instr::CriarVarInt(0);
-            }
+                return Instr::CriarVarInt(v, 0);
     // Verifica se é o nome procurado
     // Todas as palavras de NomeObj devem estar em mens
             txt = NomeObj;
@@ -81,10 +75,7 @@ bool TVarNomeObj::Func(TVariavel * v, const char * nome)
                     while (*lista == ' ')
                         lista++;
                     if (*lista == 0) // Fim da lista: não encontrou
-                    {
-                        Instr::ApagarVar(v);
-                        return Instr::CriarVarInt(0);
-                    }
+                        return Instr::CriarVarInt(v, 0);
                 }
                 while (*txt && *txt != ' ')
                     txt++;
@@ -97,8 +88,7 @@ bool TVarNomeObj::Func(TVariavel * v, const char * nome)
         if (Inicio >= valor)
         {
             Inicio -= valor;
-            Instr::ApagarVar(v);
-            return Instr::CriarVarInt(0);
+            return Instr::CriarVarInt(v, 0);
         }
         valor -= Inicio;
         Inicio = 0;
@@ -108,8 +98,7 @@ bool TVarNomeObj::Func(TVariavel * v, const char * nome)
         else
             Total -= valor;
         Achou = valor;
-        Instr::ApagarVar(v);
-        return Instr::CriarVarInt(valor);
+        return Instr::CriarVarInt(v, valor);
     }
 // Inicialização
     if (comparaZ(nome, "ini") == 0)

@@ -184,6 +184,7 @@ void TVariavel::Inicializa()
     VarInfo[Instr::cVarClasse] = *VarOutrosVarClasse();
     VarInfo[Instr::cVarObjeto] = *VarOutrosVarObjeto();
     VarInfo[Instr::cVarInt] =    *VarOutrosVarInt();
+    VarInfo[Instr::cVarDouble] = *VarOutrosVarDouble();
     VarInfo[Instr::cTextoVarSub] =*TTextoVarSub::Inicializa();
     VarInfo[Instr::cTextoObjSub] =*TTextoObjSub::Inicializa();
 }
@@ -306,6 +307,9 @@ void TVariavel::setInt(int valor)
     case Instr::cVarInt:
         valor_int = valor;
         break;
+    case Instr::cVarDouble:
+        valor_double = valor;
+        break;
 
 // Variáveis extras
     case Instr::cListaObj:
@@ -420,6 +424,9 @@ void TVariavel::setDouble(double valor)
     case Instr::cVarIniFunc:
     case Instr::cVarInt:
         valor_int = DoubleToInt(valor);
+        break;
+    case Instr::cVarDouble:
+        valor_double = valor;
         break;
 
 // Variáveis extras
@@ -547,6 +554,9 @@ void TVariavel::setTxt(const char * txt)
         break;
     case Instr::cReal2:
         end_double[indice] = TxtToDouble(txt);
+        break;
+    case Instr::cVarDouble:
+        valor_double = TxtToDouble(txt);
         break;
     case Instr::cConstNulo:
     case Instr::cConstTxt:

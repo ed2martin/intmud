@@ -338,7 +338,9 @@ public:
         const void * endfixo;
                     ///< Valor "const" de endvar
                     /**< Usar endfixo quando a variável não poderá ser mudada */
+        char * endchar; ///< Usado principalmente com Instr::cVarNome
         int  valor_int;  ///< endvar como int
+        double valor_double; ///< endvar como double (8 bytes)
 
         char * end_char; ///< endvar como char*
         TVarRef * end_varref;        ///< Instr::cRef

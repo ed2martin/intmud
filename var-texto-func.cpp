@@ -311,16 +311,14 @@ bool TTextoTxt::FuncLimpar(TVariavel * v)
 // Quantidade de linhas
 bool TTextoTxt::FuncLinhas(TVariavel * v)
 {
-    Instr::ApagarVar(v);
-    return Instr::CriarVarInt(Linhas);
+    return Instr::CriarVarInt(v, Linhas);
 }
 
 //----------------------------------------------------------------------------
 // Quantidade de bytes
 bool TTextoTxt::FuncBytes(TVariavel * v)
 {
-    Instr::ApagarVar(v);
-    return Instr::CriarVarInt(Bytes);
+    return Instr::CriarVarInt(v, Bytes);
 }
 
 //----------------------------------------------------------------------------
@@ -460,19 +458,15 @@ bool TTextoTxt::FuncJuntar(TVariavel * v)
 bool TTextoTxt::FuncLer(TVariavel * v)
 {
     if (Instr::VarAtual < v + 1)
-    {
-        Instr::ApagarVar(v);
-        return Instr::CriarVarInt(0);
-    }
+        return Instr::CriarVarInt(v, 0);
     char nome[1024]; // Nome do arquivo / buffer de leitura
     copiastr(nome, v[1].getTxt(), sizeof(nome)-4);
-    Instr::ApagarVar(v);
     if (!arqvalido(nome, true))
-        return Instr::CriarVarInt(0);
+        return Instr::CriarVarInt(v, 0);
 // Abre arquivo
     FILE * descr = fopen(nome, "rb");
     if (descr == nullptr)
-        return Instr::CriarVarInt(0);
+        return Instr::CriarVarInt(v, 0);
     TextoIni();
 // Lê arquivo
     char chfim = 0;  // Último caracter anotado em textotxt
@@ -518,7 +512,7 @@ bool TTextoTxt::FuncLer(TVariavel * v)
     TextoFim();
     fclose(descr);
     DebugTextoTxt(this);
-    return Instr::CriarVarInt(1);
+    return Instr::CriarVarInt(v, 1);
 }
 
 //----------------------------------------------------------------------------
@@ -526,19 +520,15 @@ bool TTextoTxt::FuncLer(TVariavel * v)
 bool TTextoTxt::FuncSalvar(TVariavel * v)
 {
     if (Instr::VarAtual < v + 1)
-    {
-        Instr::ApagarVar(v);
-        return Instr::CriarVarInt(0);
-    }
+        return Instr::CriarVarInt(v, 0);
     char nome[1024]; // Nome do arquivo
     copiastr(nome, v[1].getTxt(), sizeof(nome)-4);
-    Instr::ApagarVar(v);
     if (!arqvalido(nome, false))
-        return Instr::CriarVarInt(0);
+        return Instr::CriarVarInt(v, 0);
 // Abre arquivo
     FILE * descr = fopen(nome, "w");
-    if (descr==0)
-        return Instr::CriarVarInt(0);
+    if (descr == nullptr)
+        return Instr::CriarVarInt(v, 0);
 // Salva em arquivo
     char buf[4096];
     char * pbuf = buf;
@@ -584,16 +574,15 @@ bool TTextoTxt::FuncSalvar(TVariavel * v)
 // Fecha arquivo
     fclose(descr);
     DebugTextoTxt(this);
-    return Instr::CriarVarInt(1);
+    return Instr::CriarVarInt(v, 1);
 }
 
 //----------------------------------------------------------------------------
 bool TTextoTxt::FuncClipLer(TVariavel * v)
 {
     char * p = ClipboardLer();
-    Instr::ApagarVar(v);
     if (p == nullptr)
-        return Instr::CriarVarInt(0);
+        return Instr::CriarVarInt(v, 0);
     char * d = p;
     for (char * o = p; *o; o++)
     {
@@ -617,7 +606,7 @@ bool TTextoTxt::FuncClipLer(TVariavel * v)
     TextoAnota(p, d - p);
     TextoFim();
     delete[] p;
-    return Instr::CriarVarInt(1);
+    return Instr::CriarVarInt(v, 1);
 }
 
 //----------------------------------------------------------------------------
@@ -672,10 +661,9 @@ bool TTextoTxt::FuncClipSalvar(TVariavel * v)
     *destino = 0;
 
 // Envia para a área de transferência
-    Instr::ApagarVar(v);
     bool b = ClipboardMudar(buf);
     delete[] buf;
-    return Instr::CriarVarInt(b);
+    return Instr::CriarVarInt(v, b);
 }
 
 //----------------------------------------------------------------------------
@@ -779,12 +767,7 @@ bool TTextoPos::FuncDepois(TVariavel * v, int valor)
 bool TTextoPos::FuncLin(TVariavel * v, int valor)
 {
     bool valido = (TextoTxt && PosicTxt < TextoTxt->Bytes);
-    Instr::ApagarVar(v);
-    if (!Instr::CriarVarInt(0))
-        return false;
-    if (valido)
-        Instr::VarAtual->setInt(1);
-    return true;
+    return Instr::CriarVarInt(v, valido);
 }
 
 //----------------------------------------------------------------------------
@@ -801,8 +784,7 @@ bool TTextoPos::FuncLinha(TVariavel * v, int valor)
 bool TTextoPos::FuncByte(TVariavel * v, int valor)
 {
     valor = PosicTxt;
-    Instr::ApagarVar(v);
-    return Instr::CriarVarInt(valor);
+    return Instr::CriarVarInt(v, valor);
 }
 
 //----------------------------------------------------------------------------
@@ -927,10 +909,7 @@ bool TTextoPos::FuncMudar(TVariavel * v, int valor)
 bool TTextoPos::FuncAdd(TVariavel * v, int valor)
 {
     if (TextoTxt == nullptr || Instr::VarAtual < v + 1)
-    {
-        Instr::ApagarVar(v);
-        return Instr::CriarVarInt(0);
-    }
+        return Instr::CriarVarInt(v, 0);
     int lin_antes = TextoTxt->Linhas;
 
     while (true)
@@ -980,8 +959,7 @@ bool TTextoPos::FuncAdd(TVariavel * v, int valor)
     int lin_add = TextoTxt->Linhas - lin_antes;
     if (valor && lin_add)
         MoverPos(lin_add);
-    Instr::ApagarVar(v);
-    return Instr::CriarVarInt(lin_add);
+    return Instr::CriarVarInt(v, lin_add);
 }
 
 //----------------------------------------------------------------------------
@@ -1003,10 +981,9 @@ bool TTextoPos::FuncRemove(TVariavel * v, int valor)
 // Junta com a linha anterior
 bool TTextoPos::FuncJuntar(TVariavel * v, int valor)
 {
-    Instr::ApagarVar(v);
     if (TextoTxt == nullptr || Bloco == nullptr || PosicTxt == 0 ||
             PosicTxt>=TextoTxt->Bytes)
-        return Instr::CriarVarInt(0);
+        return Instr::CriarVarInt(v, 0);
 // Vai para o \n no final da linha anterior
     TBlocoPos bl = *this;
     bl.PosicTxt--;
@@ -1031,7 +1008,7 @@ bool TTextoPos::FuncJuntar(TVariavel * v, int valor)
 // Junta as duas linha
     bl.Mudar(nullptr, 0, 1);
     DebugTextoTxt(TextoTxt);
-    return Instr::CriarVarInt(1);
+    return Instr::CriarVarInt(v, 1);
 }
 
 //----------------------------------------------------------------------------
@@ -1039,19 +1016,13 @@ bool TTextoPos::FuncJuntar(TVariavel * v, int valor)
 bool TTextoPos::FuncTxtProc(TVariavel * v, int valor)
 {
     if (TextoTxt == nullptr || Bloco == nullptr || Instr::VarAtual < v + 1)
-    {
-        Instr::ApagarVar(v);
-        return Instr::CriarVarInt(-1);
-    }
+        return Instr::CriarVarInt(v, -1);
     TProcurar proc;
     const char * txtproc = v[1].getTxt();
     int inicio = (txtproc[0] == Instr::ex_barra_n &&
                     txtproc[1]); // Se texto começa com '\n'
     if (txtproc[0] == 0)
-    {
-        Instr::ApagarVar(v);
-        return Instr::CriarVarInt(-1);
-    }
+        return Instr::CriarVarInt(v, -1);
 // Obtém argumentos
     int chini = 0; // Caracter inicial na linha
     int chtam = -1; // Quantidade de linhas
@@ -1070,10 +1041,7 @@ bool TTextoPos::FuncTxtProc(TVariavel * v, int valor)
         {
             chtam = v[3].getInt();
             if (chtam <= 0)
-            {
-                Instr::ApagarVar(v);
-                return Instr::CriarVarInt(-1);
-            }
+                return Instr::CriarVarInt(v, -1);
         }
     }
 // Acerta chini se texto começa com "\n"
@@ -1092,10 +1060,7 @@ bool TTextoPos::FuncTxtProc(TVariavel * v, int valor)
     int ind = proc.Proc(&ProcLer); // Procura
 // Não encontrou
     if (ind < 0)
-    {
-        Instr::ApagarVar(v);
-        return Instr::CriarVarInt(-1);
-    }
+        return Instr::CriarVarInt(v, -1);
 // Encontrou
     ind += chini; // ind = quantos bytes deve avançar
 // Avança para nova posição - em blocos
@@ -1150,8 +1115,7 @@ bool TTextoPos::FuncTxtProc(TVariavel * v, int valor)
     }
     PosicBloco = pos;
     valor = txtfim - PosicTxt;
-    Instr::ApagarVar(v);
-    return Instr::CriarVarInt(valor);
+    return Instr::CriarVarInt(v, valor);
 }
 
 //----------------------------------------------------------------------------

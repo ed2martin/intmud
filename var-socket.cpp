@@ -465,8 +465,7 @@ bool TVarSocket::FuncMsg(TVariavel * v)
     int codigo = (Instr::VarAtual > v + 1 ? v[2].getInt() : 1);
     if (Instr::VarAtual >= v + 1)
         enviou = Socket->Enviar(v[1].getTxt(), codigo);
-    Instr::ApagarVar(v);
-    return Instr::CriarVarInt(enviou);
+    return Instr::CriarVarInt(v, enviou);
 }
 
 //----------------------------------------------------------------------------
@@ -484,8 +483,7 @@ bool TVarSocket::FuncAbrir(TVariavel * v)
     TSocket * s = TSocket::Conectar(ender, porta, false);
     if (s)
         MudarSock(s);
-    Instr::ApagarVar(v);
-    return Instr::CriarVarInt(s != nullptr);
+    return Instr::CriarVarInt(v, s != nullptr);
 }
 
 //----------------------------------------------------------------------------
@@ -502,15 +500,11 @@ bool TVarSocket::FuncAbrirSsl(TVariavel * v)
 #endif
     const char * err = AbreClienteSSL();
     if (err)
-    {
-        Instr::ApagarVar(v);
-        return Instr::CriarVarInt(0);
-    }
+        return Instr::CriarVarInt(v, 0);
     TSocket * s = TSocket::Conectar(ender, porta, true);
     if (s)
         MudarSock(s);
-    Instr::ApagarVar(v);
-    return Instr::CriarVarInt(s!=0);
+    return Instr::CriarVarInt(v, s != nullptr);
 }
 
 
@@ -610,14 +604,10 @@ bool TVarSocket::FuncEventoIP(TVariavel * v)
     if (Instr::VarAtual - v < 1)
         return false;
     TDNSSocket * obj = new TDNSSocket(this, v[1].getTxt());
-    Instr::ApagarVar(v);
     if (*obj->nomeini)
-        return Instr::CriarVarInt(1);
-    else
-    {
-        delete obj;
-        return Instr::CriarVarInt(0);
-    }
+        return Instr::CriarVarInt(v, 1);
+    delete obj;
+    return Instr::CriarVarInt(v, 0);
 }
 
 //----------------------------------------------------------------------------
@@ -702,8 +692,7 @@ bool TVarSocket::FuncIPValido(TVariavel * v)
     if (inet_aton(ender, &conSock.sin_addr) != 0)
         valido = 1;
 #endif
-    Instr::ApagarVar(v);
-    return Instr::CriarVarInt(valido);
+    return Instr::CriarVarInt(v, valido);
 }
 
 //----------------------------------------------------------------------------

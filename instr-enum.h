@@ -151,6 +151,7 @@ enum Comando
     cVarClasse,         ///< TVariavel::endvar = endereço do objeto TClasse
     cVarObjeto,         ///< TVariavel::endvar = endereço do objeto TObjeto
     cVarInt,            ///< int local; vide TVariavel::valor_int
+    cVarDouble,         ///< double local; vide TVariavel::valor_double
     cTextoVarSub,       ///< Variável de TextoVar
     cTextoObjSub,       ///< Variável de TextoObj
 

@@ -321,8 +321,7 @@ bool TVarArqMem::FuncAddBin(TVariavel * v)
 bool TVarArqMem::FuncEof(TVariavel * v)
 {
     int valor = (PosBloco == Fim && PosByte >= ArqByte);
-    Instr::ApagarVar(v);
-    return Instr::CriarVarInt(valor);
+    return Instr::CriarVarInt(v, valor);
 }
 
 //------------------------------------------------------------------------------
@@ -588,19 +587,14 @@ bool TVarArqMem::FuncPos(TVariavel * v)
     if (Instr::VarAtual >= v + 1)
         Posicao(v[1].getInt());
     int pos = Posicao();
-    Instr::ApagarVar(v);
-    if (!Instr::CriarVarInt(0))
-        return false;
-    Instr::VarAtual->setInt(pos);
-    return true;
+    return Instr::CriarVarInt(v, pos);
 }
 
 //------------------------------------------------------------------------------
 bool TVarArqMem::FuncTamanho(TVariavel * v)
 {
     int valor = Tamanho();
-    Instr::ApagarVar(v);
-    return Instr::CriarVarInt(valor);
+    return Instr::CriarVarInt(v, valor);
 }
 
 //------------------------------------------------------------------------------

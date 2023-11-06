@@ -250,8 +250,7 @@ bool TVarArqTxt::FuncEof(TVariavel * v)
     printf("EOF = %d\n", result);
     fflush(stdout);
 #endif
-    Instr::ApagarVar(v);
-    return Instr::CriarVarInt(result);
+    return Instr::CriarVarInt(v, result);
 }
 
 //------------------------------------------------------------------------------
@@ -271,8 +270,7 @@ bool TVarArqTxt::FuncPos(TVariavel * v)
         }
     }
     int novapos = (arq ? ftell(arq) : 0);
-    Instr::ApagarVar(v);
-    return Instr::CriarVarInt(novapos);
+    return Instr::CriarVarInt(v, novapos);
 }
 
 //------------------------------------------------------------------------------
@@ -300,8 +298,7 @@ bool TVarArqTxt::FuncValido(TVariavel * v)
         if (!arqvalido(arqnome, false))
             *arqnome = 0;
     }
-    Instr::ApagarVar(v);
-    return Instr::CriarVarInt(*arqnome != 0);
+    return Instr::CriarVarInt(v, *arqnome != 0);
 }
 
 //------------------------------------------------------------------------------
@@ -314,11 +311,10 @@ bool TVarArqTxt::FuncExiste(TVariavel * v)
         if (!arqvalido(arqnome, false))
             *arqnome = 0;
     }
-    Instr::ApagarVar(v);
     struct stat buf;
     if (*arqnome && stat(arqnome, &buf) < 0)
         *arqnome = 0;
-    return Instr::CriarVarInt(*arqnome != 0);
+    return Instr::CriarVarInt(v, *arqnome != 0);
 }
 
 //------------------------------------------------------------------------------
@@ -384,8 +380,7 @@ bool TVarArqTxt::FuncAbrir(TVariavel * v)
         arq = descr;
     }
 // Resultado
-    Instr::ApagarVar(v);
-    return Instr::CriarVarInt(descr != nullptr);
+    return Instr::CriarVarInt(v, descr != nullptr);
 }
 
 //------------------------------------------------------------------------------
@@ -401,13 +396,10 @@ bool TVarArqTxt::FuncTruncar(TVariavel * v)
     }
     int descr = -1;
     int tamanho = 0;
+    int valor = 0;
 // Obtém novo tamanho do arquivo
     if (Instr::VarAtual >= v + 2)
         tamanho = v[2].getInt();
-// Variável int no topo da pilha
-    Instr::ApagarVar(v);
-    if (!Instr::CriarVarInt(0))
-        return false;
 // Abre arquivo
     if (*arqnome)
         descr = open(arqnome, O_RDWR);
@@ -415,14 +407,13 @@ bool TVarArqTxt::FuncTruncar(TVariavel * v)
     if (descr >= 0)
     {
 #ifdef __WIN32__
-        chsize(descr, tamanho);
+        valor = (chsize(descr, tamanho) == 0);
 #else
-        ftruncate(descr, tamanho);
+        valor = (ftruncate(descr, tamanho) == 0);
 #endif
         close(descr);
-        Instr::VarAtual->setInt(1);
     }
-    return true;
+    return Instr::CriarVarInt(v, valor);
 }
 
 //------------------------------------------------------------------------------

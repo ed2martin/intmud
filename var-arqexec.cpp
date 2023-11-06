@@ -359,8 +359,7 @@ bool TVarArqExec::FuncMsg(TVariavel * v)
     if (ObjExec == nullptr || Instr::VarAtual != v + 1)
         return false;
     bool enviou = ObjExec->Enviar(v[1].getTxt());
-    Instr::ApagarVar(v);
-    return Instr::CriarVarInt(enviou);
+    return Instr::CriarVarInt(v, enviou);
 }
 
 //----------------------------------------------------------------------------
@@ -427,8 +426,7 @@ bool TVarArqExec::FuncFechar(TVariavel * v)
 bool TVarArqExec::FuncAberto(TVariavel * v)
 {
     bool aberto = (ObjExec != nullptr);
-    Instr::ApagarVar(v);
-    return Instr::CriarVarInt(aberto);
+    return Instr::CriarVarInt(v, aberto);
 }
 
 //------------------------------------------------------------------------------

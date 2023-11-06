@@ -77,8 +77,7 @@ bool InstrFunc::FuncArg9(TVariavel * v) { return StaticArg(v, 9); }
 //----------------------------------------------------------------------------
 bool InstrFunc::FuncArgs(TVariavel * v)
 {
-    ApagarVar(v);
-    return CriarVarInt(FuncAtual->numarg);
+    return CriarVarInt(v, FuncAtual->numarg);
 }
 
 //----------------------------------------------------------------------------
@@ -160,8 +159,7 @@ bool InstrFunc::FuncApagar(TVariavel * v)
 //----------------------------------------------------------------------------
 bool InstrFunc::FuncMatPi(TVariavel * v)
 {
-    ApagarVar(v);
-    return CriarVarDouble(M_PI);
+    return CriarVarDouble(v, M_PI);
 }
 
 //----------------------------------------------------------------------------
@@ -177,7 +175,6 @@ static inline double NumeroDouble(TVariavel * v)
     double numero = 0;
     for (TVariavel * var = v + 1; var <= Instr::VarAtual; var++)
         numero += var->getDouble();
-    Instr::ApagarVar(v);
     return numero;
 }
 
@@ -185,14 +182,14 @@ static inline double NumeroDouble(TVariavel * v)
 bool InstrFunc::FuncIntPos(TVariavel * v)
 {
     double numero = NumeroDouble(v);
-    return CriarVarDouble(numero < 0 ? 0 : numero);
+    return CriarVarDouble(v, numero < 0 ? 0 : numero);
 }
 
 //----------------------------------------------------------------------------
 bool InstrFunc::FuncIntAbs(TVariavel * v)
 {
     double numero = NumeroDouble(v);
-    return CriarVarDouble(numero < 0 ? -numero : numero);
+    return CriarVarDouble(v, numero < 0 ? -numero : numero);
 }
 
 //----------------------------------------------------------------------------
@@ -201,8 +198,8 @@ bool InstrFunc::FuncInt(TVariavel * v)
     double numero = NumeroDouble(v);
     numero = round(numero);
     if (numero >= (double)-0x7FFFFFFF && numero <= (double)0x7FFFFFFF)
-        return CriarVarInt((int)numero);
-    return CriarVarDouble(numero);
+        return CriarVarInt(v, (int)numero);
+    return CriarVarDouble(v, numero);
 }
 
 //----------------------------------------------------------------------------
@@ -211,99 +208,99 @@ bool InstrFunc::FuncIntDiv(TVariavel * v)
     double numero = NumeroDouble(v);
     numero = trunc(numero);
     if (numero >= (double)-0x7FFFFFFF && numero <= (double)0x7FFFFFFF)
-        return CriarVarInt((int)numero);
-    return CriarVarDouble(numero);
+        return CriarVarInt(v, (int)numero);
+    return CriarVarDouble(v, numero);
 }
 
 //----------------------------------------------------------------------------
 bool InstrFunc::FuncMatSin(TVariavel * v)
 {
     double numero = NumeroDouble(v);
-    return CriarVarDouble(sin(numero));
+    return CriarVarDouble(v, sin(numero));
 }
 
 //----------------------------------------------------------------------------
 bool InstrFunc::FuncMatCos(TVariavel * v)
 {
     double numero = NumeroDouble(v);
-    return CriarVarDouble(cos(numero));
+    return CriarVarDouble(v, cos(numero));
 }
 
 //----------------------------------------------------------------------------
 bool InstrFunc::FuncMatTan(TVariavel * v)
 {
     double numero = NumeroDouble(v);
-    return CriarVarDouble(tan(numero));
+    return CriarVarDouble(v, tan(numero));
 }
 
 //----------------------------------------------------------------------------
 bool InstrFunc::FuncMatAsin(TVariavel * v)
 {
     double numero = NumeroDouble(v);
-    return CriarVarDouble(asin(numero));
+    return CriarVarDouble(v, asin(numero));
 }
 
 //----------------------------------------------------------------------------
 bool InstrFunc::FuncMatAcos(TVariavel * v)
 {
     double numero = NumeroDouble(v);
-    return CriarVarDouble(acos(numero));
+    return CriarVarDouble(v, acos(numero));
 }
 
 //----------------------------------------------------------------------------
 bool InstrFunc::FuncMatAtan(TVariavel * v)
 {
     double numero = NumeroDouble(v);
-    return CriarVarDouble(atan(numero));
+    return CriarVarDouble(v, atan(numero));
 }
 
 //----------------------------------------------------------------------------
 bool InstrFunc::FuncMatExp(TVariavel * v)
 {
     double numero = NumeroDouble(v);
-    return CriarVarDouble(exp(numero));
+    return CriarVarDouble(v, exp(numero));
 }
 
 //----------------------------------------------------------------------------
 bool InstrFunc::FuncMatLog(TVariavel * v)
 {
     double numero = NumeroDouble(v);
-    return CriarVarDouble(log(numero));
+    return CriarVarDouble(v, log(numero));
 }
 
 //----------------------------------------------------------------------------
 bool InstrFunc::FuncMatRaiz(TVariavel * v)
 {
     double numero = NumeroDouble(v);
-    return CriarVarDouble(sqrt(numero));
+    return CriarVarDouble(v, sqrt(numero));
 }
 
 //----------------------------------------------------------------------------
 bool InstrFunc::FuncMatCima(TVariavel * v)
 {
     double numero = NumeroDouble(v);
-    return CriarVarDouble(ceil(numero));
+    return CriarVarDouble(v, ceil(numero));
 }
 
 //----------------------------------------------------------------------------
 bool InstrFunc::FuncMatBaixo(TVariavel * v)
 {
     double numero = NumeroDouble(v);
-    return CriarVarDouble(floor(numero));
+    return CriarVarDouble(v, floor(numero));
 }
 
 //----------------------------------------------------------------------------
 bool InstrFunc::FuncMatRad(TVariavel * v)
 {
     double numero = NumeroDouble(v);
-    return CriarVarDouble(numero / 180 * M_PI);
+    return CriarVarDouble(v, numero / 180 * M_PI);
 }
 
 //----------------------------------------------------------------------------
 bool InstrFunc::FuncMatDeg(TVariavel * v)
 {
     double numero = NumeroDouble(v);
-    return CriarVarDouble(numero / M_PI * 180);
+    return CriarVarDouble(v, numero / M_PI * 180);
 }
 
 //----------------------------------------------------------------------------
@@ -312,8 +309,7 @@ bool InstrFunc::FuncMatPow(TVariavel * v)
     if (VarAtual != v + 2)
         return false;
     double numero = pow(v[1].getDouble(), v[2].getDouble());
-    ApagarVar(v);
-    return CriarVarDouble(numero);
+    return CriarVarDouble(v, numero);
 }
 
 //----------------------------------------------------------------------------
@@ -341,8 +337,7 @@ bool InstrFunc::FuncIntBit(TVariavel * v)
                 result |= 1 << valor;
         }
     }
-    ApagarVar(v);
-    return CriarVarInt(result);
+    return CriarVarInt(v, result);
 }
 
 //----------------------------------------------------------------------------
@@ -578,8 +573,7 @@ bool InstrFunc::FuncRand(TVariavel * v)
         else
             result = min;
     }
-    ApagarVar(v);
-    return CriarVarInt(result);
+    return CriarVarInt(v, result);
 }
 
 //----------------------------------------------------------------------------
@@ -711,8 +705,7 @@ bool InstrFunc::FuncIntSub(TVariavel * v)
             total++;
         }
     }
-    ApagarVar(v);
-    return CriarVarInt(total);
+    return CriarVarInt(v, total);
 }
 
 //----------------------------------------------------------------------------
@@ -730,8 +723,7 @@ bool InstrFunc::FuncIntSubLin(TVariavel * v)
                     total++;
         }
     }
-    ApagarVar(v);
-    return CriarVarInt(total);
+    return CriarVarInt(v, total);
 }
 
 //----------------------------------------------------------------------------
@@ -1521,16 +1513,14 @@ bool InstrFunc::FuncTxtRepete(TVariavel * v)
 bool InstrFunc::FuncIntNome(TVariavel * v)
 {
     int valor = verifNome(VarAtual >= v + 1 ? v[1].getTxt() : "");
-    ApagarVar(v);
-    return CriarVarInt(valor);
+    return CriarVarInt(v, valor);
 }
 
 //----------------------------------------------------------------------------
 bool InstrFunc::FuncIntSenha(TVariavel * v)
 {
     int valor = verifSenha(VarAtual >= v + 1 ? v[1].getTxt() : "");
-    ApagarVar(v);
-    return CriarVarInt(valor);
+    return CriarVarInt(v, valor);
 }
 
 //----------------------------------------------------------------------------
@@ -2013,8 +2003,7 @@ bool InstrFunc::FuncIntChr(TVariavel * v)
     case ex_barra_n: valor = 10; break;
     default: valor = *(unsigned char*)p;
     }
-    ApagarVar(v);
-    return CriarVarInt(valor);
+    return CriarVarInt(v, valor);
 }
 
 //----------------------------------------------------------------------------
@@ -2027,8 +2016,7 @@ static inline bool StaticIntDist(TVariavel * v, int valor)
         int result = 0;
         if (Instr::VarAtual >= v + 1)
             result = strlen(v[1].getTxt());
-        Instr::ApagarVar(v);
-        return Instr::CriarVarInt(result);
+        return Instr::CriarVarInt(v, result);
     }
 // Variáveis
     char texto1[1024];
@@ -2076,8 +2064,7 @@ static inline bool StaticIntDist(TVariavel * v, int valor)
             dist[c1] = atual;
         }
     }
-    Instr::ApagarVar(v);
-    return Instr::CriarVarInt(dist[tam1 - 1]);
+    return Instr::CriarVarInt(v, dist[tam1 - 1]);
 }
 
 //----------------------------------------------------------------------------
@@ -2113,8 +2100,7 @@ static inline bool StaticTxtProc(TVariavel * v, int valor)
         break;
     }
 // Retorna o resultado
-    Instr::ApagarVar(v);
-    return Instr::CriarVarInt(posic);
+    return Instr::CriarVarInt(v, posic);
 }
 
 //----------------------------------------------------------------------------
@@ -2227,8 +2213,7 @@ static inline bool StaticProcLin(TVariavel * v, int valor)
         break;
     }
 // Retorna o resultado
-    Instr::ApagarVar(v);
-    return Instr::CriarVarInt(posic);
+    return Instr::CriarVarInt(v, posic);
 }
 
 //----------------------------------------------------------------------------
@@ -2420,6 +2405,5 @@ bool InstrFunc::FuncTotal(TVariavel * v)
                 tamanho += obj->Classe->NumObj;
             break;
         }
-    ApagarVar(v);
-    return CriarVarInt(tamanho);
+    return CriarVarInt(v, tamanho);
 }

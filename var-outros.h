@@ -19,6 +19,7 @@ const TVarInfo * VarOutrosVarIniFunc();
 const TVarInfo * VarOutrosVarClasse();
 const TVarInfo * VarOutrosVarObjeto();
 const TVarInfo * VarOutrosVarInt();
+const TVarInfo * VarOutrosVarDouble();
 
 //----------------------------------------------------------------------------
 

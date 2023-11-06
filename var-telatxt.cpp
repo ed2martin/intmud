@@ -901,8 +901,7 @@ bool TVarTelaTxt::FuncMsg(TVariavel * v)
 bool TVarTelaTxt::FuncPosx(TVariavel * v)
 {
     int valor = (ColEscreve >= 0xFFFF ? 0 : ColEscreve);
-    Instr::ApagarVar(v);
-    return Instr::CriarVarInt(valor);
+    return Instr::CriarVarInt(v, valor);
 }
 
 //------------------------------------------------------------------------------
@@ -923,8 +922,7 @@ bool TVarTelaTxt::FuncTecla(TVariavel * v)
 bool TVarTelaTxt::FuncProto(TVariavel * v)
 {
     int valor = (Console ? 1 : 0);
-    Instr::ApagarVar(v);
-    return Instr::CriarVarInt(valor);
+    return Instr::CriarVarInt(v, valor);
 }
 
 //------------------------------------------------------------------------------

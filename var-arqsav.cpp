@@ -206,13 +206,12 @@ bool TVarSav::FuncLimpar(TVariavel * v)
     copiastr(mens, v[1].getTxt(), sizeof(mens));
     if (*mens == 0)
         strcpy(mens, ".");
-    Instr::ApagarVar(v);
 // Se inválido: retorna 0
     if (!arqvalido(mens))
-        return Instr::CriarVarInt(0);
+        return Instr::CriarVarInt(v, 0);
 // Válido: coloca na lista de pendentes e retorna 1
     TVarSavDir::NovoDir(mens);
-    return Instr::CriarVarInt(1);
+    return Instr::CriarVarInt(v, 1);
 }
 
 //------------------------------------------------------------------------------
@@ -251,8 +250,7 @@ bool TVarSav::FuncSenhaCod(TVariavel * v)
         char fator = v[2].getTxt()[0];
         Senha(mens2, v[1].getTxt(), fator);
         int result = strcmp(v[2].getTxt(), mens2);
-        Instr::ApagarVar(v);
-        return Instr::CriarVarInt(result == 0);
+        return Instr::CriarVarInt(v, result == 0);
     }
     char mens[256];
     *mens = 0;
@@ -279,8 +277,7 @@ bool TVarSav::FuncValido(TVariavel * v)
         if (arqvalido(arqnome, false)) // Verifica se nome permitido
             result = 1;
     }
-    Instr::ApagarVar(v);
-    return Instr::CriarVarInt(result);
+    return Instr::CriarVarInt(v, result);
 }
 
 //------------------------------------------------------------------------------
@@ -301,8 +298,7 @@ bool TVarSav::FuncExiste(TVariavel * v)
         if (arqvalido(arqnome, false) && stat(arqnome, &buf) >= 0)
             result = 1;
     }
-    Instr::ApagarVar(v);
-    return Instr::CriarVarInt(result);
+    return Instr::CriarVarInt(v, result);
 }
 
 //------------------------------------------------------------------------------
@@ -314,18 +310,12 @@ bool TVarSav::FuncSenha(TVariavel * v)
         InicVar = true;
     }
     if (Instr::VarAtual < v + 2)
-    {
-        Instr::ApagarVar(v);
-        return Instr::CriarVarInt(0);
-    }
+        return Instr::CriarVarInt(v, 0);
     TArqLer arqler;
     char arqnome[512];
     copiastr(arqnome, v[1].getTxt(), sizeof(arqnome) - 4);
     if (!arqvalido(arqnome, false) || !arqler.Abrir(arqnome))
-    {
-        Instr::ApagarVar(v);
-        return Instr::CriarVarInt(0);
-    }
+        return Instr::CriarVarInt(v, 0);
     char mens[512];
     while (arqler.Linha(mens, sizeof(mens), false) > 0)
     {
@@ -337,11 +327,9 @@ bool TVarSav::FuncSenha(TVariavel * v)
         Senha(mens2, v[2].getTxt(), mens[6]);
         if (strcmp(mens + 6, mens2) == 0)
             break;
-        Instr::ApagarVar(v);
-        return Instr::CriarVarInt(0);
+        return Instr::CriarVarInt(v, 0);
     }
-    Instr::ApagarVar(v);
-    return Instr::CriarVarInt(1);
+    return Instr::CriarVarInt(v, 1);
 }
 
 //------------------------------------------------------------------------------
@@ -364,8 +352,7 @@ bool TVarSav::FuncDias(TVariavel * v)
                 result = (result + 1439) / 1440;
         }
     }
-    Instr::ApagarVar(v);
-    return Instr::CriarVarInt(result);
+    return Instr::CriarVarInt(v, result);
 }
 
 
@@ -385,8 +372,7 @@ bool TVarSav::FuncLer(TVariavel * v)
         if (arqvalido(arqnome, false))
             result = Ler(v, arqnome);
     }
-    Instr::ApagarVar(v);
-    return Instr::CriarVarInt(result);
+    return Instr::CriarVarInt(v, result);
 }
 
 //------------------------------------------------------------------------------
@@ -405,8 +391,7 @@ bool TVarSav::FuncSalvar(TVariavel * v)
         if (arqvalido(arqnome, true))
             result = Salvar(v, arqnome, false);
     }
-    Instr::ApagarVar(v);
-    return Instr::CriarVarInt(result);
+    return Instr::CriarVarInt(v, result);
 }
 
 //------------------------------------------------------------------------------
@@ -425,8 +410,7 @@ bool TVarSav::FuncSalvarCod(TVariavel * v)
         if (arqvalido(arqnome, true))
             result = Salvar(v, arqnome, true);
     }
-    Instr::ApagarVar(v);
-    return Instr::CriarVarInt(result);
+    return Instr::CriarVarInt(v, result);
 }
 
 //------------------------------------------------------------------------------
@@ -450,8 +434,7 @@ bool TVarSav::FuncApagar(TVariavel * v)
                 result = 1;
         }
     }
-    Instr::ApagarVar(v);
-    return Instr::CriarVarInt(result);
+    return Instr::CriarVarInt(v, result);
 }
 
 //----------------------------------------------------------------------------

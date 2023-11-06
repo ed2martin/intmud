@@ -20,6 +20,27 @@
 int Instr::ChecaLinha::ChecaErro = 0;
 
 //------------------------------------------------------------------------------
+#define INSTR_COMPL (char)0xFF, 0, 0, 0, 0, '+', 0
+const char Instr::InstrNulo[] = { 10, 0, Instr::cConstNulo, INSTR_COMPL };
+const char Instr::InstrSocket[] = { 10, 0, Instr::cSocket, INSTR_COMPL };
+const char Instr::InstrTxtFixo[] = { 10, 0, Instr::cTxtFixo, INSTR_COMPL };
+const char Instr::InstrVarNome[] = { 10, 0, Instr::cVarNome, INSTR_COMPL };
+const char Instr::InstrVarInicio[] = { 10, 0, Instr::cVarInicio, INSTR_COMPL };
+const char Instr::InstrVarIniFunc[] = { 10, 0, Instr::cVarIniFunc, INSTR_COMPL };
+const char Instr::InstrVarClasse[] = { 10, 0, Instr::cVarClasse, INSTR_COMPL };
+const char Instr::InstrVarObjeto[] = { 10, 0, Instr::cVarObjeto, INSTR_COMPL };
+const char Instr::InstrVarInt[] = { 10, 0, Instr::cVarInt, INSTR_COMPL };
+const char Instr::InstrVarDouble[] = { 10, 0, Instr::cVarDouble, INSTR_COMPL };
+const char Instr::InstrVarListaItem[] = { 10, 0, Instr::cListaItem, INSTR_COMPL };
+const char Instr::InstrVarTextoPos[] =  { 10, 0, Instr::cTextoPos, INSTR_COMPL };
+const char Instr::InstrVarTextoVarSub[] =  { 10, 0, Instr::cTextoVarSub, INSTR_COMPL };
+const char Instr::InstrVarTextoObjSub[] =  { 10, 0, Instr::cTextoObjSub, INSTR_COMPL };
+const char Instr::InstrDebugFunc[] = { 10, 0, INSTR_COMPL };
+const char Instr::InstrAddSub[] = { 9, 0, Instr::cConstExpr, (char)0xFF, 0,
+        Instr::exo_add_sub1, Instr::exo_atrib,
+        Instr::exo_add_sub2, Instr::ex_fim };
+
+//------------------------------------------------------------------------------
 // Lista de funções predefinidas
 // Deve obrigatoriamente estar em ordem alfabética
 const Instr::TListaFunc Instr::ListaFunc[] = {
@@ -148,11 +169,11 @@ int Instr::InfoFunc(const char * nome)
 //------------------------------------------------------------------------------
 /// Retorna um número que corresponde à prioridade do operador
 /** @param operador Operador em Instr::Expressao
-    @retval 2-0x2F Número que corresponde à prioridade do operador;
-            2 é operador unitário (é também o de maior prioridade);
-            3 é operador unitário que vem depois do operando
-            20 é atribuição (processado da direita para a esquerda)
-    @retval 0 Operador inválido */
+ *  @retval 2-0x2F Número que corresponde à prioridade do operador;
+ *          2 é operador unitário (é também o de maior prioridade);
+ *          3 é operador unitário que vem depois do operando
+ *          20 é atribuição (processado da direita para a esquerda)
+ *  @retval 0 Operador inválido */
 int Instr::Prioridade(int operador)
 {
     switch (operador)
@@ -229,11 +250,10 @@ bool Instr::ChecaHerda(const char * instr, const char * nomeclasse)
 
 //----------------------------------------------------------------------------
 /// Passa para a próxima função ou variável
-/**
- * @param instr Instrução atual (função ou variável)
- * @param texto O nome da próxima função/variável deve começar com esse texto
- * @param tamanho Quantos caracteres o texto tem
- * @return Endereço da próxima instrução ou 0 se não houver
+/** @param instr Instrução atual (função ou variável)
+ *  @param texto O nome da próxima função/variável deve começar com esse texto
+ *  @param tamanho Quantos caracteres o texto tem
+ *  @return Endereço da próxima instrução ou 0 se não houver
  */
 const char * Instr::ProximaInstr(const char * instr, const char * texto, int tamanho)
 {
@@ -271,8 +291,7 @@ inicio:
 
 //----------------------------------------------------------------------------
 /// Cria variável int com um valor definido
-/**
- *  @param valor Valor numérico da variável
+/** @param valor Valor numérico da variável
  *  @return true se conseguiu criar, false se memória insuficiente */
 bool Instr::CriarVarInt(int valor)
 {
@@ -288,37 +307,70 @@ bool Instr::CriarVarInt(int valor)
 }
 
 //----------------------------------------------------------------------------
+/// Apaga variáveis na pilha a partir da variável v e cria variável int no lugar
+/** @param valor Valor numérico da variável
+ *  @return true para indicar que se conseguiu criar */
+bool Instr::CriarVarInt(TVariavel * v, int valor)
+{
+    for (TVariavel * var = VarAtual; var >= v; var--)
+        if (var->tamanho)
+        {
+            if (var->endvar)
+                DadosTopo = var->endchar;
+            var->Apagar(); // Pode alterar var->endvar
+        }
+    VarAtual = v;
+    VarAtual->defvar = InstrVarInt;
+    VarAtual->nomevar = InstrVarInt;
+    VarAtual->valor_int = valor;
+    VarAtual->tamanho = 0;
+    VarAtual->indice = 0;
+    return true;
+}
+
+//----------------------------------------------------------------------------
 /// Cria variável double com um valor definido
 /**
  *  @param valor Valor numérico da variável
  *  @return true se conseguiu criar, false se memória insuficiente */
 bool Instr::CriarVarDouble(double valor)
 {
-    int tam = TVariavel::Tamanho(InstrDouble);
-// Acerta alinhamento do endereço da variável
-    char * p = Instr::DadosTopo;
-    p += ((p - Instr::DadosPilha) & 1);
-    p += ((p - Instr::DadosPilha) & 2);
-// Verifica se memória suficiente
-    if (VarAtual >= VarFim - 1 || p + tam > Instr::DadosFim)
-      return false;
-// Prepara variável
+    if (VarAtual >= VarFim - 1)
+        return false;
     VarAtual++;
-    VarAtual->endvar = p;
-    VarAtual->defvar = InstrDouble;
-    VarAtual->nomevar = InstrDouble;
-    VarAtual->tamanho = tam;
+    VarAtual->defvar = InstrVarDouble;
+    VarAtual->nomevar = InstrVarDouble;
+    VarAtual->valor_double = valor;
+    VarAtual->tamanho = 0;
     VarAtual->indice = 0;
-// Cria variável
-    Instr::DadosTopo = p + tam;
-    VarAtual->setDouble(valor);
+    return true;
+}
+
+//----------------------------------------------------------------------------
+/// Apaga variáveis na pilha a partir da variável v e cria variável double no lugar
+/** @param valor Valor numérico da variável
+ *  @return true para indicar que se conseguiu criar */
+bool Instr::CriarVarDouble(TVariavel * v, double valor)
+{
+    for (TVariavel * var = VarAtual; var >= v; var--)
+        if (var->tamanho)
+        {
+            if (var->endvar)
+                DadosTopo = var->endchar;
+            var->Apagar(); // Pode alterar var->endvar
+        }
+    VarAtual = v;
+    VarAtual->defvar = InstrVarDouble;
+    VarAtual->nomevar = InstrVarDouble;
+    VarAtual->valor_double = valor;
+    VarAtual->tamanho = 0;
+    VarAtual->indice = 0;
     return true;
 }
 
 //----------------------------------------------------------------------------
 /// Cria variável de texto no topo da pilha de variáveis (Instr::VarPilha)
-/**
- *  @param mens A mensagem que será retornada;
+/** @param mens A mensagem que será retornada;
  *               Se for 0, apenas aloca memória para o texto
  *  @param tammens Tamanho da mensagem sem o 0 final;
  *                 Se for < 0, assume o valor de strlen(mens)
@@ -358,8 +410,7 @@ bool Instr::CriarVarTexto(const char * mens, int tammens)
 
 //----------------------------------------------------------------------------
 /// Cria variável ref com um valor definido
-/**
- *  @param obj Objeto correspondente à variável
+/** @param obj Objeto correspondente à variável
  *  @return true se conseguiu criar, false se memória insuficiente */
 bool Instr::CriarVarObj(TObjeto * obj)
 {
@@ -434,16 +485,14 @@ bool Instr::CriarVar(const char * def)
 /// Apaga variáveis na pilha a partir da variável v
 void Instr::ApagarVar(TVariavel * v)
 {
-    while (VarAtual >= v)
-    {
-        if (VarAtual->tamanho)
+    for (TVariavel * var = VarAtual; var >= v; var--)
+        if (var->tamanho)
         {
-            if (VarAtual->endvar)
-                DadosTopo = (char*)VarAtual->endvar;
-            VarAtual->Apagar(); // Pode alterar VarAtual->endvar
+            if (var->endvar)
+                DadosTopo = var->endchar;
+            var->Apagar(); // Pode alterar v2->endvar
         }
-        VarAtual--;
-    }
+    VarAtual = v - 1;
 }
 
 //----------------------------------------------------------------------------
@@ -487,12 +536,12 @@ void Instr::ApagarRet(TVariavel * v)
 */
 bool Instr::VarFuncIni(TVariavel * varini)
 {
-    for (TVariavel * v=VarAtual; v>=varini; v--)
+    for (TVariavel * v = VarAtual; v >= varini; v--)
     {
         const char * defvar = v->defvar;
         if (defvar[2] != cVarFunc && defvar[2] != cConstVar)
             continue;
-        if (FuncAtual+1 >= FuncFim)
+        if (FuncAtual + 1 >= FuncFim)
             return false;
     // Cria função
         FuncAtual++;
@@ -705,7 +754,7 @@ bool Instr::ComparaInstr(const char * instr1, const char * instr2)
         case ex_num32n:
         case ex_num32hexp:
         case ex_num32hexn:
-            expr+=2;
+            expr += 2;
         case ex_num16p:
         case ex_num16n:
         case ex_num16hexp:
@@ -954,6 +1003,7 @@ const char * Instr::NomeInstr(const char * instr)
     case cVarClasse:
     case cVarObjeto:
     case cVarInt:
+    case cVarDouble:
     case cTextoVarSub:
     case cTextoObjSub:      return "";
     case cTotalComandos:    break;
@@ -1049,6 +1099,7 @@ const char * Instr::NomeComando(int valor)
     case cVarClasse:        return "cVarClasse";
     case cVarObjeto:        return "cVarObjeto";
     case cVarInt:           return "cVarInt";
+    case cVarDouble:        return "cVarDouble";
     case cTextoVarSub:      return "cTextoVarSub";
     case cTextoObjSub:      return "cTextoObjSub";
     case cTotalComandos:    break;

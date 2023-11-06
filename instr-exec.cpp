@@ -222,26 +222,6 @@ Instr::ExecFunc * const Instr::FuncFim = Instr::FuncPilha + 40;
 Instr::ExecFunc * Instr::FuncAtual  = Instr::FuncPilha;
 
 //----------------------------------------------------------------------------
-#define INSTR_COMPL (char)0xFF, 0, 0, 0, 0, '+', 0
-const char Instr::InstrNulo[] = { 10, 0, Instr::cConstNulo, INSTR_COMPL };
-const char Instr::InstrDouble[] = { 10, 0, Instr::cReal2, INSTR_COMPL };
-const char Instr::InstrSocket[] = { 10, 0, Instr::cSocket, INSTR_COMPL };
-const char Instr::InstrTxtFixo[] = { 10, 0, Instr::cTxtFixo, INSTR_COMPL };
-const char Instr::InstrVarNome[] = { 10, 0, Instr::cVarNome, INSTR_COMPL };
-const char Instr::InstrVarInicio[] = { 10, 0, Instr::cVarInicio, INSTR_COMPL };
-const char Instr::InstrVarIniFunc[] = { 10, 0, Instr::cVarIniFunc, INSTR_COMPL };
-const char Instr::InstrVarClasse[] = { 10, 0, Instr::cVarClasse, INSTR_COMPL };
-const char Instr::InstrVarObjeto[] = { 10, 0, Instr::cVarObjeto, INSTR_COMPL };
-const char Instr::InstrVarInt[] = { 10, 0, Instr::cVarInt, INSTR_COMPL };
-const char Instr::InstrVarListaItem[] = { 10, 0, Instr::cListaItem, INSTR_COMPL };
-const char Instr::InstrVarTextoPos[] =  { 10, 0, Instr::cTextoPos, INSTR_COMPL };
-const char Instr::InstrVarTextoVarSub[] =  { 10, 0, Instr::cTextoVarSub, INSTR_COMPL };
-const char Instr::InstrVarTextoObjSub[] =  { 10, 0, Instr::cTextoObjSub, INSTR_COMPL };
-const char Instr::InstrDebugFunc[] = { 10, 0, INSTR_COMPL };
-const char Instr::InstrAddSub[] = { 9, 0, Instr::cConstExpr, (char)0xFF, 0,
-        Instr::exo_add_sub1, Instr::exo_atrib,
-        Instr::exo_add_sub2, Instr::ex_fim };
-
 static void ApagaVarEscopo()
 {
     using namespace Instr;
@@ -367,7 +347,7 @@ void Instr::ExecArg(int valor)
     VarAtual++;
     VarAtual->Limpar();
     VarAtual->defvar = InstrVarInt;
-    VarAtual->setInt(valor);
+    VarAtual->valor_int = valor;
     FuncAtual->fimvar = VarAtual + 1;
     FuncAtual->numarg++;
 }
@@ -456,12 +436,12 @@ static bool RetornoErro(int motivo)
 /// Usado internamente em Instr::ExecX()
 /** Adiciona texto em variável cVarNome
  */
-static const char * CopiaVarNome(TVariavel * v, const char * txt)
+static inline const char * CopiaVarNome(TVariavel * v, const char * txt)
 {
     if (v->defvar[2] != Instr::cVarNome)
         return txt;
     char * dest = (char*)v->endvar;
-    const char * fim = dest + TVariavel::Tamanho(v->defvar) - 1;
+    const char * fim = dest + VAR_NOME_TAM - 1;
     while (*dest)
         dest++;
     for (; *txt; txt++)
@@ -473,7 +453,7 @@ static const char * CopiaVarNome(TVariavel * v, const char * txt)
         else if (dest < fim)
             *dest++ = *txt;
     }
-    *dest=0;
+    *dest = 0;
     return txt;
 }
 
@@ -481,12 +461,12 @@ static const char * CopiaVarNome(TVariavel * v, const char * txt)
 /// Usado internamente em Instr::ExecX()
 /** @return Última variável cVarNome da pilha
  */
-static TVariavel * EndVarNome(void)
+static inline TVariavel * EndVarNome(void)
 {
-    for (TVariavel * v = Instr::VarAtual; v>=Instr::VarPilha; v--)
+    for (TVariavel * v = Instr::VarAtual; v >= Instr::VarPilha; v--)
         if (v->defvar[2] == Instr::cVarNome)
             return v;
-    return 0;
+    return nullptr;
 }
 
 //----------------------------------------------------------------------------
@@ -1075,32 +1055,32 @@ bool Instr::ExecX()
                 return RetornoErro(2);
             FuncAtual->expr += 5;
             break;
+
+#define EX_DIV(divvar)   \
+            FuncAtual->expr++;                                              \
+            if (VarAtual->defvar != InstrVarDouble)                         \
+                CriarVarDouble(VarAtual, VarAtual->getDouble() / (divvar)); \
+            else                                                            \
+                VarAtual->valor_double /= (divvar);
+
         case ex_div1:
+            EX_DIV(10)
+            break;
         case ex_div2:
+            EX_DIV(100)
+            break;
         case ex_div3:
+            EX_DIV(1000)
+            break;
         case ex_div4:
+            EX_DIV(10000)
+            break;
         case ex_div5:
+            EX_DIV(100000)
+            break;
         case ex_div6:
-            {
-                double valor = VarAtual->getDouble();
-                switch (*FuncAtual->expr++)
-                {
-                case ex_div1: valor /= 10; break;
-                case ex_div2: valor /= 100; break;
-                case ex_div3: valor /= 1000; break;
-                case ex_div4: valor /= 10000; break;
-                case ex_div5: valor /= 100000; break;
-                default:      valor /= 1000000; break;
-                }
-                if (VarAtual->tamanho == 0 || VarAtual->defvar[2] != cReal2)
-                {
-                    ApagarVar(VarAtual);
-                    CriarVarDouble(valor);
-                    break;
-                }
-                VarAtual->setDouble(valor);
-                break;
-            }
+            EX_DIV(1000000)
+            break;
         case exo_virg_expr:  // Operador: Vírgula, para separar expressões
             switch (FuncAtual->linha[2])
             {
@@ -1154,50 +1134,23 @@ bool Instr::ExecX()
             if (VarFuncIni(VarAtual))
                 break;
             FuncAtual->expr++;
-            switch (VarAtual->Tipo())
+            if (VarAtual->defvar != InstrVarDouble)
             {
-            case varOutros:
-            case varObj:
+                TVarTipo tipo = VarAtual->Tipo();
+                if (tipo != varOutros && tipo != varObj)
+                    CriarVarDouble(VarAtual, -VarAtual->getDouble());
                 break;
-            case varInt:
-                if (VarAtual->tamanho)
-                    VarAtual->setInt(-VarAtual->getInt());
-                else
-                {
-                    int valor = -VarAtual->getInt();
-                    ApagarVar(VarAtual);
-                    if (!CriarVarInt(valor))
-                        return RetornoErro(2);
-                }
-                break;
-            case varDouble:
-                if (VarAtual->tamanho)
-                {
-                    VarAtual->setDouble(-VarAtual->getDouble());
-                    break;
-                }
-            default:
-                {
-                    double valor = -VarAtual->getDouble();
-                    ApagarVar(VarAtual);
-                    if (!CriarVarDouble(valor))
-                        return RetornoErro(2);
-                }
             }
+            VarAtual->valor_double *= -1;
             break;
         case exo_exclamacao: // Operador: !a
             if (VarFuncIni(VarAtual))
                 break;
             FuncAtual->expr++;
-            if (VarAtual->tamanho == 0 || VarAtual->defvar != InstrVarInt)
-            {
-                bool valor = !VarAtual->getBool();
-                ApagarVar(VarAtual);
-                if (!CriarVarInt(valor))
-                    return RetornoErro(2);
-            }
+            if (VarAtual->defvar != InstrVarInt)
+                CriarVarInt(VarAtual, !VarAtual->getBool());
             else
-                VarAtual->setInt(!VarAtual->getInt());
+                VarAtual->valor_int = !VarAtual->valor_int;
             break;
         case exo_b_comp: // Operador: ~a
             if (VarFuncIni(VarAtual))
@@ -1227,18 +1180,13 @@ bool Instr::ExecX()
                     *d++ = (ch < 10 ? ch + '0' : ch + 'a' - 10);
                 }
                 ApagarVar(VarAtual);
-                if (!CriarVarTexto(mens, d-mens))
+                if (!CriarVarTexto(mens, d - mens))
                     return RetornoErro(2);
             }
-            else if (VarAtual->tamanho == 0 || VarAtual->defvar != InstrVarInt)
-            {
-                int valor = ~VarAtual->getInt();
-                ApagarVar(VarAtual);
-                if (!CriarVarInt(valor))
-                    return RetornoErro(2);
-            }
+            else if (VarAtual->defvar != InstrVarInt)
+                CriarVarInt(VarAtual, ~VarAtual->getInt());
             else
-                VarAtual->setInt(~VarAtual->getInt());
+                VarAtual->valor_int = ~VarAtual->valor_int;
             break;
 
 // EXO_ADD_SUB tratando varfunc:
@@ -1269,9 +1217,7 @@ bool Instr::ExecX()
             {                                                                 \
                 double valor = VarAtual->getDouble();                         \
                 VarAtual->setDouble(valor + (somavar));                       \
-                ApagarVar(VarAtual);                                          \
-                if (!CriarVarDouble(valor + (somaresult)))                    \
-                    return RetornoErro(2);                                    \
+                CriarVarDouble(VarAtual, valor + (somaresult));               \
                 break;                                                        \
             }                                                                 \
             else                                                              \
@@ -1303,13 +1249,12 @@ bool Instr::ExecX()
                 FuncAtual->funcdebug = FuncAtual[-1].funcdebug;               \
                                                                               \
                 TVariavel variavel_varfunc = VarAtual[0];                     \
-                ApagarVar(VarAtual);                                          \
-                if (!CriarVarDouble(somaresult))                              \
+                if (VarAtual >= VarFim - 4)                                   \
                     return RetornoErro(2);                                    \
+                CriarVarDouble(VarAtual, somaresult);                         \
                 VarAtual++;                                                   \
                 VarAtual[0] = variavel_varfunc;                               \
-                if (!CriarVarDouble(somavar))                                 \
-                    return RetornoErro(2);                                    \
+                CriarVarDouble(somavar);                                      \
                 VarAtual++;                                                   \
                 VarAtual[0] = variavel_varfunc;                               \
                 break;                                                        \
@@ -1354,14 +1299,10 @@ bool Instr::ExecX()
                 double valor = VarAtual[-1].getDouble() *
                                VarAtual[0].getDouble();
                 ApagarVar(VarAtual);
-                if (VarAtual->tamanho == 0 || VarAtual->defvar != InstrDouble)
-                {
-                    ApagarVar(VarAtual);
-                    if (!CriarVarDouble(valor))
-                        return RetornoErro(2);
-                    break;
-                }
-                VarAtual->setDouble(valor);
+                if (VarAtual->defvar != InstrVarDouble)
+                    CriarVarDouble(VarAtual, valor);
+                else
+                    VarAtual->valor_double = valor;
                 break;
             }
         case exo_div:        // Operador: a/b
@@ -1376,14 +1317,10 @@ bool Instr::ExecX()
                 else
                     valor1 *= std::numeric_limits<double>::infinity();
                 ApagarVar(VarAtual);
-                if (VarAtual->tamanho == 0 || VarAtual->defvar != InstrDouble)
-                {
-                    ApagarVar(VarAtual);
-                    if (!CriarVarDouble(valor1))
-                        return RetornoErro(2);
-                    break;
-                }
-                VarAtual->setDouble(valor1);
+                if (VarAtual->defvar != InstrVarDouble)
+                    CriarVarDouble(VarAtual, valor1);
+                else
+                    VarAtual->valor_double = valor1;
                 break;
             }
         case exo_porcent:    // Operador: a%b
@@ -1399,13 +1336,10 @@ bool Instr::ExecX()
                     else
                         valor = 0;
                     ApagarVar(VarAtual);
-                    if (VarAtual->tamanho == 0 || VarAtual->Tipo()!=varInt)
-                    {
-                        ApagarVar(VarAtual);
-                        if (!CriarVarInt(0))
-                            return RetornoErro(2);
-                    }
-                    VarAtual->setInt(valor);
+                    if (VarAtual->defvar != InstrVarInt)
+                        CriarVarInt(VarAtual, valor);
+                    else
+                        VarAtual->valor_int = valor;
                 }
                 else
                 {
@@ -1415,14 +1349,10 @@ bool Instr::ExecX()
                     else
                         valor = 0;
                     ApagarVar(VarAtual);
-                    if (VarAtual->tamanho == 0 || VarAtual->defvar != InstrDouble)
-                    {
-                        ApagarVar(VarAtual);
-                        if (!CriarVarDouble(valor))
-                            return RetornoErro(2);
-                        break;
-                    }
-                    VarAtual->setDouble(valor);
+                    if (VarAtual->defvar != InstrVarDouble)
+                        CriarVarDouble(VarAtual, valor);
+                    else
+                        VarAtual->valor_double = valor;
                 }
                 break;
             }
@@ -1438,14 +1368,10 @@ bool Instr::ExecX()
                     double valor = VarAtual[-1].getDouble() +
                                    VarAtual[0].getDouble();
                     ApagarVar(VarAtual);
-                    if (VarAtual->tamanho == 0 || VarAtual->defvar != InstrDouble)
-                    {
-                        ApagarVar(VarAtual);
-                        if (!CriarVarDouble(valor))
-                            return RetornoErro(2);
-                        break;
-                    }
-                    VarAtual->setDouble(valor);
+                    if (VarAtual->defvar != InstrVarDouble)
+                        CriarVarDouble(VarAtual, valor);
+                    else
+                        VarAtual->valor_double = valor;
                     break;
                 }
             // Exemplo de comando no intmud.int que usa todos os tipos
@@ -1553,14 +1479,10 @@ bool Instr::ExecX()
                 double valor = VarAtual[-1].getDouble() -
                                 VarAtual[0].getDouble();
                 ApagarVar(VarAtual);
-                if (VarAtual->tamanho == 0 || VarAtual->defvar != InstrDouble)
-                {
-                    ApagarVar(VarAtual);
-                    if (!CriarVarDouble(valor))
-                        return RetornoErro(2);
-                    break;
-                }
-                VarAtual->setDouble(valor);
+                if (VarAtual->defvar != InstrVarDouble)
+                    CriarVarDouble(VarAtual, valor);
+                else
+                    VarAtual->valor_double = valor;
                 break;
             }
 
@@ -1644,14 +1566,10 @@ bool Instr::ExecX()
                 }
                 int valor = VarAtual[-1].getInt() << VarAtual[0].getInt();
                 ApagarVar(VarAtual);
-                if (VarAtual->tamanho == 0 || VarAtual->defvar != InstrVarInt)
-                {
-                    ApagarVar(VarAtual);
-                    if (!CriarVarInt(valor))
-                        return RetornoErro(2);
-                }
+                if (VarAtual->defvar != InstrVarInt)
+                    CriarVarInt(VarAtual, valor);
                 else
-                    VarAtual->setInt(valor);
+                    VarAtual->valor_int = valor;
                 break;
             }
         case exo_b_shr:  // Operador: a >> b
@@ -1668,14 +1586,10 @@ bool Instr::ExecX()
                 }
                 int valor = VarAtual[-1].getInt() >> VarAtual[0].getInt();
                 ApagarVar(VarAtual);
-                if (VarAtual->tamanho == 0 || VarAtual->defvar!=InstrVarInt)
-                {
-                    ApagarVar(VarAtual);
-                    if (!CriarVarInt(valor))
-                        return RetornoErro(2);
-                }
+                if (VarAtual->defvar != InstrVarInt)
+                    CriarVarInt(VarAtual, valor);
                 else
-                    VarAtual->setInt(valor);
+                    VarAtual->valor_int = valor;
                 break;
             }
 
@@ -1734,7 +1648,7 @@ bool Instr::ExecX()
             break;                                    \
     if (d2 == mens + BUF_MENS)                        \
         *--d2 = '0';                                  \
-    ApagarVar(VarAtual - 1);                            \
+    ApagarVar(VarAtual - 1);                          \
     if (!CriarVarTexto(d2, mens+BUF_MENS-d2))         \
         return RetornoErro(2);
 
@@ -1750,14 +1664,10 @@ bool Instr::ExecX()
                 }
                 int valor = VarAtual[-1].getInt() & VarAtual[0].getInt();
                 ApagarVar(VarAtual);
-                if (VarAtual->tamanho == 0 || VarAtual->defvar != InstrVarInt)
-                {
-                    ApagarVar(VarAtual);
-                    if (!CriarVarInt(valor))
-                        return RetornoErro(2);
-                }
+                if (VarAtual->defvar != InstrVarInt)
+                    CriarVarInt(VarAtual, valor);
                 else
-                    VarAtual->setInt(valor);
+                    VarAtual->valor_int = valor;
                 break;
             }
         case exo_b_ouou: // Operador: a^b
@@ -1772,14 +1682,10 @@ bool Instr::ExecX()
                 }
                 int valor = VarAtual[-1].getInt() ^ VarAtual[0].getInt();
                 ApagarVar(VarAtual);
-                if (VarAtual->tamanho == 0 || VarAtual->defvar != InstrVarInt)
-                {
-                    ApagarVar(VarAtual);
-                    if (!CriarVarInt(valor))
-                        return RetornoErro(2);
-                }
+                if (VarAtual->defvar != InstrVarInt)
+                    CriarVarInt(VarAtual, valor);
                 else
-                    VarAtual->setInt(valor);
+                    VarAtual->valor_int = valor;
                 break;
             }
         case exo_b_ou:  // Operador: a|b
@@ -1794,14 +1700,10 @@ bool Instr::ExecX()
                 }
                 int valor = VarAtual[-1].getInt() | VarAtual[0].getInt();
                 ApagarVar(VarAtual);
-                if (VarAtual->tamanho == 0 || VarAtual->defvar != InstrVarInt)
-                {
-                    ApagarVar(VarAtual);
-                    if (!CriarVarInt(valor))
-                        return RetornoErro(2);
-                }
+                if (VarAtual->defvar != InstrVarInt)
+                    CriarVarInt(VarAtual, valor);
                 else
-                    VarAtual->setInt(valor);
+                    VarAtual->valor_int = valor;
                 break;
             }
         case exo_atrib:      // Operador de atribuição: a=b
@@ -1914,9 +1816,7 @@ bool Instr::ExecX()
                         // Tipos diferentes de variáveis
                     tipo1 = (*FuncAtual->expr == exo_diferente);
                     FuncAtual->expr++;
-                    ApagarVar(VarAtual - 1);
-                    if (!CriarVarInt(tipo1))
-                        return RetornoErro(2);
+                    CriarVarInt(VarAtual - 1, tipo1);
                     goto exo_compara_sair;
                     //const void * v1 = VarAtual[-1].endvar;
                     //const void * v2 = VarAtual[0].endvar;
@@ -1934,9 +1834,7 @@ bool Instr::ExecX()
                 case exo_diferente:  tipo1 = (tipo1 != 0); break;
                 }
             // Apaga valores da pilha; cria int32 na pilha
-                ApagarVar(VarAtual - 1);
-                if (!CriarVarInt(tipo1))
-                    return RetornoErro(2);
+                CriarVarInt(VarAtual - 1, tipo1);
 exo_compara_sair:
                 break;
             }
@@ -1989,9 +1887,7 @@ exo_compara_sair:
                 if (*FuncAtual->expr++ == exo_diferente2)
                     tipo1 = !tipo1;
             // Apaga valores da pilha; cria int32 na pilha
-                ApagarVar(VarAtual - 1);
-                if (!CriarVarInt(tipo1 != 0))
-                    return RetornoErro(2);
+                CriarVarInt(VarAtual - 1, tipo1 != 0);
                 break;
             }
         case exo_ee:         // Operador: Início do operador &&
@@ -2003,9 +1899,7 @@ exo_compara_sair:
                 const char * p = ProcuraExpr(FuncAtual->expr, exo_e);
                 assert(p != nullptr);
                 FuncAtual->expr = p + 1;
-                ApagarVar(VarAtual);
-                if (!CriarVarInt(0))
-                    return RetornoErro(2);
+                CriarVarInt(VarAtual, 0);
                 break;
             }
             ApagarVar(VarAtual);
@@ -2019,25 +1913,18 @@ exo_compara_sair:
                 const char * p = ProcuraExpr(FuncAtual->expr, exo_ou);
                 assert(p != nullptr);
                 FuncAtual->expr = p + 1;
-                ApagarVar(VarAtual);
-                if (!CriarVarInt(1))
-                    return RetornoErro(2);
+                CriarVarInt(VarAtual, 1);
                 break;
             }
             ApagarVar(VarAtual);
             break;
         case exo_e:          // Operador: a&&b
         case exo_ou:         // Operador: a||b
-            {
-                if (VarFuncIni(VarAtual))
-                    break;
-                FuncAtual->expr++;
-                bool b = VarAtual->getBool();
-                ApagarVar(VarAtual);
-                if (!CriarVarInt(b))
-                    return RetornoErro(2);
+            if (VarFuncIni(VarAtual))
                 break;
-            }
+            FuncAtual->expr++;
+            CriarVarInt(VarAtual, VarAtual->getBool());
+            break;
         case exo_i_add:      // Operador: a += b
             if (VarAtual[-1].Tipo() == varTxt)
             {
@@ -2236,7 +2123,7 @@ exo_compara_sair:
                         v[1].defvar = InstrVarClasse;
                         v[1].nomevar = nullptr;
                         v[1].endvar = c;
-                        v->setTxt("");
+                        v->endchar[0] = 0; // Instr::cVarNome
                         FuncAtual->expr = CopiaVarNome(
                                 v, FuncAtual->expr);
                         break;
@@ -2249,10 +2136,10 @@ exo_compara_sair:
             {
                 FuncAtual->expr++;
                 TVariavel * v = EndVarNome();
+                assert(v != nullptr);
                 const char * nome = v->getTxt(); // Nome encontrado
                 TClasse * classe = nullptr; // Procurar variável de classe/objeto
                 TObjeto * objeto = nullptr; // Procurar variável de objeto
-                assert(v != nullptr);
 
             // Verifica variável/função da classe
                 unsigned char defvar_cod = v[1].defvar[2];
@@ -2278,7 +2165,7 @@ exo_compara_sair:
                         VarAtual->Limpar();
                         VarAtual->defvar = InstrVarObjeto;
                         VarAtual->endvar = c->ObjetoIni;
-                        v->setTxt("");
+                        v->endchar[0] = 0; // Instr::cVarNome
                         FuncAtual->expr = CopiaVarNome(v, FuncAtual->expr);
                         break;
                     }
@@ -2297,7 +2184,7 @@ exo_compara_sair:
                             // Processa função interna
                         if (func->Func(v + 1))
                         {
-                            v->setTxt("");
+                            v->endchar[0] = 0; // Instr::cVarNome
                             f->expr = CopiaVarNome(v, f->expr);
                         }
                         else
@@ -2312,11 +2199,11 @@ exo_compara_sair:
                             break;
                     if (var < FuncAtual->fimvar)
                     {
-                        ApagarVar(v+1);
+                        ApagarVar(v + 1);
                         VarAtual++;
                         *VarAtual = *var;
                         VarAtual->tamanho = 0;
-                        v->setTxt("");
+                        v->endchar[0] = 0; // Instr::cVarNome
                         FuncAtual->expr = CopiaVarNome(v, FuncAtual->expr);
                         break;
                     }
@@ -2342,7 +2229,7 @@ exo_compara_sair:
                             // Processa função interna
                         if (func->Func(v + 1))
                         {
-                            v->setTxt("");
+                            v->endchar[0] = 0; // Instr::cVarNome
                             f->expr = CopiaVarNome(v, f->expr);
                         }
                         else
@@ -2378,7 +2265,7 @@ exo_compara_sair:
                 // Executa função
                     if (v[1].Func(nome))
                     {
-                        v->setTxt("");
+                        v->endchar[0] = 0; // Instr::cVarNome
                         f->expr = CopiaVarNome(v, f->expr);
                     }
                     else
@@ -2400,7 +2287,7 @@ exo_compara_sair:
                 }
                 char * defvar = classe->InstrVar[indice];
                 int indvar = classe->IndiceVar[indice];
-                v->setTxt("");
+                v->endchar[0] = 0; // Instr::cVarNome
                 FuncAtual->expr = CopiaVarNome(v, FuncAtual->expr);
             // Função
                 if (defvar[2]==cFunc)

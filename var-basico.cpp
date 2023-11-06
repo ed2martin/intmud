@@ -131,8 +131,7 @@ static bool VarBaseTxt_FuncVetor(TVariavel * v, const char * nome)
         for (; palavras < numvar; destino += tamvar, numvar--)
             *destino = 0;
     // Retorna o número de palavras
-        Instr::ApagarVar(v);
-        return Instr::CriarVarInt(palavras);
+        return Instr::CriarVarInt(v, palavras);
     }
 // Divide em linhas
     if (comparaZ(nome, "linhas") == 0)
@@ -197,8 +196,7 @@ static bool VarBaseTxt_FuncVetor(TVariavel * v, const char * nome)
         for (; linha < numvar; destino += tamvar, numvar--)
             *destino = 0;
     // Retorna o número de palavras
-        Instr::ApagarVar(v);
-        return Instr::CriarVarInt(linha);
+        return Instr::CriarVarInt(v, linha);
     }
 // Limpa as variáveis do vetor
     if (comparaZ(nome, "limpar") == 0)
@@ -311,8 +309,7 @@ static bool VarBaseTxt_FuncVetor(TVariavel * v, const char * nome)
         for (; indice < numvar; destino += tamvar, numvar--)
             *destino = 0;
         // Retorna o número de variáveis
-        Instr::ApagarVar(v);
-        return Instr::CriarVarInt(indice);
+        return Instr::CriarVarInt(v, indice);
     }
 // TxtRemove
     if (comparaZ(nome, "txtremove") == 0)

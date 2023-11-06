@@ -25,8 +25,10 @@ bool ChecaHerda(const char * instr, const char * nomeclasse);
 const char * ProximaInstr(const char * instr, const char * texto, int tamanho);
 
 bool CriarVarInt(int valor);
+bool CriarVarInt(TVariavel * v, int valor);
 bool CriarVarDouble(double valor);
-bool CriarVarTexto(const char * mens, int tammens=-1);
+bool CriarVarDouble(TVariavel * v, double valor);
+bool CriarVarTexto(const char * mens, int tammens = -1);
 bool CriarVarObj(TObjeto * obj);
 bool CriarVar(const char * defvar);
 void ApagarVar(TVariavel * v);
@@ -51,8 +53,6 @@ void ExecFim();
 // Variáveis predefinidas
 /// TVariavel::defvar para Instr::cNulo
 extern const char InstrNulo[];
-/// TVariavel::defvar para Instr::cReal2
-extern const char InstrDouble[];
 /// TVariavel::defvar para Instr::cSocket
 extern const char InstrSocket[];
 /// TVariavel::defvar para Instr::cTxtFixo
@@ -69,6 +69,8 @@ extern const char InstrVarClasse[];
 extern const char InstrVarObjeto[];
 /// TVariavel::defvar para Instr::cVarInt
 extern const char InstrVarInt[];
+/// TVariavel::defvar para Instr::cVarDouble
+extern const char InstrVarDouble[];
 /// TVariavel::defvar para Instr::cListaItem
 extern const char InstrVarListaItem[];
 /// TVariavel::defvar para Instr::cTextoPos

@@ -489,8 +489,7 @@ bool TListaObj::FuncRemove(TVariavel * v)
             l1 = TListaX::EndMover, total++;
         }
         DEBUG1
-        Instr::ApagarVar(v);
-        return Instr::CriarVarInt(total);
+        return Instr::CriarVarInt(v, total);
     }
 // Remover um objeto
     if (Instr::VarAtual == v + 1 && v[1].defvar[2] != Instr::cListaObj)
@@ -510,8 +509,7 @@ bool TListaObj::FuncRemove(TVariavel * v)
                 l1 = TListaX::EndMover, total++;
             }
         DEBUG1
-        Instr::ApagarVar(v);
-        return Instr::CriarVarInt(total);
+        return Instr::CriarVarInt(v, total);
     }
 // Apagar vários objetos
         // Desmarca os objetos da lista
@@ -542,8 +540,7 @@ bool TListaObj::FuncRemove(TVariavel * v)
         l1 = TListaX::EndMover, total++;
     }
     DEBUG1
-    Instr::ApagarVar(v);
-    return Instr::CriarVarInt(total);
+    return Instr::CriarVarInt(v, total);
 }
 
 //----------------------------------------------------------------------------
@@ -625,10 +622,7 @@ bool TListaObj::FuncPossui(TVariavel * v)
 {
 // Nenhum objeto
     if (Instr::VarAtual < v + 1)
-    {
-        Instr::ApagarVar(v);
-        return Instr::CriarVarInt(0);
-    }
+        return Instr::CriarVarInt(v, 0);
 // Um objeto
     if (Instr::VarAtual == v + 1 && v[1].defvar[2] != Instr::cListaObj)
     {
@@ -638,8 +632,7 @@ bool TListaObj::FuncPossui(TVariavel * v)
             for (TListaX * l1 = Inicio; l1; l1 = l1->ListaDepois)
                 if (l1->Objeto == obj)
                     total++;
-        Instr::ApagarVar(v);
-        return Instr::CriarVarInt(total);
+        return Instr::CriarVarInt(v, total);
     }
 // Vários objetos
         // Desmarca os objetos da lista
@@ -660,8 +653,7 @@ bool TListaObj::FuncPossui(TVariavel * v)
     int total = 0;
     for (TListaX * l1 = Inicio; l1; l1 = l1->ListaDepois)
         total += l1->Objeto->MarcaLista;
-    Instr::ApagarVar(v);
-    return Instr::CriarVarInt(total);
+    return Instr::CriarVarInt(v, total);
 }
 
 //----------------------------------------------------------------------------
@@ -680,8 +672,7 @@ bool TListaObj::FuncTotal(TVariavel * v)
                 if (obj->Objeto->Classe == cl)
                     x++;
     }
-    Instr::ApagarVar(v);
-    return Instr::CriarVarInt(x);
+    return Instr::CriarVarInt(v, x);
 }
 
 //------------------------------------------------------------------------------
@@ -842,8 +833,7 @@ bool TListaItem::Func(TVariavel * v, const char * nome)
 bool TListaItem::FuncTotal(TVariavel * v)
 {
     unsigned int x = (ListaX ? ListaX->Lista->Total : 0);
-    Instr::ApagarVar(v);
-    return Instr::CriarVarInt(x);
+    return Instr::CriarVarInt(v, x);
 }
 
 //----------------------------------------------------------------------------

@@ -100,6 +100,10 @@ static bool VarOutrosVarInt_GetBool(TVariavel * v)
 {
     return v->valor_int != 0;
 }
+static bool VarOutrosVarDouble_GetBool(TVariavel * v)
+{
+    return v->valor_double != 0;
+}
 
 //------------------------------------------------------------------------------
 static int VarOutrosConstTxt_GetInt(TVariavel * v)
@@ -171,6 +175,10 @@ static int VarOutrosVarInt_GetInt(TVariavel * v)
 {
     return v->valor_int;
 }
+static int VarOutrosVarDouble_GetInt(TVariavel * v)
+{
+    return DoubleToInt(v->valor_double);
+}
 
 //------------------------------------------------------------------------------
 static double VarOutrosConstTxt_GetDouble(TVariavel * v)
@@ -239,6 +247,10 @@ static double VarOutrosVarObjeto_GetDouble(TVariavel * v)
 static double VarOutrosVarInt_GetDouble(TVariavel * v)
 {
     return v->valor_int;
+}
+static double VarOutrosVarDouble_GetDouble(TVariavel * v)
+{
+    return v->valor_double;
 }
 
 //------------------------------------------------------------------------------
@@ -347,6 +359,12 @@ static const char * VarOutrosVarInt_GetTxt(TVariavel * v)
 {
     char * buf = TVarInfo::BufferTxt();
     sprintf(buf, "%d", v->valor_int);
+    return buf;
+}
+static const char * VarOutrosVarDouble_GetTxt(TVariavel * v)
+{
+    char * buf = TVarInfo::BufferTxt();
+    DoubleToTxt(buf, v->valor_double);
     return buf;
 }
 
@@ -604,6 +622,24 @@ const TVarInfo * VarOutrosVarInt()
         VarOutrosVarInt_GetInt,
         VarOutrosVarInt_GetDouble,
         VarOutrosVarInt_GetTxt,
+        TVarInfo::FGetObjNulo,
+        TVarInfo::FFuncVetorFalse);
+    return &var;
+}
+
+const TVarInfo * VarOutrosVarDouble()
+{
+    static const TVarInfo var(
+        TVarInfo::FTamanho0,
+        TVarInfo::FTamanho0,
+        TVarInfo::FTipoDouble,
+        TVarInfo::FRedim0,
+        TVarInfo::FMoverEnd0,
+        TVarInfo::FMoverDef0,
+        VarOutrosVarDouble_GetBool,
+        VarOutrosVarDouble_GetInt,
+        VarOutrosVarDouble_GetDouble,
+        VarOutrosVarDouble_GetTxt,
         TVarInfo::FGetObjNulo,
         TVarInfo::FFuncVetorFalse);
     return &var;

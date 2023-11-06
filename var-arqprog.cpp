@@ -334,8 +334,7 @@ bool TVarArqProg::FuncDepois(TVariavel * v)
 bool TVarArqProg::FuncLin(TVariavel * v)
 {
     bool b = (*Arquivo != 0);
-    Instr::ApagarVar(v);
-    return Instr::CriarVarInt(b);
+    return Instr::CriarVarInt(v, b);
 }
 
 //------------------------------------------------------------------------------

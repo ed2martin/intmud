@@ -214,8 +214,7 @@ bool TVarDebug::FuncMemMax(TVariavel * v)
 // Nível da função atual
 bool TVarDebug::FuncFunc(TVariavel * v)
 {
-    Instr::ApagarVar(v);
-    return Instr::CriarVarInt(Instr::FuncAtual - Instr::FuncPilha);
+    return Instr::CriarVarInt(v, Instr::FuncAtual - Instr::FuncPilha);
 }
 
 //----------------------------------------------------------------------------

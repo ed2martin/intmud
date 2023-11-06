@@ -477,8 +477,7 @@ bool TTextoVar::FuncTotal(TVariavel * v)
     if (*txt == 0)
     {
         total = Total;
-        Instr::ApagarVar(v);
-        return Instr::CriarVarInt(total);
+        return Instr::CriarVarInt(v, total);
     }
     TBlocoVar * ini = ProcIni(txt);
     if (ini)
@@ -488,8 +487,7 @@ bool TTextoVar::FuncTotal(TVariavel * v)
         while (ini && ini != fim)
             total++, ini=TBlocoVar::RBnext(ini);
     }
-    Instr::ApagarVar(v);
-    return Instr::CriarVarInt(total);
+    return Instr::CriarVarInt(v, total);
 }
 
 //----------------------------------------------------------------------------
