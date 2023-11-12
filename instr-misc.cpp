@@ -449,7 +449,7 @@ bool Instr::CriarVar(const char * def)
         VarAtual->nomevar = def;
         VarAtual->endvar = 0;
         VarAtual->tamanho = 0;
-        VarAtual->indice = (def[endVetor]==0 ? 0 : 0xFF);
+        VarAtual->indice = (def[endVetor] == 0 ? 0 : 0xFF);
         VarAtual->numbit = 0;
         VarAtual->numfunc = 0;
         return true;
@@ -529,49 +529,36 @@ void Instr::ApagarRet(TVariavel * v)
 }
 
 //----------------------------------------------------------------------------
-/// Inicialização de varfunc
-/** Prepara para executar varfunc
-   @param varini Procura variáveis varfunc a partir de varini
-   @return true se vai executar varfunc, false se não vai
-*/
-bool Instr::VarFuncIni(TVariavel * varini)
+/// Cria função para executar varfunc
+/** @param var VarFunc que será executada */
+void Instr::VarFuncPrepara(TVariavel * var)
 {
-    for (TVariavel * v = VarAtual; v >= varini; v--)
+    const char * defvar = var->defvar;
+    FuncAtual++;
+    FuncAtual->nome = defvar;
+    if (defvar[2] == cVarFunc)
     {
-        const char * defvar = v->defvar;
-        if (defvar[2] != cVarFunc && defvar[2] != cConstVar)
-            continue;
-        if (FuncAtual + 1 >= FuncFim)
-            return false;
-    // Cria função
-        FuncAtual++;
-        FuncAtual->nome = defvar;
-        if (defvar[2] == cVarFunc)
-        {
-            FuncAtual->linha = defvar + Num16(defvar);
-            FuncAtual->expr = nullptr;
-        }
-        else
-        {
-            FuncAtual->linha = defvar;
-            FuncAtual->expr = defvar + defvar[endIndice];
-        }
-        FuncAtual->este = (TObjeto*)v->endvar;
-        FuncAtual->inivar = VarAtual + 1;
-        FuncAtual->fimvar = VarAtual + 1;
-        FuncAtual->numarg = 0;
-        FuncAtual->tipo = 1;
-        FuncAtual->indent = 0;
-        if (FuncAtual >= FuncPilha)
-        {
-            FuncAtual->objdebug = FuncAtual[-1].objdebug;
-            FuncAtual->funcdebug = FuncAtual[-1].funcdebug;
-        }
-        else
-            FuncAtual->funcdebug = nullptr;
-        return true;
+        FuncAtual->linha = defvar + Num16(defvar);
+        FuncAtual->expr = nullptr;
     }
-    return false;
+    else
+    {
+        FuncAtual->linha = defvar;
+        FuncAtual->expr = defvar + defvar[endIndice];
+    }
+    FuncAtual->este = reinterpret_cast<TObjeto*>(var->endvar);
+    FuncAtual->inivar = VarAtual + 1;
+    FuncAtual->fimvar = VarAtual + 1;
+    FuncAtual->numarg = 0;
+    FuncAtual->tipo = 1;
+    FuncAtual->indent = 0;
+    if (FuncAtual >= FuncPilha)
+    {
+        FuncAtual->objdebug = FuncAtual[-1].objdebug;
+        FuncAtual->funcdebug = FuncAtual[-1].funcdebug;
+    }
+    else
+        FuncAtual->funcdebug = nullptr;
 }
 
 //----------------------------------------------------------------------------
@@ -599,7 +586,7 @@ bool Instr::VarFuncFim()
             continue;
         VarAtual->tamanho = vfunc->tamanho; // VarAtual é a primeira
         vfunc->tamanho = 0; // A outra é cópia
-        endini = 0;         // Por enquanto está na ordem correta em DadosPilha
+        endini = nullptr;   // Por enquanto está na ordem correta em DadosPilha
     }
     assert(vfunc->tamanho == 0);
 
@@ -612,9 +599,9 @@ bool Instr::VarFuncFim()
         return true;
     }
 
-// Move variáveis VarAtual a (vfunc+1) para o fim da área de dados
+// Move variáveis VarAtual a (vfunc + 1) para o fim da área de dados
     char * destino = DadosFim;
-    for (TVariavel * v = VarAtual; v>vfunc; v--)
+    for (TVariavel * v = VarAtual; v > vfunc; v--)
         if (v->tamanho)
         {
             char * origem = (char*)v->endvar;

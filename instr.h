@@ -33,7 +33,7 @@ bool CriarVarObj(TObjeto * obj);
 bool CriarVar(const char * defvar);
 void ApagarVar(TVariavel * v);
 void ApagarRet(TVariavel * v);
-bool VarFuncIni(TVariavel * varini);
+void VarFuncPrepara(TVariavel * varini);
 bool VarFuncFim();
 bool ComparaInstr(const char * instr1, const char * instr2);
 const char * ProcuraExpr(const char * expr, int valor);

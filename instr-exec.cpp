@@ -212,9 +212,9 @@ char * const Instr::DadosFim   = Instr::DadosPilha + 0x10000;
 char * Instr::DadosTopo  = Instr::DadosPilha;
 
 // Pilha de variáveis
-TVariavel * const Instr::VarPilha   = new TVariavel[500];
-TVariavel * const Instr::VarFim     = Instr::VarPilha + 500;
-TVariavel * Instr::VarAtual   = Instr::VarPilha;
+TVariavel * const Instr::VarPilha = new TVariavel[500];
+TVariavel * const Instr::VarFim = Instr::VarPilha + 500;
+TVariavel * Instr::VarAtual = Instr::VarPilha;
 
 // Pilha de funções
 Instr::ExecFunc * const Instr::FuncPilha  = new Instr::ExecFunc[40];
@@ -235,6 +235,42 @@ static void ApagaVarEscopo()
         else
             FuncAtual->indent = VarAtual->nomevar[endAlin];
     }
+}
+
+//----------------------------------------------------------------------------
+/// Inicialização de varfunc
+/** Prepara para executar varfunc
+ *  @param varini Procura variáveis varfunc a partir de varini
+ *  @return true se vai executar varfunc, false se não vai */
+static inline bool VarFuncIni(TVariavel * varini)
+{
+    using namespace Instr;
+    for (TVariavel * v = VarAtual; v >= varini; v--)
+    {
+        if (v->defvar[2] != cVarFunc && v->defvar[2] != cConstVar)
+            continue;
+        if (FuncAtual + 1 >= FuncFim)
+            return false;
+        VarFuncPrepara(v); // Cria função
+        return true;
+    }
+    return false;
+}
+
+//----------------------------------------------------------------------------
+/// Inicialização de varfunc em VarAtual
+/** Prepara para executar varfunc
+ *  @return true se vai executar varfunc, false se não vai */
+static inline bool VarFuncIni()
+{
+    using namespace Instr;
+    TVariavel * v = VarAtual;
+    if (v->defvar[2] != cVarFunc && v->defvar[2] != cConstVar)
+        return false;
+    if (FuncAtual + 1 >= FuncFim)
+        return false;
+    VarFuncPrepara(v); // Cria função
+    return true;
 }
 
 //----------------------------------------------------------------------------
@@ -575,7 +611,7 @@ bool Instr::ExecX()
                         DebugInstr = FuncAtual->linha;
                     continue;
                 }
-                if (VarFuncIni(VarAtual))
+                if (VarFuncIni())
                     continue;
                 return true;
             }
@@ -794,7 +830,7 @@ bool Instr::ExecX()
                 FuncAtual--;
                 if (FuncAtual>=FuncPilha)
                     break;
-                if (VarFuncIni(VarAtual))
+                if (VarFuncIni())
                     break;
                 return true;
             case cRefVar: // Referência a uma variável
@@ -808,7 +844,7 @@ bool Instr::ExecX()
                 break;
             case cSe:
             case cSenao2:
-                if (!VarFuncIni(VarAtual))
+                if (!VarFuncIni())
                 {
                     FuncAtual->expr = nullptr;
                     int desvio = 0;
@@ -845,7 +881,7 @@ bool Instr::ExecX()
                 }
                 break;
             case cSair2:
-                if (!VarFuncIni(VarAtual))
+                if (!VarFuncIni())
                 {
                     FuncAtual->expr = nullptr;
                     int desvio = 0;
@@ -859,7 +895,7 @@ bool Instr::ExecX()
                 }
                 break;
             case cContinuar2:
-                if (!VarFuncIni(VarAtual))
+                if (!VarFuncIni())
                 {
                     const char * p = FuncAtual->linha;
                     FuncAtual->expr = nullptr;
@@ -883,7 +919,7 @@ bool Instr::ExecX()
                 ApagarVar(FuncAtual->fimvar);
                 break;
             case cEnquanto:
-                if (!VarFuncIni(VarAtual))
+                if (!VarFuncIni())
                 {
                     FuncAtual->expr = nullptr;
                     int desvio = 0;
@@ -903,7 +939,7 @@ bool Instr::ExecX()
                     break;
                 }
             case cCasoVar:
-                if (!VarFuncIni(VarAtual))
+                if (!VarFuncIni())
                 {
                     FuncAtual->expr = nullptr;
                     if (FuncAtual->linha[endVar] == 0 &&
@@ -947,7 +983,7 @@ bool Instr::ExecX()
                 if (FuncAtual->linha[2] > cVariaveis)
                 {
                     ApagarVar(FuncAtual->fimvar + 1);
-                    if (VarFuncIni(VarAtual))
+                    if (VarFuncIni())
                         break;
                     switch (VarAtual[-1].Tipo())
                     {
@@ -1085,7 +1121,7 @@ bool Instr::ExecX()
             switch (FuncAtual->linha[2])
             {
             case cRet2:
-                if (VarFuncIni(VarAtual))
+                if (VarFuncIni())
                     break;
                 if (VarAtual->getBool())
                 {
@@ -1108,7 +1144,7 @@ bool Instr::ExecX()
                     break;
                 }
                 // Fecha o laço, exatamente como na instrução "enquanto"
-                if (!VarFuncIni(VarAtual))
+                if (!VarFuncIni())
                 {
                     FuncAtual->expr = nullptr;
                     int desvio = 0;
@@ -1131,7 +1167,7 @@ bool Instr::ExecX()
             FuncAtual->expr++;
             break;
         case exo_neg:        // Operador: -a
-            if (VarFuncIni(VarAtual))
+            if (VarFuncIni())
                 break;
             FuncAtual->expr++;
             if (VarAtual->defvar != InstrVarDouble)
@@ -1144,7 +1180,7 @@ bool Instr::ExecX()
             VarAtual->valor_double *= -1;
             break;
         case exo_exclamacao: // Operador: !a
-            if (VarFuncIni(VarAtual))
+            if (VarFuncIni())
                 break;
             FuncAtual->expr++;
             if (VarAtual->defvar != InstrVarInt)
@@ -1153,7 +1189,7 @@ bool Instr::ExecX()
                 VarAtual->valor_int = !VarAtual->valor_int;
             break;
         case exo_b_comp: // Operador: ~a
-            if (VarFuncIni(VarAtual))
+            if (VarFuncIni())
                 break;
             FuncAtual->expr++;
             if (VarAtual->Tipo() == varTxt)
@@ -1196,6 +1232,7 @@ bool Instr::ExecX()
 // Cria variável double: 1, ou ou -1 (será adicionado à varfunc)
 // Cria varfunc
 // Cria função que começa com a primeira variável criada
+// As instruções dessa função estão em Instr::InstrAddSub
 
 // Em seguida é chamado exo_add_sub1:
 // Resolve a varfunc no topo da pilha
@@ -1215,9 +1252,10 @@ bool Instr::ExecX()
             if (VarAtual->defvar[2] != cVarFunc &&                            \
                 VarAtual->defvar[2] != cConstVar)                             \
             {                                                                 \
-                double valor = VarAtual->getDouble();                         \
-                VarAtual->setDouble(valor + (somavar));                       \
-                CriarVarDouble(VarAtual, valor + (somaresult));               \
+                TVariavel * v = VarAtual;                                     \
+                double valor = v->getDouble();                                \
+                v->setDouble(valor + (somavar));                              \
+                CriarVarDouble(v, valor + (somaresult));                      \
                 break;                                                        \
             }                                                                 \
             else                                                              \
@@ -1230,7 +1268,7 @@ bool Instr::ExecX()
                  * 5. Criar variável double -> adicionado ao varfunc          \
                  * 6. Criar uma cópia da varfunc                              \
                  */                                                           \
-                if (FuncAtual >= FuncFim - 1 || VarAtual >= VarFim-4)         \
+                if (FuncAtual >= FuncFim - 1 || VarAtual >= VarFim - 4)       \
                     return RetornoErro(1);                                    \
                 assert(VarAtual->tamanho == 0);                               \
                                                                               \
@@ -1279,8 +1317,10 @@ bool Instr::ExecX()
                 FuncAtual->expr++;
                 double valor = VarAtual->getDouble();
                 ApagarVar(VarAtual);
-                VarAtual->setDouble(valor + VarAtual->getDouble());
-                VarAtual[-2].setDouble(valor + VarAtual[-2].getDouble());
+                //assert(VarAtual[0].defvar == Instr::InstrVarDouble);
+                //assert(VarAtual[-2].defvar == Instr::InstrVarDouble);
+                VarAtual[0].valor_double += valor;
+                VarAtual[-2].valor_double += valor;
                 break;
             }
         case exo_add_sub2:
@@ -1736,7 +1776,7 @@ bool Instr::ExecX()
                 FuncAtual->funcdebug = FuncAtual[-1].funcdebug;
                 break;
             }
-            if (VarFuncIni(VarAtual))
+            if (VarFuncIni())
                 break;
             FuncAtual->expr++;
             switch (VarAtual[-1].Tipo())
@@ -1891,7 +1931,7 @@ exo_compara_sair:
                 break;
             }
         case exo_ee:         // Operador: Início do operador &&
-            if (VarFuncIni(VarAtual))
+            if (VarFuncIni())
                 break;
             FuncAtual->expr++;
             if (VarAtual->getBool() == false)
@@ -1905,7 +1945,7 @@ exo_compara_sair:
             ApagarVar(VarAtual);
             break;
         case exo_ouou:       // Operador: Início do operador ||
-            if (VarFuncIni(VarAtual))
+            if (VarFuncIni())
                 break;
             FuncAtual->expr++;
             if (VarAtual->getBool())
@@ -1920,7 +1960,7 @@ exo_compara_sair:
             break;
         case exo_e:          // Operador: a&&b
         case exo_ou:         // Operador: a||b
-            if (VarFuncIni(VarAtual))
+            if (VarFuncIni())
                 break;
             FuncAtual->expr++;
             CriarVarInt(VarAtual, VarAtual->getBool());
@@ -1943,7 +1983,7 @@ exo_compara_sair:
         case exo_i_b_ouou:   // Operador: a ^= b
         case exo_i_b_ou:     // Operador: a |= b
             FuncAtual->expr++;
-            if (VarAtual >= VarFim-1)
+            if (VarAtual >= VarFim - 1)
                 return RetornoErro(2);
             VarAtual[1] = VarAtual[0];
             VarAtual[0] = VarAtual[-1];
@@ -1951,7 +1991,7 @@ exo_compara_sair:
             VarAtual++;
             break;
         case exo_int1:          // Operador: Início do operador "?"
-            if (VarFuncIni(VarAtual))
+            if (VarFuncIni())
                 break;
             FuncAtual->expr++;
             if (VarAtual->getBool()==false)
@@ -1982,7 +2022,7 @@ exo_compara_sair:
             }
             break;
         case exo_intint1:       // Operador: Início do operador "??"
-            if (VarFuncIni(VarAtual))
+            if (VarFuncIni())
                 break;
             FuncAtual->expr++;
             if (VarAtual->getBool())
@@ -2160,7 +2200,7 @@ exo_compara_sair:
                             VarInvalido();
                             break;
                         }
-                        ApagarVar(v+1);
+                        ApagarVar(v + 1);
                         VarAtual++;
                         VarAtual->Limpar();
                         VarAtual->defvar = InstrVarObjeto;
@@ -2290,7 +2330,7 @@ exo_compara_sair:
                 v->endchar[0] = 0; // Instr::cVarNome
                 FuncAtual->expr = CopiaVarNome(v, FuncAtual->expr);
             // Função
-                if (defvar[2]==cFunc)
+                if (defvar[2] == cFunc)
                 {
                     if (FuncAtual >= FuncFim - 1)
                         return RetornoErro(1);
