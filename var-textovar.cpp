@@ -42,6 +42,7 @@ const TVarInfo * TTextoVar::Inicializa()
         TVarInfo::FGetDouble0,
         TVarInfo::FGetTxtVazio,
         TVarInfo::FGetObjNulo,
+        FOperadorAtrib,
         TVarInfo::FFuncVetorFalse);
     return &var;
 }
@@ -183,51 +184,6 @@ int TTextoVar::Compara(TTextoVar * v)
         bl2 = TBlocoVar::RBnext(bl2);
     }
     return (bl1 ? -1 : bl2 ? 1 : 0);
-}
-
-//------------------------------------------------------------------------------
-void TTextoVar::Igual(TTextoVar * v)
-{
-    if (v == this)
-        return;
-    while (RBroot)
-        delete RBroot;
-    TBlocoVar * bl1 = (v->RBroot ? v->RBroot->RBfirst() : nullptr);
-    for (; bl1; bl1 = TBlocoVar::RBnext(bl1))
-    {
-        const char * nome = bl1->NomeVar;
-        switch (bl1->TipoVar())
-        {
-        case TextoVarTipoTxt:
-            {
-                const char * p = bl1->getTxt();
-                if (*p)
-                    new TBlocoVarTxt(this, nome, p);
-                break;
-            }
-        case TextoVarTipoNum:
-            {
-                double valor = bl1->getDouble();
-                if (valor != 0)
-                    new TBlocoVarNum(this, nome, valor);
-                break;
-            }
-        case TextoVarTipoDec:
-            {
-                int valor = bl1->getInt();
-                if (valor != 0)
-                    new TBlocoVarDec(this, nome, valor);
-                break;
-            }
-        case TextoVarTipoRef:
-            {
-                TObjeto * obj = bl1->getObj();
-                if (obj)
-                    new TBlocoVarRef(this, nome, obj);
-                break;
-            }
-        }
-    }
 }
 
 //----------------------------------------------------------------------------
@@ -564,6 +520,56 @@ void TTextoVar::FMoverEnd(TVariavel * v, void * destino, TClasse * c, TObjeto * 
     VARIAVEL_MOVER_SIMPLES(TTextoVar)
 }
 
+
+//------------------------------------------------------------------------------
+void TTextoVar::FOperadorAtrib(TVariavel * v)
+{
+    if (v[1].defvar[2] != v[0].defvar[2])
+        return;
+    TTextoVar * r1 = reinterpret_cast<TTextoVar*>(v[0].endvar) + v[0].indice;
+    TTextoVar * r2 = reinterpret_cast<TTextoVar*>(v[1].endvar) + v[1].indice;
+    if (r1 == r2)
+        return;
+    while (r1->RBroot)
+        delete r1->RBroot;
+    TBlocoVar * bl1 = (r2->RBroot ? r2->RBroot->RBfirst() : nullptr);
+    for (; bl1; bl1 = TBlocoVar::RBnext(bl1))
+    {
+        const char * nome = bl1->NomeVar;
+        switch (bl1->TipoVar())
+        {
+        case TextoVarTipoTxt:
+            {
+                const char * p = bl1->getTxt();
+                if (*p)
+                    new TBlocoVarTxt(r1, nome, p);
+                break;
+            }
+        case TextoVarTipoNum:
+            {
+                double valor = bl1->getDouble();
+                if (valor != 0)
+                    new TBlocoVarNum(r1, nome, valor);
+                break;
+            }
+        case TextoVarTipoDec:
+            {
+                int valor = bl1->getInt();
+                if (valor != 0)
+                    new TBlocoVarDec(r1, nome, valor);
+                break;
+            }
+        case TextoVarTipoRef:
+            {
+                TObjeto * obj = bl1->getObj();
+                if (obj)
+                    new TBlocoVarRef(r1, nome, obj);
+                break;
+            }
+        }
+    }
+}
+
 //----------------------------------------------------------------------------
 TBlocoVar * TTextoVar::Procura(const char * texto)
 {
@@ -674,6 +680,7 @@ const TVarInfo * TTextoVarSub::Inicializa()
         FGetDouble,
         FGetTxt,
         FGetObj,
+        FOperadorAtrib,
         TVarInfo::FFuncVetorFalse);
     return &var;
 }
@@ -806,6 +813,82 @@ TObjeto * TTextoVarSub::FGetObj(TVariavel * v)
     return reinterpret_cast<TTextoVarSub*>(v->endvar)[ v->indice ].getObj();
 }
 
+//------------------------------------------------------------------------------
+void TTextoVarSub::FOperadorAtrib(TVariavel * v)
+{
+    TTextoVarSub * ref = reinterpret_cast<TTextoVarSub*>(v->endvar) + v->indice;
+    if (ref->TextoVar == nullptr)
+        return;
+    TBlocoVar * bl = ref->TextoVar->Procura(ref->NomeVar);
+    switch (ref->TipoVar)
+    {
+    case TextoVarTipoTxt:
+        {
+            const char * txt = v[1].getTxt();
+            if (bl != nullptr)
+            {
+                if (bl->TipoVar() == TextoVarTipoTxt)
+                {
+                    bl->setTxt(txt);
+                    break;
+                }
+                delete bl;
+            }
+            if (*txt != 0)
+                new TBlocoVarTxt(ref->TextoVar, ref->NomeVar, txt);
+            break;
+        }
+    case TextoVarTipoNum:
+        {
+            double valor = v[1].getDouble();
+            if (bl != nullptr)
+            {
+                if (bl->TipoVar() == TextoVarTipoNum)
+                {
+                    bl->setDouble(valor);
+                    break;
+                }
+                delete bl;
+            }
+            if (valor != 0)
+                new TBlocoVarNum(ref->TextoVar, ref->NomeVar, valor);
+            break;
+        }
+    case TextoVarTipoDec:
+        {
+            int valor = v[1].getInt();
+            if (bl != nullptr)
+            {
+                if (bl->TipoVar() == TextoVarTipoDec)
+                {
+                    bl->setInt(valor);
+                    break;
+                }
+                delete bl;
+            }
+            if (valor > 0)
+                new TBlocoVarDec(ref->TextoVar, ref->NomeVar, valor);
+            break;
+        }
+    case TextoVarTipoRef:
+        {
+            TObjeto * obj = v[1].getObj();
+            if (bl != nullptr)
+            {
+                if (bl->TipoVar() == TextoVarTipoRef)
+                {
+                    bl->setObj(obj);
+                    break;
+                }
+                delete bl;
+            }
+            if (obj)
+                new TBlocoVarRef(ref->TextoVar, ref->NomeVar, obj);
+            break;
+        }
+    }
+}
+
 //----------------------------------------------------------------------------
 bool TTextoVarSub::getBool()
 {
@@ -853,7 +936,7 @@ TObjeto * TTextoVarSub::getObj()
     if (TextoVar == nullptr)
         return nullptr;
     TBlocoVar * bl = TextoVar->Procura(NomeVar);
-    return (bl ? bl->getObj() : 0);
+    return (bl ? bl->getObj() : nullptr);
 }
 
 //----------------------------------------------------------------------------

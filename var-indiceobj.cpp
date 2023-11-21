@@ -32,6 +32,7 @@ const TVarInfo * TIndiceItem::Inicializa()
         FGetDouble,
         FGetTxt,
         TVarInfo::FGetObjNulo,
+        FOperadorAtrib,
         TVarInfo::FFuncVetorFalse);
     return &var;
 }
@@ -94,13 +95,6 @@ void TIndiceItem::MudarRef(TIndiceObj * indice)
         if (Depois)
             Depois->Antes = this;
     }
-}
-
-//----------------------------------------------------------------------------
-void TIndiceItem::Igual(TIndiceItem * v)
-{
-    MudarRef(v->IndiceObj);
-    TamTxt = v->TamTxt;
 }
 
 //----------------------------------------------------------------------------
@@ -312,6 +306,19 @@ double TIndiceItem::FGetDouble(TVariavel * v) VARIAVEL_FGETINT0(TIndiceItem)
 const char * TIndiceItem::FGetTxt(TVariavel * v) VARIAVEL_FGETTXT0(TIndiceItem)
 
 //----------------------------------------------------------------------------
+void TIndiceItem::FOperadorAtrib(TVariavel * v)
+{
+    if (v[1].defvar[2] != v[0].defvar[2])
+        return;
+    TIndiceItem * r1 = reinterpret_cast<TIndiceItem*>(v[0].endvar) + v[0].indice;
+    TIndiceItem * r2 = reinterpret_cast<TIndiceItem*>(v[1].endvar) + v[1].indice;
+    if (r1 == r2)
+        return;
+    r1->MudarRef(r2->IndiceObj);
+    r1->TamTxt = r2->TamTxt;
+}
+
+//----------------------------------------------------------------------------
 const TVarInfo * TIndiceObj::Inicializa()
 {
     static const TVarInfo var(
@@ -326,6 +333,7 @@ const TVarInfo * TIndiceObj::Inicializa()
         FGetDouble,
         FGetTxt,
         TVarInfo::FGetObjNulo,
+        FOperadorAtrib,
         TVarInfo::FFuncVetorFalse);
     return &var;
 }
@@ -370,6 +378,8 @@ void TIndiceObj::Mover(TIndiceObj * destino, TObjeto * o)
 //----------------------------------------------------------------------------
 void TIndiceObj::setNome(const char * texto)
 {
+    if (strcmp(texto, Nome) == 0)
+        return;
     while (IndiceItem)
         IndiceItem->MudarRef(nullptr);
     if (*Nome)
@@ -439,6 +449,13 @@ const char * TIndiceObj::FGetTxt(TVariavel * v)
 {
     TIndiceObj * ref = reinterpret_cast<TIndiceObj*>(v->endvar) + v->indice;
     return ref[0].Nome;
+}
+
+//------------------------------------------------------------------------------
+void TIndiceObj::FOperadorAtrib(TVariavel * v)
+{
+    TIndiceObj * ref = reinterpret_cast<TIndiceObj*>(v->endvar) + v->indice;
+    ref->setNome(v[1].getTxt());
 }
 
 //----------------------------------------------------------------------------

@@ -29,6 +29,7 @@ private:
     static double FGetDouble(TVariavel * v);
     static const char * FGetTxt(TVariavel * v);
     static TObjeto * FGetObj(TVariavel * v);
+    static void FOperadorAtrib(TVariavel * v);
 };
 
 //----------------------------------------------------------------------------

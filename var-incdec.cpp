@@ -196,6 +196,7 @@ const TVarInfo * TVarIncDec::InicializaInc()
         FGetDoubleInc,
         FGetTxtInc,
         TVarInfo::FGetObjNulo,
+        FOperadorAtribInc,
         FuncVetorInc);
     return &var;
 }
@@ -215,6 +216,7 @@ const TVarInfo * TVarIncDec::InicializaDec()
         FGetDoubleDec,
         FGetTxtDec,
         TVarInfo::FGetObjNulo,
+        FOperadorAtribDec,
         FuncVetorDec);
     return &var;
 }
@@ -292,4 +294,16 @@ const char * TVarIncDec::FGetTxtDec(TVariavel * v)
     char * buf = TVarInfo::BufferTxt();
     sprintf(buf, "%d", ref->getDec(v->numfunc));
     return buf;
+}
+
+//------------------------------------------------------------------------------
+void TVarIncDec::FOperadorAtribInc(TVariavel * v)
+{
+    TVarIncDec * ref = reinterpret_cast<TVarIncDec*>(v->endvar) + v->indice;
+    ref->setInc(v->numfunc, v[1].getInt());
+}
+void TVarIncDec::FOperadorAtribDec(TVariavel * v)
+{
+    TVarIncDec * ref = reinterpret_cast<TVarIncDec*>(v->endvar) + v->indice;
+    ref->setDec(v->numfunc, v[1].getInt());
 }

@@ -583,7 +583,37 @@ bool InstrFunc::FuncRef(TVariavel * v)
     for (TVariavel * var = v + 1; var <= VarAtual && obj == nullptr; var++)
         obj = var->getObj();
     ApagarVar(v);
-    return Instr::CriarVarObj(obj);
+    return CriarVarObj(obj);
+}
+
+//----------------------------------------------------------------------------
+bool InstrFunc::FuncTxtTipoVar(TVariavel * v)
+{
+    if (VarAtual < v + 1)
+        return CriarVarTxtFixo(v, "nulo");
+    TVariavel * v1 = v + 1;
+    if (v1->indice == 0xff)
+        return CriarVarTxtFixo(v, "vetor");
+    if (v1->defvar[2] == cUInt32)
+        return CriarVarTxtFixo(v, "int");
+    switch (v1->Tipo())
+    {
+    case varInt:
+        return CriarVarTxtFixo(v, "int");
+    case varDouble:
+        return CriarVarTxtFixo(v, "real");
+    case varTxt:
+        return CriarVarTxtFixo(v, "txt");
+    case varObj:
+        return CriarVarTxtFixo(v, v1->getObj() ? "ref" : "nulo");
+    case varOutros:
+        break;
+    default:
+        return CriarVarTxtFixo(v, "");
+    }
+    const char * txt = NomeInstr(v1->defvar);
+    ApagarVar(v);
+    return CriarVarTexto(txt);
 }
 
 //----------------------------------------------------------------------------

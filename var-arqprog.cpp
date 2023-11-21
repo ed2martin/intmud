@@ -91,6 +91,7 @@ const TVarInfo * TVarArqProg::Inicializa()
         TVarInfo::FGetDouble0,
         TVarInfo::FGetTxtVazio,
         TVarInfo::FGetObjNulo,
+        TVarInfo::FOperadorAtribVazio,
         TVarInfo::FFuncVetorFalse);
     return &var;
 }
@@ -313,8 +314,7 @@ bool TVarArqProg::FuncAbrir(TVariavel * v)
 {
     Fechar();
     Abrir();
-    Instr::ApagarVar(v);
-    return Instr::CriarVarTexto("");
+    return Instr::CriarVarTxtFixo(v, "");
 }
 //------------------------------------------------------------------------------
 bool TVarArqProg::FuncFechar(TVariavel * v)

@@ -985,29 +985,7 @@ bool Instr::ExecX()
                     ApagarVar(FuncAtual->fimvar + 1);
                     if (VarFuncIni())
                         break;
-                    switch (VarAtual[-1].Tipo())
-                    {
-                    case varOutros:
-                        // Chama função Igual() se forem variáveis diferentes,
-                        // mas do mesmo tipo
-                        if (VarAtual[-1].defvar[2] == VarAtual[0].defvar[2] &&
-                                (VarAtual[-1].endvar != VarAtual[0].endvar ||
-                                    VarAtual[-1].indice != VarAtual[0].indice) )
-                            VarAtual[-1].Igual(VarAtual);
-                        break;
-                    case varInt:
-                        VarAtual[-1].setInt( VarAtual->getInt() );
-                        break;
-                    case varDouble:
-                        VarAtual[-1].setDouble( VarAtual->getDouble() );
-                        break;
-                    case varTxt:
-                        VarAtual[-1].setTxt( VarAtual->getTxt() );
-                        break;
-                    case varObj:
-                        VarAtual[-1].setObj( VarAtual->getObj() );
-                        break;
-                    }
+                    VarAtual[-1].OperadorAtrib();
                 }
                 FuncAtual->expr = nullptr;
                 FuncAtual->linha += Num16(FuncAtual->linha);
@@ -1252,9 +1230,15 @@ bool Instr::ExecX()
             if (VarAtual->defvar[2] != cVarFunc &&                            \
                 VarAtual->defvar[2] != cConstVar)                             \
             {                                                                 \
+                if (VarAtual >= VarFim - 1)                                   \
+                    return RetornoErro(1);                                    \
                 TVariavel * v = VarAtual;                                     \
                 double valor = v->getDouble();                                \
-                v->setDouble(valor + (somavar));                              \
+                v[1].defvar = InstrVarDouble;                                 \
+                v[1].nomevar = InstrVarDouble;                                \
+                v[1].valor_double = valor + (somavar);                        \
+                v[1].indice = 0;                                              \
+                v->OperadorAtrib();                                           \
                 CriarVarDouble(v, valor + (somaresult));                      \
                 break;                                                        \
             }                                                                 \
@@ -1779,29 +1763,7 @@ bool Instr::ExecX()
             if (VarFuncIni())
                 break;
             FuncAtual->expr++;
-            switch (VarAtual[-1].Tipo())
-            {
-            case varOutros:
-                // Chama função Igual() se forem variáveis diferentes,
-                // mas do mesmo tipo
-                if (VarAtual[-1].defvar[2] == VarAtual[0].defvar[2] &&
-                        (VarAtual[-1].endvar != VarAtual[0].endvar ||
-                            VarAtual[-1].indice != VarAtual[0].indice) )
-                    VarAtual[-1].Igual(VarAtual);
-                break;
-            case varInt:
-                VarAtual[-1].setInt( VarAtual->getInt() );
-                break;
-            case varDouble:
-                VarAtual[-1].setDouble( VarAtual->getDouble() );
-                break;
-            case varTxt:
-                VarAtual[-1].setTxt( VarAtual->getTxt() );
-                break;
-            case varObj:
-                VarAtual[-1].setObj( VarAtual->getObj() );
-                break;
-            }
+            VarAtual[-1].OperadorAtrib();
             ApagarVar(VarAtual);
             break;
         case exo_menor:      // Operador: a<b

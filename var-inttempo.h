@@ -42,6 +42,7 @@ private:
     static int FGetInt(TVariavel * v);
     static double FGetDouble(TVariavel * v);
     static const char * FGetTxt(TVariavel * v);
+    static void FOperadorAtrib(TVariavel * v);
 
     static void DebugVet(bool mostrar); ///< Checa se listas ligadas estão OK
     unsigned short IndiceMenos;   ///< Índice em VetMenos

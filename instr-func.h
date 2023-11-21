@@ -49,6 +49,7 @@ bool FuncIntMax(TVariavel * v); ///< Função intmax
 bool FuncIntMin(TVariavel * v); ///< Função intmin
 bool FuncRand(TVariavel * v); ///< Função rand
 bool FuncRef(TVariavel * v); ///< Referência (ref)
+bool FuncTxtTipoVar(TVariavel * v); ///< Função txttipovar
 bool FuncTxtNum(TVariavel * v); ///< Função txtnum
 bool FuncIntSub(TVariavel * v); ///< Função intsub
 bool FuncIntSubLin(TVariavel * v); ///< Função intsublin

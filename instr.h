@@ -29,6 +29,8 @@ bool CriarVarInt(TVariavel * v, int valor);
 bool CriarVarDouble(double valor);
 bool CriarVarDouble(TVariavel * v, double valor);
 bool CriarVarTexto(const char * mens, int tammens = -1);
+bool CriarVarTxtFixo(const char * texto);
+bool CriarVarTxtFixo(TVariavel * v, const char * texto);
 bool CriarVarObj(TObjeto * obj);
 bool CriarVar(const char * defvar);
 void ApagarVar(TVariavel * v);

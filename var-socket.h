@@ -129,7 +129,6 @@ public:
     void MudarSock(TObjSocket * socket); ///< Muda a variável TVarSocket::Socket
     void Mover(TVarSocket * destino); ///< Move TVarSock para outro lugar
     void EndObjeto(TClasse * c, TObjeto * o);
-    void Igual(TVarSocket * v);     ///< Operador de atribuição igual
     bool Func(TVariavel * v, const char * nome); ///< Função da variável
     bool FuncMsg(TVariavel * v);
     bool FuncAbrir(TVariavel * v);
@@ -162,6 +161,7 @@ public:
     static int FGetInt(TVariavel * v);
     static double FGetDouble(TVariavel * v);
     static const char * FGetTxt(TVariavel * v);
+    static void FOperadorAtrib(TVariavel * v);
 
     int  getValor(int numfunc);
                             ///< Ler valor numérico da variável

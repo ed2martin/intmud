@@ -36,6 +36,7 @@ const TVarInfo * TTextoObj::Inicializa()
         TVarInfo::FGetDouble0,
         TVarInfo::FGetTxtVazio,
         TVarInfo::FGetObjNulo,
+        TVarInfo::FOperadorAtribVazio,
         TVarInfo::FFuncVetorFalse);
     return &var;
 }
@@ -91,15 +92,15 @@ bool TTextoObj::Func(TVariavel * v, const char * nome)
 // Variável como texto
 bool TTextoObj::FuncValor(TVariavel * v)
 {
-    TObjeto * obj = 0;
-    if (Instr::VarAtual >= v+1)
+    TObjeto * obj = nullptr;
+    if (Instr::VarAtual >= v + 1)
     {
         TBlocoObj * bl = Procura(v[1].getTxt());
         if (bl)
             obj = bl->Objeto;
     }
     Instr::ApagarVar(v);
-    if (obj==0)
+    if (obj == nullptr)
         return false;
     return Instr::CriarVarObj(obj);
 }
@@ -108,15 +109,15 @@ bool TTextoObj::FuncValor(TVariavel * v)
 // Primeira variável como texto
 bool TTextoObj::FuncValorIni(TVariavel * v)
 {
-    TBlocoObj * bl = 0;
+    TBlocoObj * bl = nullptr;
     if (RBroot)
     {
-        if (Instr::VarAtual < v+1)
+        if (Instr::VarAtual < v + 1)
             bl = RBroot->RBfirst();
         else
             bl = ProcIni(v[1].getTxt());
     }
-    if (bl==0)
+    if (bl == nullptr)
         return false;
     TObjeto * obj = bl->Objeto;
     Instr::ApagarVar(v);
@@ -127,15 +128,15 @@ bool TTextoObj::FuncValorIni(TVariavel * v)
 // Última variável como texto
 bool TTextoObj::FuncValorFim(TVariavel * v)
 {
-    TBlocoObj * bl = 0;
+    TBlocoObj * bl = nullptr;
     if (RBroot)
     {
-        if (Instr::VarAtual < v+1)
+        if (Instr::VarAtual < v + 1)
             bl = RBroot->RBlast();
         else
             bl = ProcFim(v[1].getTxt());
     }
-    if (bl==0)
+    if (bl == nullptr)
         return false;
     TObjeto * obj = bl->Objeto;
     Instr::ApagarVar(v);
@@ -146,12 +147,12 @@ bool TTextoObj::FuncValorFim(TVariavel * v)
 // Nome da variável
 bool TTextoObj::FuncNomeVar(TVariavel * v)
 {
-    TBlocoObj * bl = 0;
-    if (Instr::VarAtual >= v+1)
+    TBlocoObj * bl = nullptr;
+    if (Instr::VarAtual >= v + 1)
         bl = Procura(v[1].getTxt());
     Instr::ApagarVar(v);
-    if (bl==0)
-        return Instr::CriarVarTexto("");
+    if (bl == nullptr)
+        return Instr::CriarVarTxtFixo("");
     return Instr::CriarVarTexto(bl->NomeVar);
 }
 
@@ -159,13 +160,13 @@ bool TTextoObj::FuncNomeVar(TVariavel * v)
 // Mudar variável
 bool TTextoObj::FuncMudar(TVariavel * v)
 {
-    if (Instr::VarAtual >= v+2)
+    if (Instr::VarAtual >= v + 2)
     {
         char nomevar[64];
         copiastr(nomevar, v[1].getTxt());
         Mudar(nomevar, v[2].getObj());
     }
-    else if (Instr::VarAtual >= v+1)
+    else if (Instr::VarAtual >= v + 1)
         Mudar(v[1].getTxt(), 0);
     return false;
 }
@@ -174,14 +175,14 @@ bool TTextoObj::FuncMudar(TVariavel * v)
 // Variável anterior
 bool TTextoObj::FuncAntes(TVariavel * v)
 {
-    TBlocoObj * bl = 0;
-    if (Instr::VarAtual >= v+1)
+    TBlocoObj * bl = nullptr;
+    if (Instr::VarAtual >= v + 1)
         bl = ProcAntes(v[1].getTxt());
-    if (Instr::VarAtual >= v+2 && bl)
+    if (Instr::VarAtual >= v + 2 && bl)
     {
         int cmp = comparaZ(bl->NomeVar, v[2].getTxt());
-        if (cmp!=0 && cmp!=2) // 0=textos iguais, 2=texto 1 contém texto 2
-            bl = 0;
+        if (cmp != 0 && cmp != 2) // 0=textos iguais, 2=texto 1 contém texto 2
+            bl = nullptr;
     }
     Instr::ApagarVar(v);
     return Instr::CriarVarTexto(bl ? bl->NomeVar : "");
@@ -191,14 +192,14 @@ bool TTextoObj::FuncAntes(TVariavel * v)
 // Próxima variável
 bool TTextoObj::FuncDepois(TVariavel * v)
 {
-    TBlocoObj * bl = 0;
-    if (Instr::VarAtual >= v+1)
+    TBlocoObj * bl = nullptr;
+    if (Instr::VarAtual >= v + 1)
         bl = ProcDepois(v[1].getTxt());
     if (Instr::VarAtual >= v+2 && bl)
     {
         int cmp = comparaZ(bl->NomeVar, v[2].getTxt());
-        if (cmp!=0 && cmp!=2) // 0=textos iguais, 2=texto 1 contém texto 2
-            bl = 0;
+        if (cmp != 0 && cmp != 2) // 0=textos iguais, 2=texto 1 contém texto 2
+            bl = nullptr;
     }
     Instr::ApagarVar(v);
     return Instr::CriarVarTexto(bl ? bl->NomeVar : "");
@@ -208,10 +209,10 @@ bool TTextoObj::FuncDepois(TVariavel * v)
 // Início
 bool TTextoObj::FuncIni(TVariavel * v)
 {
-    TBlocoObj * bl = 0;
+    TBlocoObj * bl = nullptr;
     if (RBroot)
     {
-        if (Instr::VarAtual < v+1)
+        if (Instr::VarAtual < v + 1)
             bl = RBroot->RBfirst();
         else
             bl = ProcIni(v[1].getTxt());
@@ -224,10 +225,10 @@ bool TTextoObj::FuncIni(TVariavel * v)
 // Fim
 bool TTextoObj::FuncFim(TVariavel * v)
 {
-    TBlocoObj * bl = 0;
+    TBlocoObj * bl = nullptr;
     if (RBroot)
     {
-        if (Instr::VarAtual < v+1)
+        if (Instr::VarAtual < v + 1)
             bl = RBroot->RBlast();
         else
             bl = ProcFim(v[1].getTxt());
@@ -240,16 +241,16 @@ bool TTextoObj::FuncFim(TVariavel * v)
 // Limpar
 bool TTextoObj::FuncLimpar(TVariavel * v)
 {
-    if (Instr::VarAtual < v+1)
+    if (Instr::VarAtual < v + 1)
     {
         Limpar();
         return false;
     }
-    for (TVariavel * v1 = v+1; v1<=Instr::VarAtual; v1++)
+    for (TVariavel * v1 = v + 1; v1 <= Instr::VarAtual; v1++)
     {
         const char * p = v1->getTxt();
         TBlocoObj * ini = ProcIni(p);
-        if (ini==0)
+        if (ini == nullptr)
             continue;
         TBlocoObj * fim = ProcFim(p);
         while (ini != fim)
@@ -267,17 +268,17 @@ bool TTextoObj::FuncLimpar(TVariavel * v)
 // Apagar
 bool TTextoObj::FuncApagar(TVariavel * v)
 {
-    if (Instr::VarAtual < v+1)
+    if (Instr::VarAtual < v + 1)
     {
         if (RBroot)
             RBroot->FuncApagarSub();
         return false;
     }
-    for (TVariavel * v1 = v+1; v1<=Instr::VarAtual; v1++)
+    for (TVariavel * v1 = v + 1; v1<=Instr::VarAtual; v1++)
     {
         const char * p = v1->getTxt();
         TBlocoObj * ini = ProcIni(p);
-        if (ini==0)
+        if (ini == nullptr)
             continue;
         TBlocoObj * fim = ProcFim(p);
         while (ini != fim)
@@ -306,9 +307,9 @@ bool TTextoObj::FuncTotal(TVariavel * v)
 {
     const char * txt = "";
     int total = 0;
-    if (Instr::VarAtual >= v+1)
+    if (Instr::VarAtual >= v + 1)
         txt = v[1].getTxt();
-    if (*txt==0)
+    if (*txt == 0)
     {
         total = Total;
         return Instr::CriarVarInt(v, total);
@@ -317,9 +318,9 @@ bool TTextoObj::FuncTotal(TVariavel * v)
     if (ini)
     {
         TBlocoObj * fim = ProcFim(txt);
-        total=1;
+        total = 1;
         while (ini && ini != fim)
-            total++, ini=TBlocoObj::RBnext(ini);
+            total++, ini = TBlocoObj::RBnext(ini);
     }
     return Instr::CriarVarInt(v, total);
 }
@@ -375,20 +376,20 @@ TBlocoObj * TTextoObj::Procura(const char * texto)
     while (y)
     {
         int i = comparaVar(texto, y->NomeVar);
-        if (i==0)
+        if (i == 0)
             return y;
-        if (i<0)
+        if (i < 0)
             y = y->RBleft;
         else
             y = y->RBright;
     }
-    return 0;
+    return nullptr;
 }
 
 //----------------------------------------------------------------------------
 TBlocoObj * TTextoObj::ProcIni(const char * texto)
 {
-    TBlocoObj * x = 0;
+    TBlocoObj * x = nullptr;
     TBlocoObj * y = RBroot;
     while (y)
     {
@@ -410,7 +411,7 @@ TBlocoObj * TTextoObj::ProcIni(const char * texto)
 //----------------------------------------------------------------------------
 TBlocoObj * TTextoObj::ProcFim(const char * texto)
 {
-    TBlocoObj * x = 0;
+    TBlocoObj * x = nullptr;
     TBlocoObj * y = RBroot;
     while (y)
     {
@@ -434,7 +435,7 @@ TBlocoObj * TTextoObj::ProcFim(const char * texto)
 //----------------------------------------------------------------------------
 TBlocoObj * TTextoObj::ProcAntes(const char * texto)
 {
-    TBlocoObj * x = 0;
+    TBlocoObj * x = nullptr;
     TBlocoObj * y = RBroot;
     while (y)
     {
@@ -450,7 +451,7 @@ TBlocoObj * TTextoObj::ProcAntes(const char * texto)
 //----------------------------------------------------------------------------
 TBlocoObj * TTextoObj::ProcDepois(const char * texto)
 {
-    TBlocoObj * x = 0;
+    TBlocoObj * x = nullptr;
     TBlocoObj * y = RBroot;
     while (y)
     {
@@ -468,9 +469,9 @@ void TTextoObj::Mudar(const char * nomevar, TObjeto * obj)
 {
     TBlocoObj * bl = Procura(nomevar);
 // Inserir texto (não está no textoobj)
-    if (bl==0)
+    if (bl == nullptr)
     {
-        if (obj==0)
+        if (obj == nullptr)
             return;
         int total1 = strlen(nomevar) + 1; // Tamanho do texto
         int total2 = total1 + (bl->NomeVar - (char*)bl); // Tamanho do bloco
@@ -485,7 +486,7 @@ void TTextoObj::Mudar(const char * nomevar, TObjeto * obj)
 #endif
     }
 // Apagar texto
-    else if (obj==0)
+    else if (obj == nullptr)
         bl->Apagar();
 // Alterar objeto
     else
@@ -546,6 +547,7 @@ const TVarInfo * TTextoObjSub::Inicializa()
         FGetDouble,
         FGetTxt,
         FGetObj,
+        TVarInfo::FOperadorAtribVazio,
         TVarInfo::FFuncVetorFalse);
     return &var;
 }
@@ -587,16 +589,18 @@ void TTextoObjSub::Mover(TTextoObjSub * destino)
 //----------------------------------------------------------------------------
 int TTextoObjSub::getValor()
 {
-    if (TextoObj==0) return 0;
-    return (TextoObj->Procura(NomeVar) != 0);
+    if (TextoObj == nullptr)
+        return 0;
+    return (TextoObj->Procura(NomeVar) != nullptr);
 }
 
 //----------------------------------------------------------------------------
 TObjeto * TTextoObjSub::getObj()
 {
-    if (TextoObj==0) return 0;
+    if (TextoObj == nullptr)
+        return nullptr;
     TBlocoObj * bl = TextoObj->Procura(NomeVar);
-    return (bl ? bl->Objeto : 0);
+    return (bl ? bl->Objeto : nullptr);
 }
 
 //----------------------------------------------------------------------------
@@ -655,7 +659,7 @@ TObjeto * TTextoObjSub::FGetObj(TVariavel * v)
 void TBlocoObj::InsereLista(TObjeto * obj)
 {
     Objeto = obj;
-    ObjAntes = 0;
+    ObjAntes = nullptr;
     ObjDepois = obj->VarBlocoObj;
     if (ObjDepois)
         ObjDepois->ObjAntes = this;

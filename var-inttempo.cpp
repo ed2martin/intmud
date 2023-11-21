@@ -50,6 +50,7 @@ const TVarInfo * TVarIntTempo::Inicializa()
         FGetDouble,
         FGetTxt,
         TVarInfo::FGetObjNulo,
+        FOperadorAtrib,
         FuncVetor);
     return &var;
 }
@@ -380,3 +381,10 @@ bool TVarIntTempo::FGetBool(TVariavel * v) VARIAVEL_FGETINT1(TVarIntTempo)
 int TVarIntTempo::FGetInt(TVariavel * v) VARIAVEL_FGETINT1(TVarIntTempo)
 double TVarIntTempo::FGetDouble(TVariavel * v) VARIAVEL_FGETINT1(TVarIntTempo)
 const char * TVarIntTempo::FGetTxt(TVariavel * v) VARIAVEL_FGETTXT1(TVarIntTempo)
+
+//------------------------------------------------------------------------------
+void TVarIntTempo::FOperadorAtrib(TVariavel * v)
+{
+    TVarIntTempo * ref = reinterpret_cast<TVarIntTempo*>(v->endvar) + v->indice;
+    ref->setValor(v->numfunc, v[1].getInt());
+}

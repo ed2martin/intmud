@@ -40,6 +40,7 @@ const TVarInfo * TVarProg::Inicializa()
         FGetDouble,
         FGetTxt,
         TVarInfo::FGetObjNulo,
+        TVarInfo::FOperadorAtribVazio,
         TVarInfo::FFuncVetorFalse);
     return &var;
 }
@@ -475,13 +476,13 @@ bool TVarProg::FuncClasse(TVariavel * v)
 
 // Checa se está igual à classe
     if (!cl)
-        return Instr::CriarVarTexto("0");
+        return Instr::CriarVarTxtFixo("0");
     const char * p1 = mens.Buf;
     const char * p2 = cl->Comandos;
     while (p1[0] || p1[1])
     {
         if (!Instr::ComparaInstr(p1, p2))
-            return Instr::CriarVarTexto("0");
+            return Instr::CriarVarTxtFixo("0");
         int total = Num16(p1);
         p1 += total, p2 += total;
     }
@@ -1054,18 +1055,12 @@ bool TVarProg::FuncCriar(TVariavel * v)
         else if (cl)    // Comandos definidos em TClasse
             texto1 = cl->Comandos, nomeclasse = cl->Nome;
         else            // Nenhum comando definido, retorna
-        {
-            Instr::ApagarVar(v);
-            return Instr::CriarVarTexto("Classe não existe");
-        }
+            return Instr::CriarVarTxtFixo(v, "Classe não existe");
     // Codifica as instruções
         TAddBuffer mens;
         bool codifok = TMudarAux::CodifInstr(&mens, v[2].getTxt());
         if (mens.Total == 0) // Nenhuma alteração
-        {
-            Instr::ApagarVar(v);
-            return Instr::CriarVarTexto("");
-        }
+            return Instr::CriarVarTxtFixo(v, "");
         mens.Add("\x00\x00", 2); // Marca o fim das instruções
         mens.AnotarBuf();        // Anota resultado em mens.Buf
         if (!codifok) // Erro
@@ -1075,11 +1070,8 @@ bool TVarProg::FuncCriar(TVariavel * v)
         }
         char * p = TMudarAux::AvancaInstr(mens.Buf); // Passa para próxima função/variável
         if (p[0] || p[1])
-        {
-            Instr::ApagarVar(v);
-            return Instr::CriarVarTexto(
+            return Instr::CriarVarTxtFixo(v,
                     "Definição de mais de uma função/variável/herda");
-        }
         if (mens.Buf[2] == Instr::cHerda)
         {
             mudarcom.AddBloco(mens.Buf, mens.Total-2);
@@ -1152,11 +1144,7 @@ bool TVarProg::FuncCriar(TVariavel * v)
                 mudarcom.AddBloco(mens.Buf, mens.Total - 2);
         }
         else
-        {
-            Instr::ApagarVar(v);
-            return Instr::CriarVarTexto(
-                    "Faltou o nome da função/variável");
-        }
+            return Instr::CriarVarTxtFixo(v, "Faltou o nome da função/variável");
     // Verifica se bloco válido
         char err[200];
         if (!mudarcom.ChecaBloco(err, sizeof(err)))
@@ -1194,21 +1182,12 @@ bool TVarProg::FuncCriar(TVariavel * v)
             nome++;
     // Checa se nome de arquivo válido
         if (*nomearq && !TArqMapa::NomeValido(nomearq))
-        {
-            Instr::ApagarVar(v);
-            return Instr::CriarVarTexto("Nome de arquivo inválido");
-        }
+            return Instr::CriarVarTxtFixo(v, "Nome de arquivo inválido");
         if (*nomearq && !TArqIncluir::ProcArq(nomearq))
-        {
-            Instr::ApagarVar(v);
-            return Instr::CriarVarTexto("Arquivo não pertence ao programa");
-        }
+            return Instr::CriarVarTxtFixo(v, "Arquivo não pertence ao programa");
     // Checa se nome de classe válido
         if (!TClasse::NomeValido(nomeclasse))
-        {
-            Instr::ApagarVar(v);
-            return Instr::CriarVarTexto("Nome de classe inválido");
-        }
+            return Instr::CriarVarTxtFixo(v, "Nome de classe inválido");
     // Codifica as instruções
         TAddBuffer mens;
         bool codifok = TMudarAux::CodifInstr(&mens, nome);
@@ -1256,18 +1235,14 @@ bool TVarProg::FuncCriar(TVariavel * v)
             arq = new TArqMapa(nomearq);
         obj->Arquivo = arq;
     }
-    Instr::ApagarVar(v);
-    return Instr::CriarVarTexto("");
+    return Instr::CriarVarTxtFixo(v, "");
 }
 
 //------------------------------------------------------------------------------
 bool TVarProg::FuncApagarLin(TVariavel * v)
 {
     if (Instr::VarAtual < v + 2)
-    {
-        Instr::ApagarVar(v);
-        return Instr::CriarVarTexto("");
-    }
+        return Instr::CriarVarTxtFixo(v, "");
     const char * nome = v[1].getTxt();
     TClasse * cl = TClasse::Procura(nome);
     TMudarClasse * obj = TMudarClasse::Procurar(nome);
@@ -1282,10 +1257,7 @@ bool TVarProg::FuncApagarLin(TVariavel * v)
     else if (cl)    // Comandos definidos em TClasse
         texto1 = cl->Comandos;
     else            // Nenhum comando definido, retorna
-    {
-        Instr::ApagarVar(v);
-        return Instr::CriarVarTexto("Classe inexistente");
-    }
+        return Instr::CriarVarTxtFixo(v, "Classe inexistente");
 // Apagar linha da classe
     if (Instr::VarAtual == v + 2)
     {
@@ -1299,31 +1271,19 @@ bool TVarProg::FuncApagarLin(TVariavel * v)
     {
         int linha = v[3].getInt();
         if (linha < 1)
-        {
-            Instr::ApagarVar(v);
-            return Instr::CriarVarTexto("Nada foi apagado");
-        }
+            return Instr::CriarVarTxtFixo(v, "Nada foi apagado");
         texto2 = TMudarAux::ProcuraInstr(texto1, v[2].getTxt());
         if (texto2[0] == 0 && texto2[1] == 0)
-        {
-            Instr::ApagarVar(v);
-            return Instr::CriarVarTexto("Função inexistente");
-        }
+            return Instr::CriarVarTxtFixo(v, "Função inexistente");
         const char * fim = TMudarAux::AvancaInstr(texto2);
         while (linha > 0 && texto2 < fim)
             linha--, texto2 += Num16(texto2);
         if (texto2 >= fim)
-        {
-            Instr::ApagarVar(v);
-            return Instr::CriarVarTexto("Nada foi apagado");
-        }
+            return Instr::CriarVarTxtFixo(v, "Nada foi apagado");
     }
 // Verifica se alguma linha será apagada
     if (texto2[0] == 0 && texto2[1] == 0)
-    {
-        Instr::ApagarVar(v);
-        return Instr::CriarVarTexto("Nada foi apagado");
-    }
+        return Instr::CriarVarTxtFixo(v, "Nada foi apagado");
 // Verifica se bloco válido
     int linha = 1;
     char * com = texto1;
@@ -1353,18 +1313,14 @@ bool TVarProg::FuncApagarLin(TVariavel * v)
     memcpy(p, texto1, tamanho1);
     memcpy(p + tamanho1, texto2, tamanho2);
     obj->MudarComandos(p);
-    Instr::ApagarVar(v);
-    return Instr::CriarVarTexto("");
+    return Instr::CriarVarTxtFixo(v, "");
 }
 
 //------------------------------------------------------------------------------
 bool TVarProg::FuncCriarLin(TVariavel * v)
 {
     if (Instr::VarAtual < v + 3)
-    {
-        Instr::ApagarVar(v);
-        return Instr::CriarVarTexto("");
-    }
+        return Instr::CriarVarTxtFixo(v, "");
     const char * nome = v[1].getTxt();
     TClasse * cl = TClasse::Procura(nome);
     TMudarClasse * obj = TMudarClasse::Procurar(nome);
@@ -1376,10 +1332,7 @@ bool TVarProg::FuncCriarLin(TVariavel * v)
     else if (cl)    // Comandos definidos em TClasse
         texto1 = cl->Comandos;
     else            // Nenhum comando definido, retorna
-    {
-        Instr::ApagarVar(v);
-        return Instr::CriarVarTexto("Classe inexistente");
-    }
+        return Instr::CriarVarTxtFixo(v, "Classe inexistente");
 // Instruções na classe
     char * texto2 = nullptr;
     if (Instr::VarAtual == v + 3)
@@ -1398,15 +1351,9 @@ bool TVarProg::FuncCriarLin(TVariavel * v)
             linha = 1;
         texto2 = TMudarAux::ProcuraInstr(texto1, v[2].getTxt());
         if (texto2[0] == 0 && texto2[1] == 0)
-        {
-            Instr::ApagarVar(v);
-            return Instr::CriarVarTexto("Função inexistente");
-        }
+            return Instr::CriarVarTxtFixo(v, "Função inexistente");
         if (texto2[2] != Instr::cFunc && texto2[2] != Instr::cVarFunc)
-        {
-            Instr::ApagarVar(v);
-            return Instr::CriarVarTexto("Não é função");
-        }
+            return Instr::CriarVarTxtFixo(v, "Não é função");
         const char * fim = TMudarAux::AvancaInstr(texto2);
         while (linha > 0 && texto2 < fim)
             linha--, texto2 += Num16(texto2);
@@ -1422,10 +1369,7 @@ bool TVarProg::FuncCriarLin(TVariavel * v)
         return Instr::CriarVarTexto(mens.Buf);
     }
     if (mens.Total == 0) // Nenhuma instrução
-    {
-        Instr::ApagarVar(v);
-        return Instr::CriarVarTexto("");
-    }
+        return Instr::CriarVarTxtFixo(v, "");
     mens.AnotarBuf();  // Anota resultado em mens.Buf
 // Instruções em função: não permite definições de constantes e funções
     if (Instr::VarAtual > v + 3)
@@ -1438,13 +1382,11 @@ bool TVarProg::FuncCriarLin(TVariavel * v)
             case Instr::cConstNum:
             case Instr::cConstExpr:
             case Instr::cConstVar:
-                Instr::ApagarVar(v);
-                return Instr::CriarVarTexto(
+                return Instr::CriarVarTxtFixo(v,
                         "Definição de constante de função");
             case Instr::cFunc:
             case Instr::cVarFunc:
-                Instr::ApagarVar(v);
-                return Instr::CriarVarTexto(
+                return Instr::CriarVarTxtFixo(v,
                         "Definição de função dentro de função");
             }
     }
@@ -1463,8 +1405,7 @@ bool TVarProg::FuncCriarLin(TVariavel * v)
     if (obj == nullptr)
         obj = new TMudarClasse(cl->Nome);
     mudarcom.AnotaBloco(obj);
-    Instr::ApagarVar(v);
-    return Instr::CriarVarTexto("");
+    return Instr::CriarVarTxtFixo(v, "");
 }
 
 //------------------------------------------------------------------------------
@@ -1613,10 +1554,7 @@ bool TVarProg::FuncMudar(TVariavel * v, int lugar)
     }
 // Checa se a posição da função não vai mudar
     if (d1 >= p1 && d1 <= p2)
-    {
-        Instr::ApagarVar(v);
-        return Instr::CriarVarTexto("");
-    }
+        return Instr::CriarVarTxtFixo(v, "");
 // Prepara as instruções
     TMudarAux mudarcom; // Para mudar a lista de instruções
     if (d1 < p2)
@@ -1644,8 +1582,7 @@ bool TVarProg::FuncMudar(TVariavel * v, int lugar)
     if (obj == nullptr)
         obj = new TMudarClasse(nomeclasse);
     mudarcom.AnotaBloco(obj);
-    Instr::ApagarVar(v);
-    return Instr::CriarVarTexto("");
+    return Instr::CriarVarTxtFixo(v, "");
 }
 
 //------------------------------------------------------------------------------
@@ -1793,10 +1730,7 @@ bool TVarProg::FuncClAntes(TVariavel * v)
         return false;
     TClasse * cl = TClasse::Procura(v[1].getTxt());
     if (cl == nullptr)
-    {
-        Instr::ApagarVar(v);
-        return Instr::CriarVarTexto("");
-    }
+        return Instr::CriarVarTxtFixo(v, "");
     if (Instr::VarAtual > v + 1)
     {
         TClasse * cl2 = TClasse::Procura(v[2].getTxt());
@@ -1815,10 +1749,7 @@ bool TVarProg::FuncClDepois(TVariavel * v)
         return false;
     TClasse * cl = TClasse::Procura(v[1].getTxt());
     if (cl == nullptr)
-    {
-        Instr::ApagarVar(v);
-        return Instr::CriarVarTexto("");
-    }
+        return Instr::CriarVarTxtFixo(v, "");
     if (Instr::VarAtual > v + 1)
     {
         TClasse * cl2 = TClasse::Procura(v[2].getTxt());

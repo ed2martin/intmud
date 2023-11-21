@@ -159,8 +159,6 @@ public:
             ///< Associa objeto a TTextoTxt sem texto, desassocia se obj==0
     int  Compara(TTextoPos * v);
             ///< Operador de comparação
-    void Igual(TTextoPos * v);
-            ///< Operador de atribuição igual
     bool Func(TVariavel * v, const char * nome);
             ///< Função da variável
     static TVarTipo FTipo(TVariavel * v);
@@ -206,6 +204,7 @@ private:
     static int FGetInt(TVariavel * v);
     static double FGetDouble(TVariavel * v);
     static const char * FGetTxt(TVariavel * v);
+    static void FOperadorAtrib(TVariavel * v);
 };
 
 //----------------------------------------------------------------------------

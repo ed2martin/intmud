@@ -375,6 +375,31 @@ static TObjeto * VarOutrosVarObjeto_GetObj(TVariavel * v)
 }
 
 //----------------------------------------------------------------------------
+static void VarOutrosVarNome_OperadorAtrib(TVariavel * v)
+{
+    char * ref = reinterpret_cast<char*>(v->endvar) + v->indice * VAR_NOME_TAM;
+    const char * origem = v[1].getTxt();
+    if (ref != origem)
+        copiastr(ref, origem, VAR_NOME_TAM - 1);
+}
+static void VarOutrosVarIniFunc_OperadorAtrib(TVariavel * v)
+{
+    v->valor_int = v[1].getInt();
+}
+static void VarOutrosVarObjeto_OperadorAtrib(TVariavel * v)
+{
+    v->endvar = v[1].getObj();
+}
+static void VarOutrosVarInt_OperadorAtrib(TVariavel * v)
+{
+    v->valor_int = v[1].getInt();
+}
+static void VarOutrosVarDouble_OperadorAtrib(TVariavel * v)
+{
+    v->valor_double = v[1].getDouble();
+}
+
+//----------------------------------------------------------------------------
 const TVarInfo * VarOutrosConstNulo()
 {
     static const TVarInfo var(
@@ -389,6 +414,7 @@ const TVarInfo * VarOutrosConstNulo()
         TVarInfo::FGetDouble0,
         TVarInfo::FGetTxtVazio,
         TVarInfo::FGetObjNulo,
+        TVarInfo::FOperadorAtribVazio,
         TVarInfo::FFuncVetorFalse);
     return &var;
 }
@@ -407,6 +433,7 @@ const TVarInfo * VarOutrosConstTxt()
         VarOutrosConstTxt_GetDouble,
         VarOutrosConstTxt_GetTxt,
         TVarInfo::FGetObjNulo,
+        TVarInfo::FOperadorAtribVazio,
         TVarInfo::FFuncVetorFalse);
     return &var;
 }
@@ -425,6 +452,7 @@ const TVarInfo * VarOutrosConstNum()
         VarOutrosConstNum_GetDouble,
         VarOutrosConstNum_GetTxt,
         TVarInfo::FGetObjNulo,
+        TVarInfo::FOperadorAtribVazio,
         TVarInfo::FFuncVetorFalse);
     return &var;
 }
@@ -443,6 +471,7 @@ const TVarInfo * VarOutrosConstExpr()
         TVarInfo::FGetDouble0,
         TVarInfo::FGetTxtVazio,
         TVarInfo::FGetObjNulo,
+        TVarInfo::FOperadorAtribVazio,
         TVarInfo::FFuncVetorFalse);
     return &var;
 }
@@ -461,6 +490,7 @@ const TVarInfo * VarOutrosConstVar()
         TVarInfo::FGetDouble0,
         TVarInfo::FGetTxtVazio,
         TVarInfo::FGetObjNulo,
+        TVarInfo::FOperadorAtribVazio,
         TVarInfo::FFuncVetorFalse);
     return &var;
 }
@@ -479,6 +509,7 @@ const TVarInfo * VarOutrosFunc()
         TVarInfo::FGetDouble0,
         TVarInfo::FGetTxtVazio,
         TVarInfo::FGetObjNulo,
+        TVarInfo::FOperadorAtribVazio,
         TVarInfo::FFuncVetorFalse);
     return &var;
 }
@@ -497,6 +528,7 @@ const TVarInfo * VarOutrosVarFunc()
         TVarInfo::FGetDouble0,
         TVarInfo::FGetTxtVazio,
         TVarInfo::FGetObjNulo,
+        TVarInfo::FOperadorAtribVazio,
         TVarInfo::FFuncVetorFalse);
     return &var;
 }
@@ -515,6 +547,7 @@ const TVarInfo * VarOutrosTxtFixo()
         VarOutrosTxtFixo_GetDouble,
         VarOutrosTxtFixo_GetTxt,
         TVarInfo::FGetObjNulo,
+        TVarInfo::FOperadorAtribVazio,
         TVarInfo::FFuncVetorFalse);
     return &var;
 }
@@ -533,6 +566,7 @@ const TVarInfo * VarOutrosVarNome()
         TVarInfo::FGetDouble0,
         VarOutrosVarNome_GetTxt,
         TVarInfo::FGetObjNulo,
+        VarOutrosVarNome_OperadorAtrib,
         TVarInfo::FFuncVetorFalse);
     return &var;
 }
@@ -551,6 +585,7 @@ const TVarInfo * VarOutrosVarInicio()
         TVarInfo::FGetDouble0,
         TVarInfo::FGetTxtVazio,
         TVarInfo::FGetObjNulo,
+        TVarInfo::FOperadorAtribVazio,
         TVarInfo::FFuncVetorFalse);
     return &var;
 }
@@ -569,6 +604,7 @@ const TVarInfo * VarOutrosVarIniFunc()
         VarOutrosVarInt_GetDouble,
         VarOutrosVarInt_GetTxt,
         TVarInfo::FGetObjNulo,
+        VarOutrosVarIniFunc_OperadorAtrib,
         TVarInfo::FFuncVetorFalse);
     return &var;
 }
@@ -587,6 +623,7 @@ const TVarInfo * VarOutrosVarClasse()
         TVarInfo::FGetDouble0,
         VarOutrosVarClasse_GetTxt,
         TVarInfo::FGetObjNulo,
+        TVarInfo::FOperadorAtribVazio,
         TVarInfo::FFuncVetorFalse);
     return &var;
 }
@@ -605,6 +642,7 @@ const TVarInfo * VarOutrosVarObjeto()
         VarOutrosVarObjeto_GetDouble,
         VarOutrosVarObjeto_GetTxt,
         VarOutrosVarObjeto_GetObj,
+        VarOutrosVarObjeto_OperadorAtrib,
         TVarInfo::FFuncVetorFalse);
     return &var;
 }
@@ -623,6 +661,7 @@ const TVarInfo * VarOutrosVarInt()
         VarOutrosVarInt_GetDouble,
         VarOutrosVarInt_GetTxt,
         TVarInfo::FGetObjNulo,
+        VarOutrosVarInt_OperadorAtrib,
         TVarInfo::FFuncVetorFalse);
     return &var;
 }
@@ -641,6 +680,7 @@ const TVarInfo * VarOutrosVarDouble()
         VarOutrosVarDouble_GetDouble,
         VarOutrosVarDouble_GetTxt,
         TVarInfo::FGetObjNulo,
+        VarOutrosVarDouble_OperadorAtrib,
         TVarInfo::FFuncVetorFalse);
     return &var;
 }

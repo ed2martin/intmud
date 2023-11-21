@@ -80,6 +80,7 @@ const TVarInfo * TVarDataHora::Inicializa()
         FGetDouble,
         FGetTxt,
         TVarInfo::FGetObjNulo,
+        FOperadorAtrib,
         TVarInfo::FFuncVetorFalse);
     return &var;
 }
@@ -100,17 +101,6 @@ int TVarDataHora::Compara(TVarDataHora * v)
     if (Min  != v->Min)  return (Min  < v->Min  ? -1 : 1);
     if (Seg  != v->Seg)  return (Seg  < v->Seg  ? -1 : 1);
     return 0;
-}
-
-//------------------------------------------------------------------------------
-void TVarDataHora::Igual(TVarDataHora * v)
-{
-    Ano  = v->Ano;
-    Mes  = v->Mes;
-    Dia  = v->Dia;
-    Hora = v->Hora;
-    Min  = v->Min;
-    Seg  = v->Seg;
 }
 
 //------------------------------------------------------------------------------
@@ -593,4 +583,15 @@ const char * TVarDataHora::FGetTxt(TVariavel * v)
     else
         sprintf(buf, "%d", ref->getInt(v->numfunc));
     return buf;
+}
+
+//------------------------------------------------------------------------------
+void TVarDataHora::FOperadorAtrib(TVariavel * v)
+{
+    if (v[1].defvar[2] != v[0].defvar[2])
+        return;
+    TVarDataHora * r1 = reinterpret_cast<TVarDataHora*>(v[0].endvar) + v[0].indice;
+    TVarDataHora * r2 = reinterpret_cast<TVarDataHora*>(v[1].endvar) + v[1].indice;
+    if (r1 != r2)
+        *r1 = *r2;
 }

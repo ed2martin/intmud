@@ -17,8 +17,6 @@ public:
             ///< Move para outro lugar
     int  Compara(TVarDataHora * v);
             ///< Operador de comparação
-    void Igual(TVarDataHora * v);
-            ///< Operador de atribuição igual
     bool Func(TVariavel * v, const char * nome);
             ///< Função da variável
     int  getInt(int numfunc);
@@ -56,6 +54,7 @@ private:
     static int FGetInt(TVariavel * v);
     static double FGetDouble(TVariavel * v);
     static const char * FGetTxt(TVariavel * v);
+    static void FOperadorAtrib(TVariavel * v);
 };
 
 //----------------------------------------------------------------------------

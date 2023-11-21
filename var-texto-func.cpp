@@ -277,12 +277,12 @@ bool TTextoTxt::FuncRemove(TVariavel * v)
         linhas = v[1].getInt();
     Instr::ApagarVar(v); // Nota: se apagar o TextoTxt, Inicio será 0
     if (linhas <= 0 || Inicio == nullptr)
-        return Instr::CriarVarTexto("");
+        return Instr::CriarVarTxtFixo("");
 // Obtém o número de bytes
     int total = Inicio->LinhasBytes(0, linhas);
 // Cria variável e aloca memória para o texto
     if (!Instr::CriarVarTexto(nullptr, total - 1))
-        return Instr::CriarVarTexto("");
+        return Instr::CriarVarTxtFixo("");
 // Obtém tamanho da memória alocada
     int copiar = Instr::VarAtual->tamanho;
 // Anota o texto
@@ -683,16 +683,6 @@ int TTextoPos::Compara(TTextoPos * v)
 }
 
 //----------------------------------------------------------------------------
-void TTextoPos::Igual(TTextoPos * v)
-{
-    MudarTxt(v->TextoTxt);
-    Bloco = v->Bloco;
-    PosicBloco = v->PosicBloco;
-    PosicTxt = v->PosicTxt;
-    LinhaTxt = v->LinhaTxt;
-}
-
-//----------------------------------------------------------------------------
 bool TTextoPos::Func(TVariavel * v, const char * nome)
 {
 // Lista das funções de textopos
@@ -804,12 +794,12 @@ bool TTextoPos::FuncTexto(TVariavel * v, int valor)
     }
     Instr::ApagarVar(v); // Nota: se apagar o TextoTxt, Bloco será 0
     if (coltam <= 0 || Bloco == nullptr)
-        return Instr::CriarVarTexto("");
+        return Instr::CriarVarTxtFixo("");
 // Obtém o número de bytes da linha
     TTextoBloco * bl = Bloco;
     int total = bl->LinhasBytes(PosicBloco, 1) - 1;
     if (colini >= total)
-        return Instr::CriarVarTexto("");
+        return Instr::CriarVarTxtFixo("");
     if (coltam > total || colini + coltam > total)
             // Nota: colini+coltam pode ser <0 se ocorrer overflow
         coltam = total - colini;
@@ -821,7 +811,7 @@ bool TTextoPos::FuncTexto(TVariavel * v, int valor)
 // Nota: a variável Bloco pode ser alterada aqui, porque
 //       a nova variável pode ocupar o mesmo lugar de TTextoPos
     if (!Instr::CriarVarTexto(nullptr, coltam))
-        return Instr::CriarVarTexto("");
+        return Instr::CriarVarTxtFixo("");
 // Obtém tamanho da memória alocada
     int copiar = Instr::VarAtual->tamanho;
 // Anota o texto
@@ -838,14 +828,14 @@ bool TTextoPos::FuncTextoLin(TVariavel * v, int valor)
         linhas = v[1].getInt();
     Instr::ApagarVar(v); // Nota: se apagar o TextoTxt, Bloco será 0
     if (linhas <= 0 || Bloco == nullptr)
-        return Instr::CriarVarTexto("");
+        return Instr::CriarVarTxtFixo("");
 // Obtém o número de bytes
     int total = Bloco->LinhasBytes(PosicBloco, linhas) - 1;
 // Cria variável e aloca memória para o texto
     TTextoBloco * bl = Bloco;
     unsigned int pos = PosicBloco;
     if (!Instr::CriarVarTexto(nullptr, total))
-        return Instr::CriarVarTexto("");
+        return Instr::CriarVarTxtFixo("");
 // Obtém tamanho da memória alocada
     int copiar = Instr::VarAtual->tamanho;
 // Anota o texto

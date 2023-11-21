@@ -48,6 +48,7 @@ const TVarInfo * TVarDebug::Inicializa()
         FGetDouble,
         FGetTxt,
         TVarInfo::FGetObjNulo,
+        FOperadorAtrib,
         TVarInfo::FFuncVetorFalse);
     return &var;
 }
@@ -547,4 +548,14 @@ const char * TVarDebug::FGetTxt(TVariavel * v)
     char * buf = TVarInfo::BufferTxt();
     sprintf(buf, "%d", getInt(v->numfunc));
     return buf;
+}
+
+//------------------------------------------------------------------------------
+void TVarDebug::FOperadorAtrib(TVariavel * v)
+{
+    if (v->numfunc)
+    {
+        int valor = v[1].getInt();
+        Instr::VarExec = (valor < 1 ? 1 : valor);
+    }
 }

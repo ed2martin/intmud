@@ -2567,6 +2567,18 @@ inttotal("bom", "dia")
 
 Nesse caso, é o mesmo que: inttotal("bom") + inttotal("dia")
 
+15.7.6. txttipovar(<variável>)
+Retorna o tipo de variável:
+"int" se for número inteiro.
+"real" se for ponto flutuante (real e real2 são ponto flutuante).
+"txt" se for texto.
+"ref" se for objeto.
+"nulo" se for nulo.
+Outros tipos, como listaobj, textotxt, etc. retorna o nome do tipo
+(exemplo, "listaobj").
+Se for uma func, varfunc, const ou varconst, chama a função ou constante
+e retorna o tipo de variável retornada por essa função ou constante.
+
 
 15.8. FUNÇÕES DE VETORES DE VARIÁVEIS NUMÉRICAS
 

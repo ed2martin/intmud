@@ -1022,6 +1022,87 @@ static const char * VarBaseReal2_GetTxt(TVariavel * v)
 }
 
 //------------------------------------------------------------------------------
+static void VarBaseTxt1_OperadorAtrib(TVariavel * v)
+{
+    int tam = (2 + (unsigned char)v->defvar[Instr::endExtra]);
+    char * ref = reinterpret_cast<char*>(v->endvar) + v->indice * tam;
+    const char * origem = v[1].getTxt();
+    if (ref != origem)
+        copiastr(ref, origem, tam - 1);
+}
+static void VarBaseTxt2_OperadorAtrib(TVariavel * v)
+{
+    int tam = (258 + (unsigned char)v->defvar[Instr::endExtra]);
+    char * ref = reinterpret_cast<char*>(v->endvar) + v->indice * tam;
+    const char * origem = v[1].getTxt();
+    if (ref != origem)
+        copiastr(ref, origem, tam - 1);
+}
+static void VarBaseInt1_OperadorAtrib(TVariavel * v)
+{
+    int valor = v[1].getInt();
+    if (v->numfunc)
+        SetVetorInt1(v, valor);
+    else if (v->indice)
+    {
+        int ind2 = v->indice + v->numbit;
+        if (valor)
+            v->end_char[ind2 / 8] |= (1 << (ind2 & 7));
+        else
+            v->endchar[ind2 / 8] &= ~(1 << (ind2 & 7));
+    }
+    else if (valor)
+        v->end_char[0] |= (1 << v->numbit);
+    else
+        v->end_char[0] &= ~(1 << v->numbit);
+}
+static void VarBaseInt8_OperadorAtrib(TVariavel * v)
+{
+    signed char * ref = reinterpret_cast<signed char*>(v->endvar) + v->indice;
+    int valor = v[1].getInt();
+    *ref = (valor < -0x80 ? -0x80 : valor > 0x7F ? 0x7F : valor);
+}
+static void VarBaseUInt8_OperadorAtrib(TVariavel * v)
+{
+    unsigned char * ref = reinterpret_cast<unsigned char*>(v->endvar) + v->indice;
+    int valor = v[1].getInt();
+    *ref = (valor < 0 ? 0 : valor > 0xFF ? 0xFF : valor);
+}
+static void VarBaseInt16_OperadorAtrib(TVariavel * v)
+{
+    signed short * ref = reinterpret_cast<signed short*>(v->endvar) + v->indice;
+    int valor = v[1].getInt();
+    *ref = (valor < -0x8000 ? -0x8000 : valor > 0x7FFF ? 0x7FFF : valor);
+}
+static void VarBaseUInt16_OperadorAtrib(TVariavel * v)
+{
+    unsigned short * ref = reinterpret_cast<unsigned short*>(v->endvar) + v->indice;
+    int valor = v[1].getInt();
+    *ref = (valor < 0 ? 0 : valor > 0xFFFF ? 0xFFFF : valor);
+}
+static void VarBaseInt32_OperadorAtrib(TVariavel * v)
+{
+    signed int * ref = reinterpret_cast<signed int*>(v->endvar) + v->indice;
+    *ref = v[1].getInt();
+}
+static void VarBaseUInt32_OperadorAtrib(TVariavel * v)
+{
+    unsigned int * ref = reinterpret_cast<unsigned int*>(v->endvar) + v->indice;
+    double valor = v[1].getDouble();
+    *ref = (valor < 0 ? 0 : valor > 0xFFFFFFFFLL ? 0xFFFFFFFFLL : (unsigned int)valor);
+}
+static void VarBaseReal_OperadorAtrib(TVariavel * v)
+{
+    float * ref = reinterpret_cast<float*>(v->endvar) + v->indice;
+    *ref = v[1].getDouble();
+}
+static void VarBaseReal2_OperadorAtrib(TVariavel * v)
+{
+    double * ref = reinterpret_cast<double*>(v->endvar) + v->indice;
+    *ref = v[1].getDouble();
+}
+
+//------------------------------------------------------------------------------
 const TVarInfo * VarBaseTxt1()
 {
     static const TVarInfo var(
@@ -1036,6 +1117,7 @@ const TVarInfo * VarBaseTxt1()
         VarBaseTxt1_GetDouble,
         VarBaseTxt1_GetTxt,
         TVarInfo::FGetObjNulo,
+        VarBaseTxt1_OperadorAtrib,
         VarBaseTxt_FuncVetor);
     return &var;
 }
@@ -1054,6 +1136,7 @@ const TVarInfo * VarBaseTxt2()
         VarBaseTxt2_GetDouble,
         VarBaseTxt2_GetTxt,
         TVarInfo::FGetObjNulo,
+        VarBaseTxt2_OperadorAtrib,
         VarBaseTxt_FuncVetor);
     return &var;
 }
@@ -1072,6 +1155,7 @@ const TVarInfo * VarBaseInt1()
         VarBaseInt1_GetDouble,
         VarBaseInt1_GetTxt,
         TVarInfo::FGetObjNulo,
+        VarBaseInt1_OperadorAtrib,
         VarBaseInt1_FuncVetor);
     return &var;
 }
@@ -1090,6 +1174,7 @@ const TVarInfo * VarBaseInt8()
         VarBaseInt8_GetDouble,
         VarBaseInt8_GetTxt,
         TVarInfo::FGetObjNulo,
+        VarBaseInt8_OperadorAtrib,
         VarBaseInt8_FuncVetor);
     return &var;
 }
@@ -1108,6 +1193,7 @@ const TVarInfo * VarBaseUInt8()
         VarBaseUInt8_GetDouble,
         VarBaseUInt8_GetTxt,
         TVarInfo::FGetObjNulo,
+        VarBaseUInt8_OperadorAtrib,
         VarBaseUInt8_FuncVetor);
     return &var;
 }
@@ -1126,6 +1212,7 @@ const TVarInfo * VarBaseInt16()
         VarBaseInt16_GetDouble,
         VarBaseInt16_GetTxt,
         TVarInfo::FGetObjNulo,
+        VarBaseInt16_OperadorAtrib,
         VarBaseInt16_FuncVetor);
     return &var;
 }
@@ -1144,6 +1231,7 @@ const TVarInfo * VarBaseUInt16()
         VarBaseUInt16_GetDouble,
         VarBaseUInt16_GetTxt,
         TVarInfo::FGetObjNulo,
+        VarBaseUInt16_OperadorAtrib,
         VarBaseUInt16_FuncVetor);
     return &var;
 }
@@ -1162,6 +1250,7 @@ const TVarInfo * VarBaseInt32()
         VarBaseInt32_GetDouble,
         VarBaseInt32_GetTxt,
         TVarInfo::FGetObjNulo,
+        VarBaseInt32_OperadorAtrib,
         VarBaseInt32_FuncVetor);
     return &var;
 }
@@ -1180,6 +1269,7 @@ const TVarInfo * VarBaseUInt32()
         VarBaseUInt32_GetDouble,
         VarBaseUInt32_GetTxt,
         TVarInfo::FGetObjNulo,
+        VarBaseUInt32_OperadorAtrib,
         VarBaseUInt32_FuncVetor);
     return &var;
 }
@@ -1198,6 +1288,7 @@ const TVarInfo * VarBaseReal()
         VarBaseReal_GetDouble,
         VarBaseReal_GetTxt,
         TVarInfo::FGetObjNulo,
+        VarBaseReal_OperadorAtrib,
         VarBaseReal_FuncVetor);
     return &var;
 }
@@ -1216,6 +1307,7 @@ const TVarInfo * VarBaseReal2()
         VarBaseReal2_GetDouble,
         VarBaseReal2_GetTxt,
         TVarInfo::FGetObjNulo,
+        VarBaseReal2_OperadorAtrib,
         VarBaseReal2_FuncVetor);
     return &var;
 }

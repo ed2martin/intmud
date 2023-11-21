@@ -272,6 +272,7 @@ const TVarInfo * TVarArqExec::Inicializa()
         TVarInfo::FGetDouble0,
         TVarInfo::FGetTxtVazio,
         TVarInfo::FGetObjNulo,
+        TVarInfo::FOperadorAtribVazio,
         TVarInfo::FFuncVetorFalse);
     return &var;
 }
@@ -397,10 +398,7 @@ bool TVarArqExec::FuncAbrir(TVariavel * v)
                 break;
         }
         if (obj == nullptr)
-        {
-            Instr::ApagarVar(v);
-            return Instr::CriarVarTexto("ArqExec não pode executar isso");
-        }
+            return Instr::CriarVarTxtFixo(v, "ArqExec não pode executar isso");
     }
     int visivel = (Instr::VarAtual >= v+2 ? v[2].getInt() : 0);
     ObjExec = new TObjExec(this);

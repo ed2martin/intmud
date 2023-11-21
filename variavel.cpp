@@ -63,6 +63,7 @@ TVarInfo::TVarInfo()
     FGetDouble = FGetDouble0;
     FGetTxt = FGetTxtVazio;
     FGetObj = FGetObjNulo;
+    FOperadorAtrib = FOperadorAtribVazio;
     FFuncVetor = FFuncVetorFalse;
 }
 
@@ -80,6 +81,7 @@ TVarInfo::TVarInfo(int (*fTamanho)(const char * instr),
         double (*fGetDouble)(TVariavel * v),
         const char * (*fGetTxt)(TVariavel * v),
         TObjeto * (*fGetObj)(TVariavel * v),
+        void (*fOperadorAtrib)(TVariavel * v),
         bool (*fFuncVetor)(TVariavel * v, const char * nome))
 {
     FTamanho = fTamanho;
@@ -93,6 +95,7 @@ TVarInfo::TVarInfo(int (*fTamanho)(const char * instr),
     FGetInt = fGetInt;
     FGetDouble = fGetDouble;
     FGetTxt = fGetTxt;
+    FOperadorAtrib = fOperadorAtrib;
     FGetObj = fGetObj;
 }
 
@@ -116,6 +119,7 @@ int TVarInfo::FGetInt0(TVariavel * v) { return 0; }
 double TVarInfo::FGetDouble0(TVariavel * v) { return 0; }
 const char * TVarInfo::FGetTxtVazio(TVariavel * v) { return ""; }
 TObjeto * TVarInfo::FGetObjNulo(TVariavel * v) { return nullptr; }
+void TVarInfo::FOperadorAtribVazio(TVariavel * v) {}
 bool TVarInfo::FFuncVetorFalse(TVariavel * v, const char * nome) { return false; }
 
 //----------------------------------------------------------------------------
@@ -701,6 +705,7 @@ int TVariavel::Compara(TVariavel * v)
 }
 
 //------------------------------------------------------------------------------
+/*
 void TVariavel::Igual(TVariavel * v)
 {
     if (indice==0xFF || v->indice==0xFF) // Vetor
@@ -726,6 +731,7 @@ void TVariavel::Igual(TVariavel * v)
         end_datahora[indice].Igual(v->end_datahora + v->indice);
     }
 }
+*/
 
 //------------------------------------------------------------------------------
 bool TVariavel::Func(const char * nome)

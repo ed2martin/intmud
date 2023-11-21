@@ -44,6 +44,7 @@ const TVarInfo * TVarArqDir::Inicializa()
         TVarInfo::FGetDouble0,
         TVarInfo::FGetTxtVazio,
         TVarInfo::FGetObjNulo,
+        TVarInfo::FOperadorAtribVazio,
         TVarInfo::FFuncVetorFalse);
     return &var;
 }
@@ -172,23 +173,20 @@ bool TVarArqDir::FuncAbrir(TVariavel * v)
         strcpy(mens, ".");
 // Checa se nome válido
     if (!arqvalido(mens))
-    {
-        Instr::ApagarVar(v);
-        return Instr::CriarVarTexto("Nome não permitido");
-    }
+        return Instr::CriarVarTxtFixo(v, "Nome não permitido");
 // Abre o diretório
 #ifdef __WIN32__
     WIN32_FIND_DATA ffd;
     strcat(mens, "\\*");
     wdir = FindFirstFile(mens, &ffd);
     if (wdir == INVALID_HANDLE_VALUE)
-        return Instr::CriarVarTexto("");
+        return Instr::CriarVarTxtFixo(v, "");
     while (strcmp(ffd.cFileName, ".") == 0 || strcmp(ffd.cFileName, "..") == 0)
         if (FindNextFile(wdir, &ffd) == 0)
         {
             FindClose(wdir);
             wdir = INVALID_HANDLE_VALUE;
-            return Instr::CriarVarTexto("");
+            return Instr::CriarVarTxtFixo(v, "");
         }
     copiastr(arqdir, ffd.cFileName, sizeof(arqdir));
     arqtipo = (ffd.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY)
@@ -202,8 +200,7 @@ bool TVarArqDir::FuncAbrir(TVariavel * v)
     }
     Proximo();
 #endif
-    Instr::ApagarVar(v);
-    return Instr::CriarVarTexto("");
+    return Instr::CriarVarTxtFixo(v, "");
 }
 
 //------------------------------------------------------------------------------
@@ -250,7 +247,7 @@ bool TVarArqDir::FuncTamanho(TVariavel * v)
 {
     char mens[512];
     double tam = 0;
-    while (Instr::VarAtual >= v+1)
+    while (Instr::VarAtual >= v + 1)
     {
         copiastr(mens, v[1].getTxt(), sizeof(mens));
         if (!arqvalido(mens))
@@ -367,15 +364,12 @@ bool TVarArqDir::FuncAtempo(TVariavel * v)
 bool TVarArqDir::FuncApagarDir(TVariavel * v)
 {
     char mens[512];
-    if (Instr::VarAtual < v+1)
-    {
-        Instr::ApagarVar(v);
-        return Instr::CriarVarTexto("");
-    }
+    if (Instr::VarAtual < v + 1)
+        return Instr::CriarVarTxtFixo(v, "");
     copiastr(mens, v[1].getTxt(), sizeof(mens));
     Instr::ApagarVar(v);
     if (!arqvalido(mens))
-        return Instr::CriarVarTexto("Nome de diretório não permitido");
+        return Instr::CriarVarTxtFixo("Nome de diretório não permitido");
     int err = rmdir(mens);
     if (err >= 0)
         *mens = 0;
@@ -388,15 +382,12 @@ bool TVarArqDir::FuncApagarDir(TVariavel * v)
 bool TVarArqDir::FuncCriarDir(TVariavel * v)
 {
     char mens[512];
-    if (Instr::VarAtual < v+1)
-    {
-        Instr::ApagarVar(v);
-        return Instr::CriarVarTexto("");
-    }
+    if (Instr::VarAtual < v + 1)
+        return Instr::CriarVarTxtFixo(v, "");
     copiastr(mens, v[1].getTxt(), sizeof(mens));
     Instr::ApagarVar(v);
     if (!arqvalido(mens))
-        return Instr::CriarVarTexto("Nome de diretório não permitido");
+        return Instr::CriarVarTxtFixo("Nome de diretório não permitido");
 #ifdef __WIN32__
     int err = mkdir(mens);
 #else
@@ -414,15 +405,12 @@ bool TVarArqDir::FuncCriarDir(TVariavel * v)
 bool TVarArqDir::FuncApagar(TVariavel * v)
 {
     char mens[512];
-    if (Instr::VarAtual < v+1)
-    {
-        Instr::ApagarVar(v);
-        return Instr::CriarVarTexto("");
-    }
+    if (Instr::VarAtual < v + 1)
+        return Instr::CriarVarTxtFixo(v, "");
     copiastr(mens, v[1].getTxt(), sizeof(mens));
     Instr::ApagarVar(v);
     if (!arqvalido(mens, false))
-        return Instr::CriarVarTexto("Nome de arquivo não permitido");
+        return Instr::CriarVarTxtFixo("Nome de arquivo não permitido");
     if (remove(mens) >= 0) // remove ou unlink
         *mens = 0;
     else
@@ -436,15 +424,12 @@ bool TVarArqDir::FuncRenomear(TVariavel * v)
 {
     char antes[512], depois[512];
     if (Instr::VarAtual < v + 2)
-    {
-        Instr::ApagarVar(v);
-        return Instr::CriarVarTexto("");
-    }
+        return Instr::CriarVarTxtFixo(v, "");
     copiastr(antes, v[1].getTxt(), sizeof(antes));
     copiastr(depois, v[2].getTxt(), sizeof(depois));
     Instr::ApagarVar(v);
     if (!arqvalido(antes, true) || !arqvalido(depois, true))
-        return Instr::CriarVarTexto("Nome de arquivo não permitido");
+        return Instr::CriarVarTxtFixo("Nome de arquivo não permitido");
 #ifdef __WIN32__
     if (MoveFileEx(antes, depois,
             MOVEFILE_REPLACE_EXISTING | MOVEFILE_COPY_ALLOWED))

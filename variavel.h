@@ -61,6 +61,7 @@ private:
     double (*FGetDouble)(TVariavel * v);
     const char * (*FGetTxt)(TVariavel * v);
     TObjeto * (*FGetObj)(TVariavel * v);
+    void (*FOperadorAtrib)(TVariavel * v);
     bool (*FFuncVetor)(TVariavel * v, const char * nome);
 
     static char * EndBufferTxt;
@@ -83,6 +84,7 @@ public:
             double (*fGetDouble)(TVariavel * v),
             const char * (*fGetTxt)(TVariavel * v),
             TObjeto * (*fGetObj)(TVariavel * v),
+            void (*fOperadorAtrib)(TVariavel * v),
             bool (*fFuncVetor)(TVariavel * v, const char * nome));
     /// Retorna um buffer de 0x100 bytes para ser usado para retornar texto
     static inline char * BufferTxt()
@@ -107,6 +109,7 @@ public:
     static double FGetDouble0(TVariavel * v);
     static const char * FGetTxtVazio(TVariavel * v);
     static TObjeto * FGetObjNulo(TVariavel * v);
+    static void FOperadorAtribVazio(TVariavel * v);
     static bool FFuncVetorFalse(TVariavel * v, const char * nome);
 
     friend TVariavel;
@@ -310,12 +313,19 @@ public:
     void addTxt(const char * txt); ///< Adiciona texto na variável
     void setObj(TObjeto * obj); ///< Muda variável a partir de referência
 
-// Operadores numéricos
+// Operadores
+    /// Atribui o valor da próxima variável (this[1]) a esta (*this)
+    inline void OperadorAtrib()
+    {
+        unsigned char cmd = (unsigned char)defvar[2];
+        if (cmd < Instr::cTotalComandos && indice != 0xff &&
+                this[1].indice != 0xff)
+            VarInfo[cmd].FOperadorAtrib(this);
+    }
+
     int Compara(TVariavel * v);
         ///< Compara com outra variável do mesmo tipo
         /**< @return -1 se menor, 0 se igual, 1 se maior */
-    void Igual(TVariavel * v);
-        ///< Operador igual com variável do mesmo tipo
     bool Func(const char * nome);
         ///< Executa função da variável
         /**< Deve verificar argumentos, após a variável

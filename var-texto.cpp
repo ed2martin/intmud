@@ -64,6 +64,7 @@ const TVarInfo * TTextoTxt::Inicializa()
         FGetDouble,
         FGetTxt,
         TVarInfo::FGetObjNulo,
+        TVarInfo::FOperadorAtribVazio,
         TVarInfo::FFuncVetorFalse);
     return &var;
 }
@@ -215,6 +216,7 @@ const TVarInfo * TTextoPos::Inicializa()
         FGetDouble,
         FGetTxt,
         TVarInfo::FGetObjNulo,
+        FOperadorAtrib,
         TVarInfo::FFuncVetorFalse);
     return &var;
 }
@@ -319,6 +321,22 @@ bool TTextoPos::FGetBool(TVariavel * v) VARIAVEL_FGETINT1(TTextoPos)
 int TTextoPos::FGetInt(TVariavel * v) VARIAVEL_FGETINT1(TTextoPos)
 double TTextoPos::FGetDouble(TVariavel * v) VARIAVEL_FGETINT1(TTextoPos)
 const char * TTextoPos::FGetTxt(TVariavel * v) VARIAVEL_FGETTXT1(TTextoPos)
+
+//----------------------------------------------------------------------------
+void TTextoPos::FOperadorAtrib(TVariavel * v)
+{
+    if (v[1].defvar[2] != v[0].defvar[2])
+        return;
+    TTextoPos * r1 = reinterpret_cast<TTextoPos*>(v[0].endvar) + v[0].indice;
+    TTextoPos * r2 = reinterpret_cast<TTextoPos*>(v[1].endvar) + v[1].indice;
+    if (r1 == r2)
+        return;
+    r1->MudarTxt(r2->TextoTxt);
+    r1->Bloco = r2->Bloco;
+    r1->PosicBloco = r2->PosicBloco;
+    r1->PosicTxt = r2->PosicTxt;
+    r1->LinhaTxt = r2->LinhaTxt;
+}
 
 //----------------------------------------------------------------------------
 TTextoBloco * TTextoBloco::CriarAntes()

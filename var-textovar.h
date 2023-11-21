@@ -35,8 +35,6 @@ public:
     int Compara(TTextoVar * v);
         ///< Compara com outra variável TTextoVar
         /**< @return -1 se menor, 0 se igual, 1 se maior */
-    void Igual(TTextoVar * v);
-        ///< Operador igual com variável TTextoVar
     TBlocoVar * Procura(const char * texto);
         ///< Procura um objeto TIndiceObj a partir do nome
         /**< @param texto Nome a pesquisar
@@ -72,6 +70,7 @@ private:
             unsigned int antes, unsigned int depois);
     static void FMoverEnd(TVariavel * v, void * destino,
             TClasse * c, TObjeto * o);
+    static void FOperadorAtrib(TVariavel * v);
 
 public:
     TBlocoVar * RBroot;  ///< Objeto raiz da RBT
@@ -134,6 +133,7 @@ private:
     static double FGetDouble(TVariavel * v);
     static const char * FGetTxt(TVariavel * v);
     static TObjeto * FGetObj(TVariavel * v);
+    static void FOperadorAtrib(TVariavel * v);
 };
 
 //----------------------------------------------------------------------------

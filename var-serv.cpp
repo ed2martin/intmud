@@ -104,6 +104,7 @@ const TVarInfo * TVarServ::Inicializa()
         FGetDouble,
         FGetTxt,
         TVarInfo::FGetObjNulo,
+        FOperadorAtrib,
         TVarInfo::FFuncVetorFalse);
     return &var;
 }
@@ -573,3 +574,10 @@ bool TVarServ::FGetBool(TVariavel * v) VARIAVEL_FGETINT0(TVarServ)
 int TVarServ::FGetInt(TVariavel * v) VARIAVEL_FGETINT0(TVarServ)
 double TVarServ::FGetDouble(TVariavel * v) VARIAVEL_FGETINT0(TVarServ)
 const char * TVarServ::FGetTxt(TVariavel * v) VARIAVEL_FGETTXT0(TVarServ)
+
+//------------------------------------------------------------------------------
+void TVarServ::FOperadorAtrib(TVariavel * v)
+{
+    TVarServ * ref = reinterpret_cast<TVarServ*>(v->endvar) + v->indice;
+    ref->Fechar();
+}

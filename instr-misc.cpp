@@ -134,6 +134,7 @@ const Instr::TListaFunc Instr::ListaFunc[] = {
     { "txtsha1bin",   InstrFunc::FuncTxtSha1Bin },
     { "txtsub",       InstrFunc::FuncTxtSub },
     { "txtsublin",    InstrFunc::FuncTxtSubLin },
+    { "txttipovar",   InstrFunc::FuncTxtTipoVar },
     { "txttroca",     InstrFunc::FuncTxtTroca },
     { "txttrocadif",  InstrFunc::FuncTxtTrocaDif },
     { "txttrocamai",  InstrFunc::FuncTxtTrocaMai },
@@ -405,6 +406,45 @@ bool Instr::CriarVarTexto(const char * mens, int tammens)
     VarAtual->tamanho = tammens + 1;
     VarAtual->indice = 0;
     DadosTopo += tammens + 1;
+    return true;
+}
+
+//----------------------------------------------------------------------------
+/// Cria variável de texto que aponta para um texto fixo
+/** @param texto Texto da variável (nota: o texto não pode ser apagado)
+ *  @return true se conseguiu criar, false se memória insuficiente */
+bool Instr::CriarVarTxtFixo(const char * texto)
+{
+    if (VarAtual >= VarFim - 1)
+        return false;
+    VarAtual++;
+    VarAtual->defvar = InstrTxtFixo;
+    VarAtual->nomevar = InstrTxtFixo;
+    VarAtual->endfixo = texto;
+    VarAtual->tamanho = 0;
+    VarAtual->indice = 0;
+    return true;
+}
+
+//----------------------------------------------------------------------------
+/// Apaga variáveis na pilha a partir da variável v e cria variável texto fixo no lugar
+/** @param texto Texto da variável (nota: o texto não pode ser apagado)
+ *  @return true para indicar que se conseguiu criar */
+bool Instr::CriarVarTxtFixo(TVariavel * v, const char * texto)
+{
+    for (TVariavel * var = VarAtual; var >= v; var--)
+        if (var->tamanho)
+        {
+            if (var->endvar)
+                DadosTopo = var->endchar;
+            var->Apagar(); // Pode alterar var->endvar
+        }
+    VarAtual = v;
+    VarAtual->defvar = InstrTxtFixo;
+    VarAtual->nomevar = InstrTxtFixo;
+    VarAtual->endfixo = texto;
+    VarAtual->tamanho = 0;
+    VarAtual->indice = 0;
     return true;
 }
 

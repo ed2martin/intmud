@@ -38,6 +38,7 @@ private:
     static int FGetInt(TVariavel * v);
     static double FGetDouble(TVariavel * v);
     static const char * FGetTxt(TVariavel * v);
+    static void FOperadorAtrib(TVariavel * v);
 
     TVarIntExec * Antes;        ///< Objeto anterior na lista ligada
     TVarIntExec * Depois;        ///< Próximo objeto na lista ligada

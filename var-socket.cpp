@@ -337,6 +337,7 @@ const TVarInfo * TVarSocket::Inicializa()
         FGetDouble,
         FGetTxt,
         TVarInfo::FGetObjNulo,
+        FOperadorAtrib,
         TVarInfo::FFuncVetorFalse);
     return &var;
 }
@@ -405,12 +406,6 @@ void TVarSocket::EndObjeto(TClasse * c, TObjeto * o)
         endobjeto = o, b_objeto = true;
     else
         endclasse = c, b_objeto = false;
-}
-
-//------------------------------------------------------------------------------
-void TVarSocket::Igual(TVarSocket * v)
-{
-    MudarSock(v->Socket);
 }
 
 //------------------------------------------------------------------------------
@@ -625,10 +620,7 @@ bool TVarSocket::FuncNomeIP(TVariavel * v)
     if ( conSock.sin_addr.s_addr == INADDR_NONE )
     {
         if ( (hnome=gethostbyname(ender)) == nullptr )
-        {
-            Instr::ApagarVar(v);
-            return Instr::CriarVarTexto("");
-        }
+            return Instr::CriarVarTxtFixo(v, "");
         conSock.sin_addr = (*(struct in_addr *)hnome->h_addr);
     }
 #else
@@ -636,10 +628,7 @@ bool TVarSocket::FuncNomeIP(TVariavel * v)
     if (inet_aton(ender, &conSock.sin_addr) == 0)
     {
         if ( (hnome=gethostbyname(ender)) == nullptr )
-        {
-            Instr::ApagarVar(v);
-            return Instr::CriarVarTexto("");
-        }
+            return Instr::CriarVarTxtFixo(v, "");
         conSock.sin_addr = (*(struct in_addr *)hnome->h_addr);
     }
 #endif
@@ -786,6 +775,17 @@ bool TVarSocket::FGetBool(TVariavel * v) VARIAVEL_FGETINT1(TVarSocket)
 int TVarSocket::FGetInt(TVariavel * v) VARIAVEL_FGETINT1(TVarSocket)
 double TVarSocket::FGetDouble(TVariavel * v) VARIAVEL_FGETINT1(TVarSocket)
 const char * TVarSocket::FGetTxt(TVariavel * v) VARIAVEL_FGETTXT1(TVarSocket)
+
+//------------------------------------------------------------------------------
+void TVarSocket::FOperadorAtrib(TVariavel * v)
+{
+    if (v[1].defvar[2] != v[0].defvar[2])
+        return;
+    TVarSocket * r1 = reinterpret_cast<TVarSocket*>(v[0].endvar) + v[0].indice;
+    TVarSocket * r2 = reinterpret_cast<TVarSocket*>(v[1].endvar) + v[1].indice;
+    if (r1 != r2)
+        r1->MudarSock(r2->Socket);
+}
 
 //------------------------------------------------------------------------------
 #ifdef __WIN32__

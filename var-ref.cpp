@@ -69,6 +69,7 @@ const TVarInfo * TVarRef::Inicializa()
         FGetDouble,
         FGetTxt,
         FGetObj,
+        FOperadorAtrib,
         TVarInfo::FFuncVetorFalse);
     return &var;
 }
@@ -172,4 +173,11 @@ const char * TVarRef::FGetTxt(TVariavel * v)
 TObjeto * TVarRef::FGetObj(TVariavel * v)
 {
     return reinterpret_cast<TVarRef*>(v->endvar)[ v->indice].Pont;
+}
+
+//------------------------------------------------------------------------------
+void TVarRef::FOperadorAtrib(TVariavel * v)
+{
+    TVarRef * ref = reinterpret_cast<TVarRef*>(v->endvar) + v->indice;
+    ref->MudarPont(v[1].getObj());
 }

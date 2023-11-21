@@ -51,6 +51,7 @@ const TVarInfo * TListaObj::Inicializa()
         FGetDouble,
         FGetTxt,
         TVarInfo::FGetObjNulo,
+        TVarInfo::FOperadorAtribVazio,
         TVarInfo::FFuncVetorFalse);
     return &var;
 }
@@ -333,7 +334,7 @@ bool TListaObj::FuncIni(TVariavel * v)
     else if (cl == nullptr)
         obj = nullptr;
     else
-        for (obj=Inicio; obj && obj->Objeto->Classe != cl; )
+        for (obj = Inicio; obj && obj->Objeto->Classe != cl; )
             obj = obj->ListaDepois;
     Instr::VarAtual->end_listaitem->MudarRef(obj);
     DEBUG1
@@ -731,6 +732,7 @@ const TVarInfo * TListaItem::Inicializa()
         FGetDouble,
         FGetTxt,
         FGetObj,
+        FOperadorAtrib,
         TVarInfo::FFuncVetorFalse);
     return &var;
 }
@@ -1088,6 +1090,17 @@ TObjeto * TListaItem::FGetObj(TVariavel * v)
     TListaItem * ref = reinterpret_cast<TListaItem*>(v->endvar) + v->indice;
     TListaX * l = ref->ListaX;
     return (l ? l->Objeto : nullptr);
+}
+
+//----------------------------------------------------------------------------
+void TListaItem::FOperadorAtrib(TVariavel * v)
+{
+    if (v[1].defvar[2] != v[0].defvar[2])
+        return;
+    TListaItem * r1 = reinterpret_cast<TListaItem*>(v[0].endvar) + v[0].indice;
+    TListaItem * r2 = reinterpret_cast<TListaItem*>(v[1].endvar) + v[1].indice;
+    if (r1 != r2)
+        r1->MudarRef(r2->ListaX);
 }
 
 //----------------------------------------------------------------------------

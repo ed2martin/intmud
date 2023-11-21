@@ -18,7 +18,6 @@ public:
     int  getValor();        ///< Ler valor numérico da variável
     TIndiceObj * getIndiceObj(); ///< Retorna IndiceObj
     void MudarRef(TIndiceObj * indice); ///< Muda referência de ListaX
-    void Igual(TIndiceItem * v);     ///< Operador de atribuição igual
     bool Func(TVariavel * v, const char * nome); ///< Função da variável
 
     bool FuncObj(TVariavel * v);
@@ -39,6 +38,7 @@ private:
     static int FGetInt(TVariavel * v);
     static double FGetDouble(TVariavel * v);
     static const char * FGetTxt(TVariavel * v);
+    static void FOperadorAtrib(TVariavel * v);
 
     TIndiceItem * Antes;    ///< Objeto anterior
     TIndiceItem * Depois;   ///< Próximo objeto
@@ -99,6 +99,7 @@ private:
     static int FGetInt(TVariavel * v);
     static double FGetDouble(TVariavel * v);
     static const char * FGetTxt(TVariavel * v);
+    static void FOperadorAtrib(TVariavel * v);
 
     friend class TIndiceItem;
 };
