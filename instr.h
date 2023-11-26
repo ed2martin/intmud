@@ -73,6 +73,8 @@ extern const char InstrVarObjeto[];
 extern const char InstrVarInt[];
 /// TVariavel::defvar para Instr::cVarDouble
 extern const char InstrVarDouble[];
+/// TVariavel::defvar para Instr::cArqSav
+extern const char InstrVarArqSav[];
 /// TVariavel::defvar para Instr::cListaItem
 extern const char InstrVarListaItem[];
 /// TVariavel::defvar para Instr::cTextoPos

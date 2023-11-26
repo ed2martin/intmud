@@ -179,8 +179,8 @@ double TVarIntExec::FGetDouble(TVariavel * v) VARIAVEL_FGETINT0(TVarIntExec)
 const char * TVarIntExec::FGetTxt(TVariavel * v) VARIAVEL_FGETTXT0(TVarIntExec)
 
 //------------------------------------------------------------------------------
-void TVarIntExec::FOperadorAtrib(TVariavel * v)
+void TVarIntExec::FOperadorAtrib(TVariavel * v1, TVariavel * v2)
 {
-    TVarIntExec * ref = reinterpret_cast<TVarIntExec*>(v->endvar) + v->indice;
-    ref->setValor(v[1].getInt());
+    TVarIntExec * ref = reinterpret_cast<TVarIntExec*>(v1->endvar) + v1->indice;
+    ref->setValor(v2->getInt());
 }

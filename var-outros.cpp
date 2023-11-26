@@ -375,28 +375,28 @@ static TObjeto * VarOutrosVarObjeto_GetObj(TVariavel * v)
 }
 
 //----------------------------------------------------------------------------
-static void VarOutrosVarNome_OperadorAtrib(TVariavel * v)
+static void VarOutrosVarNome_OperadorAtrib(TVariavel * v1, TVariavel * v2)
 {
-    char * ref = reinterpret_cast<char*>(v->endvar) + v->indice * VAR_NOME_TAM;
-    const char * origem = v[1].getTxt();
+    char * ref = reinterpret_cast<char*>(v1->endvar) + v1->indice * VAR_NOME_TAM;
+    const char * origem = v2->getTxt();
     if (ref != origem)
-        copiastr(ref, origem, VAR_NOME_TAM - 1);
+        copiastr(ref, origem, VAR_NOME_TAM);
 }
-static void VarOutrosVarIniFunc_OperadorAtrib(TVariavel * v)
+static void VarOutrosVarIniFunc_OperadorAtrib(TVariavel * v1, TVariavel * v2)
 {
-    v->valor_int = v[1].getInt();
+    v1->valor_int = v2->getInt();
 }
-static void VarOutrosVarObjeto_OperadorAtrib(TVariavel * v)
+static void VarOutrosVarObjeto_OperadorAtrib(TVariavel * v1, TVariavel * v2)
 {
-    v->endvar = v[1].getObj();
+    v1->endvar = v2->getObj();
 }
-static void VarOutrosVarInt_OperadorAtrib(TVariavel * v)
+static void VarOutrosVarInt_OperadorAtrib(TVariavel * v1, TVariavel * v2)
 {
-    v->valor_int = v[1].getInt();
+    v1->valor_int = v2->getInt();
 }
-static void VarOutrosVarDouble_OperadorAtrib(TVariavel * v)
+static void VarOutrosVarDouble_OperadorAtrib(TVariavel * v1, TVariavel * v2)
 {
-    v->valor_double = v[1].getDouble();
+    v1->valor_double = v2->getDouble();
 }
 
 //----------------------------------------------------------------------------

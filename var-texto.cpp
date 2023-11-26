@@ -323,12 +323,12 @@ double TTextoPos::FGetDouble(TVariavel * v) VARIAVEL_FGETINT1(TTextoPos)
 const char * TTextoPos::FGetTxt(TVariavel * v) VARIAVEL_FGETTXT1(TTextoPos)
 
 //----------------------------------------------------------------------------
-void TTextoPos::FOperadorAtrib(TVariavel * v)
+void TTextoPos::FOperadorAtrib(TVariavel * v1, TVariavel * v2)
 {
-    if (v[1].defvar[2] != v[0].defvar[2])
+    if (v1->defvar[2] != v2->defvar[2])
         return;
-    TTextoPos * r1 = reinterpret_cast<TTextoPos*>(v[0].endvar) + v[0].indice;
-    TTextoPos * r2 = reinterpret_cast<TTextoPos*>(v[1].endvar) + v[1].indice;
+    TTextoPos * r1 = reinterpret_cast<TTextoPos*>(v1->endvar) + v1->indice;
+    TTextoPos * r2 = reinterpret_cast<TTextoPos*>(v2->endvar) + v2->indice;
     if (r1 == r2)
         return;
     r1->MudarTxt(r2->TextoTxt);

@@ -576,8 +576,8 @@ double TVarServ::FGetDouble(TVariavel * v) VARIAVEL_FGETINT0(TVarServ)
 const char * TVarServ::FGetTxt(TVariavel * v) VARIAVEL_FGETTXT0(TVarServ)
 
 //------------------------------------------------------------------------------
-void TVarServ::FOperadorAtrib(TVariavel * v)
+void TVarServ::FOperadorAtrib(TVariavel * v1, TVariavel * v2)
 {
-    TVarServ * ref = reinterpret_cast<TVarServ*>(v->endvar) + v->indice;
+    TVarServ * ref = reinterpret_cast<TVarServ*>(v1->endvar) + v1->indice;
     ref->Fechar();
 }

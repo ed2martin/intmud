@@ -79,7 +79,7 @@ private:
     static int FGetInt(TVariavel * v);
     static double FGetDouble(TVariavel * v);
     static const char * FGetTxt(TVariavel * v);
-    static void FOperadorAtrib(TVariavel * v);
+    static void FOperadorAtrib(TVariavel * v1, TVariavel * v2);
 
     bool modossl;               ///< Se deve usar conexão segura (SSL)
     int  sock;                  ///< Socket; menor que 0 se estiver fechado

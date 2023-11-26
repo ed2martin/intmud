@@ -59,8 +59,11 @@ private:
     static bool FuncSalvarCod(TVariavel * v);  ///< Processa função SalvarCod
     static bool FuncApagar(TVariavel * v);     ///< Processa função Apagar
 
-    static int FTamanho(const char * instr);
-    static int FTamanhoVetor(const char * instr);
+    static bool FGetBool(TVariavel * v);
+    static int FGetInt(TVariavel * v);
+    static double FGetDouble(TVariavel * v);
+    static const char * FGetTxt(TVariavel * v);
+    static TObjeto * FGetObj(TVariavel * v);
 };
 
 //----------------------------------------------------------------------------

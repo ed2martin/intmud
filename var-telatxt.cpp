@@ -507,55 +507,6 @@ int TVarTelaTxt::getValor(int numfunc)
 }
 
 //------------------------------------------------------------------------------
-void TVarTelaTxt::setValor(int numfunc, int valor)
-{
-    if (Console == nullptr)
-        return;
-    switch (numfunc)
-    {
-    case TelaTxtTexto:
-        {
-            char mens[20];
-            sprintf(mens, "%d", valor);
-            setTxt(numfunc, mens);
-            break;
-        }
-    case TelaTxtTotal:
-        if (valor > CONSOLE_MAX - 1)
-            valor = CONSOLE_MAX - 1;
-        if (valor < 1)
-            valor = 1;
-        if (valor >= (int)max_linha)
-            max_linha = valor;
-        else
-        {
-            max_linha = valor;
-            if ((int)tam_linha > valor)
-                tam_linha = valor;
-            CursorEditor();   // Cursor na linha de edição
-            if (col_linha + ColEditor > (unsigned int)valor)
-                ProcTeclaCursor(tam_linha); // Semelhante à tecla END
-            if (valor - col_linha < Console->ColTotal)
-            {
-                Console->CursorCol(valor - col_linha - Console->ColAtual);
-                Console->LimpaFim();
-            }
-        }
-        break;
-    case TelaTxtLinha:
-        if (valor < 0)
-            valor = 0;
-        if (valor == (int)LinhaPosic)
-            break;
-        CursorEditor();
-        if (valor > (int)Console->LinAtual)
-            valor = (int)Console->LinAtual;
-        LinhaPosic = valor;
-        break;
-    }
-}
-
-//------------------------------------------------------------------------------
 const char * TVarTelaTxt::getTxt(int numfunc)
 {
     if (Console == nullptr)
@@ -578,32 +529,6 @@ const char * TVarTelaTxt::getTxt(int numfunc)
         }
     }
     return "";
-}
-
-//------------------------------------------------------------------------------
-void TVarTelaTxt::setTxt(int numfunc, const char * txt)
-{
-    txt_linha[tam_linha] = 0;
-    if (Console == nullptr || strcmp(txt_linha, txt) == 0)
-        return;
-    switch (numfunc)
-    {
-    case TelaTxtTexto:
-        if (*txt == 0)
-        {
-            tam_linha = 0;
-            col_linha = 0xFFF;
-            CursorEditor();     // Cursor na linha de edição
-            ProcTeclaCursor(0); // Semelhante à tecla HOME
-        }
-        else
-            addTxt(numfunc, txt);
-        break;
-    case TelaTxtTotal:
-    case TelaTxtLinha:
-        setValor(numfunc, TxtToInt(txt));
-        break;
-    }
 }
 
 //------------------------------------------------------------------------------
@@ -646,10 +571,6 @@ void TVarTelaTxt::addTxt(int numfunc, const char * txt)
         col_linha = 0xFFF;
         CursorEditor();     // Cursor na linha de edição
         ProcTeclaCursor(0); // Semelhante à tecla HOME
-        break;
-    case TelaTxtTotal:
-    case TelaTxtLinha:
-        setValor(numfunc, TxtToInt(txt));
         break;
     }
 }
@@ -1029,13 +950,13 @@ const char * TVarTelaTxt::FGetTxt(TVariavel * v)
 }
 
 //------------------------------------------------------------------------------
-inline void TVarTelaTxt::FOperadorAtribSub(TVariavel * v)
+inline void TVarTelaTxt::FOperadorAtribSub(int numfunc, TVariavel * v2)
 {
     if (Console == nullptr)
         return;
-    if (v->numfunc == TelaTxtTexto)
+    if (numfunc == TelaTxtTexto)
     {
-        const char * txt = v[1].getTxt();
+        const char * txt = v2->getTxt();
         txt_linha[tam_linha] = 0;
         if (Console == nullptr || strcmp(txt_linha, txt) == 0)
             return;
@@ -1047,11 +968,11 @@ inline void TVarTelaTxt::FOperadorAtribSub(TVariavel * v)
             ProcTeclaCursor(0); // Semelhante à tecla HOME
         }
         else
-            addTxt(v->numfunc, txt);
+            addTxt(numfunc, txt);
     }
-    else if (v->numfunc == TelaTxtTotal)
+    else if (numfunc == TelaTxtTotal)
     {
-        int valor = v[1].getInt();
+        int valor = v2->getInt();
         if (valor > CONSOLE_MAX - 1)
             valor = CONSOLE_MAX - 1;
         if (valor < 1)
@@ -1073,9 +994,9 @@ inline void TVarTelaTxt::FOperadorAtribSub(TVariavel * v)
             }
         }
     }
-    else if (v->numfunc == TelaTxtLinha)
+    else if (numfunc == TelaTxtLinha)
     {
-        int valor = v[1].getInt();
+        int valor = v2->getInt();
         if (valor < 0)
             valor = 0;
         if (valor == (int)LinhaPosic)
@@ -1088,8 +1009,8 @@ inline void TVarTelaTxt::FOperadorAtribSub(TVariavel * v)
 }
 
 //------------------------------------------------------------------------------
-void TVarTelaTxt::FOperadorAtrib(TVariavel * v)
+void TVarTelaTxt::FOperadorAtrib(TVariavel * v1, TVariavel * v2)
 {
-    TVarTelaTxt * ref = reinterpret_cast<TVarTelaTxt*>(v->endvar) + v->indice;
-    ref->FOperadorAtribSub(v);
+    TVarTelaTxt * ref = reinterpret_cast<TVarTelaTxt*>(v1->endvar) + v1->indice;
+    ref->FOperadorAtribSub(v1->numfunc, v2);
 }

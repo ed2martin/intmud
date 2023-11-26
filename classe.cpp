@@ -1556,7 +1556,7 @@ int TClasse::AcertaVar(bool acertaderiv)
             if (cmp != 0 || antes.IndiceVar[c1] != IndiceVar[c2])
                 bitobjeto |= 0x10;
         // Pula variáveis com tamanho zero
-            bool tamzero=false;
+            bool tamzero = false;
             if (TVariavel::Tamanho(antes.InstrVar[c1]) == 0)
                 c1++, tamzero=true;
             if (TVariavel::Tamanho(InstrVar[c2]) == 0)
@@ -1574,10 +1574,9 @@ int TClasse::AcertaVar(bool acertaderiv)
                     total++;
                 }
                 c1++, bitobjeto |= 1;
-                continue;
             }
         // Variável criada
-            if (cmp > 0)
+            else if (cmp > 0)
             {
                 if (InstrVar[c2][2] > Instr::cVarFunc)
                 {
@@ -1587,22 +1586,35 @@ int TClasse::AcertaVar(bool acertaderiv)
                     total++;
                 }
                 c2++, bitobjeto |= 1;
-                continue;
             }
         // Tipo de variável não mudou: mover
-            if (antes.InstrVar[c1][2] == InstrVar[c2][2] &&
+            else if (antes.InstrVar[c1][2] == InstrVar[c2][2] &&
                 antes.InstrVar[c1][Instr::endIndice] ==
                       InstrVar[c2][Instr::endIndice])
             {
-                unsigned char tam1 = antes.InstrVar[c1][Instr::endVetor];
-                unsigned char tam2 = InstrVar[c2][Instr::endVetor];
-                if (tam1 == 0) tam1++;
-                if (tam2 == 0) tam2++;
-                if (tam1 != tam2)
+                if (InstrVar[c2][2] == Instr::cInt1)
+                {
+                    al[total].comando = 4;  // Bits: devem ser copiados
                     bitobjeto |= 1;
-                al[total].comando = 3;
-                if (InstrVar[c2][2] == Instr::cInt1) // Bits: devem ser copiados
-                    al[total].comando = 4;
+                }
+                else if ((InstrVar[c2][2] == Instr::cTxt1 ||
+                    InstrVar[c2][2] == Instr::cTxt2) &&
+                    antes.InstrVar[c1][Instr::endExtra] !=
+                          InstrVar[c2][Instr::endExtra])
+                {
+                    al[total].comando = 4; // Tamanho de txt diferente: copiar
+                    bitobjeto |= 1;
+                }
+                else // Mover
+                {
+                    unsigned char tam1 = antes.InstrVar[c1][Instr::endVetor];
+                    unsigned char tam2 = InstrVar[c2][Instr::endVetor];
+                    if (tam1 == 0) tam1++;
+                    if (tam2 == 0) tam2++;
+                    if (tam1 != tam2)
+                        bitobjeto |= 1;
+                    al[total].comando = 3;
+                }
                 al[total].defvar = antes.InstrVar[c1];
                 al[total].indvar = antes.IndiceVar[c1];
                 total++;
@@ -1610,49 +1622,24 @@ int TClasse::AcertaVar(bool acertaderiv)
                 al[total].defvar = InstrVar[c2];
                 al[total].indvar = IndiceVar[c2];
                 total++, c1++, c2++;
-                continue;
             }
-        // Tipo mudou: verifica como deve ser feita a cópia
-            v.defvar = InstrVar[c2];
-            switch (v.Tipo())
+        // Tipo mudou: copia variável
+            else
             {
-            case varInt:    al[total].comando = 4; break;
-            case varDouble: al[total].comando = 5; break;
-            case varTxt:    al[total].comando = 6; break;
-            case varObj:    al[total].comando = 7; break;
-            default:        al[total].comando = 0;
-            }
-            if (al[total].comando)
-            {
+                v.defvar = InstrVar[c2];
+                al[total].comando = 4;
                 al[total].defvar = antes.InstrVar[c1];
                 al[total].indvar = antes.IndiceVar[c1];
                 total++;
                 al[total].comando = 0;
                 al[total].defvar = InstrVar[c2];
                 al[total].indvar = IndiceVar[c2];
-                total++;
+                bitobjeto |= 1;
+                total++, c1++, c2++;
             }
-            else
-            {
-                if (antes.InstrVar[c1][2] > Instr::cVarFunc)
-                {
-                    al[total].comando = 1;
-                    al[total].defvar = antes.InstrVar[c1];
-                    al[total].indvar = antes.IndiceVar[c1];
-                    total++;
-                }
-                if (InstrVar[c2][2] > Instr::cVarFunc)
-                {
-                    al[total].comando = 2;
-                    al[total].defvar = InstrVar[c2];
-                    al[total].indvar = IndiceVar[c2];
-                    total++;
-                }
-            }
-            c1++, c2++, bitobjeto |= 1;
         }
     // Variáveis que serão apagadas
-        for (; c1<antes.NumVar; c1++)
+        for (; c1 < antes.NumVar; c1++)
             if ((antes.InstrVar[c1][Instr::endProp] & 1) == passo)
             {
                 bitobjeto |= 0x10;
@@ -1667,7 +1654,7 @@ int TClasse::AcertaVar(bool acertaderiv)
                 total++;
             }
     // Variáveis que serão criadas
-        for (; c2<NumVar; c2++)
+        for (; c2 < NumVar; c2++)
             if ((InstrVar[c2][Instr::endProp] & 1) == passo)
             {
                 bitobjeto |= 0x10;
@@ -1696,9 +1683,9 @@ int TClasse::AcertaVar(bool acertaderiv)
         al[x].numbit = al[x].indvar >> 24;
     }
 
-// Acerta al[n].tam para comandos 4 em diante
+// Acerta al[n].tam para comandos 4
     for (unsigned int x = 0; x < total; x++)
-        if (al[x].comando >= 4)
+        if (al[x].comando == 4)
         {
             if (al[x].tam > al[x+1].tam)
                 al[x].tam = al[x+1].tam;
@@ -1723,10 +1710,7 @@ int TClasse::AcertaVar(bool acertaderiv)
         case 1: printf("apagar("); param = 1; break;
         case 2: printf("criar("); param = 1; break;
         case 3: printf("mover("); param = 2; break;
-        case 4: printf("copiar_int("); param = 2; break;
-        case 5: printf("copiar_double("); param = 2; break;
-        case 6: printf("copiar_txt("); param = 2; break;
-        case 7: printf("copiar_ref("); param = 2; break;
+        case 4: printf("copiar("); param = 2; break;
         default: printf("??? (");
         }
         if (param >= 1)
@@ -1762,7 +1746,7 @@ int TClasse::AcertaVar(bool acertaderiv)
             Vars = new char[TamVars];
             memset(Vars, 0, TamVars);
         }
-        for (int x=indobjeto; x<indclasse; x++)
+        for (int x = indobjeto; x < indclasse; x++)
         {
             if (al[x].comando >= 3)
             {
@@ -1800,44 +1784,11 @@ int TClasse::AcertaVar(bool acertaderiv)
                 break;
             case 4:
                 if (al[x+1].defvar[2] > Instr::cVarFunc)
-                    al[x+1].Criar(this, 0);
+                    al[x+1].Criar(this, nullptr);
                 al[x].indice = al[x+1].indice = al[x].tam;
                 for (; al[x].indice; al[x].indice--, al[x+1].indice--)
-                    al[x+1].setInt( al[x].getInt() );
-                al[x+1].setInt( al[x].getInt() );
-                if (al[x].defvar[2] > Instr::cVarFunc)
-                    al[x].Apagar();
-                x++;
-                break;
-            case 5:
-                if (al[x+1].defvar[2] > Instr::cVarFunc)
-                    al[x+1].Criar(this, 0);
-                al[x].indice = al[x+1].indice = al[x].tam;
-                for (; al[x].indice; al[x].indice--, al[x+1].indice--)
-                    al[x+1].setDouble( al[x].getDouble() );
-                al[x+1].setDouble( al[x].getDouble() );
-                if (al[x].defvar[2] > Instr::cVarFunc)
-                    al[x].Apagar();
-                x++;
-                break;
-            case 6:
-                if (al[x+1].defvar[2] > Instr::cVarFunc)
-                    al[x+1].Criar(this, 0);
-                al[x].indice = al[x+1].indice = al[x].tam;
-                for (; al[x].indice; al[x].indice--, al[x+1].indice--)
-                    al[x+1].setTxt( al[x].getTxt() );
-                al[x+1].setTxt( al[x].getTxt() );
-                if (al[x].defvar[2] > Instr::cVarFunc)
-                    al[x].Apagar();
-                x++;
-                break;
-            case 7:
-                if (al[x+1].defvar[2] > Instr::cVarFunc)
-                    al[x+1].Criar(this, 0);
-                al[x].indice = al[x+1].indice = al[x].tam;
-                for (; al[x].indice; al[x].indice--, al[x+1].indice--)
-                    al[x+1].setObj( al[x].getObj() );
-                al[x+1].setObj( al[x].getObj() );
+                    al[x+1].OperadorAtrib( &al[x] );
+                al[x+1].OperadorAtrib( &al[x] );
                 if (al[x].defvar[2] > Instr::cVarFunc)
                     al[x].Apagar();
                 x++;
@@ -1906,41 +1857,8 @@ int TClasse::AcertaVar(bool acertaderiv)
                         al[x+1].Criar(this, obj);
                     al[x].indice = al[x+1].indice = al[x].tam;
                     for (; al[x].indice; al[x].indice--, al[x+1].indice--)
-                        al[x+1].setInt( al[x].getInt() );
-                    al[x+1].setInt( al[x].getInt() );
-                    if (al[x].defvar[2] > Instr::cVarFunc)
-                        al[x].Apagar();
-                    x++;
-                    break;
-                case 5:
-                    if (al[x+1].defvar[2] > Instr::cVarFunc)
-                        al[x+1].Criar(this, obj);
-                    al[x].indice = al[x+1].indice = al[x].tam;
-                    for (; al[x].indice; al[x].indice--, al[x+1].indice--)
-                        al[x+1].setDouble( al[x].getDouble() );
-                    al[x+1].setDouble( al[x].getDouble() );
-                    if (al[x].defvar[2] > Instr::cVarFunc)
-                        al[x].Apagar();
-                    x++;
-                    break;
-                case 6:
-                    if (al[x+1].defvar[2] > Instr::cVarFunc)
-                        al[x+1].Criar(this, obj);
-                    al[x].indice = al[x+1].indice = al[x].tam;
-                    for (; al[x].indice; al[x].indice--, al[x+1].indice--)
-                        al[x+1].setTxt( al[x].getTxt() );
-                    al[x+1].setTxt( al[x].getTxt() );
-                    if (al[x].defvar[2] > Instr::cVarFunc)
-                        al[x].Apagar();
-                    x++;
-                    break;
-                case 7:
-                    if (al[x+1].defvar[2] > Instr::cVarFunc)
-                        al[x+1].Criar(this, obj);
-                    al[x].indice = al[x+1].indice = al[x].tam;
-                    for (; al[x].indice; al[x].indice--, al[x+1].indice--)
-                        al[x+1].setObj( al[x].getObj() );
-                    al[x+1].setObj( al[x].getObj() );
+                        al[x+1].OperadorAtrib( &al[x] );
+                    al[x+1].OperadorAtrib( &al[x] );
                     if (al[x].defvar[2] > Instr::cVarFunc)
                         al[x].Apagar();
                     x++;

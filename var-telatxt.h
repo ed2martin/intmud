@@ -84,17 +84,13 @@ public:
     static int FGetInt(TVariavel * v);
     static double FGetDouble(TVariavel * v);
     static const char * FGetTxt(TVariavel * v);
-    static void FOperadorAtrib(TVariavel * v);
-    void FOperadorAtribSub(TVariavel * v);
+    static void FOperadorAtrib(TVariavel * v1, TVariavel * v2);
+    void FOperadorAtribSub(int numfunc, TVariavel * v2);
 
     int  getValor(int numfunc);
                             ///< Ler o valor numérico da variável
-    void setValor(int numfunc, int valor);
-                            ///< Mudar o valor numérico da variável
     const char * getTxt(int numfunc);
                             ///< Ler o texto
-    void setTxt(int numfunc, const char * txt);
-                            ///< Mudar o texto
     void addTxt(int numfunc, const char * txt);
                             ///< Adicionar o texto
 

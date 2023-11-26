@@ -206,6 +206,9 @@ int Instr::VarExecIni = 5000;
 // Para gerar evento para avisar sobre erros
 static char * erromens = nullptr;
 
+/// Usado nos operadores ++ e --
+static TVariavel VarIncDec;
+
 // Pilha de dados - para criar/apagar variáveis
 char * const Instr::DadosPilha = new char[0x10000];
 char * const Instr::DadosFim   = Instr::DadosPilha + 0x10000;
@@ -320,6 +323,7 @@ bool Instr::ExecIni(TClasse * classe, const char * func)
         return false;
     }
     VarExec = VarExecIni;
+    VarIncDec.defvar = VarIncDec.nomevar = InstrVarDouble;
 // Acerta pilhas
     DadosTopo = DadosPilha; // Limpa pilha de dados
     VarAtual = VarPilha;    // Limpa pilha de variáveis
@@ -985,7 +989,7 @@ bool Instr::ExecX()
                     ApagarVar(FuncAtual->fimvar + 1);
                     if (VarFuncIni())
                         break;
-                    VarAtual[-1].OperadorAtrib();
+                    VarAtual[-1].OperadorAtrib(VarAtual);
                 }
                 FuncAtual->expr = nullptr;
                 FuncAtual->linha += Num16(FuncAtual->linha);
@@ -1230,15 +1234,10 @@ bool Instr::ExecX()
             if (VarAtual->defvar[2] != cVarFunc &&                            \
                 VarAtual->defvar[2] != cConstVar)                             \
             {                                                                 \
-                if (VarAtual >= VarFim - 1)                                   \
-                    return RetornoErro(1);                                    \
                 TVariavel * v = VarAtual;                                     \
                 double valor = v->getDouble();                                \
-                v[1].defvar = InstrVarDouble;                                 \
-                v[1].nomevar = InstrVarDouble;                                \
-                v[1].valor_double = valor + (somavar);                        \
-                v[1].indice = 0;                                              \
-                v->OperadorAtrib();                                           \
+                VarIncDec.valor_double = valor + (somavar);                   \
+                v->OperadorAtrib(&VarIncDec);                                 \
                 CriarVarDouble(v, valor + (somaresult));                      \
                 break;                                                        \
             }                                                                 \
@@ -1403,7 +1402,7 @@ bool Instr::ExecX()
 
             // Caso 2: Duas variáveis não locais
             // Transforma em: Primeira variável é cTxtFixo local
-                if (VarAtual[-1].tamanho==0 && VarAtual[0].tamanho==0)
+                if (VarAtual[-1].tamanho == 0 && VarAtual[0].tamanho == 0)
                 {
                     const char * origem = VarAtual[-1].getTxt();
                     int total = 1 + strlen(origem);
@@ -1474,7 +1473,7 @@ bool Instr::ExecX()
                     total = 1 + strlen(origem);
                     if (destino + total >= DadosFim)
                         return RetornoErro(2);
-                    if (total>BUF_MENS)
+                    if (total > BUF_MENS)
                     {
                         char * pmens = new char[total];
                         memcpy(pmens, origem, total);
@@ -1763,7 +1762,7 @@ bool Instr::ExecX()
             if (VarFuncIni())
                 break;
             FuncAtual->expr++;
-            VarAtual[-1].OperadorAtrib();
+            VarAtual[-1].OperadorAtrib(VarAtual);
             ApagarVar(VarAtual);
             break;
         case exo_menor:      // Operador: a<b
@@ -2080,7 +2079,7 @@ exo_compara_sair:
                 *mens = 0;
                 assert(v != nullptr);
                 for (TVariavel * x = v + 2; x <= VarAtual; x++)
-                    p = copiastr(p, x->getTxt(), pfim-p);
+                    p = copiastr(p, x->getTxt(), pfim - p);
                 ApagarVar(v + 2);
                 CopiaVarNome(v, mens);
                 FuncAtual->expr = CopiaVarNome(v, FuncAtual->expr);

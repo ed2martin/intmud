@@ -297,13 +297,13 @@ const char * TVarIncDec::FGetTxtDec(TVariavel * v)
 }
 
 //------------------------------------------------------------------------------
-void TVarIncDec::FOperadorAtribInc(TVariavel * v)
+void TVarIncDec::FOperadorAtribInc(TVariavel * v1, TVariavel * v2)
 {
-    TVarIncDec * ref = reinterpret_cast<TVarIncDec*>(v->endvar) + v->indice;
-    ref->setInc(v->numfunc, v[1].getInt());
+    TVarIncDec * ref = reinterpret_cast<TVarIncDec*>(v1->endvar) + v1->indice;
+    ref->setInc(v1->numfunc, v2->getInt());
 }
-void TVarIncDec::FOperadorAtribDec(TVariavel * v)
+void TVarIncDec::FOperadorAtribDec(TVariavel * v1, TVariavel * v2)
 {
-    TVarIncDec * ref = reinterpret_cast<TVarIncDec*>(v->endvar) + v->indice;
-    ref->setDec(v->numfunc, v[1].getInt());
+    TVarIncDec * ref = reinterpret_cast<TVarIncDec*>(v1->endvar) + v1->indice;
+    ref->setDec(v1->numfunc, v2->getInt());
 }

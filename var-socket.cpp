@@ -777,12 +777,12 @@ double TVarSocket::FGetDouble(TVariavel * v) VARIAVEL_FGETINT1(TVarSocket)
 const char * TVarSocket::FGetTxt(TVariavel * v) VARIAVEL_FGETTXT1(TVarSocket)
 
 //------------------------------------------------------------------------------
-void TVarSocket::FOperadorAtrib(TVariavel * v)
+void TVarSocket::FOperadorAtrib(TVariavel * v1, TVariavel * v2)
 {
-    if (v[1].defvar[2] != v[0].defvar[2])
+    if (v1->defvar[2] != v2->defvar[2])
         return;
-    TVarSocket * r1 = reinterpret_cast<TVarSocket*>(v[0].endvar) + v[0].indice;
-    TVarSocket * r2 = reinterpret_cast<TVarSocket*>(v[1].endvar) + v[1].indice;
+    TVarSocket * r1 = reinterpret_cast<TVarSocket*>(v1->endvar) + v1->indice;
+    TVarSocket * r2 = reinterpret_cast<TVarSocket*>(v2->endvar) + v2->indice;
     if (r1 != r2)
         r1->MudarSock(r2->Socket);
 }

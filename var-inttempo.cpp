@@ -383,8 +383,8 @@ double TVarIntTempo::FGetDouble(TVariavel * v) VARIAVEL_FGETINT1(TVarIntTempo)
 const char * TVarIntTempo::FGetTxt(TVariavel * v) VARIAVEL_FGETTXT1(TVarIntTempo)
 
 //------------------------------------------------------------------------------
-void TVarIntTempo::FOperadorAtrib(TVariavel * v)
+void TVarIntTempo::FOperadorAtrib(TVariavel * v1, TVariavel * v2)
 {
-    TVarIntTempo * ref = reinterpret_cast<TVarIntTempo*>(v->endvar) + v->indice;
-    ref->setValor(v->numfunc, v[1].getInt());
+    TVarIntTempo * ref = reinterpret_cast<TVarIntTempo*>(v1->endvar) + v1->indice;
+    ref->setValor(v1->numfunc, v2->getInt());
 }

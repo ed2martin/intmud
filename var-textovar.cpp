@@ -522,12 +522,12 @@ void TTextoVar::FMoverEnd(TVariavel * v, void * destino, TClasse * c, TObjeto * 
 
 
 //------------------------------------------------------------------------------
-void TTextoVar::FOperadorAtrib(TVariavel * v)
+void TTextoVar::FOperadorAtrib(TVariavel * v1, TVariavel * v2)
 {
-    if (v[1].defvar[2] != v[0].defvar[2])
+    if (v1->defvar[2] != v2->defvar[2])
         return;
-    TTextoVar * r1 = reinterpret_cast<TTextoVar*>(v[0].endvar) + v[0].indice;
-    TTextoVar * r2 = reinterpret_cast<TTextoVar*>(v[1].endvar) + v[1].indice;
+    TTextoVar * r1 = reinterpret_cast<TTextoVar*>(v1->endvar) + v1->indice;
+    TTextoVar * r2 = reinterpret_cast<TTextoVar*>(v2->endvar) + v2->indice;
     if (r1 == r2)
         return;
     while (r1->RBroot)
@@ -814,9 +814,9 @@ TObjeto * TTextoVarSub::FGetObj(TVariavel * v)
 }
 
 //------------------------------------------------------------------------------
-void TTextoVarSub::FOperadorAtrib(TVariavel * v)
+void TTextoVarSub::FOperadorAtrib(TVariavel * v1, TVariavel * v2)
 {
-    TTextoVarSub * ref = reinterpret_cast<TTextoVarSub*>(v->endvar) + v->indice;
+    TTextoVarSub * ref = reinterpret_cast<TTextoVarSub*>(v1->endvar) + v1->indice;
     if (ref->TextoVar == nullptr)
         return;
     TBlocoVar * bl = ref->TextoVar->Procura(ref->NomeVar);
@@ -824,7 +824,7 @@ void TTextoVarSub::FOperadorAtrib(TVariavel * v)
     {
     case TextoVarTipoTxt:
         {
-            const char * txt = v[1].getTxt();
+            const char * txt = v2->getTxt();
             if (bl != nullptr)
             {
                 if (bl->TipoVar() == TextoVarTipoTxt)
@@ -840,7 +840,7 @@ void TTextoVarSub::FOperadorAtrib(TVariavel * v)
         }
     case TextoVarTipoNum:
         {
-            double valor = v[1].getDouble();
+            double valor = v2->getDouble();
             if (bl != nullptr)
             {
                 if (bl->TipoVar() == TextoVarTipoNum)
@@ -856,7 +856,7 @@ void TTextoVarSub::FOperadorAtrib(TVariavel * v)
         }
     case TextoVarTipoDec:
         {
-            int valor = v[1].getInt();
+            int valor = v2->getInt();
             if (bl != nullptr)
             {
                 if (bl->TipoVar() == TextoVarTipoDec)
@@ -872,7 +872,7 @@ void TTextoVarSub::FOperadorAtrib(TVariavel * v)
         }
     case TextoVarTipoRef:
         {
-            TObjeto * obj = v[1].getObj();
+            TObjeto * obj = v2->getObj();
             if (bl != nullptr)
             {
                 if (bl->TipoVar() == TextoVarTipoRef)

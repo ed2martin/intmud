@@ -300,85 +300,6 @@ double TVarDataHora::getDouble(int numfunc)
 }
 
 //------------------------------------------------------------------------------
-void TVarDataHora::setInt(int numfunc, int valor)
-{
-    int x;
-    switch (numfunc)
-    {
-    case DataHoraAno:
-        Ano = (valor < 1 ? 1 : valor > 9999 ? 9999 : valor);
-        if (Mes == 2 && Dia == 29 && !BISSEXTO(Ano))
-            Dia--;
-        break;
-    case DataHoraMes:
-        Mes = (valor < 1 ? 1 : valor > 12 ? 12 : valor);
-        x = DiasMes();
-        if (Dia > x)
-            Dia = x;
-        break;
-    case DataHoraDia:
-        if (valor < 1)
-            Dia = 1;
-        else
-        {
-            x = DiasMes();
-            Dia = (valor < x ? valor : x);
-        }
-        break;
-    case DataHoraHora:
-        Hora = (valor < 0 ? 0 : valor > 23 ? 23 : valor);
-        break;
-    case DataHoraMin:
-        Min = (valor < 0 ? 0 : valor > 59 ? 59 : valor);
-        break;
-    case DataHoraSeg:
-        Seg = (valor < 0 ? 0 : valor > 59 ? 59 : valor);
-        break;
-    case DataHoraNumDia:
-        if (valor < 0) // 1/1/1
-            valor = 0;
-        if (valor > 3652058) // 31/12/9999
-            valor = 3652058;
-        NumData(valor);
-        break;
-    case DataHoraNumTotal:
-        if (valor <= 0)
-        {
-            NumData(0);
-            Seg = 0, Min = 0, Hora = 0;
-            break;
-        }
-        NumData(valor / 86400);
-        valor %= 86400;
-        // Muda hora/minuto/segundo em seguida
-    case DataHoraNumSeg:
-        if (valor < 0)
-            valor = 0;
-        if (valor > 24 * 60 * 60 - 1)
-            valor = 24 * 60 * 60 - 1;
-        Seg = valor%60;
-        valor /= 60;
-        Min = valor % 60;
-        Hora = valor / 60;
-        break;
-    }
-}
-
-//------------------------------------------------------------------------------
-void TVarDataHora::setDouble(int numfunc, double valor)
-{
-    if (numfunc != DataHoraNumTotal || valor <= 0)
-    {
-        setInt(numfunc, DoubleToInt(valor));
-        return;
-    }
-    double data = trunc(valor / 86400.0);
-    valor -= data * 86400.0;
-    NumData(DoubleToInt(data));
-    setInt(DataHoraNumSeg, (int)nearbyint(valor));
-}
-
-//------------------------------------------------------------------------------
 void TVarDataHora::LerSav(const char * texto)
 {
     int x, y;
@@ -586,12 +507,110 @@ const char * TVarDataHora::FGetTxt(TVariavel * v)
 }
 
 //------------------------------------------------------------------------------
-void TVarDataHora::FOperadorAtrib(TVariavel * v)
+void TVarDataHora::FOperadorAtrib(TVariavel * v1, TVariavel * v2)
 {
-    if (v[1].defvar[2] != v[0].defvar[2])
-        return;
-    TVarDataHora * r1 = reinterpret_cast<TVarDataHora*>(v[0].endvar) + v[0].indice;
-    TVarDataHora * r2 = reinterpret_cast<TVarDataHora*>(v[1].endvar) + v[1].indice;
-    if (r1 != r2)
-        *r1 = *r2;
+    TVarDataHora * r1 = reinterpret_cast<TVarDataHora*>(v1->endvar) + v1->indice;
+    switch (v1->numfunc)
+    {
+    case DataHoraAno:
+        {
+            int valor = v2->getInt();
+            r1->Ano = (valor < 1 ? 1 : valor > 9999 ? 9999 : valor);
+            if (r1->Mes == 2 && r1->Dia == 29 && !BISSEXTO(r1->Ano))
+                r1->Dia--;
+            break;
+        }
+    case DataHoraMes:
+        {
+            int valor = v2->getInt();
+            r1->Mes = (valor < 1 ? 1 : valor > 12 ? 12 : valor);
+            int x = r1->DiasMes();
+            if (r1->Dia > x)
+                r1->Dia = x;
+            break;
+        }
+    case DataHoraDia:
+        {
+            int valor = v2->getInt();
+            if (valor < 1)
+                r1->Dia = 1;
+            else
+            {
+                int x = r1->DiasMes();
+                r1->Dia = (valor < x ? valor : x);
+            }
+            break;
+        }
+    case DataHoraHora:
+        {
+            int valor = v2->getInt();
+            r1->Hora = (valor < 0 ? 0 : valor > 23 ? 23 : valor);
+            break;
+        }
+    case DataHoraMin:
+        {
+            int valor = v2->getInt();
+            r1->Min = (valor < 0 ? 0 : valor > 59 ? 59 : valor);
+            break;
+        }
+    case DataHoraSeg:
+        {
+            int valor = v2->getInt();
+            r1->Seg = (valor < 0 ? 0 : valor > 59 ? 59 : valor);
+            break;
+        }
+    case DataHoraNumDia:
+        {
+            int valor = v2->getInt();
+            if (valor < 0) // 1/1/1
+                valor = 0;
+            if (valor > 3652058) // 31/12/9999
+                valor = 3652058;
+            r1->NumData(valor);
+            break;
+        }
+    case DataHoraNumTotal:
+        {
+            double valor = v2->getDouble();
+            if (!(valor > 0)) // Nota: double pode ser NaN
+            {
+                r1->NumData(0);
+                r1->Seg = 0, r1->Min = 0, r1->Hora = 0;
+                break;
+            }
+            double data = trunc(valor / 86400.0);
+            r1->NumData(DoubleToInt(data));
+            int hns = (int)nearbyint(valor - data * 86400.0);
+            if (hns < 0)
+                hns = 0;
+            if (hns > 24 * 60 * 60 - 1)
+                hns = 24 * 60 * 60 - 1;
+            r1->Seg = hns % 60;
+            hns /= 60;
+            r1->Min = hns % 60;
+            r1->Hora = hns / 60;
+            break;
+        }
+    case DataHoraNumSeg:
+        {
+            int valor = v2->getInt();
+            if (valor < 0)
+                valor = 0;
+            if (valor > 24 * 60 * 60 - 1)
+                valor = 24 * 60 * 60 - 1;
+            r1->Seg = valor % 60;
+            valor /= 60;
+            r1->Min = valor % 60;
+            r1->Hora = valor / 60;
+            break;
+        }
+    default:
+        if (v1->defvar[2] == v2->defvar[2])
+        {
+            TVarDataHora * r2 = reinterpret_cast<TVarDataHora*>(v2->endvar) + v2->indice;
+            if (r1 != r2)
+                *r1 = *r2;
+        }
+        break;
+    }
 }

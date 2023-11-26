@@ -31,6 +31,7 @@ const char Instr::InstrVarClasse[] = { 10, 0, Instr::cVarClasse, INSTR_COMPL };
 const char Instr::InstrVarObjeto[] = { 10, 0, Instr::cVarObjeto, INSTR_COMPL };
 const char Instr::InstrVarInt[] = { 10, 0, Instr::cVarInt, INSTR_COMPL };
 const char Instr::InstrVarDouble[] = { 10, 0, Instr::cVarDouble, INSTR_COMPL };
+const char Instr::InstrVarArqSav[] = { 10, 0, Instr::cArqSav, INSTR_COMPL };
 const char Instr::InstrVarListaItem[] = { 10, 0, Instr::cListaItem, INSTR_COMPL };
 const char Instr::InstrVarTextoPos[] =  { 10, 0, Instr::cTextoPos, INSTR_COMPL };
 const char Instr::InstrVarTextoVarSub[] =  { 10, 0, Instr::cTextoVarSub, INSTR_COMPL };

@@ -282,7 +282,7 @@ char * copiastr(char * destino, const char * origem)
 {
     while (*origem)
         *(destino++) = *(origem++);
-    *destino=0;
+    *destino = 0;
     return destino;
 }
 

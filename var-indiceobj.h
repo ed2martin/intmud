@@ -38,7 +38,7 @@ private:
     static int FGetInt(TVariavel * v);
     static double FGetDouble(TVariavel * v);
     static const char * FGetTxt(TVariavel * v);
-    static void FOperadorAtrib(TVariavel * v);
+    static void FOperadorAtrib(TVariavel * v1, TVariavel * v2);
 
     TIndiceItem * Antes;    ///< Objeto anterior
     TIndiceItem * Depois;   ///< Próximo objeto
@@ -57,7 +57,6 @@ public:
     void Apagar();          ///< Apaga objeto
     void Mover(TIndiceObj * destino, TObjeto * obj); ///< Move para outro lugar
     static void addTxt(TVariavel * v, const char * txt);
-    void setNome(const char * texto); ///< Muda o texto
     static TIndiceObj * Procura(const char * nome);
         ///< Procura um objeto TIndiceObj a partir do nome
         /**<
@@ -89,6 +88,8 @@ private:
     char Nome[65];          ///< Texto da variável
     TIndiceItem * IndiceItem; ///< Primeiro indiceitem apontando para esse objeto
 
+    void setNome(const char * texto); ///< Muda o texto
+
     static int FTamanho(const char * instr);
     static int FTamanhoVetor(const char * instr);
     static void FRedim(TVariavel * v, TClasse * c, TObjeto * o,
@@ -99,7 +100,7 @@ private:
     static int FGetInt(TVariavel * v);
     static double FGetDouble(TVariavel * v);
     static const char * FGetTxt(TVariavel * v);
-    static void FOperadorAtrib(TVariavel * v);
+    static void FOperadorAtrib(TVariavel * v1, TVariavel * v2);
 
     friend class TIndiceItem;
 };

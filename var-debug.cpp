@@ -413,13 +413,6 @@ double TVarDebug::getDouble(int numfunc)
 }
 
 //----------------------------------------------------------------------------
-void TVarDebug::setValor(int numfunc, int valor)
-{
-    if (numfunc)
-        Instr::VarExec = (valor < 1 ? 1 : valor);
-}
-
-//----------------------------------------------------------------------------
 void TVarDebug::Exec()
 {
     using namespace Instr;
@@ -551,11 +544,11 @@ const char * TVarDebug::FGetTxt(TVariavel * v)
 }
 
 //------------------------------------------------------------------------------
-void TVarDebug::FOperadorAtrib(TVariavel * v)
+void TVarDebug::FOperadorAtrib(TVariavel * v1, TVariavel * v2)
 {
-    if (v->numfunc)
+    if (v1->numfunc)
     {
-        int valor = v[1].getInt();
+        int valor = v2->getInt();
         Instr::VarExec = (valor < 1 ? 1 : valor);
     }
 }

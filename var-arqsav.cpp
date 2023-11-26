@@ -47,6 +47,10 @@ int TVarSav::TempoSav = 0;
 TVarSavArq * TVarSavArq::Inicio = nullptr;
 TVarSavArq * TVarSavArq::Fim = nullptr;
 
+static char * ArqLerMens = nullptr; // char mens[] em TVarSav::Ler()
+static char * ArqLerTxt = nullptr; // Texto lido em TVarSav::Ler();
+static std::vector<TObjeto *> ArqLerObj;
+
 //----------------------------------------------------------------------------
 const TVarInfo * TVarSav::Inicializa()
 {
@@ -57,11 +61,11 @@ const TVarInfo * TVarSav::Inicializa()
         TVarInfo::FRedim0,
         TVarInfo::FMoverEnd0,
         TVarInfo::FMoverDef0,
-        TVarInfo::FGetBoolFalse,
-        TVarInfo::FGetInt0,
-        TVarInfo::FGetDouble0,
-        TVarInfo::FGetTxtVazio,
-        TVarInfo::FGetObjNulo,
+        FGetBool,
+        FGetInt,
+        FGetDouble,
+        FGetTxt,
+        FGetObj,
         TVarInfo::FOperadorAtribVazio,
         TVarInfo::FFuncVetorFalse);
     return &var;
@@ -498,6 +502,7 @@ int TVarSav::Ler(TVariavel * v, const char * arqnome)
     unsigned int quantidade = MAX_OBJ; // Número máximo de objetos
     char mens[8192];
     TArqLer arqler;
+    ArqLerObj.clear();
     if (Instr::VarAtual >= v + 3)
         quantidade = v[2].getInt();
     if (*arqnome == 0 ||  // Arquivo inválido
@@ -522,12 +527,12 @@ int TVarSav::Ler(TVariavel * v, const char * arqnome)
         //printf("1> %s\n", mens); fflush(stdout);
         if (strcmp(mens, "+++") == 0)
             break;
-        if (bufobj.size() >= quantidade)
+        if (ArqLerObj.size() >= quantidade)
             continue;
     // Objeto está na lista
         if (listaitem)
         {
-            bufobj.push_back(listaitem->Objeto);
+            ArqLerObj.push_back(listaitem->Objeto);
             listaitem = listaitem->ListaDepois;
             continue;
         }
@@ -536,13 +541,13 @@ int TVarSav::Ler(TVariavel * v, const char * arqnome)
     // Classe inválida: não cria objeto
         if (c == nullptr)
         {
-            bufobj.push_back(nullptr);
+            ArqLerObj.push_back(nullptr);
             continue;
         }
     // Classe válida: cria objeto e adiciona na lista
         TObjeto * obj = TObjeto::Criar(c);
         listaobj->AddFim(obj);
-        bufobj.push_back(obj);
+        ArqLerObj.push_back(obj);
     }
 // Lê objetos
     TListaX * listaitem_fim = nullptr;
@@ -551,23 +556,26 @@ int TVarSav::Ler(TVariavel * v, const char * arqnome)
     TTextoObj * textoobj_obj = nullptr; // Para anotar texto em textoobj
     char mensvar[65100];       // Texto que será anotado
     char * pmensvar = mensvar; // Aonde adicionar texto
-    TVariavel var;
-    var.defvar = nullptr;
-    quantidade = bufobj.size();
+    TVariavel var[2];
+    var[0].defvar = nullptr;    // var[0] = Variável que será alterada
+    var[1].defvar = Instr::InstrVarArqSav; // var[1] = Variável arqsav que será lida
+    var[1].numfunc = 1;
+    ArqLerMens = mens; // char mens[] em TVarSav::Ler()
+    quantidade = ArqLerObj.size();
     unsigned int numobj = 0;
     while (arqler.Linha(mens, sizeof(mens), false) > 0)
     {
     // Próximo objeto
         if (strcmp(mens, "+++") == 0)
         {
-            var.defvar = nullptr;
+            var[0].defvar = nullptr;
             numobj++;
             if (numobj >= quantidade)
                 break;
             continue;
         }
     // Verifica se objeto válido
-        if (bufobj[numobj] == 0)
+        if (ArqLerObj[numobj] == 0)
             continue;
     // Separa nome da variável, índice e valor
         char * p = mens;
@@ -579,7 +587,7 @@ int TVarSav::Ler(TVariavel * v, const char * arqnome)
     // Obtém a variável
         if (mens[0] != '.' || mens[1] != 0)
         {
-            ObterVar(&var, bufobj[numobj], mens);
+            ObterVar(var, ArqLerObj[numobj], mens);
             listaitem_fim = nullptr;
             if (textotxt_obj)
             {
@@ -587,61 +595,14 @@ int TVarSav::Ler(TVariavel * v, const char * arqnome)
                 textotxt_obj = nullptr;
             }
         }
-        if (var.defvar == nullptr)
+        if (var[0].defvar == nullptr)
             continue;
     // Anota valor na variável
-        switch (var.Tipo())
+        switch (var[0].defvar[2])
         {
-    // Variáveis numéricas
-        case varInt:
-            var.setInt(TxtToInt(p));
-            break;
-    // Ponto flutuante
-        case varDouble:
-            var.setDouble(atof(p));
-            break;
-    // Texto
-        case varTxt:
+        case Instr::cListaObj: // ListaObj
             {
-                char * d = mens;
-                for (; *p; p++)
-                {
-                    if (*p != '\\' || p[1] == 0)
-                        *d++ = *p;
-                    else switch (*++p)
-                    {
-                    case 'n':
-                    case 'N': *d++ = Instr::ex_barra_n; break;
-                    case 'b':
-                    case 'B': *d++ = Instr::ex_barra_b; break;
-                    case 'c':
-                    case 'C': *d++ = Instr::ex_barra_c; break;
-                    case 'd':
-                    case 'D': *d++ = Instr::ex_barra_d; break;
-                    case '\\': *d++ = '\\'; break;
-                    }
-                }
-                *d = 0;
-                var.setTxt(mens);
-            }
-            break;
-    // Referência a objetos
-        case varObj:
-            {
-                unsigned int indice = (p[0] - 0x21) * 0x40 + (p[1] - 0x21);
-                if (p[0] < 0x21 || p[0] >= 0x61 || p[1] < 0x21 || p[1] >= 0x61 ||
-                        indice >= quantidade)
-                    var.setObj(nullptr);
-                else
-                    var.setObj(bufobj[indice]);
-                break;
-            }
-    // Checa outros tipos de variáveis
-        default:
-    // ListaObj
-            if (var.defvar[2] == Instr::cListaObj)
-            {
-                TListaObj * lobj = var.end_listaobj + var.indice;
+                TListaObj * lobj = var[0].end_listaobj + var[0].indice;
             // Limpa a lista
                 if (*p=='\'')
                 {
@@ -659,8 +620,8 @@ int TVarSav::Ler(TVariavel * v, const char * arqnome)
                 // Verifica se adicionar novo objeto
                     if (*p != '.')
                     {
-                        if (subobj < quantidade && bufobj[subobj])
-                            listaitem_fim = lobj->AddFim(bufobj[subobj]);
+                        if (subobj < quantidade && ArqLerObj[subobj])
+                            listaitem_fim = lobj->AddFim(ArqLerObj[subobj]);
                         else
                             listaitem_fim = nullptr;
                         while (*p && *p!='\'')
@@ -677,8 +638,8 @@ int TVarSav::Ler(TVariavel * v, const char * arqnome)
                     char ch = *p;
                     *p++ = 0;
                     TVariavel varitem;
-                    if (subobj < quantidade && bufobj[subobj])
-                      if (ObterVar(&varitem, bufobj[subobj], nomeobj))
+                    if (subobj < quantidade && ArqLerObj[subobj])
+                      if (ObterVar(&varitem, ArqLerObj[subobj], nomeobj))
                         if (varitem.defvar[2] == Instr::cListaItem)
                         varitem.end_listaitem[varitem.indice].MudarRef(listaitem_fim);
                     if (ch == 0)
@@ -686,10 +647,9 @@ int TVarSav::Ler(TVariavel * v, const char * arqnome)
                 }
                 break;
             }
-    // TextoTxt
-            if (var.defvar[2] == Instr::cTextoTxt)
+        case Instr::cTextoTxt: // TextoTxt
             {
-                TTextoTxt * txtobj = var.end_textotxt + var.indice;
+                TTextoTxt * txtobj = var[0].end_textotxt + var[0].indice;
             // Outro textotxt: anota \n no fim do anterior
                 if (textotxt_obj && textotxt_obj != txtobj)
                 {
@@ -713,8 +673,8 @@ int TVarSav::Ler(TVariavel * v, const char * arqnome)
                         subobj = subobj * 10 + *p - '0';
                 // Obtém a variável textopos
                     if (*p != '.' ||
-                        subobj > quantidade || bufobj[subobj] == nullptr ||
-                        ObterVar(&varitem, bufobj[subobj], p + 1) == 0 ||
+                        subobj > quantidade || ArqLerObj[subobj] == nullptr ||
+                        ObterVar(&varitem, ArqLerObj[subobj], p + 1) == 0 ||
                         varitem.defvar[2] != Instr::cTextoPos)
                         break;
                     TTextoPos * pos = varitem.end_textopos + varitem.indice;
@@ -763,10 +723,9 @@ int TVarSav::Ler(TVariavel * v, const char * arqnome)
                 }
                 break;
             }
-    // TextoVar
-            if (var.defvar[2] == Instr::cTextoVar)
+        case Instr::cTextoVar: // TextoVar
             {
-                TTextoVar * txtvar = var.end_textovar + var.indice;
+                TTextoVar * txtvar = var[0].end_textovar + var[0].indice;
             // Outro textovar: anota texto e inicializa textovar
                 if (txtvar != textovar_obj)
                 {
@@ -830,17 +789,16 @@ int TVarSav::Ler(TVariavel * v, const char * arqnome)
                     {
                         unsigned int subobj = atoi(texto);
                         if (*texto && subobj < quantidade)
-                            if (bufobj[subobj])
-                                sub.setObj(bufobj[subobj]);
+                            if (ArqLerObj[subobj])
+                                sub.setObj(ArqLerObj[subobj]);
                     }
                     sub.Apagar();
                 }
                 break;
             }
-    // TextoObj
-            if (var.defvar[2] == Instr::cTextoObj)
+        case Instr::cTextoObj: // TextoObj
             {
-                TTextoObj * txtobj = var.end_textoobj + var.indice;
+                TTextoObj * txtobj = var[0].end_textoobj + var[0].indice;
             // Outro textoobj: inicializa textoobj
                 if (txtobj != textoobj_obj)
                 {
@@ -864,22 +822,27 @@ int TVarSav::Ler(TVariavel * v, const char * arqnome)
                         subobj = subobj * 10 + *p - '0';
                 // Adiciona variável
                     if (*nomevar && subobj < quantidade)
-                        if (bufobj[subobj])
-                            txtobj->Mudar(nomevar, bufobj[subobj]);
+                        if (ArqLerObj[subobj])
+                            txtobj->Mudar(nomevar, ArqLerObj[subobj]);
                 // Passa para a próxima variável
                     if (*p == '\'')
                         p++;
                 }
                 break;
             }
-    // DataHora
-            if (var.defvar[2] == Instr::cDataHora)
-                var.end_datahora[var.indice].LerSav(p);
+        case Instr::cDataHora: // DataHora
+            var[0].end_datahora[var[0].indice].LerSav(p);
+            break;
+        default:
+            ArqLerTxt = p;
+            var[0].OperadorAtrib(var + 1);
+            break;
         } // switch
     } // while
     if (textotxt_obj)
         textotxt_obj->AddTexto("\n", 1);
 
+    ArqLerObj.clear();
     return quantidade;
 }
 
@@ -1387,6 +1350,64 @@ int TVarSav::Salvar(TVariavel * v, const char * arqnome, bool senhacod)
 #endif
     remove("intmud-temp.txt");
     return 0;
+}
+
+//----------------------------------------------------------------------------
+bool TVarSav::FGetBool(TVariavel * v)
+{
+    return (v->numfunc == 0 ? false : ArqLerTxt[0] != 0);
+}
+
+//----------------------------------------------------------------------------
+int TVarSav::FGetInt(TVariavel * v)
+{
+    return (v->numfunc == 0 ? false : TxtToInt(ArqLerTxt));
+}
+
+//----------------------------------------------------------------------------
+double TVarSav::FGetDouble(TVariavel * v)
+{
+    return (v->numfunc == 0 ? false : TxtToDouble(ArqLerTxt));
+}
+
+//----------------------------------------------------------------------------
+const char * TVarSav::FGetTxt(TVariavel * v)
+{
+    if (v->numfunc == 0)
+        return "";
+    char * d = ArqLerMens;
+    for (const char * p = ArqLerTxt; *p; p++)
+    {
+        if (*p != '\\' || p[1] == 0)
+            *d++ = *p;
+        else switch (*++p)
+        {
+        case 'n':
+        case 'N': *d++ = Instr::ex_barra_n; break;
+        case 'b':
+        case 'B': *d++ = Instr::ex_barra_b; break;
+        case 'c':
+        case 'C': *d++ = Instr::ex_barra_c; break;
+        case 'd':
+        case 'D': *d++ = Instr::ex_barra_d; break;
+        case '\\': *d++ = '\\'; break;
+        }
+    }
+    *d = 0;
+    return ArqLerMens;
+}
+
+//----------------------------------------------------------------------------
+TObjeto * TVarSav::FGetObj(TVariavel * v)
+{
+    if (v->numfunc == 0)
+        return nullptr;
+    const char * p = ArqLerTxt;
+    unsigned int indice = (p[0] - 0x21) * 0x40 + (p[1] - 0x21);
+    if (p[0] < 0x21 || p[0] >= 0x61 || p[1] < 0x21 || p[1] >= 0x61 ||
+            indice >= ArqLerObj.size())
+        return nullptr;
+    return ArqLerObj[indice];
 }
 
 //----------------------------------------------------------------------------

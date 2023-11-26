@@ -1093,12 +1093,12 @@ TObjeto * TListaItem::FGetObj(TVariavel * v)
 }
 
 //----------------------------------------------------------------------------
-void TListaItem::FOperadorAtrib(TVariavel * v)
+void TListaItem::FOperadorAtrib(TVariavel * v1, TVariavel * v2)
 {
-    if (v[1].defvar[2] != v[0].defvar[2])
+    if (v1->defvar[2] != v2->defvar[2])
         return;
-    TListaItem * r1 = reinterpret_cast<TListaItem*>(v[0].endvar) + v[0].indice;
-    TListaItem * r2 = reinterpret_cast<TListaItem*>(v[1].endvar) + v[1].indice;
+    TListaItem * r1 = reinterpret_cast<TListaItem*>(v1->endvar) + v1->indice;
+    TListaItem * r2 = reinterpret_cast<TListaItem*>(v2->endvar) + v2->indice;
     if (r1 != r2)
         r1->MudarRef(r2->ListaX);
 }

@@ -1022,84 +1022,84 @@ static const char * VarBaseReal2_GetTxt(TVariavel * v)
 }
 
 //------------------------------------------------------------------------------
-static void VarBaseTxt1_OperadorAtrib(TVariavel * v)
+static void VarBaseTxt1_OperadorAtrib(TVariavel * v1, TVariavel * v2)
 {
-    int tam = (2 + (unsigned char)v->defvar[Instr::endExtra]);
-    char * ref = reinterpret_cast<char*>(v->endvar) + v->indice * tam;
-    const char * origem = v[1].getTxt();
+    int tam = (2 + (unsigned char)v1->defvar[Instr::endExtra]);
+    char * ref = reinterpret_cast<char*>(v1->endvar) + v1->indice * tam;
+    const char * origem = v2->getTxt();
     if (ref != origem)
-        copiastr(ref, origem, tam - 1);
+        copiastr(ref, origem, tam);
 }
-static void VarBaseTxt2_OperadorAtrib(TVariavel * v)
+static void VarBaseTxt2_OperadorAtrib(TVariavel * v1, TVariavel * v2)
 {
-    int tam = (258 + (unsigned char)v->defvar[Instr::endExtra]);
-    char * ref = reinterpret_cast<char*>(v->endvar) + v->indice * tam;
-    const char * origem = v[1].getTxt();
+    int tam = (258 + (unsigned char)v1->defvar[Instr::endExtra]);
+    char * ref = reinterpret_cast<char*>(v1->endvar) + v1->indice * tam;
+    const char * origem = v2->getTxt();
     if (ref != origem)
-        copiastr(ref, origem, tam - 1);
+        copiastr(ref, origem, tam);
 }
-static void VarBaseInt1_OperadorAtrib(TVariavel * v)
+static void VarBaseInt1_OperadorAtrib(TVariavel * v1, TVariavel * v2)
 {
-    int valor = v[1].getInt();
-    if (v->numfunc)
-        SetVetorInt1(v, valor);
-    else if (v->indice)
+    int valor = v2->getInt();
+    if (v1->numfunc)
+        SetVetorInt1(v1, valor);
+    else if (v1->indice)
     {
-        int ind2 = v->indice + v->numbit;
+        int ind2 = v1->indice + v1->numbit;
         if (valor)
-            v->end_char[ind2 / 8] |= (1 << (ind2 & 7));
+            v1->end_char[ind2 / 8] |= (1 << (ind2 & 7));
         else
-            v->endchar[ind2 / 8] &= ~(1 << (ind2 & 7));
+            v1->endchar[ind2 / 8] &= ~(1 << (ind2 & 7));
     }
     else if (valor)
-        v->end_char[0] |= (1 << v->numbit);
+        v1->end_char[0] |= (1 << v1->numbit);
     else
-        v->end_char[0] &= ~(1 << v->numbit);
+        v1->end_char[0] &= ~(1 << v1->numbit);
 }
-static void VarBaseInt8_OperadorAtrib(TVariavel * v)
+static void VarBaseInt8_OperadorAtrib(TVariavel * v1, TVariavel * v2)
 {
-    signed char * ref = reinterpret_cast<signed char*>(v->endvar) + v->indice;
-    int valor = v[1].getInt();
+    signed char * ref = reinterpret_cast<signed char*>(v1->endvar) + v1->indice;
+    int valor = v2->getInt();
     *ref = (valor < -0x80 ? -0x80 : valor > 0x7F ? 0x7F : valor);
 }
-static void VarBaseUInt8_OperadorAtrib(TVariavel * v)
+static void VarBaseUInt8_OperadorAtrib(TVariavel * v1, TVariavel * v2)
 {
-    unsigned char * ref = reinterpret_cast<unsigned char*>(v->endvar) + v->indice;
-    int valor = v[1].getInt();
+    unsigned char * ref = reinterpret_cast<unsigned char*>(v1->endvar) + v1->indice;
+    int valor = v2->getInt();
     *ref = (valor < 0 ? 0 : valor > 0xFF ? 0xFF : valor);
 }
-static void VarBaseInt16_OperadorAtrib(TVariavel * v)
+static void VarBaseInt16_OperadorAtrib(TVariavel * v1, TVariavel * v2)
 {
-    signed short * ref = reinterpret_cast<signed short*>(v->endvar) + v->indice;
-    int valor = v[1].getInt();
+    signed short * ref = reinterpret_cast<signed short*>(v1->endvar) + v1->indice;
+    int valor = v2->getInt();
     *ref = (valor < -0x8000 ? -0x8000 : valor > 0x7FFF ? 0x7FFF : valor);
 }
-static void VarBaseUInt16_OperadorAtrib(TVariavel * v)
+static void VarBaseUInt16_OperadorAtrib(TVariavel * v1, TVariavel * v2)
 {
-    unsigned short * ref = reinterpret_cast<unsigned short*>(v->endvar) + v->indice;
-    int valor = v[1].getInt();
+    unsigned short * ref = reinterpret_cast<unsigned short*>(v1->endvar) + v1->indice;
+    int valor = v2->getInt();
     *ref = (valor < 0 ? 0 : valor > 0xFFFF ? 0xFFFF : valor);
 }
-static void VarBaseInt32_OperadorAtrib(TVariavel * v)
+static void VarBaseInt32_OperadorAtrib(TVariavel * v1, TVariavel * v2)
 {
-    signed int * ref = reinterpret_cast<signed int*>(v->endvar) + v->indice;
-    *ref = v[1].getInt();
+    signed int * ref = reinterpret_cast<signed int*>(v1->endvar) + v1->indice;
+    *ref = v2->getInt();
 }
-static void VarBaseUInt32_OperadorAtrib(TVariavel * v)
+static void VarBaseUInt32_OperadorAtrib(TVariavel * v1, TVariavel * v2)
 {
-    unsigned int * ref = reinterpret_cast<unsigned int*>(v->endvar) + v->indice;
-    double valor = v[1].getDouble();
+    unsigned int * ref = reinterpret_cast<unsigned int*>(v1->endvar) + v1->indice;
+    double valor = v2->getDouble();
     *ref = (valor < 0 ? 0 : valor > 0xFFFFFFFFLL ? 0xFFFFFFFFLL : (unsigned int)valor);
 }
-static void VarBaseReal_OperadorAtrib(TVariavel * v)
+static void VarBaseReal_OperadorAtrib(TVariavel * v1, TVariavel * v2)
 {
-    float * ref = reinterpret_cast<float*>(v->endvar) + v->indice;
-    *ref = v[1].getDouble();
+    float * ref = reinterpret_cast<float*>(v1->endvar) + v1->indice;
+    *ref = v2->getDouble();
 }
-static void VarBaseReal2_OperadorAtrib(TVariavel * v)
+static void VarBaseReal2_OperadorAtrib(TVariavel * v1, TVariavel * v2)
 {
-    double * ref = reinterpret_cast<double*>(v->endvar) + v->indice;
-    *ref = v[1].getDouble();
+    double * ref = reinterpret_cast<double*>(v1->endvar) + v1->indice;
+    *ref = v2->getDouble();
 }
 
 //------------------------------------------------------------------------------

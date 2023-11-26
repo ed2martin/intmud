@@ -43,8 +43,8 @@ private:
     static double FGetDoubleDec(TVariavel * v);
     static const char * FGetTxtInc(TVariavel * v);
     static const char * FGetTxtDec(TVariavel * v);
-    static void FOperadorAtribInc(TVariavel * v);
-    static void FOperadorAtribDec(TVariavel * v);
+    static void FOperadorAtribInc(TVariavel * v1, TVariavel * v2);
+    static void FOperadorAtribDec(TVariavel * v1, TVariavel * v2);
 
     int valor; ///< Tempo, usando tanto em intinc quanto em intdec
 };

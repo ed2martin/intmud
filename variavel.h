@@ -61,7 +61,7 @@ private:
     double (*FGetDouble)(TVariavel * v);
     const char * (*FGetTxt)(TVariavel * v);
     TObjeto * (*FGetObj)(TVariavel * v);
-    void (*FOperadorAtrib)(TVariavel * v);
+    void (*FOperadorAtrib)(TVariavel * v1, TVariavel * v2);
     bool (*FFuncVetor)(TVariavel * v, const char * nome);
 
     static char * EndBufferTxt;
@@ -84,7 +84,7 @@ public:
             double (*fGetDouble)(TVariavel * v),
             const char * (*fGetTxt)(TVariavel * v),
             TObjeto * (*fGetObj)(TVariavel * v),
-            void (*fOperadorAtrib)(TVariavel * v),
+            void (*fOperadorAtrib)(TVariavel * v1, TVariavel * v2),
             bool (*fFuncVetor)(TVariavel * v, const char * nome));
     /// Retorna um buffer de 0x100 bytes para ser usado para retornar texto
     static inline char * BufferTxt()
@@ -109,7 +109,7 @@ public:
     static double FGetDouble0(TVariavel * v);
     static const char * FGetTxtVazio(TVariavel * v);
     static TObjeto * FGetObjNulo(TVariavel * v);
-    static void FOperadorAtribVazio(TVariavel * v);
+    static void FOperadorAtribVazio(TVariavel * v1, TVariavel * v2);
     static bool FFuncVetorFalse(TVariavel * v, const char * nome);
 
     friend TVariavel;
@@ -307,20 +307,16 @@ public:
     }
 
 // Funções set
-    void setInt(int valor); ///< Muda variável a partir de int
-    void setDouble(double valor); ///< Muda variável a partir de double
-    void setTxt(const char * txt); ///< Muda variável a partir de texto
     void addTxt(const char * txt); ///< Adiciona texto na variável
-    void setObj(TObjeto * obj); ///< Muda variável a partir de referência
 
 // Operadores
-    /// Atribui o valor da próxima variável (this[1]) a esta (*this)
-    inline void OperadorAtrib()
+    /// Atribui o valor de uma variável a esta
+    inline void OperadorAtrib(TVariavel * v)
     {
         unsigned char cmd = (unsigned char)defvar[2];
         if (cmd < Instr::cTotalComandos && indice != 0xff &&
-                this[1].indice != 0xff)
-            VarInfo[cmd].FOperadorAtrib(this);
+                v->indice != 0xff)
+            VarInfo[cmd].FOperadorAtrib(this, v);
     }
 
     int Compara(TVariavel * v);

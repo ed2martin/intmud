@@ -70,7 +70,7 @@ private:
             unsigned int antes, unsigned int depois);
     static void FMoverEnd(TVariavel * v, void * destino,
             TClasse * c, TObjeto * o);
-    static void FOperadorAtrib(TVariavel * v);
+    static void FOperadorAtrib(TVariavel * v1, TVariavel * v2);
 
 public:
     TBlocoVar * RBroot;  ///< Objeto raiz da RBT
@@ -133,7 +133,7 @@ private:
     static double FGetDouble(TVariavel * v);
     static const char * FGetTxt(TVariavel * v);
     static TObjeto * FGetObj(TVariavel * v);
-    static void FOperadorAtrib(TVariavel * v);
+    static void FOperadorAtrib(TVariavel * v1, TVariavel * v2);
 };
 
 //----------------------------------------------------------------------------

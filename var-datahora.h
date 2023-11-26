@@ -23,10 +23,6 @@ public:
             ///< Ler o valor numérico da variável como int
     double getDouble(int numfunc);
             ///< Ler o valor numérico da variável como double
-    void setInt(int numfunc, int valor);
-            ///< Mudar o valor numérico da variável como int
-    void setDouble(int numfunc, double valor);
-            ///< Mudar o valor numérico da variável como double
     void LerSav(const char * texto);
             ///< Atualiza datahora com o valor salvo em arqsav
     void SalvarSav(char * texto);
@@ -54,7 +50,7 @@ private:
     static int FGetInt(TVariavel * v);
     static double FGetDouble(TVariavel * v);
     static const char * FGetTxt(TVariavel * v);
-    static void FOperadorAtrib(TVariavel * v);
+    static void FOperadorAtrib(TVariavel * v1, TVariavel * v2);
 };
 
 //----------------------------------------------------------------------------

@@ -31,8 +31,6 @@ public:
         ///< Ler valor numérico da variável como int
     static double getDouble(int numfunc);
         ///< Ler valor numérico da variável como double
-    static void setValor(int numfunc, int valor);
-        ///< Alterar valor numérico da variável
     static void Exec();
         ///< Para executar passo-a-passo
 
@@ -74,7 +72,7 @@ private:
     static int FGetInt(TVariavel * v);
     static double FGetDouble(TVariavel * v);
     static const char * FGetTxt(TVariavel * v);
-    static void FOperadorAtrib(TVariavel * v);
+    static void FOperadorAtrib(TVariavel * v1, TVariavel * v2);
 };
 
 //----------------------------------------------------------------------------

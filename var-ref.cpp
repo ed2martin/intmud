@@ -176,8 +176,8 @@ TObjeto * TVarRef::FGetObj(TVariavel * v)
 }
 
 //------------------------------------------------------------------------------
-void TVarRef::FOperadorAtrib(TVariavel * v)
+void TVarRef::FOperadorAtrib(TVariavel * v1, TVariavel * v2)
 {
-    TVarRef * ref = reinterpret_cast<TVarRef*>(v->endvar) + v->indice;
-    ref->MudarPont(v[1].getObj());
+    TVarRef * ref = reinterpret_cast<TVarRef*>(v1->endvar) + v1->indice;
+    ref->MudarPont(v2->getObj());
 }
