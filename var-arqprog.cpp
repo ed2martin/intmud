@@ -1,3 +1,10 @@
+/* Este arquivo é software livre; você pode redistribuir e/ou
+ * modificar nos termos da licença LGPL. Vide arquivo COPYING.
+ *
+ * This file is free software; you can redistribute it and/or
+ * modify it under the terms of the LGPL license. See file COPYING.
+ */
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>

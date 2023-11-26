@@ -1,10 +1,8 @@
 /* Este arquivo é software livre; você pode redistribuir e/ou
- * modificar nos termos das licenças GPL ou LGPL. Vide arquivos
- * COPYING e COPYING2.
+ * modificar nos termos da licença LGPL. Vide arquivo COPYING.
  *
  * This file is free software; you can redistribute it and/or
- * modify it under the terms of the GPL or the LGP licenses.
- * See files COPYING e COPYING2.
+ * modify it under the terms of the LGPL license. See file COPYING.
  */
 
 #include <stdio.h>
@@ -1527,12 +1525,12 @@ int TClasse::AcertaVar(bool acertaderiv)
 // Prepara lista de variáveis que mudaram
     antes.al =  new TClasseAloca[NumVar + antes.NumVar];
     TClasseAloca * al = antes.al;
-    indobjeto=0; // Número de variáveis de objetos
-    indclasse=0; // Número de variáveis de objetos + classe
-    bitobjeto=0; // Bit 1 =1 se alguma variável da classe mudou
-                 // Bit 2 =1 se alguma variável de objeto mudou
-                 // !=0 se a lista de variáveis mudou
-    total = 0;   // Para obter o número de variáveis
+    indobjeto = 0; // Número de variáveis de objetos
+    indclasse = 0; // Número de variáveis de objetos + classe
+    bitobjeto = 0; // Bit 1 =1 se alguma variável da classe mudou
+                   // Bit 2 =1 se alguma variável de objeto mudou
+                   // Diferente de 0 se a lista de variáveis mudou
+    total = 0;     // Para obter o número de variáveis
 
         // passo=0 -> obtém variáveis de objetos
         // passo=1 -> obtém variáveis da classe (definida com "comum")
@@ -1542,13 +1540,19 @@ int TClasse::AcertaVar(bool acertaderiv)
         TVariavel v;
         v.Limpar();
     // Checa variáveis que mudaram
-        while (c1<antes.NumVar && c2<NumVar)
+        while (c1 < antes.NumVar && c2 < NumVar)
         {
         // Pula variáveis que não correspondem ao passo
             if ((antes.InstrVar[c1][Instr::endProp] & 1) != passo)
-                { c1++; continue; }
+            {
+                c1++;
+                continue;
+            }
             if ((InstrVar[c2][Instr::endProp] & 1) != passo)
-                { c2++; continue; }
+            {
+                c2++;
+                continue;
+            }
         // Compara variáveis antes e depois
         // Checa também se herança da variável mudou
             int cmp = comparaVar(antes.InstrVar[c1] + Instr::endNome,
@@ -1592,12 +1596,7 @@ int TClasse::AcertaVar(bool acertaderiv)
                 antes.InstrVar[c1][Instr::endIndice] ==
                       InstrVar[c2][Instr::endIndice])
             {
-                if (InstrVar[c2][2] == Instr::cInt1)
-                {
-                    al[total].comando = 4;  // Bits: devem ser copiados
-                    bitobjeto |= 1;
-                }
-                else if ((InstrVar[c2][2] == Instr::cTxt1 ||
+                if ((InstrVar[c2][2] == Instr::cTxt1 ||
                     InstrVar[c2][2] == Instr::cTxt2) &&
                     antes.InstrVar[c1][Instr::endExtra] !=
                           InstrVar[c2][Instr::endExtra])
@@ -1605,16 +1604,14 @@ int TClasse::AcertaVar(bool acertaderiv)
                     al[total].comando = 4; // Tamanho de txt diferente: copiar
                     bitobjeto |= 1;
                 }
-                else // Mover
-                {
-                    unsigned char tam1 = antes.InstrVar[c1][Instr::endVetor];
-                    unsigned char tam2 = InstrVar[c2][Instr::endVetor];
-                    if (tam1 == 0) tam1++;
-                    if (tam2 == 0) tam2++;
-                    if (tam1 != tam2)
-                        bitobjeto |= 1;
-                    al[total].comando = 3;
-                }
+                else if (InstrVar[c2][2] == Instr::cInt1)
+                    al[total].comando = 4;  // Bits: devem ser copiados
+                else
+                    al[total].comando = 3; // Mover
+                unsigned char tam1 = antes.InstrVar[c1][Instr::endVetor];
+                unsigned char tam2 = InstrVar[c2][Instr::endVetor];
+                if ((tam1 ? tam1 : 1) != (tam2 ? tam2 : 1))
+                    bitobjeto |= 1;
                 al[total].defvar = antes.InstrVar[c1];
                 al[total].indvar = antes.IndiceVar[c1];
                 total++;

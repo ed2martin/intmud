@@ -1,10 +1,8 @@
 /* Este arquivo é software livre; você pode redistribuir e/ou
- * modificar nos termos das licenças GPL ou LGPL. Vide arquivos
- * COPYING e COPYING2.
+ * modificar nos termos da licença LGPL. Vide arquivo COPYING.
  *
  * This file is free software; you can redistribute it and/or
- * modify it under the terms of the GPL or the LGP licenses.
- * See files COPYING e COPYING2.
+ * modify it under the terms of the LGPL license. See file COPYING.
  */
 
 #include <stdio.h>
