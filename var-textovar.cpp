@@ -445,7 +445,7 @@ bool TTextoVar::FuncTotal(TVariavel * v)
 }
 
 //----------------------------------------------------------------------------
-void TTextoVar::Apagar()
+inline void TTextoVar::Apagar()
 {
     while (RBroot)
         delete RBroot;
@@ -463,7 +463,7 @@ void TTextoVar::Limpar()
 }
 
 //----------------------------------------------------------------------------
-void TTextoVar::Mover(TTextoVar * destino)
+inline void TTextoVar::Mover(TTextoVar * destino)
 {
     if (RBroot)
         RBroot->MoveTextoVar(destino);

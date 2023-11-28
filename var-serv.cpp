@@ -108,7 +108,7 @@ const TVarInfo * TVarServ::Inicializa()
 }
 
 //------------------------------------------------------------------------------
-void TVarServ::Criar()
+inline void TVarServ::Criar()
 {
 #ifdef DEBUG_CRIAR
     puts("new TVarServ"); fflush(stdout);
@@ -117,7 +117,7 @@ void TVarServ::Criar()
 }
 
 //------------------------------------------------------------------------------
-void TVarServ::Apagar()
+inline void TVarServ::Apagar()
 {
 #ifdef DEBUG_CRIAR
     puts("delete TVarServ"); fflush(stdout);
@@ -142,7 +142,7 @@ void TVarServ::Fechar()
 }
 
 //------------------------------------------------------------------------------
-void TVarServ::Mover(TVarServ * destino)
+inline void TVarServ::Mover(TVarServ * destino)
 {
     if (sock >= 0)
     {
@@ -521,7 +521,7 @@ bool TVarServ::FuncIniSSL(TVariavel * v)
 }
 
 //------------------------------------------------------------------------------
-int TVarServ::getValor()
+inline int TVarServ::getValor()
 {
     return sock >= 0;
 }

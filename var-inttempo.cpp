@@ -227,7 +227,7 @@ void TVarIntTempo::setValor(int numfunc, int valor)
 }
 
 //------------------------------------------------------------------------------
-void TVarIntTempo::Mover(TVarIntTempo * destino)
+inline void TVarIntTempo::Mover(TVarIntTempo * destino)
 {
     if (!parado)
     {
@@ -247,7 +247,7 @@ void TVarIntTempo::Mover(TVarIntTempo * destino)
 }
 
 //------------------------------------------------------------------------------
-void TVarIntTempo::EndObjeto(TClasse * c, TObjeto * o)
+inline void TVarIntTempo::EndObjeto(TClasse * c, TObjeto * o)
 {
     if (o)
         endobjeto = o, b_objeto = true;

@@ -448,7 +448,7 @@ void TVarTelaTxt::ProcFim()
 }
 
 //------------------------------------------------------------------------------
-void TVarTelaTxt::Criar()
+inline void TVarTelaTxt::Criar()
 {
     Antes = nullptr;
     Depois = Inicio;
@@ -458,7 +458,7 @@ void TVarTelaTxt::Criar()
 }
 
 //------------------------------------------------------------------------------
-void TVarTelaTxt::Apagar()
+inline void TVarTelaTxt::Apagar()
 {
     (Antes ? Antes->Depois : Inicio) = Depois;
     if (Depois)
@@ -468,7 +468,7 @@ void TVarTelaTxt::Apagar()
 }
 
 //------------------------------------------------------------------------------
-void TVarTelaTxt::Mover(TVarTelaTxt * destino)
+inline void TVarTelaTxt::Mover(TVarTelaTxt * destino)
 {
     (Antes ? Antes->Depois : Inicio) = destino;
     if (Depois)
@@ -479,7 +479,7 @@ void TVarTelaTxt::Mover(TVarTelaTxt * destino)
 }
 
 //------------------------------------------------------------------------------
-void TVarTelaTxt::EndObjeto(TClasse * c, TObjeto * o)
+inline void TVarTelaTxt::EndObjeto(TClasse * c, TObjeto * o)
 {
     if (o)
         endobjeto = o, b_objeto = true;

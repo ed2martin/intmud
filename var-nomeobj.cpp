@@ -195,7 +195,7 @@ bool TVarNomeObj::Func(TVariavel * v, const char * nome)
 }
 
 //------------------------------------------------------------------------------
-int TVarNomeObj::getValor()
+inline int TVarNomeObj::getValor()
 {
     return Achou;
 }

@@ -36,7 +36,7 @@ const TVarInfo * TIndiceItem::Inicializa()
 }
 
 //----------------------------------------------------------------------------
-void TIndiceItem::Apagar()
+inline void TIndiceItem::Apagar()
 {
     if (IndiceObj)
     {
@@ -47,7 +47,7 @@ void TIndiceItem::Apagar()
 }
 
 //----------------------------------------------------------------------------
-void TIndiceItem::Mover(TIndiceItem * destino)
+inline void TIndiceItem::Mover(TIndiceItem * destino)
 {
     if (IndiceObj)
     {
@@ -59,7 +59,7 @@ void TIndiceItem::Mover(TIndiceItem * destino)
 }
 
 //----------------------------------------------------------------------------
-int TIndiceItem::getValor()
+inline int TIndiceItem::getValor()
 {
     if (IndiceObj == nullptr)
         return 0;

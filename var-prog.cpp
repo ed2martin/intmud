@@ -44,13 +44,13 @@ const TVarInfo * TVarProg::Inicializa()
 }
 
 //------------------------------------------------------------------------------
-void TVarProg::Criar()
+inline void TVarProg::Criar()
 {
     consulta = prNada;
 }
 
 //------------------------------------------------------------------------------
-void TVarProg::Apagar()
+inline void TVarProg::Apagar()
 {
     if (consulta == prNada)
         return;
@@ -61,7 +61,7 @@ void TVarProg::Apagar()
 }
 
 //------------------------------------------------------------------------------
-void TVarProg::Mover(TVarProg * destino)
+inline void TVarProg::Mover(TVarProg * destino)
 {
     if (consulta == prNada)
     {
@@ -75,7 +75,7 @@ void TVarProg::Mover(TVarProg * destino)
 }
 
 //------------------------------------------------------------------------------
-int TVarProg::getValor()
+inline int TVarProg::getValor()
 {
     return 0;
 }

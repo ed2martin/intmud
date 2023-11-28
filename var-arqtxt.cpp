@@ -41,13 +41,13 @@ const TVarInfo * TVarArqTxt::Inicializa()
 }
 
 //------------------------------------------------------------------------------
-void TVarArqTxt::Criar()
+inline void TVarArqTxt::Criar()
 {
     arq = nullptr;
 }
 
 //------------------------------------------------------------------------------
-void TVarArqTxt::Apagar()
+inline void TVarArqTxt::Apagar()
 {
     if (arq)
         fclose(arq);
@@ -63,7 +63,7 @@ void TVarArqTxt::Fechar()
 }
 
 //------------------------------------------------------------------------------
-int TVarArqTxt::getValor()
+inline int TVarArqTxt::getValor()
 {
     return (arq != nullptr);
 }

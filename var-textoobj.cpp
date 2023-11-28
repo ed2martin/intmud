@@ -324,7 +324,7 @@ bool TTextoObj::FuncTotal(TVariavel * v)
 }
 
 //----------------------------------------------------------------------------
-void TTextoObj::Apagar()
+inline void TTextoObj::Apagar()
 {
     if (Objeto)
         while (RBroot)
@@ -347,7 +347,7 @@ void TTextoObj::Limpar()
 }
 
 //----------------------------------------------------------------------------
-void TTextoObj::Mover(TTextoObj * destino, TObjeto * o)
+inline void TTextoObj::Mover(TTextoObj * destino, TObjeto * o)
 {
     Objeto = o;
     if (RBroot)
@@ -562,7 +562,7 @@ void TTextoObjSub::Criar(TTextoObj * var)
 }
 
 //----------------------------------------------------------------------------
-void TTextoObjSub::Apagar()
+inline void TTextoObjSub::Apagar()
 {
     if (TextoObj == nullptr)
         return;
@@ -573,7 +573,7 @@ void TTextoObjSub::Apagar()
 }
 
 //----------------------------------------------------------------------------
-void TTextoObjSub::Mover(TTextoObjSub * destino)
+inline void TTextoObjSub::Mover(TTextoObjSub * destino)
 {
     if (TextoObj)
     {

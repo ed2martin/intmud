@@ -42,19 +42,19 @@ const TVarInfo * TVarArqLog::Inicializa()
 }
 
 //------------------------------------------------------------------------------
-void TVarArqLog::Criar()
+inline void TVarArqLog::Criar()
 {
     arq = -1;
 }
 
 //------------------------------------------------------------------------------
-void TVarArqLog::Apagar()
+inline void TVarArqLog::Apagar()
 {
     Fechar();
 }
 
 //------------------------------------------------------------------------------
-void TVarArqLog::Mover(TVarArqLog * destino)
+inline void TVarArqLog::Mover(TVarArqLog * destino)
 {
     if (arq == -1)
     {
@@ -69,7 +69,7 @@ void TVarArqLog::Mover(TVarArqLog * destino)
 }
 
 //------------------------------------------------------------------------------
-int TVarArqLog::getValor()
+inline int TVarArqLog::getValor()
 {
     return (arq >= 0 ? 1 : 0);
 }

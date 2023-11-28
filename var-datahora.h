@@ -28,6 +28,7 @@ public:
     void SalvarSav(char * texto);
             ///< Prepara um texto com data e hora para arqsav
 
+private:
     int DiasMes();          ///< Calcula quantos dias tem no mês
     int DataNum();          ///< Calcula o número de dias desde 1/1/1
     void NumData(int dias); ///< Obtém dia/mês/ano a partir do número de dias
@@ -38,7 +39,6 @@ public:
     unsigned char Min;      ///< Variável min
     unsigned char Seg;      ///< Variável seg
 
-private:
     static int FTamanho(const char * instr);
     static int FTamanhoVetor(const char * instr);
     static TVarTipo FTipo(TVariavel * v);

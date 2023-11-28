@@ -55,7 +55,7 @@ const TVarInfo * TListaObj::Inicializa()
 }
 
 //----------------------------------------------------------------------------
-void TListaObj::Apagar()
+inline void TListaObj::Apagar()
 {
     if (Objeto)
         while (Inicio)
@@ -70,7 +70,7 @@ void TListaObj::Apagar()
 }
 
 //----------------------------------------------------------------------------
-void TListaObj::Mover(TListaObj * destino, TObjeto * o)
+inline void TListaObj::Mover(TListaObj * destino, TObjeto * o)
 {
     Objeto = o;
     // Acerta TListaX::Lista em todos os TListaX da lista
@@ -140,7 +140,7 @@ TListaX * TListaObj::AddFim(TObjeto * obj)
 }
 
 //----------------------------------------------------------------------------
-int TListaObj::getValor()
+inline int TListaObj::getValor()
 {
     return (Inicio != nullptr);
 }
@@ -736,7 +736,7 @@ const TVarInfo * TListaItem::Inicializa()
 }
 
 //----------------------------------------------------------------------------
-void TListaItem::Apagar()
+inline void TListaItem::Apagar()
 {
     if (ListaX)
     {
@@ -749,7 +749,7 @@ void TListaItem::Apagar()
 }
 
 //----------------------------------------------------------------------------
-void TListaItem::Mover(TListaItem * destino, TObjeto * o)
+inline void TListaItem::Mover(TListaItem * destino, TObjeto * o)
 {
     Objeto = o;
     if (ListaX)
@@ -762,7 +762,7 @@ void TListaItem::Mover(TListaItem * destino, TObjeto * o)
 }
 
 //----------------------------------------------------------------------------
-int TListaItem::getValor()
+inline int TListaItem::getValor()
 {
     return (ListaX != nullptr);
 }

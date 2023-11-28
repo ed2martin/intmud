@@ -306,10 +306,8 @@ public:
         return nullptr;
     }
 
-// Funções set
-    void addTxt(const char * txt); ///< Adiciona texto na variável
-
 // Operadores
+
     /// Atribui o valor de uma variável a esta
     inline void OperadorAtrib(TVariavel * v)
     {
@@ -318,6 +316,8 @@ public:
                 v->indice != 0xff)
             VarInfo[cmd].FOperadorAtrib(this, v);
     }
+
+    void addTxt(const char * txt); ///< Adiciona texto na variável
 
     int Compara(TVariavel * v);
         ///< Compara com outra variável do mesmo tipo

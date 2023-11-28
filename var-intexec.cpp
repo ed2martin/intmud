@@ -83,7 +83,7 @@ void TVarIntExec::ProcEventos()
 }
 
 //------------------------------------------------------------------------------
-int TVarIntExec::getValor()
+inline int TVarIntExec::getValor()
 {
     return (Antes || Inicio == this);
 }
@@ -109,7 +109,7 @@ void TVarIntExec::setValor(int valor)
 }
 
 //------------------------------------------------------------------------------
-void TVarIntExec::Mover(TVarIntExec * destino)
+inline void TVarIntExec::Mover(TVarIntExec * destino)
 {
     if (Antes || Inicio == this)
     {
@@ -120,7 +120,7 @@ void TVarIntExec::Mover(TVarIntExec * destino)
 }
 
 //------------------------------------------------------------------------------
-void TVarIntExec::EndObjeto(TClasse * c, TObjeto * o)
+inline void TVarIntExec::EndObjeto(TClasse * c, TObjeto * o)
 {
     if (o)
         endobjeto = o, b_objeto = true;

@@ -52,7 +52,7 @@ const TVarInfo * TVarDebug::Inicializa()
 }
 
 //------------------------------------------------------------------------------
-void TVarDebug::Criar()
+inline void TVarDebug::Criar()
 {
     Antes = nullptr;
     Depois = Inicio;
@@ -62,7 +62,7 @@ void TVarDebug::Criar()
 }
 
 //------------------------------------------------------------------------------
-void TVarDebug::Apagar()
+inline void TVarDebug::Apagar()
 {
     (Antes ? Antes->Depois : Inicio) = Depois;
     if (Depois)
@@ -72,7 +72,7 @@ void TVarDebug::Apagar()
 }
 
 //------------------------------------------------------------------------------
-void TVarDebug::Mover(TVarDebug * destino)
+inline void TVarDebug::Mover(TVarDebug * destino)
 {
     (Antes ? Antes->Depois : Inicio) = destino;
     if (Depois)
@@ -83,7 +83,7 @@ void TVarDebug::Mover(TVarDebug * destino)
 }
 
 //------------------------------------------------------------------------------
-void TVarDebug::EndObjeto(TClasse * c, TObjeto * o)
+inline void TVarDebug::EndObjeto(TClasse * c, TObjeto * o)
 {
     if (o)
         endobjeto = o, b_objeto = true;

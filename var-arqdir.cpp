@@ -48,7 +48,7 @@ const TVarInfo * TVarArqDir::Inicializa()
 }
 
 //------------------------------------------------------------------------------
-void TVarArqDir::Criar()
+inline void TVarArqDir::Criar()
 {
 #ifdef __WIN32__
     wdir = INVALID_HANDLE_VALUE;
@@ -58,7 +58,7 @@ void TVarArqDir::Criar()
 }
 
 //------------------------------------------------------------------------------
-void TVarArqDir::Apagar()
+inline void TVarArqDir::Apagar()
 {
 #ifdef __WIN32__
     if (wdir != INVALID_HANDLE_VALUE)

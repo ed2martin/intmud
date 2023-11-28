@@ -47,14 +47,14 @@ const TVarInfo * TVarArqMem::Inicializa()
 }
 
 //----------------------------------------------------------------------------
-void TVarArqMem::Criar()
+inline void TVarArqMem::Criar()
 {
     Inicio = Fim = PosBloco = nullptr;
     PosByte = ArqByte = 0;
 }
 
 //----------------------------------------------------------------------------
-void TVarArqMem::Apagar()
+inline void TVarArqMem::Apagar()
 {
     while (Fim)
         ApagarBloco();

@@ -101,7 +101,7 @@ void TVarRef::MudarPont(TObjeto * obj)
 }
 
 //------------------------------------------------------------------------------
-void TVarRef::Mover(TVarRef * destino)
+inline void TVarRef::Mover(TVarRef * destino)
 {
     if (Pont)
     {

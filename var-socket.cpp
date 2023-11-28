@@ -711,23 +711,6 @@ int TVarSocket::getValor(int numfunc)
 }
 
 //------------------------------------------------------------------------------
-void TVarSocket::setValor(int numfunc, int valor)
-{
-    if (Socket == nullptr)
-        return;
-    switch (numfunc)
-    {
-    case 0:
-        MudarSock(nullptr);
-        break;
-    case SocketPosX:
-        break;
-    default:
-        Socket->Variavel(numfunc, valor < 0 ? 0 : valor);
-    }
-}
-
-//------------------------------------------------------------------------------
 int TVarSocket::FTamanho(const char * instr)
 {
     return sizeof(TVarSocket);
@@ -777,12 +760,20 @@ const char * TVarSocket::FGetTxt(TVariavel * v) VARIAVEL_FGETTXT1(TVarSocket)
 //------------------------------------------------------------------------------
 void TVarSocket::FOperadorAtrib(TVariavel * v1, TVariavel * v2)
 {
-    if (v1->defvar[2] != v2->defvar[2])
-        return;
     TVarSocket * r1 = reinterpret_cast<TVarSocket*>(v1->endvar) + v1->indice;
-    TVarSocket * r2 = reinterpret_cast<TVarSocket*>(v2->endvar) + v2->indice;
-    if (r1 != r2)
-        r1->MudarSock(r2->Socket);
+    if (v1->numfunc == 0)
+    {
+        if (v1->defvar[2] != v2->defvar[2])
+            return;
+        TVarSocket * r2 = reinterpret_cast<TVarSocket*>(v2->endvar) + v2->indice;
+        if (r1 != r2)
+            r1->MudarSock(r2->Socket);
+    }
+    else if (v1->numfunc != SocketPosX && r1->Socket != nullptr)
+    {
+        int valor = v2->getInt();
+        r1->Socket->Variavel(v1->numfunc, valor < 0 ? 0 : valor);
+    }
 }
 
 //------------------------------------------------------------------------------

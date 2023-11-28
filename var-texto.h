@@ -66,6 +66,7 @@ public:
             ///< Remove espaços, instrução txtremove
             /**< @param opcoes Opções de remoção, obtidas com ::txtRemove() */
 
+private:
     bool FuncIni(TVariavel * v);
     bool FuncFim(TVariavel * v);
     bool FuncAddIni(TVariavel * v);
@@ -87,7 +88,6 @@ public:
     bool FuncClipLer(TVariavel * v);
     bool FuncClipSalvar(TVariavel * v);
 
-private:
     static int FTamanho(const char * instr);
     static int FTamanhoVetor(const char * instr);
     static void FRedim(TVariavel * v, TClasse * c, TObjeto * o,

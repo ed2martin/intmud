@@ -38,9 +38,6 @@ const TVarInfo * VarBaseReal();
 /// Variáveis real2
 const TVarInfo * VarBaseReal2();
 
-/// Altera valor numérico de vetor de int1
-void SetVetorInt1(TVariavel * v, int valor);
-
 //----------------------------------------------------------------------------
 
 #endif

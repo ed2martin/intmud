@@ -68,7 +68,7 @@ const TVarInfo * TTextoTxt::Inicializa()
 }
 
 //----------------------------------------------------------------------------
-void TTextoTxt::Apagar()
+inline void TTextoTxt::Apagar()
 {
 // Otimização, no caso de precisar mover algum bloco que será apagado
     for (TTextoBloco * obj = Inicio; obj; obj = obj->Depois)
@@ -105,7 +105,7 @@ void TTextoTxt::Limpar()
 }
 
 //----------------------------------------------------------------------------
-void TTextoTxt::Mover(TTextoTxt * destino)
+inline void TTextoTxt::Mover(TTextoTxt * destino)
 {
     for (TTextoPos * obj = Posic; obj; obj = obj->Depois)
         obj->TextoTxt = destino;
@@ -220,7 +220,7 @@ const TVarInfo * TTextoPos::Inicializa()
 }
 
 //----------------------------------------------------------------------------
-void TTextoPos::Apagar()
+inline void TTextoPos::Apagar()
 {
     if (TextoTxt == nullptr)
         return;
@@ -230,7 +230,7 @@ void TTextoPos::Apagar()
 }
 
 //----------------------------------------------------------------------------
-void TTextoPos::Mover(TTextoPos * destino, TObjeto * o)
+inline void TTextoPos::Mover(TTextoPos * destino, TObjeto * o)
 {
     Objeto = o;
     if (TextoTxt)

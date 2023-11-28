@@ -125,11 +125,12 @@ class TVarSocket /// Variáveis Socket
 public:
     static const TVarInfo * Inicializa();
         ///< Inicializa variável e retorna informações
-    void Apagar();          ///< Apaga objeto
+    bool Func(TVariavel * v, const char * nome); ///< Função da variável
     void MudarSock(TObjSocket * socket); ///< Muda a variável TVarSocket::Socket
+private:
+    void Apagar();          ///< Apaga objeto
     void Mover(TVarSocket * destino); ///< Move TVarSock para outro lugar
     void EndObjeto(TClasse * c, TObjeto * o);
-    bool Func(TVariavel * v, const char * nome); ///< Função da variável
     bool FuncMsg(TVariavel * v);
     bool FuncAbrir(TVariavel * v);
     bool FuncAbrirSsl(TVariavel * v);
@@ -176,9 +177,13 @@ public:
     bool b_objeto;          ///< O que usar: true=endobjeto, false=endclasse
     unsigned char indice;   ///< Índice no vetor
 
+public:
     TObjSocket * Socket;    ///< Conexão atual
     TVarSocket * Antes;     ///< Objeto anterior da mesma conexão
     TVarSocket * Depois;    ///< Próximo objeto da mesma conexão
+
+    friend TDNSSocket;
+    friend TObjSocket;
 };
 
 //----------------------------------------------------------------------------

@@ -328,7 +328,7 @@ static bool VarBaseTxt_FuncVetor(TVariavel * v, const char * nome)
 //const char Int1_Valor[] = { 8, 0, Instr::cInt1, 0, 0, 1, '=', '0', 0 };
 
 //------------------------------------------------------------------------------
-bool VarBaseInt1_FuncVetor(TVariavel * v, const char * nome)
+static bool VarBaseInt1_FuncVetor(TVariavel * v, const char * nome)
 {
     if (comparaZ(nome, "limpar") == 0)
     {
@@ -432,7 +432,7 @@ static inline int GetValorInt1(TVariavel * v)
 }
 
 //------------------------------------------------------------------------------
-void SetVetorInt1(TVariavel * v, int valor)
+static inline void SetVetorInt1(TVariavel * v, int valor)
 {
     unsigned int bitnum = v->numbit;
     unsigned char * p = reinterpret_cast<unsigned char*>(v->endvar);
@@ -490,7 +490,7 @@ static bool VarBaseInt8_FuncVetor(TVariavel * v, const char * nome)
 }
 
 //------------------------------------------------------------------------------
-bool VarBaseUInt8_FuncVetor(TVariavel * v, const char * nome)
+static bool VarBaseUInt8_FuncVetor(TVariavel * v, const char * nome)
 {
     if (comparaZ(nome, "limpar") != 0)
         return false;
