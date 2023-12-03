@@ -63,6 +63,7 @@ const TVarInfo * TTextoTxt::Inicializa()
         FGetTxt,
         TVarInfo::FGetObjNulo,
         TVarInfo::FOperadorAtribVazio,
+        TVarInfo::FOperadorAddFalse,
         TVarInfo::FFuncVetorFalse);
     return &var;
 }
@@ -215,6 +216,7 @@ const TVarInfo * TTextoPos::Inicializa()
         FGetTxt,
         TVarInfo::FGetObjNulo,
         FOperadorAtrib,
+        TVarInfo::FOperadorAddFalse,
         TVarInfo::FFuncVetorFalse);
     return &var;
 }

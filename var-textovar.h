@@ -134,6 +134,7 @@ private:
     static const char * FGetTxt(TVariavel * v);
     static TObjeto * FGetObj(TVariavel * v);
     static void FOperadorAtrib(TVariavel * v1, TVariavel * v2);
+    static bool FOperadorAdd(TVariavel * v1, TVariavel * v2);
 };
 
 //----------------------------------------------------------------------------

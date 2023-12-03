@@ -62,6 +62,7 @@ private:
     const char * (*FGetTxt)(TVariavel * v);
     TObjeto * (*FGetObj)(TVariavel * v);
     void (*FOperadorAtrib)(TVariavel * v1, TVariavel * v2);
+    bool (*FOperadorAdd)(TVariavel * v1, TVariavel * v2);
     bool (*FFuncVetor)(TVariavel * v, const char * nome);
 
     static char * EndBufferTxt;
@@ -85,6 +86,7 @@ public:
             const char * (*fGetTxt)(TVariavel * v),
             TObjeto * (*fGetObj)(TVariavel * v),
             void (*fOperadorAtrib)(TVariavel * v1, TVariavel * v2),
+            bool (*fOperadorAdd)(TVariavel * v1, TVariavel * v2),
             bool (*fFuncVetor)(TVariavel * v, const char * nome));
     /// Retorna um buffer de 0x100 bytes para ser usado para retornar texto
     static inline char * BufferTxt()
@@ -110,6 +112,7 @@ public:
     static const char * FGetTxtVazio(TVariavel * v);
     static TObjeto * FGetObjNulo(TVariavel * v);
     static void FOperadorAtribVazio(TVariavel * v1, TVariavel * v2);
+    static bool FOperadorAddFalse(TVariavel * v1, TVariavel * v2);
     static bool FFuncVetorFalse(TVariavel * v, const char * nome);
 
     friend TVariavel;
@@ -261,6 +264,7 @@ public:
     }
 
 // Funções get
+
     /// Obtém o valor "bool" da variável
     inline bool getBool()
     {
@@ -317,7 +321,17 @@ public:
             VarInfo[cmd].FOperadorAtrib(this, v);
     }
 
-    void addTxt(const char * txt); ///< Adiciona texto na variável
+    /// Adiciona uma variável a esta (operador mais igual)
+    /** @param v Variável que será adicionada
+     *  @return true se adicionou, false se deve somar da forma convencional
+     *  @note Costuma ser usado somente para adicionar texto */
+    inline bool OperadorAdd(TVariavel * v)
+    {
+        unsigned char cmd = (unsigned char)defvar[2];
+        if (cmd < Instr::cTotalComandos && indice != 0xff)
+            return VarInfo[cmd].FOperadorAdd(this, v);
+        return false;
+    }
 
     int Compara(TVariavel * v);
         ///< Compara com outra variável do mesmo tipo

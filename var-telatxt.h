@@ -65,12 +65,13 @@ private:
 public:
     static const TVarInfo * Inicializa();
         ///< Inicializa variável e retorna informações
+    bool Func(TVariavel * v, const char * nome); ///< Função da variável
+private:
     void Criar();           ///< Cria objeto
             /**< Após criado, acertar defvar, indice e chamar EndObjeto() */
     void Apagar();          ///< Apaga objeto
     void Mover(TVarTelaTxt * destino); ///< Move TVarSock para outro lugar
     void EndObjeto(TClasse * c, TObjeto * o);
-    bool Func(TVariavel * v, const char * nome); ///< Função da variável
 
     static int FTamanho(const char * instr);
     static TVarTipo FTipo(TVariavel * v);
@@ -86,6 +87,7 @@ public:
     static const char * FGetTxt(TVariavel * v);
     static void FOperadorAtrib(TVariavel * v1, TVariavel * v2);
     void FOperadorAtribSub(int numfunc, TVariavel * v2);
+    static bool FOperadorAdd(TVariavel * v1, TVariavel * v2);
 
     int  getValor(int numfunc);
                             ///< Ler o valor numérico da variável
@@ -102,6 +104,7 @@ public:
     bool b_objeto;          ///< O que usar: true=endobjeto, false=endclasse
     unsigned char indice;   ///< Índice no vetor
 
+public:
     static bool Inic();     ///< Inicializa consolse se Console!=0
     static void Fim();      ///< Encerra o console
     static void Processa(); ///< Processa teclas pressionadas
@@ -111,6 +114,8 @@ public:
                     /**< @param evento Nome do evento (ex. "msg")
                      *   @param texto Texto do primeiro argumento, 0=nenhum texto
                      *   @return true se não apagou o objeto, false se apagou */
+
+private:
     static TVarTelaTxt * ObjAtual; ///< Objeto atual, usado em FuncEvento()
 
     static TVarTelaTxt * Inicio; ///< Primeiro objeto

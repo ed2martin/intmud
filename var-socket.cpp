@@ -336,6 +336,7 @@ const TVarInfo * TVarSocket::Inicializa()
         FGetTxt,
         TVarInfo::FGetObjNulo,
         FOperadorAtrib,
+        TVarInfo::FOperadorAddFalse,
         TVarInfo::FFuncVetorFalse);
     return &var;
 }

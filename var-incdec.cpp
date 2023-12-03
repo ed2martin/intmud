@@ -195,6 +195,7 @@ const TVarInfo * TVarIncDec::InicializaInc()
         FGetTxtInc,
         TVarInfo::FGetObjNulo,
         FOperadorAtribInc,
+        TVarInfo::FOperadorAddFalse,
         FuncVetorInc);
     return &var;
 }
@@ -215,6 +216,7 @@ const TVarInfo * TVarIncDec::InicializaDec()
         FGetTxtDec,
         TVarInfo::FGetObjNulo,
         FOperadorAtribDec,
+        TVarInfo::FOperadorAddFalse,
         FuncVetorDec);
     return &var;
 }

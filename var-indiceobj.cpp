@@ -31,6 +31,7 @@ const TVarInfo * TIndiceItem::Inicializa()
         FGetTxt,
         TVarInfo::FGetObjNulo,
         FOperadorAtrib,
+        TVarInfo::FOperadorAddFalse,
         TVarInfo::FFuncVetorFalse);
     return &var;
 }
@@ -332,6 +333,7 @@ const TVarInfo * TIndiceObj::Inicializa()
         FGetTxt,
         TVarInfo::FGetObjNulo,
         FOperadorAtrib,
+        FOperadorAdd,
         TVarInfo::FFuncVetorFalse);
     return &var;
 }
@@ -456,17 +458,19 @@ void TIndiceObj::FOperadorAtrib(TVariavel * v1, TVariavel * v2)
     ref->setNome(v2->getTxt());
 }
 
-//----------------------------------------------------------------------------
-void TIndiceObj::addTxt(TVariavel * v, const char * txt)
+//------------------------------------------------------------------------------
+bool TIndiceObj::FOperadorAdd(TVariavel * v1, TVariavel * v2)
 {
-    TIndiceObj * ref = reinterpret_cast<TIndiceObj*>(v->endvar) + v->indice;
-    char * dest = ref->Nome;
-    const char * fim = dest + sizeof(Nome) - 1;
-    while (*dest)
-        dest++;
-    while (*txt && dest < fim)
-        *dest++ = *txt++;
-    *dest = 0;
+    TIndiceObj * ref = reinterpret_cast<TIndiceObj*>(v1->endvar) + v1->indice;
+    char * destino = ref->Nome;
+    const char * origem = v2->getTxt();
+    int desloc = strlen(destino);
+    int tam = sizeof(Nome) - desloc;
+    if (origem != destino)
+        copiastr(destino + desloc, origem, tam);
+    else
+        copiastr(destino + desloc, origem, tam < desloc + 1 ? tam : desloc + 1);
+    return true;
 }
 
 //----------------------------------------------------------------------------

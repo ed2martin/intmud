@@ -271,6 +271,7 @@ const TVarInfo * TVarArqExec::Inicializa()
         TVarInfo::FGetTxtVazio,
         TVarInfo::FGetObjNulo,
         TVarInfo::FOperadorAtribVazio,
+        TVarInfo::FOperadorAddFalse,
         TVarInfo::FFuncVetorFalse);
     return &var;
 }

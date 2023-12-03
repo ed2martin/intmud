@@ -65,6 +65,7 @@ const TVarInfo * TVarSav::Inicializa()
         FGetTxt,
         FGetObj,
         TVarInfo::FOperadorAtribVazio,
+        TVarInfo::FOperadorAddFalse,
         TVarInfo::FFuncVetorFalse);
     return &var;
 }

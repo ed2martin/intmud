@@ -56,7 +56,6 @@ public:
         ///< Inicializa variável e retorna informações
     void Apagar();          ///< Apaga objeto
     void Mover(TIndiceObj * destino, TObjeto * obj); ///< Move para outro lugar
-    static void addTxt(TVariavel * v, const char * txt);
     static TIndiceObj * Procura(const char * nome);
         ///< Procura um objeto TIndiceObj a partir do nome
         /**<
@@ -101,6 +100,7 @@ private:
     static double FGetDouble(TVariavel * v);
     static const char * FGetTxt(TVariavel * v);
     static void FOperadorAtrib(TVariavel * v1, TVariavel * v2);
+    static bool FOperadorAdd(TVariavel * v1, TVariavel * v2);
 
     friend class TIndiceItem;
 };

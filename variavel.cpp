@@ -62,6 +62,7 @@ TVarInfo::TVarInfo()
     FGetTxt = FGetTxtVazio;
     FGetObj = FGetObjNulo;
     FOperadorAtrib = FOperadorAtribVazio;
+    FOperadorAdd = FOperadorAddFalse;
     FFuncVetor = FFuncVetorFalse;
 }
 
@@ -80,6 +81,7 @@ TVarInfo::TVarInfo(int (*fTamanho)(const char * instr),
         const char * (*fGetTxt)(TVariavel * v),
         TObjeto * (*fGetObj)(TVariavel * v),
         void (*fOperadorAtrib)(TVariavel * v1, TVariavel * v2),
+        bool (*fOperadorAdd)(TVariavel * v1, TVariavel * v2),
         bool (*fFuncVetor)(TVariavel * v, const char * nome))
 {
     FTamanho = fTamanho;
@@ -94,6 +96,7 @@ TVarInfo::TVarInfo(int (*fTamanho)(const char * instr),
     FGetDouble = fGetDouble;
     FGetTxt = fGetTxt;
     FOperadorAtrib = fOperadorAtrib;
+    FOperadorAdd = fOperadorAdd;
     FGetObj = fGetObj;
 }
 
@@ -118,6 +121,7 @@ double TVarInfo::FGetDouble0(TVariavel * v) { return 0; }
 const char * TVarInfo::FGetTxtVazio(TVariavel * v) { return ""; }
 TObjeto * TVarInfo::FGetObjNulo(TVariavel * v) { return nullptr; }
 void TVarInfo::FOperadorAtribVazio(TVariavel * v1, TVariavel * v2) {}
+bool TVarInfo::FOperadorAddFalse(TVariavel * v1, TVariavel * v2) { return false; }
 bool TVarInfo::FFuncVetorFalse(TVariavel * v, const char * nome) { return false; }
 
 //----------------------------------------------------------------------------
@@ -189,6 +193,8 @@ void TVariavel::Inicializa()
     VarInfo[Instr::cVarDouble] = *VarOutrosVarDouble();
     VarInfo[Instr::cTextoVarSub] =*TTextoVarSub::Inicializa();
     VarInfo[Instr::cTextoObjSub] =*TTextoObjSub::Inicializa();
+
+    //printf("\nTVarInfo=0x%x\n\n", (int)sizeof(TVarInfo));
 }
 
 //----------------------------------------------------------------------------
@@ -213,39 +219,6 @@ void TVariavel::Limpar()
     indice = 0;
     numbit = 0;
     numfunc = 0;
-}
-
-//------------------------------------------------------------------------------
-void TVariavel::addTxt(const char * txt)
-{
-    if (indice==0xFF) // Vetor
-        return;
-    switch (defvar[2])
-    {
-    case Instr::cTxt1:
-    case Instr::cTxt2:
-    case Instr::cVarNome:
-        {
-            int tam = Tamanho(defvar);
-            char * dest = end_char + indice * tam;
-            const char * fim = dest + tam - 1;
-            while (*dest)
-                dest++;
-            while (*txt && dest<fim)
-                *dest++ = *txt++;
-            *dest=0;
-            break;
-        }
-    case Instr::cTelaTxt:
-        end_telatxt[indice].addTxt(numfunc, txt);
-        break;
-    case Instr::cIndiceObj:
-        end_indiceobj[indice].addTxt(this, txt);
-        break;
-    case Instr::cTextoVarSub:
-        end_textovarsub[indice].addTxt(txt);
-        break;
-    }
 }
 
 //------------------------------------------------------------------------------

@@ -29,6 +29,7 @@ const TVarInfo * TVarNomeObj::Inicializa()
         FGetTxt,
         TVarInfo::FGetObjNulo,
         TVarInfo::FOperadorAtribVazio,
+        TVarInfo::FOperadorAddFalse,
         TVarInfo::FFuncVetorFalse);
     return &var;
 }

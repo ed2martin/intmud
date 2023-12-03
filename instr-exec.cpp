@@ -1925,10 +1925,9 @@ exo_compara_sair:
             CriarVarInt(VarAtual, VarAtual->getBool());
             break;
         case exo_i_add:      // Operador: a += b
-            if (VarAtual[-1].Tipo() == varTxt)
+            if (VarAtual[-1].OperadorAdd(VarAtual))
             {
                 FuncAtual->expr += 3;
-                VarAtual[-1].addTxt(VarAtual[0].getTxt());
                 ApagarVar(VarAtual);
                 break;
             }

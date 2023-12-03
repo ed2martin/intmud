@@ -49,6 +49,7 @@ const TVarInfo * TVarIntTempo::Inicializa()
         FGetTxt,
         TVarInfo::FGetObjNulo,
         FOperadorAtrib,
+        TVarInfo::FOperadorAddFalse,
         FuncVetor);
     return &var;
 }

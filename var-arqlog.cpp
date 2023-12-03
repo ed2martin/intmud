@@ -37,6 +37,7 @@ const TVarInfo * TVarArqLog::Inicializa()
         FGetTxt,
         TVarInfo::FGetObjNulo,
         TVarInfo::FOperadorAtribVazio,
+        TVarInfo::FOperadorAddFalse,
         TVarInfo::FFuncVetorFalse);
     return &var;
 }

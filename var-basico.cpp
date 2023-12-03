@@ -1101,6 +1101,36 @@ static void VarBaseReal2_OperadorAtrib(TVariavel * v1, TVariavel * v2)
 }
 
 //------------------------------------------------------------------------------
+static bool VarBaseTxt1_FOperadorAdd(TVariavel * v1, TVariavel * v2)
+{
+    int tam = (2 + (unsigned char)v1->defvar[Instr::endExtra]);
+    char * ref = reinterpret_cast<char*>(v1->endvar) + v1->indice * tam;
+    const char * origem = v2->getTxt();
+    int desloc = strlen(ref);
+    tam -= desloc;
+    if (origem != ref)
+        copiastr(ref + desloc, origem, tam);
+    else
+        copiastr(ref + desloc, origem, tam < desloc + 1 ? tam : desloc + 1);
+    return true;
+}
+
+//------------------------------------------------------------------------------
+static bool VarBaseTxt2_FOperadorAdd(TVariavel * v1, TVariavel * v2)
+{
+    int tam = (258 + (unsigned char)v1->defvar[Instr::endExtra]);
+    char * ref = reinterpret_cast<char*>(v1->endvar) + v1->indice * tam;
+    const char * origem = v2->getTxt();
+    int desloc = strlen(ref);
+    tam -= desloc;
+    if (origem != ref)
+        copiastr(ref + desloc, origem, tam);
+    else
+        copiastr(ref + desloc, origem, tam < desloc + 1 ? tam : desloc + 1);
+    return true;
+}
+
+//------------------------------------------------------------------------------
 const TVarInfo * VarBaseTxt1()
 {
     static const TVarInfo var(
@@ -1116,6 +1146,7 @@ const TVarInfo * VarBaseTxt1()
         VarBaseTxt1_GetTxt,
         TVarInfo::FGetObjNulo,
         VarBaseTxt1_OperadorAtrib,
+        VarBaseTxt1_FOperadorAdd,
         VarBaseTxt_FuncVetor);
     return &var;
 }
@@ -1135,6 +1166,7 @@ const TVarInfo * VarBaseTxt2()
         VarBaseTxt2_GetTxt,
         TVarInfo::FGetObjNulo,
         VarBaseTxt2_OperadorAtrib,
+        VarBaseTxt2_FOperadorAdd,
         VarBaseTxt_FuncVetor);
     return &var;
 }
@@ -1154,6 +1186,7 @@ const TVarInfo * VarBaseInt1()
         VarBaseInt1_GetTxt,
         TVarInfo::FGetObjNulo,
         VarBaseInt1_OperadorAtrib,
+        TVarInfo::FOperadorAddFalse,
         VarBaseInt1_FuncVetor);
     return &var;
 }
@@ -1173,6 +1206,7 @@ const TVarInfo * VarBaseInt8()
         VarBaseInt8_GetTxt,
         TVarInfo::FGetObjNulo,
         VarBaseInt8_OperadorAtrib,
+        TVarInfo::FOperadorAddFalse,
         VarBaseInt8_FuncVetor);
     return &var;
 }
@@ -1192,6 +1226,7 @@ const TVarInfo * VarBaseUInt8()
         VarBaseUInt8_GetTxt,
         TVarInfo::FGetObjNulo,
         VarBaseUInt8_OperadorAtrib,
+        TVarInfo::FOperadorAddFalse,
         VarBaseUInt8_FuncVetor);
     return &var;
 }
@@ -1211,6 +1246,7 @@ const TVarInfo * VarBaseInt16()
         VarBaseInt16_GetTxt,
         TVarInfo::FGetObjNulo,
         VarBaseInt16_OperadorAtrib,
+        TVarInfo::FOperadorAddFalse,
         VarBaseInt16_FuncVetor);
     return &var;
 }
@@ -1230,6 +1266,7 @@ const TVarInfo * VarBaseUInt16()
         VarBaseUInt16_GetTxt,
         TVarInfo::FGetObjNulo,
         VarBaseUInt16_OperadorAtrib,
+        TVarInfo::FOperadorAddFalse,
         VarBaseUInt16_FuncVetor);
     return &var;
 }
@@ -1249,6 +1286,7 @@ const TVarInfo * VarBaseInt32()
         VarBaseInt32_GetTxt,
         TVarInfo::FGetObjNulo,
         VarBaseInt32_OperadorAtrib,
+        TVarInfo::FOperadorAddFalse,
         VarBaseInt32_FuncVetor);
     return &var;
 }
@@ -1268,6 +1306,7 @@ const TVarInfo * VarBaseUInt32()
         VarBaseUInt32_GetTxt,
         TVarInfo::FGetObjNulo,
         VarBaseUInt32_OperadorAtrib,
+        TVarInfo::FOperadorAddFalse,
         VarBaseUInt32_FuncVetor);
     return &var;
 }
@@ -1287,6 +1326,7 @@ const TVarInfo * VarBaseReal()
         VarBaseReal_GetTxt,
         TVarInfo::FGetObjNulo,
         VarBaseReal_OperadorAtrib,
+        TVarInfo::FOperadorAddFalse,
         VarBaseReal_FuncVetor);
     return &var;
 }
@@ -1306,6 +1346,7 @@ const TVarInfo * VarBaseReal2()
         VarBaseReal2_GetTxt,
         TVarInfo::FGetObjNulo,
         VarBaseReal2_OperadorAtrib,
+        TVarInfo::FOperadorAddFalse,
         VarBaseReal2_FuncVetor);
     return &var;
 }

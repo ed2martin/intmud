@@ -58,6 +58,7 @@ const TVarInfo * TVarTelaTxt::Inicializa()
         FGetTxt,
         TVarInfo::FGetObjNulo,
         FOperadorAtrib,
+        FOperadorAdd,
         TVarInfo::FFuncVetorFalse);
     return &var;
 }
@@ -532,45 +533,39 @@ const char * TVarTelaTxt::getTxt(int numfunc)
 //------------------------------------------------------------------------------
 void TVarTelaTxt::addTxt(int numfunc, const char * txt)
 {
-    if (Console == nullptr || *txt == 0)
+    if (Console == nullptr || *txt == 0 || numfunc != TelaTxtTexto)
         return;
-    char * destino;
-    switch (numfunc)
+    char * destino = txt_linha + tam_linha;
+    while (*txt && destino < txt_linha + max_linha)
     {
-    case TelaTxtTexto:
-        destino = txt_linha + tam_linha;
-        while (*txt && destino < txt_linha + max_linha)
+        switch (*txt)
         {
-            switch (*txt)
-            {
-            case Instr::ex_barra_n:
-            case Instr::ex_barra_b:
+        case Instr::ex_barra_n:
+        case Instr::ex_barra_b:
+            txt++;
+            break;
+        case Instr::ex_barra_c:
+            if ((txt[1] >= '0' && txt[1] <= '9') ||
+                    (txt[1] >= 'A' && txt[1] <= 'J') ||
+                    (txt[1] >= 'a' && txt[1] <= 'j'))
+                txt += 2;
+            else
                 txt++;
-                break;
-            case Instr::ex_barra_c:
-                if ((txt[1] >= '0' && txt[1] <= '9') ||
-                        (txt[1] >= 'A' && txt[1] <= 'J') ||
-                        (txt[1] >= 'a' && txt[1] <= 'j'))
-                    txt += 2;
-                else
-                    txt++;
-                break;
-            case Instr::ex_barra_d:
-                if (txt[1] >= '0' && txt[1] <= '7')
-                    txt += 2;
-                else
-                    txt++;
-                break;
-            default:
-                *destino++ = *txt++;
-            }
+            break;
+        case Instr::ex_barra_d:
+            if (txt[1] >= '0' && txt[1] <= '7')
+                txt += 2;
+            else
+                txt++;
+            break;
+        default:
+            *destino++ = *txt++;
         }
-        tam_linha = destino - txt_linha;
-        col_linha = 0xFFF;
-        CursorEditor();     // Cursor na linha de edição
-        ProcTeclaCursor(0); // Semelhante à tecla HOME
-        break;
     }
+    tam_linha = destino - txt_linha;
+    col_linha = 0xFFF;
+    CursorEditor();     // Cursor na linha de edição
+    ProcTeclaCursor(0); // Semelhante à tecla HOME
 }
 
 //------------------------------------------------------------------------------
@@ -1011,4 +1006,14 @@ void TVarTelaTxt::FOperadorAtrib(TVariavel * v1, TVariavel * v2)
 {
     TVarTelaTxt * ref = reinterpret_cast<TVarTelaTxt*>(v1->endvar) + v1->indice;
     ref->FOperadorAtribSub(v1->numfunc, v2);
+}
+
+//------------------------------------------------------------------------------
+bool TVarTelaTxt::FOperadorAdd(TVariavel * v1, TVariavel * v2)
+{
+    if (v1->numfunc != TelaTxtTexto)
+        return false;
+    TVarTelaTxt * ref = reinterpret_cast<TVarTelaTxt*>(v1->endvar) + v1->indice;
+    ref->addTxt(v1->numfunc, v2->getTxt());
+    return true;
 }

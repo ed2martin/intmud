@@ -41,6 +41,7 @@ const TVarInfo * TTextoVar::Inicializa()
         TVarInfo::FGetTxtVazio,
         TVarInfo::FGetObjNulo,
         FOperadorAtrib,
+        TVarInfo::FOperadorAddFalse,
         TVarInfo::FFuncVetorFalse);
     return &var;
 }
@@ -679,6 +680,7 @@ const TVarInfo * TTextoVarSub::Inicializa()
         FGetTxt,
         FGetObj,
         FOperadorAtrib,
+        FOperadorAdd,
         TVarInfo::FFuncVetorFalse);
     return &var;
 }
@@ -885,6 +887,16 @@ void TTextoVarSub::FOperadorAtrib(TVariavel * v1, TVariavel * v2)
             break;
         }
     }
+}
+
+//----------------------------------------------------------------------------
+bool TTextoVarSub::FOperadorAdd(TVariavel * v1, TVariavel * v2)
+{
+    TTextoVarSub * ref = reinterpret_cast<TTextoVarSub*>(v1->endvar) + v1->indice;
+    if (ref->TextoVar == nullptr || ref->TipoVar != TextoVarTipoTxt)
+        return false;
+    ref->addTxt(v2->getTxt());
+    return true;
 }
 
 //----------------------------------------------------------------------------

@@ -50,6 +50,7 @@ const TVarInfo * TListaObj::Inicializa()
         FGetTxt,
         TVarInfo::FGetObjNulo,
         TVarInfo::FOperadorAtribVazio,
+        TVarInfo::FOperadorAddFalse,
         TVarInfo::FFuncVetorFalse);
     return &var;
 }
@@ -731,6 +732,7 @@ const TVarInfo * TListaItem::Inicializa()
         FGetTxt,
         FGetObj,
         FOperadorAtrib,
+        TVarInfo::FOperadorAddFalse,
         TVarInfo::FFuncVetorFalse);
     return &var;
 }
