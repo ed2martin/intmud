@@ -63,6 +63,8 @@ TVarInfo::TVarInfo()
     FGetObj = FGetObjNulo;
     FOperadorAtrib = FOperadorAtribVazio;
     FOperadorAdd = FOperadorAddFalse;
+    FOperadorIgual2 = FOperadorIgual2Var;
+    FOperadorCompara = FOperadorComparaVar;
     FFuncVetor = FFuncVetorFalse;
 }
 
@@ -82,6 +84,8 @@ TVarInfo::TVarInfo(int (*fTamanho)(const char * instr),
         TObjeto * (*fGetObj)(TVariavel * v),
         void (*fOperadorAtrib)(TVariavel * v1, TVariavel * v2),
         bool (*fOperadorAdd)(TVariavel * v1, TVariavel * v2),
+        bool (*fOperadorIgual2)(TVariavel * v1, TVariavel * v2),
+        unsigned char (*fOperadorCompara)(TVariavel * v1, TVariavel * v2),
         bool (*fFuncVetor)(TVariavel * v, const char * nome))
 {
     FTamanho = fTamanho;
@@ -97,6 +101,8 @@ TVarInfo::TVarInfo(int (*fTamanho)(const char * instr),
     FGetTxt = fGetTxt;
     FOperadorAtrib = fOperadorAtrib;
     FOperadorAdd = fOperadorAdd;
+    FOperadorIgual2 = fOperadorIgual2;
+    FOperadorCompara = fOperadorCompara;
     FGetObj = fGetObj;
 }
 
@@ -122,6 +128,16 @@ const char * TVarInfo::FGetTxtVazio(TVariavel * v) { return ""; }
 TObjeto * TVarInfo::FGetObjNulo(TVariavel * v) { return nullptr; }
 void TVarInfo::FOperadorAtribVazio(TVariavel * v1, TVariavel * v2) {}
 bool TVarInfo::FOperadorAddFalse(TVariavel * v1, TVariavel * v2) { return false; }
+bool TVarInfo::FOperadorIgual2Var(TVariavel * v1, TVariavel * v2)
+{
+    return (v1->endvar == v2->endvar && v1->indice == v2->indice &&
+            v1->defvar[2] == v2->defvar[2]);
+}
+unsigned char TVarInfo::FOperadorComparaVar(TVariavel * v1, TVariavel * v2)
+{
+    return (v1->endvar == v2->endvar && v1->indice == v2->indice &&
+            v1->defvar[2] == v2->defvar[2] ? 2 : 0);
+}
 bool TVarInfo::FFuncVetorFalse(TVariavel * v, const char * nome) { return false; }
 
 //----------------------------------------------------------------------------
@@ -219,36 +235,6 @@ void TVariavel::Limpar()
     indice = 0;
     numbit = 0;
     numfunc = 0;
-}
-
-//------------------------------------------------------------------------------
-int TVariavel::Compara(TVariavel * v)
-{
-    void * var1 = endvar;
-    void * var2 = v->endvar;
-    if (indice!=0xFF && v->indice!=0xFF)
-        switch (defvar[2])
-        {
-        case Instr::cListaItem:
-            var1 = end_listaitem[indice].ListaX;
-            var2 = v->end_listaitem[v->indice].ListaX;
-            break;
-        case Instr::cTextoPos:
-            return end_textopos[indice].Compara(v->end_textopos + v->indice);
-        case Instr::cTextoVar:
-            return end_textovar[indice].Compara(v->end_textovar + v->indice);
-        case Instr::cSocket:
-            var1 = end_socket->Socket + indice;
-            var2 = v->end_socket->Socket + v->indice;
-            break;
-        case Instr::cIndiceItem:
-            var1 = end_indiceitem[indice].getIndiceObj();
-            var2 =v->end_indiceitem[v->indice].getIndiceObj();
-            break;
-        case Instr::cDataHora:
-            return end_datahora[indice].Compara(v->end_datahora + v->indice);
-        }
-    return (var1 == var2 ? 0 : var1 < var2 ? -1 : 1);
 }
 
 //------------------------------------------------------------------------------

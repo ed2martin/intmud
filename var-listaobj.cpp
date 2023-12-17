@@ -51,6 +51,8 @@ const TVarInfo * TListaObj::Inicializa()
         TVarInfo::FGetObjNulo,
         TVarInfo::FOperadorAtribVazio,
         TVarInfo::FOperadorAddFalse,
+        TVarInfo::FOperadorIgual2Var,
+        TVarInfo::FOperadorComparaVar,
         TVarInfo::FFuncVetorFalse);
     return &var;
 }
@@ -733,6 +735,8 @@ const TVarInfo * TListaItem::Inicializa()
         FGetObj,
         FOperadorAtrib,
         TVarInfo::FOperadorAddFalse,
+        FOperadorIgual2,
+        FOperadorCompara,
         TVarInfo::FFuncVetorFalse);
     return &var;
 }
@@ -1101,6 +1105,26 @@ void TListaItem::FOperadorAtrib(TVariavel * v1, TVariavel * v2)
     TListaItem * r2 = reinterpret_cast<TListaItem*>(v2->endvar) + v2->indice;
     if (r1 != r2)
         r1->MudarRef(r2->ListaX);
+}
+
+//------------------------------------------------------------------------------
+bool TListaItem::FOperadorIgual2(TVariavel * v1, TVariavel * v2)
+{
+    if (v1->defvar[2] != v2->defvar[2])
+        return false;
+    TListaItem * ref1 = reinterpret_cast<TListaItem*>(v1->endvar) + v1->indice;
+    TListaItem * ref2 = reinterpret_cast<TListaItem*>(v2->endvar) + v2->indice;
+    return ref1->ListaX == ref2->ListaX;
+}
+
+//------------------------------------------------------------------------------
+unsigned char TListaItem::FOperadorCompara(TVariavel * v1, TVariavel * v2)
+{
+    if (v1->defvar[2] != v2->defvar[2])
+        return 0;
+    TListaItem * ref1 = reinterpret_cast<TListaItem*>(v1->endvar) + v1->indice;
+    TListaItem * ref2 = reinterpret_cast<TListaItem*>(v2->endvar) + v2->indice;
+    return ref1->ListaX == ref2->ListaX ? 2 : ref1->ListaX < ref2->ListaX ? 1 : 4;
 }
 
 //----------------------------------------------------------------------------

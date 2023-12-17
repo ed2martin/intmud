@@ -34,8 +34,10 @@ const TVarInfo * TTextoObj::Inicializa()
         TVarInfo::FGetDouble0,
         TVarInfo::FGetTxtVazio,
         TVarInfo::FGetObjNulo,
-        TVarInfo::FOperadorAtribVazio,
+        FOperadorAtrib,
         TVarInfo::FOperadorAddFalse,
+        FOperadorIgual2,
+        FOperadorCompara,
         TVarInfo::FFuncVetorFalse);
     return &var;
 }
@@ -532,6 +534,63 @@ void TTextoObj::FMoverEnd(TVariavel * v, void * destino, TClasse * c, TObjeto * 
 }
 
 //------------------------------------------------------------------------------
+void TTextoObj::FOperadorAtrib(TVariavel * v1, TVariavel * v2)
+{
+    if (v1->defvar[2] != v2->defvar[2])
+        return;
+    TTextoObj * r1 = reinterpret_cast<TTextoObj*>(v1->endvar) + v1->indice;
+    TTextoObj * r2 = reinterpret_cast<TTextoObj*>(v2->endvar) + v2->indice;
+    if (r1 == r2)
+        return;
+    while (r1->RBroot)
+        delete r1->RBroot;
+    TBlocoObj * bl1 = (r2->RBroot ? r2->RBroot->RBfirst() : nullptr);
+    for (; bl1; bl1 = TBlocoObj::RBnext(bl1))
+        r1->Mudar(bl1->NomeVar, bl1->Objeto);
+}
+
+//------------------------------------------------------------------------------
+bool TTextoObj::FOperadorIgual2(TVariavel * v1, TVariavel * v2)
+{
+    if (v1->defvar[2] != v2->defvar[2])
+        return false;
+    TTextoObj * ref1 = reinterpret_cast<TTextoObj*>(v1->endvar) + v1->indice;
+    TTextoObj * ref2 = reinterpret_cast<TTextoObj*>(v2->endvar) + v2->indice;
+    TBlocoObj * bl1 = (ref1->RBroot ? ref1->RBroot->RBfirst() : nullptr);
+    TBlocoObj * bl2 = (ref2->RBroot ? ref2->RBroot->RBfirst() : nullptr);
+    while (bl1 && bl2)
+    {
+        if (strcmp(bl1->NomeVar, bl2->NomeVar) != 0 || bl1->Objeto != bl2->Objeto)
+            return false;
+        bl1 = TBlocoObj::RBnext(bl1);
+        bl2 = TBlocoObj::RBnext(bl2);
+    }
+    return bl1 == bl2;
+}
+
+//------------------------------------------------------------------------------
+unsigned char TTextoObj::FOperadorCompara(TVariavel * v1, TVariavel * v2)
+{
+    if (v1->defvar[2] != v2->defvar[2])
+        return false;
+    TTextoObj * ref1 = reinterpret_cast<TTextoObj*>(v1->endvar) + v1->indice;
+    TTextoObj * ref2 = reinterpret_cast<TTextoObj*>(v2->endvar) + v2->indice;
+    TBlocoObj * bl1 = (ref1->RBroot ? ref1->RBroot->RBfirst() : nullptr);
+    TBlocoObj * bl2 = (ref2->RBroot ? ref2->RBroot->RBfirst() : nullptr);
+    while (bl1 && bl2)
+    {
+        int cmp1 = strcmp(bl1->NomeVar, bl2->NomeVar);
+        if (cmp1 != 0)
+            return cmp1 < 0 ? 1 : 4;
+        if (bl1->Objeto != bl2->Objeto)
+            return bl1->Objeto < bl2->Objeto ? 1 : 4;
+        bl1 = TBlocoObj::RBnext(bl1);
+        bl2 = TBlocoObj::RBnext(bl2);
+    }
+    return (bl2 ? 1 : bl1 ? 4 : 0);
+}
+
+//------------------------------------------------------------------------------
 const TVarInfo * TTextoObjSub::Inicializa()
 {
     static const TVarInfo var(
@@ -546,8 +605,10 @@ const TVarInfo * TTextoObjSub::Inicializa()
         FGetDouble,
         FGetTxt,
         FGetObj,
-        TVarInfo::FOperadorAtribVazio,
+        FOperadorAtrib,
         TVarInfo::FOperadorAddFalse,
+        FOperadorIgual2,
+        FOperadorCompara,
         TVarInfo::FFuncVetorFalse);
     return &var;
 }
@@ -587,7 +648,7 @@ inline void TTextoObjSub::Mover(TTextoObjSub * destino)
 }
 
 //----------------------------------------------------------------------------
-int TTextoObjSub::getValor()
+inline int TTextoObjSub::getValor()
 {
     if (TextoObj == nullptr)
         return 0;
@@ -595,7 +656,7 @@ int TTextoObjSub::getValor()
 }
 
 //----------------------------------------------------------------------------
-TObjeto * TTextoObjSub::getObj()
+inline TObjeto * TTextoObjSub::getObj()
 {
     if (TextoObj == nullptr)
         return nullptr;
@@ -604,7 +665,7 @@ TObjeto * TTextoObjSub::getObj()
 }
 
 //----------------------------------------------------------------------------
-void TTextoObjSub::setObj(TObjeto * obj)
+inline void TTextoObjSub::setObj(TObjeto * obj)
 {
     if (TextoObj)
         TextoObj->Mudar(NomeVar, obj);
@@ -653,6 +714,32 @@ const char * TTextoObjSub::FGetTxt(TVariavel * v) VARIAVEL_FGETTXT0(TTextoObjSub
 TObjeto * TTextoObjSub::FGetObj(TVariavel * v)
 {
     return reinterpret_cast<TTextoObjSub*>(v->endvar)[ v->indice].getObj();
+}
+
+//------------------------------------------------------------------------------
+void TTextoObjSub::FOperadorAtrib(TVariavel * v1, TVariavel * v2)
+{
+    TTextoObjSub * ref = reinterpret_cast<TTextoObjSub*>(v1->endvar) + v1->indice;
+    ref->setObj(v2->getObj());
+}
+
+//------------------------------------------------------------------------------
+bool TTextoObjSub::FOperadorIgual2(TVariavel * v1, TVariavel * v2)
+{
+    if (v2->Tipo() != varObj)
+        return false;
+    TObjeto * obj1 = reinterpret_cast<TTextoObjSub*>(v1->endvar)[v1->indice].getObj();
+    return obj1 == v2->getObj();
+}
+
+//------------------------------------------------------------------------------
+unsigned char TTextoObjSub::FOperadorCompara(TVariavel * v1, TVariavel * v2)
+{
+    if (v2->Tipo() != varObj)
+        return 0;
+    TObjeto * obj1 = reinterpret_cast<TTextoObjSub*>(v1->endvar)[v1->indice].getObj();
+    TObjeto * obj2 = v2->getObj();
+    return (obj1 == obj2 ? 2 : obj1 < obj2 ? 1 : 4);
 }
 
 //----------------------------------------------------------------------------

@@ -32,6 +32,8 @@ const TVarInfo * TIndiceItem::Inicializa()
         TVarInfo::FGetObjNulo,
         FOperadorAtrib,
         TVarInfo::FOperadorAddFalse,
+        FOperadorIgual2,
+        FOperadorCompara,
         TVarInfo::FFuncVetorFalse);
     return &var;
 }
@@ -317,6 +319,28 @@ void TIndiceItem::FOperadorAtrib(TVariavel * v1, TVariavel * v2)
     r1->TamTxt = r2->TamTxt;
 }
 
+//------------------------------------------------------------------------------
+bool TIndiceItem::FOperadorIgual2(TVariavel * v1, TVariavel * v2)
+{
+    if (v1->defvar[2] != v2->defvar[2])
+        return false;
+    TIndiceItem * ref1 = reinterpret_cast<TIndiceItem*>(v1->endvar) + v1->indice;
+    TIndiceItem * ref2 = reinterpret_cast<TIndiceItem*>(v2->endvar) + v2->indice;
+    return ref1->getIndiceObj() == ref2->getIndiceObj();
+}
+
+//------------------------------------------------------------------------------
+unsigned char TIndiceItem::FOperadorCompara(TVariavel * v1, TVariavel * v2)
+{
+    if (v1->defvar[2] != v2->defvar[2])
+        return 0;
+    TIndiceItem * ref1 = reinterpret_cast<TIndiceItem*>(v1->endvar) + v1->indice;
+    TIndiceItem * ref2 = reinterpret_cast<TIndiceItem*>(v2->endvar) + v2->indice;
+    TIndiceObj * obj1 = ref1->getIndiceObj();
+    TIndiceObj * obj2 = ref2->getIndiceObj();
+    return (obj1 == obj2 ? 2 : obj1 < obj2 ? 1 : 4);;
+}
+
 //----------------------------------------------------------------------------
 const TVarInfo * TIndiceObj::Inicializa()
 {
@@ -334,6 +358,8 @@ const TVarInfo * TIndiceObj::Inicializa()
         TVarInfo::FGetObjNulo,
         FOperadorAtrib,
         FOperadorAdd,
+        FOperadorIgual2,
+        FOperadorCompara,
         TVarInfo::FFuncVetorFalse);
     return &var;
 }
@@ -427,28 +453,28 @@ void TIndiceObj::FMoverEnd(TVariavel * v, void * destino, TClasse * c, TObjeto *
 bool TIndiceObj::FGetBool(TVariavel * v)
 {
     TIndiceObj * ref = reinterpret_cast<TIndiceObj*>(v->endvar) + v->indice;
-    return ref[0].Nome[0] != 0;
+    return ref->Nome[0] != 0;
 }
 
 //----------------------------------------------------------------------------
 int TIndiceObj::FGetInt(TVariavel * v)
 {
     TIndiceObj * ref = reinterpret_cast<TIndiceObj*>(v->endvar) + v->indice;
-    return TxtToInt(ref[0].Nome);
+    return TxtToInt(ref->Nome);
 }
 
 //----------------------------------------------------------------------------
 double TIndiceObj::FGetDouble(TVariavel * v)
 {
     TIndiceObj * ref = reinterpret_cast<TIndiceObj*>(v->endvar) + v->indice;
-    return TxtToDouble(ref[0].Nome);
+    return TxtToDouble(ref->Nome);
 }
 
 //----------------------------------------------------------------------------
 const char * TIndiceObj::FGetTxt(TVariavel * v)
 {
     TIndiceObj * ref = reinterpret_cast<TIndiceObj*>(v->endvar) + v->indice;
-    return ref[0].Nome;
+    return ref->Nome;
 }
 
 //------------------------------------------------------------------------------
@@ -462,15 +488,25 @@ void TIndiceObj::FOperadorAtrib(TVariavel * v1, TVariavel * v2)
 bool TIndiceObj::FOperadorAdd(TVariavel * v1, TVariavel * v2)
 {
     TIndiceObj * ref = reinterpret_cast<TIndiceObj*>(v1->endvar) + v1->indice;
-    char * destino = ref->Nome;
-    const char * origem = v2->getTxt();
-    int desloc = strlen(destino);
-    int tam = sizeof(Nome) - desloc;
-    if (origem != destino)
-        copiastr(destino + desloc, origem, tam);
-    else
-        copiastr(destino + desloc, origem, tam < desloc + 1 ? tam : desloc + 1);
+    char mens[1024];
+    snprintf(mens, sizeof(mens), "%s%s", ref->Nome, v2->getTxt());
+    ref->setNome(mens);
     return true;
+}
+
+//------------------------------------------------------------------------------
+bool TIndiceObj::FOperadorIgual2(TVariavel * v1, TVariavel * v2)
+{
+    TIndiceObj * ref = reinterpret_cast<TIndiceObj*>(v1->endvar) + v1->indice;
+    return v2->Tipo() == varTxt && strcmp(ref->Nome, v2->getTxt()) == 0;
+}
+
+//------------------------------------------------------------------------------
+unsigned char TIndiceObj::FOperadorCompara(TVariavel * v1, TVariavel * v2)
+{
+    TIndiceObj * ref = reinterpret_cast<TIndiceObj*>(v1->endvar) + v1->indice;
+    int result = comparaZ(ref->Nome, v2->getTxt());
+    return result == 0 ? 2 : result < 0 ? 1 : 4;
 }
 
 //----------------------------------------------------------------------------

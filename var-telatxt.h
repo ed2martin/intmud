@@ -88,6 +88,8 @@ private:
     static void FOperadorAtrib(TVariavel * v1, TVariavel * v2);
     void FOperadorAtribSub(int numfunc, TVariavel * v2);
     static bool FOperadorAdd(TVariavel * v1, TVariavel * v2);
+    static bool FOperadorIgual2(TVariavel * v1, TVariavel * v2);
+    static unsigned char FOperadorCompara(TVariavel * v1, TVariavel * v2);
 
     int  getValor(int numfunc);
                             ///< Ler o valor numérico da variável

@@ -64,6 +64,8 @@ const TVarInfo * TTextoTxt::Inicializa()
         TVarInfo::FGetObjNulo,
         TVarInfo::FOperadorAtribVazio,
         TVarInfo::FOperadorAddFalse,
+        TVarInfo::FOperadorIgual2Var,
+        TVarInfo::FOperadorComparaVar,
         TVarInfo::FFuncVetorFalse);
     return &var;
 }
@@ -217,6 +219,8 @@ const TVarInfo * TTextoPos::Inicializa()
         TVarInfo::FGetObjNulo,
         FOperadorAtrib,
         TVarInfo::FOperadorAddFalse,
+        FOperadorIgual2,
+        FOperadorCompara,
         TVarInfo::FFuncVetorFalse);
     return &var;
 }
@@ -336,6 +340,32 @@ void TTextoPos::FOperadorAtrib(TVariavel * v1, TVariavel * v2)
     r1->PosicBloco = r2->PosicBloco;
     r1->PosicTxt = r2->PosicTxt;
     r1->LinhaTxt = r2->LinhaTxt;
+}
+
+//------------------------------------------------------------------------------
+bool TTextoPos::FOperadorIgual2(TVariavel * v1, TVariavel * v2)
+{
+    if (v1->defvar[2] != v2->defvar[2])
+        return false;
+    TTextoPos * ref1 = reinterpret_cast<TTextoPos*>(v1->endvar) + v1->indice;
+    TTextoPos * ref2 = reinterpret_cast<TTextoPos*>(v2->endvar) + v2->indice;
+    if (ref1->TextoTxt != ref2->TextoTxt)
+        return false;
+    return ref1->TextoTxt == nullptr || ref1->PosicTxt == ref2->PosicTxt;
+}
+
+//------------------------------------------------------------------------------
+unsigned char TTextoPos::FOperadorCompara(TVariavel * v1, TVariavel * v2)
+{
+    if (v1->defvar[2] != v2->defvar[2])
+        return 0;
+    TTextoPos * ref1 = reinterpret_cast<TTextoPos*>(v1->endvar) + v1->indice;
+    TTextoPos * ref2 = reinterpret_cast<TTextoPos*>(v2->endvar) + v2->indice;
+    if (ref1->TextoTxt != ref2->TextoTxt)
+        return ref1->TextoTxt < ref2->TextoTxt ? 1 : 4;
+    if (ref1->TextoTxt == nullptr || ref1->PosicTxt == ref2->PosicTxt)
+        return 2;
+    return ref1->PosicTxt < ref2->PosicTxt ? 1 : 4;
 }
 
 //----------------------------------------------------------------------------

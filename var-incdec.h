@@ -45,6 +45,10 @@ private:
     static const char * FGetTxtDec(TVariavel * v);
     static void FOperadorAtribInc(TVariavel * v1, TVariavel * v2);
     static void FOperadorAtribDec(TVariavel * v1, TVariavel * v2);
+    static bool FOperadorIgual2Inc(TVariavel * v1, TVariavel * v2);
+    static bool FOperadorIgual2Dec(TVariavel * v1, TVariavel * v2);
+    static unsigned char FOperadorComparaInc(TVariavel * v1, TVariavel * v2);
+    static unsigned char FOperadorComparaDec(TVariavel * v1, TVariavel * v2);
 
     int valor; ///< Tempo, usando tanto em intinc quanto em intdec
 };

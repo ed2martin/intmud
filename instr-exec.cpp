@@ -1764,131 +1764,61 @@ bool Instr::ExecX()
             ApagarVar(VarAtual);
             break;
         case exo_menor:      // Operador: a<b
+            if (VarFuncIni(VarAtual - 1))
+                break;
+            FuncAtual->expr++;
+            CriarVarInt(VarAtual - 1,
+                    VarAtual[-1].OperadorCompara(VarAtual) & 1 ? 1 : 0);
+            break;
         case exo_menorigual: // Operador: a<=b
+            if (VarFuncIni(VarAtual - 1))
+                break;
+            FuncAtual->expr++;
+            CriarVarInt(VarAtual - 1,
+                    VarAtual[-1].OperadorCompara(VarAtual) & 3 ? 1 : 0);
+            break;
         case exo_maior:      // Operador: a>b
+            if (VarFuncIni(VarAtual - 1))
+                break;
+            FuncAtual->expr++;
+            CriarVarInt(VarAtual - 1,
+                    VarAtual[-1].OperadorCompara(VarAtual) & 4 ? 1 : 0);
+            break;
         case exo_maiorigual: // Operador: a>=b
+            if (VarFuncIni(VarAtual - 1))
+                break;
+            FuncAtual->expr++;
+            CriarVarInt(VarAtual - 1,
+                    VarAtual[-1].OperadorCompara(VarAtual) & 6 ? 1 : 0);
+            break;
         case exo_igual:      // Operador: a==b
+            if (VarFuncIni(VarAtual - 1))
+                break;
+            FuncAtual->expr++;
+            CriarVarInt(VarAtual - 1,
+                    VarAtual[-1].OperadorCompara(VarAtual) & 2 ? 1 : 0);
+            break;
         case exo_diferente:  // Operador: a!=b
-            {
-                if (VarFuncIni(VarAtual - 1))
-                    break;
-            // Compara valores
-                int tipo1 = VarAtual[-1].Tipo();
-                int tipo2 = VarAtual[0].Tipo();
-                    // Números
-                switch (tipo1)
-                {
-                case varInt:
-                    if (tipo2 == varInt)
-                    {
-                        int v1 = VarAtual[-1].getInt();
-                        int v2 = VarAtual[0].getInt();
-                        tipo1 = (v1 == v2 ? 0 : v1 < v2 ? -1 : 1);
-                        break;
-                    }
-                case varDouble:
-                    {
-                        double v1 = VarAtual[-1].getDouble();
-                        double v2 = VarAtual[0].getDouble();
-                        tipo1 = (v1 == v2 ? 0 : v1 < v2 ? -1 : 1);
-                        break;
-                    }
-                case varTxt:
-                    tipo1 = comparaZ(VarAtual[-1].getTxt(),
-                                    VarAtual->getTxt());
-                    break;
-                case varObj:
-                    if (tipo2 == varObj)
-                    {
-                        TObjeto * v1 = VarAtual[-1].getObj();
-                        TObjeto * v2 = VarAtual[0].getObj();
-                        tipo1 = (v1 == v2 ? 0 : v1 < v2 ? -1 : 1);
-                        break;
-                    }
-                default:
-                        // Mesmo tipo de variável
-                    if (VarAtual[-1].defvar[2] == VarAtual[0].defvar[2])
-                    {
-                        tipo1 = VarAtual[-1].Compara(VarAtual);
-                        break;
-                    }
-                        // Tipos diferentes de variáveis
-                    tipo1 = (*FuncAtual->expr == exo_diferente);
-                    FuncAtual->expr++;
-                    CriarVarInt(VarAtual - 1, tipo1);
-                    goto exo_compara_sair;
-                    //const void * v1 = VarAtual[-1].endvar;
-                    //const void * v2 = VarAtual[0].endvar;
-                    //tipo1 = (v1 == v2 ? 0 : v1 < v2 ? -1 : 1);
-                    //break;
-                }
-            // Avança Func->expr, verifica operador
-                switch (*FuncAtual->expr++)
-                {
-                case exo_menor:      tipo1 = (tipo1 < 0);  break;
-                case exo_menorigual: tipo1 = (tipo1 <= 0); break;
-                case exo_maior:      tipo1 = (tipo1 > 0);  break;
-                case exo_maiorigual: tipo1 = (tipo1 >= 0); break;
-                case exo_igual:      tipo1 = (tipo1 == 0); break;
-                case exo_diferente:  tipo1 = (tipo1 != 0); break;
-                }
-            // Apaga valores da pilha; cria int32 na pilha
-                CriarVarInt(VarAtual - 1, tipo1);
-exo_compara_sair:
+            if (VarFuncIni(VarAtual - 1))
                 break;
-            }
+            FuncAtual->expr++;
+            CriarVarInt(VarAtual - 1,
+                    VarAtual[-1].OperadorCompara(VarAtual) & 2 ? 0 : 1);
+            break;
         case exo_igual2:     // Operador: a===b
-        case exo_diferente2:  // Operador: a!==b
-            {
-                if (VarFuncIni(VarAtual - 1))
-                    break;
-            // Compara valores
-                int tipo1 = VarAtual[-1].Tipo();
-                int tipo2 = VarAtual[0].Tipo();
-                    // Números
-                switch (tipo1)
-                {
-                case varInt:
-                    tipo1 = 0;
-                    if (tipo2 == varInt)
-                        tipo1 = (VarAtual[-1].getInt() ==
-                                 VarAtual[0].getInt());
-                    else if (tipo2==varDouble)
-                        tipo1 = (VarAtual[-1].getDouble() ==
-                                 VarAtual[0].getDouble());
-                    break;
-                case varDouble:
-                    tipo1 = 0;
-                    if (tipo2 == varInt || tipo2==varDouble)
-                        tipo1 = (VarAtual[-1].getDouble() ==
-                                 VarAtual[0].getDouble());
-                    break;
-                case varTxt:
-                    tipo1 = 0;
-                    if (tipo2 == varTxt)
-                        tipo1 = (strcmp(VarAtual[-1].getTxt(),
-                                        VarAtual[0].getTxt())==0);
-                    break;
-                case varObj:
-                    tipo1 = 0;
-                    if (tipo2 == varObj)
-                        tipo1 = (VarAtual[-1].getObj() ==
-                                 VarAtual[0].getObj());
-                    break;
-                default:
-                    if (tipo1 != tipo2)
-                        tipo1 = 0;
-                    else if (VarAtual[-1].defvar[2] == VarAtual[0].defvar[2])
-                        tipo1 = (VarAtual[-1].Compara(VarAtual) == 0);
-                    else
-                        tipo1 = 0;
-                }
-                if (*FuncAtual->expr++ == exo_diferente2)
-                    tipo1 = !tipo1;
-            // Apaga valores da pilha; cria int32 na pilha
-                CriarVarInt(VarAtual - 1, tipo1 != 0);
+            if (VarFuncIni(VarAtual - 1))
                 break;
-            }
+            FuncAtual->expr++;
+            CriarVarInt(VarAtual - 1,
+                    VarAtual[-1].OperadorIgual2(VarAtual) ? 1 : 0);
+            break;
+        case exo_diferente2:  // Operador: a!==b
+            if (VarFuncIni(VarAtual - 1))
+                break;
+            FuncAtual->expr++;
+            CriarVarInt(VarAtual - 1,
+                    VarAtual[-1].OperadorIgual2(VarAtual) ? 0 : 1);
+            break;
         case exo_ee:         // Operador: Início do operador &&
             if (VarFuncIni())
                 break;

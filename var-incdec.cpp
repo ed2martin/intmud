@@ -196,6 +196,8 @@ const TVarInfo * TVarIncDec::InicializaInc()
         TVarInfo::FGetObjNulo,
         FOperadorAtribInc,
         TVarInfo::FOperadorAddFalse,
+        FOperadorIgual2Inc,
+        FOperadorComparaInc,
         FuncVetorInc);
     return &var;
 }
@@ -217,6 +219,8 @@ const TVarInfo * TVarIncDec::InicializaDec()
         TVarInfo::FGetObjNulo,
         FOperadorAtribDec,
         TVarInfo::FOperadorAddFalse,
+        FOperadorIgual2Dec,
+        FOperadorComparaDec,
         FuncVetorDec);
     return &var;
 }
@@ -306,4 +310,28 @@ void TVarIncDec::FOperadorAtribDec(TVariavel * v1, TVariavel * v2)
 {
     TVarIncDec * ref = reinterpret_cast<TVarIncDec*>(v1->endvar) + v1->indice;
     ref->setDec(v1->numfunc, v2->getInt());
+}
+
+//------------------------------------------------------------------------------
+bool TVarIncDec::FOperadorIgual2Inc(TVariavel * v1, TVariavel * v2)
+{
+    TVarIncDec * ref = reinterpret_cast<TVarIncDec*>(v1->endvar) + v1->indice;
+    return (v2->TipoNumerico() && ref->getInc(v1->numfunc) == v2->getDouble());
+}
+bool TVarIncDec::FOperadorIgual2Dec(TVariavel * v1, TVariavel * v2)
+{
+    TVarIncDec * ref = reinterpret_cast<TVarIncDec*>(v1->endvar) + v1->indice;
+    return (v2->TipoNumerico() && ref->getDec(v1->numfunc) == v2->getDouble());
+}
+
+//------------------------------------------------------------------------------
+unsigned char TVarIncDec::FOperadorComparaInc(TVariavel * v1, TVariavel * v2)
+{
+    TVarIncDec * ref = reinterpret_cast<TVarIncDec*>(v1->endvar) + v1->indice;
+    return TVarInfo::ComparaInt(ref->getInc(v1->numfunc), v2);
+}
+unsigned char TVarIncDec::FOperadorComparaDec(TVariavel * v1, TVariavel * v2)
+{
+    TVarIncDec * ref = reinterpret_cast<TVarIncDec*>(v1->endvar) + v1->indice;
+    return TVarInfo::ComparaInt(ref->getDec(v1->numfunc), v2);
 }

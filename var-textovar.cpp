@@ -42,6 +42,8 @@ const TVarInfo * TTextoVar::Inicializa()
         TVarInfo::FGetObjNulo,
         FOperadorAtrib,
         TVarInfo::FOperadorAddFalse,
+        FOperadorIgual2,
+        FOperadorCompara,
         TVarInfo::FFuncVetorFalse);
     return &var;
 }
@@ -124,65 +126,6 @@ bool TTextoVar::CriarTextoVarSub(TBlocoVar * bl)
     default: Instr::VarAtual->numfunc = varOutros;
     }
     return true;
-}
-
-//------------------------------------------------------------------------------
-int TTextoVar::Compara(TTextoVar * v)
-{
-    TBlocoVar * bl1 = (RBroot ? RBroot->RBfirst() : nullptr);
-    TBlocoVar * bl2 = (v->RBroot ? v->RBroot->RBfirst() : nullptr);
-    while (bl1 && bl2)
-    {
-    // Compara o nome da variável
-        int cmp1 = strcmp(bl1->NomeVar, bl2->NomeVar);
-        if (cmp1 != 0)
-            return cmp1;
-    // Compara o tipo de variável
-        const char * tipo1 = bl1->Tipo();
-        const char * tipo2 = bl2->Tipo();
-        int cmp2 = strcmp(tipo1, tipo2);
-        if (cmp2 != 0)
-            return cmp1;
-    // Compara o conteúdo da variável
-        switch (bl1->TipoVar())
-        {
-        case TextoVarTipoTxt:
-            {
-                int cmp2 = strcmp(bl1->getTxt(), bl2->getTxt());
-                if (cmp2 == 0)
-                    break;
-                return (cmp2 < 0 ? -1 : 1);
-            }
-        case TextoVarTipoNum:
-            {
-                double v1 = bl1->getDouble();
-                double v2 = bl2->getDouble();
-                if (v1 == v2)
-                    break;
-                return (v1 < v2 ? -1 : 1);
-            }
-        case TextoVarTipoDec:
-            {
-                int v1 = bl1->getInt();
-                int v2 = bl2->getInt();
-                if (v1 == v2)
-                    break;
-                return (v1 < v2 ? -1 : 1);
-            }
-        case TextoVarTipoRef:
-            {
-                TObjeto * v1 = bl1->getObj();
-                TObjeto * v2 = bl2->getObj();
-                if (v1 == v2)
-                    break;
-                return (v1 < v2 ? -1 : 1);
-            }
-        }
-    // Passa para a próxima variável
-        bl1 = TBlocoVar::RBnext(bl1);
-        bl2 = TBlocoVar::RBnext(bl2);
-    }
-    return (bl1 ? -1 : bl2 ? 1 : 0);
 }
 
 //----------------------------------------------------------------------------
@@ -519,7 +462,6 @@ void TTextoVar::FMoverEnd(TVariavel * v, void * destino, TClasse * c, TObjeto * 
     VARIAVEL_MOVER_SIMPLES(TTextoVar)
 }
 
-
 //------------------------------------------------------------------------------
 void TTextoVar::FOperadorAtrib(TVariavel * v1, TVariavel * v2)
 {
@@ -567,6 +509,114 @@ void TTextoVar::FOperadorAtrib(TVariavel * v1, TVariavel * v2)
             }
         }
     }
+}
+
+//------------------------------------------------------------------------------
+bool TTextoVar::FOperadorIgual2(TVariavel * v1, TVariavel * v2)
+{
+    if (v1->defvar[2] != v2->defvar[2])
+        return false;
+    TTextoVar * ref1 = reinterpret_cast<TTextoVar*>(v1->endvar) + v1->indice;
+    TTextoVar * ref2 = reinterpret_cast<TTextoVar*>(v2->endvar) + v2->indice;
+    TBlocoVar * bl1 = (ref1->RBroot ? ref1->RBroot->RBfirst() : nullptr);
+    TBlocoVar * bl2 = (ref2->RBroot ? ref2->RBroot->RBfirst() : nullptr);
+    while (bl1 && bl2)
+    {
+    // Compara o nome da variável
+        if (strcmp(bl1->NomeVar, bl2->NomeVar) != 0)
+            return false;
+    // Compara o tipo de variável
+        if (strcmp(bl1->Tipo(), bl2->Tipo()) != 0)
+            return false;
+    // Compara o conteúdo da variável
+        switch (bl1->TipoVar())
+        {
+        case TextoVarTipoTxt:
+            if (strcmp(bl1->getTxt(), bl2->getTxt()) != 0)
+                return false;
+            break;
+        case TextoVarTipoNum:
+            if (bl1->getDouble() != bl2->getDouble())
+                return false;
+            break;
+        case TextoVarTipoDec:
+            if (bl1->getInt() != bl2->getInt())
+                return false;
+            break;
+        case TextoVarTipoRef:
+            if (bl1->getObj() != bl2->getObj())
+                return false;
+            break;
+        }
+    // Passa para a próxima variável
+        bl1 = TBlocoVar::RBnext(bl1);
+        bl2 = TBlocoVar::RBnext(bl2);
+    }
+    return bl1 == bl2;
+}
+
+//------------------------------------------------------------------------------
+unsigned char TTextoVar::FOperadorCompara(TVariavel * v1, TVariavel * v2)
+{
+    if (v1->defvar[2] != v2->defvar[2])
+        return false;
+    TTextoVar * ref1 = reinterpret_cast<TTextoVar*>(v1->endvar) + v1->indice;
+    TTextoVar * ref2 = reinterpret_cast<TTextoVar*>(v2->endvar) + v2->indice;
+    TBlocoVar * bl1 = (ref1->RBroot ? ref1->RBroot->RBfirst() : nullptr);
+    TBlocoVar * bl2 = (ref2->RBroot ? ref2->RBroot->RBfirst() : nullptr);
+    while (bl1 && bl2)
+    {
+    // Compara o nome da variável
+        int cmp1 = strcmp(bl1->NomeVar, bl2->NomeVar);
+        if (cmp1 != 0)
+            return cmp1 < 0 ? 1 : 4;
+    // Compara o tipo de variável
+        int cmp2 = strcmp(bl1->Tipo(), bl2->Tipo());
+        if (cmp2 != 0)
+            return cmp2 < 0 ? 1 : 4;
+    // Compara o conteúdo da variável
+        switch (bl1->TipoVar())
+        {
+        case TextoVarTipoTxt:
+            {
+                int cmp2 = comparaZ(bl1->getTxt(), bl2->getTxt());
+                if (cmp2 == 0)
+                    break;
+                return cmp2 < 0 ? 1 : 4;
+            }
+        case TextoVarTipoNum:
+            {
+                double x1 = bl1->getDouble();
+                double x2 = bl2->getDouble();
+                if (x1 == x2)
+                    break;
+                unsigned char result = 0;
+                if (x1 < x2) result |= 1;
+                if (x1 > x2) result |= 4;
+                return (x1 < x2 ? 1 : 0) | (x1 > x2 ? 4 : 0);
+            }
+        case TextoVarTipoDec:
+            {
+                int x1 = bl1->getInt();
+                int x2 = bl2->getInt();
+                if (x1 == x2)
+                    break;
+                return x1 < x2 ? 1 : 4;
+            }
+        case TextoVarTipoRef:
+            {
+                TObjeto * x1 = bl1->getObj();
+                TObjeto * x2 = bl2->getObj();
+                if (x1 == x2)
+                    break;
+                return x1 < x2 ? 1 : 4;
+            }
+        }
+    // Passa para a próxima variável
+        bl1 = TBlocoVar::RBnext(bl1);
+        bl2 = TBlocoVar::RBnext(bl2);
+    }
+    return bl2 ? 1 : bl1 ? 4 : 0;
 }
 
 //----------------------------------------------------------------------------
@@ -681,6 +731,8 @@ const TVarInfo * TTextoVarSub::Inicializa()
         FGetObj,
         FOperadorAtrib,
         FOperadorAdd,
+        FOperadorIgual2,
+        FOperadorCompara,
         TVarInfo::FFuncVetorFalse);
     return &var;
 }
@@ -897,6 +949,57 @@ bool TTextoVarSub::FOperadorAdd(TVariavel * v1, TVariavel * v2)
         return false;
     ref->addTxt(v2->getTxt());
     return true;
+}
+
+//------------------------------------------------------------------------------
+bool TTextoVarSub::FOperadorIgual2(TVariavel * v1, TVariavel * v2)
+{
+    TTextoVarSub * ref = reinterpret_cast<TTextoVarSub*>(v1->endvar) + v1->indice;
+    if (ref->TextoVar == nullptr)
+        return v2->Tipo() == varObj && v2->getObj() == nullptr;
+    TBlocoVar * bl = ref->TextoVar->Procura(ref->NomeVar);
+    if (bl == nullptr)
+        return v2->Tipo() == varObj && v2->getObj() == nullptr;
+    switch (bl->TipoVar())
+    {
+    case TextoVarTipoTxt:
+        return v2->Tipo() == varTxt && strcmp(bl->getTxt(), v2->getTxt()) == 0;
+    case TextoVarTipoNum:
+    case TextoVarTipoDec:
+        return v2->TipoNumerico() && bl->getDouble() == v2->getDouble();
+    case TextoVarTipoRef:
+        return v2->Tipo() == varObj && bl->getObj() == v2->getObj();
+    }
+    return false;
+}
+
+//------------------------------------------------------------------------------
+unsigned char TTextoVarSub::FOperadorCompara(TVariavel * v1, TVariavel * v2)
+{
+    TTextoVarSub * ref = reinterpret_cast<TTextoVarSub*>(v1->endvar) + v1->indice;
+    if (ref->TextoVar == nullptr)
+        return v2->Tipo() != varObj ? 0 : v2->getObj() == nullptr ? 2 : 1;
+    TBlocoVar * bl = ref->TextoVar->Procura(ref->NomeVar);
+    if (bl == nullptr)
+        return v2->Tipo() != varObj ? 0 : v2->getObj() == nullptr ? 2 : 1;
+    switch (bl->TipoVar())
+    {
+    case TextoVarTipoTxt:
+        return TVarInfo::ComparaTxt(bl->getTxt(), v2->getTxt());
+    case TextoVarTipoNum:
+        return TVarInfo::ComparaDouble(bl->getDouble(), v2);
+    case TextoVarTipoDec:
+        return TVarInfo::ComparaInt(bl->getDouble(), v2);
+    case TextoVarTipoRef:
+        if (v2->Tipo() == varObj)
+        {
+            TObjeto * obj1 = bl->getObj();
+            TObjeto * obj2 = v2->getObj();
+            return (obj1 == obj2 ? 2 : obj1 < obj2 ? 1 : 4);
+        }
+        return 0;
+    }
+    return 0;
 }
 
 //----------------------------------------------------------------------------

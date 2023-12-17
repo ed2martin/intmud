@@ -337,6 +337,8 @@ const TVarInfo * TVarSocket::Inicializa()
         TVarInfo::FGetObjNulo,
         FOperadorAtrib,
         TVarInfo::FOperadorAddFalse,
+        FOperadorIgual2,
+        FOperadorCompara,
         TVarInfo::FFuncVetorFalse);
     return &var;
 }
@@ -775,6 +777,32 @@ void TVarSocket::FOperadorAtrib(TVariavel * v1, TVariavel * v2)
         int valor = v2->getInt();
         r1->Socket->Variavel(v1->numfunc, valor < 0 ? 0 : valor);
     }
+}
+
+//------------------------------------------------------------------------------
+bool TVarSocket::FOperadorIgual2(TVariavel * v1, TVariavel * v2)
+{
+    TVarSocket * ref1 = reinterpret_cast<TVarSocket*>(v1->endvar) + v1->indice;
+    if (v1->numfunc != 0)
+        return v2->TipoNumerico() && ref1->getValor(v1->numfunc) == v2->getDouble();
+    if (ref1->Socket == nullptr)
+        return false;
+    TVarSocket * ref2 = reinterpret_cast<TVarSocket*>(v2->endvar) + v2->indice;
+    return v1->defvar[2] == v2->defvar[2] && v2->numfunc == 0 &&
+            ref1->Socket == ref2->Socket;
+}
+
+//------------------------------------------------------------------------------
+unsigned char TVarSocket::FOperadorCompara(TVariavel * v1, TVariavel * v2)
+{
+    TVarSocket * ref1 = reinterpret_cast<TVarSocket*>(v1->endvar) + v1->indice;
+    if (v1->numfunc != 0)
+        return TVarInfo::ComparaInt(ref1->getValor(v1->numfunc), v2);
+    if (ref1->Socket == nullptr)
+        return 0;
+    TVarSocket * ref2 = reinterpret_cast<TVarSocket*>(v2->endvar) + v2->indice;
+    return v1->defvar[2] == v2->defvar[2] && v2->numfunc == 0 &&
+            ref1->Socket == ref2->Socket ? 2 : 0;
 }
 
 //------------------------------------------------------------------------------

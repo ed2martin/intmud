@@ -48,6 +48,8 @@ const TVarInfo * TVarDebug::Inicializa()
         TVarInfo::FGetObjNulo,
         FOperadorAtrib,
         TVarInfo::FOperadorAddFalse,
+        TVarInfo::FOperadorIgual2Var,
+        TVarInfo::FOperadorComparaVar,
         TVarInfo::FFuncVetorFalse);
     return &var;
 }
@@ -286,7 +288,7 @@ bool TVarDebug::FuncCmd(TVariavel * v)
                 "Quantidade de instruções muito grande");
 // Para mostrar o que codificou
 #if 0
-    for (const char * p = VarAtual->end_char; Num16(p); p+=Num16(p))
+    for (const char * p = VarAtual->endchar; Num16(p); p+=Num16(p))
     {
         char mens[BUF_MENS];
         int total = Num16(p);
@@ -308,8 +310,8 @@ bool TVarDebug::FuncCmd(TVariavel * v)
 #endif
 // Acerta função
     Instr::FuncAtual++;
-    Instr::FuncAtual->nome = Instr::VarAtual->end_char;
-    Instr::FuncAtual->linha = Instr::VarAtual->end_char;
+    Instr::FuncAtual->nome = Instr::VarAtual->endchar;
+    Instr::FuncAtual->linha = Instr::VarAtual->endchar;
     Instr::FuncAtual->este = obj;
     Instr::FuncAtual->expr = nullptr;
     Instr::FuncAtual->inivar = Instr::VarAtual + 1;

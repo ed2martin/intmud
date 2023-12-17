@@ -335,11 +335,11 @@ static const char * VarOutrosConstNum_GetTxt(TVariavel * v)
     *destino = 0;
     return buf;
 }
-static const char * VarOutrosVarNome_GetTxt(TVariavel * v)
+static const char * VarOutrosTxtFixo_GetTxt(TVariavel * v)
 {
     return reinterpret_cast<const char*>(v->endvar);
 }
-static const char * VarOutrosTxtFixo_GetTxt(TVariavel * v)
+static const char * VarOutrosVarNome_GetTxt(TVariavel * v)
 {
     return reinterpret_cast<const char*>(v->endvar);
 }
@@ -412,6 +412,100 @@ static bool VarOutrosVarNome_OperadorAddFalse(TVariavel * v1, TVariavel * v2)
 }
 
 //----------------------------------------------------------------------------
+static bool VarOutrosConstNulo_OperadorIgual2(TVariavel * v1, TVariavel * v2)
+{
+    return v2->Tipo() == varObj && v2->getObj() == nullptr;
+}
+static bool VarOutrosConstTxt_OperadorIgual2(TVariavel * v1, TVariavel * v2)
+{
+    const char * ref = v1->defvar + v1->defvar[Instr::endIndice] + 1;
+    return v2->Tipo() == varTxt && strcmp(ref, v2->getTxt()) == 0;
+}
+static bool VarOutrosConstNum_OperadorIgual2(TVariavel * v1, TVariavel * v2)
+{
+    return v2->TipoNumerico() &&
+            VarOutrosConstNum_GetDouble(v1) == v2->getDouble();
+}
+static bool VarOutrosTxtFixo_OperadorIgual2(TVariavel * v1, TVariavel * v2)
+{
+    const char * ref = reinterpret_cast<const char*>(v1->endvar);
+    return v2->Tipo() == varTxt && strcmp(ref, v2->getTxt()) == 0;
+}
+static bool VarOutrosVarNome_OperadorIgual2(TVariavel * v1, TVariavel * v2)
+{
+    const char * ref = reinterpret_cast<const char*>(v1->endvar);
+    return v2->Tipo() == varTxt && strcmp(ref, v2->getTxt()) == 0;
+}
+static bool VarOutrosVarInt_OperadorIgual2(TVariavel * v1, TVariavel * v2)
+{
+    return v2->TipoNumerico() && v1->valor_int == v2->getDouble();
+}
+static bool VarOutrosVarDouble_OperadorIgual2(TVariavel * v1, TVariavel * v2)
+{
+    return v2->TipoNumerico() && v1->valor_double == v2->getDouble();
+}
+static bool VarOutrosVarClasse_OperadorIgual2(TVariavel * v1, TVariavel * v2)
+{
+    TClasse * obj = reinterpret_cast<TClasse*>(v1->endvar);
+    const char * ref = (obj == nullptr ? "" : obj->Nome);
+    return v2->Tipo() == varTxt && strcmp(ref, v2->getTxt()) == 0;
+}
+static bool VarOutrosVarObjeto_OperadorIgual2(TVariavel * v1, TVariavel * v2)
+{
+    if (v2->Tipo() != varObj)
+        return 0;
+    TObjeto * obj1 = reinterpret_cast<TObjeto*>(v1->endvar);
+    return obj1 == v2->getObj();
+}
+
+//----------------------------------------------------------------------------
+static unsigned char VarOutrosConstNulo_OperadorCompara(TVariavel * v1, TVariavel * v2)
+{
+    return v2->Tipo() == varObj && v2->getObj() == nullptr ? 2 : 0;
+}
+static unsigned char VarOutrosConstTxt_OperadorCompara(TVariavel * v1, TVariavel * v2)
+{
+    const char * ref = v1->defvar + v1->defvar[Instr::endIndice] + 1;
+    return TVarInfo::ComparaTxt(ref, v2->getTxt());
+}
+static unsigned char VarOutrosConstNum_OperadorCompara(TVariavel * v1, TVariavel * v2)
+{
+    return TVarInfo::ComparaDouble(VarOutrosConstNum_GetDouble(v1), v2);
+}
+static unsigned char VarOutrosTxtFixo_OperadorCompara(TVariavel * v1, TVariavel * v2)
+{
+    const char * ref = reinterpret_cast<const char*>(v1->endvar);
+    return TVarInfo::ComparaTxt(ref, v2->getTxt());
+}
+static unsigned char VarOutrosVarNome_OperadorCompara(TVariavel * v1, TVariavel * v2)
+{
+    const char * ref = reinterpret_cast<const char*>(v1->endvar);
+    return TVarInfo::ComparaTxt(ref, v2->getTxt());
+}
+static unsigned char VarOutrosVarInt_OperadorCompara(TVariavel * v1, TVariavel * v2)
+{
+    return TVarInfo::ComparaInt(v1->valor_int, v2);
+}
+static unsigned char VarOutrosVarDouble_OperadorCompara(TVariavel * v1, TVariavel * v2)
+{
+    return TVarInfo::ComparaDouble(v1->valor_double, v2);
+}
+static unsigned char VarOutrosVarClasse_OperadorCompara(TVariavel * v1, TVariavel * v2)
+{
+    TClasse * obj = reinterpret_cast<TClasse*>(v1->endvar);
+    const char * ref = (obj == nullptr ? "" : obj->Nome);
+    return TVarInfo::ComparaTxt(ref, v2->getTxt());
+}
+static unsigned char VarOutrosVarObjeto_OperadorCompara(TVariavel * v1, TVariavel * v2)
+{
+    if (v2->Tipo() != varObj)
+        return 0;
+    TObjeto * obj1 = reinterpret_cast<TObjeto*>(v1->endvar);
+    TObjeto * obj2 = v2->getObj();
+    return obj1 == obj2 ? 2 : obj1 < obj2 ? 1 : 4;
+}
+
+//----------------------------------------------------------------------------
 const TVarInfo * VarOutrosConstNulo()
 {
     static const TVarInfo var(
@@ -428,6 +522,8 @@ const TVarInfo * VarOutrosConstNulo()
         TVarInfo::FGetObjNulo,
         TVarInfo::FOperadorAtribVazio,
         TVarInfo::FOperadorAddFalse,
+        VarOutrosConstNulo_OperadorIgual2,
+        VarOutrosConstNulo_OperadorCompara,
         TVarInfo::FFuncVetorFalse);
     return &var;
 }
@@ -448,6 +544,8 @@ const TVarInfo * VarOutrosConstTxt()
         TVarInfo::FGetObjNulo,
         TVarInfo::FOperadorAtribVazio,
         TVarInfo::FOperadorAddFalse,
+        VarOutrosConstTxt_OperadorIgual2,
+        VarOutrosConstTxt_OperadorCompara,
         TVarInfo::FFuncVetorFalse);
     return &var;
 }
@@ -468,6 +566,8 @@ const TVarInfo * VarOutrosConstNum()
         TVarInfo::FGetObjNulo,
         TVarInfo::FOperadorAtribVazio,
         TVarInfo::FOperadorAddFalse,
+        VarOutrosConstNum_OperadorIgual2,
+        VarOutrosConstNum_OperadorCompara,
         TVarInfo::FFuncVetorFalse);
     return &var;
 }
@@ -488,6 +588,8 @@ const TVarInfo * VarOutrosConstExpr()
         TVarInfo::FGetObjNulo,
         TVarInfo::FOperadorAtribVazio,
         TVarInfo::FOperadorAddFalse,
+        TVarInfo::FOperadorIgual2Var,
+        TVarInfo::FOperadorComparaVar,
         TVarInfo::FFuncVetorFalse);
     return &var;
 }
@@ -508,6 +610,8 @@ const TVarInfo * VarOutrosConstVar()
         TVarInfo::FGetObjNulo,
         TVarInfo::FOperadorAtribVazio,
         TVarInfo::FOperadorAddFalse,
+        TVarInfo::FOperadorIgual2Var,
+        TVarInfo::FOperadorComparaVar,
         TVarInfo::FFuncVetorFalse);
     return &var;
 }
@@ -528,6 +632,8 @@ const TVarInfo * VarOutrosFunc()
         TVarInfo::FGetObjNulo,
         TVarInfo::FOperadorAtribVazio,
         TVarInfo::FOperadorAddFalse,
+        TVarInfo::FOperadorIgual2Var,
+        TVarInfo::FOperadorComparaVar,
         TVarInfo::FFuncVetorFalse);
     return &var;
 }
@@ -548,6 +654,8 @@ const TVarInfo * VarOutrosVarFunc()
         TVarInfo::FGetObjNulo,
         TVarInfo::FOperadorAtribVazio,
         TVarInfo::FOperadorAddFalse,
+        TVarInfo::FOperadorIgual2Var,
+        TVarInfo::FOperadorComparaVar,
         TVarInfo::FFuncVetorFalse);
     return &var;
 }
@@ -568,6 +676,8 @@ const TVarInfo * VarOutrosTxtFixo()
         TVarInfo::FGetObjNulo,
         TVarInfo::FOperadorAtribVazio,
         TVarInfo::FOperadorAddFalse,
+        VarOutrosTxtFixo_OperadorIgual2,
+        VarOutrosTxtFixo_OperadorCompara,
         TVarInfo::FFuncVetorFalse);
     return &var;
 }
@@ -588,6 +698,8 @@ const TVarInfo * VarOutrosVarNome()
         TVarInfo::FGetObjNulo,
         VarOutrosVarNome_OperadorAtrib,
         VarOutrosVarNome_OperadorAddFalse,
+        VarOutrosVarNome_OperadorIgual2,
+        VarOutrosVarNome_OperadorCompara,
         TVarInfo::FFuncVetorFalse);
     return &var;
 }
@@ -608,6 +720,8 @@ const TVarInfo * VarOutrosVarInicio()
         TVarInfo::FGetObjNulo,
         TVarInfo::FOperadorAtribVazio,
         TVarInfo::FOperadorAddFalse,
+        TVarInfo::FOperadorIgual2Var,
+        TVarInfo::FOperadorComparaVar,
         TVarInfo::FFuncVetorFalse);
     return &var;
 }
@@ -628,6 +742,8 @@ const TVarInfo * VarOutrosVarIniFunc()
         TVarInfo::FGetObjNulo,
         VarOutrosVarIniFunc_OperadorAtrib,
         TVarInfo::FOperadorAddFalse,
+        VarOutrosVarInt_OperadorIgual2,
+        VarOutrosVarInt_OperadorCompara,
         TVarInfo::FFuncVetorFalse);
     return &var;
 }
@@ -648,6 +764,8 @@ const TVarInfo * VarOutrosVarClasse()
         TVarInfo::FGetObjNulo,
         TVarInfo::FOperadorAtribVazio,
         TVarInfo::FOperadorAddFalse,
+        VarOutrosVarClasse_OperadorIgual2,
+        VarOutrosVarClasse_OperadorCompara,
         TVarInfo::FFuncVetorFalse);
     return &var;
 }
@@ -668,6 +786,8 @@ const TVarInfo * VarOutrosVarObjeto()
         VarOutrosVarObjeto_GetObj,
         VarOutrosVarObjeto_OperadorAtrib,
         TVarInfo::FOperadorAddFalse,
+        VarOutrosVarObjeto_OperadorIgual2,
+        VarOutrosVarObjeto_OperadorCompara,
         TVarInfo::FFuncVetorFalse);
     return &var;
 }
@@ -688,6 +808,8 @@ const TVarInfo * VarOutrosVarInt()
         TVarInfo::FGetObjNulo,
         VarOutrosVarInt_OperadorAtrib,
         TVarInfo::FOperadorAddFalse,
+        VarOutrosVarInt_OperadorIgual2,
+        VarOutrosVarInt_OperadorCompara,
         TVarInfo::FFuncVetorFalse);
     return &var;
 }
@@ -708,6 +830,8 @@ const TVarInfo * VarOutrosVarDouble()
         TVarInfo::FGetObjNulo,
         VarOutrosVarDouble_OperadorAtrib,
         TVarInfo::FOperadorAddFalse,
+        VarOutrosVarDouble_OperadorIgual2,
+        VarOutrosVarDouble_OperadorCompara,
         TVarInfo::FFuncVetorFalse);
     return &var;
 }

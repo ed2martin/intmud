@@ -33,6 +33,9 @@ class TTextoVarSub;
 class TTextoObjSub;
 class TVariavel;
 
+// De misc.h
+int comparaZ(const char * string1, const char * string2);
+
 //----------------------------------------------------------------------------
 /// Tipo de variável
 enum TVarTipo : unsigned char
@@ -63,6 +66,8 @@ private:
     TObjeto * (*FGetObj)(TVariavel * v);
     void (*FOperadorAtrib)(TVariavel * v1, TVariavel * v2);
     bool (*FOperadorAdd)(TVariavel * v1, TVariavel * v2);
+    bool (*FOperadorIgual2)(TVariavel * v1, TVariavel * v2);
+    unsigned char (*FOperadorCompara)(TVariavel * v1, TVariavel * v2);
     bool (*FFuncVetor)(TVariavel * v, const char * nome);
 
     static char * EndBufferTxt;
@@ -87,6 +92,8 @@ public:
             TObjeto * (*fGetObj)(TVariavel * v),
             void (*fOperadorAtrib)(TVariavel * v1, TVariavel * v2),
             bool (*fOperadorAdd)(TVariavel * v1, TVariavel * v2),
+            bool (*fOperadorIgual2)(TVariavel * v1, TVariavel * v2),
+            unsigned char (*fOperadorCompara)(TVariavel * v1, TVariavel * v2),
             bool (*fFuncVetor)(TVariavel * v, const char * nome));
     /// Retorna um buffer de 0x100 bytes para ser usado para retornar texto
     static inline char * BufferTxt()
@@ -94,6 +101,12 @@ public:
         NumBufferTxt = (NumBufferTxt + 0x100) & 0x300;
         return EndBufferTxt + NumBufferTxt;
     }
+    /// Compara variável int e retorna como em TVariavel::OperadorCompara
+    static unsigned char ComparaInt(int d1, TVariavel * v);
+    /// Compara variável double e retorna como em TVariavel::OperadorCompara
+    static unsigned char ComparaDouble(double d1, TVariavel * v);
+    /// Compara dois textos e retorna como em TVariavel::OperadorCompara
+    static unsigned char ComparaTxt(const char * t1, const char * t2);
 
     static int FTamanho0(const char * instr);
     static TVarTipo FTipoOutros(TVariavel * v);
@@ -113,6 +126,8 @@ public:
     static TObjeto * FGetObjNulo(TVariavel * v);
     static void FOperadorAtribVazio(TVariavel * v1, TVariavel * v2);
     static bool FOperadorAddFalse(TVariavel * v1, TVariavel * v2);
+    static bool FOperadorIgual2Var(TVariavel * v1, TVariavel * v2);
+    static unsigned char FOperadorComparaVar(TVariavel * v1, TVariavel * v2);
     static bool FFuncVetorFalse(TVariavel * v, const char * nome);
 
     friend TVariavel;
@@ -154,16 +169,26 @@ public:
     }
 
     /// Obtém o tipo mais apropriado para expressões numéricas
-    /** Usa  TVariavel::defvar  e  TVariavel::endvar
+    /** @note Usa  TVariavel::defvar  e  TVariavel::endvar
      *  @return Tipo de variável */
     inline TVarTipo Tipo()
     {
-        if (indice == 0xFF) // Vetor
-            return varOutros;
         unsigned char cmd = (unsigned char)defvar[2];
-        if (cmd < Instr::cTotalComandos)
+        if (cmd < Instr::cTotalComandos && indice != 0xff)
             return VarInfo[cmd].FTipo(this);
         return varOutros;
+    }
+
+    /// Retorna true se o tipo de variável for int ou double
+    inline bool TipoNumerico()
+    {
+        unsigned char cmd = (unsigned char)defvar[2];
+        if (cmd < Instr::cTotalComandos && indice != 0xff)
+        {
+            TVarTipo tipo = VarInfo[cmd].FTipo(this);
+            return tipo == varInt || tipo == varDouble;
+        }
+        return false;
     }
 
 // Construtor/destrutor/mover
@@ -328,14 +353,37 @@ public:
     inline bool OperadorAdd(TVariavel * v)
     {
         unsigned char cmd = (unsigned char)defvar[2];
-        if (cmd < Instr::cTotalComandos && indice != 0xff)
+        if (cmd < Instr::cTotalComandos && indice != 0xff &&
+                v->indice != 0xff)
             return VarInfo[cmd].FOperadorAdd(this, v);
         return false;
     }
 
-    int Compara(TVariavel * v);
-        ///< Compara com outra variável do mesmo tipo
-        /**< @return -1 se menor, 0 se igual, 1 se maior */
+    /// Checa se esta variável é exatamente igual à outra (tipo e valor)
+    /** @param v Variável que será comparada
+     *  @return true se exatamente igualis, false caso contrário */
+    inline bool OperadorIgual2(TVariavel * v)
+    {
+        unsigned char cmd = (unsigned char)defvar[2];
+        if (cmd < Instr::cTotalComandos && indice != 0xff &&
+                v->indice != 0xff)
+            return VarInfo[cmd].FOperadorIgual2(this, v);
+        return false;
+    }
+
+    /// Compara esta variável com outra
+    /** @param v Variável que será comparada
+     *  @return 1 se esta variável vem antes, 2 se iguais, 4 se vem depois
+     *      ou 0 se são apenas diferentes porque não tem como comparar */
+    inline unsigned char OperadorCompara(TVariavel * v)
+    {
+        unsigned char cmd = (unsigned char)defvar[2];
+        if (cmd < Instr::cTotalComandos && indice != 0xff &&
+                v->indice != 0xff)
+            return VarInfo[cmd].FOperadorCompara(this, v);
+        return 0;
+    }
+
     bool Func(const char * nome);
         ///< Executa função da variável
         /**< Deve verificar argumentos, após a variável
@@ -354,23 +402,15 @@ public:
     union {
         void * endvar;  ///< Endereço da variável na memória
                         /** - É nullptr se não for aplicável
-                         *  - Em vetores, endereço da primeira variável */
+                         *  - Em vetores, é o endereço da primeira variável */
         const void * endfixo;
                     ///< Valor "const" de endvar
                     /**< Usar endfixo quando a variável não poderá ser mudada */
-        char * endchar; ///< Usado principalmente com Instr::cVarNome
+        char * endchar; ///< endvar como char*
         int  valor_int;  ///< endvar como int
         double valor_double; ///< endvar como double (8 bytes)
 
-        char * end_char; ///< endvar como char*
-        TVarRef * end_varref;        ///< Instr::cRef
-        signed   short * end_short;  ///< Instr::cInt16
-        unsigned short * end_ushort; ///< Instr::cUInt16
-        signed   int * end_int;      ///< Instr::cInt32
-        unsigned int * end_uint;     ///< Instr::cUInt32
         TVarIncDec   * end_incdec;   ///< Instr::cIntInc e Instr::cIntDec
-        float        * end_float;    ///< Instr::cReal
-        double       * end_double;   ///< Instr::cReal2
         TVarArqDir   * end_arqdir;   ///< Instr::cArqDir
         TVarArqLog   * end_arqlog;   ///< Instr::cArqLog
         TVarArqProg  * end_arqprog;  ///< Instr::cArqProg
@@ -409,6 +449,36 @@ public:
 private:
     static TVarInfo * VarInfo;
 };
+
+//----------------------------------------------------------------------------
+inline unsigned char TVarInfo::ComparaInt(int d1, TVariavel * v)
+{
+    /*if (v->Tipo() == varInt) // Nos testes, isso é menos eficiente
+    {
+        int d2 = v->getInt();
+        return d1 == d2 ? 2 : d1 < d2 ? 1 : 4;
+    }*/
+    double d2 = v->getDouble();
+    unsigned char result = 0;
+    if (d1 < d2) result |= 1;
+    if (d1 == d2) result |= 2;
+    if (d1 > d2) result |= 4;
+    return result;
+}
+inline unsigned char TVarInfo::ComparaDouble(double d1, TVariavel * v)
+{
+    double d2 = v->getDouble();
+    unsigned char result = 0;
+    if (d1 < d2) result |= 1;
+    if (d1 == d2) result |= 2;
+    if (d1 > d2) result |= 4;
+    return result;
+}
+inline unsigned char TVarInfo::ComparaTxt(const char * t1, const char * t2)
+{
+    int cmp = comparaZ(t1, t2);
+    return (cmp == 0 ? 2 : cmp < 0 ? 1 : 4);
+}
 
 //----------------------------------------------------------------------------
 

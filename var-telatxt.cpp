@@ -59,6 +59,8 @@ const TVarInfo * TVarTelaTxt::Inicializa()
         TVarInfo::FGetObjNulo,
         FOperadorAtrib,
         FOperadorAdd,
+        FOperadorIgual2,
+        FOperadorCompara,
         TVarInfo::FFuncVetorFalse);
     return &var;
 }
@@ -1016,4 +1018,40 @@ bool TVarTelaTxt::FOperadorAdd(TVariavel * v1, TVariavel * v2)
     TVarTelaTxt * ref = reinterpret_cast<TVarTelaTxt*>(v1->endvar) + v1->indice;
     ref->addTxt(v1->numfunc, v2->getTxt());
     return true;
+}
+
+//------------------------------------------------------------------------------
+bool TVarTelaTxt::FOperadorIgual2(TVariavel * v1, TVariavel * v2)
+{
+    if (Console == nullptr)
+        return false;
+    TVarTelaTxt * ref = reinterpret_cast<TVarTelaTxt*>(v1->endvar) + v1->indice;
+    switch (v1->numfunc)
+    {
+    case TelaTxtTexto:
+        return v2->Tipo() == varTxt && strcmp(ref->LerLinha(), v2->getTxt()) == 0;
+    case TelaTxtTotal:
+        return v2->TipoNumerico() && ref->max_linha == v2->getDouble();
+    case TelaTxtLinha:
+        return v2->TipoNumerico() && ref->LinhaPosic == v2->getDouble();
+    }
+    return v1->defvar[2] == v2->defvar[2] && v2->numfunc == 0;
+}
+
+//------------------------------------------------------------------------------
+unsigned char TVarTelaTxt::FOperadorCompara(TVariavel * v1, TVariavel * v2)
+{
+    if (Console == nullptr)
+        return 0;
+    TVarTelaTxt * ref = reinterpret_cast<TVarTelaTxt*>(v1->endvar) + v1->indice;
+    switch (v1->numfunc)
+    {
+    case TelaTxtTexto:
+        return TVarInfo::ComparaTxt(ref->LerLinha(), v2->getTxt());
+    case TelaTxtTotal:
+        return TVarInfo::ComparaInt(ref->max_linha, v2);
+    case TelaTxtLinha:
+        return TVarInfo::ComparaInt(ref->LinhaPosic, v2);
+    }
+    return v1->defvar[2] == v2->defvar[2] && v2->numfunc == 0 ? 2 : 0;
 }

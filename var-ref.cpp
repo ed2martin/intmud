@@ -69,6 +69,8 @@ const TVarInfo * TVarRef::Inicializa()
         FGetObj,
         FOperadorAtrib,
         TVarInfo::FOperadorAddFalse,
+        FOperadorIgual2,
+        FOperadorCompara,
         TVarInfo::FFuncVetorFalse);
     return &var;
 }
@@ -179,4 +181,23 @@ void TVarRef::FOperadorAtrib(TVariavel * v1, TVariavel * v2)
 {
     TVarRef * ref = reinterpret_cast<TVarRef*>(v1->endvar) + v1->indice;
     ref->MudarPont(v2->getObj());
+}
+
+//------------------------------------------------------------------------------
+bool TVarRef::FOperadorIgual2(TVariavel * v1, TVariavel * v2)
+{
+    if (v2->Tipo() != varObj)
+        return false;
+    TObjeto * obj1 = reinterpret_cast<TVarRef*>(v1->endvar)[v1->indice].Pont;
+    return obj1 == v2->getObj();
+}
+
+//------------------------------------------------------------------------------
+unsigned char TVarRef::FOperadorCompara(TVariavel * v1, TVariavel * v2)
+{
+    if (v2->Tipo() != varObj)
+        return 0;
+    TObjeto * obj1 = reinterpret_cast<TVarRef*>(v1->endvar)[v1->indice].Pont;
+    TObjeto * obj2 = v2->getObj();
+    return (obj1 == obj2 ? 2 : obj1 < obj2 ? 1 : 4);
 }

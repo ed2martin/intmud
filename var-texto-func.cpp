@@ -284,7 +284,7 @@ bool TTextoTxt::FuncRemove(TVariavel * v)
 // Obtém tamanho da memória alocada
     int copiar = Instr::VarAtual->tamanho;
 // Anota o texto
-    Inicio->CopiarTxt(0, Instr::VarAtual->end_char, copiar);
+    Inicio->CopiarTxt(0, Instr::VarAtual->endchar, copiar);
 // Apaga texto de ListaTxt
     TBlocoPos pos;
     pos.Bloco = Inicio;
@@ -671,16 +671,6 @@ int TTextoTxt::getValor()
 }
 
 //----------------------------------------------------------------------------
-int TTextoPos::Compara(TTextoPos * v)
-{
-    if (TextoTxt != v->TextoTxt)
-        return (TextoTxt < v->TextoTxt ? -1 : 1);
-    if (TextoTxt == nullptr || PosicTxt == v->PosicTxt)
-        return 0;
-    return (PosicTxt < v->PosicTxt ? -1 : 1);
-}
-
-//----------------------------------------------------------------------------
 bool TTextoPos::Func(TVariavel * v, const char * nome)
 {
 // Lista das funções de textopos
@@ -813,7 +803,7 @@ bool TTextoPos::FuncTexto(TVariavel * v, int valor)
 // Obtém tamanho da memória alocada
     int copiar = Instr::VarAtual->tamanho;
 // Anota o texto
-    bl->CopiarTxt(colini, Instr::VarAtual->end_char, copiar);
+    bl->CopiarTxt(colini, Instr::VarAtual->endchar, copiar);
     return true;
 }
 
@@ -837,7 +827,7 @@ bool TTextoPos::FuncTextoLin(TVariavel * v, int valor)
 // Obtém tamanho da memória alocada
     int copiar = Instr::VarAtual->tamanho;
 // Anota o texto
-    bl->CopiarTxt(pos, Instr::VarAtual->end_char, copiar);
+    bl->CopiarTxt(pos, Instr::VarAtual->endchar, copiar);
     return true;
 }
 

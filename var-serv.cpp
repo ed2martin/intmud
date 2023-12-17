@@ -104,6 +104,8 @@ const TVarInfo * TVarServ::Inicializa()
         TVarInfo::FGetObjNulo,
         FOperadorAtrib,
         TVarInfo::FOperadorAddFalse,
+        TVarInfo::FOperadorIgual2Var,
+        TVarInfo::FOperadorComparaVar,
         TVarInfo::FFuncVetorFalse);
     return &var;
 }

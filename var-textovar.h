@@ -32,9 +32,6 @@ public:
         ///< Cria uma variável TTextoVarSub na pilha
     bool CriarTextoVarSub(TBlocoVar * bl);
         ///< Cria uma variável TTextoVarSub na pilha
-    int Compara(TTextoVar * v);
-        ///< Compara com outra variável TTextoVar
-        /**< @return -1 se menor, 0 se igual, 1 se maior */
     TBlocoVar * Procura(const char * texto);
         ///< Procura um objeto TIndiceObj a partir do nome
         /**< @param texto Nome a pesquisar
@@ -71,6 +68,8 @@ private:
     static void FMoverEnd(TVariavel * v, void * destino,
             TClasse * c, TObjeto * o);
     static void FOperadorAtrib(TVariavel * v1, TVariavel * v2);
+    static bool FOperadorIgual2(TVariavel * v1, TVariavel * v2);
+    static unsigned char FOperadorCompara(TVariavel * v1, TVariavel * v2);
 
 public:
     TBlocoVar * RBroot;  ///< Objeto raiz da RBT
@@ -135,6 +134,8 @@ private:
     static TObjeto * FGetObj(TVariavel * v);
     static void FOperadorAtrib(TVariavel * v1, TVariavel * v2);
     static bool FOperadorAdd(TVariavel * v1, TVariavel * v2);
+    static bool FOperadorIgual2(TVariavel * v1, TVariavel * v2);
+    static unsigned char FOperadorCompara(TVariavel * v1, TVariavel * v2);
 };
 
 //----------------------------------------------------------------------------

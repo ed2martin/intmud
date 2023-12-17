@@ -50,6 +50,8 @@ const TVarInfo * TVarIntTempo::Inicializa()
         TVarInfo::FGetObjNulo,
         FOperadorAtrib,
         TVarInfo::FOperadorAddFalse,
+        FOperadorIgual2,
+        FOperadorCompara,
         FuncVetor);
     return &var;
 }
@@ -386,4 +388,18 @@ void TVarIntTempo::FOperadorAtrib(TVariavel * v1, TVariavel * v2)
 {
     TVarIntTempo * ref = reinterpret_cast<TVarIntTempo*>(v1->endvar) + v1->indice;
     ref->setValor(v1->numfunc, v2->getInt());
+}
+
+//------------------------------------------------------------------------------
+bool TVarIntTempo::FOperadorIgual2(TVariavel * v1, TVariavel * v2)
+{
+    TVarIntTempo * ref = reinterpret_cast<TVarIntTempo*>(v1->endvar) + v1->indice;
+    return v2->TipoNumerico() && ref->getValor(v1->numfunc) == v2->getDouble();
+}
+
+//------------------------------------------------------------------------------
+unsigned char TVarIntTempo::FOperadorCompara(TVariavel * v1, TVariavel * v2)
+{
+    TVarIntTempo * ref = reinterpret_cast<TVarIntTempo*>(v1->endvar) + v1->indice;
+    return TVarInfo::ComparaInt(ref->getValor(v1->numfunc), v2);
 }

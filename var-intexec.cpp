@@ -38,6 +38,8 @@ const TVarInfo * TVarIntExec::Inicializa()
         TVarInfo::FGetObjNulo,
         FOperadorAtrib,
         TVarInfo::FOperadorAddFalse,
+        FOperadorIgual2,
+        FOperadorCompara,
         TVarInfo::FFuncVetorFalse);
     return &var;
 }
@@ -182,4 +184,18 @@ void TVarIntExec::FOperadorAtrib(TVariavel * v1, TVariavel * v2)
 {
     TVarIntExec * ref = reinterpret_cast<TVarIntExec*>(v1->endvar) + v1->indice;
     ref->setValor(v2->getInt());
+}
+
+//------------------------------------------------------------------------------
+bool TVarIntExec::FOperadorIgual2(TVariavel * v1, TVariavel * v2)
+{
+    TVarIntExec * ref = reinterpret_cast<TVarIntExec*>(v1->endvar) + v1->indice;
+    return (v2->TipoNumerico() && ref->getValor() == v2->getDouble());
+}
+
+//------------------------------------------------------------------------------
+unsigned char TVarIntExec::FOperadorCompara(TVariavel * v1, TVariavel * v2)
+{
+    TVarIntExec * ref = reinterpret_cast<TVarIntExec*>(v1->endvar) + v1->indice;
+    return TVarInfo::ComparaInt(ref->getValor(), v2);
 }

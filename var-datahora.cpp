@@ -80,6 +80,8 @@ const TVarInfo * TVarDataHora::Inicializa()
         TVarInfo::FGetObjNulo,
         FOperadorAtrib,
         TVarInfo::FOperadorAddFalse,
+        FOperadorIgual2,
+        FOperadorCompara,
         TVarInfo::FFuncVetorFalse);
     return &var;
 }
@@ -88,18 +90,6 @@ const TVarInfo * TVarDataHora::Inicializa()
 void TVarDataHora::Mover(TVarDataHora * destino)
 {
     memmove(destino, this, sizeof(TVarDataHora));
-}
-
-//------------------------------------------------------------------------------
-int TVarDataHora::Compara(TVarDataHora * v)
-{
-    if (Ano  != v->Ano)  return (Ano  < v->Ano  ? -1 : 1);
-    if (Mes  != v->Mes)  return (Mes  < v->Mes  ? -1 : 1);
-    if (Dia  != v->Dia)  return (Dia  < v->Dia  ? -1 : 1);
-    if (Hora != v->Hora) return (Hora < v->Hora ? -1 : 1);
-    if (Min  != v->Min)  return (Min  < v->Min  ? -1 : 1);
-    if (Seg  != v->Seg)  return (Seg  < v->Seg  ? -1 : 1);
-    return 0;
 }
 
 //------------------------------------------------------------------------------
@@ -612,4 +602,38 @@ void TVarDataHora::FOperadorAtrib(TVariavel * v1, TVariavel * v2)
         }
         break;
     }
+}
+
+//------------------------------------------------------------------------------
+bool TVarDataHora::FOperadorIgual2(TVariavel * v1, TVariavel * v2)
+{
+    TVarDataHora * ref1 = reinterpret_cast<TVarDataHora*>(v1->endvar) + v1->indice;
+    if (v1->numfunc == 0)
+        return v2->TipoNumerico() && ref1->getDouble(v1->numfunc) == v2->getDouble();
+    if (v1->defvar[2] != v2->defvar[2])
+        return false;
+    TVarDataHora * ref2 = reinterpret_cast<TVarDataHora*>(v2->endvar) + v2->indice;
+    return ref1->Ano == ref2->Ano && ref1->Mes == ref2->Mes &&
+        ref1->Dia == ref2->Dia && ref1->Hora == ref2->Hora &&
+        ref1->Min == ref2->Min && ref1->Seg == ref2->Seg;
+}
+
+//------------------------------------------------------------------------------
+unsigned char TVarDataHora::FOperadorCompara(TVariavel * v1, TVariavel * v2)
+{
+    TVarDataHora * ref1 = reinterpret_cast<TVarDataHora*>(v1->endvar) + v1->indice;
+    if (v1->numfunc == DataHoraNumTotal)
+        return TVarInfo::ComparaDouble(ref1->getDouble(v1->numfunc), v2);
+    if (v1->numfunc != 0)
+        return TVarInfo::ComparaInt(ref1->getDouble(v1->numfunc), v2);
+    if (v1->defvar[2] != v2->defvar[2])
+        return 0;
+    TVarDataHora * ref2 = reinterpret_cast<TVarDataHora*>(v2->endvar) + v2->indice;
+    if (ref1->Ano  != ref2->Ano)  return (ref1->Ano  < ref2->Ano  ? 1 : 4);
+    if (ref1->Mes  != ref2->Mes)  return (ref1->Mes  < ref2->Mes  ? 1 : 4);
+    if (ref1->Dia  != ref2->Dia)  return (ref1->Dia  < ref2->Dia  ? 1 : 4);
+    if (ref1->Hora != ref2->Hora) return (ref1->Hora < ref2->Hora ? 1 : 4);
+    if (ref1->Min  != ref2->Min)  return (ref1->Min  < ref2->Min  ? 1 : 4);
+    if (ref1->Seg  != ref2->Seg)  return (ref1->Seg  < ref2->Seg  ? 1 : 4);
+    return 2;
 }

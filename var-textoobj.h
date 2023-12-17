@@ -55,6 +55,9 @@ private:
             unsigned int antes, unsigned int depois);
     static void FMoverEnd(TVariavel * v, void * destino,
             TClasse * c, TObjeto * o);
+    static void FOperadorAtrib(TVariavel * v1, TVariavel * v2);
+    static bool FOperadorIgual2(TVariavel * v1, TVariavel * v2);
+    static unsigned char FOperadorCompara(TVariavel * v1, TVariavel * v2);
 
 public:
     TBlocoObj * RBroot;  ///< Objeto raiz da RBT
@@ -94,6 +97,9 @@ private:
     static double FGetDouble(TVariavel * v);
     static const char * FGetTxt(TVariavel * v);
     static TObjeto * FGetObj(TVariavel * v);
+    static void FOperadorAtrib(TVariavel * v1, TVariavel * v2);
+    static bool FOperadorIgual2(TVariavel * v1, TVariavel * v2);
+    static unsigned char FOperadorCompara(TVariavel * v1, TVariavel * v2);
 };
 
 //----------------------------------------------------------------------------

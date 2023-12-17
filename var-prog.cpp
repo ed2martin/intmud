@@ -40,6 +40,8 @@ const TVarInfo * TVarProg::Inicializa()
         TVarInfo::FGetObjNulo,
         TVarInfo::FOperadorAtribVazio,
         TVarInfo::FOperadorAddFalse,
+        TVarInfo::FOperadorIgual2Var,
+        TVarInfo::FOperadorComparaVar,
         TVarInfo::FFuncVetorFalse);
     return &var;
 }

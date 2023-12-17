@@ -13,22 +13,21 @@ class TVarDataHora /// Data e hora
 public:
     static const TVarInfo * Inicializa();
         ///< Inicializa variável e retorna informações
-    void Mover(TVarDataHora * destino);
-            ///< Move para outro lugar
-    int  Compara(TVarDataHora * v);
-            ///< Operador de comparação
-    bool Func(TVariavel * v, const char * nome);
-            ///< Função da variável
-    int  getInt(int numfunc);
-            ///< Ler o valor numérico da variável como int
-    double getDouble(int numfunc);
-            ///< Ler o valor numérico da variável como double
     void LerSav(const char * texto);
-            ///< Atualiza datahora com o valor salvo em arqsav
+        ///< Atualiza datahora com o valor salvo em arqsav
     void SalvarSav(char * texto);
-            ///< Prepara um texto com data e hora para arqsav
+        ///< Prepara um texto com data e hora para arqsav
+    bool Func(TVariavel * v, const char * nome);
+        ///< Função da variável
 
 private:
+    void Mover(TVarDataHora * destino);
+        ///< Move para outro lugar
+    int  getInt(int numfunc);
+        ///< Ler o valor numérico da variável como int
+    double getDouble(int numfunc);
+        ///< Ler o valor numérico da variável como double
+
     int DiasMes();          ///< Calcula quantos dias tem no mês
     int DataNum();          ///< Calcula o número de dias desde 1/1/1
     void NumData(int dias); ///< Obtém dia/mês/ano a partir do número de dias
@@ -51,6 +50,8 @@ private:
     static double FGetDouble(TVariavel * v);
     static const char * FGetTxt(TVariavel * v);
     static void FOperadorAtrib(TVariavel * v1, TVariavel * v2);
+    static bool FOperadorIgual2(TVariavel * v1, TVariavel * v2);
+    static unsigned char FOperadorCompara(TVariavel * v1, TVariavel * v2);
 };
 
 //----------------------------------------------------------------------------
