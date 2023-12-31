@@ -11,14 +11,14 @@ class TObjeto;
 class TVarTelaTxt
 {
 private:
-    bool FuncMsg(TVariavel * v);    ///< Processa função Msg
-    bool FuncPosx(TVariavel * v);   ///< Processa função Posx
-    bool FuncTecla(TVariavel * v);  ///< Processa função Tecla
-    bool FuncProto(TVariavel * v);  ///< Processa função Proto
-    bool FuncLimpa(TVariavel * v);  ///< Processa função Limpa
-    bool FuncTexto(TVariavel * v);  ///< Processa função Texto
-    bool FuncTotal(TVariavel * v);  ///< Processa função Total
-    bool FuncLinha(TVariavel * v);  ///< Processa função Linha
+    static bool FuncMsg(TVariavel * v);    ///< Processa função Msg
+    static bool FuncPosx(TVariavel * v);   ///< Processa função Posx
+    static bool FuncTecla(TVariavel * v);  ///< Processa função Tecla
+    static bool FuncProto(TVariavel * v);  ///< Processa função Proto
+    static bool FuncLimpa(TVariavel * v);  ///< Processa função Limpa
+    static bool FuncTexto(TVariavel * v);  ///< Processa função Texto
+    static bool FuncTotal(TVariavel * v);  ///< Processa função Total
+    static bool FuncLinha(TVariavel * v);  ///< Processa função Linha
 
     static void Escrever(const char * texto, int tamanho = -1);
         ///< Envia um texto para o console
@@ -62,11 +62,6 @@ private:
     static unsigned int max_linha;  ///< Tamanho máximo da linha sendo editada
     static char * txt_linha; ///< Linha sendo editada
 
-public:
-    static const TVarInfo * Inicializa();
-        ///< Inicializa variável e retorna informações
-    bool Func(TVariavel * v, const char * nome); ///< Função da variável
-private:
     void Criar();           ///< Cria objeto
             /**< Após criado, acertar defvar, indice e chamar EndObjeto() */
     void Apagar();          ///< Apaga objeto
@@ -107,7 +102,9 @@ private:
     unsigned char indice;   ///< Índice no vetor
 
 public:
-    static bool Inic();     ///< Inicializa consolse se Console!=0
+    static const TVarInfo * Inicializa();
+        ///< Inicializa variável e retorna informações
+    static bool Inic();     ///< Inicializa console se Console!=0
     static void Fim();      ///< Encerra o console
     static void Processa(); ///< Processa teclas pressionadas
     static void ProcFim();  ///< Fim do processamento do console

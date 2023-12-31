@@ -22,14 +22,29 @@
 #include "misc.h"
 
 #ifdef __WIN32__
- #define DIR_VALIDO (wdir != INVALID_HANDLE_VALUE)
+ #define DIR_VALIDO (ref->wdir != INVALID_HANDLE_VALUE)
 #else
- #define DIR_VALIDO (dir != nullptr)
+ #define DIR_VALIDO (ref->dir != nullptr)
 #endif
 
 //----------------------------------------------------------------------------
 const TVarInfo * TVarArqDir::Inicializa()
 {
+    static TVarInfo::FuncItem ListaFuncEnd[] = {
+        { "abrir",        &TVarArqDir::FuncAbrir },
+        { "apagar",       &TVarArqDir::FuncApagar },
+        { "apagardir",    &TVarArqDir::FuncApagarDir },
+        { "atempo",       &TVarArqDir::FuncAtempo },
+        { "barra",        &TVarArqDir::FuncBarra },
+        { "criardir",     &TVarArqDir::FuncCriarDir },
+        { "depois",       &TVarArqDir::FuncDepois },
+        { "fechar",       &TVarArqDir::FuncFechar },
+        { "lin",          &TVarArqDir::FuncLin },
+        { "mtempo",       &TVarArqDir::FuncMtempo },
+        { "renomear",     &TVarArqDir::FuncRenomear },
+        { "tamanho",      &TVarArqDir::FuncTamanho },
+        { "texto",        &TVarArqDir::FuncTexto },
+        { "tipo",         &TVarArqDir::FuncTipo } };
     static const TVarInfo var(
         FTamanho,
         FTamanhoVetor,
@@ -46,7 +61,10 @@ const TVarInfo * TVarArqDir::Inicializa()
         TVarInfo::FOperadorAddFalse,
         TVarInfo::FOperadorIgual2Var,
         TVarInfo::FOperadorComparaVar,
-        TVarInfo::FFuncVetorFalse);
+        TVarInfo::FFuncTextoFalse,
+        TVarInfo::FFuncVetorFalse,
+        ListaFuncEnd,
+        sizeof(ListaFuncEnd) / sizeof(ListaFuncEnd[0]) - 1);
     return &var;
 }
 
@@ -75,46 +93,9 @@ inline void TVarArqDir::Apagar()
 }
 
 //------------------------------------------------------------------------------
-bool TVarArqDir::Func(TVariavel * v, const char * nome)
-{
-// Lista das funções de arqdir
-// Deve obrigatoriamente estar em letras minúsculas e ordem alfabética
-    static const struct {
-        const char * Nome;
-        bool (TVarArqDir::*Func)(TVariavel * v); } ExecFunc[] = {
-        { "abrir",        &TVarArqDir::FuncAbrir },
-        { "apagar",       &TVarArqDir::FuncApagar },
-        { "apagardir",    &TVarArqDir::FuncApagarDir },
-        { "atempo",       &TVarArqDir::FuncAtempo },
-        { "barra",        &TVarArqDir::FuncBarra },
-        { "criardir",     &TVarArqDir::FuncCriarDir },
-        { "depois",       &TVarArqDir::FuncDepois },
-        { "fechar",       &TVarArqDir::FuncFechar },
-        { "lin",          &TVarArqDir::FuncLin },
-        { "mtempo",       &TVarArqDir::FuncMtempo },
-        { "renomear",     &TVarArqDir::FuncRenomear },
-        { "tamanho",      &TVarArqDir::FuncTamanho },
-        { "texto",        &TVarArqDir::FuncTexto },
-        { "tipo",         &TVarArqDir::FuncTipo } };
-// Procura a função correspondente e executa
-    int ini = 0;
-    int fim = sizeof(ExecFunc) / sizeof(ExecFunc[0]) - 1;
-    char mens[80];
-    copiastrmin(mens, nome, sizeof(mens));
-    while (ini <= fim)
-    {
-        int meio = (ini + fim) / 2;
-        int resultado = strcmp(mens, ExecFunc[meio].Nome);
-        if (resultado == 0) // Se encontrou...
-            return (this->*ExecFunc[meio].Func)(v);
-        if (resultado < 0) fim = meio - 1; else ini = meio + 1;
-    }
-    return false;
-}
-
-//------------------------------------------------------------------------------
 bool TVarArqDir::FuncLin(TVariavel * v)
 {
+    TVarArqDir * ref = reinterpret_cast<TVarArqDir*>(v->endvar) + v->indice;
     bool b = DIR_VALIDO;
     return Instr::CriarVarInt(v, b);
 }
@@ -122,14 +103,16 @@ bool TVarArqDir::FuncLin(TVariavel * v)
 //------------------------------------------------------------------------------
 bool TVarArqDir::FuncTexto(TVariavel * v)
 {
+    TVarArqDir * ref = reinterpret_cast<TVarArqDir*>(v->endvar) + v->indice;
     Instr::ApagarVar(v);
-    return Instr::CriarVarTexto(DIR_VALIDO ? arqdir : "");
+    return Instr::CriarVarTexto(DIR_VALIDO ? ref->arqdir : "");
 }
 
 //------------------------------------------------------------------------------
 bool TVarArqDir::FuncDepois(TVariavel * v)
 {
-    Proximo();
+    TVarArqDir * ref = reinterpret_cast<TVarArqDir*>(v->endvar) + v->indice;
+    ref->Proximo();
     return false;
 }
 
@@ -163,9 +146,10 @@ bool TVarArqDir::FuncBarra(TVariavel * v)
 // Abrir/Fechar diretório
 bool TVarArqDir::FuncAbrir(TVariavel * v)
 {
+    TVarArqDir * ref = reinterpret_cast<TVarArqDir*>(v->endvar) + v->indice;
     char mens[512];
 // Fecha diretório
-    Apagar();
+    ref->Apagar();
 // Obtém nome do diretório
     *mens = 0;
     if (Instr::VarAtual >= v + 1)
@@ -193,13 +177,13 @@ bool TVarArqDir::FuncAbrir(TVariavel * v)
     arqtipo = (ffd.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY)
                 ? 'D' : 'A';
 #else
-    dir = opendir(mens);
-    if (dir == nullptr)
+    ref->dir = opendir(mens);
+    if (ref->dir == nullptr)
     {
         Instr::ApagarVar(v);
         return Instr::CriarVarTexto(strerror(errno));
     }
-    Proximo();
+    ref->Proximo();
 #endif
     return Instr::CriarVarTxtFixo(v, "");
 }
@@ -207,7 +191,8 @@ bool TVarArqDir::FuncAbrir(TVariavel * v)
 //------------------------------------------------------------------------------
 bool TVarArqDir::FuncFechar(TVariavel * v)
 {
-    Apagar();
+    TVarArqDir * ref = reinterpret_cast<TVarArqDir*>(v->endvar) + v->indice;
+    ref->Apagar();
     return false;
 }
 
@@ -215,12 +200,13 @@ bool TVarArqDir::FuncFechar(TVariavel * v)
 // Atributos do arquivo
 bool TVarArqDir::FuncTipo(TVariavel * v)
 {
+    TVarArqDir * ref = reinterpret_cast<TVarArqDir*>(v->endvar) + v->indice;
 // Sem argumentos: entrada encontrada em abrir()
     if (Instr::VarAtual < v + 1)
     {
         char txt[2] = "?";
         if (DIR_VALIDO)
-            txt[0] = arqtipo;
+            txt[0] = ref->arqtipo;
         Instr::ApagarVar(v);
         return Instr::CriarVarTexto(txt);
     }

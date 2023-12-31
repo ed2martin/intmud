@@ -1,6 +1,8 @@
 #ifndef VAR_TEXTO_H
 #define VAR_TEXTO_H
 
+//#define DEBUG_TEXTOTXT // Texto guardado em TTextoTxt
+
 //----------------------------------------------------------------------------
 class TVariavel;
 class TVarInfo;
@@ -14,6 +16,11 @@ class TObjeto;
 class TTextoTxt  /// Variáveis TextoTxt
 {
 public:
+#ifdef DEBUG_TEXTOTXT
+    static void DebugTextoTxt(TTextoTxt * txt);
+#else
+    inline static void DebugTextoTxt(TTextoTxt * txt) {}
+#endif
     static const TVarInfo * Inicializa();
         ///< Inicializa variável e retorna informações
     void Apagar();          ///< Apaga objeto
@@ -36,7 +43,6 @@ public:
             /**< Se algum texto foi adicionado (com TextoAnota), o último
                  byte adicionado deve ser um Instr::ex_barra_n ou 0 */
 
-    bool Func(TVariavel * v, const char * nome); ///< Função da variável
     int  getValor();        ///< Ler valor numérico da variável
 
     TTextoBloco * Inicio;   ///< Aonde começa o texto
@@ -67,26 +73,26 @@ public:
             /**< @param opcoes Opções de remoção, obtidas com ::txtRemove() */
 
 private:
-    bool FuncIni(TVariavel * v);
-    bool FuncFim(TVariavel * v);
-    bool FuncAddIni(TVariavel * v);
-    bool FuncAddFim(TVariavel * v);
-    bool FuncRemove(TVariavel * v);
-    bool FuncLimpar(TVariavel * v);
-    bool FuncLinhas(TVariavel * v);
-    bool FuncBytes(TVariavel * v);
-    bool FuncOrdena(TVariavel * v);
-    bool FuncOrdenaLin(TVariavel * v);
-    bool FuncRand(TVariavel * v);
-    bool FuncTxtRemove(TVariavel * v);
-    bool FuncJuntaLin(TVariavel * v);
-    bool FuncDivideLin(TVariavel * v);
-    bool FuncDivideLinCor(TVariavel * v);
-    bool FuncJuntar(TVariavel * v);
-    bool FuncLer(TVariavel * v);
-    bool FuncSalvar(TVariavel * v);
-    bool FuncClipLer(TVariavel * v);
-    bool FuncClipSalvar(TVariavel * v);
+    static bool FuncIni(TVariavel * v);
+    static bool FuncFim(TVariavel * v);
+    static bool FuncAddIni(TVariavel * v);
+    static bool FuncAddFim(TVariavel * v);
+    static bool FuncRemove(TVariavel * v);
+    static bool FuncLimpar(TVariavel * v);
+    static bool FuncLinhas(TVariavel * v);
+    static bool FuncBytes(TVariavel * v);
+    static bool FuncOrdena(TVariavel * v);
+    static bool FuncOrdenaLin(TVariavel * v);
+    static bool FuncRand(TVariavel * v);
+    static bool FuncTxtRemove(TVariavel * v);
+    static bool FuncJuntaLin(TVariavel * v);
+    static bool FuncDivideLin(TVariavel * v);
+    static bool FuncDivideLinCor(TVariavel * v);
+    static bool FuncJuntar(TVariavel * v);
+    static bool FuncLer(TVariavel * v);
+    static bool FuncSalvar(TVariavel * v);
+    static bool FuncClipLer(TVariavel * v);
+    static bool FuncClipSalvar(TVariavel * v);
 
     static int FTamanho(const char * instr);
     static int FTamanhoVetor(const char * instr);
@@ -157,8 +163,6 @@ public:
             ///< Move objeto para outro lugar
     void MudarTxt(TTextoTxt * obj);
             ///< Associa objeto a TTextoTxt sem texto, desassocia se obj==0
-    bool Func(TVariavel * v, const char * nome);
-            ///< Função da variável
     static TVarTipo FTipo(TVariavel * v);
             ///< Retorna o tipo de variável
     int  getValor(int numfunc);
@@ -177,19 +181,25 @@ public:
     unsigned int indice;    ///< Índice da variável
 
 private:
-    bool FuncAntes(TVariavel * v, int valor);
-    bool FuncDepois(TVariavel * v, int valor);
-    bool FuncLin(TVariavel * v, int valor);
-    bool FuncLinha(TVariavel * v, int valor);
-    bool FuncByte(TVariavel * v, int valor);
-    bool FuncTexto(TVariavel * v, int valor);
-    bool FuncTextoLin(TVariavel * v, int valor);
-    bool FuncMudar(TVariavel * v, int valor);
-    bool FuncAdd(TVariavel * v, int valor);
-    bool FuncRemove(TVariavel * v, int valor);
-    bool FuncJuntar(TVariavel * v, int valor);
-    bool FuncTxtProc(TVariavel * v, int valor);
-    bool FuncMd5Sha1(TVariavel * v, int valor);
+    bool FuncAddInterno(TVariavel * v, int valor);
+    bool FuncTxtProcInterno(TVariavel * v, int valor);
+    static bool FuncAntes(TVariavel * v);
+    static bool FuncDepois(TVariavel * v);
+    static bool FuncLin(TVariavel * v);
+    static bool FuncLinha(TVariavel * v);
+    static bool FuncByte(TVariavel * v);
+    static bool FuncTexto(TVariavel * v);
+    static bool FuncTextoLin(TVariavel * v);
+    static bool FuncMudar(TVariavel * v);
+    static bool FuncAdd(TVariavel * v);
+    static bool FuncAddPos(TVariavel * v);
+    static bool FuncRemove(TVariavel * v);
+    static bool FuncJuntar(TVariavel * v);
+    static bool FuncTxtProc(TVariavel * v);
+    static bool FuncTxtProcDif(TVariavel * v);
+    static bool FuncTxtProcMai(TVariavel * v);
+    static bool FuncMd5(TVariavel * v);
+    static bool FuncSha1(TVariavel * v);
 
     static int FTamanho(const char * instr);
     static int FTamanhoVetor(const char * instr);

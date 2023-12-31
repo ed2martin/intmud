@@ -4,33 +4,6 @@
 #include "instr-enum.h"
 class TClasse;
 class TObjeto;
-class TVarRef;
-class TVarIncDec;
-class TVarIntTempo;
-class TVarIntExec;
-class TListaObj;
-class TListaItem;
-class TTextoTxt;
-class TTextoPos;
-class TTextoVar;
-class TTextoObj;
-class TVarArqDir;
-class TVarArqProg;
-class TVarArqExec;
-class TVarArqLog;
-class TVarArqTxt;
-class TVarArqMem;
-class TVarNomeObj;
-class TVarTelaTxt;
-class TVarSocket;
-class TVarServ;
-class TVarProg;
-class TVarDebug;
-class TIndiceObj;
-class TIndiceItem;
-class TVarDataHora;
-class TTextoVarSub;
-class TTextoObjSub;
 class TVariavel;
 
 // De misc.h
@@ -51,29 +24,14 @@ enum TVarTipo : unsigned char
 /// Informações e funções de cada variável
 class TVarInfo
 {
-private:
-    int (*FTamanho)(const char * instr);
-    int (*FTamanhoVetor)(const char * instr);
-    TVarTipo (*FTipo)(TVariavel * v);
-    void (*FRedim)(TVariavel * v, TClasse * c, TObjeto * o,
-            unsigned int antes, unsigned int depois);
-    void (*FMoverEnd)(TVariavel * v, void * destino, TClasse * c, TObjeto * o);
-    void (*FMoverDef)(TVariavel * v);
-    bool (*FGetBool)(TVariavel * v);
-    int (*FGetInt)(TVariavel * v);
-    double (*FGetDouble)(TVariavel * v);
-    const char * (*FGetTxt)(TVariavel * v);
-    TObjeto * (*FGetObj)(TVariavel * v);
-    void (*FOperadorAtrib)(TVariavel * v1, TVariavel * v2);
-    bool (*FOperadorAdd)(TVariavel * v1, TVariavel * v2);
-    bool (*FOperadorIgual2)(TVariavel * v1, TVariavel * v2);
-    unsigned char (*FOperadorCompara)(TVariavel * v1, TVariavel * v2);
-    bool (*FFuncVetor)(TVariavel * v, const char * nome);
-
-    static char * EndBufferTxt;
-    static unsigned short NumBufferTxt;
-
 public:
+    /// Um item, para executar funções de uma variável de TVariavel
+    struct FuncItem
+    {
+        const char * Nome;
+        bool (*Func)(TVariavel * v);
+    };
+
     /// Construtor usado ao criar TVariavel::VarInfo
     TVarInfo();
     /// Construtor usado nas variáveis da linguagem
@@ -94,7 +52,10 @@ public:
             bool (*fOperadorAdd)(TVariavel * v1, TVariavel * v2),
             bool (*fOperadorIgual2)(TVariavel * v1, TVariavel * v2),
             unsigned char (*fOperadorCompara)(TVariavel * v1, TVariavel * v2),
-            bool (*fFuncVetor)(TVariavel * v, const char * nome));
+            bool (*fFuncTexto)(TVariavel * v, const char * nome),
+            bool (*fFuncVetor)(TVariavel * v, const char * nome),
+            FuncItem * FuncListaEnd, // Lista de funções em ordem alfabética
+            int FuncListaFim); // Número de elementos de FuncListaEnd menos 1
     /// Retorna um buffer de 0x100 bytes para ser usado para retornar texto
     static inline char * BufferTxt()
     {
@@ -128,7 +89,35 @@ public:
     static bool FOperadorAddFalse(TVariavel * v1, TVariavel * v2);
     static bool FOperadorIgual2Var(TVariavel * v1, TVariavel * v2);
     static unsigned char FOperadorComparaVar(TVariavel * v1, TVariavel * v2);
+    static bool FFuncTextoFalse(TVariavel * v, const char * nome);
     static bool FFuncVetorFalse(TVariavel * v, const char * nome);
+
+private:
+    int (*FTamanho)(const char * instr);
+    int (*FTamanhoVetor)(const char * instr);
+    TVarTipo (*FTipo)(TVariavel * v);
+    void (*FRedim)(TVariavel * v, TClasse * c, TObjeto * o,
+            unsigned int antes, unsigned int depois);
+    void (*FMoverEnd)(TVariavel * v, void * destino, TClasse * c, TObjeto * o);
+    void (*FMoverDef)(TVariavel * v);
+    bool (*FGetBool)(TVariavel * v);
+    int (*FGetInt)(TVariavel * v);
+    double (*FGetDouble)(TVariavel * v);
+    const char * (*FGetTxt)(TVariavel * v);
+    TObjeto * (*FGetObj)(TVariavel * v);
+    void (*FOperadorAtrib)(TVariavel * v1, TVariavel * v2);
+    bool (*FOperadorAdd)(TVariavel * v1, TVariavel * v2);
+    bool (*FOperadorIgual2)(TVariavel * v1, TVariavel * v2);
+    unsigned char (*FOperadorCompara)(TVariavel * v1, TVariavel * v2);
+    bool (*FFuncTexto)(TVariavel * v, const char * nome);
+    bool (*FFuncVetor)(TVariavel * v, const char * nome);
+    /// Lista de funções em letras minúsculas e em ordem alfabética
+    FuncItem * FFuncListaEnd;
+    /// Número de elementos de FFuncListaEnd menos 1
+    int FFuncListaFim;
+
+    static char * EndBufferTxt;
+    static unsigned short NumBufferTxt;
 
     friend TVariavel;
 };
@@ -373,8 +362,10 @@ public:
 
     /// Compara esta variável com outra
     /** @param v Variável que será comparada
-     *  @return 1 se esta variável vem antes, 2 se iguais, 4 se vem depois
-     *      ou 0 se são apenas diferentes porque não tem como comparar */
+     *  @retval 1 se esta variável vem antes
+     *  @retval 2 se variáveis iguais
+     *  @retval 4 se esta variável vem depois
+     *  @retval 0 se são apenas diferentes porque não tem como comparar */
     inline unsigned char OperadorCompara(TVariavel * v)
     {
         unsigned char cmd = (unsigned char)defvar[2];
@@ -384,12 +375,12 @@ public:
         return 0;
     }
 
+    /// Executa função da variável
+    /** Deve verificar argumentos, após a variável
+     *  @param nome Nome da função
+     *  @retval true se processou
+     *  @retval false se função inexistente */
     bool Func(const char * nome);
-        ///< Executa função da variável
-        /**< Deve verificar argumentos, após a variável
-         *   @param nome Nome da função
-         *   @retval true se processou
-         *   @retval false se função inexistente */
 
 // Variáveis
     const char * defvar;
@@ -409,33 +400,6 @@ public:
         char * endchar; ///< endvar como char*
         int  valor_int;  ///< endvar como int
         double valor_double; ///< endvar como double (8 bytes)
-
-        TVarIncDec   * end_incdec;   ///< Instr::cIntInc e Instr::cIntDec
-        TVarArqDir   * end_arqdir;   ///< Instr::cArqDir
-        TVarArqLog   * end_arqlog;   ///< Instr::cArqLog
-        TVarArqProg  * end_arqprog;  ///< Instr::cArqProg
-        TVarArqExec  * end_arqexec;  ///< Instr::cArqExec
-        TVarArqTxt   * end_arqtxt;   ///< Instr::cArqTxt
-        TVarArqMem   * end_arqmem;   ///< Instr::cArqMem
-        TVarIntTempo * end_inttempo; ///< Instr::cIntTempo
-        TVarIntExec  * end_intexec;  ///< Instr::cIntExec
-        TListaObj    * end_listaobj; ///< Instr::cListaObj
-        TListaItem   * end_listaitem;///< Instr::cListaItem
-        TTextoTxt    * end_textotxt; ///< Instr::cTextoTxt
-        TTextoPos    * end_textopos; ///< Instr::cTextoPos
-        TTextoVar    * end_textovar; ///< Instr::cTextoVar
-        TTextoObj    * end_textoobj; ///< Instr::cTextoObj
-        TVarTelaTxt  * end_telatxt;  ///< Instr::cTelaTxt
-        TVarSocket   * end_socket;   ///< Instr::cSocket
-        TVarServ     * end_serv;     ///< Instr::cServ
-        TVarNomeObj  * end_nomeobj;  ///< Instr::cNomeObj
-        TVarProg     * end_prog;     ///< Instr::cProg
-        TVarDebug    * end_debug;    ///< Instr::cDebug
-        TIndiceObj   * end_indiceobj; ///< Instr::cIndiceObj
-        TIndiceItem  * end_indiceitem; ///< Instr::cIndiceItem
-        TVarDataHora * end_datahora; ///< Instr::cDataHora
-        TTextoVarSub * end_textovarsub; ///< Instr::cTextoVarSub
-        TTextoObjSub * end_textoobjsub; ///< Instr::cTextoObjSub
     };
     int  tamanho;   ///< Quantos bytes está usando na memória
                     /**< 0 significa que não está usando ou a variável está

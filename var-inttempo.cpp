@@ -36,6 +36,10 @@ const TVarInfo * TVarIntTempo::Inicializa()
         memset(VetMenos, 0, sizeof(TVarIntTempo*) * INTTEMPO_MAX);
         memset(VetMais, 0, sizeof(TVarIntTempo*) * INTTEMPO_MAX);
     }
+    static TVarInfo::FuncItem ListaFuncEnd[] = {
+        { "abs",        &TVarIntTempo::FuncAbs },
+        { "neg",        &TVarIntTempo::FuncNeg },
+        { "pos",        &TVarIntTempo::FuncPos } };
     static const TVarInfo var(
         FTamanho,
         FTamanhoVetor,
@@ -52,7 +56,10 @@ const TVarInfo * TVarIntTempo::Inicializa()
         TVarInfo::FOperadorAddFalse,
         FOperadorIgual2,
         FOperadorCompara,
-        FuncVetor);
+        TVarInfo::FFuncTextoFalse,
+        FuncVetor,
+        ListaFuncEnd,
+        sizeof(ListaFuncEnd) / sizeof(ListaFuncEnd[0]) - 1);
     return &var;
 }
 
@@ -259,45 +266,6 @@ inline void TVarIntTempo::EndObjeto(TClasse * c, TObjeto * o)
 }
 
 //------------------------------------------------------------------------------
-bool TVarIntTempo::Func(TVariavel * v, const char * nome)
-{
-    if (comparaZ(nome, "abs") == 0)
-    {
-        Instr::ApagarVar(v + 1);
-        Instr::VarAtual->numfunc = 1;
-        return true;
-    }
-    if (comparaZ(nome, "pos") == 0)
-    {
-        int valor = getValor(0);
-        if (valor < 0)
-            setValor(0, -valor);
-        return false;
-    }
-    if (comparaZ(nome, "neg") == 0)
-    {
-        int valor = getValor(0);
-        if (valor > 0)
-            setValor(0, -valor);
-        return false;
-    }
-    return false;
-}
-
-//------------------------------------------------------------------------------
-bool TVarIntTempo::FuncVetor(TVariavel * v, const char * nome)
-{
-    if (comparaZ(nome, "limpar") != 0)
-        return false;
-    const int total = (unsigned char)v->defvar[Instr::endVetor];
-    const int numero = (Instr::VarAtual <= v ? 0 : v[1].getInt());
-    TVarIntTempo * ender = reinterpret_cast<TVarIntTempo*>(v->endvar);
-    for (int x = 0; x < total; x++)
-        ender[x].setValor(0, numero);
-    return false;
-}
-
-//------------------------------------------------------------------------------
 int TVarIntTempo::FTamanho(const char * instr)
 {
     return sizeof(TVarIntTempo);
@@ -402,4 +370,45 @@ unsigned char TVarIntTempo::FOperadorCompara(TVariavel * v1, TVariavel * v2)
 {
     TVarIntTempo * ref = reinterpret_cast<TVarIntTempo*>(v1->endvar) + v1->indice;
     return TVarInfo::ComparaInt(ref->getValor(v1->numfunc), v2);
+}
+
+//------------------------------------------------------------------------------
+bool TVarIntTempo::FuncAbs(TVariavel * v)
+{
+    Instr::ApagarVar(v + 1);
+    Instr::VarAtual->numfunc = 1;
+    return true;
+}
+
+//------------------------------------------------------------------------------
+bool TVarIntTempo::FuncPos(TVariavel * v)
+{
+    TVarIntTempo * ref = reinterpret_cast<TVarIntTempo*>(v->endvar) + v->indice;
+    int valor = ref->getValor(0);
+    if (valor < 0)
+        ref->setValor(0, -valor);
+    return false;
+}
+
+//------------------------------------------------------------------------------
+bool TVarIntTempo::FuncNeg(TVariavel * v)
+{
+    TVarIntTempo * ref = reinterpret_cast<TVarIntTempo*>(v->endvar) + v->indice;
+    int valor = ref->getValor(0);
+    if (valor > 0)
+        ref->setValor(0, -valor);
+    return false;
+}
+
+//------------------------------------------------------------------------------
+bool TVarIntTempo::FuncVetor(TVariavel * v, const char * nome)
+{
+    if (comparaZ(nome, "limpar") != 0)
+        return false;
+    const int total = (unsigned char)v->defvar[Instr::endVetor];
+    const int numero = (Instr::VarAtual <= v ? 0 : v[1].getInt());
+    TVarIntTempo * ender = reinterpret_cast<TVarIntTempo*>(v->endvar);
+    for (int x = 0; x < total; x++)
+        ender[x].setValor(0, numero);
+    return false;
 }

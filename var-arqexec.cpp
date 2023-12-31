@@ -258,6 +258,11 @@ void TObjExec::ProcEventos(fd_set * set_entrada, fd_set * set_saida)
 //----------------------------------------------------------------------------
 const TVarInfo * TVarArqExec::Inicializa()
 {
+    static TVarInfo::FuncItem ListaFuncEnd[] = {
+        { "aberto",    &TVarArqExec::FuncAberto },
+        { "abrir",     &TVarArqExec::FuncAbrir },
+        { "fechar",    &TVarArqExec::FuncFechar },
+        { "msg",       &TVarArqExec::FuncMsg }  };
     static const TVarInfo var(
         FTamanho,
         FTamanhoVetor,
@@ -274,7 +279,10 @@ const TVarInfo * TVarArqExec::Inicializa()
         TVarInfo::FOperadorAddFalse,
         TVarInfo::FOperadorIgual2Var,
         TVarInfo::FOperadorComparaVar,
-        TVarInfo::FFuncVetorFalse);
+        TVarInfo::FFuncTextoFalse,
+        TVarInfo::FFuncVetorFalse,
+        ListaFuncEnd,
+        sizeof(ListaFuncEnd) / sizeof(ListaFuncEnd[0]) - 1);
     return &var;
 }
 
@@ -327,40 +335,13 @@ void TVarArqExec::GeraEvento(const char * evento, const char * texto, int valor)
     }
 }
 
-//------------------------------------------------------------------------------
-bool TVarArqExec::Func(TVariavel * v, const char * nome)
-{
-// Lista das funções de arqexec
-// Deve obrigatoriamente estar em letras minúsculas e ordem alfabética
-    static const struct {
-        const char * Nome;
-        bool (TVarArqExec::*Func)(TVariavel * v); } ExecFunc[] = {
-        { "aberto",    &TVarArqExec::FuncAberto },
-        { "abrir",     &TVarArqExec::FuncAbrir },
-        { "fechar",    &TVarArqExec::FuncFechar },
-        { "msg",       &TVarArqExec::FuncMsg }  };
-// Procura a função correspondente e executa
-    int ini = 0;
-    int fim = sizeof(ExecFunc) / sizeof(ExecFunc[0]) - 1;
-    char mens[80];
-    copiastrmin(mens, nome, sizeof(mens));
-    while (ini <= fim)
-    {
-        int meio = (ini + fim) / 2;
-        int resultado = strcmp(mens, ExecFunc[meio].Nome);
-        if (resultado == 0) // Se encontrou...
-            return (this->*ExecFunc[meio].Func)(v);
-        if (resultado < 0) fim = meio - 1; else ini = meio + 1;
-    }
-    return false;
-}
-
 //----------------------------------------------------------------------------
 bool TVarArqExec::FuncMsg(TVariavel * v)
 {
-    if (ObjExec == nullptr || Instr::VarAtual != v + 1)
+    TVarArqExec * ref = reinterpret_cast<TVarArqExec*>(v->endvar) + v->indice;
+    if (ref->ObjExec == nullptr || Instr::VarAtual != v + 1)
         return false;
-    bool enviou = ObjExec->Enviar(v[1].getTxt());
+    bool enviou = ref->ObjExec->Enviar(v[1].getTxt());
     return Instr::CriarVarInt(v, enviou);
 }
 
@@ -369,10 +350,11 @@ bool TVarArqExec::FuncAbrir(TVariavel * v)
 {
     if (Instr::VarAtual < v + 1)
         return false;
-    if (ObjExec)
+    TVarArqExec * ref = reinterpret_cast<TVarArqExec*>(v->endvar) + v->indice;
+    if (ref->ObjExec)
     {
-        ObjExec->VarArqExec = nullptr;
-        ObjExec = nullptr;
+        ref->ObjExec->VarArqExec = nullptr;
+        ref->ObjExec = nullptr;
     }
     const char * cmd = v[1].getTxt();
     if (cmd == nullptr || *cmd == 0)
@@ -402,21 +384,22 @@ bool TVarArqExec::FuncAbrir(TVariavel * v)
             return Instr::CriarVarTxtFixo(v, "ArqExec não pode executar isso");
     }
     int visivel = (Instr::VarAtual >= v+2 ? v[2].getInt() : 0);
-    ObjExec = new TObjExec(this);
-    const char * err = ObjExec->Abrir(cmd, visivel == 1);
-    Instr::ApagarVar(v);
+    ref->ObjExec = new TObjExec(ref);
+    const char * err = ref->ObjExec->Abrir(cmd, visivel == 1);
     if (err)
-        delete ObjExec;
+        delete ref->ObjExec;
+    Instr::ApagarVar(v);
     return Instr::CriarVarTexto(err ? err : "");
 }
 
 //----------------------------------------------------------------------------
 bool TVarArqExec::FuncFechar(TVariavel * v)
 {
-    if (ObjExec)
+    TVarArqExec * ref = reinterpret_cast<TVarArqExec*>(v->endvar) + v->indice;
+    if (ref->ObjExec)
     {
-        ObjExec->VarArqExec = nullptr;
-        ObjExec = nullptr;
+        ref->ObjExec->VarArqExec = nullptr;
+        ref->ObjExec = nullptr;
     }
     return false;
 }
@@ -424,7 +407,8 @@ bool TVarArqExec::FuncFechar(TVariavel * v)
 //----------------------------------------------------------------------------
 bool TVarArqExec::FuncAberto(TVariavel * v)
 {
-    bool aberto = (ObjExec != nullptr);
+    TVarArqExec * ref = reinterpret_cast<TVarArqExec*>(v->endvar) + v->indice;
+    bool aberto = (ref->ObjExec != nullptr);
     return Instr::CriarVarInt(v, aberto);
 }
 

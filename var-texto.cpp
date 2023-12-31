@@ -50,6 +50,27 @@ int TextoAnotaLin(char * destino, const char * origem, int total)
 //----------------------------------------------------------------------------
 const TVarInfo * TTextoTxt::Inicializa()
 {
+    static TVarInfo::FuncItem ListaFuncEnd[] = {
+        { "addfim",       &TTextoTxt::FuncAddFim },
+        { "addini",       &TTextoTxt::FuncAddIni },
+        { "bytes",        &TTextoTxt::FuncBytes },
+        { "clipler",      &TTextoTxt::FuncClipLer },
+        { "clipsalvar",   &TTextoTxt::FuncClipSalvar },
+        { "dividelin",    &TTextoTxt::FuncDivideLin },
+        { "dividelincor", &TTextoTxt::FuncDivideLinCor },
+        { "fim",          &TTextoTxt::FuncFim },
+        { "ini",          &TTextoTxt::FuncIni },
+        { "juntalin",     &TTextoTxt::FuncJuntaLin },
+        { "juntar",       &TTextoTxt::FuncJuntar },
+        { "ler",          &TTextoTxt::FuncLer },
+        { "limpar",       &TTextoTxt::FuncLimpar },
+        { "linhas",       &TTextoTxt::FuncLinhas },
+        { "ordena",       &TTextoTxt::FuncOrdena },
+        { "ordenalin",    &TTextoTxt::FuncOrdenaLin },
+        { "rand",         &TTextoTxt::FuncRand },
+        { "remove",       &TTextoTxt::FuncRemove },
+        { "salvar",       &TTextoTxt::FuncSalvar },
+        { "txtremove",    &TTextoTxt::FuncTxtRemove }  };
     static const TVarInfo var(
         FTamanho,
         FTamanhoVetor,
@@ -66,7 +87,10 @@ const TVarInfo * TTextoTxt::Inicializa()
         TVarInfo::FOperadorAddFalse,
         TVarInfo::FOperadorIgual2Var,
         TVarInfo::FOperadorComparaVar,
-        TVarInfo::FFuncVetorFalse);
+        TVarInfo::FFuncTextoFalse,
+        TVarInfo::FFuncVetorFalse,
+        ListaFuncEnd,
+        sizeof(ListaFuncEnd) / sizeof(ListaFuncEnd[0]) - 1);
     return &var;
 }
 
@@ -205,6 +229,24 @@ const char * TTextoTxt::FGetTxt(TVariavel * v) VARIAVEL_FGETTXT0(TTextoTxt)
 //----------------------------------------------------------------------------
 const TVarInfo * TTextoPos::Inicializa()
 {
+    static TVarInfo::FuncItem ListaFuncEnd[] = {
+        { "add",          &TTextoPos::FuncAdd },
+        { "addpos",       &TTextoPos::FuncAddPos },
+        { "antes",        &TTextoPos::FuncAntes },
+        { "byte",         &TTextoPos::FuncByte },
+        { "depois",       &TTextoPos::FuncDepois },
+        { "juntar",       &TTextoPos::FuncJuntar },
+        { "lin",          &TTextoPos::FuncLin },
+        { "linha",        &TTextoPos::FuncLinha },
+        { "mudar",        &TTextoPos::FuncMudar },
+        { "remove",       &TTextoPos::FuncRemove },
+        { "texto",        &TTextoPos::FuncTexto },
+        { "textolin",     &TTextoPos::FuncTextoLin },
+        { "txtmd5",       &TTextoPos::FuncMd5 },
+        { "txtproc",      &TTextoPos::FuncTxtProc },
+        { "txtprocdif",   &TTextoPos::FuncTxtProc },
+        { "txtprocmai",   &TTextoPos::FuncTxtProc },
+        { "txtsha1",      &TTextoPos::FuncSha1 } };
     static const TVarInfo var(
         FTamanho,
         FTamanhoVetor,
@@ -221,7 +263,10 @@ const TVarInfo * TTextoPos::Inicializa()
         TVarInfo::FOperadorAddFalse,
         FOperadorIgual2,
         FOperadorCompara,
-        TVarInfo::FFuncVetorFalse);
+        TVarInfo::FFuncTextoFalse,
+        TVarInfo::FFuncVetorFalse,
+        ListaFuncEnd,
+        sizeof(ListaFuncEnd) / sizeof(ListaFuncEnd[0]) - 1);
     return &var;
 }
 

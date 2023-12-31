@@ -21,8 +21,6 @@ public:
             ///< Chamado ao criar objeto
     void Apagar();
             ///< Chamado ao apagar objeto
-    bool Func(TVariavel * v, const char * nome);
-            ///< Função da variável
     void Proximo(); ///< Passa para a próxima entrada
 #ifdef __WIN32__
     HANDLE wdir; ///< Diretório sendo verificado, ou 0 se nenhum
@@ -33,20 +31,20 @@ public:
     char arqtipo;     ///< Letra que indica o tipo de arquivo, se dir!=0
 
 private:
-    bool FuncLin(TVariavel * v);
-    bool FuncTexto(TVariavel * v);
-    bool FuncDepois(TVariavel * v);
-    bool FuncBarra(TVariavel * v);
-    bool FuncAbrir(TVariavel * v);
-    bool FuncFechar(TVariavel * v);
-    bool FuncTipo(TVariavel * v);
-    bool FuncTamanho(TVariavel * v);
-    bool FuncMtempo(TVariavel * v);
-    bool FuncAtempo(TVariavel * v);
-    bool FuncApagarDir(TVariavel * v);
-    bool FuncCriarDir(TVariavel * v);
-    bool FuncApagar(TVariavel * v);
-    bool FuncRenomear(TVariavel * v);
+    static bool FuncLin(TVariavel * v);
+    static bool FuncTexto(TVariavel * v);
+    static bool FuncDepois(TVariavel * v);
+    static bool FuncBarra(TVariavel * v);
+    static bool FuncAbrir(TVariavel * v);
+    static bool FuncFechar(TVariavel * v);
+    static bool FuncTipo(TVariavel * v);
+    static bool FuncTamanho(TVariavel * v);
+    static bool FuncMtempo(TVariavel * v);
+    static bool FuncAtempo(TVariavel * v);
+    static bool FuncApagarDir(TVariavel * v);
+    static bool FuncCriarDir(TVariavel * v);
+    static bool FuncApagar(TVariavel * v);
+    static bool FuncRenomear(TVariavel * v);
 
     static int FTamanho(const char * instr);
     static int FTamanhoVetor(const char * instr);

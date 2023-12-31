@@ -516,7 +516,7 @@ bool Instr::CriarVar(const char * def)
     }
 // Cria variável
     Instr::DadosTopo = p + VarAtual->tamanho;
-    VarAtual->Criar(0, 0);
+    VarAtual->Criar(nullptr, nullptr);
     return true;
 }
 

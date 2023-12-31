@@ -90,6 +90,11 @@ TVarServObj::~TVarServObj()
 //----------------------------------------------------------------------------
 const TVarInfo * TVarServ::Inicializa()
 {
+    static TVarInfo::FuncItem ListaFuncEnd[] = {
+        { "abrir",        &TVarServ::FuncAbrir },
+        { "abrirssl",     &TVarServ::FuncAbrirSSL },
+        { "fechar",       &TVarServ::FuncFechar },
+        { "inissl",       &TVarServ::FuncIniSSL }  };
     static const TVarInfo var(
         FTamanho,
         FTamanhoVetor,
@@ -106,7 +111,10 @@ const TVarInfo * TVarServ::Inicializa()
         TVarInfo::FOperadorAddFalse,
         TVarInfo::FOperadorIgual2Var,
         TVarInfo::FOperadorComparaVar,
-        TVarInfo::FFuncVetorFalse);
+        TVarInfo::FFuncTextoFalse,
+        TVarInfo::FFuncVetorFalse,
+        ListaFuncEnd,
+        sizeof(ListaFuncEnd) / sizeof(ListaFuncEnd[0]) - 1);
     return &var;
 }
 
@@ -420,49 +428,23 @@ void TVarServ::ExecEvento(int localSocket, SSL * sslSocket)
         // Cria argumento: TVarSocket
     Instr::ExecArgCriar(Instr::InstrSocket);
     TVariavel * v = Instr::VarAtual;
+    TVarSocket * ref = reinterpret_cast<TVarSocket*>(v->endvar) + v->indice;
         // Cria argumento: índice
     Instr::ExecArg(indice);
         // Cria TObjSocket com o socket
     TSocket * s = new TSocket(localSocket, sslSocket);
         // Coloca TObjSocket em TVarSocket
-    v->end_socket->MudarSock(s);
+    ref->MudarSock(s);
         // Executa
     Instr::ExecX();
     Instr::ExecFim();
 }
 
 //------------------------------------------------------------------------------
-bool TVarServ::Func(TVariavel * v, const char * nome)
-{
-// Lista das funções de serv
-// Deve obrigatoriamente estar em letras minúsculas e ordem alfabética
-    static const struct {
-        const char * Nome;
-        bool (TVarServ::*Func)(TVariavel * v); } ExecFunc[] = {
-        { "abrir",        &TVarServ::FuncAbrir },
-        { "abrirssl",     &TVarServ::FuncAbrirSSL },
-        { "fechar",       &TVarServ::FuncFechar },
-        { "inissl",       &TVarServ::FuncIniSSL }  };
-// Procura a função correspondente e executa
-    int ini = 0;
-    int fim = sizeof(ExecFunc) / sizeof(ExecFunc[0]) - 1;
-    char mens[80];
-    copiastrmin(mens, nome, sizeof(mens));
-    while (ini <= fim)
-    {
-        int meio = (ini + fim) / 2;
-        int resultado = strcmp(mens, ExecFunc[meio].Nome);
-        if (resultado == 0) // Se encontrou...
-            return (this->*ExecFunc[meio].Func)(v);
-        if (resultado < 0) fim = meio - 1; else ini = meio + 1;
-    }
-    return false;
-}
-
-//------------------------------------------------------------------------------
 bool TVarServ::FuncFechar(TVariavel * v)
 {
-    Fechar();
+    TVarServ * ref = reinterpret_cast<TVarServ*>(v->endvar) + v->indice;
+    ref->Fechar();
     return false;
 }
 
@@ -476,8 +458,9 @@ bool TVarServ::FuncAbrir(TVariavel * v)
     int valor = 0;
     if (porta >= 0 && porta <= 65535)
     {
-        modossl = false;
-        valor = Abrir(ender, porta);
+        TVarServ * ref = reinterpret_cast<TVarServ*>(v->endvar) + v->indice;
+        ref->modossl = false;
+        valor = ref->Abrir(ender, porta);
 //printf("%s %d -> %d\n\n", ender, porta, valor); fflush(stdout);
     }
     return Instr::CriarVarInt(v, valor);
@@ -493,8 +476,9 @@ bool TVarServ::FuncAbrirSSL(TVariavel * v)
     int valor = 0;
     if (porta >= 0 && porta <= 65535 && ssl_ctx_servidor)
     {
-        modossl = true;
-        valor = Abrir(ender, porta);
+        TVarServ * ref = reinterpret_cast<TVarServ*>(v->endvar) + v->indice;
+        ref->modossl = true;
+        valor = ref->Abrir(ender, porta);
 //printf("%s %d -> %d\n\n", ender, porta, valor); fflush(stdout);
     }
     return Instr::CriarVarInt(v, valor);
@@ -508,7 +492,7 @@ bool TVarServ::FuncIniSSL(TVariavel * v)
     if (ssl_ctx_servidor)
     {
         Instr::ApagarVar(v);
-        return Instr::CriarVarTexto("");
+        return Instr::CriarVarTxtFixo("");
     }
     char arq_crt[0x100];
     char arq_key[0x100];

@@ -71,7 +71,9 @@ const TVarInfo * TVarRef::Inicializa()
         TVarInfo::FOperadorAddFalse,
         FOperadorIgual2,
         FOperadorCompara,
-        TVarInfo::FFuncVetorFalse);
+        TVarInfo::FFuncTextoFalse,
+        TVarInfo::FFuncVetorFalse,
+        nullptr, -1);
     return &var;
 }
 

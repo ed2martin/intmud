@@ -14,8 +14,6 @@ public:
         ///< Inicializa variável e retorna informações
     static void ProcEventos(int tempoespera);
         ///< Processa eventos
-    static bool Func(TVariavel * v, const char * nome);
-        ///< Funções da variável arqsav
     static int Tempo(const char * arqnome);
         ///< Obtém a quantidade de minutos para expirar
         /**< @return quantidade de minutos ou 0=expirou, -1=nunca expira */
@@ -28,12 +26,12 @@ private:
          *   @param nomevar Nome da variável
          *   @return verdadeiro se sucesso, falso se falha (var->defvar=0) */
     static int Ler(TVariavel * v, const char * arqnome);
-        ///< Lê um arquivo salvo; chamado internamente por Func()
+        ///< Lê um arquivo salvo; usado internamente
         /**< @param v Argumentos
          *   @param arqnome Nome do arquivo
          *   @return Quantidade de objetos lidos */
     static int Salvar(TVariavel * v, const char * arqnome, bool senhacod);
-        ///< Salva um arquivo; chamado internamente por Func()
+        ///< Salva um arquivo; usado internamente
         /**< @param v Argumentos
          *   @param arqnome Nome do arquivo
          *   @param senhacod Se a senha já está codificada

@@ -86,6 +86,12 @@ const char * TArqIncluir::ArqNome()
 //----------------------------------------------------------------------------
 const TVarInfo * TVarArqProg::Inicializa()
 {
+    static TVarInfo::FuncItem ListaFuncEnd[] = {
+        { "abrir",        &TVarArqProg::FuncAbrir },
+        { "depois",       &TVarArqProg::FuncDepois },
+        { "fechar",       &TVarArqProg::FuncFechar },
+        { "lin",          &TVarArqProg::FuncLin },
+        { "texto",        &TVarArqProg::FuncTexto } };
     static const TVarInfo var(
         FTamanho,
         FTamanhoVetor,
@@ -102,7 +108,10 @@ const TVarInfo * TVarArqProg::Inicializa()
         TVarInfo::FOperadorAddFalse,
         TVarInfo::FOperadorIgual2Var,
         TVarInfo::FOperadorComparaVar,
-        TVarInfo::FFuncVetorFalse);
+        TVarInfo::FFuncTextoFalse,
+        TVarInfo::FFuncVetorFalse,
+        ListaFuncEnd,
+        sizeof(ListaFuncEnd) / sizeof(ListaFuncEnd[0]) - 1);
     return &var;
 }
 
@@ -291,67 +300,43 @@ void TVarArqProg::Proximo()
 }
 
 //------------------------------------------------------------------------------
-bool TVarArqProg::Func(TVariavel * v, const char * nome)
-{
-// Lista das funções de arqprog
-// Deve obrigatoriamente estar em letras minúsculas e ordem alfabética
-    static const struct {
-        const char * Nome;
-        bool (TVarArqProg::*Func)(TVariavel * v); } ExecFunc[] = {
-        { "abrir",        &TVarArqProg::FuncAbrir },
-        { "depois",       &TVarArqProg::FuncDepois },
-        { "fechar",       &TVarArqProg::FuncFechar },
-        { "lin",          &TVarArqProg::FuncLin },
-        { "texto",        &TVarArqProg::FuncTexto } };
-// Procura a função correspondente e executa
-    int ini = 0;
-    int fim = sizeof(ExecFunc) / sizeof(ExecFunc[0]) - 1;
-    char mens[80];
-    copiastrmin(mens, nome, sizeof(mens));
-    while (ini <= fim)
-    {
-        int meio = (ini + fim) / 2;
-        int resultado = strcmp(mens, ExecFunc[meio].Nome);
-        if (resultado == 0) // Se encontrou...
-            return (this->*ExecFunc[meio].Func)(v);
-        if (resultado < 0) fim = meio - 1; else ini = meio + 1;
-    }
-    return false;
-}
-
-//------------------------------------------------------------------------------
 bool TVarArqProg::FuncAbrir(TVariavel * v)
 {
-    Fechar();
-    Abrir();
+    TVarArqProg * ref = reinterpret_cast<TVarArqProg*>(v->endvar) + v->indice;
+    ref->Fechar();
+    ref->Abrir();
     return Instr::CriarVarTxtFixo(v, "");
 }
 //------------------------------------------------------------------------------
 bool TVarArqProg::FuncFechar(TVariavel * v)
 {
-    Fechar();
+    TVarArqProg * ref = reinterpret_cast<TVarArqProg*>(v->endvar) + v->indice;
+    ref->Fechar();
     return false;
 }
 
 //------------------------------------------------------------------------------
 bool TVarArqProg::FuncDepois(TVariavel * v)
 {
-    Proximo();
+    TVarArqProg * ref = reinterpret_cast<TVarArqProg*>(v->endvar) + v->indice;
+    ref->Proximo();
     return false;
 }
 
 //------------------------------------------------------------------------------
 bool TVarArqProg::FuncLin(TVariavel * v)
 {
-    bool b = (*Arquivo != 0);
+    TVarArqProg * ref = reinterpret_cast<TVarArqProg*>(v->endvar) + v->indice;
+    bool b = (*ref->Arquivo != 0);
     return Instr::CriarVarInt(v, b);
 }
 
 //------------------------------------------------------------------------------
 bool TVarArqProg::FuncTexto(TVariavel * v)
 {
+    TVarArqProg * ref = reinterpret_cast<TVarArqProg*>(v->endvar) + v->indice;
     char arq[ARQINCLUIR_TAM];
-    copiastr(arq, Arquivo, sizeof(arq));
+    copiastr(arq, ref->Arquivo, sizeof(arq));
     Instr::ApagarVar(v);
     return Instr::CriarVarTexto(arq);
 }

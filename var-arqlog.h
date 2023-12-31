@@ -17,13 +17,12 @@ public:
     void Mover(TVarArqLog * destino); ///< Move para outro lugar
     int  getValor();        ///< Ler valor numérico da variável
     static int TempoEspera(int tempodecorrido);
-    bool Func(TVariavel * v, const char * nome); ///< Função da variável
 private:
-    bool FuncMsg(TVariavel * v);    ///< Processa função Msg
-    bool FuncFechar(TVariavel * v); ///< Processa função Fechar
-    bool FuncValido(TVariavel * v); ///< Processa função Valido
-    bool FuncExiste(TVariavel * v); ///< Processa função Existe
-    bool FuncAbrir(TVariavel * v);  ///< Processa função Abrir
+    static bool FuncMsg(TVariavel * v);    ///< Processa função Msg
+    static bool FuncFechar(TVariavel * v); ///< Processa função Fechar
+    static bool FuncValido(TVariavel * v); ///< Processa função Valido
+    static bool FuncExiste(TVariavel * v); ///< Processa função Existe
+    static bool FuncAbrir(TVariavel * v);  ///< Processa função Abrir
 
     static int FTamanho(const char * instr);
     static int FTamanhoVetor(const char * instr);

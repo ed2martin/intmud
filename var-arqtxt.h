@@ -17,18 +17,17 @@ public:
     void Criar();           ///< Chamado ao criar objeto
     void Apagar();          ///< Apaga objeto
     int  getValor();        ///< Ler valor numérico da variável
-    bool Func(TVariavel * v, const char * nome); ///< Função da variável
 private:
-    bool FuncLer(TVariavel * v);          ///< Processa função Ler
-    bool FuncEscr(TVariavel * v);         ///< Processa função Escr
-    bool FuncEof(TVariavel * v);          ///< Processa função Eof
-    bool FuncPos(TVariavel * v);          ///< Processa função Pos
-    bool FuncFechar(TVariavel * v);       ///< Processa função Fechar
-    bool FuncFlush(TVariavel * v);        ///< Processa função Flush
-    bool FuncValido(TVariavel * v);       ///< Processa função Valido
-    bool FuncExiste(TVariavel * v);       ///< Processa função Existe
-    bool FuncAbrir(TVariavel * v);        ///< Processa função Abrir
-    bool FuncTruncar(TVariavel * v);      ///< Processa função Truncar
+    static bool FuncLer(TVariavel * v);          ///< Processa função Ler
+    static bool FuncEscr(TVariavel * v);         ///< Processa função Escr
+    static bool FuncEof(TVariavel * v);          ///< Processa função Eof
+    static bool FuncPos(TVariavel * v);          ///< Processa função Pos
+    static bool FuncFechar(TVariavel * v);       ///< Processa função Fechar
+    static bool FuncFlush(TVariavel * v);        ///< Processa função Flush
+    static bool FuncValido(TVariavel * v);       ///< Processa função Valido
+    static bool FuncExiste(TVariavel * v);       ///< Processa função Existe
+    static bool FuncAbrir(TVariavel * v);        ///< Processa função Abrir
+    static bool FuncTruncar(TVariavel * v);      ///< Processa função Truncar
 
     static int FTamanho(const char * instr);
     static int FTamanhoVetor(const char * instr);

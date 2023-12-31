@@ -51,7 +51,6 @@ public:
     static int Fd_Set(fd_set * set_entrada, fd_set * set_saida);
     static void ProcEventos(fd_set * set_entrada, int tempo);
     void ExecEvento(int localSocket, SSL * sslSocket); ///< Gera evento
-    bool Func(TVariavel * v, const char * nome); ///< Função da variável
     int  getValor();    ///< Ler valor numérico da variável
 
     const char * defvar;///< Como foi definida a variável
@@ -63,10 +62,10 @@ public:
     unsigned char indice;   ///< Índice no vetor
 
 private:
-    bool FuncFechar(TVariavel * v);    ///< Processa função Fechar
-    bool FuncAbrir(TVariavel * v);     ///< Processa função Abrir
-    bool FuncAbrirSSL(TVariavel * v);  ///< Processa função AbrirSSL
-    bool FuncIniSSL(TVariavel * v);    ///< Processa função IniSSL
+    static bool FuncFechar(TVariavel * v);    ///< Processa função Fechar
+    static bool FuncAbrir(TVariavel * v);     ///< Processa função Abrir
+    static bool FuncAbrirSSL(TVariavel * v);  ///< Processa função AbrirSSL
+    static bool FuncIniSSL(TVariavel * v);    ///< Processa função IniSSL
 
     static int FTamanho(const char * instr);
     static int FTamanhoVetor(const char * instr);

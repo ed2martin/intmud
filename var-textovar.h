@@ -44,22 +44,20 @@ public:
         ///< Semelhante a Procura(), mas procura o texto anterior
     TBlocoVar * ProcDepois(const char * nome);
         ///< Semelhante a Procura(), mas procura o próximo texto
-    bool Func(TVariavel * v, const char * nome);
-        ///< Função da variável
 
 private:
-    bool FuncValor(TVariavel * v);
-    bool FuncValorIni(TVariavel * v);
-    bool FuncValorFim(TVariavel * v);
-    bool FuncMudar(TVariavel * v);
-    bool FuncNomeVar(TVariavel * v);
-    bool FuncTipo(TVariavel * v);
-    bool FuncAntes(TVariavel * v);
-    bool FuncDepois(TVariavel * v);
-    bool FuncIni(TVariavel * v);
-    bool FuncFim(TVariavel * v);
-    bool FuncLimpar(TVariavel * v);
-    bool FuncTotal(TVariavel * v);
+    static bool FuncValor(TVariavel * v);
+    static bool FuncValorIni(TVariavel * v);
+    static bool FuncValorFim(TVariavel * v);
+    static bool FuncMudar(TVariavel * v);
+    static bool FuncNomeVar(TVariavel * v);
+    static bool FuncTipo(TVariavel * v);
+    static bool FuncAntes(TVariavel * v);
+    static bool FuncDepois(TVariavel * v);
+    static bool FuncIni(TVariavel * v);
+    static bool FuncFim(TVariavel * v);
+    static bool FuncLimpar(TVariavel * v);
+    static bool FuncTotal(TVariavel * v);
 
     static int FTamanho(const char * instr);
     static int FTamanhoVetor(const char * instr);
@@ -70,6 +68,7 @@ private:
     static void FOperadorAtrib(TVariavel * v1, TVariavel * v2);
     static bool FOperadorIgual2(TVariavel * v1, TVariavel * v2);
     static unsigned char FOperadorCompara(TVariavel * v1, TVariavel * v2);
+    static bool FFuncTexto(TVariavel * v,const char * nome);
 
 public:
     TBlocoVar * RBroot;  ///< Objeto raiz da RBT

@@ -13,21 +13,20 @@ class TIndiceItem /// Variável IndiceItem
 public:
     static const TVarInfo * Inicializa();
         ///< Inicializa variável e retorna informações
+private:
     void Apagar();          ///< Apaga objeto
     void Mover(TIndiceItem * destino); ///< Move para outro lugar
     int  getValor();        ///< Ler valor numérico da variável
     TIndiceObj * getIndiceObj(); ///< Retorna IndiceObj
     void MudarRef(TIndiceObj * indice); ///< Muda referência de ListaX
-    bool Func(TVariavel * v, const char * nome); ///< Função da variável
 
-    bool FuncObj(TVariavel * v);
-    bool FuncTxt(TVariavel * v);
-    bool FuncAntes(TVariavel * v);
-    bool FuncDepois(TVariavel * v);
-    bool FuncIni(TVariavel * v);
-    bool FuncFim(TVariavel * v);
+    static bool FuncObj(TVariavel * v);
+    static bool FuncTxt(TVariavel * v);
+    static bool FuncAntes(TVariavel * v);
+    static bool FuncDepois(TVariavel * v);
+    static bool FuncIni(TVariavel * v);
+    static bool FuncFim(TVariavel * v);
 
-private:
     static int FTamanho(const char * instr);
     static int FTamanhoVetor(const char * instr);
     static void FRedim(TVariavel * v, TClasse * c, TObjeto * o,
@@ -55,6 +54,7 @@ class TIndiceObj /// Variável IndiceObj
 {
 public:
     static const TVarInfo * Inicializa();
+private:
         ///< Inicializa variável e retorna informações
     void Apagar();          ///< Apaga objeto
     void Mover(TIndiceObj * destino, TObjeto * obj); ///< Move para outro lugar
@@ -78,7 +78,6 @@ public:
     static TIndiceObj * RBlast(void);  ///< Último objeto da RBT
     static TIndiceObj * RBnext(TIndiceObj *); ///< Próximo objeto da RBT
     static TIndiceObj * RBprevious(TIndiceObj *); ///< Objeto anterior da RBT
-private:
     static TIndiceObj * RBroot;  ///< Objeto raiz
     TIndiceObj *RBleft,*RBright,*RBparent; ///< Objetos filhos e objeto pai
     void RBleft_rotate(void);

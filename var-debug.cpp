@@ -34,6 +34,18 @@ size_t getCurrentRSS();
 //----------------------------------------------------------------------------
 const TVarInfo * TVarDebug::Inicializa()
 {
+    static TVarInfo::FuncItem ListaFuncEnd[] = {
+        { "cmd",          &TVarDebug::FuncCmd },
+        { "data",         &TVarDebug::FuncData },
+        { "exec",         &TVarDebug::FuncExec },
+        { "func",         &TVarDebug::FuncFunc },
+        { "ini",          &TVarDebug::FuncIni },
+        { "mem",          &TVarDebug::FuncMem },
+        { "memmax",       &TVarDebug::FuncMemMax },
+        { "passo",        &TVarDebug::FuncPasso },
+        { "stempo",       &TVarDebug::FuncStempo },
+        { "utempo",       &TVarDebug::FuncUtempo },
+        { "ver",          &TVarDebug::FuncVer } };
     static const TVarInfo var(
         FTamanho,
         FTamanhoVetor,
@@ -50,7 +62,10 @@ const TVarInfo * TVarDebug::Inicializa()
         TVarInfo::FOperadorAddFalse,
         TVarInfo::FOperadorIgual2Var,
         TVarInfo::FOperadorComparaVar,
-        TVarInfo::FFuncVetorFalse);
+        TVarInfo::FFuncTextoFalse,
+        TVarInfo::FFuncVetorFalse,
+        ListaFuncEnd,
+        sizeof(ListaFuncEnd) / sizeof(ListaFuncEnd[0]) - 1);
     return &var;
 }
 
@@ -128,41 +143,6 @@ void TVarDebug::FuncEvento(const char * evento, const char * texto)
     // Passa para próximo objeto
         vobj = ObjAtual;
     } // for (TVarDebug ...
-}
-
-//------------------------------------------------------------------------------
-bool TVarDebug::Func(TVariavel * v, const char * nome)
-{
-// Lista das funções de debug
-// Deve obrigatoriamente estar em letras minúsculas e ordem alfabética
-    static const struct {
-        const char * Nome;
-        bool (*Func)(TVariavel * v); } ExecFunc[] = {
-        { "cmd",          &TVarDebug::FuncCmd },
-        { "data",         &TVarDebug::FuncData },
-        { "exec",         &TVarDebug::FuncExec },
-        { "func",         &TVarDebug::FuncFunc },
-        { "ini",          &TVarDebug::FuncIni },
-        { "mem",          &TVarDebug::FuncMem },
-        { "memmax",       &TVarDebug::FuncMemMax },
-        { "passo",        &TVarDebug::FuncPasso },
-        { "stempo",       &TVarDebug::FuncStempo },
-        { "utempo",       &TVarDebug::FuncUtempo },
-        { "ver",          &TVarDebug::FuncVer } };
-// Procura a função correspondente e executa
-    int ini = 0;
-    int fim = sizeof(ExecFunc) / sizeof(ExecFunc[0]) - 1;
-    char mens[80];
-    copiastrmin(mens, nome, sizeof(mens));
-    while (ini <= fim)
-    {
-        int meio = (ini + fim) / 2;
-        int resultado = strcmp(mens, ExecFunc[meio].Nome);
-        if (resultado == 0) // Se encontrou...
-            return (ExecFunc[meio].Func)(v);
-        if (resultado < 0) fim = meio - 1; else ini = meio + 1;
-    }
-    return false;
 }
 
 //----------------------------------------------------------------------------
@@ -249,7 +229,7 @@ bool TVarDebug::FuncCmd(TVariavel * v)
     if (mens.Total == TotalFunc) // Nenhuma instrução
     {
         Instr::ApagarVar(v);
-        return Instr::CriarVarTexto("");
+        return Instr::CriarVarTxtFixo("");
     }
     mens.Add("\x00\x00", 2); // Zero no fim da mensagem
     mens.AnotarBuf();    // Anota resultado em mens.Buf
@@ -284,7 +264,7 @@ bool TVarDebug::FuncCmd(TVariavel * v)
 // Anota instruções em DadosPilha
     Instr::ApagarVar(v);
     if (!Instr::CriarVarTexto(mens.Buf + TotalFunc, mens.Total - TotalFunc))
-        return Instr::CriarVarTexto(
+        return Instr::CriarVarTxtFixo(
                 "Quantidade de instruções muito grande");
 // Para mostrar o que codificou
 #if 0

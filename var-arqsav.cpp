@@ -52,6 +52,18 @@ static std::vector<TObjeto *> ArqLerObj;
 //----------------------------------------------------------------------------
 const TVarInfo * TVarSav::Inicializa()
 {
+    static TVarInfo::FuncItem ListaFuncEnd[] = {
+        { "apagar",       &TVarSav::FuncApagar },
+        { "dias",         &TVarSav::FuncDias },
+        { "existe",       &TVarSav::FuncExiste },
+        { "ler",          &TVarSav::FuncLer },
+        { "limpar",       &TVarSav::FuncLimpar },
+        { "limpou",       &TVarSav::FuncLimpou },
+        { "salvar",       &TVarSav::FuncSalvar },
+        { "salvarcod",    &TVarSav::FuncSalvarCod },
+        { "senha",        &TVarSav::FuncSenha },
+        { "senhacod",     &TVarSav::FuncSenhaCod },
+        { "valido",       &TVarSav::FuncValido }  };
     static const TVarInfo var(
         TVarInfo::FTamanho0,
         TVarInfo::FTamanho0,
@@ -68,7 +80,10 @@ const TVarInfo * TVarSav::Inicializa()
         TVarInfo::FOperadorAddFalse,
         TVarInfo::FOperadorIgual2Var,
         TVarInfo::FOperadorComparaVar,
-        TVarInfo::FFuncVetorFalse);
+        TVarInfo::FFuncTextoFalse,
+        TVarInfo::FFuncVetorFalse,
+        ListaFuncEnd,
+        sizeof(ListaFuncEnd) / sizeof(ListaFuncEnd[0]) - 1);
     return &var;
 }
 
@@ -158,41 +173,6 @@ int TVarSav::Tempo(const char * arqnome)
         return (tempo < 0 ? 0 : tempo);
     }
     return -1;
-}
-
-//----------------------------------------------------------------------------
-bool TVarSav::Func(TVariavel * v, const char * nome)
-{
-// Lista das funções de arqsav
-// Deve obrigatoriamente estar em letras minúsculas e ordem alfabética
-    static const struct {
-        const char * Nome;
-        bool (*Func)(TVariavel * v); } ExecFunc[] = {
-        { "apagar",       &TVarSav::FuncApagar },
-        { "dias",         &TVarSav::FuncDias },
-        { "existe",       &TVarSav::FuncExiste },
-        { "ler",          &TVarSav::FuncLer },
-        { "limpar",       &TVarSav::FuncLimpar },
-        { "limpou",       &TVarSav::FuncLimpou },
-        { "salvar",       &TVarSav::FuncSalvar },
-        { "salvarcod",    &TVarSav::FuncSalvarCod },
-        { "senha",        &TVarSav::FuncSenha },
-        { "senhacod",     &TVarSav::FuncSenhaCod },
-        { "valido",       &TVarSav::FuncValido }  };
-// Procura a função correspondente e executa
-    int ini = 0;
-    int fim = sizeof(ExecFunc) / sizeof(ExecFunc[0]) - 1;
-    char mens[80];
-    copiastrmin(mens, nome, sizeof(mens));
-    while (ini <= fim)
-    {
-        int meio = (ini + fim) / 2;
-        int resultado = strcmp(mens, ExecFunc[meio].Nome);
-        if (resultado == 0) // Se encontrou...
-            return (*ExecFunc[meio].Func)(v);
-        if (resultado < 0) fim = meio - 1; else ini = meio + 1;
-    }
-    return false;
 }
 
 //------------------------------------------------------------------------------
@@ -513,7 +493,7 @@ int TVarSav::Ler(TVariavel * v, const char * arqnome)
             !arqler.Abrir(arqnome))  // Não conseguiu abrir arquivo
         return 0;
 // Prepara variáveis
-    TListaObj * listaobj = v[2].end_listaobj + v[2].indice;
+    TListaObj * listaobj = (TListaObj*)v[2].endvar + v[2].indice;
     TListaX * listaitem = listaobj->Inicio;
     std::vector<TObjeto *> bufobj;
     if (quantidade > MAX_OBJ)
@@ -603,7 +583,7 @@ int TVarSav::Ler(TVariavel * v, const char * arqnome)
         {
         case Instr::cListaObj: // ListaObj
             {
-                TListaObj * lobj = var[0].end_listaobj + var[0].indice;
+                TListaObj * lobj = (TListaObj*)var[0].endvar + var[0].indice;
             // Limpa a lista
                 if (*p=='\'')
                 {
@@ -639,10 +619,11 @@ int TVarSav::Ler(TVariavel * v, const char * arqnome)
                     char ch = *p;
                     *p++ = 0;
                     TVariavel varitem;
-                    if (subobj < quantidade && ArqLerObj[subobj])
-                      if (ObterVar(&varitem, ArqLerObj[subobj], nomeobj))
-                        if (varitem.defvar[2] == Instr::cListaItem)
-                        varitem.end_listaitem[varitem.indice].MudarRef(listaitem_fim);
+                    if (subobj < quantidade && ArqLerObj[subobj] &&
+                            ObterVar(&varitem, ArqLerObj[subobj], nomeobj) &&
+                            varitem.defvar[2] == Instr::cListaItem)
+                        reinterpret_cast<TListaItem*>(varitem.endvar)
+                                [varitem.indice].MudarRef(listaitem_fim);
                     if (ch == 0)
                         break;
                 }
@@ -650,7 +631,7 @@ int TVarSav::Ler(TVariavel * v, const char * arqnome)
             }
         case Instr::cTextoTxt: // TextoTxt
             {
-                TTextoTxt * txtobj = var[0].end_textotxt + var[0].indice;
+                TTextoTxt * txtobj = (TTextoTxt*)var[0].endvar + var[0].indice;
             // Outro textotxt: anota \n no fim do anterior
                 if (textotxt_obj && textotxt_obj != txtobj)
                 {
@@ -678,7 +659,7 @@ int TVarSav::Ler(TVariavel * v, const char * arqnome)
                         ObterVar(&varitem, ArqLerObj[subobj], p + 1) == 0 ||
                         varitem.defvar[2] != Instr::cTextoPos)
                         break;
-                    TTextoPos * pos = varitem.end_textopos + varitem.indice;
+                    TTextoPos * pos = (TTextoPos*)varitem.endvar + varitem.indice;
                 // Adicina \n no final de textotxt se necessário
                     if (textotxt_obj)
                     {
@@ -726,7 +707,7 @@ int TVarSav::Ler(TVariavel * v, const char * arqnome)
             }
         case Instr::cTextoVar: // TextoVar
             {
-                TTextoVar * txtvar = var[0].end_textovar + var[0].indice;
+                TTextoVar * txtvar = (TTextoVar*)var[0].endvar + var[0].indice;
             // Outro textovar: anota texto e inicializa textovar
                 if (txtvar != textovar_obj)
                 {
@@ -799,7 +780,7 @@ int TVarSav::Ler(TVariavel * v, const char * arqnome)
             }
         case Instr::cTextoObj: // TextoObj
             {
-                TTextoObj * txtobj = var[0].end_textoobj + var[0].indice;
+                TTextoObj * txtobj = (TTextoObj*)var[0].endvar + var[0].indice;
             // Outro textoobj: inicializa textoobj
                 if (txtobj != textoobj_obj)
                 {
@@ -832,7 +813,7 @@ int TVarSav::Ler(TVariavel * v, const char * arqnome)
                 break;
             }
         case Instr::cDataHora: // DataHora
-            var[0].end_datahora[var[0].indice].LerSav(p);
+            reinterpret_cast<TVarDataHora*>(var[0].endvar)[var[0].indice].LerSav(p);
             break;
         default:
             ArqLerTxt = p;
@@ -880,7 +861,7 @@ int TVarSav::Salvar(TVariavel * v, const char * arqnome, bool senhacod)
         fprintf(arq, "senha=%s\n", mens);
     }
 // Anota os tipos de objetos
-    TListaObj * listaobj = v[2].end_listaobj + v[2].indice;
+    TListaObj * listaobj = (TListaObj*)v[2].endvar + v[2].indice;
     std::vector<TObjeto *> bufobj;
     fprintf(arq, "+++\n");
     for (TListaX * litem = listaobj->Inicio; litem; litem = litem->ListaDepois)
@@ -1014,7 +995,7 @@ int TVarSav::Salvar(TVariavel * v, const char * arqnome, bool senhacod)
                 do {
                     char mens[512];
                     char * d = mens;
-                    TListaObj * lobj = var.end_listaobj + var.indice;
+                    TListaObj * lobj = (TListaObj*)var.endvar + var.indice;
                     TListaX * listax = lobj->Inicio;
                     if (var.indice)
                         sprintf(d, "%s.%d=",
@@ -1088,7 +1069,7 @@ int TVarSav::Salvar(TVariavel * v, const char * arqnome, bool senhacod)
                 do {
                     char mens[512];
                     char * d = mens;
-                    TTextoTxt * txtobj = var.end_textotxt + var.indice;
+                    TTextoTxt * txtobj = (TTextoTxt*)var.endvar + var.indice;
                     if (var.indice)
                         sprintf(d, "%s.%d=lt",
                                 var.defvar + Instr::endNome, var.indice);
@@ -1187,7 +1168,7 @@ int TVarSav::Salvar(TVariavel * v, const char * arqnome, bool senhacod)
                     bool vazio = true;
                     char mens[512];
                     char * d = mens;
-                    TTextoVar * txtvar = var.end_textovar + var.indice;
+                    TTextoVar * txtvar = (TTextoVar*)var.endvar + var.indice;
                     if (var.indice)
                         sprintf(d, "%s.%d=",
                                 var.defvar + Instr::endNome, var.indice);
@@ -1280,7 +1261,7 @@ int TVarSav::Salvar(TVariavel * v, const char * arqnome, bool senhacod)
                 do {
                     char mens[512];
                     char * d = mens;
-                    TTextoObj * txtobj = var.end_textoobj + var.indice;
+                    TTextoObj * txtobj = (TTextoObj*)var.endvar + var.indice;
                     if (var.indice)
                         sprintf(d, "%s.%d=",
                                 var.defvar + Instr::endNome, var.indice);
@@ -1324,7 +1305,8 @@ int TVarSav::Salvar(TVariavel * v, const char * arqnome, bool senhacod)
               case Instr::cDataHora:
                 do {
                     char mens[100];
-                    var.end_datahora[var.indice].SalvarSav(mens);
+                    reinterpret_cast<TVarDataHora*>(var.endvar)[var.indice]
+                            .SalvarSav(mens);
                     if (var.indice)
                         fprintf(arq, "%s.%d=%s\n",
                                 var.defvar + Instr::endNome,

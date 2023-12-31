@@ -33,57 +33,56 @@ class TVarProg /// Variáveis Prog
 public:
     static const TVarInfo * Inicializa();
         ///< Inicializa variável e retorna informações
+    static void LimparVar(); ///< Apaga referências do programa nas variáveis prog
+private:
     void Criar();           ///< Cria objeto
     void Apagar();          ///< Apaga objeto
     void Mover(TVarProg * destino); ///< Move objeto para outro lugar
-    static void LimparVar(); ///< Apaga referências do programa nas variáveis prog
-    bool Func(TVariavel * v, const char * nome); ///< Função da variável
     int  getValor();    ///< Ler valor numérico da variável
 
-private:
-    bool FuncExiste(TVariavel * v);       ///< Processa função Existe
-    bool FuncArquivo(TVariavel * v);      ///< Processa função Arquivo
-    bool FuncArqNome(TVariavel * v);      ///< Processa função ArqNome
-    bool FuncVarComum(TVariavel * v);     ///< Processa função VarComum
-    bool FuncVarSav(TVariavel * v);       ///< Processa função VarSav
-    bool FuncVarNum(TVariavel * v);       ///< Processa função VarNum
-    bool FuncVarTexto(TVariavel * v);     ///< Processa função VarTexto
-    bool FuncVarTipo(TVariavel * v);      ///< Processa função VarTipo
-    bool FuncVarLugar(TVariavel * v);     ///< Processa função VarLugar
-    bool FuncVarVetor(TVariavel * v);     ///< Processa função VarVetor
-    bool FuncConst(TVariavel * v);        ///< Processa função Const
-    bool FuncClasse(TVariavel * v);       ///< Processa função Classe
+    static bool FuncExiste(TVariavel * v);       ///< Processa função Existe
+    static bool FuncArquivo(TVariavel * v);      ///< Processa função Arquivo
+    static bool FuncArqNome(TVariavel * v);      ///< Processa função ArqNome
+    static bool FuncVarComum(TVariavel * v);     ///< Processa função VarComum
+    static bool FuncVarSav(TVariavel * v);       ///< Processa função VarSav
+    static bool FuncVarNum(TVariavel * v);       ///< Processa função VarNum
+    static bool FuncVarTexto(TVariavel * v);     ///< Processa função VarTexto
+    static bool FuncVarTipo(TVariavel * v);      ///< Processa função VarTipo
+    static bool FuncVarLugar(TVariavel * v);     ///< Processa função VarLugar
+    static bool FuncVarVetor(TVariavel * v);     ///< Processa função VarVetor
+    static bool FuncConst(TVariavel * v);        ///< Processa função Const
+    static bool FuncClasse(TVariavel * v);       ///< Processa função Classe
 
-    bool FuncIniArq(TVariavel * v);       ///< Processa função IniArq
-    bool FuncIniClasse(TVariavel * v);    ///< Processa função IniClasse
-    bool FuncIniFunc(TVariavel * v);      ///< Processa função IniFunc
-    bool FuncIniFuncTudo(TVariavel * v);  ///< Processa função IniFuncTudo
-    bool FuncIniFuncCl(TVariavel * v);    ///< Processa função IniFuncCl
-    bool FuncIniHerda(TVariavel * v);     ///< Processa função IniHerda
-    bool FuncIniHerdaTudo(TVariavel * v); ///< Processa função IniHerdatudo
-    bool FuncIniHerdaInv(TVariavel * v);  ///< Processa função IniHerdainv
-    bool FuncIniLinha(TVariavel * v);     ///< Processa função IniLinha
+    static bool FuncIniArq(TVariavel * v);       ///< Processa função IniArq
+    static bool FuncIniClasse(TVariavel * v);    ///< Processa função IniClasse
+    static bool FuncIniFunc(TVariavel * v);      ///< Processa função IniFunc
+    static bool FuncIniFuncTudo(TVariavel * v);  ///< Processa função IniFuncTudo
+    static bool FuncIniFuncCl(TVariavel * v);    ///< Processa função IniFuncCl
+    static bool FuncIniHerda(TVariavel * v);     ///< Processa função IniHerda
+    static bool FuncIniHerdaTudo(TVariavel * v); ///< Processa função IniHerdatudo
+    static bool FuncIniHerdaInv(TVariavel * v);  ///< Processa função IniHerdainv
+    static bool FuncIniLinha(TVariavel * v);     ///< Processa função IniLinha
 
-    bool FuncLin(TVariavel * v);          ///< Processa função Lin
-    bool FuncNivel(TVariavel * v);        ///< Processa função Nivel
-    bool FuncDepois(TVariavel * v);       ///< Processa função Depois
-    bool FuncTexto(TVariavel * v);        ///< Processa função Texto
+    static bool FuncLin(TVariavel * v);          ///< Processa função Lin
+    static bool FuncNivel(TVariavel * v);        ///< Processa função Nivel
+    static bool FuncDepois(TVariavel * v);       ///< Processa função Depois
+    static bool FuncTexto(TVariavel * v);        ///< Processa função Texto
 
-    bool FuncApagar(TVariavel * v);       ///< Processa função Apagar
-    bool FuncCriar(TVariavel * v);        ///< Processa função Criar
-    bool FuncApagarLin(TVariavel * v);    ///< Processa função ApagarLin
-    bool FuncCriarLin(TVariavel * v);     ///< Processa função CriarLin
-    bool FuncFAntes(TVariavel * v);       ///< Processa função FAntes
-    bool FuncFDepois(TVariavel * v);      ///< Processa função FDepois
-    bool FuncMudar(TVariavel * v, int lugar); ///< Chamado por FuncF*
-    bool FuncRenomear(TVariavel * v);     ///< Processa função Renomear
-    bool FuncSalvar(TVariavel * v);       ///< Processa função Salvar
-    bool FuncSalvarTudo(TVariavel * v);   ///< Processa função SalvarTudo
+    static bool FuncApagar(TVariavel * v);       ///< Processa função Apagar
+    static bool FuncCriar(TVariavel * v);        ///< Processa função Criar
+    static bool FuncApagarLin(TVariavel * v);    ///< Processa função ApagarLin
+    static bool FuncCriarLin(TVariavel * v);     ///< Processa função CriarLin
+    static bool FuncFAntes(TVariavel * v);       ///< Processa função FAntes
+    static bool FuncFDepois(TVariavel * v);      ///< Processa função FDepois
+    static bool FuncMudar(TVariavel * v, int lugar); ///< Chamado por FuncF*
+    static bool FuncRenomear(TVariavel * v);     ///< Processa função Renomear
+    static bool FuncSalvar(TVariavel * v);       ///< Processa função Salvar
+    static bool FuncSalvarTudo(TVariavel * v);   ///< Processa função SalvarTudo
 
-    bool FuncClIni(TVariavel * v);        ///< Processa função ClIni
-    bool FuncClFim(TVariavel * v);        ///< Processa função ClFim
-    bool FuncClAntes(TVariavel * v);      ///< Processa função ClAntes
-    bool FuncClDepois(TVariavel * v);     ///< Processa função ClDepois
+    static bool FuncClIni(TVariavel * v);        ///< Processa função ClIni
+    static bool FuncClFim(TVariavel * v);        ///< Processa função ClFim
+    static bool FuncClAntes(TVariavel * v);      ///< Processa função ClAntes
+    static bool FuncClDepois(TVariavel * v);     ///< Processa função ClDepois
 
     static int FTamanho(const char * instr);
     static int FTamanhoVetor(const char * instr);

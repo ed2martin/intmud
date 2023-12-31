@@ -8,7 +8,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <math.h>
 #include <errno.h>
 #include <assert.h>
 #include "variavel.h"
@@ -65,7 +64,10 @@ TVarInfo::TVarInfo()
     FOperadorAdd = FOperadorAddFalse;
     FOperadorIgual2 = FOperadorIgual2Var;
     FOperadorCompara = FOperadorComparaVar;
+    FFuncTexto = FFuncTextoFalse;
     FFuncVetor = FFuncVetorFalse;
+    FFuncListaEnd = nullptr;
+    FFuncListaFim = -1;
 }
 
 //----------------------------------------------------------------------------
@@ -86,7 +88,10 @@ TVarInfo::TVarInfo(int (*fTamanho)(const char * instr),
         bool (*fOperadorAdd)(TVariavel * v1, TVariavel * v2),
         bool (*fOperadorIgual2)(TVariavel * v1, TVariavel * v2),
         unsigned char (*fOperadorCompara)(TVariavel * v1, TVariavel * v2),
-        bool (*fFuncVetor)(TVariavel * v, const char * nome))
+        bool (*fFuncTexto)(TVariavel * v, const char * nome),
+        bool (*fFuncVetor)(TVariavel * v, const char * nome),
+        FuncItem * fFuncListaEnd,
+        int fFuncListaFim)
 {
     FTamanho = fTamanho;
     FTamanhoVetor = fTamanhoVetor;
@@ -94,16 +99,19 @@ TVarInfo::TVarInfo(int (*fTamanho)(const char * instr),
     FRedim = fRedim;
     FMoverEnd = fMoverEnd;
     FMoverDef = fMoverDef;
-    FFuncVetor = fFuncVetor;
     FGetBool = fGetBool;
     FGetInt = fGetInt;
     FGetDouble = fGetDouble;
     FGetTxt = fGetTxt;
+    FGetObj = fGetObj;
     FOperadorAtrib = fOperadorAtrib;
     FOperadorAdd = fOperadorAdd;
     FOperadorIgual2 = fOperadorIgual2;
     FOperadorCompara = fOperadorCompara;
-    FGetObj = fGetObj;
+    FFuncTexto = fFuncTexto;
+    FFuncVetor = fFuncVetor;
+    FFuncListaEnd = fFuncListaEnd;
+    FFuncListaFim = fFuncListaFim;
 }
 
 //----------------------------------------------------------------------------
@@ -138,6 +146,7 @@ unsigned char TVarInfo::FOperadorComparaVar(TVariavel * v1, TVariavel * v2)
     return (v1->endvar == v2->endvar && v1->indice == v2->indice &&
             v1->defvar[2] == v2->defvar[2] ? 2 : 0);
 }
+bool TVarInfo::FFuncTextoFalse(TVariavel * v, const char * nome) { return false; }
 bool TVarInfo::FFuncVetorFalse(TVariavel * v, const char * nome) { return false; }
 
 //----------------------------------------------------------------------------
@@ -240,6 +249,9 @@ void TVariavel::Limpar()
 //------------------------------------------------------------------------------
 bool TVariavel::Func(const char * nome)
 {
+    unsigned char cmd = (unsigned char)defvar[2];
+    if (cmd >= Instr::cTotalComandos)
+        return false;
     if (indice == 0xFF) // Vetor
     {
         int valor = 0;
@@ -252,65 +264,28 @@ bool TVariavel::Func(const char * nome)
         if (*nome == 0 && valor < (unsigned char)defvar[Instr::endVetor])
         {
             indice = valor;
-            Instr::ApagarVar(this+1);
+            Instr::ApagarVar(this + 1);
             return true;
         }
-
-        unsigned char cmd = (unsigned char)defvar[2];
-        if (cmd < Instr::cTotalComandos)
-            return VarInfo[cmd].FFuncVetor(this, nome);
-        return false;
+        return VarInfo[cmd].FFuncVetor(this, nome);
     }
-    switch (defvar[2])
+    int fim = VarInfo[cmd].FFuncListaFim;
+    if (fim < 0)
+        return VarInfo[cmd].FFuncTexto(this, nome);
+    TVarInfo::FuncItem * lista = VarInfo[cmd].FFuncListaEnd;
+    int ini = 0;
+    char mens[80];
+    copiastrmin(mens, nome, sizeof(mens));
+    while (ini <= fim)
     {
-    case Instr::cIntInc:
-        return end_incdec->FuncInc(this, nome);
-    case Instr::cIntDec:
-        return end_incdec->FuncDec(this, nome);
-    case Instr::cIntTempo:
-        return end_inttempo->Func(this, nome);
-    case Instr::cListaObj:
-        return end_listaobj[indice].Func(this, nome);
-    case Instr::cListaItem:
-        return end_listaitem[indice].Func(this, nome);
-    case Instr::cTextoTxt:
-        return end_textotxt[indice].Func(this, nome);
-    case Instr::cTextoPos:
-        return end_textopos[indice].Func(this, nome);
-    case Instr::cTextoVar:
-        return end_textovar[indice].Func(this, nome);
-    case Instr::cTextoObj:
-        return end_textoobj[indice].Func(this, nome);
-    case Instr::cNomeObj:
-        return end_nomeobj[indice].Func(this, nome);
-    case Instr::cArqDir:
-        return end_arqdir[indice].Func(this, nome);
-    case Instr::cArqLog:
-        return end_arqlog[indice].Func(this, nome);
-    case Instr::cArqProg:
-        return end_arqprog[indice].Func(this, nome);
-    case Instr::cArqExec:
-        return end_arqexec[indice].Func(this, nome);
-    case Instr::cArqSav:
-        return TVarSav::Func(this, nome);
-    case Instr::cArqTxt:
-        return end_arqtxt[indice].Func(this, nome);
-    case Instr::cArqMem:
-        return end_arqmem[indice].Func(this, nome);
-    case Instr::cTelaTxt:
-        return end_telatxt[indice].Func(this, nome);
-    case Instr::cSocket:
-        return end_socket[indice].Func(this, nome);
-    case Instr::cServ:
-        return end_serv[indice].Func(this, nome);
-    case Instr::cProg:
-        return end_prog[indice].Func(this, nome);
-    case Instr::cDebug:
-        return TVarDebug::Func(this, nome);
-    case Instr::cIndiceItem:
-        return end_indiceitem[indice].Func(this, nome);
-    case Instr::cDataHora:
-        return end_datahora[indice].Func(this, nome);
+        int meio = (ini + fim) / 2;
+        int resultado = strcmp(mens, lista[meio].Nome);
+        if (resultado == 0) // Se encontrou...
+            return lista[meio].Func(this);
+        if (resultado < 0)
+            fim = meio - 1;
+        else
+            ini = meio + 1;
     }
-    return false;
+    return VarInfo[cmd].FFuncTexto(this, nome);
 }

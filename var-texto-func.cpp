@@ -18,11 +18,9 @@
 #include "sha1.h"
 #include "md5.h"
 
-//#define DEBUG_TXT // Texto guardado em TTextoTxt
-
 //----------------------------------------------------------------------------
-#ifdef DEBUG_TXT
-static void DebugTextoTxt(TTextoTxt * txt)
+#ifdef DEBUG_TEXTOTXT
+void TTextoTxt::DebugTextoTxt(TTextoTxt * txt)
 {
     if (txt == nullptr)
         return;
@@ -51,7 +49,7 @@ static void DebugTextoTxt(TTextoTxt * txt)
     assert(lin_atual == txt->Linhas);
     assert(byte_atual == txt->Bytes);
 // Checa posição de TTextoPos
-    for (TTextoPos * p = txt->Posic; p; p=p->Depois)
+    for (TTextoPos * p = txt->Posic; p; p = p->Depois)
     {
     // Nenhum texto
         if (txt->Inicio == nullptr)
@@ -86,8 +84,6 @@ static void DebugTextoTxt(TTextoTxt * txt)
             assert(obj->Antes->Texto[obj->Antes->Bytes - 1] == Instr::ex_barra_n);
     }
 }
-#else
-#define DebugTextoTxt(x)
 #endif
 
 //----------------------------------------------------------------------------
@@ -159,59 +155,16 @@ static int ProcLer(char * buf, int tambuf)
 }
 
 //----------------------------------------------------------------------------
-bool TTextoTxt::Func(TVariavel * v, const char * nome)
-{
-// Lista das funções de textotxt
-// Deve obrigatoriamente estar em letras minúsculas e ordem alfabética
-    static const struct {
-        const char * Nome;
-        bool (TTextoTxt::*Func)(TVariavel * v); } ExecFunc[] = {
-        { "addfim",       &TTextoTxt::FuncAddFim },
-        { "addini",       &TTextoTxt::FuncAddIni },
-        { "bytes",        &TTextoTxt::FuncBytes },
-        { "clipler",      &TTextoTxt::FuncClipLer },
-        { "clipsalvar",   &TTextoTxt::FuncClipSalvar },
-        { "dividelin",    &TTextoTxt::FuncDivideLin },
-        { "dividelincor", &TTextoTxt::FuncDivideLinCor },
-        { "fim",          &TTextoTxt::FuncFim },
-        { "ini",          &TTextoTxt::FuncIni },
-        { "juntalin",     &TTextoTxt::FuncJuntaLin },
-        { "juntar",       &TTextoTxt::FuncJuntar },
-        { "ler",          &TTextoTxt::FuncLer },
-        { "limpar",       &TTextoTxt::FuncLimpar },
-        { "linhas",       &TTextoTxt::FuncLinhas },
-        { "ordena",       &TTextoTxt::FuncOrdena },
-        { "ordenalin",    &TTextoTxt::FuncOrdenaLin },
-        { "rand",         &TTextoTxt::FuncRand },
-        { "remove",       &TTextoTxt::FuncRemove },
-        { "salvar",       &TTextoTxt::FuncSalvar },
-        { "txtremove",    &TTextoTxt::FuncTxtRemove }  };
-// Procura a função correspondente e executa
-    int ini = 0;
-    int fim = sizeof(ExecFunc) / sizeof(ExecFunc[0]) - 1;
-    char mens[80];
-    copiastrmin(mens, nome, sizeof(mens));
-    while (ini <= fim)
-    {
-        int meio = (ini + fim) / 2;
-        int resultado = strcmp(mens, ExecFunc[meio].Nome);
-        if (resultado == 0) // Se encontrou...
-            return (this->*ExecFunc[meio].Func)(v);
-        if (resultado < 0) fim = meio - 1; else ini = meio + 1;
-    }
-    return false;
-}
-
-//----------------------------------------------------------------------------
 // Primeira linha do texto
 bool TTextoTxt::FuncIni(TVariavel * v)
 {
+    TTextoTxt * ref = reinterpret_cast<TTextoTxt*>(v->endvar) + v->indice;
     Instr::ApagarVar(v);
     if (!Instr::CriarVar(Instr::InstrVarTextoPos))
         return false;
-    TTextoPos * obj = Instr::VarAtual->end_textopos;
-    obj->MudarTxt(this);
-    obj->Bloco = Inicio;
+    TTextoPos * obj = reinterpret_cast<TTextoPos*>(Instr::VarAtual->endvar);
+    obj->MudarTxt(ref);
+    obj->Bloco = ref->Inicio;
     obj->PosicBloco = 0;
     obj->PosicTxt = 0;
     obj->LinhaTxt = 0;
@@ -222,15 +175,16 @@ bool TTextoTxt::FuncIni(TVariavel * v)
 // Última linha do texto
 bool TTextoTxt::FuncFim(TVariavel * v)
 {
+    TTextoTxt * ref = reinterpret_cast<TTextoTxt*>(v->endvar) + v->indice;
     Instr::ApagarVar(v);
     if (!Instr::CriarVar(Instr::InstrVarTextoPos))
         return false;
-    TTextoPos * obj = Instr::VarAtual->end_textopos;
-    obj->MudarTxt(this);
-    obj->Bloco = Fim;
-    obj->PosicBloco = (Fim ? Fim->Bytes : 0);
-    obj->PosicTxt = Bytes;
-    obj->LinhaTxt = Linhas;
+    TTextoPos * obj = reinterpret_cast<TTextoPos*>(Instr::VarAtual->endvar);
+    obj->MudarTxt(ref);
+    obj->Bloco = ref->Fim;
+    obj->PosicBloco = (ref->Fim ? ref->Fim->Bytes : 0);
+    obj->PosicTxt = ref->Bytes;
+    obj->LinhaTxt = ref->Linhas;
     return true;
 }
 
@@ -238,18 +192,19 @@ bool TTextoTxt::FuncFim(TVariavel * v)
 // Adiciona texto no início
 bool TTextoTxt::FuncAddIni(TVariavel * v)
 {
+    TTextoTxt * ref = reinterpret_cast<TTextoTxt*>(v->endvar) + v->indice;
     for (TVariavel * v1 = v + 1; v1 <= Instr::VarAtual; v1++)
     {
         const char * texto = v1->getTxt();
-        IniBloco();
+        ref->IniBloco();
         TBlocoPos pos;
-        pos.Bloco = Inicio;
+        pos.Bloco = ref->Inicio;
         pos.PosicBloco = 0;
         pos.PosicTxt = 0;
         pos.LinhaTxt = 0;
         pos.Mudar(texto, strlen(texto) + 1, 0);
     }
-    DebugTextoTxt(this);
+    TTextoTxt::DebugTextoTxt(ref);
     return false;
 }
 
@@ -257,12 +212,13 @@ bool TTextoTxt::FuncAddIni(TVariavel * v)
 // Adiciona texto no fim
 bool TTextoTxt::FuncAddFim(TVariavel * v)
 {
+    TTextoTxt * ref = reinterpret_cast<TTextoTxt*>(v->endvar) + v->indice;
     for (TVariavel * v1 = v + 1; v1 <= Instr::VarAtual; v1++)
     {
         const char * texto = v1->getTxt();
-        AddTexto(texto, strlen(texto) + 1);
+        ref->AddTexto(texto, strlen(texto) + 1);
     }
-    DebugTextoTxt(this);
+    TTextoTxt::DebugTextoTxt(ref);
     return false;
 }
 
@@ -270,29 +226,28 @@ bool TTextoTxt::FuncAddFim(TVariavel * v)
 // Remove uma quantidade de linhas
 bool TTextoTxt::FuncRemove(TVariavel * v)
 {
-    int linhas = 1;
-    if (Instr::VarAtual >= v + 1)
-        linhas = v[1].getInt();
-    Instr::ApagarVar(v); // Nota: se apagar o TextoTxt, Inicio será 0
-    if (linhas <= 0 || Inicio == nullptr)
+    int linhas = (Instr::VarAtual >= v + 1 ? v[1].getInt() : 1);
+    TTextoTxt * ref = reinterpret_cast<TTextoTxt*>(v->endvar) + v->indice;
+    Instr::ApagarVar(v); // Nota: se apagar o TextoTxt, Inicio será nullptr
+    if (linhas <= 0 || ref->Inicio == nullptr)
         return Instr::CriarVarTxtFixo("");
 // Obtém o número de bytes
-    int total = Inicio->LinhasBytes(0, linhas);
+    int total = ref->Inicio->LinhasBytes(0, linhas);
 // Cria variável e aloca memória para o texto
     if (!Instr::CriarVarTexto(nullptr, total - 1))
         return Instr::CriarVarTxtFixo("");
 // Obtém tamanho da memória alocada
     int copiar = Instr::VarAtual->tamanho;
 // Anota o texto
-    Inicio->CopiarTxt(0, Instr::VarAtual->endchar, copiar);
+    ref->Inicio->CopiarTxt(0, Instr::VarAtual->endchar, copiar);
 // Apaga texto de ListaTxt
     TBlocoPos pos;
-    pos.Bloco = Inicio;
+    pos.Bloco = ref->Inicio;
     pos.PosicBloco = 0;
     pos.PosicTxt = 0;
     pos.LinhaTxt = 0;
     pos.Mudar(nullptr, 0, total);
-    DebugTextoTxt(this);
+    TTextoTxt::DebugTextoTxt(ref);
     return true;
 }
 
@@ -300,8 +255,9 @@ bool TTextoTxt::FuncRemove(TVariavel * v)
 // Remove todos os textos
 bool TTextoTxt::FuncLimpar(TVariavel * v)
 {
-    Limpar();
-    DebugTextoTxt(this);
+    TTextoTxt * ref = reinterpret_cast<TTextoTxt*>(v->endvar) + v->indice;
+    ref->Limpar();
+    TTextoTxt::DebugTextoTxt(ref);
     return false;
 }
 
@@ -309,22 +265,25 @@ bool TTextoTxt::FuncLimpar(TVariavel * v)
 // Quantidade de linhas
 bool TTextoTxt::FuncLinhas(TVariavel * v)
 {
-    return Instr::CriarVarInt(v, Linhas);
+    TTextoTxt * ref = reinterpret_cast<TTextoTxt*>(v->endvar) + v->indice;
+    return Instr::CriarVarInt(v, ref->Linhas);
 }
 
 //----------------------------------------------------------------------------
 // Quantidade de bytes
 bool TTextoTxt::FuncBytes(TVariavel * v)
 {
-    return Instr::CriarVarInt(v, Bytes);
+    TTextoTxt * ref = reinterpret_cast<TTextoTxt*>(v->endvar) + v->indice;
+    return Instr::CriarVarInt(v, ref->Bytes);
 }
 
 //----------------------------------------------------------------------------
 // Ordenar
 bool TTextoTxt::FuncOrdena(TVariavel * v)
 {
-    Ordena(0, nullptr, nullptr);
-    DebugTextoTxt(this);
+    TTextoTxt * ref = reinterpret_cast<TTextoTxt*>(v->endvar) + v->indice;
+    ref->Ordena(0, nullptr, nullptr);
+    TTextoTxt::DebugTextoTxt(ref);
     return false;
 }
 
@@ -332,19 +291,20 @@ bool TTextoTxt::FuncOrdena(TVariavel * v)
 // Ordenar juntando linhas
 bool TTextoTxt::FuncOrdenaLin(TVariavel * v)
 {
+    TTextoTxt * ref = reinterpret_cast<TTextoTxt*>(v->endvar) + v->indice;
 // Com menos de dois argumentos
     if (Instr::VarAtual < v + 2)
     {
-        Ordena(1, nullptr, nullptr);
-        DebugTextoTxt(this);
+        ref->Ordena(1, nullptr, nullptr);
+        TTextoTxt::DebugTextoTxt(ref);
         return false;
     }
 // Com dois ou mais argumentos
     char txt1[256],txt2[256];
     copiastr(txt1, v[1].getTxt(), sizeof(txt1));
     copiastr(txt2, v[2].getTxt(), sizeof(txt2));
-    Ordena(2, txt1, txt2);
-    DebugTextoTxt(this);
+    ref->Ordena(2, txt1, txt2);
+    TTextoTxt::DebugTextoTxt(ref);
     return false;
 }
 
@@ -352,7 +312,8 @@ bool TTextoTxt::FuncOrdenaLin(TVariavel * v)
 // Ordenar aleatoriamente
 bool TTextoTxt::FuncRand(TVariavel * v)
 {
-    Rand();
+    TTextoTxt * ref = reinterpret_cast<TTextoTxt*>(v->endvar) + v->indice;
+    ref->Rand();
     return false;
 }
 
@@ -365,8 +326,9 @@ bool TTextoTxt::FuncTxtRemove(TVariavel * v)
     int remove = txtRemove(v[1].getTxt()); // O que deve remover
     if (remove == 0)
         return false;
-    TxtRemove(remove);
-    DebugTextoTxt(this);
+    TTextoTxt * ref = reinterpret_cast<TTextoTxt*>(v->endvar) + v->indice;
+    ref->TxtRemove(remove);
+    TTextoTxt::DebugTextoTxt(ref);
     return false;
 }
 
@@ -374,19 +336,20 @@ bool TTextoTxt::FuncTxtRemove(TVariavel * v)
 // Apenas juntar linhas
 bool TTextoTxt::FuncJuntaLin(TVariavel * v)
 {
+    TTextoTxt * ref = reinterpret_cast<TTextoTxt*>(v->endvar) + v->indice;
 // Com menos de dois argumentos
     if (Instr::VarAtual < v + 2)
     {
-        Ordena(3, nullptr, nullptr);
-        DebugTextoTxt(this);
+        ref->Ordena(3, nullptr, nullptr);
+        TTextoTxt::DebugTextoTxt(ref);
         return false;
     }
 // Com dois ou mais argumentos
     char txt1[256],txt2[256];
     copiastr(txt1, v[1].getTxt(), sizeof(txt1));
     copiastr(txt2, v[2].getTxt(), sizeof(txt2));
-    Ordena(4, txt1, txt2);
-    DebugTextoTxt(this);
+    ref->Ordena(4, txt1, txt2);
+    TTextoTxt::DebugTextoTxt(ref);
     return false;
 }
 
@@ -396,11 +359,12 @@ bool TTextoTxt::FuncDivideLin(TVariavel * v)
 {
     if (Instr::VarAtual < v + 2)
         return false;
+    TTextoTxt * ref = reinterpret_cast<TTextoTxt*>(v->endvar) + v->indice;
     int min = v[1].getInt();
     int max = v[2].getInt();
     if (min > max) min = max;
-    if (min >= 2)  DivideLin(min, max, false);
-    DebugTextoTxt(this);
+    if (min >= 2)  ref->DivideLin(min, max, false);
+    TTextoTxt::DebugTextoTxt(ref);
     return false;
 }
 
@@ -410,11 +374,12 @@ bool TTextoTxt::FuncDivideLinCor(TVariavel * v)
 {
     if (Instr::VarAtual < v + 2)
         return false;
+    TTextoTxt * ref = reinterpret_cast<TTextoTxt*>(v->endvar) + v->indice;
     int min = v[1].getInt();
     int max = v[2].getInt();
     if (min > max) min = max;
-    if (min >= 2)  DivideLin(min, max, true);
-    DebugTextoTxt(this);
+    if (min >= 2)  ref->DivideLin(min, max, true);
+    TTextoTxt::DebugTextoTxt(ref);
     return false;
 }
 
@@ -422,8 +387,9 @@ bool TTextoTxt::FuncDivideLinCor(TVariavel * v)
 // Junta linhas
 bool TTextoTxt::FuncJuntar(TVariavel * v)
 {
+    TTextoTxt * ref = reinterpret_cast<TTextoTxt*>(v->endvar) + v->indice;
 // Junta linhas eliminando "\n"
-    for (TTextoBloco * bl = Inicio; bl; bl = bl->Depois)
+    for (TTextoBloco * bl = ref->Inicio; bl; bl = bl->Depois)
         if (bl->Linhas)
         {
             bl->Linhas = 0;
@@ -432,22 +398,22 @@ bool TTextoTxt::FuncJuntar(TVariavel * v)
                     bl->Texto[x] = ' ';
         }
 // Coloca "\n" no fim
-    Linhas = 0;
-    if (Fim)
+    ref->Linhas = 0;
+    if (ref->Fim)
     {
-        Fim->Texto[Fim->Bytes - 1] = Instr::ex_barra_n;
-        Fim->Linhas = 1;
-        Linhas = 1;
+        ref->Fim->Texto[ref->Fim->Bytes - 1] = Instr::ex_barra_n;
+        ref->Fim->Linhas = 1;
+        ref->Linhas = 1;
     }
 // Acerta TextoPos
-    for (TTextoPos * pos = Posic; pos; pos = pos->Depois)
+    for (TTextoPos * pos = ref->Posic; pos; pos = pos->Depois)
     {
-        pos->Bloco = Inicio;
+        pos->Bloco = ref->Inicio;
         pos->PosicBloco = 0;
         pos->PosicTxt = 0;
         pos->LinhaTxt = 0;
     }
-    DebugTextoTxt(this);
+    TTextoTxt::DebugTextoTxt(ref);
     return false;
 }
 
@@ -465,7 +431,8 @@ bool TTextoTxt::FuncLer(TVariavel * v)
     FILE * descr = fopen(nome, "rb");
     if (descr == nullptr)
         return Instr::CriarVarInt(v, 0);
-    TextoIni();
+    TTextoTxt * ref = reinterpret_cast<TTextoTxt*>(v->endvar) + v->indice;
+    ref->TextoIni();
 // Lê arquivo
     char chfim = 0;  // Último caracter anotado em textotxt
     char linhaCRLF = 0; // Para detectar fim da linha (CR e LF)
@@ -476,7 +443,7 @@ bool TTextoTxt::FuncLer(TVariavel * v)
         int lido = fread(nome, 1, sizeof(nome), descr);
         if (lido <= 0)
             break;
-        for (const char * o=nome; o<nome+lido; o++)
+        for (const char * o = nome; o < nome + lido; o++)
         {
             unsigned char ch = *o;
             //putchar(ch);
@@ -490,26 +457,26 @@ bool TTextoTxt::FuncLer(TVariavel * v)
             else if (ch != 13 && ch != 10) // Se não é nova linha
                 linhaCRLF = 0;
             else if (linhaCRLF == 0 || linhaCRLF == ch) // Nova linha
-                linhaCRLF=ch, *d++=Instr::ex_barra_n;
+                linhaCRLF = ch, *d++ = Instr::ex_barra_n;
         }
         if (d != buf)
         {
-            TextoAnota(buf, d-buf);
+            ref->TextoAnota(buf, d-buf);
             chfim = d[-1];
         }
-        if (lido!=sizeof(nome))
+        if (lido != sizeof(nome))
             break;
     }
 // Garante Instr::ex_barra_n no fim do texto de textotxt
     if (chfim != Instr::ex_barra_n)
     {
         const char barra_n = Instr::ex_barra_n;
-        TextoAnota(&barra_n, 1);
+        ref->TextoAnota(&barra_n, 1);
     }
 // Fecha arquivo
-    TextoFim();
+    ref->TextoFim();
     fclose(descr);
-    DebugTextoTxt(this);
+    TTextoTxt::DebugTextoTxt(ref);
     return Instr::CriarVarInt(v, 1);
 }
 
@@ -528,10 +495,11 @@ bool TTextoTxt::FuncSalvar(TVariavel * v)
     if (descr == nullptr)
         return Instr::CriarVarInt(v, 0);
 // Salva em arquivo
+    TTextoTxt * ref = reinterpret_cast<TTextoTxt*>(v->endvar) + v->indice;
     char buf[4096];
     char * pbuf = buf;
     int pular = 0; // Para não salvar cores em arquivo
-    for (TTextoBloco * bl = Inicio; bl; bl=bl->Depois)
+    for (TTextoBloco * bl = ref->Inicio; bl; bl=bl->Depois)
     {
         char * p = bl->Texto;
         for (int x = bl->Bytes; x; x--, p++)
@@ -571,13 +539,14 @@ bool TTextoTxt::FuncSalvar(TVariavel * v)
         fwrite(buf, 1, pbuf-buf, descr);
 // Fecha arquivo
     fclose(descr);
-    DebugTextoTxt(this);
+    TTextoTxt::DebugTextoTxt(ref);
     return Instr::CriarVarInt(v, 1);
 }
 
 //----------------------------------------------------------------------------
 bool TTextoTxt::FuncClipLer(TVariavel * v)
 {
+    TTextoTxt * ref = reinterpret_cast<TTextoTxt*>(v->endvar) + v->indice;
     char * p = ClipboardLer();
     if (p == nullptr)
         return Instr::CriarVarInt(v, 0);
@@ -600,9 +569,9 @@ bool TTextoTxt::FuncClipLer(TVariavel * v)
             *d++ = *o;
     }
     *d++ = Instr::ex_barra_n;
-    TextoIni();
-    TextoAnota(p, d - p);
-    TextoFim();
+    ref->TextoIni();
+    ref->TextoAnota(p, d - p);
+    ref->TextoFim();
     delete[] p;
     return Instr::CriarVarInt(v, 1);
 }
@@ -610,20 +579,21 @@ bool TTextoTxt::FuncClipLer(TVariavel * v)
 //----------------------------------------------------------------------------
 bool TTextoTxt::FuncClipSalvar(TVariavel * v)
 {
-    char * buf = new char[Bytes + Linhas + 2];
-    char * fim = buf + Linhas + 1;
+    TTextoTxt * ref = reinterpret_cast<TTextoTxt*>(v->endvar) + v->indice;
+    char * buf = new char[ref->Bytes + ref->Linhas + 2];
+    char * fim = buf + ref->Linhas + 1;
 
 // Copia texto para buf
-    for (TTextoBloco * bl = Inicio; bl; bl = bl->Depois)
+    for (TTextoBloco * bl = ref->Inicio; bl; bl = bl->Depois)
     {
         memcpy(fim, bl->Texto, bl->Bytes);
         fim += bl->Bytes;
     }
     *fim++ = 0;
-    assert(fim <= buf + Bytes + Linhas + 2);
+    assert(fim <= buf + ref->Bytes + ref->Linhas + 2);
 
 // Retira as definições de cores
-    char * txt = buf + Linhas + 1;
+    char * txt = buf + ref->Linhas + 1;
     char * destino = buf;
     while (*txt)
         switch (*txt)
@@ -671,86 +641,43 @@ int TTextoTxt::getValor()
 }
 
 //----------------------------------------------------------------------------
-bool TTextoPos::Func(TVariavel * v, const char * nome)
-{
-// Lista das funções de textopos
-// Deve obrigatoriamente estar em letras minúsculas e ordem alfabética
-    static const struct {
-        const char * Nome;
-        int valor;
-        bool (TTextoPos::*Func)(TVariavel * v, int valor); } ExecFunc[] = {
-        { "add",          0, &TTextoPos::FuncAdd },
-        { "addpos",       1, &TTextoPos::FuncAdd },
-        { "antes",        0, &TTextoPos::FuncAntes },
-        { "byte",         0, &TTextoPos::FuncByte },
-        { "depois",       0, &TTextoPos::FuncDepois },
-        { "juntar",       0, &TTextoPos::FuncJuntar },
-        { "lin",          0, &TTextoPos::FuncLin },
-        { "linha",        0, &TTextoPos::FuncLinha },
-        { "mudar",        0, &TTextoPos::FuncMudar },
-        { "remove",       0, &TTextoPos::FuncRemove },
-        { "texto",        0, &TTextoPos::FuncTexto },
-        { "textolin",     0, &TTextoPos::FuncTextoLin },
-        { "txtmd5",       0, &TTextoPos::FuncMd5Sha1 },
-        { "txtproc",      0, &TTextoPos::FuncTxtProc },
-        { "txtprocdif",   2, &TTextoPos::FuncTxtProc },
-        { "txtprocmai",   1, &TTextoPos::FuncTxtProc },
-        { "txtsha1",      1, &TTextoPos::FuncMd5Sha1 } };
-// Procura a função correspondente e executa
-    int ini = 0;
-    int fim = sizeof(ExecFunc) / sizeof(ExecFunc[0]) - 1;
-    char mens[80];
-    copiastrmin(mens, nome, sizeof(mens));
-    while (ini <= fim)
-    {
-        int meio = (ini + fim) / 2;
-        int resultado = strcmp(mens, ExecFunc[meio].Nome);
-        if (resultado == 0) // Se encontrou...
-            return (this->*ExecFunc[meio].Func)(v, ExecFunc[meio].valor);
-        if (resultado < 0) fim = meio - 1; else ini = meio + 1;
-    }
-    return false;
-}
-
-//----------------------------------------------------------------------------
 // Recua linhas
-bool TTextoPos::FuncAntes(TVariavel * v, int valor)
+bool TTextoPos::FuncAntes(TVariavel * v)
 {
-    int total = 1;
-    if (Instr::VarAtual >= v + 1)
-        total = v[1].getInt();
+    TTextoPos * ref = reinterpret_cast<TTextoPos*>(v->endvar) + v->indice;
+    int total = (Instr::VarAtual >= v + 1 ? v[1].getInt() : 1);
     if (total > 0)
-        MoverPos(-total);
-    DebugTextoTxt(TextoTxt);
+        ref->MoverPos(-total);
+    TTextoTxt::DebugTextoTxt(ref->TextoTxt);
     Instr::ApagarVar(v + 1);
     return true;
 }
 
 //----------------------------------------------------------------------------
 // Avança linhas
-bool TTextoPos::FuncDepois(TVariavel * v, int valor)
+bool TTextoPos::FuncDepois(TVariavel * v)
 {
-    int total = 1;
-    if (Instr::VarAtual >= v + 1)
-        total = v[1].getInt();
+    TTextoPos * ref = reinterpret_cast<TTextoPos*>(v->endvar) + v->indice;
+    int total = (Instr::VarAtual >= v + 1 ? v[1].getInt() : 1);
     if (total > 0)
-        MoverPos(total);
-    DebugTextoTxt(TextoTxt);
+        ref->MoverPos(total);
+    TTextoTxt::DebugTextoTxt(ref->TextoTxt);
     Instr::ApagarVar(v + 1);
     return true;
 }
 
 //----------------------------------------------------------------------------
 // Informa se linha é válida
-bool TTextoPos::FuncLin(TVariavel * v, int valor)
+bool TTextoPos::FuncLin(TVariavel * v)
 {
-    bool valido = (TextoTxt && PosicTxt < TextoTxt->Bytes);
+    TTextoPos * ref = reinterpret_cast<TTextoPos*>(v->endvar) + v->indice;
+    bool valido = (ref->TextoTxt && ref->PosicTxt < ref->TextoTxt->Bytes);
     return Instr::CriarVarInt(v, valido);
 }
 
 //----------------------------------------------------------------------------
 // Número da linha
-bool TTextoPos::FuncLinha(TVariavel * v, int valor)
+bool TTextoPos::FuncLinha(TVariavel * v)
 {
     Instr::ApagarVar(v + 1);
     Instr::VarAtual->numfunc = 1;
@@ -759,16 +686,17 @@ bool TTextoPos::FuncLinha(TVariavel * v, int valor)
 
 //----------------------------------------------------------------------------
 // Quantidade de bytes
-bool TTextoPos::FuncByte(TVariavel * v, int valor)
+bool TTextoPos::FuncByte(TVariavel * v)
 {
-    valor = PosicTxt;
-    return Instr::CriarVarInt(v, valor);
+    TTextoPos * ref = reinterpret_cast<TTextoPos*>(v->endvar) + v->indice;
+    return Instr::CriarVarInt(v, ref->PosicTxt);
 }
 
 //----------------------------------------------------------------------------
 // Texto da linha atual
-bool TTextoPos::FuncTexto(TVariavel * v, int valor)
+bool TTextoPos::FuncTexto(TVariavel * v)
 {
+    TTextoPos * ref = reinterpret_cast<TTextoPos*>(v->endvar) + v->indice;
 // Obtém colunas inicial e final
     int colini = 0;
     int coltam = 0x7FFFFFF;
@@ -781,18 +709,18 @@ bool TTextoPos::FuncTexto(TVariavel * v, int valor)
             coltam = v[2].getInt();
     }
     Instr::ApagarVar(v); // Nota: se apagar o TextoTxt, Bloco será 0
-    if (coltam <= 0 || Bloco == nullptr)
+    if (coltam <= 0 || ref->Bloco == nullptr)
         return Instr::CriarVarTxtFixo("");
 // Obtém o número de bytes da linha
-    TTextoBloco * bl = Bloco;
-    int total = bl->LinhasBytes(PosicBloco, 1) - 1;
+    TTextoBloco * bl = ref->Bloco;
+    int total = bl->LinhasBytes(ref->PosicBloco, 1) - 1;
     if (colini >= total)
         return Instr::CriarVarTxtFixo("");
     if (coltam > total || colini + coltam > total)
             // Nota: colini+coltam pode ser <0 se ocorrer overflow
         coltam = total - colini;
 // Avança coluna inicial
-    colini += PosicBloco;
+    colini += ref->PosicBloco;
     while (colini > bl->Bytes)
         colini -= bl->Bytes, bl = bl->Depois;
 // Cria variável e aloca memória para o texto
@@ -809,19 +737,18 @@ bool TTextoPos::FuncTexto(TVariavel * v, int valor)
 
 //----------------------------------------------------------------------------
 // Texto de uma ou mais linhas
-bool TTextoPos::FuncTextoLin(TVariavel * v, int valor)
+bool TTextoPos::FuncTextoLin(TVariavel * v)
 {
-    int linhas = 1;
-    if (Instr::VarAtual >= v + 1)
-        linhas = v[1].getInt();
+    TTextoPos * ref = reinterpret_cast<TTextoPos*>(v->endvar) + v->indice;
+    int linhas = (Instr::VarAtual >= v + 1 ? v[1].getInt() : 1);
     Instr::ApagarVar(v); // Nota: se apagar o TextoTxt, Bloco será 0
-    if (linhas <= 0 || Bloco == nullptr)
+    if (linhas <= 0 || ref->Bloco == nullptr)
         return Instr::CriarVarTxtFixo("");
 // Obtém o número de bytes
-    int total = Bloco->LinhasBytes(PosicBloco, linhas) - 1;
+    int total = ref->Bloco->LinhasBytes(ref->PosicBloco, linhas) - 1;
 // Cria variável e aloca memória para o texto
-    TTextoBloco * bl = Bloco;
-    unsigned int pos = PosicBloco;
+    TTextoBloco * bl = ref->Bloco;
+    unsigned int pos = ref->PosicBloco;
     if (!Instr::CriarVarTexto(nullptr, total))
         return Instr::CriarVarTxtFixo("");
 // Obtém tamanho da memória alocada
@@ -833,11 +760,12 @@ bool TTextoPos::FuncTextoLin(TVariavel * v, int valor)
 
 //----------------------------------------------------------------------------
 // Muda o texto da linha atual
-bool TTextoPos::FuncMudar(TVariavel * v, int valor)
+bool TTextoPos::FuncMudar(TVariavel * v)
 {
-    if (TextoTxt == nullptr || Instr::VarAtual < v + 1)
+    TTextoPos * ref = reinterpret_cast<TTextoPos*>(v->endvar) + v->indice;
+    if (ref->TextoTxt == nullptr || Instr::VarAtual < v + 1)
         return false;
-    TextoTxt->IniBloco();
+    ref->TextoTxt->IniBloco();
 // Obtém colunas inicial e final
     int colini = 0;
     int coltam = 0x7FFFFFF;
@@ -852,10 +780,10 @@ bool TTextoPos::FuncMudar(TVariavel * v, int valor)
             coltam = 0;
     }
 // Obtém variáveis
-    TBlocoPos bl = *this;
+    TBlocoPos bl = *ref;
     const char * txt = v[1].getTxt();
     int tamtxt = strlen(txt) + 1;
-    int apagar = Bloco->LinhasBytes(PosicBloco, 1);
+    int apagar = ref->Bloco->LinhasBytes(ref->PosicBloco, 1);
 // Se linha não está vazia: obtém posição na linha
     if (apagar > 0)
     {
@@ -878,13 +806,23 @@ bool TTextoPos::FuncMudar(TVariavel * v, int valor)
     }
 // Altera o texto
     bl.Mudar(txt, tamtxt, apagar);
-    DebugTextoTxt(TextoTxt);
+    TTextoTxt::DebugTextoTxt(ref->TextoTxt);
     return false;
 }
 
 //----------------------------------------------------------------------------
 // Adiciona texto
-bool TTextoPos::FuncAdd(TVariavel * v, int valor)
+bool TTextoPos::FuncAdd(TVariavel * v)
+{
+    TTextoPos * ref = reinterpret_cast<TTextoPos*>(v->endvar) + v->indice;
+    return ref->FuncAddInterno(v, 0);
+}
+bool TTextoPos::FuncAddPos(TVariavel * v)
+{
+    TTextoPos * ref = reinterpret_cast<TTextoPos*>(v->endvar) + v->indice;
+    return ref->FuncAddInterno(v, 1);
+}
+inline bool TTextoPos::FuncAddInterno(TVariavel * v, int valor)
 {
     if (TextoTxt == nullptr || Instr::VarAtual < v + 1)
         return Instr::CriarVarInt(v, 0);
@@ -898,7 +836,7 @@ bool TTextoPos::FuncAdd(TVariavel * v, int valor)
             const char * txt = v[1].getTxt();
             TextoTxt->IniBloco();
             Mudar(txt, strlen(txt) + 1, 0);
-            DebugTextoTxt(TextoTxt);
+            TTextoTxt::DebugTextoTxt(TextoTxt);
             break;
         }
     // Obtém número de linhas
@@ -906,9 +844,9 @@ bool TTextoPos::FuncAdd(TVariavel * v, int valor)
         if (linhas <= 0)
             break;
     // Obtém variável textopos
-        if (v[1].defvar[2] != Instr::cTextoPos)
+        if (v[1].defvar[2] != Instr::cTextoPos || v[1].indice == 0xff)
             break;
-        TTextoPos * pos = v[1].end_textopos + v[1].indice;
+        TTextoPos * pos = reinterpret_cast<TTextoPos*>(v[1].endvar) + v[1].indice;
         if (pos->TextoTxt == nullptr || pos->Bloco == nullptr)
             break;
     // Adiciona o texto
@@ -930,7 +868,7 @@ bool TTextoPos::FuncAdd(TVariavel * v, int valor)
             Mudar(txt, total, 0);
             delete[] txt;
         }
-        DebugTextoTxt(TextoTxt);
+        TTextoTxt::DebugTextoTxt(TextoTxt);
         break;
     }
 
@@ -942,28 +880,28 @@ bool TTextoPos::FuncAdd(TVariavel * v, int valor)
 
 //----------------------------------------------------------------------------
 // Remove a linha atual
-bool TTextoPos::FuncRemove(TVariavel * v, int valor)
+bool TTextoPos::FuncRemove(TVariavel * v)
 {
-    int linhas = 1;
-    if (Instr::VarAtual >= v + 1)
-        linhas = v[1].getInt();
-    if (linhas <= 0 || Bloco == nullptr)
+    TTextoPos * ref = reinterpret_cast<TTextoPos*>(v->endvar) + v->indice;
+    int linhas = (Instr::VarAtual >= v + 1 ? v[1].getInt() : 1);
+    if (linhas <= 0 || ref->Bloco == nullptr)
         return false;
-    int apagar = Bloco->LinhasBytes(PosicBloco, linhas);
-    Mudar(nullptr, 0, apagar);
-    DebugTextoTxt(TextoTxt);
+    int apagar = ref->Bloco->LinhasBytes(ref->PosicBloco, linhas);
+    ref->Mudar(nullptr, 0, apagar);
+    TTextoTxt::DebugTextoTxt(ref->TextoTxt);
     return false;
 }
 
 //----------------------------------------------------------------------------
 // Junta com a linha anterior
-bool TTextoPos::FuncJuntar(TVariavel * v, int valor)
+bool TTextoPos::FuncJuntar(TVariavel * v)
 {
-    if (TextoTxt == nullptr || Bloco == nullptr || PosicTxt == 0 ||
-            PosicTxt>=TextoTxt->Bytes)
+    TTextoPos * ref = reinterpret_cast<TTextoPos*>(v->endvar) + v->indice;
+    if (ref->TextoTxt == nullptr || ref->Bloco == nullptr ||
+            ref->PosicTxt == 0 || ref->PosicTxt >= ref->TextoTxt->Bytes)
         return Instr::CriarVarInt(v, 0);
 // Vai para o \n no final da linha anterior
-    TBlocoPos bl = *this;
+    TBlocoPos bl = *ref;
     bl.PosicTxt--;
     bl.LinhaTxt--;
     if (bl.PosicBloco)
@@ -974,24 +912,39 @@ bool TTextoPos::FuncJuntar(TVariavel * v, int valor)
         bl.PosicBloco = bl.Bloco->Bytes - 1;
     }
 // Move posição para a linha anterior
-    MoverPos(-1);
-    for (TTextoPos * obj = TextoTxt->Posic; obj; obj=obj->Depois)
-        if (obj->LinhaTxt == LinhaTxt + 1)
+    ref->MoverPos(-1);
+    for (TTextoPos * obj = ref->TextoTxt->Posic; obj; obj = obj->Depois)
+        if (obj->LinhaTxt == ref->LinhaTxt + 1)
         {
-            obj->Bloco = Bloco;
-            obj->PosicBloco = PosicBloco;
-            obj->PosicTxt = PosicTxt;
-            obj->LinhaTxt = LinhaTxt;
+            obj->Bloco = ref->Bloco;
+            obj->PosicBloco = ref->PosicBloco;
+            obj->PosicTxt = ref->PosicTxt;
+            obj->LinhaTxt = ref->LinhaTxt;
         }
 // Junta as duas linha
     bl.Mudar(nullptr, 0, 1);
-    DebugTextoTxt(TextoTxt);
+    TTextoTxt::DebugTextoTxt(ref->TextoTxt);
     return Instr::CriarVarInt(v, 1);
 }
 
 //----------------------------------------------------------------------------
 // Procura um texto
-bool TTextoPos::FuncTxtProc(TVariavel * v, int valor)
+bool TTextoPos::FuncTxtProc(TVariavel * v)
+{
+    TTextoPos * ref = reinterpret_cast<TTextoPos*>(v->endvar) + v->indice;
+    return ref->FuncTxtProcInterno(v, 0);
+}
+bool TTextoPos::FuncTxtProcMai(TVariavel * v)
+{
+    TTextoPos * ref = reinterpret_cast<TTextoPos*>(v->endvar) + v->indice;
+    return ref->FuncTxtProcInterno(v, 1);
+}
+bool TTextoPos::FuncTxtProcDif(TVariavel * v)
+{
+    TTextoPos * ref = reinterpret_cast<TTextoPos*>(v->endvar) + v->indice;
+    return ref->FuncTxtProcInterno(v, 2);
+}
+bool TTextoPos::FuncTxtProcInterno(TVariavel * v, int valor)
 {
     if (TextoTxt == nullptr || Bloco == nullptr || Instr::VarAtual < v + 1)
         return Instr::CriarVarInt(v, -1);
@@ -1097,82 +1050,89 @@ bool TTextoPos::FuncTxtProc(TVariavel * v, int valor)
 }
 
 //----------------------------------------------------------------------------
-bool TTextoPos::FuncMd5Sha1(TVariavel * v, int valor)
+bool TTextoPos::FuncMd5(TVariavel * v)
 {
-    int linhas = 1;
-    if (Instr::VarAtual >= v + 1)
-        linhas = v[1].getInt();
-    Instr::ApagarVar(v); // Nota: se apagar o TextoTxt, Bloco será 0
-
+    int linhas = (Instr::VarAtual >= v + 1 ? v[1].getInt() : 1);
+    TTextoPos * ref = reinterpret_cast<TTextoPos*>(v->endvar) + v->indice;
 // Obtém o número de bytes e bloco/posição inicial
     char mens[80];
-    unsigned int posic = PosicBloco;
-    TTextoBloco * obj = Bloco;
+    unsigned int posic = ref->PosicBloco;
+    TTextoBloco * obj = ref->Bloco;
     int tambuf = 0;
     if (linhas > 0 && obj)
         tambuf = obj->LinhasBytes(posic, linhas) - 1;
-
 // MD5
-    if (valor == 0)
-    {
-        unsigned char digest[16];
-        cvs_MD5Context md5Info;
-        cvs_MD5Init(&md5Info);
-        if (obj)
-            if (posic >= obj->Bytes)
-                obj = obj->Depois, posic = 0;
-        while (obj)
-        {
-            if (tambuf <= (int)obj->Bytes - (int)posic)
-                break;
-            int total = obj->Bytes - posic;
-            cvs_MD5Update(&md5Info, (unsigned char *)obj->Texto + posic, total);
-            tambuf -= total;
+    unsigned char digest[16];
+    cvs_MD5Context md5Info;
+    cvs_MD5Init(&md5Info);
+    if (obj)
+        if (posic >= obj->Bytes)
             obj = obj->Depois, posic = 0;
-        }
-        if (tambuf > 0)
-            cvs_MD5Update(&md5Info, (unsigned char *)obj->Texto + posic, tambuf);
-        cvs_MD5Final(digest, &md5Info);
-        for (int x = 0; x < 16; x++)
-        {
-            int valor = digest[x] >> 4;
-            mens[x * 2] = (valor < 10 ? valor + '0' : valor + 'a' - 10);
-            valor = digest[x] & 0x0F;
-            mens[x * 2 + 1] = (valor < 10 ? valor + '0' : valor + 'a' - 10);
-        }
-        return Instr::CriarVarTexto(mens, 32);
-    }
-// SHA1
-    else
+    while (obj)
     {
-        unsigned char digest[20];
-        SHA_CTX shaInfo;
-        SHAInit(&shaInfo);
-        if (obj)
-            if (posic >= obj->Bytes)
-                obj = obj->Depois, posic = 0;
-        while (obj)
-        {
-            if (tambuf <= (int)obj->Bytes - (int)posic)
-                break;
-            int total = obj->Bytes - posic;
-            SHAUpdate(&shaInfo, (unsigned char *)obj->Texto + posic, total);
-            tambuf -= total;
-            obj = obj->Depois, posic = 0;
-        }
-        if (tambuf > 0)
-            SHAUpdate(&shaInfo, (unsigned char *)obj->Texto + posic, tambuf);
-        SHAFinal(digest, &shaInfo);
-        for (int x=0; x<20; x++)
-        {
-            int valor = digest[x] >> 4;
-            mens[x * 2] = (valor < 10 ? valor + '0' : valor + 'a' - 10);
-            valor = digest[x] & 0x0F;
-            mens[x * 2 + 1] = (valor < 10 ? valor + '0' : valor + 'a' - 10);
-        }
-        return Instr::CriarVarTexto(mens, 40);
+        if (tambuf <= (int)obj->Bytes - (int)posic)
+            break;
+        int total = obj->Bytes - posic;
+        cvs_MD5Update(&md5Info, (unsigned char *)obj->Texto + posic, total);
+        tambuf -= total;
+        obj = obj->Depois, posic = 0;
     }
+    if (tambuf > 0)
+        cvs_MD5Update(&md5Info, (unsigned char *)obj->Texto + posic, tambuf);
+    cvs_MD5Final(digest, &md5Info);
+    for (int x = 0; x < 16; x++)
+    {
+        int valor = digest[x] >> 4;
+        mens[x * 2] = (valor < 10 ? valor + '0' : valor + 'a' - 10);
+        valor = digest[x] & 0x0F;
+        mens[x * 2 + 1] = (valor < 10 ? valor + '0' : valor + 'a' - 10);
+    }
+    Instr::ApagarVar(v);
+    return Instr::CriarVarTexto(mens, 32);
 }
+
+//----------------------------------------------------------------------------
+bool TTextoPos::FuncSha1(TVariavel * v)
+{
+    int linhas = (Instr::VarAtual >= v + 1 ? v[1].getInt() : 1);
+    TTextoPos * ref = reinterpret_cast<TTextoPos*>(v->endvar) + v->indice;
+// Obtém o número de bytes e bloco/posição inicial
+    char mens[80];
+    unsigned int posic = ref->PosicBloco;
+    TTextoBloco * obj = ref->Bloco;
+    int tambuf = 0;
+    if (linhas > 0 && obj)
+        tambuf = obj->LinhasBytes(posic, linhas) - 1;
+// SHA1
+    unsigned char digest[20];
+    SHA_CTX shaInfo;
+    SHAInit(&shaInfo);
+    if (obj)
+        if (posic >= obj->Bytes)
+            obj = obj->Depois, posic = 0;
+    while (obj)
+    {
+        if (tambuf <= (int)obj->Bytes - (int)posic)
+            break;
+        int total = obj->Bytes - posic;
+        SHAUpdate(&shaInfo, (unsigned char *)obj->Texto + posic, total);
+        tambuf -= total;
+        obj = obj->Depois, posic = 0;
+    }
+    if (tambuf > 0)
+        SHAUpdate(&shaInfo, (unsigned char *)obj->Texto + posic, tambuf);
+    SHAFinal(digest, &shaInfo);
+    for (int x=0; x<20; x++)
+    {
+        int valor = digest[x] >> 4;
+        mens[x * 2] = (valor < 10 ? valor + '0' : valor + 'a' - 10);
+        valor = digest[x] & 0x0F;
+        mens[x * 2 + 1] = (valor < 10 ? valor + '0' : valor + 'a' - 10);
+    }
+    Instr::ApagarVar(v);
+    return Instr::CriarVarTexto(mens, 40);
+}
+
 
 //----------------------------------------------------------------------------
 TVarTipo TTextoPos::FTipo(TVariavel * v)

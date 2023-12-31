@@ -22,6 +22,19 @@
 //----------------------------------------------------------------------------
 const TVarInfo * TTextoObj::Inicializa()
 {
+    static TVarInfo::FuncItem ListaFuncEnd[] = {
+        { "antes",        &TTextoObj::FuncAntes },
+        { "apagar",       &TTextoObj::FuncApagar },
+        { "depois",       &TTextoObj::FuncDepois },
+        { "fim",          &TTextoObj::FuncFim },
+        { "ini",          &TTextoObj::FuncIni },
+        { "limpar",       &TTextoObj::FuncLimpar },
+        { "mudar",        &TTextoObj::FuncMudar },
+        { "nomevar",      &TTextoObj::FuncNomeVar },
+        { "total",        &TTextoObj::FuncTotal },
+        { "valor",        &TTextoObj::FuncValor },
+        { "valorfim",     &TTextoObj::FuncValorFim },
+        { "valorini",     &TTextoObj::FuncValorIni } };
     static const TVarInfo var(
         FTamanho,
         FTamanhoVetor,
@@ -38,46 +51,21 @@ const TVarInfo * TTextoObj::Inicializa()
         TVarInfo::FOperadorAddFalse,
         FOperadorIgual2,
         FOperadorCompara,
-        TVarInfo::FFuncVetorFalse);
+        FFuncTexto,
+        TVarInfo::FFuncVetorFalse,
+        ListaFuncEnd,
+        sizeof(ListaFuncEnd) / sizeof(ListaFuncEnd[0]) - 1);
     return &var;
 }
 
 //----------------------------------------------------------------------------
-bool TTextoObj::Func(TVariavel * v, const char * nome)
+bool TTextoObj::FFuncTexto(TVariavel * v, const char * nome)
 {
-// Lista das funções de indiceitem
-// Deve obrigatoriamente estar em letras minúsculas e ordem alfabética
-    static const struct {
-        const char * Nome;
-        bool (TTextoObj::*Func)(TVariavel * v); } ExecFunc[] = {
-        { "antes",        &TTextoObj::FuncAntes },
-        { "apagar",       &TTextoObj::FuncApagar },
-        { "depois",       &TTextoObj::FuncDepois },
-        { "fim",          &TTextoObj::FuncFim },
-        { "ini",          &TTextoObj::FuncIni },
-        { "limpar",       &TTextoObj::FuncLimpar },
-        { "mudar",        &TTextoObj::FuncMudar },
-        { "nomevar",      &TTextoObj::FuncNomeVar },
-        { "total",        &TTextoObj::FuncTotal },
-        { "valor",        &TTextoObj::FuncValor },
-        { "valorfim",     &TTextoObj::FuncValorFim },
-        { "valorini",     &TTextoObj::FuncValorIni } };
-// Procura a função correspondente e executa
-    int ini = 0;
-    int fim = sizeof(ExecFunc) / sizeof(ExecFunc[0]) - 1;
-    char mens[80];
-    copiastrmin(mens, nome, sizeof(mens));
-    while (ini <= fim)
-    {
-        int meio = (ini+fim)/2;
-        int resultado = strcmp(mens, ExecFunc[meio].Nome);
-        if (resultado==0) // Se encontrou...
-            return (this->*ExecFunc[meio].Func)(v);
-        if (resultado<0) fim=meio-1; else ini=meio+1;
-    }
-// Outro nome de variável
+    if (nome[0] == 0)
+        return false;
+    TTextoObj * ref = reinterpret_cast<TTextoObj*>(v->endvar) + v->indice;
     TTextoObjSub sub1;
-    sub1.Criar(this);
+    sub1.Criar(ref);
     copiastr(sub1.NomeVar, nome, sizeof(sub1.NomeVar));
     Instr::ApagarVar(v);
     if (!Instr::CriarVar(Instr::InstrVarTextoObjSub))
@@ -85,7 +73,7 @@ bool TTextoObj::Func(TVariavel * v, const char * nome)
         sub1.Apagar();
         return false;
     }
-    sub1.Mover(Instr::VarAtual->end_textoobjsub);
+    sub1.Mover(reinterpret_cast<TTextoObjSub*>(Instr::VarAtual->endvar));
     return true;
 }
 
@@ -93,10 +81,11 @@ bool TTextoObj::Func(TVariavel * v, const char * nome)
 // Variável como texto
 bool TTextoObj::FuncValor(TVariavel * v)
 {
+    TTextoObj * ref = reinterpret_cast<TTextoObj*>(v->endvar) + v->indice;
     TObjeto * obj = nullptr;
     if (Instr::VarAtual >= v + 1)
     {
-        TBlocoObj * bl = Procura(v[1].getTxt());
+        TBlocoObj * bl = ref->Procura(v[1].getTxt());
         if (bl)
             obj = bl->Objeto;
     }
@@ -110,13 +99,14 @@ bool TTextoObj::FuncValor(TVariavel * v)
 // Primeira variável como texto
 bool TTextoObj::FuncValorIni(TVariavel * v)
 {
+    TTextoObj * ref = reinterpret_cast<TTextoObj*>(v->endvar) + v->indice;
     TBlocoObj * bl = nullptr;
-    if (RBroot)
+    if (ref->RBroot)
     {
         if (Instr::VarAtual < v + 1)
-            bl = RBroot->RBfirst();
+            bl = ref->RBroot->RBfirst();
         else
-            bl = ProcIni(v[1].getTxt());
+            bl = ref->ProcIni(v[1].getTxt());
     }
     if (bl == nullptr)
         return false;
@@ -129,13 +119,14 @@ bool TTextoObj::FuncValorIni(TVariavel * v)
 // Última variável como texto
 bool TTextoObj::FuncValorFim(TVariavel * v)
 {
+    TTextoObj * ref = reinterpret_cast<TTextoObj*>(v->endvar) + v->indice;
     TBlocoObj * bl = nullptr;
-    if (RBroot)
+    if (ref->RBroot)
     {
         if (Instr::VarAtual < v + 1)
-            bl = RBroot->RBlast();
+            bl = ref->RBroot->RBlast();
         else
-            bl = ProcFim(v[1].getTxt());
+            bl = ref->ProcFim(v[1].getTxt());
     }
     if (bl == nullptr)
         return false;
@@ -148,9 +139,10 @@ bool TTextoObj::FuncValorFim(TVariavel * v)
 // Nome da variável
 bool TTextoObj::FuncNomeVar(TVariavel * v)
 {
+    TTextoObj * ref = reinterpret_cast<TTextoObj*>(v->endvar) + v->indice;
     TBlocoObj * bl = nullptr;
     if (Instr::VarAtual >= v + 1)
-        bl = Procura(v[1].getTxt());
+        bl = ref->Procura(v[1].getTxt());
     Instr::ApagarVar(v);
     if (bl == nullptr)
         return Instr::CriarVarTxtFixo("");
@@ -161,14 +153,15 @@ bool TTextoObj::FuncNomeVar(TVariavel * v)
 // Mudar variável
 bool TTextoObj::FuncMudar(TVariavel * v)
 {
+    TTextoObj * ref = reinterpret_cast<TTextoObj*>(v->endvar) + v->indice;
     if (Instr::VarAtual >= v + 2)
     {
         char nomevar[64];
         copiastr(nomevar, v[1].getTxt());
-        Mudar(nomevar, v[2].getObj());
+        ref->Mudar(nomevar, v[2].getObj());
     }
     else if (Instr::VarAtual >= v + 1)
-        Mudar(v[1].getTxt(), 0);
+        ref->Mudar(v[1].getTxt(), 0);
     return false;
 }
 
@@ -176,9 +169,10 @@ bool TTextoObj::FuncMudar(TVariavel * v)
 // Variável anterior
 bool TTextoObj::FuncAntes(TVariavel * v)
 {
+    TTextoObj * ref = reinterpret_cast<TTextoObj*>(v->endvar) + v->indice;
     TBlocoObj * bl = nullptr;
     if (Instr::VarAtual >= v + 1)
-        bl = ProcAntes(v[1].getTxt());
+        bl = ref->ProcAntes(v[1].getTxt());
     if (Instr::VarAtual >= v + 2 && bl)
     {
         int cmp = comparaZ(bl->NomeVar, v[2].getTxt());
@@ -193,9 +187,10 @@ bool TTextoObj::FuncAntes(TVariavel * v)
 // Próxima variável
 bool TTextoObj::FuncDepois(TVariavel * v)
 {
+    TTextoObj * ref = reinterpret_cast<TTextoObj*>(v->endvar) + v->indice;
     TBlocoObj * bl = nullptr;
     if (Instr::VarAtual >= v + 1)
-        bl = ProcDepois(v[1].getTxt());
+        bl = ref->ProcDepois(v[1].getTxt());
     if (Instr::VarAtual >= v+2 && bl)
     {
         int cmp = comparaZ(bl->NomeVar, v[2].getTxt());
@@ -210,13 +205,14 @@ bool TTextoObj::FuncDepois(TVariavel * v)
 // Início
 bool TTextoObj::FuncIni(TVariavel * v)
 {
+    TTextoObj * ref = reinterpret_cast<TTextoObj*>(v->endvar) + v->indice;
     TBlocoObj * bl = nullptr;
-    if (RBroot)
+    if (ref->RBroot)
     {
         if (Instr::VarAtual < v + 1)
-            bl = RBroot->RBfirst();
+            bl = ref->RBroot->RBfirst();
         else
-            bl = ProcIni(v[1].getTxt());
+            bl = ref->ProcIni(v[1].getTxt());
     }
     Instr::ApagarVar(v);
     return Instr::CriarVarTexto(bl ? bl->NomeVar : "");
@@ -226,13 +222,14 @@ bool TTextoObj::FuncIni(TVariavel * v)
 // Fim
 bool TTextoObj::FuncFim(TVariavel * v)
 {
+    TTextoObj * ref = reinterpret_cast<TTextoObj*>(v->endvar) + v->indice;
     TBlocoObj * bl = nullptr;
-    if (RBroot)
+    if (ref->RBroot)
     {
         if (Instr::VarAtual < v + 1)
-            bl = RBroot->RBlast();
+            bl = ref->RBroot->RBlast();
         else
-            bl = ProcFim(v[1].getTxt());
+            bl = ref->ProcFim(v[1].getTxt());
     }
     Instr::ApagarVar(v);
     return Instr::CriarVarTexto(bl ? bl->NomeVar : "");
@@ -242,18 +239,19 @@ bool TTextoObj::FuncFim(TVariavel * v)
 // Limpar
 bool TTextoObj::FuncLimpar(TVariavel * v)
 {
+    TTextoObj * ref = reinterpret_cast<TTextoObj*>(v->endvar) + v->indice;
     if (Instr::VarAtual < v + 1)
     {
-        Limpar();
+        ref->Limpar();
         return false;
     }
     for (TVariavel * v1 = v + 1; v1 <= Instr::VarAtual; v1++)
     {
         const char * p = v1->getTxt();
-        TBlocoObj * ini = ProcIni(p);
+        TBlocoObj * ini = ref->ProcIni(p);
         if (ini == nullptr)
             continue;
-        TBlocoObj * fim = ProcFim(p);
+        TBlocoObj * fim = ref->ProcFim(p);
         while (ini != fim)
         {
             TBlocoObj * bl = TBlocoObj::RBnext(ini);
@@ -269,19 +267,20 @@ bool TTextoObj::FuncLimpar(TVariavel * v)
 // Apagar
 bool TTextoObj::FuncApagar(TVariavel * v)
 {
+    TTextoObj * ref = reinterpret_cast<TTextoObj*>(v->endvar) + v->indice;
     if (Instr::VarAtual < v + 1)
     {
-        if (RBroot)
-            RBroot->FuncApagarSub();
+        if (ref->RBroot)
+            ref->RBroot->FuncApagarSub();
         return false;
     }
-    for (TVariavel * v1 = v + 1; v1<=Instr::VarAtual; v1++)
+    for (TVariavel * v1 = v + 1; v1 <= Instr::VarAtual; v1++)
     {
         const char * p = v1->getTxt();
-        TBlocoObj * ini = ProcIni(p);
+        TBlocoObj * ini = ref->ProcIni(p);
         if (ini == nullptr)
             continue;
-        TBlocoObj * fim = ProcFim(p);
+        TBlocoObj * fim = ref->ProcFim(p);
         while (ini != fim)
         {
             ini->Objeto->MarcarApagar();
@@ -306,19 +305,20 @@ void TBlocoObj::FuncApagarSub()
 // Total
 bool TTextoObj::FuncTotal(TVariavel * v)
 {
+    TTextoObj * ref = reinterpret_cast<TTextoObj*>(v->endvar) + v->indice;
     const char * txt = "";
     int total = 0;
     if (Instr::VarAtual >= v + 1)
         txt = v[1].getTxt();
     if (*txt == 0)
     {
-        total = Total;
+        total = ref->Total;
         return Instr::CriarVarInt(v, total);
     }
-    TBlocoObj * ini = ProcIni(txt);
+    TBlocoObj * ini = ref->ProcIni(txt);
     if (ini)
     {
-        TBlocoObj * fim = ProcFim(txt);
+        TBlocoObj * fim = ref->ProcFim(txt);
         total = 1;
         while (ini && ini != fim)
             total++, ini = TBlocoObj::RBnext(ini);
@@ -609,7 +609,9 @@ const TVarInfo * TTextoObjSub::Inicializa()
         TVarInfo::FOperadorAddFalse,
         FOperadorIgual2,
         FOperadorCompara,
-        TVarInfo::FFuncVetorFalse);
+        TVarInfo::FFuncTextoFalse,
+        TVarInfo::FFuncVetorFalse,
+        nullptr, -1);
     return &var;
 }
 

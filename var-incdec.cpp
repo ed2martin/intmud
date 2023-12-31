@@ -15,6 +15,66 @@
 #include "misc.h"
 
 //------------------------------------------------------------------------------
+const TVarInfo * TVarIncDec::InicializaInc()
+{
+    static TVarInfo::FuncItem ListaFuncEnd[] = {
+        { "abs",        &TVarIncDec::FuncAbs },
+        { "neg",        &TVarIncDec::FuncNegInc },
+        { "pos",        &TVarIncDec::FuncPosInc } };
+    static const TVarInfo var(
+        FTamanho,
+        FTamanhoVetor,
+        TVarInfo::FTipoInt,
+        FRedimInc,
+        FMoverEnd,
+        TVarInfo::FMoverDef0,
+        FGetBoolInc,
+        FGetIntInc,
+        FGetDoubleInc,
+        FGetTxtInc,
+        TVarInfo::FGetObjNulo,
+        FOperadorAtribInc,
+        TVarInfo::FOperadorAddFalse,
+        FOperadorIgual2Inc,
+        FOperadorComparaInc,
+        TVarInfo::FFuncTextoFalse,
+        FuncVetorInc,
+        ListaFuncEnd,
+        sizeof(ListaFuncEnd) / sizeof(ListaFuncEnd[0]) - 1);
+    return &var;
+}
+
+//------------------------------------------------------------------------------
+const TVarInfo * TVarIncDec::InicializaDec()
+{
+    static TVarInfo::FuncItem ListaFuncEnd[] = {
+        { "abs",        &TVarIncDec::FuncAbs },
+        { "neg",        &TVarIncDec::FuncNegDec },
+        { "pos",        &TVarIncDec::FuncPosDec } };
+    static const TVarInfo var(
+        FTamanho,
+        FTamanhoVetor,
+        TVarInfo::FTipoInt,
+        FRedimDec,
+        FMoverEnd,
+        TVarInfo::FMoverDef0,
+        FGetBoolDec,
+        FGetIntDec,
+        FGetDoubleDec,
+        FGetTxtDec,
+        TVarInfo::FGetObjNulo,
+        FOperadorAtribDec,
+        TVarInfo::FOperadorAddFalse,
+        FOperadorIgual2Dec,
+        FOperadorComparaDec,
+        TVarInfo::FFuncTextoFalse,
+        FuncVetorDec,
+        ListaFuncEnd,
+        sizeof(ListaFuncEnd) / sizeof(ListaFuncEnd[0]) - 1);
+    return &var;
+}
+
+//------------------------------------------------------------------------------
 int TVarIncDec::getInc(int numfunc)
 {
     if (valor < 0)
@@ -75,98 +135,6 @@ void TVarIncDec::setDec(int numfunc, int v)
 }
 
 //------------------------------------------------------------------------------
-bool TVarIncDec::FuncInc(TVariavel * v, const char * nome)
-{
-    if (comparaZ(nome, "abs") == 0)
-    {
-        Instr::ApagarVar(v + 1);
-        Instr::VarAtual->numfunc = 1;
-        return true;
-    }
-    if (comparaZ(nome, "pos") == 0)
-    {
-        int valor = getInc(0);
-        if (valor < 0)
-            setInc(0, -valor);
-        return false;
-    }
-    if (comparaZ(nome, "neg") == 0)
-    {
-        int valor = getInc(0);
-        if (valor > 0)
-            setInc(0, -valor);
-        return false;
-    }
-    return false;
-}
-
-//------------------------------------------------------------------------------
-bool TVarIncDec::FuncDec(TVariavel * v, const char * nome)
-{
-    if (comparaZ(nome, "abs") == 0)
-    {
-        Instr::ApagarVar(v + 1);
-        Instr::VarAtual->numfunc = 1;
-        return true;
-    }
-    if (comparaZ(nome, "pos") == 0)
-    {
-        int valor = getDec(0);
-        if (valor < 0)
-            setDec(0, -valor);
-        return false;
-    }
-    if (comparaZ(nome, "neg") == 0)
-    {
-        int valor = getDec(0);
-        if (valor > 0)
-            setDec(0, -valor);
-        return false;
-    }
-    return false;
-}
-
-//------------------------------------------------------------------------------
-bool TVarIncDec::FuncVetorInc(TVariavel * v, const char * nome)
-{
-    if (comparaZ(nome, "limpar") != 0)
-        return false;
-    const int total = (unsigned char)v->defvar[Instr::endVetor];
-    int numero = 0;
-    if (Instr::VarAtual > v)
-    {
-        numero = v[1].getInt();
-        if (numero >= INTTEMPO_MAX * INTTEMPO_MAX)
-            numero = INTTEMPO_MAX * INTTEMPO_MAX - 1;
-    }
-    numero = TempoIni + INTTEMPO_MAX * INTTEMPO_MAX - numero;
-    TVarIncDec * ender = reinterpret_cast<TVarIncDec*>(v->endvar);
-    for (int x = 0; x < total; x++)
-        ender[x].valor = numero;
-    return false;
-}
-
-//------------------------------------------------------------------------------
-bool TVarIncDec::FuncVetorDec(TVariavel * v, const char * nome)
-{
-    if (comparaZ(nome, "limpar") != 0)
-        return false;
-    const int total = (unsigned char)v->defvar[Instr::endVetor];
-    int numero = 0;
-    if (Instr::VarAtual > v)
-    {
-        numero = v[1].getInt();
-        if (numero >= INTTEMPO_MAX * INTTEMPO_MAX)
-            numero = INTTEMPO_MAX * INTTEMPO_MAX - 1;
-    }
-    numero = TempoIni + numero;
-    TVarIncDec * ender = reinterpret_cast<TVarIncDec*>(v->endvar);
-    for (int x = 0; x < total; x++)
-        ender[x].valor = numero;
-    return false;
-}
-
-//------------------------------------------------------------------------------
 int TVarIncDec::FTamanho(const char * instr)
 {
     return sizeof(TVarIncDec);
@@ -177,52 +145,6 @@ int TVarIncDec::FTamanhoVetor(const char * instr)
 {
     int total = (unsigned char)instr[Instr::endVetor];
     return (total ? total : 1) * sizeof(TVarIncDec);
-}
-
-//------------------------------------------------------------------------------
-const TVarInfo * TVarIncDec::InicializaInc()
-{
-    static const TVarInfo var(
-        FTamanho,
-        FTamanhoVetor,
-        TVarInfo::FTipoInt,
-        FRedimInc,
-        FMoverEnd,
-        TVarInfo::FMoverDef0,
-        FGetBoolInc,
-        FGetIntInc,
-        FGetDoubleInc,
-        FGetTxtInc,
-        TVarInfo::FGetObjNulo,
-        FOperadorAtribInc,
-        TVarInfo::FOperadorAddFalse,
-        FOperadorIgual2Inc,
-        FOperadorComparaInc,
-        FuncVetorInc);
-    return &var;
-}
-
-//------------------------------------------------------------------------------
-const TVarInfo * TVarIncDec::InicializaDec()
-{
-    static const TVarInfo var(
-        FTamanho,
-        FTamanhoVetor,
-        TVarInfo::FTipoInt,
-        FRedimDec,
-        FMoverEnd,
-        TVarInfo::FMoverDef0,
-        FGetBoolDec,
-        FGetIntDec,
-        FGetDoubleDec,
-        FGetTxtDec,
-        TVarInfo::FGetObjNulo,
-        FOperadorAtribDec,
-        TVarInfo::FOperadorAddFalse,
-        FOperadorIgual2Dec,
-        FOperadorComparaDec,
-        FuncVetorDec);
-    return &var;
 }
 
 //------------------------------------------------------------------------------
@@ -334,4 +256,92 @@ unsigned char TVarIncDec::FOperadorComparaDec(TVariavel * v1, TVariavel * v2)
 {
     TVarIncDec * ref = reinterpret_cast<TVarIncDec*>(v1->endvar) + v1->indice;
     return TVarInfo::ComparaInt(ref->getDec(v1->numfunc), v2);
+}
+
+//------------------------------------------------------------------------------
+bool TVarIncDec::FuncAbs(TVariavel * v)
+{
+    Instr::ApagarVar(v + 1);
+    Instr::VarAtual->numfunc = 1;
+    return true;
+}
+
+//------------------------------------------------------------------------------
+bool TVarIncDec::FuncPosInc(TVariavel * v)
+{
+    TVarIncDec * ref = reinterpret_cast<TVarIncDec*>(v->endvar) + v->indice;
+    int valor = ref->getInc(0);
+    if (valor < 0)
+        ref->setInc(0, -valor);
+    return false;
+}
+
+//------------------------------------------------------------------------------
+bool TVarIncDec::FuncPosDec(TVariavel * v)
+{
+    TVarIncDec * ref = reinterpret_cast<TVarIncDec*>(v->endvar) + v->indice;
+    int valor = ref->getDec(0);
+    if (valor < 0)
+        ref->setDec(0, -valor);
+    return false;
+}
+
+//------------------------------------------------------------------------------
+bool TVarIncDec::FuncNegInc(TVariavel * v)
+{
+    TVarIncDec * ref = reinterpret_cast<TVarIncDec*>(v->endvar) + v->indice;
+    int valor = ref->getInc(0);
+    if (valor > 0)
+        ref->setInc(0, -valor);
+    return false;
+}
+
+//------------------------------------------------------------------------------
+bool TVarIncDec::FuncNegDec(TVariavel * v)
+{
+    TVarIncDec * ref = reinterpret_cast<TVarIncDec*>(v->endvar) + v->indice;
+    int valor = ref->getDec(0);
+    if (valor > 0)
+        ref->setDec(0, -valor);
+    return false;
+}
+
+//------------------------------------------------------------------------------
+bool TVarIncDec::FuncVetorInc(TVariavel * v, const char * nome)
+{
+    if (comparaZ(nome, "limpar") != 0)
+        return false;
+    const int total = (unsigned char)v->defvar[Instr::endVetor];
+    int numero = 0;
+    if (Instr::VarAtual > v)
+    {
+        numero = v[1].getInt();
+        if (numero >= INTTEMPO_MAX * INTTEMPO_MAX)
+            numero = INTTEMPO_MAX * INTTEMPO_MAX - 1;
+    }
+    numero = TempoIni + INTTEMPO_MAX * INTTEMPO_MAX - numero;
+    TVarIncDec * ender = reinterpret_cast<TVarIncDec*>(v->endvar);
+    for (int x = 0; x < total; x++)
+        ender[x].valor = numero;
+    return false;
+}
+
+//------------------------------------------------------------------------------
+bool TVarIncDec::FuncVetorDec(TVariavel * v, const char * nome)
+{
+    if (comparaZ(nome, "limpar") != 0)
+        return false;
+    const int total = (unsigned char)v->defvar[Instr::endVetor];
+    int numero = 0;
+    if (Instr::VarAtual > v)
+    {
+        numero = v[1].getInt();
+        if (numero >= INTTEMPO_MAX * INTTEMPO_MAX)
+            numero = INTTEMPO_MAX * INTTEMPO_MAX - 1;
+    }
+    numero = TempoIni + numero;
+    TVarIncDec * ender = reinterpret_cast<TVarIncDec*>(v->endvar);
+    for (int x = 0; x < total; x++)
+        ender[x].valor = numero;
+    return false;
 }

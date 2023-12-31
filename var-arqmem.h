@@ -33,20 +33,20 @@ private:
     void Debug();
         ///< Verifica se variáveis de TArqMem estão corretas
 
-    bool FuncAdd(TVariavel * v);          ///< Processa função Add
-    bool FuncAddBin(TVariavel * v);       ///< Processa função AddBin
-    bool FuncEof(TVariavel * v);          ///< Processa função Eof
-    bool FuncEscr(TVariavel * v);         ///< Processa função Escr
-    bool FuncEscrBin(TVariavel * v);      ///< Processa função EscrBin
-    bool FuncLer(TVariavel * v);          ///< Processa função Ler
-    bool FuncLerBin(TVariavel * v);       ///< Processa função LerBin
-    bool FuncLerBinEsp(TVariavel * v);    ///< Processa função LerBinEsp
+    static bool FuncAdd(TVariavel * v);          ///< Processa função Add
+    static bool FuncAddBin(TVariavel * v);       ///< Processa função AddBin
+    static bool FuncEof(TVariavel * v);          ///< Processa função Eof
+    static bool FuncEscr(TVariavel * v);         ///< Processa função Escr
+    static bool FuncEscrBin(TVariavel * v);      ///< Processa função EscrBin
+    static bool FuncLer(TVariavel * v);          ///< Processa função Ler
+    static bool FuncLerBin(TVariavel * v);       ///< Processa função LerBin
+    static bool FuncLerBinEsp(TVariavel * v);    ///< Processa função LerBinEsp
     bool FuncLerBinComum(TVariavel * v, bool espaco);
             ///< Usado por FuncLerBin e FuncLerBinEsp
-    bool FuncLimpar(TVariavel * v);       ///< Processa função Limpar
-    bool FuncPos(TVariavel * v);          ///< Processa função Pos
-    bool FuncTamanho(TVariavel * v);      ///< Processa função Tamanho
-    bool FuncTruncar(TVariavel * v);      ///< Processa função Truncar
+    static bool FuncLimpar(TVariavel * v);       ///< Processa função Limpar
+    static bool FuncPos(TVariavel * v);          ///< Processa função Pos
+    static bool FuncTamanho(TVariavel * v);      ///< Processa função Tamanho
+    static bool FuncTruncar(TVariavel * v);      ///< Processa função Truncar
 
     static int FTamanho(const char * instr);
     static int FTamanhoVetor(const char * instr);
@@ -62,7 +62,6 @@ public:
     ~TVarArqMem() { Apagar(); } ///< Destrutor
     void Criar();           ///< Chamado ao criar objeto
     void Apagar();          ///< Apaga objeto
-    bool Func(TVariavel * v, const char * nome); ///< Função da variável
 
     int Ler(char * buffer, int tamanho);
         ///< Lê a partir da posição atual, retorna quantos bytes lidos

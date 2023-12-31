@@ -34,7 +34,6 @@ public:
          *           - 4 a 7 = adiciona apenas se objeto não estiver na lista
          *   @return Endereço do primeiro objeto adicionado, ou 0 se não houver
          */
-    bool Func(TVariavel * v, const char * nome); ///< Função da variável
     int  getValor();        ///< Ler valor numérico da variável
     TListaX * Inicio;       ///< Primeiro item
     TListaX * Fim;          ///< Último item
@@ -42,22 +41,22 @@ public:
     unsigned int Total;     ///< Quantidade de itens da lista
 
 private:
-    bool FuncIni(TVariavel * v);
-    bool FuncFim(TVariavel * v);
-    bool FuncObjLista(TVariavel * v);
-    bool FuncObjIni(TVariavel * v);
-    bool FuncObjFim(TVariavel * v);
-    bool FuncAddIni(TVariavel * v);
-    bool FuncAddFim(TVariavel * v);
-    bool FuncAddIni1(TVariavel * v);
-    bool FuncAddFim1(TVariavel * v);
-    bool FuncRemove(TVariavel * v);
-    bool FuncRand(TVariavel * v);
-    bool FuncInverter(TVariavel * v);
-    bool FuncLimpar(TVariavel * v);
-    bool FuncApagar(TVariavel * v);
-    bool FuncPossui(TVariavel * v);
-    bool FuncTotal(TVariavel * v);
+    static bool FuncIni(TVariavel * v);
+    static bool FuncFim(TVariavel * v);
+    static bool FuncObjLista(TVariavel * v);
+    static bool FuncObjIni(TVariavel * v);
+    static bool FuncObjFim(TVariavel * v);
+    static bool FuncAddIni(TVariavel * v);
+    static bool FuncAddFim(TVariavel * v);
+    static bool FuncAddIni1(TVariavel * v);
+    static bool FuncAddFim1(TVariavel * v);
+    static bool FuncRemove(TVariavel * v);
+    static bool FuncRand(TVariavel * v);
+    static bool FuncInverter(TVariavel * v);
+    static bool FuncLimpar(TVariavel * v);
+    static bool FuncApagar(TVariavel * v);
+    static bool FuncPossui(TVariavel * v);
+    static bool FuncTotal(TVariavel * v);
 
     static int FTamanho(const char * instr);
     static int FTamanhoVetor(const char * instr);
@@ -80,7 +79,6 @@ public:
     void Apagar();          ///< Apaga objeto
     void Mover(TListaItem * destino, TObjeto * o);
         ///< Move TListaItem para outro lugar
-    bool Func(TVariavel * v, const char * nome); ///< Função da variável
     int  getValor();        ///< Ler valor numérico da variável
     void MudarRef(TListaX * lista); ///< Muda referência de ListaX
     TListaItem * Antes;     ///< Objeto anterior
@@ -91,20 +89,20 @@ public:
     unsigned int indice;    ///< Índice da variável
 
 private:
-    bool FuncTotal(TVariavel * v);
-    bool FuncObj(TVariavel * v);
-    bool FuncObjLista(TVariavel * v);
-    bool FuncAntes(TVariavel * v);
-    bool FuncDepois(TVariavel * v);
-    bool FuncObjAntes(TVariavel * v);
-    bool FuncObjDepois(TVariavel * v);
-    bool FuncRemove(TVariavel * v);
-    bool FuncRemoveAntes(TVariavel * v);
-    bool FuncRemoveDepois(TVariavel * v);
-    bool FuncAddAntes(TVariavel * v);
-    bool FuncAddDepois(TVariavel * v);
-    bool FuncAddAntes1(TVariavel * v);
-    bool FuncAddDepois1(TVariavel * v);
+    static bool FuncTotal(TVariavel * v);
+    static bool FuncObj(TVariavel * v);
+    static bool FuncObjLista(TVariavel * v);
+    static bool FuncAntes(TVariavel * v);
+    static bool FuncDepois(TVariavel * v);
+    static bool FuncObjAntes(TVariavel * v);
+    static bool FuncObjDepois(TVariavel * v);
+    static bool FuncRemove(TVariavel * v);
+    static bool FuncRemoveAntes(TVariavel * v);
+    static bool FuncRemoveDepois(TVariavel * v);
+    static bool FuncAddAntes(TVariavel * v);
+    static bool FuncAddDepois(TVariavel * v);
+    static bool FuncAddAntes1(TVariavel * v);
+    static bool FuncAddDepois1(TVariavel * v);
 
     static int FTamanho(const char * instr);
     static int FTamanhoVetor(const char * instr);

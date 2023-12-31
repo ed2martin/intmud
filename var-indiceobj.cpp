@@ -18,6 +18,13 @@
 //----------------------------------------------------------------------------
 const TVarInfo * TIndiceItem::Inicializa()
 {
+    static TVarInfo::FuncItem ListaFuncEnd[] = {
+        { "antes",        &TIndiceItem::FuncAntes },
+        { "depois",       &TIndiceItem::FuncDepois },
+        { "fim",          &TIndiceItem::FuncFim },
+        { "ini",          &TIndiceItem::FuncIni },
+        { "obj",          &TIndiceItem::FuncObj },
+        { "txt",          &TIndiceItem::FuncTxt }  };
     static const TVarInfo var(
         FTamanho,
         FTamanhoVetor,
@@ -34,7 +41,10 @@ const TVarInfo * TIndiceItem::Inicializa()
         TVarInfo::FOperadorAddFalse,
         FOperadorIgual2,
         FOperadorCompara,
-        TVarInfo::FFuncVetorFalse);
+        TVarInfo::FFuncTextoFalse,
+        TVarInfo::FFuncVetorFalse,
+        ListaFuncEnd,
+        sizeof(ListaFuncEnd) / sizeof(ListaFuncEnd[0]) - 1);
     return &var;
 }
 
@@ -99,44 +109,15 @@ void TIndiceItem::MudarRef(TIndiceObj * indice)
 }
 
 //----------------------------------------------------------------------------
-bool TIndiceItem::Func(TVariavel * v, const char * nome)
-{
-// Lista das funções de indiceitem
-// Deve obrigatoriamente estar em letras minúsculas e ordem alfabética
-    static const struct {
-        const char * Nome;
-        bool (TIndiceItem::*Func)(TVariavel * v); } ExecFunc[] = {
-        { "antes",        &TIndiceItem::FuncAntes },
-        { "depois",       &TIndiceItem::FuncDepois },
-        { "fim",          &TIndiceItem::FuncFim },
-        { "ini",          &TIndiceItem::FuncIni },
-        { "obj",          &TIndiceItem::FuncObj },
-        { "txt",          &TIndiceItem::FuncTxt }  };
-// Procura a função correspondente e executa
-    int ini = 0;
-    int fim = sizeof(ExecFunc) / sizeof(ExecFunc[0]) - 1;
-    char mens[80];
-    copiastrmin(mens, nome, sizeof(mens));
-    while (ini <= fim)
-    {
-        int meio = (ini + fim) / 2;
-        int resultado = strcmp(mens, ExecFunc[meio].Nome);
-        if (resultado == 0) // Se encontrou...
-            return (this->*ExecFunc[meio].Func)(v);
-        if (resultado < 0) fim = meio - 1; else ini = meio + 1;
-    }
-    return false;
-}
-
-//----------------------------------------------------------------------------
 bool TIndiceItem::FuncObj(TVariavel * v)
 {
 // Nenhum argumento
     if (Instr::VarAtual == v)
     {
-        if (IndiceObj == nullptr)
+        TIndiceItem * ref = reinterpret_cast<TIndiceItem*>(v->endvar) + v->indice;
+        if (ref->IndiceObj == nullptr)
             return false;
-        TObjeto * obj = IndiceObj->Objeto;
+        TObjeto * obj = ref->IndiceObj->Objeto;
         Instr::ApagarVar(v);
         return Instr::CriarVarObj(obj);
     }
@@ -164,11 +145,12 @@ bool TIndiceItem::FuncObj(TVariavel * v)
 // Texto
 bool TIndiceItem::FuncTxt(TVariavel * v)
 {
+    TIndiceItem * ref = reinterpret_cast<TIndiceItem*>(v->endvar) + v->indice;
 // Obtém o texto e o tamanho do texto
     char mens[100];
     *mens = 0;
-    if (IndiceObj)
-        copiastr(mens, IndiceObj->Nome, sizeof(mens));
+    if (ref->IndiceObj)
+        copiastr(mens, ref->IndiceObj->Nome, sizeof(mens));
 // Anota o texto
     Instr::ApagarVar(v);
     return Instr::CriarVarTexto(mens);
@@ -178,10 +160,11 @@ bool TIndiceItem::FuncTxt(TVariavel * v)
 // Objeto anterior
 bool TIndiceItem::FuncAntes(TVariavel * v)
 {
-    if (IndiceObj == nullptr)
+    TIndiceItem * ref = reinterpret_cast<TIndiceItem*>(v->endvar) + v->indice;
+    if (ref->IndiceObj == nullptr)
         return false;
     int total = 1;
-    TIndiceObj * obj = IndiceObj;
+    TIndiceObj * obj = ref->IndiceObj;
     if (Instr::VarAtual >= v+1)
         total = v[1].getInt();
     for (; total > 0; total--)
@@ -189,13 +172,13 @@ bool TIndiceItem::FuncAntes(TVariavel * v)
         obj = TIndiceObj::RBprevious(obj);
         if (obj == nullptr)
             break;
-        if (compara(obj->Nome, IndiceObj->Nome, TamTxt) != 0)
+        if (compara(obj->Nome, ref->IndiceObj->Nome, ref->TamTxt) != 0)
         {
             obj = nullptr;
             break;
         }
     }
-    MudarRef(obj);
+    ref->MudarRef(obj);
     return false;
 }
 
@@ -203,10 +186,11 @@ bool TIndiceItem::FuncAntes(TVariavel * v)
 // Próximo objeto
 bool TIndiceItem::FuncDepois(TVariavel * v)
 {
-    if (IndiceObj == nullptr)
+    TIndiceItem * ref = reinterpret_cast<TIndiceItem*>(v->endvar) + v->indice;
+    if (ref->IndiceObj == nullptr)
         return false;
     int total = 1;
-    TIndiceObj * obj = IndiceObj;
+    TIndiceObj * obj = ref->IndiceObj;
     if (Instr::VarAtual >= v+1)
         total = v[1].getInt();
     for (; total > 0; total--)
@@ -214,13 +198,13 @@ bool TIndiceItem::FuncDepois(TVariavel * v)
         obj = TIndiceObj::RBnext(obj);
         if (obj == nullptr)
             break;
-        if (compara(obj->Nome, IndiceObj->Nome, TamTxt) != 0)
+        if (compara(obj->Nome, ref->IndiceObj->Nome, ref->TamTxt) != 0)
         {
             obj = nullptr;
             break;
         }
     }
-    MudarRef(obj);
+    ref->MudarRef(obj);
     return false;
 }
 
@@ -228,6 +212,7 @@ bool TIndiceItem::FuncDepois(TVariavel * v)
 // Primeiro objeto
 bool TIndiceItem::FuncIni(TVariavel * v)
 {
+    TIndiceItem * ref = reinterpret_cast<TIndiceItem*>(v->endvar) + v->indice;
     for (TVariavel * v1 = v + 1; v1 <= Instr::VarAtual; v1++)
     {
         const char * txt = v1->getTxt();
@@ -239,11 +224,11 @@ bool TIndiceItem::FuncIni(TVariavel * v)
         if (indice == nullptr)
             continue;
     // Encontrou
-        MudarRef(indice);
-        TamTxt = strlen(txt);
+        ref->MudarRef(indice);
+        ref->TamTxt = strlen(txt);
         return false;
     }
-    MudarRef(nullptr);
+    ref->MudarRef(nullptr);
     return false;
 }
 
@@ -251,6 +236,7 @@ bool TIndiceItem::FuncIni(TVariavel * v)
 // Último objeto
 bool TIndiceItem::FuncFim(TVariavel * v)
 {
+    TIndiceItem * ref = reinterpret_cast<TIndiceItem*>(v->endvar) + v->indice;
     for (TVariavel * v1 = v + 1; v1 <= Instr::VarAtual; v1++)
     {
         const char * txt = v1->getTxt();
@@ -262,11 +248,11 @@ bool TIndiceItem::FuncFim(TVariavel * v)
         if (indice == nullptr)
             continue;
     // Encontrou
-        MudarRef(indice);
-        TamTxt = strlen(txt);
+        ref->MudarRef(indice);
+        ref->TamTxt = strlen(txt);
         return false;
     }
-    MudarRef(nullptr);
+    ref->MudarRef(nullptr);
     return false;
 }
 
@@ -360,7 +346,9 @@ const TVarInfo * TIndiceObj::Inicializa()
         FOperadorAdd,
         FOperadorIgual2,
         FOperadorCompara,
-        TVarInfo::FFuncVetorFalse);
+        TVarInfo::FFuncTextoFalse,
+        TVarInfo::FFuncVetorFalse,
+        nullptr, -1);
     return &var;
 }
 

@@ -84,7 +84,6 @@ public:
         ///< Inicializa variável e retorna informações
     void Mover(TVarArqExec * destino);  ///< Move TVarArqExec para outro lugar
     void EndObjeto(TClasse * c, TObjeto * o);
-    bool Func(TVariavel * v, const char * nome); ///< Função da variável
 
     const char * defvar;    ///< Como foi definida a variável
     union {
@@ -98,14 +97,14 @@ private:
     void GeraEvento(const char * evento, const char * texto, int valor);
         ///< Executa uma função
         /**< @param evento Nome do evento (ex. "msg")
-         *   @param texto Texto do primeiro argumento, 0=nenhum texto
-         *   @param valor Segundo argumento, <0 = nenhum valor
+         *   @param texto Texto do primeiro argumento, nullptr = nenhum texto
+         *   @param valor Segundo argumento, menor que 0 = nenhum valor
          *   @note O objeto pode ser apagado nessa função */
 
-    bool FuncMsg(TVariavel * v);    ///< Processa função Msg
-    bool FuncAbrir(TVariavel * v);  ///< Processa função Abrir
-    bool FuncFechar(TVariavel * v); ///< Processa função Fechar
-    bool FuncAberto(TVariavel * v); ///< Processa função Aberto
+    static bool FuncMsg(TVariavel * v);    ///< Processa função Msg
+    static bool FuncAbrir(TVariavel * v);  ///< Processa função Abrir
+    static bool FuncFechar(TVariavel * v); ///< Processa função Fechar
+    static bool FuncAberto(TVariavel * v); ///< Processa função Aberto
 
     static int FTamanho(const char * instr);
     static int FTamanhoVetor(const char * instr);

@@ -15,24 +15,23 @@ class TVarDebug /// Variáveis Debug
 public:
     static const TVarInfo * Inicializa();
         ///< Inicializa variável e retorna informações
+    static void FuncEvento(const char * evento, const char * texto);
+        ///< Executa uma função
+        /**< @param evento Nome do evento (ex. "msg")
+         *   @param texto Texto do primeiro argumento, 0=nenhum texto */
+    static void Exec();
+        ///< Para executar passo-a-passo
+private:
     void Criar();           ///< Cria objeto
             /**< Após criado, acertar defvar, indice e chamar EndObjeto() */
     void Apagar();          ///< Apaga objeto
     void Mover(TVarDebug * destino); ///< Move TVarSock para outro lugar
     void EndObjeto(TClasse * c, TObjeto * o);
-    static void FuncEvento(const char * evento, const char * texto);
-        ///< Executa uma função
-        /**< @param evento Nome do evento (ex. "msg")
-         *   @param texto Texto do primeiro argumento, 0=nenhum texto */
 
-    static bool Func(TVariavel * v, const char * nome);
-        ///< Função da variável
     static int  getInt(int numfunc);
         ///< Ler valor numérico da variável como int
     static double getDouble(int numfunc);
         ///< Ler valor numérico da variável como double
-    static void Exec();
-        ///< Para executar passo-a-passo
 
     const char * defvar;    ///< Como foi definida a variável
     union {
@@ -47,7 +46,6 @@ public:
     TVarDebug * Antes;    ///< Objeto anterior
     TVarDebug * Depois;   ///< Próximo objeto
 
-private:
     static bool FuncIni(TVariavel * v);    ///< Processa função Ini
     static bool FuncExec(TVariavel * v);   ///< Processa função Exec
     static bool FuncUtempo(TVariavel * v); ///< Processa função Utempo

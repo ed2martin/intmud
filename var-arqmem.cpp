@@ -19,16 +19,29 @@
 
 //----------------------------------------------------------------------------
 #ifdef DEBUG
-#define DEBUG1 Debug();
+#define DEBUG1(ref1) ref1->Debug();
 static const int tamanhobloco = 10;
 #else
-#define DEBUG1
+#define DEBUG1(ref1)
 static const int tamanhobloco = 1024;
 #endif
 
 //----------------------------------------------------------------------------
 const TVarInfo * TVarArqMem::Inicializa()
 {
+    static TVarInfo::FuncItem ListaFuncEnd[] = {
+        { "add",          &TVarArqMem::FuncAdd },
+        { "addbin",       &TVarArqMem::FuncAddBin },
+        { "eof",          &TVarArqMem::FuncEof },
+        { "escr",         &TVarArqMem::FuncEscr },
+        { "escrbin",      &TVarArqMem::FuncEscrBin },
+        { "ler",          &TVarArqMem::FuncLer },
+        { "lerbin",       &TVarArqMem::FuncLerBin },
+        { "lerbinesp",    &TVarArqMem::FuncLerBinEsp },
+        { "limpar",       &TVarArqMem::FuncLimpar },
+        { "pos",          &TVarArqMem::FuncPos },
+        { "tamanho",      &TVarArqMem::FuncTamanho },
+        { "truncar",      &TVarArqMem::FuncTruncar }  };
     static const TVarInfo var(
         FTamanho,
         FTamanhoVetor,
@@ -45,7 +58,11 @@ const TVarInfo * TVarArqMem::Inicializa()
         TVarInfo::FOperadorAddFalse,
         TVarInfo::FOperadorIgual2Var,
         TVarInfo::FOperadorComparaVar,
-        TVarInfo::FFuncVetorFalse);
+        TVarInfo::FFuncTextoFalse,
+        TVarInfo::FFuncVetorFalse,
+        ListaFuncEnd,
+        sizeof(ListaFuncEnd) / sizeof(ListaFuncEnd[0]) - 1);
+
     return &var;
 }
 
@@ -61,7 +78,7 @@ inline void TVarArqMem::Apagar()
 {
     while (Fim)
         ApagarBloco();
-    DEBUG1
+    DEBUG1(this)
 }
 
 //----------------------------------------------------------------------------
@@ -126,7 +143,7 @@ void TVarArqMem::Posicao(int novapos)
     {
         PosBloco = Inicio;
         PosByte = 0;
-        DEBUG1
+        DEBUG1(this)
         return;
     }
     int posfim = Fim->Posicao;
@@ -135,7 +152,7 @@ void TVarArqMem::Posicao(int novapos)
         PosBloco = Fim;
         novapos -= posfim;
         PosByte = (novapos <= ArqByte ? novapos : ArqByte);
-        DEBUG1
+        DEBUG1(this)
         return;
     }
     TBloco * bl = PosBloco;
@@ -150,7 +167,7 @@ void TVarArqMem::Posicao(int novapos)
             bl = bl->Depois;
     PosBloco = bl;
     PosByte = novapos - bl->Posicao;
-    DEBUG1
+    DEBUG1(this)
 }
 
 //----------------------------------------------------------------------------
@@ -172,7 +189,7 @@ void TVarArqMem::TruncarPosicao()
         while (bl->Depois)
             ApagarBloco();
         ArqByte = PosByte;
-        DEBUG1
+        DEBUG1(this)
         return;
     }
     bl = bl->Antes; // Vai para o fim do bloco anterior
@@ -185,7 +202,7 @@ void TVarArqMem::TruncarPosicao()
         ApagarBloco();
     PosBloco = bl;
     ArqByte = PosByte = bl->Tamanho;
-    DEBUG1
+    DEBUG1(this)
 }
 
 //----------------------------------------------------------------------------
@@ -201,7 +218,7 @@ int TVarArqMem::Ler(char * buffer, int tamanho)
         if (t == 0)
         {
             pont.MudaPosicao(pont.buffer);
-            DEBUG1
+            DEBUG1(this)
             return buffer - bufini;
         }
         else if (tamanho <= t)
@@ -209,7 +226,7 @@ int TVarArqMem::Ler(char * buffer, int tamanho)
             memcpy(buffer, pont.buffer, tamanho);
             buffer += tamanho;
             pont.MudaPosicao(buffer);
-            DEBUG1
+            DEBUG1(this)
             return buffer - bufini;
         }
         memcpy(buffer, pont.buffer, t);
@@ -243,7 +260,7 @@ int TVarArqMem::Escrever(char * buffer, int tamanho)
         {
             PosByte = ArqByte = bl->Tamanho;
             PosBloco = bl;
-            DEBUG1
+            DEBUG1(this)
             return buffer - bufinicio;
         }
         bl = bl->Depois;
@@ -263,72 +280,40 @@ int TVarArqMem::Escrever(char * buffer, int tamanho)
         ArqByte = pos;
     PosBloco = bl;
     PosByte = pos;
-    DEBUG1
+    DEBUG1(this)
     return buffer - bufinicio;
-}
-
-//------------------------------------------------------------------------------
-bool TVarArqMem::Func(TVariavel * v, const char * nome)
-{
-// Lista das funções de varmem
-// Deve obrigatoriamente estar em letras minúsculas e ordem alfabética
-    static const struct {
-        const char * Nome;
-        bool (TVarArqMem::*Func)(TVariavel * v); } ExecFunc[] = {
-        { "add",          &TVarArqMem::FuncAdd },
-        { "addbin",       &TVarArqMem::FuncAddBin },
-        { "eof",          &TVarArqMem::FuncEof },
-        { "escr",         &TVarArqMem::FuncEscr },
-        { "escrbin",      &TVarArqMem::FuncEscrBin },
-        { "ler",          &TVarArqMem::FuncLer },
-        { "lerbin",       &TVarArqMem::FuncLerBin },
-        { "lerbinesp",    &TVarArqMem::FuncLerBinEsp },
-        { "limpar",       &TVarArqMem::FuncLimpar },
-        { "pos",          &TVarArqMem::FuncPos },
-        { "tamanho",      &TVarArqMem::FuncTamanho },
-        { "truncar",      &TVarArqMem::FuncTruncar }  };
-// Procura a função correspondente e executa
-    int ini = 0;
-    int fim = sizeof(ExecFunc) / sizeof(ExecFunc[0]) - 1;
-    char mens[80];
-    copiastrmin(mens, nome, sizeof(mens));
-    while (ini <= fim)
-    {
-        int meio = (ini + fim) / 2;
-        int resultado = strcmp(mens, ExecFunc[meio].Nome);
-        if (resultado == 0) // Se encontrou...
-            return (this->*ExecFunc[meio].Func)(v);
-        if (resultado < 0) fim = meio - 1; else ini = meio + 1;
-    }
-    return false;
 }
 
 //------------------------------------------------------------------------------
 bool TVarArqMem::FuncAdd(TVariavel * v)
 {
-    PosBloco = Fim;
-    PosByte = ArqByte;
+    TVarArqMem * ref = reinterpret_cast<TVarArqMem*>(v->endvar) + v->indice;
+    ref->PosBloco = ref->Fim;
+    ref->PosByte = ref->ArqByte;
     return FuncEscr(v);
 }
 
 //------------------------------------------------------------------------------
 bool TVarArqMem::FuncAddBin(TVariavel * v)
 {
-    PosBloco = Fim;
-    PosByte = ArqByte;
+    TVarArqMem * ref = reinterpret_cast<TVarArqMem*>(v->endvar) + v->indice;
+    ref->PosBloco = ref->Fim;
+    ref->PosByte = ref->ArqByte;
     return FuncEscrBin(v);
 }
 
 //------------------------------------------------------------------------------
 bool TVarArqMem::FuncEof(TVariavel * v)
 {
-    int valor = (PosBloco == Fim && PosByte >= ArqByte);
+    TVarArqMem * ref = reinterpret_cast<TVarArqMem*>(v->endvar) + v->indice;
+    int valor = (ref->PosBloco == ref->Fim && ref->PosByte >= ref->ArqByte);
     return Instr::CriarVarInt(v, valor);
 }
 
 //------------------------------------------------------------------------------
 bool TVarArqMem::FuncEscr(TVariavel * v)
 {
+    TVarArqMem * ref = reinterpret_cast<TVarArqMem*>(v->endvar) + v->indice;
     for (TVariavel * v1 = v + 1; v1 <= Instr::VarAtual; v1++)
     {
         const char * txt = v1->getTxt();
@@ -338,7 +323,7 @@ bool TVarArqMem::FuncEscr(TVariavel * v)
         {
             if (pmens >= (int)sizeof(mens) - 2)
             {
-                Escrever(mens, pmens);
+                ref->Escrever(mens, pmens);
                 pmens = 0;
             }
             switch (*txt)
@@ -369,15 +354,16 @@ bool TVarArqMem::FuncEscr(TVariavel * v)
             }
         }
         if (pmens)
-            Escrever(mens, pmens);
+            ref->Escrever(mens, pmens);
     }
-    DEBUG1
+    DEBUG1(ref)
     return false;
 }
 
 //------------------------------------------------------------------------------
 bool TVarArqMem::FuncEscrBin(TVariavel * v)
 {
+    TVarArqMem * ref = reinterpret_cast<TVarArqMem*>(v->endvar) + v->indice;
     for (TVariavel * v1 = v + 1; v1 <= Instr::VarAtual; v1++)
     {
         const char * txt = v1->getTxt();
@@ -402,23 +388,24 @@ bool TVarArqMem::FuncEscrBin(TVariavel * v)
             mens[pmens++] = valor, valor = 1;
             if (pmens >= (int)sizeof(mens))
             {
-                Escrever(mens, pmens);
+                ref->Escrever(mens, pmens);
                 pmens = 0;
             }
         }
         if (pmens)
-            Escrever(mens, pmens);
+            ref->Escrever(mens, pmens);
     }
-    DEBUG1
+    DEBUG1(ref)
     return false;
 }
 
 //------------------------------------------------------------------------------
 bool TVarArqMem::FuncLer(TVariavel * v)
 {
+    TVarArqMem * ref = reinterpret_cast<TVarArqMem*>(v->endvar) + v->indice;
     char mens[BUF_MENS];
     int pmens = 0;
-    TVarArqMem::TArqLer pont(this, false);
+    TVarArqMem::TArqLer pont(ref, false);
     if (Instr::VarAtual > v) // Ler o tamanho especificado
     {
         int total = v[1].getInt();
@@ -480,7 +467,7 @@ bool TVarArqMem::FuncLer(TVariavel * v)
     }
     pont.MudaPosicao(pont.buffer);
 fim:
-    DEBUG1
+    DEBUG1(ref)
     Instr::ApagarVar(v);
     return Instr::CriarVarTexto(mens, pmens);
 }
@@ -488,13 +475,15 @@ fim:
 //------------------------------------------------------------------------------
 bool TVarArqMem::FuncLerBin(TVariavel * v)
 {
-    return FuncLerBinComum(v, false);
+    TVarArqMem * ref = reinterpret_cast<TVarArqMem*>(v->endvar) + v->indice;
+    return ref->FuncLerBinComum(v, false);
 }
 
 //------------------------------------------------------------------------------
 bool TVarArqMem::FuncLerBinEsp(TVariavel * v)
 {
-    return FuncLerBinComum(v, true);
+    TVarArqMem * ref = reinterpret_cast<TVarArqMem*>(v->endvar) + v->indice;
+    return ref->FuncLerBinComum(v, true);
 }
 
 //------------------------------------------------------------------------------
@@ -570,7 +559,7 @@ bool TVarArqMem::FuncLerBinComum(TVariavel * v, bool espaco)
     }
     pont.MudaPosicao(pont.buffer);
 fim:
-    DEBUG1
+    DEBUG1(this)
     Instr::ApagarVar(v);
     int add = (espaco && pmens ? 1 : 0);
     return Instr::CriarVarTexto(mens + add, pmens - add);
@@ -579,30 +568,32 @@ fim:
 //------------------------------------------------------------------------------
 bool TVarArqMem::FuncLimpar(TVariavel * v)
 {
-    TruncarZero();
+    TVarArqMem * ref = reinterpret_cast<TVarArqMem*>(v->endvar) + v->indice;
+    ref->TruncarZero();
     return false;
 }
 
 //------------------------------------------------------------------------------
 bool TVarArqMem::FuncPos(TVariavel * v)
 {
+    TVarArqMem * ref = reinterpret_cast<TVarArqMem*>(v->endvar) + v->indice;
     if (Instr::VarAtual >= v + 1)
-        Posicao(v[1].getInt());
-    int pos = Posicao();
-    return Instr::CriarVarInt(v, pos);
+        ref->Posicao(v[1].getInt());
+    return Instr::CriarVarInt(v, ref->Posicao());
 }
 
 //------------------------------------------------------------------------------
 bool TVarArqMem::FuncTamanho(TVariavel * v)
 {
-    int valor = Tamanho();
-    return Instr::CriarVarInt(v, valor);
+    TVarArqMem * ref = reinterpret_cast<TVarArqMem*>(v->endvar) + v->indice;
+    return Instr::CriarVarInt(v, ref->Tamanho());
 }
 
 //------------------------------------------------------------------------------
 bool TVarArqMem::FuncTruncar(TVariavel * v)
 {
-    TruncarPosicao();
+    TVarArqMem * ref = reinterpret_cast<TVarArqMem*>(v->endvar) + v->indice;
+    ref->TruncarPosicao();
     return false;
 }
 

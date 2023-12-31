@@ -1276,7 +1276,9 @@ const TVarInfo * VarBaseTxt1()
         VarBaseTxt1_FOperadorAdd,
         VarBaseTxt1_FOperadorIgual2,
         VarBaseTxt1_FOperadorCompara,
-        VarBaseTxt_FuncVetor);
+        TVarInfo::FFuncTextoFalse,
+        VarBaseTxt_FuncVetor,
+        nullptr, -1);
     return &var;
 }
 
@@ -1298,7 +1300,9 @@ const TVarInfo * VarBaseTxt2()
         VarBaseTxt2_FOperadorAdd,
         VarBaseTxt2_FOperadorIgual2,
         VarBaseTxt2_FOperadorCompara,
-        VarBaseTxt_FuncVetor);
+        TVarInfo::FFuncTextoFalse,
+        VarBaseTxt_FuncVetor,
+        nullptr, -1);
     return &var;
 }
 
@@ -1320,7 +1324,9 @@ const TVarInfo * VarBaseInt1()
         TVarInfo::FOperadorAddFalse,
         VarBaseInt1_FOperadorIgual2,
         VarBaseInt1_FOperadorCompara,
-        VarBaseInt1_FuncVetor);
+        TVarInfo::FFuncTextoFalse,
+        VarBaseInt1_FuncVetor,
+        nullptr, -1);
     return &var;
 }
 
@@ -1342,7 +1348,9 @@ const TVarInfo * VarBaseInt8()
         TVarInfo::FOperadorAddFalse,
         VarBaseInt8_FOperadorIgual2,
         VarBaseInt8_FOperadorCompara,
-        VarBaseInt8_FuncVetor);
+        TVarInfo::FFuncTextoFalse,
+        VarBaseInt8_FuncVetor,
+        nullptr, -1);
     return &var;
 }
 
@@ -1364,7 +1372,9 @@ const TVarInfo * VarBaseUInt8()
         TVarInfo::FOperadorAddFalse,
         VarBaseUInt8_FOperadorIgual2,
         VarBaseUInt8_FOperadorCompara,
-        VarBaseUInt8_FuncVetor);
+        TVarInfo::FFuncTextoFalse,
+        VarBaseUInt8_FuncVetor,
+        nullptr, -1);
     return &var;
 }
 
@@ -1386,7 +1396,9 @@ const TVarInfo * VarBaseInt16()
         TVarInfo::FOperadorAddFalse,
         VarBaseInt16_FOperadorIgual2,
         VarBaseInt16_FOperadorCompara,
-        VarBaseInt16_FuncVetor);
+        TVarInfo::FFuncTextoFalse,
+        VarBaseInt16_FuncVetor,
+        nullptr, -1);
     return &var;
 }
 
@@ -1408,7 +1420,9 @@ const TVarInfo * VarBaseUInt16()
         TVarInfo::FOperadorAddFalse,
         VarBaseUInt16_FOperadorIgual2,
         VarBaseUInt16_FOperadorCompara,
-        VarBaseUInt16_FuncVetor);
+        TVarInfo::FFuncTextoFalse,
+        VarBaseUInt16_FuncVetor,
+        nullptr, -1);
     return &var;
 }
 
@@ -1430,7 +1444,9 @@ const TVarInfo * VarBaseInt32()
         TVarInfo::FOperadorAddFalse,
         VarBaseInt32_FOperadorIgual2,
         VarBaseInt32_FOperadorCompara,
-        VarBaseInt32_FuncVetor);
+        TVarInfo::FFuncTextoFalse,
+        VarBaseInt32_FuncVetor,
+        nullptr, -1);
     return &var;
 }
 
@@ -1452,7 +1468,9 @@ const TVarInfo * VarBaseUInt32()
         TVarInfo::FOperadorAddFalse,
         VarBaseUInt32_FOperadorIgual2,
         VarBaseUInt32_FOperadorCompara,
-        VarBaseUInt32_FuncVetor);
+        TVarInfo::FFuncTextoFalse,
+        VarBaseUInt32_FuncVetor,
+        nullptr, -1);
     return &var;
 }
 
@@ -1474,7 +1492,9 @@ const TVarInfo * VarBaseReal()
         TVarInfo::FOperadorAddFalse,
         VarBaseReal_FOperadorIgual2,
         VarBaseReal_FOperadorCompara,
-        VarBaseReal_FuncVetor);
+        TVarInfo::FFuncTextoFalse,
+        VarBaseReal_FuncVetor,
+        nullptr, -1);
     return &var;
 }
 
@@ -1496,6 +1516,8 @@ const TVarInfo * VarBaseReal2()
         TVarInfo::FOperadorAddFalse,
         VarBaseReal2_FOperadorIgual2,
         VarBaseReal2_FOperadorCompara,
-        VarBaseReal2_FuncVetor);
+        TVarInfo::FFuncTextoFalse,
+        VarBaseReal2_FuncVetor,
+        nullptr, -1);
     return &var;
 }

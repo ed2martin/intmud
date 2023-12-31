@@ -66,6 +66,23 @@ DataHoraNumTotal
 //----------------------------------------------------------------------------
 const TVarInfo * TVarDataHora::Inicializa()
 {
+    static TVarInfo::FuncItem ListaFuncEnd[] = {
+        { "agora",      &TVarDataHora::FuncAgora },
+        { "ano",        &TVarDataHora::FuncAno },
+        { "antes",      &TVarDataHora::FuncAntes },
+        { "bissexto",   &TVarDataHora::FuncBissexto },
+        { "depois",     &TVarDataHora::FuncDepois },
+        { "dia",        &TVarDataHora::FuncDia },
+        { "diasem",     &TVarDataHora::FuncDiaSem },
+        { "hora",       &TVarDataHora::FuncHora },
+        { "mes",        &TVarDataHora::FuncMes },
+        { "min",        &TVarDataHora::FuncMin },
+        { "novadata",   &TVarDataHora::FuncNovaData },
+        { "novahora",   &TVarDataHora::FuncNovaHora },
+        { "numdias",    &TVarDataHora::FuncNumDias },
+        { "numseg",     &TVarDataHora::FuncNumSeg },
+        { "numtotal",   &TVarDataHora::FuncNumTotal },
+        { "seg",        &TVarDataHora::FuncSeg } };
     static const TVarInfo var(
         FTamanho,
         FTamanhoVetor,
@@ -82,7 +99,10 @@ const TVarInfo * TVarDataHora::Inicializa()
         TVarInfo::FOperadorAddFalse,
         FOperadorIgual2,
         FOperadorCompara,
-        TVarInfo::FFuncVetorFalse);
+        TVarInfo::FFuncTextoFalse,
+        TVarInfo::FFuncVetorFalse,
+        ListaFuncEnd,
+        sizeof(ListaFuncEnd) / sizeof(ListaFuncEnd[0]) - 1);
     return &var;
 }
 
@@ -92,171 +112,191 @@ void TVarDataHora::Mover(TVarDataHora * destino)
     memmove(destino, this, sizeof(TVarDataHora));
 }
 
-//------------------------------------------------------------------------------
-bool TVarDataHora::Func(TVariavel * v, const char * nome)
+//----------------------------------------------------------------------------
+bool TVarDataHora::FuncAgora(TVariavel * v)
 {
-// Lista das funções de datahora
-// Deve obrigatoriamente estar em ordem alfabética
-    const char * DataHoraFunc[] = {
-            "agora",
-            "ano",
-            "antes",
-            "bissexto",
-            "depois",
-            "dia",
-            "diasem",
-            "hora",
-            "mes",
-            "min",
-            "novadata",
-            "novahora",
-            "numdias",
-            "numseg",
-            "numtotal",
-            "seg" };
-// Procura a função correspondente
-    int ini = 0;
-    int fim = sizeof(DataHoraFunc) / sizeof(DataHoraFunc[0]) - 1;
-    int meio;
-    while (true)
-    {
-        if (ini > fim)
-            return false;
-        meio = (ini + fim) / 2;
-        int resultado = comparaZ(nome, DataHoraFunc[meio]);
-        if (resultado == 0) // Se encontrou...
-            break;
-        if (resultado < 0)
-            fim = meio - 1;
-        else
-            ini = meio + 1;
-    }
-// Encontrou
-    switch (meio)
-    {
-    case 0: // Agora
-        {
+    TVarDataHora * ref = reinterpret_cast<TVarDataHora*>(v->endvar);
 #ifdef __WIN32__
-            SYSTEMTIME lt = {};
-            GetLocalTime(&lt);
-            Ano = lt.wYear;
-            Mes = lt.wMonth;
-            Dia = lt.wDay;
-            Hora = lt.wHour;
-            Min = lt.wMinute;
-            Seg = lt.wSecond;
+    SYSTEMTIME lt = {};
+    GetLocalTime(&lt);
+    ref->Ano = lt.wYear;
+    ref->Mes = lt.wMonth;
+    ref->Dia = lt.wDay;
+    ref->Hora = lt.wHour;
+    ref->Min = lt.wMinute;
+    ref->Seg = lt.wSecond;
 #else
-            // Nota: localtime() Converte para representação local de tempo
-            struct tm * tempolocal;
-            time_t tempoatual;
-            time(&tempoatual);
-            tempolocal = localtime(&tempoatual);
-            Ano = tempolocal->tm_year + 1900; // Ano começa no 1900
-            Mes = tempolocal->tm_mon + 1; // Mês começa no 1
-            Dia = tempolocal->tm_mday; // Dia começa no 0
-            Hora = tempolocal->tm_hour;
-            Min = tempolocal->tm_min;
-            Seg = tempolocal->tm_sec;
+    // Nota: localtime() Converte para representação local de tempo
+    struct tm * tempolocal;
+    time_t tempoatual;
+    time(&tempoatual);
+    tempolocal = localtime(&tempoatual);
+    ref->Ano = tempolocal->tm_year + 1900; // Ano começa no 1900
+    ref->Mes = tempolocal->tm_mon + 1; // Mês começa no 1
+    ref->Dia = tempolocal->tm_mday; // Dia começa no 0
+    ref->Hora = tempolocal->tm_hour;
+    ref->Min = tempolocal->tm_min;
+    ref->Seg = tempolocal->tm_sec;
 #endif
-            return false;
-        }
-    case 1: // Ano
-        Instr::ApagarVar(v + 1);
-        Instr::VarAtual->numfunc = DataHoraAno;
-        return true;
-    case 2: // Antes
-        if (Dia > 1)
-            Dia--;
-        else if (Mes > 1)
-            Mes--, Dia = DiasMes();
-        else if (Ano > 1)
-            Dia = 31, Mes = 12, Ano--;
-        return false;
-    case 3: // Bissexto
-        ini = BISSEXTO(Ano);
-        return Instr::CriarVarInt(v, ini);
-    case 4: // Depois
-        if (Dia < DiasMes())
-            Dia++;
-        else if (Mes < 12)
-            Dia = 1, Mes++;
-        else if (Ano < 9999)
-            Dia = 1, Mes = 1, Ano++;
-        return false;
-    case 5: // Dia
-        Instr::ApagarVar(v + 1);
-        Instr::VarAtual->numfunc = DataHoraDia;
-        return true;
-    case 6: // DiaSem
-        ini = (DataNum() + 1) % 7;
-        return Instr::CriarVarInt(v, ini);
-    case 7: // Hora
-        Instr::ApagarVar(v + 1);
-        Instr::VarAtual->numfunc = DataHoraHora;
-        return true;
-    case 8: // Mes
-        Instr::ApagarVar(v + 1);
-        Instr::VarAtual->numfunc = DataHoraMes;
-        return true;
-    case 9: // Min
-        Instr::ApagarVar(v + 1);
-        Instr::VarAtual->numfunc = DataHoraMin;
-        return true;
-    case 10: // NovaData
-        if (Instr::VarAtual - v >= 1)
-        {
-            int x = v[1].getInt();
-            Ano = (x < 1 ? 1 : x > 9999 ? 9999 : x);
-        }
-        if (Instr::VarAtual - v >= 2)
-        {
-            int x = v[2].getInt();
-            Mes = (x < 1 ? 1 : x > 12 ? 12 : x);
-        }
-        if (Instr::VarAtual - v >= 3)
-        {
-            int x = v[3].getInt();
-            Dia = (x < 1 ? 1 : x > 31 ? 31 : x);
-        }
-        ini = DiasMes();
-        if (Dia > ini)
-            Dia = ini;
-        return false;
-    case 11: // NovaHora
-        if (Instr::VarAtual - v >= 1)
-        {
-            int x = v[1].getInt();
-            Hora = (x < 0 ? 0 : x > 23 ? 23 : x);
-        }
-        if (Instr::VarAtual - v >= 2)
-        {
-            int x = v[2].getInt();
-            Min = (x < 0 ? 0 : x > 59 ? 59 : x);
-        }
-        if (Instr::VarAtual - v >= 3)
-        {
-            int x = v[3].getInt();
-            Seg = (x < 0 ? 0 : x > 59 ? 59 : x);
-        }
-        return false;
-    case 12: // NumDia
-        Instr::ApagarVar(v + 1);
-        Instr::VarAtual->numfunc = DataHoraNumDia;
-        return true;
-    case 13: // NumSeg
-        Instr::ApagarVar(v + 1);
-        Instr::VarAtual->numfunc = DataHoraNumSeg;
-        return true;
-    case 14: // NumTotal
-        Instr::ApagarVar(v + 1);
-        Instr::VarAtual->numfunc = DataHoraNumTotal;
-        return true;
-    case 15: // Seg
-        Instr::ApagarVar(v + 1);
-        Instr::VarAtual->numfunc = DataHoraSeg;
-        return true;
+    return false;
+}
+
+//----------------------------------------------------------------------------
+bool TVarDataHora::FuncAno(TVariavel * v)
+{
+    Instr::ApagarVar(v + 1);
+    Instr::VarAtual->numfunc = DataHoraAno;
+    return true;
+}
+
+//----------------------------------------------------------------------------
+bool TVarDataHora::FuncAntes(TVariavel * v)
+{
+    TVarDataHora * ref = reinterpret_cast<TVarDataHora*>(v->endvar);
+    if (ref->Dia > 1)
+        ref->Dia--;
+    else if (ref->Mes > 1)
+        ref->Mes--, ref->Dia = ref->DiasMes();
+    else if (ref->Ano > 1)
+        ref->Dia = 31, ref->Mes = 12, ref->Ano--;
+    return false;
+}
+
+//----------------------------------------------------------------------------
+bool TVarDataHora::FuncBissexto(TVariavel * v)
+{
+    TVarDataHora * ref = reinterpret_cast<TVarDataHora*>(v->endvar);
+    return Instr::CriarVarInt(v, BISSEXTO(ref->Ano));
+}
+
+//----------------------------------------------------------------------------
+bool TVarDataHora::FuncDepois(TVariavel * v)
+{
+    TVarDataHora * ref = reinterpret_cast<TVarDataHora*>(v->endvar);
+    if (ref->Dia < ref->DiasMes())
+        ref->Dia++;
+    else if (ref->Mes < 12)
+        ref->Dia = 1, ref->Mes++;
+    else if (ref->Ano < 9999)
+        ref->Dia = 1, ref->Mes = 1, ref->Ano++;
+    return false;
+}
+
+//----------------------------------------------------------------------------
+bool TVarDataHora::FuncDia(TVariavel * v)
+{
+    Instr::ApagarVar(v + 1);
+    Instr::VarAtual->numfunc = DataHoraDia;
+    return true;
+}
+
+//----------------------------------------------------------------------------
+bool TVarDataHora::FuncDiaSem(TVariavel * v)
+{
+    TVarDataHora * ref = reinterpret_cast<TVarDataHora*>(v->endvar);
+    return Instr::CriarVarInt(v, (ref->DataNum() + 1) % 7);
+}
+
+//----------------------------------------------------------------------------
+bool TVarDataHora::FuncHora(TVariavel * v)
+{
+    Instr::ApagarVar(v + 1);
+    Instr::VarAtual->numfunc = DataHoraHora;
+    return true;
+}
+
+//----------------------------------------------------------------------------
+bool TVarDataHora::FuncMes(TVariavel * v)
+{
+    Instr::ApagarVar(v + 1);
+    Instr::VarAtual->numfunc = DataHoraMes;
+    return true;
+}
+
+//----------------------------------------------------------------------------
+bool TVarDataHora::FuncMin(TVariavel * v)
+{
+    Instr::ApagarVar(v + 1);
+    Instr::VarAtual->numfunc = DataHoraMin;
+    return true;
+}
+
+//----------------------------------------------------------------------------
+bool TVarDataHora::FuncNovaData(TVariavel * v)
+{
+    TVarDataHora * ref = reinterpret_cast<TVarDataHora*>(v->endvar);
+    if (Instr::VarAtual - v >= 1)
+    {
+        int x = v[1].getInt();
+        ref->Ano = (x < 1 ? 1 : x > 9999 ? 9999 : x);
+    }
+    if (Instr::VarAtual - v >= 2)
+    {
+        int x = v[2].getInt();
+        ref->Mes = (x < 1 ? 1 : x > 12 ? 12 : x);
+    }
+    if (Instr::VarAtual - v >= 3)
+    {
+        int x = v[3].getInt();
+        ref->Dia = (x < 1 ? 1 : x > 31 ? 31 : x);
+    }
+    int valor = ref->DiasMes();
+    if (ref->Dia > valor)
+        ref->Dia = valor;
+    return false;
+}
+
+//----------------------------------------------------------------------------
+bool TVarDataHora::FuncNovaHora(TVariavel * v)
+{
+    TVarDataHora * ref = reinterpret_cast<TVarDataHora*>(v->endvar);
+    if (Instr::VarAtual - v >= 1)
+    {
+        int x = v[1].getInt();
+        ref->Hora = (x < 0 ? 0 : x > 23 ? 23 : x);
+    }
+    if (Instr::VarAtual - v >= 2)
+    {
+        int x = v[2].getInt();
+        ref->Min = (x < 0 ? 0 : x > 59 ? 59 : x);
+    }
+    if (Instr::VarAtual - v >= 3)
+    {
+        int x = v[3].getInt();
+        ref->Seg = (x < 0 ? 0 : x > 59 ? 59 : x);
     }
     return false;
+}
+
+//----------------------------------------------------------------------------
+bool TVarDataHora::FuncNumDias(TVariavel * v)
+{
+    Instr::ApagarVar(v + 1);
+    Instr::VarAtual->numfunc = DataHoraNumDia;
+    return true;
+}
+
+//----------------------------------------------------------------------------
+bool TVarDataHora::FuncNumSeg(TVariavel * v)
+{
+    Instr::ApagarVar(v + 1);
+    Instr::VarAtual->numfunc = DataHoraNumSeg;
+    return true;
+}
+
+//----------------------------------------------------------------------------
+bool TVarDataHora::FuncNumTotal(TVariavel * v)
+{
+    Instr::ApagarVar(v + 1);
+    Instr::VarAtual->numfunc = DataHoraNumTotal;
+    return true;
+}
+//----------------------------------------------------------------------------
+bool TVarDataHora::FuncSeg(TVariavel * v)
+{
+    Instr::ApagarVar(v + 1);
+    Instr::VarAtual->numfunc = DataHoraSeg;
+    return true;
 }
 
 //------------------------------------------------------------------------------

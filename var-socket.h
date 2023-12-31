@@ -125,30 +125,29 @@ class TVarSocket /// Variáveis Socket
 public:
     static const TVarInfo * Inicializa();
         ///< Inicializa variável e retorna informações
-    bool Func(TVariavel * v, const char * nome); ///< Função da variável
     void MudarSock(TObjSocket * socket); ///< Muda a variável TVarSocket::Socket
 private:
     void Apagar();          ///< Apaga objeto
     void Mover(TVarSocket * destino); ///< Move TVarSock para outro lugar
     void EndObjeto(TClasse * c, TObjeto * o);
-    bool FuncMsg(TVariavel * v);
-    bool FuncAbrir(TVariavel * v);
-    bool FuncAbrirSsl(TVariavel * v);
-    bool FuncFechar(TVariavel * v);
-    bool FuncIpLocal(TVariavel * v);
-    bool FuncIp(TVariavel * v);
-    bool FuncMd5(TVariavel * v);
-    bool FuncSha1(TVariavel * v);
-    bool FuncAFlooder(TVariavel * v);
-    bool FuncCores(TVariavel * v);
-    bool FuncOpcTelnet(TVariavel * v);
-    bool FuncPosX(TVariavel * v);
-    bool FuncProto(TVariavel * v);
-    bool FuncEventoIP(TVariavel * v);
-    bool FuncNomeIP(TVariavel * v);
-    bool FuncIPNome(TVariavel * v);
-    bool FuncIPValido(TVariavel * v);
-    bool FuncIniSSL(TVariavel * v);
+    static bool FuncMsg(TVariavel * v);
+    static bool FuncAbrir(TVariavel * v);
+    static bool FuncAbrirSsl(TVariavel * v);
+    static bool FuncFechar(TVariavel * v);
+    static bool FuncIpLocal(TVariavel * v);
+    static bool FuncIp(TVariavel * v);
+    static bool FuncMd5(TVariavel * v);
+    static bool FuncSha1(TVariavel * v);
+    static bool FuncAFlooder(TVariavel * v);
+    static bool FuncCores(TVariavel * v);
+    static bool FuncOpcTelnet(TVariavel * v);
+    static bool FuncPosX(TVariavel * v);
+    static bool FuncProto(TVariavel * v);
+    static bool FuncEventoIP(TVariavel * v);
+    static bool FuncNomeIP(TVariavel * v);
+    static bool FuncIPNome(TVariavel * v);
+    static bool FuncIPValido(TVariavel * v);
+    static bool FuncIniSSL(TVariavel * v);
 
     static int FTamanho(const char * instr);
     static int FTamanhoVetor(const char * instr);
@@ -179,7 +178,6 @@ private:
     bool b_objeto;          ///< O que usar: true=endobjeto, false=endclasse
     unsigned char indice;   ///< Índice no vetor
 
-public:
     TObjSocket * Socket;    ///< Conexão atual
     TVarSocket * Antes;     ///< Objeto anterior da mesma conexão
     TVarSocket * Depois;    ///< Próximo objeto da mesma conexão

@@ -24,6 +24,12 @@ TVarArqLog * TVarArqLog::Inicio = nullptr;
 //----------------------------------------------------------------------------
 const TVarInfo * TVarArqLog::Inicializa()
 {
+    static TVarInfo::FuncItem ListaFuncEnd[] = {
+        { "abrir",     &TVarArqLog::FuncAbrir },
+        { "existe",    &TVarArqLog::FuncExiste },
+        { "fechar",    &TVarArqLog::FuncFechar },
+        { "msg",       &TVarArqLog::FuncMsg },
+        { "valido",    &TVarArqLog::FuncValido }  };
     static const TVarInfo var(
         FTamanho,
         FTamanhoVetor,
@@ -40,7 +46,10 @@ const TVarInfo * TVarArqLog::Inicializa()
         TVarInfo::FOperadorAddFalse,
         TVarInfo::FOperadorIgual2Var,
         TVarInfo::FOperadorComparaVar,
-        TVarInfo::FFuncVetorFalse);
+        TVarInfo::FFuncTextoFalse,
+        TVarInfo::FFuncVetorFalse,
+        ListaFuncEnd,
+        sizeof(ListaFuncEnd) / sizeof(ListaFuncEnd[0]) - 1);
     return &var;
 }
 
@@ -110,45 +119,17 @@ void TVarArqLog::Fechar()
     if (pontlog)
         safe_write(arq, buflog, pontlog);
     close(arq);
-    arq=-1;
+    arq = -1;
     (Antes ? Antes->Depois : Inicio) = Depois;
     if (Depois)
         Depois->Antes = nullptr;
 }
 
-//------------------------------------------------------------------------------
-bool TVarArqLog::Func(TVariavel * v, const char * nome)
-{
-// Lista das funções de arqlog
-// Deve obrigatoriamente estar em letras minúsculas e ordem alfabética
-    static const struct {
-        const char * Nome;
-        bool (TVarArqLog::*Func)(TVariavel * v); } ExecFunc[] = {
-        { "abrir",     &TVarArqLog::FuncAbrir },
-        { "existe",    &TVarArqLog::FuncExiste },
-        { "fechar",    &TVarArqLog::FuncFechar },
-        { "msg",       &TVarArqLog::FuncMsg },
-        { "valido",    &TVarArqLog::FuncValido }  };
-// Procura a função correspondente e executa
-    int ini = 0;
-    int fim = sizeof(ExecFunc) / sizeof(ExecFunc[0]) - 1;
-    char mens[80];
-    copiastrmin(mens, nome, sizeof(mens));
-    while (ini <= fim)
-    {
-        int meio = (ini + fim) / 2;
-        int resultado = strcmp(mens, ExecFunc[meio].Nome);
-        if (resultado == 0) // Se encontrou...
-            return (this->*ExecFunc[meio].Func)(v);
-        if (resultado < 0) fim = meio - 1; else ini = meio + 1;
-    }
-    return false;
-}
-
 //----------------------------------------------------------------------------
 bool TVarArqLog::FuncMsg(TVariavel * v)
 {
-    if (arq < 0)
+    TVarArqLog * ref = reinterpret_cast<TVarArqLog*>(v->endvar) + v->indice;
+    if (ref->arq < 0)
         return false;
     for (TVariavel * v1 = v + 1; v1 <= Instr::VarAtual; v1++)
     {
@@ -159,10 +140,10 @@ bool TVarArqLog::FuncMsg(TVariavel * v)
                 txt++;
             if (*txt == 0)
                 break;
-            if (pontlog >= (int)sizeof(buflog) - 500)
+            if (ref->pontlog >= (int)sizeof(ref->buflog) - 500)
             {
-                safe_write(arq, buflog, pontlog);
-                pontlog = 0;
+                safe_write(ref->arq, ref->buflog, ref->pontlog);
+                ref->pontlog = 0;
             }
             for (int x = 0; x < 490 && *txt && *txt != Instr::ex_barra_n; x++)
                 switch (*txt)
@@ -185,9 +166,9 @@ bool TVarArqLog::FuncMsg(TVariavel * v)
                         txt++;
                     break;
                 default:
-                    buflog[pontlog++] = *txt++;
+                    ref->buflog[ref->pontlog++] = *txt++;
                 }
-            buflog[pontlog++] = '\n';
+            ref->buflog[ref->pontlog++] = '\n';
         }
     }
     return false;
@@ -196,7 +177,8 @@ bool TVarArqLog::FuncMsg(TVariavel * v)
 //----------------------------------------------------------------------------
 bool TVarArqLog::FuncFechar(TVariavel * v)
 {
-    Fechar();
+    TVarArqLog * ref = reinterpret_cast<TVarArqLog*>(v->endvar) + v->indice;
+    ref->Fechar();
     return false;
 }
 
@@ -248,6 +230,7 @@ bool TVarArqLog::FuncAbrir(TVariavel * v)
     }
     if (*arqnome)
     {
+        TVarArqLog * ref = reinterpret_cast<TVarArqLog*>(v->endvar) + v->indice;
     // Acerta o nome do arquivo
         int tam = strlen(arqnome);
         if (tam >= 4) // Tamanho suficiente
@@ -261,16 +244,16 @@ bool TVarArqLog::FuncAbrir(TVariavel * v)
         else
         {
         // Fecha arquivo
-            Fechar();
+            ref->Fechar();
         // Anota variáveis
-            arq = descr;
-            pontlog = 0;
+            ref->arq = descr;
+            ref->pontlog = 0;
         // Insere na lista ligada
-            Antes = nullptr;
-            Depois = Inicio;
-            Inicio = this;
-            if (Depois)
-                Depois->Antes = this;
+            ref->Antes = nullptr;
+            ref->Depois = Inicio;
+            ref->Inicio = ref;
+            if (ref->Depois)
+                ref->Depois->Antes = ref;
         }
     }
     return Instr::CriarVarInt(v, *arqnome != 0);

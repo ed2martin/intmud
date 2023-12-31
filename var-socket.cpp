@@ -323,6 +323,25 @@ void TObjSocket::FuncEvento(const char * evento, const char * texto, int v1, int
 //----------------------------------------------------------------------------
 const TVarInfo * TVarSocket::Inicializa()
 {
+    static TVarInfo::FuncItem ListaFuncEnd[] = {
+        { "abrir",        &TVarSocket::FuncAbrir },
+        { "abrirssl",     &TVarSocket::FuncAbrirSsl },
+        { "aflooder",     &TVarSocket::FuncAFlooder },
+        { "cores",        &TVarSocket::FuncCores },
+        { "eventoip",     &TVarSocket::FuncEventoIP },
+        { "fechar",       &TVarSocket::FuncFechar },
+        { "inissl",       &TVarSocket::FuncIniSSL },
+        { "ip",           &TVarSocket::FuncIp },
+        { "iplocal",      &TVarSocket::FuncIpLocal },
+        { "ipnome",       &TVarSocket::FuncIPNome },
+        { "ipvalido",     &TVarSocket::FuncIPValido },
+        { "msg",          &TVarSocket::FuncMsg },
+        { "nomeip",       &TVarSocket::FuncNomeIP },
+        { "opctelnet",    &TVarSocket::FuncOpcTelnet },
+        { "posx",         &TVarSocket::FuncPosX },
+        { "proto",        &TVarSocket::FuncProto },
+        { "txtmd5",       &TVarSocket::FuncMd5 },
+        { "txtsha1",      &TVarSocket::FuncSha1 }  };
     static const TVarInfo var(
         FTamanho,
         FTamanhoVetor,
@@ -339,7 +358,11 @@ const TVarInfo * TVarSocket::Inicializa()
         TVarInfo::FOperadorAddFalse,
         FOperadorIgual2,
         FOperadorCompara,
-        TVarInfo::FFuncVetorFalse);
+        TVarInfo::FFuncTextoFalse,
+        TVarInfo::FFuncVetorFalse,
+        ListaFuncEnd,
+        sizeof(ListaFuncEnd) / sizeof(ListaFuncEnd[0]) - 1);
+
     return &var;
 }
 
@@ -409,58 +432,17 @@ void TVarSocket::EndObjeto(TClasse * c, TObjeto * o)
         endclasse = c, b_objeto = false;
 }
 
-//------------------------------------------------------------------------------
-bool TVarSocket::Func(TVariavel * v, const char * nome)
-{
-// Lista das funções de socket
-// Deve obrigatoriamente estar em letras minúsculas e ordem alfabética
-    static const struct {
-        const char * Nome;
-        bool (TVarSocket::*Func)(TVariavel * v); } ExecFunc[] = {
-        { "abrir",        &TVarSocket::FuncAbrir },
-        { "abrirssl",     &TVarSocket::FuncAbrirSsl },
-        { "aflooder",     &TVarSocket::FuncAFlooder },
-        { "cores",        &TVarSocket::FuncCores },
-        { "eventoip",     &TVarSocket::FuncEventoIP },
-        { "fechar",       &TVarSocket::FuncFechar },
-        { "inissl",       &TVarSocket::FuncIniSSL },
-        { "ip",           &TVarSocket::FuncIp },
-        { "iplocal",      &TVarSocket::FuncIpLocal },
-        { "ipnome",       &TVarSocket::FuncIPNome },
-        { "ipvalido",     &TVarSocket::FuncIPValido },
-        { "msg",          &TVarSocket::FuncMsg },
-        { "nomeip",       &TVarSocket::FuncNomeIP },
-        { "opctelnet",    &TVarSocket::FuncOpcTelnet },
-        { "posx",         &TVarSocket::FuncPosX },
-        { "proto",        &TVarSocket::FuncProto },
-        { "txtmd5",       &TVarSocket::FuncMd5 },
-        { "txtsha1",      &TVarSocket::FuncSha1 }  };
-// Procura a função correspondente e executa
-    int ini = 0;
-    int fim = sizeof(ExecFunc) / sizeof(ExecFunc[0]) - 1;
-    char mens[80];
-    copiastrmin(mens, nome, sizeof(mens));
-    while (ini <= fim)
-    {
-        int meio = (ini + fim) / 2;
-        int resultado = strcmp(mens, ExecFunc[meio].Nome);
-        if (resultado == 0) // Se encontrou...
-            return (this->*ExecFunc[meio].Func)(v);
-        if (resultado < 0) fim = meio - 1; else ini = meio + 1;
-    }
-    return false;
-}
-
 //----------------------------------------------------------------------------
 // Envia mensagem: de longe é a função mais usada
 bool TVarSocket::FuncMsg(TVariavel * v)
 {
-    if (Socket == nullptr)
+    TVarSocket * ref = reinterpret_cast<TVarSocket*>(v->endvar) + v->indice;
+    if (ref->Socket == nullptr)
         return false;
     bool enviou = true;
     int codigo = (Instr::VarAtual > v + 1 ? v[2].getInt() : 1);
     if (Instr::VarAtual >= v + 1)
-        enviou = Socket->Enviar(v[1].getTxt(), codigo);
+        enviou = ref->Socket->Enviar(v[1].getTxt(), codigo);
     return Instr::CriarVarInt(v, enviou);
 }
 
@@ -468,7 +450,8 @@ bool TVarSocket::FuncMsg(TVariavel * v)
 /// Conecta
 bool TVarSocket::FuncAbrir(TVariavel * v)
 {
-    MudarSock(nullptr);
+    TVarSocket * ref = reinterpret_cast<TVarSocket*>(v->endvar) + v->indice;
+    ref->MudarSock(nullptr);
     if (Instr::VarAtual - v < 2)
         return false;
     int porta = v[2].getInt();
@@ -478,7 +461,7 @@ bool TVarSocket::FuncAbrir(TVariavel * v)
 #endif
     TSocket * s = TSocket::Conectar(ender, porta, false);
     if (s)
-        MudarSock(s);
+        ref->MudarSock(s);
     return Instr::CriarVarInt(v, s != nullptr);
 }
 
@@ -486,7 +469,8 @@ bool TVarSocket::FuncAbrir(TVariavel * v)
 /// Conecta
 bool TVarSocket::FuncAbrirSsl(TVariavel * v)
 {
-    MudarSock(nullptr);
+    TVarSocket * ref = reinterpret_cast<TVarSocket*>(v->endvar) + v->indice;
+    ref->MudarSock(nullptr);
     if (Instr::VarAtual - v < 2)
         return false;
     int porta = v[2].getInt();
@@ -499,7 +483,7 @@ bool TVarSocket::FuncAbrirSsl(TVariavel * v)
         return Instr::CriarVarInt(v, 0);
     TSocket * s = TSocket::Conectar(ender, porta, true);
     if (s)
-        MudarSock(s);
+        ref->MudarSock(s);
     return Instr::CriarVarInt(v, s != nullptr);
 }
 
@@ -508,17 +492,19 @@ bool TVarSocket::FuncAbrirSsl(TVariavel * v)
 /// Fecha Socket
 bool TVarSocket::FuncFechar(TVariavel * v)
 {
-    if (Socket)
-        Socket->Fechar();
+    TVarSocket * ref = reinterpret_cast<TVarSocket*>(v->endvar) + v->indice;
+    if (ref->Socket)
+        ref->Socket->Fechar();
     return false;
 }
 
 //----------------------------------------------------------------------------
 bool TVarSocket::FuncIpLocal(TVariavel * v)
 {
+    TVarSocket * ref = reinterpret_cast<TVarSocket*>(v->endvar) + v->indice;
     char mens[50] = "";
-    if (Socket)
-        Socket->Endereco(0, mens, sizeof(mens));
+    if (ref->Socket)
+        ref->Socket->Endereco(0, mens, sizeof(mens));
     Instr::ApagarVar(v);
     return Instr::CriarVarTexto(mens);
 }
@@ -526,9 +512,10 @@ bool TVarSocket::FuncIpLocal(TVariavel * v)
 //----------------------------------------------------------------------------
 bool TVarSocket::FuncIp(TVariavel * v)
 {
+    TVarSocket * ref = reinterpret_cast<TVarSocket*>(v->endvar) + v->indice;
     char mens[50] = "";
-    if (Socket)
-        Socket->Endereco(1, mens, sizeof(mens));
+    if (ref->Socket)
+        ref->Socket->Endereco(1, mens, sizeof(mens));
     Instr::ApagarVar(v);
     return Instr::CriarVarTexto(mens);
 }
@@ -536,9 +523,10 @@ bool TVarSocket::FuncIp(TVariavel * v)
 //----------------------------------------------------------------------------
 bool TVarSocket::FuncMd5(TVariavel * v)
 {
+    TVarSocket * ref = reinterpret_cast<TVarSocket*>(v->endvar) + v->indice;
     char mens[50] = "";
-    if (Socket)
-        Socket->Endereco(2, mens, sizeof(mens));
+    if (ref->Socket)
+        ref->Socket->Endereco(2, mens, sizeof(mens));
     Instr::ApagarVar(v);
     return Instr::CriarVarTexto(mens);
 }
@@ -546,9 +534,10 @@ bool TVarSocket::FuncMd5(TVariavel * v)
 //----------------------------------------------------------------------------
 bool TVarSocket::FuncSha1(TVariavel * v)
 {
+    TVarSocket * ref = reinterpret_cast<TVarSocket*>(v->endvar) + v->indice;
     char mens[50] = "";
-    if (Socket)
-        Socket->Endereco(3, mens, sizeof(mens));
+    if (ref->Socket)
+        ref->Socket->Endereco(3, mens, sizeof(mens));
     Instr::ApagarVar(v);
     return Instr::CriarVarTexto(mens);
 }
@@ -599,7 +588,8 @@ bool TVarSocket::FuncEventoIP(TVariavel * v)
 {
     if (Instr::VarAtual - v < 1)
         return false;
-    TDNSSocket * obj = new TDNSSocket(this, v[1].getTxt());
+    TVarSocket * ref = reinterpret_cast<TVarSocket*>(v->endvar) + v->indice;
+    TDNSSocket * obj = new TDNSSocket(ref, v[1].getTxt());
     if (*obj->nomeini)
         return Instr::CriarVarInt(v, 1);
     delete obj;

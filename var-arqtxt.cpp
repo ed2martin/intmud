@@ -23,6 +23,17 @@
 //----------------------------------------------------------------------------
 const TVarInfo * TVarArqTxt::Inicializa()
 {
+    static TVarInfo::FuncItem ListaFuncEnd[] = {
+        { "abrir",        &TVarArqTxt::FuncAbrir },
+        { "eof",          &TVarArqTxt::FuncEof },
+        { "escr",         &TVarArqTxt::FuncEscr },
+        { "existe",       &TVarArqTxt::FuncExiste },
+        { "fechar",       &TVarArqTxt::FuncFechar },
+        { "flush",        &TVarArqTxt::FuncFlush },
+        { "ler",          &TVarArqTxt::FuncLer },
+        { "pos",          &TVarArqTxt::FuncPos },
+        { "truncar",      &TVarArqTxt::FuncTruncar },
+        { "valido",       &TVarArqTxt::FuncValido }  };
     static const TVarInfo var(
         FTamanho,
         FTamanhoVetor,
@@ -39,7 +50,10 @@ const TVarInfo * TVarArqTxt::Inicializa()
         TVarInfo::FOperadorAddFalse,
         TVarInfo::FOperadorIgual2Var,
         TVarInfo::FOperadorComparaVar,
-        TVarInfo::FFuncVetorFalse);
+        TVarInfo::FFuncTextoFalse,
+        TVarInfo::FFuncVetorFalse,
+        ListaFuncEnd,
+        sizeof(ListaFuncEnd) / sizeof(ListaFuncEnd[0]) - 1);
     return &var;
 }
 
@@ -72,48 +86,15 @@ inline int TVarArqTxt::getValor()
 }
 
 //------------------------------------------------------------------------------
-bool TVarArqTxt::Func(TVariavel * v, const char * nome)
-{
-// Lista das funções de arqtxt
-// Deve obrigatoriamente estar em letras minúsculas e ordem alfabética
-    static const struct {
-        const char * Nome;
-        bool (TVarArqTxt::*Func)(TVariavel * v); } ExecFunc[] = {
-        { "abrir",        &TVarArqTxt::FuncAbrir },
-        { "eof",          &TVarArqTxt::FuncEof },
-        { "escr",         &TVarArqTxt::FuncEscr },
-        { "existe",       &TVarArqTxt::FuncExiste },
-        { "fechar",       &TVarArqTxt::FuncFechar },
-        { "flush",        &TVarArqTxt::FuncFlush },
-        { "ler",          &TVarArqTxt::FuncLer },
-        { "pos",          &TVarArqTxt::FuncPos },
-        { "truncar",      &TVarArqTxt::FuncTruncar },
-        { "valido",       &TVarArqTxt::FuncValido }  };
-// Procura a função correspondente e executa
-    int ini = 0;
-    int fim = sizeof(ExecFunc) / sizeof(ExecFunc[0]) - 1;
-    char mens[80];
-    copiastrmin(mens, nome, sizeof(mens));
-    while (ini <= fim)
-    {
-        int meio = (ini+fim)/2;
-        int resultado = strcmp(mens, ExecFunc[meio].Nome);
-        if (resultado == 0) // Se encontrou...
-            return (this->*ExecFunc[meio].Func)(v);
-        if (resultado < 0) fim = meio - 1; else ini = meio + 1;
-    }
-    return false;
-}
-
-//------------------------------------------------------------------------------
 bool TVarArqTxt::FuncLer(TVariavel * v)
 {
+    TVarArqTxt * ref = reinterpret_cast<TVarArqTxt*>(v->endvar) + v->indice;
     char mens[BUF_MENS];
     int pmens = 0;
 // Lê o texto do arquivo
-    if (arq) // Se o arquivo está aberto...
+    if (ref->arq) // Se o arquivo está aberto...
     {
-        if (ModoBinario)
+        if (ref->ModoBinario)
         {
             int tam = 1;
             if (Instr::VarAtual > v)
@@ -123,9 +104,9 @@ bool TVarArqTxt::FuncLer(TVariavel * v)
             if (tam > (int)sizeof(mens) / 2)
                 tam = (int)sizeof(mens) / 2;
             tam *= 2;
-            while (pmens<tam)
+            while (pmens < tam)
             {
-                int lido = fgetc(arq);
+                int lido = fgetc(ref->arq);
                 if (lido == EOF)
                     break;
                 char ch = ((lido >> 4) & 15);
@@ -141,7 +122,7 @@ bool TVarArqTxt::FuncLer(TVariavel * v)
                 tam = (int)sizeof(mens);
             while (pmens < tam)
             {
-                int lido = fgetc(arq);
+                int lido = fgetc(ref->arq);
                 if (lido == EOF)
                     break;
                 if (lido == '\n')
@@ -153,7 +134,7 @@ bool TVarArqTxt::FuncLer(TVariavel * v)
         else // Nenhum argumento: ler uma linha
             while (pmens < (int)sizeof(mens))
             {
-                int lido = fgetc(arq);
+                int lido = fgetc(ref->arq);
                 if (lido == EOF || lido == '\n')
                     break;
                 if (lido >= ' ')
@@ -168,14 +149,15 @@ bool TVarArqTxt::FuncLer(TVariavel * v)
 //------------------------------------------------------------------------------
 bool TVarArqTxt::FuncEscr(TVariavel * v)
 {
-    if (arq == nullptr)
+    TVarArqTxt * ref = reinterpret_cast<TVarArqTxt*>(v->endvar) + v->indice;
+    if (ref->arq == nullptr)
         return false;
     for (TVariavel * v1 = v + 1; v1 <= Instr::VarAtual; v1++)
     {
         const char * txt = v1->getTxt();
         char mens[BUF_MENS];
         int pmens = 0;
-        if (ModoBinario)
+        if (ref->ModoBinario)
         {
             int valor = 1;
             while (true)
@@ -196,19 +178,19 @@ bool TVarArqTxt::FuncEscr(TVariavel * v)
                 mens[pmens++] = valor, valor = 1;
                 if (pmens >= (int)sizeof(mens))
                 {
-                    fwrite(mens, 1, pmens, arq);
+                    fwrite(mens, 1, pmens, ref->arq);
                     pmens = 0;
                 }
             }
             if (pmens)
-                fwrite(mens, 1, pmens, arq);
+                fwrite(mens, 1, pmens, ref->arq);
             continue;
         }
         while (*txt)
         {
             if (pmens >= (int)sizeof(mens)-2)
             {
-                fwrite(mens, 1, pmens, arq);
+                fwrite(mens, 1, pmens, ref->arq);
                 pmens = 0;
             }
             switch (*txt)
@@ -239,7 +221,7 @@ bool TVarArqTxt::FuncEscr(TVariavel * v)
             }
         }
         if (pmens)
-            fwrite(mens, 1, pmens, arq);
+            fwrite(mens, 1, pmens, ref->arq);
     }
     return false;
 }
@@ -247,7 +229,8 @@ bool TVarArqTxt::FuncEscr(TVariavel * v)
 //------------------------------------------------------------------------------
 bool TVarArqTxt::FuncEof(TVariavel * v)
 {
-    int result = (arq == nullptr || feof(arq));
+    TVarArqTxt * ref = reinterpret_cast<TVarArqTxt*>(v->endvar) + v->indice;
+    int result = (ref->arq == nullptr || feof(ref->arq));
 #ifdef DEBUG
     printf("EOF = %d\n", result);
     fflush(stdout);
@@ -258,7 +241,8 @@ bool TVarArqTxt::FuncEof(TVariavel * v)
 //------------------------------------------------------------------------------
 bool TVarArqTxt::FuncPos(TVariavel * v)
 {
-    if (arq && Instr::VarAtual >= v + 1)
+    TVarArqTxt * ref = reinterpret_cast<TVarArqTxt*>(v->endvar) + v->indice;
+    if (ref->arq && Instr::VarAtual >= v + 1)
     {
         int pos = v[1].getInt();
         int modo = 0;
@@ -266,27 +250,29 @@ bool TVarArqTxt::FuncPos(TVariavel * v)
             modo = v[2].getInt();
         switch (modo)
         {
-        case 0: fseek(arq, pos, SEEK_SET); break;
-        case 1: fseek(arq, pos, SEEK_CUR); break;
-        case 2: fseek(arq, pos, SEEK_END); break;
+        case 0: fseek(ref->arq, pos, SEEK_SET); break;
+        case 1: fseek(ref->arq, pos, SEEK_CUR); break;
+        case 2: fseek(ref->arq, pos, SEEK_END); break;
         }
     }
-    int novapos = (arq ? ftell(arq) : 0);
+    int novapos = (ref->arq ? ftell(ref->arq) : 0);
     return Instr::CriarVarInt(v, novapos);
 }
 
 //------------------------------------------------------------------------------
 bool TVarArqTxt::FuncFechar(TVariavel * v)
 {
-    Fechar();
+    TVarArqTxt * ref = reinterpret_cast<TVarArqTxt*>(v->endvar) + v->indice;
+    ref->Fechar();
     return false;
 }
 
 //------------------------------------------------------------------------------
 bool TVarArqTxt::FuncFlush(TVariavel * v)
 {
-    if (arq)
-        fflush(arq);
+    TVarArqTxt * ref = reinterpret_cast<TVarArqTxt*>(v->endvar) + v->indice;
+    if (ref->arq)
+        fflush(ref->arq);
     return false;
 }
 
@@ -339,35 +325,36 @@ bool TVarArqTxt::FuncAbrir(TVariavel * v)
     if (*arqnome && Instr::VarAtual >= v + 2)
         modo = v[2].getInt();
 // Abre arquivo
+    TVarArqTxt * ref = reinterpret_cast<TVarArqTxt*>(v->endvar) + v->indice;
     switch (modo)
     {
     case 0:
-        ModoBinario = false, descr = fopen(arqnome, "r");
+        ref->ModoBinario = false, descr = fopen(arqnome, "r");
         break;
     case 1:
-        ModoBinario = false, descr = fopen(arqnome, "r+");
+        ref->ModoBinario = false, descr = fopen(arqnome, "r+");
         break;
     case 2:
         if (escrita)
-            ModoBinario = false, descr = fopen(arqnome, "w");
+            ref->ModoBinario = false, descr = fopen(arqnome, "w");
         break;
     case 3:
         if (escrita)
-            ModoBinario = false, descr = fopen(arqnome, "a");
+            ref->ModoBinario = false, descr = fopen(arqnome, "a");
         break;
     case 4:
-        ModoBinario = true, descr = fopen(arqnome, "rb");
+        ref->ModoBinario = true, descr = fopen(arqnome, "rb");
         break;
     case 5:
-        ModoBinario = true, descr = fopen(arqnome, "rb+");
+        ref->ModoBinario = true, descr = fopen(arqnome, "rb+");
         break;
     case 6:
         if (escrita)
-            ModoBinario = true, descr = fopen(arqnome, "wb");
+            ref->ModoBinario = true, descr = fopen(arqnome, "wb");
         break;
     case 7:
         if (escrita)
-            ModoBinario = true, descr = fopen(arqnome, "ab");
+            ref->ModoBinario = true, descr = fopen(arqnome, "ab");
         break;
     }
 #ifdef DEBUG
@@ -377,9 +364,9 @@ bool TVarArqTxt::FuncAbrir(TVariavel * v)
 // Se conseguiu abrir arquivo...
     if (descr != nullptr)
     {
-        if (arq)
-            fclose(arq);
-        arq = descr;
+        if (ref->arq)
+            fclose(ref->arq);
+        ref->arq = descr;
     }
 // Resultado
     return Instr::CriarVarInt(v, descr != nullptr);

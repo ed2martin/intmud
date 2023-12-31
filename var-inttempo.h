@@ -18,8 +18,6 @@ public:
     void setValor(int numfunc, int valor); ///< Mudar valor da variável
     void Mover(TVarIntTempo * destino); ///< Move para outro lugar
     void EndObjeto(TClasse * c, TObjeto * o);
-    bool Func(TVariavel * v, const char * nome); ///< Funções de inttempo
-    static bool FuncVetor(TVariavel * v, const char * nome); ///< Funções de vetores
 
     const char * defvar;///< Como foi definida a variável
     union {
@@ -45,6 +43,10 @@ private:
     static void FOperadorAtrib(TVariavel * v1, TVariavel * v2);
     static bool FOperadorIgual2(TVariavel * v1, TVariavel * v2);
     static unsigned char FOperadorCompara(TVariavel * v1, TVariavel * v2);
+    static bool FuncVetor(TVariavel * v, const char * nome); ///< Funções de vetores
+    static bool FuncAbs(TVariavel * v); ///< Processa função Abs
+    static bool FuncPos(TVariavel * v); ///< Processa função Pos
+    static bool FuncNeg(TVariavel * v); ///< Processa função Neg
 
     static void DebugVet(bool mostrar); ///< Checa se listas ligadas estão OK
     unsigned short IndiceMenos;   ///< Índice em VetMenos

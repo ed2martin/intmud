@@ -45,6 +45,15 @@ TVarTelaTxt * TVarTelaTxt::ObjAtual = 0;
 //----------------------------------------------------------------------------
 const TVarInfo * TVarTelaTxt::Inicializa()
 {
+    static TVarInfo::FuncItem ListaFuncEnd[] = {
+        { "limpa",        &TVarTelaTxt::FuncLimpa },
+        { "linha",        &TVarTelaTxt::FuncLinha },
+        { "msg",          &TVarTelaTxt::FuncMsg },
+        { "posx",         &TVarTelaTxt::FuncPosx },
+        { "proto",        &TVarTelaTxt::FuncProto },
+        { "tecla",        &TVarTelaTxt::FuncTecla },
+        { "texto",        &TVarTelaTxt::FuncTexto },
+        { "total",        &TVarTelaTxt::FuncTotal }  };
     static const TVarInfo var(
         FTamanho,
         FTamanhoVetor,
@@ -61,7 +70,10 @@ const TVarInfo * TVarTelaTxt::Inicializa()
         FOperadorAdd,
         FOperadorIgual2,
         FOperadorCompara,
-        TVarInfo::FFuncVetorFalse);
+        TVarInfo::FFuncTextoFalse,
+        TVarInfo::FFuncVetorFalse,
+        ListaFuncEnd,
+        sizeof(ListaFuncEnd) / sizeof(ListaFuncEnd[0]) - 1);
     return &var;
 }
 
@@ -701,38 +713,6 @@ bool TVarTelaTxt::FuncEvento(const char * evento, const char * texto)
 }
 
 //------------------------------------------------------------------------------
-bool TVarTelaTxt::Func(TVariavel * v, const char * nome)
-{
-// Lista das funções de telatxt
-// Deve obrigatoriamente estar em letras minúsculas e ordem alfabética
-    static const struct {
-        const char * Nome;
-        bool (TVarTelaTxt::*Func)(TVariavel * v); } ExecFunc[] = {
-        { "limpa",        &TVarTelaTxt::FuncLimpa },
-        { "linha",        &TVarTelaTxt::FuncLinha },
-        { "msg",          &TVarTelaTxt::FuncMsg },
-        { "posx",         &TVarTelaTxt::FuncPosx },
-        { "proto",        &TVarTelaTxt::FuncProto },
-        { "tecla",        &TVarTelaTxt::FuncTecla },
-        { "texto",        &TVarTelaTxt::FuncTexto },
-        { "total",        &TVarTelaTxt::FuncTotal }  };
-// Procura a função correspondente e executa
-    int ini = 0;
-    int fim = sizeof(ExecFunc) / sizeof(ExecFunc[0]) - 1;
-    char mens[80];
-    copiastrmin(mens, nome, sizeof(mens));
-    while (ini <= fim)
-    {
-        int meio = (ini + fim) / 2;
-        int resultado = strcmp(mens, ExecFunc[meio].Nome);
-        if (resultado == 0) // Se encontrou...
-            return (this->*ExecFunc[meio].Func)(v);
-        if (resultado < 0) fim = meio - 1; else ini = meio + 1;
-    }
-    return false;
-}
-
-//------------------------------------------------------------------------------
 bool TVarTelaTxt::FuncMsg(TVariavel * v)
 {
     if (Console == nullptr)
@@ -815,11 +795,12 @@ bool TVarTelaTxt::FuncTecla(TVariavel * v)
 {
     if (Console == nullptr)
         return false;
+    TVarTelaTxt * ref = reinterpret_cast<TVarTelaTxt*>(v->endvar) + v->indice;
     for (TVariavel * obj = v + 1; obj <= Instr::VarAtual; obj++)
     {
         const char * texto = obj->getTxt();
         if (*texto)
-            ProcTecla(texto);
+            ref->ProcTecla(texto);
     }
     return false;
 }
@@ -836,15 +817,16 @@ bool TVarTelaTxt::FuncLimpa(TVariavel * v)
 {
     if (Console == nullptr)
         return false;
+    TVarTelaTxt * ref = reinterpret_cast<TVarTelaTxt*>(v->endvar) + v->indice;
     Console->CorTxt(0x70);
     Console->LimpaTela();
     Console->CursorPosic(1, 0);
     Console->CorTxt(CONSOLE_COR_LINHA);
     Console->LimpaFim();  // Preenche do cursor até o fim da linha
-    LinhaFinal = 0;
-    LinhaPosic = 0;
-    ColPosic = 0;
-    ColEscreve = 0;
+    ref->LinhaFinal = 0;
+    ref->LinhaPosic = 0;
+    ref->ColPosic = 0;
+    ref->ColEscreve = 0;
     int total = tam_linha - col_linha;
     if (total > 0)
         Console->EnvTxt(txt_linha + col_linha,
