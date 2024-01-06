@@ -616,7 +616,7 @@ void Inicializa(const char * arg)
 
     // Verifica se é definição de classe
         char * pclasse = TClasse::NomeDef(mens);
-        if (pclasse==0)
+        if (pclasse == 0)
             continue;
 
     // Fim da configuração: adiciona arquivos a serem buscados

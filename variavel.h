@@ -91,8 +91,16 @@ public:
     static unsigned char FOperadorComparaVar(TVariavel * v1, TVariavel * v2);
     static bool FFuncTextoFalse(TVariavel * v, const char * nome);
     static bool FFuncVetorFalse(TVariavel * v, const char * nome);
+    static bool FFuncFalse(TVariavel * v);
 
 private:
+    /// Um item, para executar funções
+    struct FuncExec
+    {
+        const char * Nome;
+        bool (*Func[Instr::cTotalComandos])(TVariavel * v);
+    };
+
     int (*FTamanho)(const char * instr);
     int (*FTamanhoVetor)(const char * instr);
     TVarTipo (*FTipo)(TVariavel * v);
@@ -375,12 +383,32 @@ public:
         return 0;
     }
 
+    /// Obtém o número da função (de qualquer variável) a partir do nome
+    /** @param nome Nome da função
+     *  @return Número da função ou -1 se não existir */
+    static int FuncNum(const char * nome);
+
     /// Executa função da variável
     /** Deve verificar argumentos, após a variável
      *  @param nome Nome da função
      *  @retval true se processou
-     *  @retval false se função inexistente */
-    bool Func(const char * nome);
+     *  @retval false se função inexistente ou se retornou false */
+    bool FuncExec(int numero)
+    {
+        if (numero < 0 || numero > VarExecFim)
+            return false;
+        unsigned char cmd = (unsigned char)defvar[2];
+        if (cmd >= Instr::cTotalComandos || indice == 0xFF)
+            return false;
+        return VarExecEnd[numero].Func[cmd](this);
+    }
+
+    /// Executa função da variável
+    /** Deve verificar argumentos, após a variável
+     *  @param nome Nome da função
+     *  @retval true se processou
+     *  @retval false se função inexistente ou se retornou false */
+    bool FuncExec(const char * nome);
 
 // Variáveis
     const char * defvar;
@@ -412,6 +440,8 @@ public:
 
 private:
     static TVarInfo * VarInfo;
+    static TVarInfo::FuncExec * VarExecEnd;
+    static int VarExecFim;
 };
 
 //----------------------------------------------------------------------------

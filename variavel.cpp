@@ -42,7 +42,15 @@
 #include "var-intexec.h"
 #include "misc.h"
 
+// Se deve checar se as funções estão em letras minúsculas e em ordem crescente
+//#define DEBUG_FUNC
+
+// Mostrar algumas variáveis
+//#define DEBUG_ESTAT
+
 TVarInfo * TVariavel::VarInfo = nullptr;
+TVarInfo::FuncExec * TVariavel::VarExecEnd = nullptr;
+int TVariavel::VarExecFim = -1;
 char * TVarInfo::EndBufferTxt = new char[0x400];
 unsigned short TVarInfo::NumBufferTxt = 0;
 
@@ -148,6 +156,7 @@ unsigned char TVarInfo::FOperadorComparaVar(TVariavel * v1, TVariavel * v2)
 }
 bool TVarInfo::FFuncTextoFalse(TVariavel * v, const char * nome) { return false; }
 bool TVarInfo::FFuncVetorFalse(TVariavel * v, const char * nome) { return false; }
+bool TVarInfo::FFuncFalse(TVariavel * v) { return false; }
 
 //----------------------------------------------------------------------------
 void TVariavel::Inicializa()
@@ -219,7 +228,178 @@ void TVariavel::Inicializa()
     VarInfo[Instr::cTextoVarSub] =*TTextoVarSub::Inicializa();
     VarInfo[Instr::cTextoObjSub] =*TTextoObjSub::Inicializa();
 
-    //printf("\nTVarInfo=0x%x\n\n", (int)sizeof(TVarInfo));
+// Verifica se as funções estão em letras minúsculas e em ordem crescente
+#ifdef DEBUG_FUNC
+    for (int tipo = 0; tipo < Instr::cTotalComandos; tipo++)
+    {
+        char mens[80];
+        int total = VarInfo[tipo].FFuncListaFim;
+        TVarInfo::FuncItem * item = VarInfo[tipo].FFuncListaEnd;
+        for (int indice = 0; indice <= total; indice++)
+        {
+            copiastrmin(mens, item[indice].Nome, sizeof(mens));
+            assert(strcmp(mens, item[indice].Nome) == 0);
+        }
+        for (int indice = 0; indice <= total - 1; indice++)
+            assert(strcmp(item[indice].Nome, item[indice + 1].Nome) <= 0);
+    }
+#endif
+
+// Obtém o número de funções somando todas as variáveis
+    int totalfunc = 0, totalvar = 0;
+    for (int tipo = 0; tipo < Instr::cTotalComandos; tipo++)
+    {
+        int total = VarInfo[tipo].FFuncListaFim;
+        if (total >= 0)
+            totalfunc += total + 1, totalvar++;
+    }
+
+// Aloca memória
+    struct LocalFunc
+    {
+        const char * nome; // Nome da função
+        unsigned char tipo; // Alguma constante de Instr::Comando
+        unsigned char indtipo; // Índice em FFuncListaEnd da variável
+        unsigned char indfunc; // Índice na lista de todas as funções
+    };
+    struct LocalVar
+    {
+        int inicio; // LocalFunc[inicio] = primeiro elemento
+        int total; // LocalFunc[total] = quantidade de elementos
+    };
+    LocalFunc * localfunc = new LocalFunc[totalfunc * 2];
+    LocalVar * localvar = new LocalVar[totalvar + 1];
+    int atualfunc = 0; // localfunc[atualfunc] = próximo item que será inserido
+    int atualvar = 0; // localvar[atualvar] = próxima lista que será inserida
+
+// Preenche localfunc com os dados das funções e localvar com os dados das variáveis
+    for (int tipo = 0; tipo < Instr::cTotalComandos; tipo++)
+    {
+        int total = VarInfo[tipo].FFuncListaFim;
+        if (total < 0)
+            continue;
+        TVarInfo::FuncItem * item = VarInfo[tipo].FFuncListaEnd;
+        localvar[atualvar].inicio = atualfunc;
+        localvar[atualvar].total = total + 1;
+        atualvar++;
+        for (int indice = 0; indice <= total; indice++)
+        {
+            localfunc[atualfunc].nome = item[indice].Nome;
+            localfunc[atualfunc].tipo = tipo;
+            localfunc[atualfunc].indtipo = indice;
+            atualfunc++;
+        }
+    }
+
+// Usa localvar para ordenar os dados em localfunc
+    int iniciovar = 0; // localvar[iniciovar] = lista mais antiga não verificada
+    while (atualvar > 1)
+    {
+    // Se juntou as listas (cada 2 listas vira uma), volta ao início
+        if (iniciovar >= atualvar)
+        {
+            atualvar = iniciovar / 2;
+            iniciovar = 0;
+            if (atualfunc == totalfunc * 2)
+                atualfunc = 0;
+            continue;
+        }
+        //printf("Verificando localvar[%d] de %d, atualfunc=%d de %d\n",
+        //        iniciovar, atualvar, atualfunc, totalfunc);
+    // Obtém início e número de elementos das duas listas que serão juntadas
+        int inicio1 = localvar[iniciovar].inicio;
+        int total1 = localvar[iniciovar].total;
+        int inicio2 = 0, total2 = 0;
+        if (iniciovar + 1 < atualvar) // Se segunda lista existe
+        {
+            inicio2 = localvar[iniciovar + 1].inicio;
+            total2 = localvar[iniciovar + 1].total;
+        }
+    // Obtém a lista destino
+        int destino = iniciovar / 2;
+        iniciovar += 2;
+        localvar[destino].inicio = atualfunc;
+        localvar[destino].total = total1 + total2;
+    // Preenche a lista destino
+        while (total1 && total2)
+        {
+            if (strcmp(localfunc[inicio1].nome, localfunc[inicio2].nome) <= 0)
+                localfunc[atualfunc++] = localfunc[inicio1++], total1--;
+            else
+                localfunc[atualfunc++] = localfunc[inicio2++], total2--;
+        }
+        while (total1)
+            localfunc[atualfunc++] = localfunc[inicio1++], total1--;
+        while (total2)
+            localfunc[atualfunc++] = localfunc[inicio2++], total2--;
+        assert(atualfunc <= totalfunc * 2);
+    }
+    assert(atualfunc == 0 || atualfunc == totalfunc);
+    LocalFunc * listafunc = localfunc + (atualfunc == 0 ? totalfunc : 0);
+
+// Verifica nomes repetidos e obtém o número de funções com nomes diferentes
+    int funcnum = 0;
+    const char * funcnome = listafunc[0].nome;
+    for (int cont = 0; cont < totalfunc; cont++)
+    {
+        LocalFunc * l = listafunc + cont;
+        int dif = strcmp(funcnome, l->nome);
+        assert(dif <= 0);
+        if (dif != 0)
+            funcnome = l->nome, funcnum++;
+        l->indfunc = funcnum;
+    }
+    funcnum++;
+
+// Nota: se houver mais de 255 funções com nomes diferentes,
+// o código do IntMUD precisa ser mudado
+    assert(funcnum < 0xff);
+
+// Constrói um vetor de funções
+    VarExecEnd = new TVarInfo::FuncExec[funcnum];
+    VarExecFim = funcnum - 1;
+    for (int cont = 0; cont < funcnum; cont++)
+    {
+        VarExecEnd[cont].Nome = nullptr;
+        for (int cmd = 0; cmd < Instr::cTotalComandos; cmd++)
+            VarExecEnd[cont].Func[cmd] = TVarInfo::FFuncFalse;
+    }
+    for (int cont = 0; cont < totalfunc; cont++)
+    {
+        LocalFunc * l = listafunc + cont;
+        VarExecEnd[l->indfunc].Nome = l->nome;
+        VarExecEnd[l->indfunc].Func[l->tipo] =
+                VarInfo[l->tipo].FFuncListaEnd[l->indtipo].Func;
+        //assert(l->tipo < Instr::cTotalComandos && l->indfunc < funcnum);
+    }
+
+// Mostra algumas variáveis
+#ifdef DEBUG_ESTAT
+    printf("Func");
+    int cont2 = -1;
+    for (int cont1 = 0; cont1 < totalfunc; cont1++)
+    {
+        LocalFunc * l = listafunc + cont1;
+        if (cont2 != l->indfunc)
+        {
+            cont2++;
+            printf("\n%d", cont2);
+        }
+        printf(" %s", l->nome);
+    }
+    printf("\nTotalComandos = %d\nTVarInfo = 0x%x\n",
+            Instr::cTotalComandos, (int)sizeof(TVarInfo));
+    printf("totalfunc = %d\ntotalvar = %d\nfuncnum = %d\n",
+            totalfunc, totalvar, funcnum);
+    printf("TVarInfo::FuncExec = %d, total alocado = %d\n",
+            (int)sizeof(TVarInfo::FuncExec),
+           (int)sizeof(TVarInfo::FuncExec) * funcnum);
+    fflush(stdout);
+#endif
+
+// Libera memória alocada
+    delete[] localfunc;
+    delete[] localvar;
 }
 
 //----------------------------------------------------------------------------
@@ -247,7 +427,27 @@ void TVariavel::Limpar()
 }
 
 //------------------------------------------------------------------------------
-bool TVariavel::Func(const char * nome)
+int TVariavel::FuncNum(const char * nome)
+{
+    int ini = 0, fim = VarExecFim;
+    char mens[80];
+    copiastrmin(mens, nome, sizeof(mens));
+    while (ini <= fim)
+    {
+        int meio = (ini + fim) / 2;
+        int resultado = strcmp(mens, VarExecEnd[meio].Nome);
+        if (resultado == 0) // Se encontrou...
+            return meio;
+        if (resultado < 0)
+            fim = meio - 1;
+        else
+            ini = meio + 1;
+    }
+    return -1;
+}
+
+//------------------------------------------------------------------------------
+bool TVariavel::FuncExec(const char * nome)
 {
     unsigned char cmd = (unsigned char)defvar[2];
     if (cmd >= Instr::cTotalComandos)

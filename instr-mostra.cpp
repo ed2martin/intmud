@@ -257,22 +257,22 @@ bool Instr::Mostra(char * destino, const char * origem, int tamanho)
             destino[0] = ' ';
             destino[1] = '#';
             destino[2] = ' ';
-            if (total>0)
+            if (total > 0)
                 memcpy(destino + 3, origem+coment, total);
         }
-        destino[3 + total]=0;
+        destino[3 + total] = 0;
         return true;
     }
 
 // Verifica se tem expressão numérica
-    if (expr==0)
+    if (expr == 0)
         return true;
     const char * origem_fim = origem + Num16(origem);
     origem += expr;
 
     while (true)
     {
-        *nome=0;
+        *nome = 0;
         assert(origem < origem_fim);
         switch (*origem)
         {
@@ -325,7 +325,7 @@ bool Instr::Mostra(char * destino, const char * origem, int tamanho)
                 strcpy(destino, " ]");
             while (*destino)
                 destino++, tamanho--;
-            for (origem++; *(unsigned char*)origem>=' '; )
+            for (origem++; *(unsigned char*)origem >= ' '; )
             {
                 if (tamanho < 2)
                     return false;

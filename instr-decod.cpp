@@ -335,8 +335,8 @@ bool Instr::Decod(char * destino, const char * origem, int tamanho)
     // Para testes - mostra como está o texto em destino
 #if 0
         printf("destino = ");
-        for (const char * x1=dest_ini; x1<destino; x1++)
-            if (*(unsigned char*)x1>=' ')
+        for (const char * x1 = dest_ini; x1 < destino; x1++)
+            if (*(unsigned char*)x1 >= ' ')
                 putchar(*x1);
             else
                 printf(" [%d] ", *x1);
@@ -383,7 +383,7 @@ bool Instr::Decod(char * destino, const char * origem, int tamanho)
                              // Nesse caso é fim dos parâmetros da função
             indica = 1 + 2;  // 1 = Apaga a indicação anterior de operando
                              // 2 = Copiar o nome em nome[]
-            if (origem[1 ]== ex_varfim) // Seguido de ex_varfim: fim do nome
+            if (origem[1] == ex_varfim) // Seguido de ex_varfim: fim do nome
             {
                 origem++;
                 strcpy(nome, ")");
@@ -664,14 +664,14 @@ bool Instr::Decod(char * destino, const char * origem, int tamanho)
             }
             memmove(p, p + 1, destino - p);
         }
-        if (indica&2) // Copiar texto de nome[]
+        if (indica & 2) // Copiar texto de nome[]
         {
             //printf("copia: %s\n", nome); fflush(stdout);
             if (destino + strlen(nome) + 1 >= dest_fim)
                 return false;
             destino = copiastr(destino, nome);
         }
-        if (indica&4) // Processar texto = nome da variável
+        if (indica & 4) // Processar texto = nome da variável
         {
             while (true)
             {
@@ -681,7 +681,7 @@ bool Instr::Decod(char * destino, const char * origem, int tamanho)
                 if (*(unsigned char*)origem >= ' ')
                     *destino++ = *origem++;
             // Dois pontos
-                else if (*origem==ex_doispontos)
+                else if (*origem == ex_doispontos)
                 {
                     origem++;
                     *destino++ = ':';
@@ -715,7 +715,7 @@ bool Instr::Decod(char * destino, const char * origem, int tamanho)
                     assert(0);
             }
         }
-        if (indica&8) // Operador unitário antes
+        if (indica & 8) // Operador unitário antes
         {
             //printf("unitário: %s\n", nome); fflush(stdout);
             int op = Instr::Prioridade(origem[-1]);

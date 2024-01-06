@@ -12,6 +12,7 @@
 #include "instr.h"
 #include "instr-enum.h"
 #include "classe.h"
+#include "variavel.h"
 #include "mudarclasse.h"
 #include "misc.h"
 
@@ -408,9 +409,9 @@ bool Instr::Codif(char * destino, const char * origem, int tamanho)
     }
 
 // Verifica se é comentário
-    while (*origem==' ')
+    while (*origem == ' ')
         origem++;
-    if (*origem=='#')
+    if (*origem == '#')
     {
         destino[2] = cComent;
         destino[3] = 0;
@@ -483,7 +484,7 @@ bool Instr::Codif(char * destino, const char * origem, int tamanho)
             continue;
         }
     // Verifica se instrução não é nula
-        if (*origem==0)
+        if (*origem == 0)
         {
             copiastr(dest_ini, "Faltou a instrução", tamanho);
             return false;
@@ -682,7 +683,7 @@ bool Instr::Codif(char * destino, const char * origem, int tamanho)
         char * p = nome;
         int  indice = -1;
     // Avança enquanto for espaço
-        while (*origem==' ')
+        while (*origem == ' ')
             origem++;
     // Copia o nome
         for (; *origem && *origem != '=' && *origem != '#'; origem++)
@@ -820,7 +821,7 @@ bool Instr::Codif(char * destino, const char * origem, int tamanho)
         }
         destino[2] = cSenao2;
         destino += endVar+2;
-        proc_expr=true;
+        proc_expr = true;
         break;
     case cRet1:     // Pode ter ou não expressão numérica
         if (*origem == 0 || *origem == '#')
@@ -1069,7 +1070,7 @@ bool Instr::Codif(char * destino, const char * origem, int tamanho)
                         p++;
                     if (*p != '\"')
                         break;
-                    origem=p;
+                    origem = p;
                     continue;
                 }
                 if (*origem == '\\')
@@ -1282,7 +1283,7 @@ bool Instr::Codif(char * destino, const char * origem, int tamanho)
                 mprintf(dest_ini, tamanho, "Erro a partir de: %s", origem);
                 return false;
             }
-            arg=true;
+            arg = true;
         // Verifica "nulo"
             if ((origem[0] | 0x20) == 'n' && (origem[1] | 0x20) == 'u' &&
                 (origem[2] | 0x20) == 'l' && (origem[3] | 0x20) == 'o' &&
@@ -1313,7 +1314,7 @@ bool Instr::Codif(char * destino, const char * origem, int tamanho)
                 p++;
         // Otimização: checa se encontrou ':' ou '[' ou se nome nulo
         // Nesse caso não pode otimizar
-            if (p == origem || *p == ':' || *p == '[' || p-origem > 79)
+            if (p == origem || *p == ':' || *p == '[' || p - origem > 79)
             {
                 *destino++ = ex_varini;
                 *destino++ = *origem++;
@@ -1321,8 +1322,8 @@ bool Instr::Codif(char * destino, const char * origem, int tamanho)
             }
         // Otimização: checa se é uma função predefinida
             char mens[80];
-            memcpy(mens, origem, p-origem);
-            mens[p-origem] = 0;
+            memcpy(mens, origem, p - origem);
+            mens[p - origem] = 0;
             int NumFunc = InfoFunc(mens);
             if (NumFunc >= 0) // Função predefinida
             {
@@ -1403,7 +1404,7 @@ bool Instr::Codif(char * destino, const char * origem, int tamanho)
                 return false;
             }
         // Anota operadores de menor precedência
-            while (modo>exo_ini && modo<exo_fim && destino < dest_fim - 3)
+            while (modo > exo_ini && modo < exo_fim && destino < dest_fim - 3)
             {
                 destino = anotaModo(destino, modo);
                 modo = *--topo;

@@ -27,7 +27,7 @@ void Termina(); // Encerra o programa
 
 //#define DEBUG_INSTR // Mostra instruções que serão executadas
 //#define DEBUG_EXPR  // Mostra valores de Instr::Expressao encontrados
-//#define DEBUG_VAR   // Mostra variáveis no topo da pilha
+#define DEBUG_VAR   // Mostra variáveis no topo da pilha
 
 /** @defgroup exec Instr::Exec - Algoritmo para executar funções
 
@@ -2170,7 +2170,7 @@ bool Instr::ExecX()
                         classe = objeto->Classe;
                 }
             // Verifica variável/função de objeto
-                else if (v[1].Tipo()==varObj)
+                else if (v[1].Tipo() == varObj)
                 {
                     objeto = v[1].getObj();
                     if (objeto == nullptr) // Objeto inexistente
@@ -2191,7 +2191,7 @@ bool Instr::ExecX()
                         break;
                     }
                 // Executa função
-                    if (v[1].Func(nome))
+                    if (v[1].FuncExec(nome))
                     {
                         v->endchar[0] = 0; // Instr::cVarNome
                         f->expr = CopiaVarNome(v, f->expr);
@@ -2273,7 +2273,7 @@ bool Instr::ExecX()
                     break;
                 }
             // Variável
-                ApagarVar(v+1);
+                ApagarVar(v + 1);
                 VarAtual++;
                 VarAtual->Limpar();
                 VarAtual->defvar = defvar;
