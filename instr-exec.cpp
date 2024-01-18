@@ -27,7 +27,7 @@ void Termina(); // Encerra o programa
 
 //#define DEBUG_INSTR // Mostra instruções que serão executadas
 //#define DEBUG_EXPR  // Mostra valores de Instr::Expressao encontrados
-#define DEBUG_VAR   // Mostra variáveis no topo da pilha
+//#define DEBUG_VAR   // Mostra variáveis no topo da pilha
 
 /** @defgroup exec Instr::Exec - Algoritmo para executar funções
 
