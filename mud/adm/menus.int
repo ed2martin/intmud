@@ -772,7 +772,7 @@ func menu2 # Retorna o texto correspondente a uma opção
   ([arg0]:f_tipo == 1 || [arg0]:f_tipo == 2) && (tipo |= config:item_bebida)
   [arg0]:f_tipo == 3 && (tipo |= config:item_comida)
   [arg0]:f_tipo == 4 && (tipo |= config:item_pergaminho)
-  tipo &= ~valor
+  tipo &= valor ^ "FFFFFFFFFFFF"
   epara t.addfim(arg2), t.linhas, t.remove
     txtbith(tipo & "1") ? (lin2 += ", " + x + "-" + t.ini.texto)
     txtbith(valor & "1") ? (lin1 += ", " + x + "-" + t.ini.texto)

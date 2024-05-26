@@ -211,8 +211,8 @@ const armamax = 120
 const armamin = 70
 const armatipo = 3 # Arma tipo: 1 Lâmina curta
 const pesoobj = 300
-const tipoitem = "3"
 const valor = 50
+const tipoitem = "3"
 
 
 classe i_teste013
@@ -223,8 +223,8 @@ const descsala = "Um colete está jogado aqui."
 const msexo = 1 # Sexo: 1 Masculino
 const nivel = 1
 const pesoobj = 1000
-const tipoitem = "8"
 const valor = 300
+const vestiritem = "1" # Conflita com itens: 0-Possui metal
 const vestir1 = "40"
 
 func cmd_recalc2 # Recalcula variáveis do personagem
@@ -278,6 +278,7 @@ const descnome = "uns óculos especiais"
 const descsala = "Uns óculos especiais foram largados aqui."
 const descver = "Esses óculos permitem ver coisas invisíveis."
 const msexo = 1 # Sexo: 1 Masculino
+const tipoitem = "1" # Tipo de item: 0-Possui metal (3-Vestimenta)
 const vestir1 = "2"
 
 func recalc2_auto # Altera atributos do personagem
@@ -3065,7 +3066,8 @@ const s_titulo = "Criando equipamentos"
 const s_desc = "Personagens podem ter algumas propriedades especiais, e alguns itens\n\
 também podem mudar alguns atributos de um personagem, quando vestidos.\n\
 Veja a opção \"Atributos\" de tipos (raças e classes) e personagens,\n\
-e a opção \"Atributos vestir\" de itens."
+e a opção \"Atributos vestir\" de itens.\n\
+O colete não pode ser usado com coisas com metal, como a faca e os óculos."
 const dir_n = $s_teste029
 const dir_s = $s_teste063
 const dir_l = $s_teste032
@@ -5323,6 +5325,7 @@ func i_reset1 # Realiza o reset
   se p_teste030:objsolto.total < 1000
     criar("p_teste030", este, 3)
   fimse
+
 
 classe s_teste163
 herda b_teste

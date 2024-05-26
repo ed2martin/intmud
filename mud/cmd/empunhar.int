@@ -29,11 +29,13 @@ const m_empunhou1_p = "Você empunha $o."
 const m_empunhou1_a = "$A empunha $o."
 const m_empunhou2_p = "$P empunha $o."
 const m_empunhou2_a = "$A empunha $o."
+const m_item_p = "$N impede que você empunhe $o."
+const m_item_a = "$N impede que $a empunhe $o."
 const admordem = "m_ajuda m_sem_args m_naover m_nao_arma m_empunhando_p\n\
 m_empunhando_a m_nao_consegue_p m_nao_consegue_a m_conhecimento_p\n\
 m_conhecimento_a m_nivel_p m_nivel_a m_renascer1 m_renascer2 m_renascer3\n\
 m_em_uso_p m_em_uso_a m_em_cima_p m_em_cima_a\n\
-m_empunhou1_p m_empunhou1_a m_empunhou2_p m_empunhou2_a"
+m_empunhou1_p m_empunhou1_a m_empunhou2_p m_empunhou2_a m_item_p m_item_a"
 
 func escr
   ret !arg1, $mensjog.msg(m_sem_args, arg0)
@@ -101,6 +103,14 @@ func escr
     continuar vest1 & config:vestir[txt1(lin)] == "0"
     refvar obj = arg0.objitemvestir(config:vestir[txt1(lin)])
     ret $mens.mp(m_em_cima[tipomsg], arg0.contr, arg0, obj)
+  efim
+# Verifica se conflita com algum outro tipo de item
+  listaitem i
+  epara i = arg0.dentro2.ini, i, i.depois
+    se i.obj.item && ((txt(i.obj.tipoitem2) & r.vestiritem) != "0" || \
+(txt(r.tipoitem2) & i.obj.vestiritem) != "0")
+      ret $mens.mp(m_item[tipomsg], arg0.contr, arg0, r, i.obj)
+    fimse
   efim
 # Eventos
   listaobj e
@@ -175,44 +185,52 @@ const nome13 = "Outro item em cima"
 const tipo13 = "opc_linha"
 const vari13 = "m_em_cima_p"
 #
-const nome14 = "Empunha perso"
+const nome14 = "Conflita com item"
 const tipo14 = "opc_linha"
-const vari14 = "m_empunhou1_p"
+const vari14 = "m_item_p"
 #
-const nome15 = "Empunha outros"
+const nome15 = "Empunha perso"
 const tipo15 = "opc_linha"
-const vari15 = "m_empunhou2_p"
+const vari15 = "m_empunhou1_p"
 #
-const titu16 = " * Animal empunha"
-#
-const nome16 = "Já está empunhando"
+const nome16 = "Empunha outros"
 const tipo16 = "opc_linha"
-const vari16 = "m_empunhando_a"
+const vari16 = "m_empunhou2_p"
 #
-const nome17 = "Não consegue"
+const titu17 = " * Animal empunha"
+#
+const nome17 = "Já está empunhando"
 const tipo17 = "opc_linha"
-const vari17 = "m_nao_consegue_a"
+const vari17 = "m_empunhando_a"
 #
-const nome18 = "Sem conhecimento"
+const nome18 = "Não consegue"
 const tipo18 = "opc_linha"
-const vari18 = "m_conhecimento_a"
+const vari18 = "m_nao_consegue_a"
 #
-const nome19 = "Nível insuficiente"
+const nome19 = "Sem conhecimento"
 const tipo19 = "opc_linha"
-const vari19 = "m_nivel_a"
+const vari19 = "m_conhecimento_a"
 #
-const nome20 = "Já tem outro item"
+const nome20 = "Nível insuficiente"
 const tipo20 = "opc_linha"
-const vari20 = "m_em_uso_a"
+const vari20 = "m_nivel_a"
 #
-const nome21 = "Outro item em cima"
+const nome21 = "Já tem outro item"
 const tipo21 = "opc_linha"
-const vari21 = "m_em_cima_a"
+const vari21 = "m_em_uso_a"
 #
-const nome22 = "Empunha perso"
+const nome22 = "Outro item em cima"
 const tipo22 = "opc_linha"
-const vari22 = "m_empunhou1_a"
+const vari22 = "m_em_cima_a"
 #
-const nome23 = "Empunha outros"
+const nome23 = "Conflita com item"
 const tipo23 = "opc_linha"
-const vari23 = "m_empunhou2_a"
+const vari23 = "m_item_a"
+#
+const nome24 = "Empunha perso"
+const tipo24 = "opc_linha"
+const vari24 = "m_empunhou1_a"
+#
+const nome25 = "Empunha outros"
+const tipo25 = "opc_linha"
+const vari25 = "m_empunhou2_a"

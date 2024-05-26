@@ -29,10 +29,12 @@ const m_em_uso_p = "Você já está usando $o nessa posição."
 const m_em_uso_a = "$A já está usando $o nessa posição."
 const m_em_cima_p = "Antes você precisa parar de usar $o."
 const m_em_cima_a = "Antes $A precisa parar de usar $o."
+const m_item_p = "$N impede que você use $o."
+const m_item_a = "$N impede que $a use $o."
 const admordem = "m_ajuda m_sem_args m_naover m_longe_a m_nao_consegue_p\n\
 m_nao_consegue_a m_nivel_p m_nivel_a m_renascer1 m_renascer2 m_renascer3\n\
 m_conhecimento_p m_conhecimento_a m_posicao_p m_posicao_a\n\
-m_em_uso_p m_em_uso_a m_em_cima_p m_em_cima_a"
+m_em_uso_p m_em_uso_a m_em_cima_p m_em_cima_a m_item_p m_item_a"
 
 func escr
   ret !arg1, $mensjog.msg(m_sem_args, arg0)
@@ -169,6 +171,14 @@ func objvestir # Quer vestir um item
       $mens.mp(m_em_cima[tipomsg], arg0.contr, arg0, obj)
       ret
     efim
+# Verifica se conflita com algum outro tipo de item
+    listaitem i
+    epara i = arg0.dentro2.ini, i, i.depois
+      se i.obj.item && ((txt(i.obj.tipoitem2) & arg1.vestiritem) != "0" || \
+(txt(arg1.tipoitem2) & i.obj.vestiritem) != "0")
+        ret $mens.mp(m_item[tipomsg], arg0.contr, arg0, arg1, i.obj)
+      fimse
+    efim
 # Checa se o item deixa vestir
     refvar lin = arg1.cmd_podevestir(arg0)
     ret lin, lin
@@ -248,7 +258,11 @@ const nome11 = "Outro item em cima"
 const tipo11 = "opc_linha"
 const vari11 = "m_em_cima_p"
 #
-const titu12 = " * Animal veste"
+const nome12 = "Conflita com item"
+const tipo12 = "opc_linha"
+const vari12 = "m_item_p"
+#
+const titu13 = " * Animal veste"
 #
 const nome13 = "Conhecimento"
 const tipo13 = "opc_linha"
@@ -273,3 +287,7 @@ const vari17 = "m_em_uso_a"
 const nome18 = "Outro item em cima"
 const tipo18 = "opc_linha"
 const vari18 = "m_em_cima_a"
+#
+const nome19 = "Conflita com item"
+const tipo19 = "opc_linha"
+const vari19 = "m_item_a"
