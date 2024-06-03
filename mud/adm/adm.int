@@ -24,7 +24,7 @@ Os tópicos são:\n\
 -m OUTROS Outros comandos\n\
 -m NOMES Atribuir nomes a um item ou personagem\n\
 -m MENS Mostra os caracteres especiais em mensagens\n\
--m CORES Mostra as cores permitidas em mensagens"
+-m CORES Mostra as cores permitidas e temporização em mensagens"
 
 
 classe adm_jog
@@ -211,7 +211,16 @@ As seguintes sequências de caracteres mudam outros atributos:\n\
  \\cj  Desliga inversão de frente com fundo\n\
  \\ck  Liga texto piscante\n\
  \\cl  Desliga texto piscante\n\
- \\dv  Vírgula que desaparece se não for seguida de espaço"
+ \\dv  Vírgula que desaparece se não for seguida de espaço\n\n\
+Enviar mensagens depois de um tempo\n\
+Basta colocar uma linha começada com \\d+ seguido de um número de 1 a 600\n\
+(quanto tempo esperar em décimos de segundo) e um espaço. Por exemplo:\n\
+\\d+5 Bom dia\\nBoa tarde\n\
+Significa esperar meio segundo e enviar \"Bom dia\" e \"Boa tarde\".\n\
+É possível colocar várias esperas no meio de uma mensagem. Por exemplo:\n\
+Bom dia\\n\\d+10 Boa tarde\\n\\d+10 Boa noite\n\
+Envia Bom dia de imediato, espera um segundo, envia Boa tarde, espera mais\n\
+um segundo e envia Boa noite."
 
 
 classe adm_adm

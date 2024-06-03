@@ -26,6 +26,8 @@ intinc tempojogo # Tempo da sessão
 txt100 msgsom_t # Nome do último som enviado ao jogador
 inttempo tempofim1 # Para sair do jogo após algum tempo sem digitar nada
 int8 tempofim2 # Para sair do jogo após algum tempo sem digitar nada
+textovar msgtempo1 # Próximas mensagens de msg
+inttempo msgtempo2 # Tempo para enviar a próxima mensagem de msgtempo1
 #
 txt30 passo # Passo atual; "" se estiver jogando
 txt100 tpasso # Texto usado no passo atual
@@ -340,24 +342,31 @@ func txtmostra # Mostra próximo bloco de txtmais
 func msg # Envia mensagem
 # arg0=mensagem
 # arg1 é verdadeiro se deve apenas enviar a mensagem
-  se arg1
-  senao lmonit
-    execprompt = 1
-    listaitem i
-    epara i = lmonit.ini, i, i.depois
-      i.obj.msg(">" + arg0, 1), i.obj.execprompt = 1
-    efim
-  senao
-    execprompt = 1
-  fimse
-# Sons
   textotxt t
   t.addfim(arg0)
   textopos p = t.ini
+# Mensagens enviadas depois de um tempo, com "\d+" seguido do tempo
+  se p.txtproc("\n\d+") >= 0
+    textopos p2
+    uint32 agora = msgtempo1.ini ? msgtempo1.ini - msgtempo2 : 1000000000
+    uint32 tempo = agora
+    enquanto p.lin
+      refvar num1 = txt1(p.texto(2, 8))
+      p.mudar("", 0, inttotal(num1) + 3)
+      tempo += intmax(1, intmin(600, num1))
+      p2 = p, p2.depois, p2.txtproc("\n\d+") < 0 && (p2 = t.fim)
+      refvar linhas = p2.linha - p.linha
+      msgtempo1.[tempo] = msgtempo1.[tempo] + "\n" + p.textolin(linhas)
+      p.remove(linhas)
+    efim
+    msgtempo2 = msgtempo1.ini ? msgtempo1.ini - agora
+  fimse
+# Sons
   enquanto p.txtproc("\d=") >= 0
     refvar ini = p.txtproc("\d=")
     refvar som = txt(txt1(p.texto(ini, 80)), 2)
     p.mudar("", ini, inttotal(som) + 3)
+    !p.texto(0, 1) && p.remove
     casovar txt1($som_[som].tipo)
     casose "2" # Música contínua
       continuar !(jogconfig.23 || jogconfig.24) || msgsom_t == som
@@ -374,6 +383,18 @@ func msg # Envia mensagem
       p.mudar($som_[som].var.som[jogconfig.14][jogconfig.13] + "\n", 0, 0)
     casofim
   efim
+  ret !t.linhas, nulo
+# Monitoramento e prompt
+  se arg1
+  senao lmonit
+    execprompt = 1
+    listaitem i
+    epara i = lmonit.ini, i, i.depois
+      i.obj.msg(">" + arg0, 1), i.obj.execprompt = 1
+    efim
+  senao
+    execprompt = 1
+  fimse
 # Configuração do jogador
   casovar jogconfig.bits & 12
   casose "0" # -CORES -ACENTO
@@ -385,6 +406,14 @@ func msg # Envia mensagem
   casose "12" # +CORES +ACENTO
     ret msgsock(vartrocacod(t.remove(1000), "\d", "msgtroca_"))
   casofim
+
+func msgtempo2_exec # Envia mensagens pendentes depois de um tempo
+  se msgtempo1.ini
+    refvar m1 = msgtempo1.[msgtempo1.ini]
+    refvar m2 = txt(m1, 1)
+    uint32 agora = msgtempo1.ini
+    m1 = "", msgtempo2 = msgtempo1.ini ? msgtempo1.ini - agora, msg(m2)
+  fimse
 
 func msgsom # Envia mensagem
 # arg0=nome do som
