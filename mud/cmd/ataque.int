@@ -188,7 +188,7 @@ func escrhab # Atacar alguém ou usar habilidade/magia não ofensiva em alguém
       epara sala = arg0.dono, sala && move < dist, sala = sala.dirsala(dir)
         se move
           epara i = sala.dentro2.ini, i, i.depois
-            sair i.obj.visivel(arg0) && n.nome(i.obj.ident)
+            sair i.obj.visivel(arg0) && n.nome(i.obj.ident2)
           efim
         fimse
         sair i.obj || int(sala.porta_[dir]) >= 2 # Achou o alvo ou porta fechada

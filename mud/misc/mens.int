@@ -236,22 +236,24 @@ func mtodos2som # Mesmo que mtodos1som, porém não envia mensagem para o personag
 func mtodos3dir # Mensagem só para quem estiver acordado
 # arg0,arg1,arg2 = mensagens para personagem, alvo e outros
 # arg3 = direção do personagem ao alvo, quando não estão na mesma sala
-  refvar persodono = perso.dono.perso ? perso.dono.dono : perso.dono
-  refvar alvodono = alvo.dono.perso ? alvo.dono.dono : alvo.dono
+  refvar persocontr = perso.dono.perso ? perso.dono : perso
+  refvar alvocontr = alvo.dono.perso ? alvo.dono : alvo
+  refvar persodono = persocontr.dono
+  refvar alvodono = alvocontr.dono
   ret !alvodono || alvodono == persodono, mtodos3(arg0, arg1, arg2)
   ret !(persodono.socktot || alvodono.socktot), nulo
   refvar t1 = txt(misc:d3[arg3])
   refvar t2 = txt(misc:d4[arg3])
-  arg0 && msginv(t1 + arg0, perso)
-  arg1 && persodono != alvodono && msginv(t2 + arg1, alvo)
+  arg0 && msginv(t1 + arg0, persocontr)
+  arg1 && persodono != alvodono && msginv(t2 + arg1, alvocontr)
   ret !arg2, nulo
   listaobj l0
   l0.addfim(persodono.dentro2)
-  epara l0.remove(persocontr), l0, l0.ini.remove
+  epara l0.remove(persocontr, alvocontr), l0, l0.ini.remove
     msginv(t1 + arg2, l0.objini)
   efim
   l0.addfim(alvodono.dentro2)
-  epara l0.remove(alvocontr), l0, l0.ini.remove
+  epara l0.remove(persocontr, alvocontr), l0, l0.ini.remove
     msginv(t2 + arg2, l0.objini)
   efim
 

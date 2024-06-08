@@ -19,13 +19,16 @@ func danosgolpe # Obtém informações sobre os danos que o ataque causaria
   real2 danomin = 1 # Menor dano = dano * danomin * força
   real2 danomax = 1 # Maior dano = dano * danomax * força
   real2 ataquemedio # Força, de ataquemin a ataquemax, conforme o quanto conhece
-  refvar aulas = arg4 ? "com item" : txtsublin(misc:aulas, arg0.var.[nomevar]_, 1)
+  txt50 aulas = txtsublin(misc:aulas, arg0.var.[nomevar]_, 1)
 # Obtém arma e munição
   refvar errmuni = execmunicao(arg0)
   ret errmuni, arg2.addfim(errmuni)
-#
-  ataquemedio = arg4 ? 0.5 : (arg0.var.[nomevar]_ - 1) / 7 # Quanto conhece, de 0 a 1
-  se ataquemedio < 0 # Se não conhece
+# Obtém ataquemedio (de ataquemin a ataquemax) e aulas
+  se arg4
+    ataquemedio = 0.5, aulas = "com item"
+  senao tipoalvo == 9
+    ataquemedio = 0.5, aulas = "ataque automático"
+  senao (ataquemedio = (arg0.var.[nomevar]_ - 1) / 7) < 0
     arg2.addfim("Nenhum dano, não conhece o ataque")
     ret danosg_envmsg(arg0, arg1, arg2, arg4)
   fimse
@@ -221,20 +224,15 @@ func danosgolpe # Obtém informações sobre os danos que o ataque causaria
   se ataquemedio >= 0
     temp1 = danomin * dano * ataquemedio + danoadd
     temp2 = danomax * dano * ataquemedio + danoadd
-    lin = "Danos " + aulas + ": \b" + danosg_sub(temp1, temp2, danosporseg) + "\n"
-  fimse
-  se tipoalvo == 9
-    temp1 = danomin * dano * (ataquemin + ataquemax) / 2 + danoadd
-    temp2 = danomax * dano * (ataquemin + ataquemax) / 2 + danoadd
-    lin += "Danos sem arma:\b" + danosg_sub(temp1, temp2, danosporseg) + "\n"
+    lin = "\nDanos " + aulas + ": \b" + danosg_sub(temp1, temp2, danosporseg)
   fimse
   temp1 = danomin * dano * ataquemin + danoadd
   temp2 = danomax * dano * ataquemin + danoadd
-  lin += "Danos Iniciante: \b" + danosg_sub(temp1, temp2, danosporseg) + "\n"
+  lin += "\nDanos Iniciante: \b" + danosg_sub(temp1, temp2, danosporseg)
   temp1 = danomin * dano * ataquemax + danoadd
   temp2 = danomax * dano * ataquemax + danoadd
-  lin += "Danos Perito: \b" + danosg_sub(temp1, temp2, danosporseg)
-  arg2.addini(lin)
+  lin += "\nDanos Perito: \b" + danosg_sub(temp1, temp2, danosporseg)
+  arg2.addini(txt(lin, 1))
 # Mensagem
   ret danosg_envmsg(arg0, arg1, arg2, arg4)
 
