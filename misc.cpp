@@ -192,10 +192,6 @@ int safe_write(int filedes, const void *buffer, int size)
 }
 
 //------------------------------------------------------------------------------
-// Semelhante a sprintf(), exceto que:
-// Só processa caracteres %%, %c, %d, %u e %s
-// %S = mensagem como em %s, mas sem espaços finais
-// tamanho é o tamanho máximo do buffer destino
 char * mprintf(char * destino, int tamanho, const char * mens, ...)
 {
     const char * fim = &destino[tamanho <= 0 ? 0 : tamanho - 1];
@@ -210,7 +206,7 @@ char * mprintf(char * destino, int tamanho, const char * mens, ...)
     {
         if (*mens != '%')
         {
-            if (destino<fim)
+            if (destino < fim)
                 *(destino++) = *mens;
             continue;
         }

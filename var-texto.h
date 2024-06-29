@@ -252,7 +252,8 @@ public:
     TTextoBloco * Depois; ///< Próximo TTextoBloco
     unsigned char Linhas; ///< Número de caracteres Instr::ex_barra_n do bloco
     unsigned char Bytes;  ///< Número de bytes do bloco
-    char Texto[0xF0];     ///< A partir daqui: texto do bloco
+    static const int SizeofTexto = 0xF0;
+    char Texto[SizeofTexto];     ///< A partir daqui: texto do bloco
 };
 
 //----------------------------------------------------------------------------

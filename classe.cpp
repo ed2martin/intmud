@@ -180,8 +180,7 @@ bool TClasse::NomeValido(char * nome)
             *d++ = *o;
     *d = 0;
 // Checa tamanho do nome
-    TClasse * cl = nullptr; // Apenas para sizeof(TClasse::Nome)
-    if (d == nome || d - nome >= (int)sizeof(cl->Nome))
+    if (d == nome || d - nome >= CLASSE_NOME_TAM)
         return false;
     return true;
 }

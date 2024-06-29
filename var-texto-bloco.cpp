@@ -31,7 +31,7 @@ void TTextoTxt::TextoAnota(const char * txt, int total)
 {
     if (total <= 0)
         return;
-    const int bytes_por_bloco = sizeof(TTextoBloco::Texto);
+    const int bytes_por_bloco = TTextoBloco::SizeofTexto;
     int lin;
     Bytes += total;
 // Cria bloco se o bloco atual está cheio

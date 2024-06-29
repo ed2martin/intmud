@@ -165,7 +165,7 @@ void TTextoTxt::IniBloco()
 //----------------------------------------------------------------------------
 void TTextoTxt::AddTexto(const char * texto, unsigned int tamtexto)
 {
-    const unsigned int bloco_tam = sizeof(TTextoBloco::Texto);
+    const unsigned int bloco_tam = TTextoBloco::SizeofTexto;
     if (Inicio == 0)
         IniBloco();
     Bytes += tamtexto;
@@ -683,7 +683,7 @@ void TBlocoPos::MoverPos(int numlinhas)
 void TBlocoPos::Mudar(const char * texto, unsigned int tamtexto,
         unsigned int tamapagar)
 {
-    const unsigned int bloco_tam = sizeof(TTextoBloco::Texto);
+    const unsigned int bloco_tam = TTextoBloco::SizeofTexto;
     int add_bytes = tamtexto;   // Quantidade de bytes inseridos
     int sub_bytes = 0;          // Quantidade de bytes removidos
     int dif_linhas = 0;         // = linhas inseridas - linhas removidas

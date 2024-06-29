@@ -127,7 +127,7 @@ private:
     static char * EndBufferTxt;
     static unsigned short NumBufferTxt;
 
-    friend TVariavel;
+    friend class TVariavel;
 };
 
 //----------------------------------------------------------------------------

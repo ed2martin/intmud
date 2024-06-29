@@ -51,12 +51,12 @@ int safe_write(int filedes, const void *buffer, int size);
  *  Semelhante a sprintf(), exceto que:
  *  - Só processa caracteres %%, \%c, \%d, \%u e \%s
  *  - \%S = mensagem como em \%s, mas sem espaços finais
- *  - tamanho é o tamanho máximo do buffer destino
  *  .
  *  @param destino Endereço destino
  *  @param tamanho Tamanho do buffer em destino
  *  @param mens    Mensagem formatada, como em snprintf()
- *  @note Usar no lugar de snprintf(), que não está presente em alguns UNIXes */
+ *  @return Endereço do 0 no final do texto
+ *  @note Pode ter ganho de desempenho em relação a snprintf() */
 char * mprintf(char * destino, int tamanho, const char * mens, ...);
 
 /// Semelhante a strcpy(), mas retorna endereço do byte =0 em destino */

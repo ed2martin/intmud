@@ -182,8 +182,8 @@ private:
     TVarSocket * Antes;     ///< Objeto anterior da mesma conexão
     TVarSocket * Depois;    ///< Próximo objeto da mesma conexão
 
-    friend TDNSSocket;
-    friend TObjSocket;
+    friend class TDNSSocket;
+    friend class TObjSocket;
 };
 
 //----------------------------------------------------------------------------
