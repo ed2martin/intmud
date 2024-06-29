@@ -163,18 +163,18 @@ bool TVarArqDir::FuncAbrir(TVariavel * v)
 #ifdef __WIN32__
     WIN32_FIND_DATA ffd;
     strcat(mens, "\\*");
-    wdir = FindFirstFile(mens, &ffd);
-    if (wdir == INVALID_HANDLE_VALUE)
+    ref->wdir = FindFirstFile(mens, &ffd);
+    if (ref->wdir == INVALID_HANDLE_VALUE)
         return Instr::CriarVarTxtFixo(v, "");
     while (strcmp(ffd.cFileName, ".") == 0 || strcmp(ffd.cFileName, "..") == 0)
-        if (FindNextFile(wdir, &ffd) == 0)
+        if (FindNextFile(ref->wdir, &ffd) == 0)
         {
-            FindClose(wdir);
-            wdir = INVALID_HANDLE_VALUE;
+            FindClose(ref->wdir);
+            ref->wdir = INVALID_HANDLE_VALUE;
             return Instr::CriarVarTxtFixo(v, "");
         }
-    copiastr(arqdir, ffd.cFileName, sizeof(arqdir));
-    arqtipo = (ffd.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY)
+    copiastr(ref->arqdir, ffd.cFileName, sizeof(ref->arqdir));
+    ref->arqtipo = (ffd.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY)
                 ? 'D' : 'A';
 #else
     ref->dir = opendir(mens);

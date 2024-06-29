@@ -16,6 +16,9 @@
 #define X509_FILETYPE_PEM       1
 #define SSL_FILETYPE_PEM        X509_FILETYPE_PEM
 
+#define SSL_CTRL_SET_TLSEXT_HOSTNAME 55
+#define TLSEXT_NAMETYPE_host_name 0
+
 //----------------------------------------------------------------------------
 // Variáveis
 struct SSL;
@@ -54,6 +57,7 @@ typedef X509 *  (*TSslGetPeerCertificate)(const SSL *ssl);
 typedef void    (*TSslX509free)(X509 *x);
 typedef X509 *  (*TSslX509d2i)(X509 **px, const unsigned char **in, int len);
 typedef int     (*TSslX509i2d)(X509 *x, unsigned char **out);
+typedef long    (*TSslCtrl)(SSL *ssl, int cmd, long larg, void *parg);
 
 //----------------------------------------------------------------------------
 // Ponteiros de funções
@@ -83,12 +87,21 @@ extern TSslGetPeerCertificate SslGetPeerCertificate;
 extern TSslX509free         SslX509free;
 extern TSslX509d2i          SslX509d2i;
 extern TSslX509i2d          SslX509i2d;
+extern TSslCtrl             SslCtrl;
 
 //----------------------------------------------------------------------------
 // Outros
 extern SSL_CTX * ssl_ctx_cliente;
 extern SSL_CTX * ssl_ctx_servidor;
 extern SSL_METHOD * ssl_metodo;
+
+inline int SslSetTlsextHostName(SSL * s, const char * name)
+{
+    if (SslCtrl == nullptr)
+        return 0;
+    return SslCtrl(s, SSL_CTRL_SET_TLSEXT_HOSTNAME,
+                TLSEXT_NAMETYPE_host_name, (void *)name);
+}
 
 /// Fecha biblioteca SSL
 void FechaSSL();

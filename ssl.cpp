@@ -69,6 +69,7 @@ TSslGetPeerCertificate SslGetPeerCertificate = nullptr;
 TSslX509free         SslX509free = nullptr;
 TSslX509d2i          SslX509d2i = nullptr;
 TSslX509i2d          SslX509i2d = nullptr;
+TSslCtrl             SslCtrl = nullptr;
 
 //----------------------------------------------------------------------------
 void FechaSSL()
@@ -162,6 +163,7 @@ const char * AbreSSL()
     SslX509free         = (TSslX509free)   GETPROC(ssl_handle2, "X509_free");
     SslX509d2i          = (TSslX509d2i)    GETPROC(ssl_handle2, "d2i_X509");
     SslX509i2d          = (TSslX509i2d)    GETPROC(ssl_handle2, "i2d_X509");
+    SslCtrl             = (TSslCtrl)GETPROC(ssl_handle1, "SSL_ctrl");
 
     const char * erro = nullptr;
     if (!SslGetError)         erro = "SSL_get_error não foi encontrado";

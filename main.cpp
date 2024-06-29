@@ -65,8 +65,10 @@
 #endif
 
 static void Inicializa(const char * arg);
-static void TerminaSign(int sig);
 void Termina();
+#ifndef __WIN32__
+static void TerminaSign(int sig);
+#endif
 
 static FILE * err_log = nullptr;
 
@@ -897,7 +899,7 @@ void Inicializa(const char * arg)
 #ifdef __WIN32__
 // Inicializa WinSock
     WSADATA info;
-    bool xinic=(WSAStartup(MAKELONG(1, 1), &info) != SOCKET_ERROR);
+    bool xinic=(WSAStartup(MAKEWORD(1, 1), &info) == 0);
     if (!xinic)
     {
         err_printf("Problema inicializando WinSock\n");

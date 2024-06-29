@@ -121,7 +121,7 @@ TSocket * TSocket::Conectar(const char * ender, int porta, bool ssl)
     conSock.sin_addr.s_addr = inet_addr(ender);
     if ( conSock.sin_addr.s_addr == INADDR_NONE )
     {
-        if ( (hnome=gethostbyname(ender)) == NULL )
+        if ( (hnome = gethostbyname(ender)) == NULL )
             return nullptr;
         conSock.sin_addr = (*(struct in_addr *)hnome->h_addr);
     }
@@ -165,6 +165,8 @@ TSocket * TSocket::Conectar(const char * ender, int porta, bool ssl)
     TSocket * s = new TSocket(conManip, nullptr);
     s->proto = (ssl ? spConnect2 : spConnect1);
     s->conSock = conSock;
+    if (ssl)
+        copiastr((char*)s->bufRec, ender, sizeof(s->bufRec));
 #ifdef DEBUG_SSL
     if (ssl) { puts("CONECTADO"); fflush(stdout); }
 #endif
@@ -402,11 +404,13 @@ void TSocket::FecharSock(int erro, bool env)
 }
 
 //------------------------------------------------------------------------------
-void TSocket::CriaSSL()
+void TSocket::CriaSSL(const char * ender)
 {
     if (sockssl || sock < 0)
         return;
     sockssl = SslNew(ssl_ctx_cliente);
+    if (ender != nullptr)
+        SslSetTlsextHostName(sockssl, ender);
     SslSetFd(sockssl, sock);
     receberssl = 0;
 #ifdef DEBUG_SSL
@@ -1009,7 +1013,7 @@ bool TSocket::EnvMens(const char * mensagem, int codigo)
 //------------------------------------------------------------------------------
 bool TSocket::EnvMensBytes(const char * mensagem, int tamanho)
 {
-    if (sock<0)
+    if (sock < 0)
         return false;
     if (tamanho > SOCKET_ENV)
         return false;
@@ -1052,7 +1056,7 @@ void TSocket::EnvPend()
         if (receberssl)
             return;
         int erro = 0;
-        resposta=SslWrite(sockssl, bufEnv, pontEnvSsl ? pontEnvSsl : pontEnv);
+        resposta = SslWrite(sockssl, bufEnv, pontEnvSsl ? pontEnvSsl : pontEnv);
         if (resposta <= 0)
         {
             erro = SslGetError(sockssl, resposta);
@@ -1090,17 +1094,17 @@ void TSocket::EnvPend()
     else
     {
 #ifdef __WIN32__
-        resposta=send(sock, bufEnv, pontEnv, 0);
+        resposta = send(sock, bufEnv, pontEnv, 0);
         //if (resposta==0)
         //    resposta=-1, coderro=0;
         //else
-        if (resposta==SOCKET_ERROR)
+        if (resposta == SOCKET_ERROR)
         {
             coderro = WSAGetLastError();
             resposta = (coderro==WSAEWOULDBLOCK ? 0 : -1);
         }
 #else
-        resposta=send(sock, bufEnv, pontEnv, 0);
+        resposta = send(sock, bufEnv, pontEnv, 0);
         if (resposta <= 0)
         {
             coderro = errno;
@@ -1292,7 +1296,7 @@ void TSocket::ProcEventos(fd_set * set_entrada,
                 continue;
             }
         // Conseguiu conectar, checa se é conexão normal (não SSL)
-            if (obj->proto!=spConnect2)
+            if (obj->proto != spConnect2)
             {
                 SockAtual = obj->sDepois;
                 obj->proto = spTelnet2;
@@ -1302,7 +1306,7 @@ void TSocket::ProcEventos(fd_set * set_entrada,
             }
         // Conexão SSL
             obj->proto = spSslConnect;
-            obj->CriaSSL();
+            obj->CriaSSL((const char*)obj->bufRec);
         // Erro ao conectar
         }
     // Verifica conexão SSL

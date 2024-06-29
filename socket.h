@@ -50,8 +50,9 @@ public:
                                 fd_set * set_saida, fd_set * set_err);
             ///< Processa eventos
     static void SairPend();  ///< Envia dados pendentes (programa vai encerrar)
-    void CriaSSL();
+    void CriaSSL(const char * ender = nullptr);
             ///< Cria conexão SSL (variável sockssl) a partir do socket
+            /**< @param ender Endereço do host ou nullptr se não for usado */
     bool Conectado();   ///< Retorna verdadeiro se estiver conectado
     bool EnvMens(const char * mensagem, int codigo);
             ///< Envia mensagem conforme protocolo
