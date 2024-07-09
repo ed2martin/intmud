@@ -383,6 +383,7 @@ func batalhaexp # Dá experiência a quem estiver atacando o personagem
   ret !v1, nulo
   refvar exp1 = arg0 * (config:atkexp0 + pnivel * config:atkexp1) * misc:mudaexp / (2000 * \
 v1)
+  listaobj e # Para gerar eventos
   epara i = l.ini, i, i.depois
     r = i.obj
     real2 v2 = pnivel - r.pnivel
@@ -397,7 +398,14 @@ v1)
     r.dono.perso && (r = r.dono)
     r.iseguir && r.tseguir == 3 && (r = r.iseguir.objlista)
     r.iseguir && r.tseguir == 1 && (r = r.iseguir.objlista)
-    i.obj.ganhaexp(v2 * exp1 * p_exp(i.obj) * r.atkdanos1 / r.atkdanos2)
+    v2 *= exp1 * p_exp(i.obj) * r.atkdanos1 / r.atkdanos2
+    epara e.addfim(i.obj.evento), e, e.ini.remove
+      e.objini.cmd_ganhaexp(i.obj, este, v2, i.obj)
+    efim
+    epara e.addfim(evento), e, e.ini.remove
+      e.objini.cmd_ganhaexp(i.obj, este, v2, este)
+    efim
+    i.obj.ganhaexp(v2)
   efim
 
 func ganhaexp # Personagem ganha experiência
@@ -621,14 +629,24 @@ func morreu # Procedimentos quando morre
   ret corpo
 
 func pegamoedas # Pega todas as moedas do personagem arg0
-  int32 moedas = arg0.var.z_moedas_
+# Gera eventos
+  listaobj l
+  epara l.addfim(arg0.evento), l, l.ini.remove
+    l.objini.cmd_configmoedas(este, arg0, arg0)
+  efim
+  epara l.addfim(evento), l, l.ini.remove
+    l.objini.cmd_configmoedas(este, arg0, este)
+  efim
 # Pega moedas
+  uint32 moedas = arg0.var.z_moedas_
   var.z_moedas_ += moedas
   arg0.var.z_moedas = ""
 # Envia mensagem
-  $mens.p(este)
-  ret moedas == 1, $mens.mvis1("$P pega uma moeda.")
-  $mens.mvis1("$P pega " + moedas + " moedas.")
+  ret !moedas, nulo
+  $mens.p(este, arg0)
+  $mens.mens = moedas
+  ret moedas == 1, $mens.mtodos2(perso_cfg:moedas_peg1a, perso_cfg:moedas_peg1b)
+  $mens.mtodos2(perso_cfg:moedas_peg2a, perso_cfg:moedas_peg2b)
 # Obtém o líder do grupo
   refvar lider = tseguir == 2 ? este : iseguir && tseguir == 1 ? iseguir.objlista
   ret !lider, nulo # Retorna se não tem líder

@@ -2539,6 +2539,15 @@ const sexoini = 1 # Sexo Perso: 1 Masculino
 const lojaaula = "h_Retornar 8\nh_Voltar 8"
 
 
+classe p_teste052
+herda comum_perso
+const nome = "Anã de prata"
+const sexoini = 0 # Sexo Perso: 0 Feminino
+const tipo1 = "anao"
+const taxaaula = arg0.tipo1 == "anao" ? 50 : 100
+const lojaaula = arg0.tipo1 == "anao" ? "m_Ganância 8" : "m_Ganância 5"
+
+
 classe s_teste001
 herda b_teste
 const s_titulo = "Entrada"
@@ -5772,6 +5781,7 @@ identificação. Ao olhar para o robô, o estado de saúde também é diferente.\n\
 E se for controlado (com o comando PNJ), nota-se que ele não dorme, não\n\
 descansa e não senta."
 const dir_n = $s_teste051
+const dir_s = $s_teste190
 const s_reset = "P 100 teste050 1 1 1 h_socar,h_chutar,z_moedas=100"
 
 func s_reset1 # Realiza o reset
@@ -5808,4 +5818,22 @@ func s_reset1 # Realiza o reset
 # Não alterar; função criada automaticamente a partir de s_reset
   se p_teste051:objsolto.total < 1
     criar("p_teste051", este, 0)
+  fimse
+
+
+classe s_teste190
+herda b_teste
+const s_titulo = "Magia ganância"
+const s_desc = "A magia ganância aumenta as moedas pegas (com config +moedas) ao matar PNJs\n\
+ao custo de diminuir a experiência ganha. Quanto mais aulas, mais moedas\n\
+e menos experiência. A anã de prata ensina para todos, mas cobra metade\n\
+do preço e dá aulas mais avançadas só para anões. Isso foi feito via\n\
+programação no personagem e na magia. O camundongo ao norte carrega moedas."
+const dir_n = $s_teste187
+const s_reset = "P 100 teste052 0 0 1"
+
+func s_reset1 # Realiza o reset
+# Não alterar; função criada automaticamente a partir de s_reset
+  se p_teste052:objsolto.total < 1
+    criar("p_teste052", este, 0)
   fimse

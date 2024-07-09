@@ -259,6 +259,36 @@ func recalc2_auto # Altera atributos do personagem
   bitver |= 256
 
 
+classe e_ganância
+herda comum_efeito
+const e_nome = txtsublin(e_nome2, aulas, 1) ?? "Ganância"
+const e_nome2 = "\nGanância minúscula\n\
+Ganância muito pequena\n\
+Ganância pequena\n\
+Ganância média\n\
+Ganância grande\n\
+Ganância muito grande\n\
+Ganância enorme\nGanância gigantesca"
+const tempo1 = 300
+const msgini1 = "A ganância aparece para você."
+const msgini2 = "A ganância aparece para $p."
+const msgnulo1 = "A ganância não aparece para você."
+const msgnulo2 = "A ganância não aparece para $p."
+const msgfim1 = "A ganância some de você."
+const msgfim2 = "A ganância some de $p."
+const evperso = 1 # Eventos perso: Sim
+uint8 aulas
+
+func cmd_configmoedas
+  arg1.var.z_moedas_ *= 1 + aulas / 6
+
+func cmd_ganhaexp
+  arg2 /= 1 + aulas / 6
+
+func e_nome
+  ret este == "e_ganancia" ? "Ganância 1" : "Ganância 2"
+
+
 classe e_invisibilidade
 herda comum_efeito
 const e_nome = "Invisibilidade"

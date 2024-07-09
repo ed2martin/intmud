@@ -174,7 +174,7 @@ bool TVarNomeObj::FuncIni(TVariavel * v)
         while (*txt == ' ')
             txt++;
         char * p = ref->NomeObj;
-        for (; *txt && p < ref->NomeObj + sizeof(NomeObj) - 1; p++, txt++)
+        for (; *txt && p < ref->NomeObj + sizeof(ref->NomeObj) - 1; p++, txt++)
             *p = tabNOMEOBJ[*(unsigned char*)(txt)];
         *p = 0;
     }

@@ -268,6 +268,23 @@ const atk1_errou1 = "$P lança fogo em $a mas erra."
 const atk1_nulo1 = "$P lança fogo em $a mas nada acontece."
 
 
+classe magia_ganância
+herda comando_ataque
+const nomevar = "m_Ganância"
+const tipoalvo = 6 # Alvo: 6 Qualquer um; não é ataque
+const c_mana1 = 15
+const c_mana2 = 5
+const valor = 100
+const atk1_auto1 = "$P lança ganância sobre $a"
+const atk1_perso1 = "$P lança ganância sobre $a"
+const atk1_errou1 = "$P tenta lançar ganância sobre $a mas erra"
+const atk1_nulo1 = "$P lança ganância sobre $a mas não tem efeito"
+
+func cmd_alvofim
+  ref r = criar("e_ganancia", arg1, arg0.pnivel)
+  r.aulas = arg0.var.m_Ganância_
+
+
 classe magia_identificar
 herda comando_identificar
 const nomevar = "m_Identificar"

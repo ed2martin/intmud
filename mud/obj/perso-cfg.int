@@ -164,6 +164,10 @@ const exp_nivelmsg2 = "$1 avança para o nível $m."
 const exp_nmax = ""
 #
 # Moedas
+const moedas_peg1a = "Você pega uma moeda."
+const moedas_peg1b = "$P pega uma moeda."
+const moedas_peg2a = "Você pega $m moedas."
+const moedas_peg2b = "$P pega $m moedas."
 const moedas_dar1 = "Você dá uma moeda para o grupo."
 const moedas_dar2 = "Você dá $m moedas para o grupo."
 const moedas_rec1 = "Você recebe uma moeda $d $a."
@@ -236,6 +240,7 @@ ini_perso_entrou ini_perso_saiu ini_perso_caiu ini_perso_reconectou\n\
 exp_add1_voce exp_add2_voce exp_add1_animal exp_add2_animal\n\
 exp_sub1_voce exp_sub2_voce exp_sub1_animal exp_sub2_animal\n\
 exp_nivelmsg1 exp_nivelmsg2 exp_nmax\n\
+moedas_peg1a moedas_peg1b moedas_peg2a moedas_peg2b\n\
 moedas_dar1 moedas_dar2 moedas_rec1 moedas_rec2\n\
 loja_invisivel loja_naonegocia loja_fechada loja_msgidioma\n\
 p_exp p_morreu0 p_morreu1 p_morreu2 p_corpo_tipo p_corpo_ident p_corpo_descnome\n\
@@ -830,21 +835,37 @@ const nome11 = "Chegou no nível máximo"
 const tipo11 = "opc_texto"
 const vari11 = "exp_nmax"
 #
-const nome12 = "Dar uma moeda"
+const nome12 = "Você pega uma moeda"
 const tipo12 = "opc_linha"
-const vari12 = "moedas_dar1"
+const vari12 = "moedas_peg1a"
 #
-const nome13 = "Dar moedas"
+const nome13 = "Outro pega uma moeda"
 const tipo13 = "opc_linha"
-const vari13 = "moedas_dar2"
+const vari13 = "moedas_peg1b"
 #
-const nome14 = "Receber uma moeda"
+const nome14 = "Você pega moedas"
 const tipo14 = "opc_linha"
-const vari14 = "moedas_rec1"
+const vari14 = "moedas_peg2a"
 #
-const nome15 = "Receber moedas"
+const nome15 = "Outro pega moedas"
 const tipo15 = "opc_linha"
-const vari15 = "moedas_rec2"
+const vari15 = "moedas_peg2b"
+#
+const nome16 = "Dar uma moeda"
+const tipo16 = "opc_linha"
+const vari16 = "moedas_dar1"
+#
+const nome17 = "Dar moedas"
+const tipo17 = "opc_linha"
+const vari17 = "moedas_dar2"
+#
+const nome18 = "Receber uma moeda"
+const tipo18 = "opc_linha"
+const vari18 = "moedas_rec1"
+#
+const nome19 = "Receber moedas"
+const tipo19 = "opc_linha"
+const vari19 = "moedas_rec2"
 
 
 classe m_perso_loja

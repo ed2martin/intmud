@@ -46,8 +46,7 @@ func escr
   l.addfim(arg0.dono.dentro2), n.ini(nomeitem, total)
   epara l.remove(arg0), l, l.ini.remove
     refvar p = ref(l.objini) # Personagem que está sendo verificado
-    continuar !(p.lojaitem || p.lojainv || $s_[p.lojasala] || $a_[p.lojacasa] || $a_[p.lojachave]\
-)
+    continuar !(p.lojaitem(arg0) || p.lojainv || $s_[p.lojasala] || $a_[p.lojacasa] || $a_[p.lojachave])
     continuar negociar_checa(arg0, p)
     continuar evento(arg0, p)
 # Itens fixos - lojaitem
@@ -57,7 +56,7 @@ func escr
       lin = "i_" + txt1(t2.ini.texto), linha++
       continuar !n.nome([lin]:nome, 1) && txt(linha) != nomeitem
       nivel = txt2(t2.ini.texto) ?? [lin]:nivel
-      valor = (100 + p.taxavenda) / 100 * [lin]:valor
+      valor = (100 + p.taxavenda(arg0)) / 100 * [lin]:valor
       total > 100 && (total = 100)
       se arg0.var.z_moedas_ < valor * total
         $mens.o_1 = valor * total
@@ -99,7 +98,7 @@ func escr
       epara e.addfim($s_[p.lojasala].dentro1), e, e.ini.remove
         ref r = e.objini
         continuar txt(++linha) != arg1 && !n.nome(r.ident2, 1)
-        valor = (100 + p.taxavenda) / 100 * r.valor
+        valor = (100 + p.taxavenda(arg0)) / 100 * r.valor
         total > r.objtot && (total = r.objtot)
         se r.cabedentro(arg0) < total
           ret $mens.mp(m_muita_coisa, arg0)
@@ -145,7 +144,7 @@ func escr
           valor--
         efim
         ret valor <= 0, $mens.mp(m_casa_limite, arg0, p)
-        valor = (100 + p.taxavenda) / 100 * r.valor
+        valor = (100 + p.taxavenda(arg0)) / 100 * r.valor
         se item.obj("cj " + txt2(arg0.sock.cnome) + " " + p.lojacasa)
           ret $mens.mp(m_tem_casa, arg0, p)
         senao arg0.var.z_moedas_ < valor
@@ -173,7 +172,7 @@ func escr
       refvar casa = item.obj("cj " + txt2(arg0.sock.cnome) + " " + p.lojachave)
       se !casa
       senao txt(++linha) == arg1 || n.nome("chave da casa", 1)
-        valor = (100 + p.taxavenda) / 100 * config:casachave
+        valor = (100 + p.taxavenda(arg0)) / 100 * config:casachave
         se arg0.dentro1.total + 1 > arg0.objmax
           ret $mens.mp(m_muita_coisa, arg0)
         senao arg0.volden + comum_chave:voltot > arg0.volmax
@@ -193,7 +192,7 @@ func escr
         $mens.mtodos2(m_chave1, m_chave2)
         ret
       senao txt(++linha) == arg1 || n.nome("fechadura da casa", 1)
-        valor = (100 + p.taxavenda) / 100 * config:casafechadura
+        valor = (100 + p.taxavenda(arg0)) / 100 * config:casafechadura
         se arg0.var.z_moedas_ < valor
           $mens.o_1 = valor
           $mens.mp(m_moedas, arg0, p)

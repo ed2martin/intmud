@@ -18,7 +18,7 @@ func escr
       continuar evento(arg0, p)
       indiceitem item
       refvar r = item.obj("cj " + txt2(arg0.sock.cnome) + " " + p.lojacasa)
-      refvar valor = intpos(r.valor * (100 - p.taxacompra) / 100)
+      refvar valor = intpos(r.valor * (100 - p.taxacompra(arg0)) / 100)
       se !r
         arg0.msg("Você não tem uma casa aqui.")
         continuar
@@ -82,7 +82,7 @@ func exec # Avalia ou vende um item
       continuar
     fimse
     int32 valor # Valor do item
-    valor = intpos(arg1.valor * (100 - p.taxacompra) / 100)
+    valor = intpos(arg1.valor * (100 - p.taxacompra(arg0)) / 100)
     se vender
       valor *= arg2
       arg1.apagar(arg2)
