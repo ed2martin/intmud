@@ -18,11 +18,14 @@ const msgfalhou1 = msgfalhou2
 const msgnulo1 = msgnulo2
 const msgreduz1 = msgreduz2
 intexec e_evini # Para inicializar o efeito
+const atribs_dono = comum:atribs_dono
+const recalc_dono = comum:recalc_dono
 #
 # Ordem que deve organizar as constantes:
 const admordem = "e_nome\n\
 e_desc\n\
 e_condicao\n\
+e_tipos\n\
 e_ef_condicao e_ef_apaga\n\
 desc\n\
 maximo\n\
@@ -54,6 +57,11 @@ func ini # Cria efeito
   epara t.addfim(e_ef_condicao), t.linhas, t.remove
     ret lista.objini("e_" + t.ini.texto), nulo
   efim
+  se e_tipos
+    ret arg0.tipo1 && txtproclin(txte(e_tipos), txte(arg0.tipo1)) >= 0, nulo
+    ret arg0.tipo2 && txtproclin(txte(e_tipos), txte(arg0.tipo2)) >= 0, nulo
+    ret arg0.tipo3 && txtproclin(txte(e_tipos), txte(arg0.tipo3)) >= 0, nulo
+  fimse
   idono = lista.addini(este) # Adiciona como personagem
   t_reduzir = r_tempo
   t_duracao = intpos(tempo1 + tempo2 * arg1)
