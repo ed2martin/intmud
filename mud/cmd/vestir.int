@@ -1,5 +1,5 @@
 classe h_cmd_vestir
-herda comando_comum
+herda comando_comum, comum_vestir
 const objmenu = $m_cmd_vestir
 const objtipo = 2 # Pode renomear
 const posic = 5
@@ -43,9 +43,6 @@ func escr
   refvar alvo = ref(arg0.persoesc) # Quem vai vestir
   ret alvo.dono != arg0 && alvo.dono != arg0.dono, $mens.mp(m_longe_a, arg0, alvo)
   refvar tipomsg = arg0 == alvo ? "_p" : "_a"
-  refvar tipo1 = txte(alvo.tipo1)
-  refvar tipo2 = txte(alvo.tipo2)
-  refvar tipo3 = txte(alvo.tipo3)
 # Variáveis
   int8 achou # Se 0, não achou nenhum item para vestir
   nomeobj n # Para reconhecer os itens
@@ -78,48 +75,8 @@ func escr
     ref r = l.objini
     continuar !r.visivel(arg0) || !n.nome(r.ident2, r.objtot)
     achou = 1
-    txt100 erro # Se for um texto vazio, pode vestir
-# Checa se o personagem pode vestir
-    se r.vestirsim == (alvo == arg0 ? 2 : 1)
-      erro = m_nao_consegue[tipomsg]
-    senao r.vestirsexo == (alvo.psexo ? 1 : 2)
-      erro = m_nao_consegue[tipomsg]
-# Checa o nível
-    senao int(r.pnivel) > alvo.pnivel
-      $mens.mens = r.pnivel
-      erro = m_nivel[tipomsg]
-    senao int(r.renascer) > arg0.prenascer
-      $mens.mens = r.renascer
-      se r.renascer == 1
-        erro = m_renascer1
-      senao r.renascer == 2
-        erro = m_renascer2
-      senao
-        erro = m_renascer3
-      fimse
-# Checa se a classe ou a raça tem permissão
-    senao !r.vestirnao
-    senao tipo1 && txtproclin(txte(r.vestirnao), tipo1) >= 0
-      erro = m_nao_consegue[tipomsg]
-    senao tipo2 && txtproclin(txte(r.vestirnao), tipo2) >= 0
-      erro = m_nao_consegue[tipomsg]
-    senao tipo3 && txtproclin(txte(r.vestirnao), tipo3) >= 0
-      erro = m_nao_consegue[tipomsg]
-    fimse
-# Checa se tem conhecimento suficiente
-    se !erro
-      txt200 lin
-      textotxt t2
-      epara t2.addfim(r.vestiraula(alvo)), t2.linhas, t2.remove
-        continuar !(lin = t2.ini.texto)
-        continuar alvo.var.[txt1(lin)]_ >= txt2(lin)
-        $mens.mens = misc:nomevar(txt1(lin))
-        $mens.o_1 = txtmin(txtsublin(misc:aulas, txt2(lin), 1))
-        erro = m_conhecimento[tipomsg]
-      efim
-    fimse
-# Tenta vestir
-    erro ? $mens.mp(erro, arg0, alvo, r) : objvestir(alvo, r, int(n))
+    refvar msg = checavestir(alvo, r)
+    msg ? $mens.mp(msg, arg0, alvo, r) : objvestir(alvo, r, int(n))
   efim
 # Avisa se não encontrou nenhum item
   se !achou

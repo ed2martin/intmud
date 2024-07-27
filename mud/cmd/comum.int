@@ -194,3 +194,60 @@ func negociar_checa # Checa se PNJ pode negociar
   refvar fecha = int(arg1.lojafim) - misc:hora
   ret abre < fecha ? abre > 0 || fecha <= 0 : abre > 0 && fecha <= 0, "\b"
   ret ""
+
+
+classe comum_vestir
+# Checagem básica se pode vestir ou empunhar algo
+
+func checavestir # Verifica se pode vestir um item
+# arg0 = personagem
+# arg1 = item
+# Retorna mensagem se não pode vestir ou nulo se pode
+  refvar tipomsg = arg0.dono.perso ? "_a" : "_p"
+# Checa se o personagem pode vestir
+  se arg1.vestirsim == (arg0.dono.perso ? 1 : 2)
+    ret m_nao_consegue[tipomsg]
+  senao arg1.vestirsexo == (arg0.psexo ? 1 : 2)
+    ret m_nao_consegue[tipomsg]
+# Checa o nível
+  senao int(arg1.pnivel) > arg0.pnivel
+    $mens.mens = arg1.pnivel
+    ret m_nivel[tipomsg]
+  senao int(arg1.renascer) > (arg0.dono.perso ? arg0.dono.prenascer : arg0.prenascer)
+    $mens.mens = arg1.renascer
+    ret arg1.renascer == 1, m_renascer1
+    ret arg1.renascer == 2, m_renascer2
+    ret m_renascer3
+# Checa se a classe ou a raça tem permissão
+  senao !arg1.vestirnao
+  senao arg0.tipo1 && txtproclin(txte(arg1.vestirnao), txte(arg0.tipo1)) >= 0
+    ret m_nao_consegue[tipomsg]
+  senao arg0.tipo2 && txtproclin(txte(arg1.vestirnao), txte(arg0.tipo2)) >= 0
+    ret m_nao_consegue[tipomsg]
+  senao arg0.tipo3 && txtproclin(txte(arg1.vestirnao), txte(arg0.tipo3)) >= 0
+    ret m_nao_consegue[tipomsg]
+  fimse
+# Checa se tem conhecimento suficiente
+  txt200 lin
+  textotxt t2
+  epara t2.addfim(arg1.vestiraula(arg0)), t2.linhas, t2.remove
+    continuar !(lin = t2.ini.texto)
+    continuar arg0.var.[txt1(lin)]_ >= txt2(lin)
+    $mens.mens = misc:nomevar(txt1(lin))
+    $mens.o_1 = txtmin(txtsublin(misc:aulas, txt2(lin), 1))
+    ret m_conhecimento[tipomsg]
+  efim
+
+
+classe comum_vestir_obj
+herda comum_vestir
+const m_nao_consegue_p = 1
+const m_nao_consegue_a = 1
+const m_nivel_p = 1
+const m_nivel_a = 1
+const m_renascer1 = 1
+const m_renascer2 = 1
+const m_renascer3 = 1
+const m_conhecimento_p = 1
+const m_conhecimento_a = 1
+const iniclasse = !$[arg0] && criar(arg0)

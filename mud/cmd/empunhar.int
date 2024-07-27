@@ -1,5 +1,5 @@
 classe h_cmd_empunhar
-herda comando_comum
+herda comando_comum, comum_vestir
 const objmenu = $m_cmd_empunhar
 const objtipo = 2 # Pode renomear
 const posic = 5
@@ -44,54 +44,20 @@ func escr
   refvar alvo = ref(arg0.persoesc) ?? arg0
   refvar tipomsg = arg0 == alvo ? "_p" : "_a"
   ret alvo.iempu, $mens.mp(m_empunhando[tipomsg], arg0, alvo)
-  refvar tipo1 = txte(alvo.tipo1)
-  refvar tipo2 = txte(alvo.tipo2)
-  refvar tipo3 = txte(alvo.tipo3)
   txt200 lin
 # Verifica condições para empunhar
   ref r = misc:itemdentro(arg0, arg1)
-  $mens.p(arg0, alvo, r)
   se !r
     $mens.mens = arg1
-    ret $mens.msg(m_naover, arg0)
-  senao !r.armatipo
-    ret $mens.msg(m_nao_arma, arg0)
-  senao r.vestirsim == (alvo == arg0 ? 2 : 1)
-    ret $mens.msg(m_nao_consegue[tipomsg], arg0)
-  senao r.vestirsexo == (alvo.psexo ? 1 : 2)
-    ret $mens.msg(m_nao_consegue[tipomsg], arg0)
-  senao int(r.pnivel) > alvo.pnivel
-    $mens.mens = r.pnivel
-    ret $mens.msg(m_nivel[tipomsg], arg0)
-  senao int(r.renascer) > arg0.prenascer
-    $mens.mens = r.renascer
-    se r.renascer == 1
-      ret $mens.msg(m_renascer1, arg0)
-    senao r.renascer == 2
-      ret $mens.msg(m_renascer2, arg0)
-    fimse
-    ret $mens.msg(m_renascer3, arg0)
-  senao !alvo.var.h_[txtsublin(config:arma_txt, r.armatipo, 1)]
-    $mens.mens = txtsublin(config:arma_txt, r.armatipo, 1)
-    ret $mens.msg(m_conhecimento[tipomsg], arg0)
-  senao r.vestirnao
-    se tipo1 && txtproclin(txte(r.vestirnao), tipo1) >= 0
-      ret $mens.msg(m_nao_consegue[tipomsg], arg0)
-    senao tipo2 && txtproclin(txte(r.vestirnao), tipo2) >= 0
-      ret $mens.msg(m_nao_consegue[tipomsg], arg0)
-    senao tipo3 && txtproclin(txte(r.vestirnao), tipo3) >= 0
-      ret $mens.msg(m_nao_consegue[tipomsg], arg0)
-    fimse
+    ret $mens.mp(m_naover, arg0, alvo, r)
   fimse
-# Checa se tem conhecimento suficiente
-  textotxt t2
-  epara t2.addfim(r.vestiraula(alvo)), t2.linhas, t2.remove
-    continuar !(lin = t2.ini.texto)
-    continuar alvo.var.[txt1(lin)]_ >= txt2(lin)
-    $mens.mens = misc:nomevar(txt1(lin))
-    $mens.o_1 = txtmin(txtsublin(misc:aulas, txt2(lin), 1))
+  ret !r.armatipo, $mens.mp(m_nao_arma, arg0, alvo, r)
+  refvar msg = checavestir(alvo, r)
+  ret msg, $mens.mp(msg, arg0, alvo, r)
+  se !alvo.var.h_[txtsublin(config:arma_txt, r.armatipo, 1)]
+    $mens.mens = txtsublin(config:arma_txt, r.armatipo, 1)
     ret $mens.mp(m_conhecimento[tipomsg], arg0, alvo, r)
-  efim
+  fimse
 # Verifica posições extras
   refvar vest1 = alvo.positemvestir
   se vest1 & r.vestirextra != "0"

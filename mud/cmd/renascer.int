@@ -47,6 +47,8 @@ const m_magia = "Você quer a magia $m? (Tecle S ou N)"
 const m_nao_possui = "Você não possui $m, escolha outra."
 const m_renasceu = "Você renasceu no nível $m."
 const m_cancelar = "Desistiu."
+const m_antes2 = "$P some em um redemoinho de fumaça."
+const m_depois2 = "$P aparece de um redemoinho de fumaça."
 #
 const admordem = "m_ajudaI m_ajuda2 m_ajuda3 m_ajuda4 m_ajuda5 m_ajuda6\n\
 m_ajudaR m_ajudaM1 m_ajudaM2\n\
@@ -54,7 +56,8 @@ m_sem m_nivel m_escolha1 m_escolha2 m_escolha3\n\
 m_confirma1 m_confirma2 m_confirma3\n\
 m_invalido1 m_invalido2 m_invalido3\n\
 m_habmag1 m_habmag2 m_habmag3 m_habmag4 m_habmag5\n\
-m_hab m_magia m_nao_possui m_renasceu m_cancelar"
+m_hab m_magia m_nao_possui m_renasceu m_cancelar\n\
+m_antes1 m_antes2 m_depois1 m_depois2"
 
 func acertahab # Acerta cada habilidade ou magia do jogador
 # Nota: só é chamado quando o comando Renascer perde as hab/magias
@@ -317,7 +320,8 @@ func renascer
   $mens.mp(m_renasceu, perso)
   listaobj l
   epara l.addfim(perso.dentro2), l, l.ini.remove
-    l.objini.item && l.objini.pnivel > perso.pnivel && l.objini.vestir(0)
+    l.objini.item && $comum_vestir_obj.checavestir(perso, l.objini) && l.objini.vestir(0)
+    l.objini.e_renascer && apagar(l.objini)
   efim
   perso.cmd_nivel1(perso, 0)
   listaobj l
@@ -329,8 +333,15 @@ func renascer
   perso.pvida = perso.pvidamax
   perso.pmana = perso.pmanamax
   perso.pmove = perso.pmovemax
+# Muda de sala
   ref sala = acertasala(perso, $t_[perso.tipo1].sala_renascer ?? $t_[perso.tipo2].sala_renascer ?? $t_[perso.tipo3].sala_renascer ?? config:sala_renascer)
-  sala && perso.mudadono(sala)
+  se sala && sala != perso.dono
+    $mens.p(perso)
+    $mens.mvis2(m_antes1, m_antes2)
+    perso.mudadono(sala)
+    $mens.p(perso)
+    $mens.mvis2(m_depois1, m_depois2)
+  fimse
   ret 0
 
 
@@ -504,3 +515,19 @@ const vari34 = "m_renasceu"
 const nome35 = "Cancelou"
 const tipo35 = "opc_linha"
 const vari35 = "m_cancelar"
+#
+const nome36 = "Saiu da sala perso"
+const tipo36 = "opc_linha"
+const vari36 = "m_antes1"
+#
+const nome37 = "Saiu da sala outros"
+const tipo37 = "opc_linha"
+const vari37 = "m_antes2"
+#
+const nome38 = "Entrou na sala perso"
+const tipo38 = "opc_linha"
+const vari38 = "m_depois1"
+#
+const nome39 = "Entrou na sala outros"
+const tipo39 = "opc_linha"
+const vari39 = "m_depois2"
