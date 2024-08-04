@@ -40,6 +40,7 @@ func escr
     ret $mens.mp(m_acendeusar, arg0, nulo, r)
   fimse
 # Eventos
+  ret cmd_acender(arg0, r), nulo
   epara l.addfim(arg0.evento), l, l.ini.remove
     ret l.objini.cmd_acender(arg0, r, arg0), nulo
   efim
@@ -50,6 +51,7 @@ func escr
   r.luztempo.pos, r.recalc = 1, r.ajustapeso
   $mens.p(arg0, nulo, r)
   $mens.mvis2(r.luzliga1 ?? m_acende1, r.luzliga2 ?? m_acende2)
+  cmd_acendeu(arg0, r)
   epara l.addfim(arg0.evento), l, l.ini.remove
     l.objini.cmd_acendeu(arg0, r, arg0)
   efim
@@ -87,6 +89,7 @@ func escr
     ret $mens.mp(m_apagado, arg0, nulo, r)
   fimse
 # Eventos
+  ret cmd_apagar(arg0, r), nulo
   epara l.addfim(arg0.evento), l, l.ini.remove
     ret l.objini.cmd_apagar(arg0, r, arg0), nulo
   efim
@@ -97,6 +100,7 @@ func escr
   r.luztipo == 5 ? (r.luztempo = 0) : r.luztempo.neg, r.recalc = 1, r.ajustapeso
   $mens.p(arg0, nulo, r)
   $mens.mvis2(m_apaga1, m_apaga2)
+  cmd_apagou(arg0, r)
   epara l.addfim(arg0.evento), l, l.ini.remove
     l.objini.cmd_apagou(arg0, r, arg0)
   efim

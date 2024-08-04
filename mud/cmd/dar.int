@@ -41,6 +41,7 @@ const txtmoedas = txttroca(arg0, "$o", "$1")
 func escr
   refvar perm_msg = $perm_[arg0.jogperm].item
   ret perm_msg, $mensjog.msg(perm_msg, arg0)
+  ret cmd_dar(arg0, arg1), nulo
   listaobj l
   epara l.addfim(arg0.evento), l, l.ini.remove
     ret l.objini.cmd_dar(arg0, arg1), nulo
@@ -104,6 +105,7 @@ func daranimal
   ret !arg1.jog, $mens.mp(m_nao_jogador, arg0, arg1)
   ret arg2.persodomador != arg0, $mens.mp(m_outro_dono, arg0, arg1, arg2)
   ret !arg1.animalmais, $mens.mp(m_espaco_animal, arg0, arg1, arg2)
+  ret cmd_daranim(arg0, arg1, arg2), nulo
   listaobj e
   epara e.addfim(arg0.evento), e, e.ini.remove
     ret e.objini.cmd_daranim(arg0, arg1, arg2, arg0), nulo
@@ -124,6 +126,7 @@ func daranimal
   fimse
   $mens.p(arg0, arg1, arg2)
   $mens.mvis3(m_dar_animal1, m_dar_animal2, m_dar_animal3)
+  cmd_deunim(arg0, arg1, arg2)
   epara e.addfim(arg0.evento), e, e.ini.remove
     e.objini.cmd_deunim(arg0, arg1, arg2, arg0)
   efim
@@ -147,6 +150,7 @@ func darobj
     $mens.p(arg0, arg1, arg2)
     ret $mens.txt(m_muito_peso, arg0)
   fimse
+  ret cmd_darobj(arg0, arg1, arg2, total), nulo
   listaobj e
   epara e.addfim(arg0.evento), e, e.ini.remove
     ret e.objini.cmd_darobj(arg0, arg1, arg2, total, arg0), nulo
@@ -161,6 +165,7 @@ func darobj
   $mens.o_1 = total
   $mens.mvis3(txtitens(m_dar_item1), txtitens(m_dar_item2), txtitens(m_dar_item3))
   refvar r = arg2.mudadono(arg1, total)
+  cmd_deuobj(arg0, arg1, r, total)
   epara e.addfim(arg0.evento), e, e.ini.remove
     e.objini.cmd_deuobj(arg0, arg1, r, total, arg0)
   efim
@@ -173,9 +178,13 @@ func darobj
 
 func darmoedas
 # arg0=persoangem, arg1=para quem dar, total=quantidade de moedas
+  ret cmd_darmoedas(arg0, arg1, total), nulo
   listaobj e
-  epara e.addfim(arg0.evento, arg1.evento), e, e.ini.remove
-    ret e.objini.cmd_darmoedas(arg0, arg1, total), nulo
+  epara e.addfim(arg0.evento), e, e.ini.remove
+    ret e.objini.cmd_darmoedas(arg0, arg1, total, arg0), nulo
+  efim
+  epara e.addfim(arg1.evento), e, e.ini.remove
+    ret e.objini.cmd_darmoedas(arg0, arg1, total, arg1), nulo
   efim
   ret !total, nulo
   arg1.var.z_moedas_ += total

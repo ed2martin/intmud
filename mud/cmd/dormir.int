@@ -54,6 +54,7 @@ func escr
     se r != arg0.poslugar.objlista && r.i_lugar <= r.persolugar.total
       ret $mens.mp(m_cheio, arg0, nulo, r)
     fimse
+    ret cmd_dormirobj(arg0, r), nulo
     epara l.addfim(arg0.evento), l, l.ini.remove
       ret l.objini.cmd_dormirobj(arg0, r, arg0), nulo
     efim
@@ -65,6 +66,7 @@ func escr
     arg0.poslugar.remove
     arg0.poslugar = r.persolugar.addfim(arg0)
     arg0.posicao = 4
+    cmd_dormiuobj(arg0, r)
     epara l.addfim(arg0.evento), l, l.ini.remove
       l.objini.cmd_dormiuobj(arg0, r, arg0)
     efim
@@ -77,12 +79,14 @@ func escr
     $mens.mp(m_naover, arg0)
 # Dormir no chão
   senao
+    ret cmd_dormirchao(arg0), nulo
     epara l.addfim(arg0.evento), l, l.ini.remove
       ret l.objini.cmd_dormirchao(arg0), nulo
     efim
     $mens.p(arg0)
     $mens.mtodos2(m_dormir_chao1, m_dormir_chao2)
     arg0.poslugar.remove, arg0.posicao = 4
+    cmd_dormiuchao(arg0)
     epara l.addfim(arg0.evento), l, l.ini.remove
       l.objini.cmd_dormiuchao(arg0)
     efim
@@ -129,6 +133,7 @@ func escr
       $mens.mtodos2(m_nao_consegue1, m_nao_consegue1)
       ret
     fimse
+    ret cmd_acordar(r, arg0), nulo
     listaobj l
     epara l.addfim(r.evento), l, l.ini.remove
       ret l.objini.cmd_acordar(r, arg0, r), nulo
@@ -139,6 +144,7 @@ func escr
     r.posicao = r.podeposicao(5) ? 5 : r.podeposicao(6) ? 6 : 8
     $mens.p(arg0, r)
     $mens.mtodos3(m_acorda_alvo1, m_acorda_alvo2, m_acorda_alvo3)
+    cmd_acordou(r, arg0)
     epara l.addfim(r.evento), l, l.ini.remove
       l.objini.cmd_acordou(r, arg0, r)
     efim
@@ -151,6 +157,7 @@ func escr
   senao arg0.bitver & 0xC00 == 0x400
     ret $mens.mp(m_nao_perso, arg0, r)
   senao
+    ret cmd_acordar(arg0, nulo), nulo
     listaobj l
     epara l.addfim(arg0.evento), l, l.ini.remove
       ret l.objini.cmd_acordar(arg0, nulo, arg0), nulo
@@ -158,6 +165,7 @@ func escr
     arg0.posicao = arg0.podeposicao(5) ? 5 : arg0.podeposicao(6) ? 6 : 8
     $mens.p(arg0)
     $mens.mtodos2(m_acorda_perso1, m_acorda_perso2)
+    cmd_acordou(arg0, nulo)
     epara l.addfim(arg0.evento), l, l.ini.remove
       l.objini.cmd_acordou(arg0, nulo, arg0)
     efim

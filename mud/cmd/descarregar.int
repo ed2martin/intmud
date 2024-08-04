@@ -52,6 +52,7 @@ func descarregar # Descarrega arma, tirando um item
   senao arg0.volden + arg2.voltot * arg3 / arg2.objtot > arg0.volmax
     ret 0
   fimse
+  ret cmd_descarregarobj(arg0, arg1, arg2, arg3), nulo
   listaobj e
   epara e.addfim(arg0.evento), e, e.ini.remove
     ret e.objini.cmd_descarregarobj(arg0, arg1, arg2, arg3, arg0), nulo
@@ -63,6 +64,7 @@ func descarregar # Descarrega arma, tirando um item
     ret e.objini.cmd_descarregarobj(arg0, arg1, arg2, arg3, arg2), nulo
   efim
   ref r = arg2.mudadono(arg0, arg3)
+  cmd_descarregouobj(arg0, arg1, r, total)
   epara e.addfim(arg0.evento), e, e.ini.remove
     e.objini.cmd_descarregouobj(arg0, arg1, r, total, arg0)
   efim

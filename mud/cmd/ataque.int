@@ -500,11 +500,15 @@ func exechab # Chamado quando personagem usa habilidade ou magia
   atk /= (2 + $miscfome.f.[arg0.p_sede] + $miscfome.f.[arg0.p_fome]) / 2
 # Coloca os personagens na sala se necessário
   se arg0.dono.perso && arg0.p_animal == 3
+    prog p
+    p.iniherdainv("h_cmd_soltar")
+    refvar soltar = $[p.texto]
     refvar sala = contr0.dono
     arg0.mudadono(sala)
     $mens.p(contr0, arg0)
-    $mens.mvis2($cmd_soltar.m_soltaranim1, $cmd_soltar.m_soltaranim2)
+    $mens.mvis2(soltar.m_soltar_anim1, soltar.m_soltar_anim2)
     listaobj e
+    soltar.cmd_soltouanim(contr0, sala, arg0)
     epara e.addfim(contr0.evento), e, e.ini.remove
       e.objini.cmd_soltouanim(contr0, sala, arg0, contr0)
     efim
@@ -516,11 +520,15 @@ func exechab # Chamado quando personagem usa habilidade ou magia
     efim
   fimse
   se arg1.dono.perso && arg1.p_animal == 3
+    prog p
+    p.iniherdainv("h_cmd_soltar")
+    refvar soltar = $[p.texto]
     refvar sala = contr1.dono
     arg1.mudadono(sala)
     $mens.p(contr1, arg1)
-    $mens.mvis2($cmd_soltar.m_soltaranim1, $cmd_soltar.m_soltaranim2)
+    $mens.mvis2(soltar.m_soltar_anim1, soltar.m_soltar_anim2)
     listaobj e
+    soltar.cmd_soltouanim(contr1, sala, arg1)
     epara e.addfim(contr1.evento), e, e.ini.remove
       e.objini.cmd_soltouanim(contr1, sala, arg1, contr1)
     efim

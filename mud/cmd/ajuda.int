@@ -24,6 +24,7 @@ const m_desconhecido = "Comando ou tópico de ajuda desconhecido: $m"
 const admordem = "m_ajuda1 m_ajuda2 m_desconhecido"
 
 func escr
+  ret cmd_ajuda(arg0, arg1), nulo
   listaobj l
   epara l.addfim(arg0.evento), l, l.ini.remove
     ret l.objini.cmd_ajuda(arg0, arg1), nulo

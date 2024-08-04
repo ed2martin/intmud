@@ -34,12 +34,13 @@ func escr
   fimse
 # Eventos
   refvar liq = $liq_[txt2(r1.var.z_liquido)]
-  ret liq.cmd_esvaziar(arg0, r1, liq, liq), 0
+  ret cmd_esvaziar(arg0, r1, liq), nulo
+  ret liq.cmd_esvaziar(arg0, r1, liq, liq), nulo
   epara l.addfim(arg0.evento), l, l.ini.remove
-    ret l.objini.cmd_esvaziar(arg0, r1, liq, arg0), 0
+    ret l.objini.cmd_esvaziar(arg0, r1, liq, arg0), nulo
   efim
   epara l.addfim(r1.evento), l, l.ini.remove
-    ret l.objini.cmd_esvaziar(arg0, r1, liq, r1), 0
+    ret l.objini.cmd_esvaziar(arg0, r1, liq, r1), nulo
   efim
 # Esvazia
   r1.var.z_liquido = ""
@@ -51,6 +52,7 @@ func escr
   $mens.p(arg0, nulo, r1)
   $mens.mtodos2(m_esvaziou1, m_esvaziou2)
 # Eventos
+  cmd_esvaziou(arg0, r1, liq)
   liq.cmd_esvaziou(arg0, r1, liq, liq)
   epara l.addfim(arg0.evento), l, l.ini.remove
     ret l.objini.cmd_esvaziou(arg0, r1, liq, arg0), 0

@@ -30,6 +30,7 @@ func chamar
 # arg0 = quem está chamando
 # arg1 = animal
   refvar sala = arg0.dono
+  ret cmd_chamaranim(arg0, sala, arg1), nulo
   listaobj e
   epara e.addfim(arg0.evento), e, e.ini.remove
     ret e.objini.cmd_chamaranim(arg0, sala, arg1, arg0), nulo
@@ -48,6 +49,7 @@ func chamar
     $mens.msgvis(m_entra2, e.objini)
   efim
   $mens.msgvis(m_entra1, arg0)
+  cmd_chamouanim(arg0, sala, arg1)
   epara e.addfim(arg0.evento), e, e.ini.remove
     e.objini.cmd_chamouanim(arg0, sala, arg1, arg0)
   efim

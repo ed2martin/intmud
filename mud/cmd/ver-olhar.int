@@ -84,6 +84,7 @@ func escr
 # Gera eventos
   l.limpar
   se completo
+    ret cmd_olhar(arg0, r1), nulo
     epara l.addfim(arg0.evento), l, l.ini.remove
       ret l.objini.cmd_olhar(arg0, r1, arg0), nulo
     efim
@@ -91,6 +92,7 @@ func escr
       ret l.objini.cmd_olhar(arg0, r1, r1), nulo
     efim
   senao
+    ret cmd_ver(arg0, r1), nulo
     epara l.addfim(arg0.evento), l, l.ini.remove
       ret l.objini.cmd_ver(arg0, r1, arg0), nulo
     efim
@@ -190,7 +192,15 @@ func escr
   fimse
 # Descrição ao olhar
   se !completo
-    ret arg0.msg("\b" + txtcopiamai(r1.descnome2, "A") + t2 + ".\b " + t.remove(1000))
+    t.ini.mudar("\b" + txtcopiamai(r1.descnome2, "A") + t2 + ".\b ", 0)
+    cmd_msg_ver(arg0, r1, t)
+    epara l.addfim(arg0.evento), l, l.ini.remove
+      l.objini.cmd_ver(arg0, r1, t, arg0)
+    efim
+    epara l.addfim(r1.evento), l, l.ini.remove
+      l.objini.cmd_ver(arg0, r1, t, r1)
+    efim
+    ret arg0.msg(t.remove(1000))
   senao
     refvar m1 = !arg0.psexo && r1.var.z_mdesc ? r1.var.z_mdesc : r1.var.z_desc
     refvar mm = r1.temdomador ? r1.descdonover(arg0)
@@ -200,11 +210,18 @@ func escr
       m1 && t.addini(m1)
       m2 && t.addini(m2)
       t.addini("\b\c6" + nomevolume(r1, r2) + "\b")
-      arg0.msg2(t.remove(1000))
     senao # Sem descrição extra
       !t.linhas && m_descextra && t.addfim($mens.txt(m_descextra, arg0))
-      arg0.msg2("\b\c6" + nomevolume(r1, r2) + t2 + ".\b\n" + t.remove(1000))
+      t.addini("\b\c6" + nomevolume(r1, r2) + t2 + ".\b")
     fimse
+    cmd_msg_olhar(arg0, r1, t)
+    epara l.addfim(arg0.evento), l, l.ini.remove
+      l.objini.cmd_olhar(arg0, r1, t, arg0)
+    efim
+    epara l.addfim(r1.evento), l, l.ini.remove
+      l.objini.cmd_olhar(arg0, r1, t, r1)
+    efim
+    arg0.msg2(t.remove(1000))
   fimse
 # Envia mensagem
   se r1 == arg0

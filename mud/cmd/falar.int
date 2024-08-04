@@ -61,6 +61,7 @@ func escr
   refvar sabe = !idioma ? 8 : arg0.var.[idioma.nomevar]_
   msg(arg0, arg1, idioma)
 # Executa eventos
+  cmd_falou(arg0, arg1, idioma, sabe)
   listaobj l
   epara l.addfim(arg0.evento), l, l.ini.remove
     l.objini.cmd_falou(arg0, arg1, idioma, sabe)

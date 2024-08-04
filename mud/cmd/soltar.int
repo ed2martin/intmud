@@ -36,6 +36,7 @@ func escr
   listaobj l
   refvar perm_msg = $perm_[arg0.jogperm].item
   ret perm_msg, $mensjog.msg(perm_msg, arg0)
+  ret cmd_soltar(arg0, arg1), nulo
   epara l.addfim(arg0.evento), l, l.ini.remove
     ret l.objini.cmd_soltar(arg0, arg1), nulo
   efim
@@ -107,6 +108,7 @@ func soltaranimal
 # arg1 = sala destino
 # arg2 = animal
   ret arg2.p_animal < 2, $mens.mp(m_chama_solta, arg0, arg2)
+  ret cmd_soltaranim(arg0, arg1, arg2), nulo
   listaobj e
   epara e.addfim(arg0.evento), e, e.ini.remove
     ret e.objini.cmd_soltaranim(arg0, arg1, arg2, arg0), nulo
@@ -120,6 +122,7 @@ func soltaranimal
   arg2.mudadono(arg1)
   $mens.p(arg0, arg2)
   $mens.mvis2(m_soltar_anim1, m_soltar_anim2)
+  cmd_soltouanim(arg0, arg1, arg2)
   epara e.addfim(arg0.evento), e, e.ini.remove
     e.objini.cmd_soltouanim(arg0, arg1, arg2, arg0)
   efim
@@ -147,6 +150,7 @@ func soltarobj
     $mens.p(arg0, arg1, arg3)
     ret $mens.txt(arg1.item ? m_item_cheio : m_sala_cheia, arg0)
   fimse
+  ret cmd_soltarobj(arg0, arg1, arg3, total), nulo
   listaobj e
   epara e.addfim(arg0.evento), e, e.ini.remove
     ret e.objini.cmd_soltarobj(arg0, arg1, arg3, total, arg0), nulo
@@ -170,6 +174,7 @@ func soltarobj
     refvar m2 = txtitens(arg1.s_soltarmsg2 ?? m_soltar_sala2)
     $mens.mvis2(m1, m2)
   fimse
+  cmd_soltouobj(arg0, arg1, r, total)
   epara e.addfim(arg0.evento), e, e.ini.remove
     e.objini.cmd_soltouobj(arg0, arg1, r, total, arg0)
   efim
@@ -183,6 +188,7 @@ func soltarobj
 
 func soltarmoedas
 # arg0=personagem, arg1=aonde soltar, total=quantidade de moedas
+  ret cmd_soltarmoedas(arg0, arg1, total), nulo
   listaobj e
   epara e.addfim(arg0.evento), e, e.ini.remove
     ret e.objini.cmd_soltarmoedas(arg0, arg1, total, arg0), nulo

@@ -79,9 +79,13 @@ func escr
     fimse
   efim
 # Eventos
+  ret cmd_vestir(alvo, r, 50), nulo
   listaobj e
-  epara e.addfim(alvo.evento, r.evento), e, e.ini.remove
-    ret e.objini.cmd_vestir(alvo, r, 50), nulo
+  epara e.addfim(alvo.evento), e, e.ini.remove
+    ret e.objini.cmd_vestir(alvo, r, 50, alvo), nulo
+  efim
+  epara e.addfim(r.evento), e, e.ini.remove
+    ret e.objini.cmd_vestir(alvo, r, 50, r), nulo
   efim
 # Empunha
   r.vestir(50)
@@ -89,8 +93,12 @@ func escr
   $mens.msgsomvis(m_empunhou1[tipomsg], r.i_som_emp1, arg0)
   $mens.mvis2som(m_empunhou2[tipomsg], r.i_som_emp1)
 # Eventos
-  epara e.addfim(alvo.evento, r.evento), e, e.ini.remove
-    e.objini.cmd_vestiu(alvo, r, 50)
+  cmd_vestiu(alvo, r, 50)
+  epara e.addfim(alvo.evento), e, e.ini.remove
+    e.objini.cmd_vestiu(alvo, r, 50, alvo)
+  efim
+  epara e.addfim(r.evento), e, e.ini.remove
+    e.objini.cmd_vestiu(alvo, r, 50, r)
   efim
 
 

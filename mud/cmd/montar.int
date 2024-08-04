@@ -107,6 +107,7 @@ func escr
 func montar
 # arg0 monta em arg1
 # arg2 = quem fez a montaria ou nulo se arg0 montou sozinho
+  ret cmd_montar(arg0, arg1), nulo
   listaobj l
   epara l.addfim(arg0.evento), l, l.ini.remove
     ret l.objini.cmd_montar(arg0, arg1, arg0), nulo
@@ -121,6 +122,7 @@ func montar
   senao
     $mens.mtodos3(m_montou1, m_montou2, m_montou3)
   fimse
+  cmd_montou(arg0, arg1)
   epara l.addfim(arg0.evento), l, l.ini.remove
     l.objini.cmd_montou(arg0, arg1, arg0)
   efim
@@ -172,6 +174,7 @@ func desmontar
 # arg1 = quem tirou da montaria ou nulo se arg0 desmontou sozinho
   ref r = arg0.poslugar.objlista
   ret !r, nulo
+  ret cmd_desmontar(arg0, r), nulo
   listaobj l
   epara l.addfim(arg0.evento), l, l.ini.remove
     ret l.objini.cmd_desmontar(arg0, r, arg0), nulo
@@ -186,6 +189,7 @@ func desmontar
   senao
     $mens.mtodos3(m_desmontou1, m_desmontou2, m_desmontou3)
   fimse
+  cmd_desmontou(arg0, r)
   epara l.addfim(arg0.evento), l, l.ini.remove
     l.objini.cmd_desmontou(arg0, r, arg0)
   efim

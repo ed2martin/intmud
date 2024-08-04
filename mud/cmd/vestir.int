@@ -140,6 +140,7 @@ func objvestir # Quer vestir um item
     refvar lin = arg1.cmd_podevestir(arg0)
     ret lin, lin
 # Eventos
+    ret cmd_vestir(arg0, arg1, numpos), nulo
     listaobj l
     epara l.addfim(arg0.evento), l, l.ini.remove
       ret l.objini.cmd_vestir(arg0, arg1, numpos, arg0), nulo
@@ -155,6 +156,7 @@ func objvestir # Quer vestir um item
     $mens.msgsomvis(mvestir[tipomsg], arg1.i_som_vest1, arg0.contr)
     $mens.mvis2som(mvestir_a, arg1.i_som_vest1)
 # Eventos
+    cmd_vestiu(arg0, arg1, numpos)
     epara l.addfim(arg0.evento), l, l.ini.remove
       l.objini.cmd_vestiu(arg0, arg1, numpos, arg0)
     efim

@@ -44,6 +44,7 @@ func escr
   listaobj l
   refvar perm_msg = $perm_[arg0.jogperm].item
   ret perm_msg, $mensjog.msg(perm_msg, arg0)
+  ret cmd_pegar(arg0, arg1), nulo
   epara l.addfim(arg0.evento), l, l.ini.remove
     ret l.objini.cmd_pegar(arg0, arg1), nulo
   efim
@@ -130,6 +131,7 @@ func pegarobj
     ret arg3.pesotot > arg3.objtot * arg0.pesomax, $mens.txt(m_item_pesado, arg0)
     ret $mens.txt(m_muito_peso, arg0)
   fimse
+  ret cmd_pegarobj(arg0, arg1, arg3, total), nulo
   listaobj e
   epara e.addfim(arg0.evento), e, e.ini.remove
     ret e.objini.cmd_pegarobj(arg0, arg1, arg3, total, arg0), nulo
@@ -152,6 +154,7 @@ func pegarobj
     $mens.mvis2(m1, m2)
   fimse
   refvar r = arg3.mudadono(arg0, total)
+  cmd_pegouobj(arg0, arg1, r, total)
   epara e.addfim(arg0.evento), e, e.ini.remove
     e.objini.cmd_pegouobj(arg0, arg1, r, total, arg0)
   efim
@@ -165,6 +168,7 @@ func pegarobj
 
 func pegarmoedas
 # arg0=personagem, arg1=de onde pegar, total=quantidade de moedas
+  ret cmd_pegarmoedas(arg0, arg1, total), nulo
   listaobj e
   epara e.addfim(arg0.evento), e, e.ini.remove
     ret e.objini.cmd_pegarmoedas(arg0, arg1, total, arg0), nulo

@@ -61,11 +61,12 @@ func comer # Personagem arg0 come item arg1
 # Nota: Essa função é chamada em obj/perso.int quando o personagem come corpos
   listaobj l
 # Eventos
+  ret cmd_comer(arg0, arg1), nulo
   epara l.addfim(arg0.evento), l, l.ini.remove
-    ret l.objini.cmd_comer(arg0, arg1, arg0), 0
+    ret l.objini.cmd_comer(arg0, arg1, arg0), nulo
   efim
   epara l.addfim(arg1.evento), l, l.ini.remove
-    ret l.objini.cmd_comer(arg0, arg1, arg1), 0
+    ret l.objini.cmd_comer(arg0, arg1, arg1), nulo
   efim
 # Come o objeto
   $mens.mens = ""
@@ -74,6 +75,7 @@ func comer # Personagem arg0 come item arg1
   arg1.apagar(1)
   efeito(arg0, "", arg1)
 # Eventos
+  cmd_comeu(arg0, arg1)
   epara l.addfim(arg0.evento), l, l.ini.remove
     l.objini.cmd_comeu(arg0, arg1, arg0)
   efim
@@ -155,6 +157,7 @@ func beber # Personagem arg0 bebe item arg1, arg2=quantidade (de 0 a 1)
   listaobj l
   refvar liq = $liq_[arg1.f_tipo == 5 ? txt2(arg1.var.z_liquido) : arg1.f_liquido]
 # Eventos
+  ret cmd_beber(arg0, arg1, liq), nulo
   ret liq.cmd_beber(arg0, arg1, liq, liq), nulo
   epara l.addfim(arg0.evento), l, l.ini.remove
     ret l.objini.cmd_beber(arg0, arg1, arg0, liq), nulo
@@ -197,6 +200,7 @@ func beber # Personagem arg0 bebe item arg1, arg2=quantidade (de 0 a 1)
     efeito(arg0, "", arg1)
   fimse
 # Eventos
+  cmd_bebeu(arg0, arg1, liq)
   liq.cmd_bebeu(arg0, arg1, liq, liq)
   epara l.addfim(arg0.evento), l, l.ini.remove
     l.objini.cmd_bebeu(arg0, arg1, arg0, liq)

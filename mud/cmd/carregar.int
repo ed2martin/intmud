@@ -115,6 +115,7 @@ func carregar # Carrega arma com um item
     fimse
     ret $mens.txt(m_renascer3, arg0)
   fimse
+  ret cmd_carregarobj(arg0, arg1, arg2, arg3), nulo
   listaobj e
   epara e.addfim(arg0.evento), e, e.ini.remove
     ret e.objini.cmd_carregarobj(arg0, arg1, arg2, arg3, arg0), nulo
@@ -133,6 +134,7 @@ func carregar # Carrega arma com um item
     $mens.mvis2(m_carrega_mais1, m_carrega_mais2)
   fimse
   ref r = arg2.mudadono(arg1, arg3)
+  cmd_carregouobj(arg0, arg1, r, total)
   epara e.addfim(arg0.evento), e, e.ini.remove
     e.objini.cmd_carregouobj(arg0, arg1, r, total, arg0)
   efim

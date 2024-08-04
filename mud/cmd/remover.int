@@ -51,6 +51,7 @@ func escr
     continuar lin
     refvar posic = int(r.vestpos)
 # Eventos
+    ret cmd_remover(alvo, r, posic), nulo
     listaobj e
     epara e.addfim(alvo.evento), e, e.ini.remove
       ret e.objini.cmd_remover(alvo, r, posic, alvo), nulo
@@ -65,6 +66,7 @@ func escr
     $mens.msgsomvis(m_removeu1[tipomsg], som, arg0)
     $mens.mvis2som(m_removeu2[tipomsg], som)
 # Eventos
+    cmd_removeu(alvo, r, posic)
     epara e.addfim(alvo.evento), e, e.ini.remove
       e.objini.cmd_removeu(alvo, r, posic, alvo)
     efim

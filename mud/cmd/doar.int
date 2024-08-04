@@ -23,6 +23,7 @@ m_doar_um1 m_doar_um2 m_doar_mais1 m_doar_mais2"
 func escr
   refvar perm_msg = $perm_[arg0.jogperm].item
   ret perm_msg, $mensjog.msg(perm_msg, arg0)
+  ret cmd_doar(arg0, arg1), nulo
   listaobj l
   epara l.addfim(arg0.evento), l, l.ini.remove
     ret l.objini.cmd_doar(arg0, arg1), nulo
@@ -85,6 +86,7 @@ func doarobj
   fimse
   achou++
 # Eventos
+  ret cmd_doarobj(arg0, s, arg1, arg2), nulo
   listaobj e
   epara e.addfim(arg0.evento), e, e.ini.remove
     ret e.objini.cmd_doarobj(arg0, s, arg1, arg2, arg0), nulo
@@ -107,6 +109,7 @@ func doarobj
   arg0.p_espera += 2
   ref r = arg1.mudadono(s, arg2)
 # Eventos
+  cmd_doouobj(arg0, s, r, arg2)
   epara e.addfim(arg0.evento), e, e.ini.remove
     e.objini.cmd_doouobj(arg0, s, r, arg2, arg0)
   efim

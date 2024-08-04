@@ -48,6 +48,7 @@ func despedir
 # arg0 = quem está soltando
 # arg1 = destino (se nulo, animal sai do jogo)
 # arg2 = animal
+  ret cmd_despediranim(arg0, arg1, arg2), nulo
   listaobj e
   epara e.addfim(arg0.evento), e, e.ini.remove
     ret e.objini.cmd_despediranim(arg0, arg1, arg2, arg0), nulo
@@ -70,6 +71,7 @@ func despedir
   fimse
   arg2.mudadomador
   arg0.recalc = 1 # Acerta personagem
+  cmd_despediuanim(arg0, arg1, arg2)
   epara e.addfim(arg0.evento), e, e.ini.remove
     e.objini.cmd_despediuanim(arg0, arg1, arg2, arg0)
   efim

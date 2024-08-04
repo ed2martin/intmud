@@ -43,6 +43,7 @@ func escr
     ret f, arg0.msg(f)
   fimse
 # Eventos
+  ret cmd_recitar(arg0, r), nulo
   epara l.addfim(arg0.evento), l, l.ini.remove
     ret l.objini.cmd_recitar(arg0, r, arg0), nulo
   efim
@@ -55,6 +56,7 @@ func escr
   r.apagar(1)
   efeito(arg0, nome, r)
 # Eventos
+  cmd_recitou(arg0, r)
   epara l.addfim(arg0.evento), l, l.ini.remove
     l.objini.cmd_recitou(arg0, r, arg0)
   efim

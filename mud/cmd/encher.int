@@ -89,15 +89,16 @@ func escr
   fimse
   qtd2 = intmin(qtd1, qtd2)
 # Eventos
-  ret liq.cmd_encher(arg0, r1, r2, liq, qtd2, liq), 0
+  ret cmd_encher(arg0, r1, r2, liq, qtd2), nulo
+  ret liq.cmd_encher(arg0, r1, r2, liq, qtd2, liq), nulo
   epara l.addfim(arg0.evento), l, l.ini.remove
-    ret l.objini.cmd_encher(arg0, r1, r2, liq, qtd2, arg0), 0
+    ret l.objini.cmd_encher(arg0, r1, r2, liq, qtd2, arg0), nulo
   efim
   epara l.addfim(r1.evento), l, l.ini.remove
-    ret l.objini.cmd_encher(arg0, r1, r2, liq, qtd2, r1), 0
+    ret l.objini.cmd_encher(arg0, r1, r2, liq, qtd2, r1), nulo
   efim
   epara l.addfim(r2.evento), l, l.ini.remove
-    ret l.objini.cmd_encher(arg0, r1, r2, liq, qtd2, r2), 0
+    ret l.objini.cmd_encher(arg0, r1, r2, liq, qtd2, r2), nulo
   efim
 # Transfere o líquido
   $mens.mens = liq.nome
@@ -116,6 +117,7 @@ func escr
     $mens.mtodos2(m_encheu_fonte1, m_encheu_fonte2)
   fimse
 # Eventos
+  cmd_encheu(arg0, r1, r2, liq, qtd2)
   liq.cmd_encheu(arg0, r1, r2, liq, qtd2, liq)
   epara l.addfim(arg0.evento), l, l.ini.remove
     l.objini.cmd_encheu(arg0, r1, r2, liq, qtd2, arg0)

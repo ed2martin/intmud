@@ -25,6 +25,7 @@ func escr
     ret arg0.msgposicao
   casofim
 # Ficar em pé
+  ret cmd_levantar(arg0), nulo
   listaobj l
   epara l.addfim(arg0.evento), l, l.ini.remove
     ret l.objini.cmd_levantar(arg0), nulo
@@ -33,6 +34,7 @@ func escr
   arg0.posicao = 8
   $mens.p(arg0)
   $mens.mtodos2(m_levantou1, m_levantou2)
+  cmd_levantou(arg0)
   epara l.addfim(arg0.evento), l, l.ini.remove
     l.objini.cmd_levantou(arg0)
   efim
@@ -96,6 +98,7 @@ func escr
     senao r != arg0.poslugar.objlista && int(r.i_lugar) <= r.persolugar.total
       ret $mens.mp(m_item_cheio, arg0, nulo, r)
     fimse
+    ret cmd_sentarobj(arg0, r), nulo
     epara l.addfim(arg0.evento), l, l.ini.remove
       ret l.objini.cmd_sentarobj(arg0, r, arg0), nulo
     efim
@@ -107,6 +110,7 @@ func escr
     arg0.posicao = 6
     $mens.p(arg0, nulo, r)
     $mens.mtodos2(m_sentou_item1, m_sentou_item2)
+    cmd_sentouobj(arg0, r)
     epara l.addfim(arg0.evento), l, l.ini.remove
       l.objini.cmd_sentouobj(arg0, r, arg0)
     efim
@@ -119,6 +123,7 @@ func escr
     $mens.mp(m_naover, arg0)
 # Sentar-se no chão
   senao
+    ret cmd_sentarchao(arg0), nulo
     epara l.addfim(arg0.evento), l, l.ini.remove
       ret l.objini.cmd_sentarchao(arg0), nulo
     efim
@@ -126,6 +131,7 @@ func escr
     arg0.posicao = 6
     $mens.p(arg0)
     $mens.mtodos2(m_sentou_chao1, m_sentou_chao2)
+    cmd_sentouchao(arg0)
     epara l.addfim(arg0.evento), l, l.ini.remove
       l.objini.cmd_sentouchao(arg0)
     efim
@@ -190,6 +196,7 @@ func escr
     senao r != arg0.poslugar.objlista && int(r.i_lugar) <= r.persolugar.total
       ret $mens.mp(m_item_cheio, arg0, nulo, r)
     fimse
+    ret cmd_descansarobj(arg0, r), nulo
     epara l.addfim(arg0.evento), l, l.ini.remove
       ret l.objini.cmd_descansarobj(arg0, r, arg0), nulo
     efim
@@ -201,6 +208,7 @@ func escr
     arg0.posicao = 5
     $mens.p(arg0, nulo, r)
     $mens.mtodos2(m_descansou_item1, m_descansou_item2)
+    cmd_descansouobj(arg0, r)
     epara l.addfim(arg0.evento), l, l.ini.remove
       l.objini.cmd_descansouobj(arg0, r, arg0)
     efim
@@ -213,6 +221,7 @@ func escr
     $mens.mp(m_naover, arg0)
 # Descansar no chão
   senao
+    ret cmd_descansarchao(arg0), nulo
     epara l.addfim(arg0.evento), l, l.ini.remove
       ret l.objini.cmd_descansarchao(arg0), nulo
     efim
@@ -220,6 +229,7 @@ func escr
     arg0.posicao = 5
     $mens.p(arg0)
     $mens.mtodos2(m_descansou_chao1, m_descansou_chao2)
+    cmd_descansouchao(arg0)
     epara l.addfim(arg0.evento), l, l.ini.remove
       l.objini.cmd_descansouchao(arg0)
     efim
