@@ -747,9 +747,6 @@ func ini4_exec
       p.apagar(p.texto, "som")
     efim
   fimse
-# Você/Tu/Ti
-  criafunc("config", "const mens_tu = \"você\"")
-  criafunc("config", "const mens_ti = \"você\"")
 # Opções dos menus
   se versao < 482
     dbg.ini
@@ -880,10 +877,6 @@ func ini4_exec
       lin = p.texto
     efim
   fimse
-# Mensagem morreu
-  se versao < 519
-    criafunc("config", "const p_morreu0 = \"Você morreu.\"")
-  fimse
 # Mensagens de nível
   se versao < 522
     movefunc("config", "nivelmsg1", "perso_cfg", "exp_nivelmsg1")
@@ -1001,9 +994,6 @@ func ini4_exec
 # Constantes novas de ataques
   se versao < 577
     dbg.ini
-    criafunc("config", "const a_ataque2 = 0")
-    criafunc("config", "const a_ataque2perso = 1")
-    criafunc("config", "const a_ataque2nivel = 0")
     epara p.iniherdainv("comando_ataque"), p.lin, p.depois
       dbg.ini
       [p.texto]:ataque2 && p.criar(p.texto, "const ataque2perso = 0")
@@ -1035,19 +1025,6 @@ func ini4_exec
       casofim
       p.apagar(p.texto, "descdono")
     efim
-  fimse
-# Arquivos de log
-  versao < 587 && criafunc("config", "const l_autoapagar = 0")
-# Tipos herdados
-  se versao < 596
-    criafunc("config", "const p_tipo1 = \"normal\"")
-    criafunc("config", "const p_tipo2 = \"\"")
-    criafunc("config", "const p_tipo3 = \"\"")
-  fimse
-# Controle de banda
-  se versao < 597
-    criafunc("config", "const bandabot1 = 4000")
-    criafunc("config", "const bandabot2 = 500")
   fimse
 # Mensagens quando personagem morreu e se deixa corpo
   se versao < 601

@@ -611,6 +611,7 @@ func passo
       arg0.msg("Entre com uma opção, O mostra as opções, N nenhum atributo, Z cancela")
     fimse
   senao arg1 == "n" && !arg0.var.opcvalido
+    prog p
     p.apagar(arg0.var.opcclasse, arg0.var.opcvar)
     config:salvar
     criar("admmudou", arg0.var.opcclasse, arg0.var.opcexec)

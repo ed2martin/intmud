@@ -1,0 +1,656 @@
+classe h_config
+# Configuração padrão, herdada pela classe config
+#
+# Mensagem de apresentação
+# Primeira mensagem que o jogador recebe ao entrar no MUD
+const apres = ""
+#
+# Mensagem de apresentação banido com ban
+# Primeira mensagem que um jogador com IP banido recebe ao entrar no MUD
+# Esses jogadores não podem criar novos personagens
+const apresban = "Seu endereço IP está bloqueado para novos personagens"
+#
+# Mensagem de apresentação banido com ban2
+# Esses jogadores não podem entrar no jogo
+const apresban2 = "Seu endereço IP está bloqueado"
+#
+# Log dos usuários que entraram e saíram
+const l_entrou = 0
+#
+# Log do canal Admlog
+const l_admlog = 0
+#
+# Log do canal Cmdlog e alguns comandos de administração
+const l_cmdlog = 0
+#
+# Log do chat jogadores, canais públicos: chat e novatos
+const l_jogchat = 0
+#
+# Log do chat com admin, comandos Rezar, Rezou e Echo"
+const l_rezou = 0
+#
+# Mortes dos personagens dos jogadores
+const l_mortes = 0
+#
+# Log do canal Bug
+const l_bug = 0
+#
+# Log do canal Ideia
+const l_ideia = 0
+#
+# Log do canal AC
+const l_ac = 0
+#
+# Log dos comandos Falar e Gritar
+const l_falar = 0 # Falar e Gritar: 0 Não grava
+#
+# Log ds comandos Telepatia e Sussurrar
+const l_telepatia = 0
+#
+# Log do comando Autoapagar
+const l_autoapagar = 0
+#
+# De quanto em quanto tempo criar novos arquivos de log
+# 0 Um por dia
+# 1 Um a cada 5 dias
+# 2 Um a cada 10 dias
+# 3 Um por mês
+const logtempo = 3 # Arquivos de log: 3 Um por mês
+#
+# Nomes não permitidos para personagens dos jogadores, uma linha por nome
+const nomesnao = "cagar\n\
+defecar\n\
+peitar\n\
+mijar\n\
+urinar\n\
+porra\n\
+viado\n\
+veado\n\
+merda\n\
+puta\n\
+pariu\n\
+foder\n\
+fuder\n\
+fodido\nfudido"
+#
+# A partir de que nível um jogador é considerado veterano
+const nivelveterano = 10
+#
+# Quantos dias personagens de iniciantes ficam salvos
+# Essa opção é atualizada quando um jogo é salvo
+const salvainiciante = 30
+#
+# Quantos dias personagens de veteranos ficam salvos
+# Essa opção é atualizada quando um jogo é salvo
+const salvaveterano = 60
+#
+# Se pede o e-mail ao criar personagem
+# 0=não pede, 1=opcional, 2=obrigatório
+const email = 0
+#
+# Opções ativas do comando CONFIG quando um jogador cria um personagem
+const jogconfig = 319 # Config: 0-desc, 1-saidas, 2-cores, 3-acento, 4-chat, 5-seguir, 8-telepati\
+a
+#
+# Prompt ao criar personagem; vide comando Prompt
+const promptmsg = "<%c3%hhp %c2%mmn %c6%vmv%b>"
+#
+# BPrompt ao criar personagem; vide comando BPrompt
+const bpromptmsg = "<%c3%hhp %c2%mmn %c6%vmv%b>"
+# Autorização
+# Se após criar um personagem, o jogador precisa de autorização para
+# o personagem ser salvo; vide também comando de administração Autorizar
+const autorizar = 0
+#
+# Nível necessário para usar o comando Salvar
+# Abaixo desse nível, só pode salvar quem já tem jogo salvo
+# Se for um número acima de 65535, quem não tem jogo salvo não salva
+const salvarnivel = 11
+#
+# Se deve salvar o personagem ao criar: 0=não salvar, 1=salvar
+const salvacria = 0
+#
+# A partir de que nível sente fome e sede
+const fomeini = 0
+#
+# A partir de que nível não sente mais fome e sede
+const fomefim = 0
+#
+# Experiência nível 0
+# Experiência ganha ao matar personagens do nível 0
+const atkexp0 = 600
+#
+# Experiência por nível
+# A experiência ganha ao matar personagens do nível 1 em diante é a mesma
+# do nível 0, porém somado a esse número vezes o nível do personagem
+const atkexp1 = 100
+#
+# Experiência do personagem ao morrer, em porcentagem
+# De 0 a 100, sendo que 0 perde tudo e 100 não perde experiência
+const atkmorreuexp = 50
+#
+# Experiência ao matar um jogador
+# 0 = Ganha experiência como ao matar PNJ
+# 1 = Ganha experiência que o jogador perdeu
+# 2 = Perde experiência que possui
+const atkmatoutipo = 2
+#
+# Quantidade de experiência ao matar um jogador, em porcentagem
+# De 0 a 100, sendo que 0 não ganha nem perde e 100 ganha/perde tudo
+const atkmatouexp = 30
+#
+# Exp nível abaixo
+# Se essa opção não for 0, nas lutas com personagens abaixo do seu nível,
+# quanto maior a diferença entre os níveis, menor a experiência ganha.
+# Quando a diferença chegar nesse valor, você não ganha experiência.
+const atkbexp = 8
+#
+# Exp nível acima
+# Se essa opção não for 0, nas lutas com personagens acima do seu nível,
+# quanto maior a diferença entre os níveis, maior a experiência ganha.
+# No entanto, quando a diferença entre níveis passar desse valor, a taxa
+# de experiência será fixa, definida pela opção "Exp máxima acima".
+const atkcexp = 8
+#
+# Exp máxima acima
+# Somente nas lutas com personagens acima do seu nível. É o bônus de
+# experiência ganha quando a diferença entre os níveis chegar ou passar
+# do que está definido na opção "Exp máxima acima". Em porcentagem.
+# Exemplo, 0 não tem bônus, 50 ganha 50% a mais, 100 ganha o dobro.
+const atkmaxexp = 100
+#
+# Exp alvos secundários
+# Se ganha-se experiência matando alvos secundários
+# (com ataques que acertam vários personagens ao mesmo tempo)
+const atkexpsecundario = 0
+#
+# Danos diferença de nível
+# Se a diferença de nível entre os personagens influencia nos danos dos golpe
+# 0 = Não
+# 1 = Somente em golpes sem arma
+# 2 = Sim
+const atknivel = 1
+#
+# Tempo de um turno dos ataques manuais (em décimos de segundo)
+# É o tempo máximo após digitar um comando que ataca
+# Personagens esperam menos tempo quando a velocidade do personagem
+# vezes velocidade do golpe dividido por 70 superar a velocidade do alvo
+const atkmtempo = 40
+#
+# Tempo mínimo que deve esperar após um ataque manual (em décimos de segundo)
+const atkespera = 8
+#
+# Tempo de um turno dos ataques automáticos (em décimos de segundo)
+const atktempo = 60
+#
+# Força dos ataques automáticos (ataques sem o personagem digitar o golpe)
+const atkfor = 30
+#
+# Habilidade de esquiva
+# Cada aula nessa habilidade aumenta a evasão do personagem
+const atk_evasao1 = "Esquiva"
+#
+# Quantos pontos de evasão por aula de esquiva
+const atk_evasao2 = 2
+#
+# Animais não obedecem mais os jogadores se o nível do jogador somado
+# com esse número for menor que o nível do animal
+const animal_n = 0
+#
+# A experiência para subir um nível é o resultado de:
+# expmax0 + expmax1 * nível + expmax2 * nível ao quadrado
+const expmax0 = 20
+const expmax1 = 0
+const expmax2 = 1
+#
+# Mensagem conforme a hora do dia MUD
+const horamsg5 = "Começa a amanhecer."
+const horamsg6 = "O sol surge no leste."
+const horamsg17 = "O sol começa a se por no oeste."
+const horamsg18 = "A noite chega."
+#
+# Você/Tu em $P, $Q, $A, $B, $O, $N nas mensagens
+const mens_tu = "você"
+#
+# Você/Tu em $P1, $Q1, $A1, $B1, $O1, $N1 nas mensagens
+const mens_ti = "você"
+#
+# Mensagem quando tem sala perigosa por perto
+# Aparece após descrição e título da sala
+# Se estiver vazio, não é enviada nenhuma mensagem
+const perigomsg = ""
+#
+# Jogador entrou
+const entrou_msgadm = "*. Entrou: $P, $C, N$N, $$$M"
+const entrou_msgjog = "*. $P entrou"
+#
+# Jogador saiu
+const saiu_msgadm = "*. Saiu: $P, $C"
+const saiu_msgjog = "*. $P saiu"
+#
+# Jogador está criando personagem
+const criar_msgadm = "*. Criando personagem: $P, $C"
+#
+# Jogador desistiu de criar personagem
+const naocriar_msgadm = "*. Desistiu de criar: $P, $C"
+#
+# Jogador criou personagem
+const criou_msgadm = "*. Criou personagem: $P, $C"
+const criou_msgjog = "*. $P entrou"
+#
+# Mensagem do comando Echo
+const echomsg = "\b\cb(ADM) $m\b"
+#
+# Mensagem do comando SEcho
+const sechomsg = "\b\cb$m\b"
+#
+# Mensagem do comando JEcho
+const jecho1msg = "\b\cb$m\b"
+#
+# Mensagem para o jogador que usou o comando JEcho
+const jecho2msg = "\bJEcho para $a '$m'"
+#
+# Mensagem do canal Rezou
+const rezou1msg = "(rezou) $R para $c '$m'"
+#
+# Mensagem para o personagem alvo do comando Rezou
+const rezou2msg = "Os deuses responderam '$m'"
+#
+# Mensagem do canal AC
+const acmsg = "(ac) $R: $m"
+#
+# Quantos animais pode ter numa batalha, de 0 a 8
+# Se 0, os comando para animais deixam de existir
+const animal1 = 5
+#
+# Quantos animais reserva pode guardar com o comando Reserva
+# Se 0, o comandos Reserva deixa de existir
+const animal2 = 50
+#
+# Comando renascer:
+# 0=não existe, 1=não perde hab/magias, 2 a 6 = escolhe de 1 a 5 habs/magias
+const renascer = 2
+#
+# Cada vez que o jogador escolhe uma habilidade ou magia no comando renascer,
+# poderá aprendê-la em um nível menor. Essa opção é quantos níveis reduzir.
+const nrenascer = 5
+#
+# Renascer nível máximo
+# Após renascer, o nível para renascer novamente aumenta conforme essa opção
+const nivel_renascer = 0
+#
+# Renascer experiência máxima
+# Em porcentagem. Ao renascer, a experiência necessária para subir de nível
+# é multiplicada por esse número.
+const exp_renascer = 100
+#
+# Em que sala vai após renascer; se ausente continua na mesma sala
+# const sala_renascer = $s_casa001
+#
+# Quantos pontos de aulas ganha quando sobe de nível
+# Se 0, o comando aprender não usa pontos de aula
+const aulas = 0
+#
+# Quantos pontos de aula consome por aula
+const a_aulapontos = 0
+#
+# Quantas casas um jogador pode ter (sendo uma casa por área)
+const casajog = 3
+#
+# Nível mínimo para comprar uma casa
+const casanivel = 30
+#
+# Valor para fazer uma cópia da chave da casa do jogador
+const casachave = 120
+#
+# Valor para trocar a fechadura da casa do jogador
+const casafechadura = 500
+#
+# Taxa de manutenção
+# Valor da taxa de manutenção da casa, em porcentagem (100=preço da casa)
+const casataxa = 5
+#
+# Dias manutenção
+# De quantos em quantos dias precisa pagar a taxa de manutenção da casa
+const casatempotaxa = 30
+#
+# Dias avisar
+# Quantos dias sem pagar a taxa avisa sobre o atraso
+const casatempoaviso = 5
+#
+# Dias bloquear
+# Quantos dias sem pagar a taxa bloqueia a casa
+const casatempobloq = 20
+#
+# Dias perder
+# Quantos dias sem pagar a taxa perde a casa
+const casatempoperder = 180
+#
+# Mensagem perso - quando tem a chave da casa e atravessa a porta fechada
+const casaabriu1 = "Você segura uma chave e abre a porta da sua casa."
+#
+# Mensagem outros - quando tem a chave da casa e atravessa a porta fechada
+const casaabriu2 = "$P segura uma chave e abre a porta da casa del$v."
+#
+# Mensagem aviso - ao entrar na casa, se o pagamento da taxa está atrasado
+const casamsgaviso = "Há uma nota avisando que a taxa de manutenção da casa está atrasada."
+#
+# Mensagem bloqueado - ao entrar na casa, se está bloqueada por falta de pagamento
+const casamsgbloq = "A porta foi lacrada por falta de pagamento."
+#
+# Os tipos de itens usados nos comandos Vender, Avaliar e Doar
+const item_tipos = "Possui metal\n\
+Arma\n\
+Armadura\n\
+Vestimenta\n\
+Cajado\n\
+Varinha\n\
+Pergaminho\n\
+Tesouro\n\
+Fonte de luz\n\
+Mobília\n\
+Poção\n\
+Container\n\
+Vasilhame\n\
+Comida\nBarco"
+#
+# Tipos de item obtidos de outras variáveis
+const item_container = "800"
+const item_arma = "2"
+const item_luz = "100"
+const item_vestimenta = "8"
+const item_bebida = "400"
+const item_comida = "2000"
+const item_pergaminho = "40"
+const item_chave = "0"
+#
+# Tipos de ataque existentes
+const atknomes = "Contusão\n\
+Luta\n\
+Cortante\n\
+Perfurante\n\
+Fogo\n\
+Água\n\
+Gelo\n\
+Terra\n\
+Pedra\n\
+Aéreo/vento\n\
+Luz\n\
+Trevas\n\
+Elétrico\n\
+Vegetal\n\
+Psíquico\n\
+Veneno\n\
+Fantasma\nDragão"
+#
+# Mensagem quando um item está na sala
+const item_descsala = "$P está aqui."
+#
+# Tipos de ataque que usam ataque e defesa especiais (cada bit é um tipo)
+# Nota: é bem mais fácil editar essa opção com o comando ECONFIG, dentro do MUD
+const atkespecial = 31856 # Ataques especiais: Fogo, Água, Gelo, Luz, Trevas, Elétrico, Vegetal, \
+Psíquico
+#
+# Habilidade usada em ataques automáticos sem arma
+const atk_txt = "bater"
+#
+# Tipos de armas existentes
+# Habilidades usadas em ataques automáticos com arma
+const arma_txt = "Sem armas\n\
+Varinha\n\
+Cajado\n\
+Lâmina curta\n\
+Lâmina longa\n\
+Maca e Martelo\n\
+Arco e flecha\n\
+Chicote e Corrente\n\
+Revolver"
+#
+# Tipos de comandos sociais existentes
+const social_txt = "Neutro\nAgradecer\nOfender\nCumprimentar"
+#
+# Nomes das posições aonde os itens são vestidos
+# Não contém a posição 50, que é "empunhando"
+const equip_txt = "cabeça\n\
+rosto\n\
+olhos\n\
+orelhas\n\
+pescoço\n\
+corpo\n\
+sobre o corpo\n\
+costas\n\
+braços\n\
+mãos\n\
+pulso direito\n\
+pulso esquerdo\n\
+dedo direito\n\
+dedo esquerdo\n\
+escudo\n\
+cintura\n\
+pernas\n\
+tornozelos\npés"
+#
+# Em que ordem as posições são mostradas no comando equip
+# A posição 49 corresponde à arma sendo empunhada
+const equip_ordem = "49 0 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 \
+27 28 29 30 31 32 33 34 35 36 37 38 39 40 41 42 43 44 45 46 47"
+#
+# Mensagens ao vestir um item
+# Não contém a posição 50, que é "empunhando"
+const equip_vestir = "$P coloca $o na cabeça.\n\
+$P coloca $o no rosto.\n\
+$P coloca $o nos olhos.\n\
+$P coloca $o nas orelhas.\n\
+$P coloca $o no pescoço.\n\n\n\
+$P coloca $o nas costas.\n\n\
+$P coloca $o nas mãos.\n\
+$P coloca $o.\n\
+$P coloca $o.\n\n\n\
+$P usa $o como escudo.\n\
+$P coloca $o na cintura.\n\n\
+$P coloca $o nos tornozelos.\n\
+$P calça $o."
+#
+# Mensagens para o próprio personagem quando veste um item
+# Se ausente, usa a mensagem de equip_vestir
+const equip_perso = ""
+#
+# As posições que estão em cima de cada posição
+const vestir0 = "0"
+const vestir1 = "0"
+const vestir2 = "2"
+const vestir3 = "0"
+const vestir4 = "0"
+const vestir5 = "40"
+const vestir6 = "0"
+const vestir7 = "0"
+const vestir8 = "0"
+const vestir9 = "0"
+const vestir10 = "200"
+const vestir11 = "200"
+const vestir12 = "200"
+const vestir13 = "200"
+const vestir14 = "0"
+const vestir15 = "0"
+const vestir16 = "0"
+const vestir17 = "0"
+const vestir18 = "0"
+const vestir19 = "0"
+const vestir20 = "0"
+const vestir21 = "0"
+const vestir22 = "0"
+const vestir23 = "0"
+const vestir24 = "0"
+const vestir25 = "0"
+const vestir26 = "0"
+const vestir27 = "0"
+const vestir28 = "0"
+const vestir29 = "0"
+const vestir30 = "0"
+const vestir31 = "0"
+const vestir32 = "0"
+const vestir33 = "0"
+const vestir34 = "0"
+const vestir35 = "0"
+const vestir36 = "0"
+const vestir37 = "0"
+const vestir38 = "0"
+const vestir39 = "0"
+const vestir40 = "0"
+const vestir41 = "0"
+const vestir42 = "0"
+const vestir43 = "0"
+const vestir44 = "0"
+const vestir45 = "0"
+const vestir46 = "0"
+const vestir47 = "0"
+const vestir48 = "0"
+const vestir49 = "0"
+#
+# Comando MudaExp - Quanta experiência os personagens dão quando morrem
+# (quando estiver contando tempo), em porcentagem
+const mudaexp_exp = 200
+#
+# Comando MudaExp - Tempo entre as mensagens que se repetem, em minutos
+const mudaexp_tempo = 2
+#
+# Comando MudaExp - Mensagem inicial
+const mudaexp_msgini = "Bônus! Agora pnjs dão o dobro de experiência!"
+#
+# Comando MudaExp - Mensagem que se repete
+const mudaexp_msgrep = "Aproveite, $m minutos para terminar!"
+#
+# Comando MudaExp - Mensagem final
+const mudaexp_msgfim = "Acabou a experiência extra."
+#
+# Comando MudaMoedas - Quantas moedas os personagens não jogador que não recebem
+# items dão quando morrem (quando estiver contando tempo), em porcentagem
+const mudamoedas_valor = 200
+#
+# Comando MudaMoedas - Tempo entre as mensagens que se repetem, em minutos
+const mudamoedas_tempo = 2
+#
+# Comando MudaMoedas - Mensagem inicial
+const mudamoedas_msgini = "Bônus! Agora pnjs dão o dobro de moedas!"
+#
+# Comando MudaMoedas - Mensagem que se repete
+const mudamoedas_msgrep = "Aproveite, $m minutos para terminar!"
+#
+# Comando MudaMoedas - Mensagem final
+const mudamoedas_msgfim = "Acabaram as moedas extras."
+#
+# Raça, classe e subclasse
+const p_tipo1 = "normal"
+const p_tipo2 = ""
+const p_tipo3 = ""
+#
+# Quantos itens (ao todo) cada personagem pode ter
+const p_objlimite = 100
+#
+# Quantos itens pode ter (objetos em dentro1) - salas, itens e personagens
+const s_objmax = 100
+const i_objmax = 100
+const p_objmax = 100
+#
+# Volume máximo do que pode ter dentro - salas, itens e personagens
+const s_volmax = 1000000
+const i_volmax = 1000000
+const p_volmax = 1000000
+#
+# Salas: Taxa de recuperação de vida, mana e movimentos
+const s_recup = 100
+#
+# Salas: Quantidade máxima de PNJs
+const s_pnj = 10
+#
+# Salas: Quantidade máxima de jogadores
+const s_jog = 100
+#
+# Salas: Som ao entrar
+const s_som = "sala"
+#
+# Salas: Para que salas os itens doados vão
+const s_doarsalas = ""
+#
+# Salas: Itens doados que essa sala aceita; se vazio aceita qualquer item
+const s_doarsim = "0"
+#
+# Salas: Itens doados que essa sala não aceita
+const s_doarnao = "0"
+#
+# Salas: Quantidade de movimentos que um ataque de outra sala usa para chegar na sala
+const s_atk_move = 1
+#
+# Personagens: Tempo médio em décimos de segundo para ir para outra sala
+const p_movervel = 140
+#
+# Personagens: Por quanto tempo se lembra dos jogadores que atacaram, em minutos
+const p_lembra = 0
+#
+# Personagens: Perseguição
+# Tempo médio em décimos de segundo para ir para outra sala
+const p_perseguevel = 20
+#
+# Personagens: Alvo dos ataques
+# Como o personagem escolhe quem atacar, quando está lutando com vários
+# 0 Não muda
+# 1 Aleatório
+# 2 Personagem de menor nível
+const p_atk_alvo = 0
+#
+# Ataques: força de ataque nível iniciante, 100 significa 100%
+const a_ataquemin = 25
+#
+# Ataques: força de ataque nível perito, 100 significa 100%
+const a_ataquemax = 75
+#
+# Ataques: fator mínimo
+const a_fatormin = 270
+#
+# Ataques: fator máximo
+const a_fatormax = 330
+#
+# Ataques: valor de Ataque2
+const a_ataque2 = 0
+#
+# Ataques: somar em ataque2 o ataque do personagem vezes esse número
+const a_ataque2perso = 1
+#
+# Ataques: Somar em ataque2 o nível do personagem vezes esse número
+const a_ataque2nivel = 0
+#
+# Ataques: velocidade do golpe, 100 significa 100%
+const a_vel = 50
+#
+# Se remove efeitos ao renascer: 0=não, 1=sim
+const e_renascer = 0
+
+func atribcfg # Altera atributos do personagem
+# Função criada automaticamente
+  pvidamax = 15 * pnivel + 45
+  pmanamax = 1 * pnivel + 30
+  pmovemax = 2 * pnivel + 30
+  pveloc1 = 5 * pnivel + 20
+  atknorm = 12 * pnivel + 36
+  defnorm = 10 * pnivel + 30
+  atkesp = 12 * pnivel + 36
+  defesp = 10 * pnivel + 30
+  evasao = 2 * pnivel + 30
+  precisao = 2 * pnivel + 30
+  pesomax = 20000
+
+func salvar # Salva o programa
+  prog p
+  p.salvar("L99N1I2C2F1V0")
+  $mudaprog.ini # Para indicar que nenhum arquivo foi mudado
+
+func sav # Para salvar acertando indentação e linhas entre classes e funções
+  prog p
+  p.salvartudo("L99N1I2C2F1V0")
+
+func iniclasse
+  ret txt(arg0, 0, 2) != "h_", nulo
+  prog p
+  p.iniherdainv(arg0)
+  ret p.lin, nulo
+  p.criar("config", "herda h_config")
