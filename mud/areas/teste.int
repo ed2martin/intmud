@@ -3500,7 +3500,7 @@ const dir_s = $s_teste054
 
 classe s_teste056
 herda b_teste
-const s_titulo = "Acertar o alvo 1 de 3"
+const s_titulo = "Acertar o alvo 1 de 5"
 const s_desc = "Se a precisão do golpe estiver acima de 100, acertou o alvo, porque\n\
 o golpe nunca falha (embriaguez, precisão e evasão são ignorados).\n\
 Nos outros casos, é escolhido aleatoriamente um número de 0 a 99.\n\
@@ -3511,7 +3511,7 @@ const dir_s = $s_teste057
 
 classe s_teste057
 herda b_teste
-const s_titulo = "Acertar o alvo 2 de 3"
+const s_titulo = "Acertar o alvo 2 de 5"
 const s_desc = "Se está usando arma, é escolhido outro número aleatório de 0 a 99.\n\
 Se for menor ou igual à precisão da arma, errou automaticamente.\n\
 Depois checa-se a embriaguez de quem está atacando (estando bêbado é\n\
@@ -3522,13 +3522,14 @@ const dir_s = $s_teste058
 
 classe s_teste058
 herda b_teste
-const s_titulo = "Acertar o alvo 3 de 3"
+const s_titulo = "Acertar o alvo 3 de 5"
 const s_desc = "A última é sortear um número de 1 a 20. Se for 20 ou o alvo estiver\n\
 dormindo, acertou o golpe. Se for 1, errou o golpe. Outros valores,\n\
 some à precisão do personagem, à opção \"precisão perso\" do golpe e\n\
 à opção \"precisão perso\" da arma. Alvo invisível, subtraia 5.\n\
 Se o resultado for maior que a evasão do alvo, acertou o golpe."
 const dir_n = $s_teste057
+const dir_s = $s_teste191
 
 
 classe s_teste059
@@ -5837,3 +5838,25 @@ func s_reset1 # Realiza o reset
   se p_teste052:objsolto.total < 1
     criar("p_teste052", este, 0)
   fimse
+
+
+classe s_teste191
+herda b_teste
+const s_titulo = "Acertar o alvo 4 de 5"
+const s_desc = "Em alguns ataques que exigem muita precisão, como arco e flecha, subtrair 5\n\
+se não estiver vendo o alvo pode ser muito pouco. E para outros, como\n\
+terremoto, pode não fazer sentido. O quanto perde de precisão é definido\n\
+na opção \"Imprecisão não ver\" do ataque (comando Ehab, Emag e Etec)."
+const dir_n = $s_teste058
+const dir_s = $s_teste192
+
+
+classe s_teste192
+herda b_teste
+const s_titulo = "Acertar o alvo 5 de 5"
+const s_desc = "Algumas raças, ou mesmo PNJs, podem ter dificuldades para mirar no alvo,\n\
+talvez não enxerguem bem. Isso é definido na opção \"Perde precisão ver\"\n\
+do personagem (comandos Eperso e Etipo). Também pode acontecer que mesmo\n\
+quando não estiver vendo o alvo, não perca tanta precisão. Isso é a opção\n\
+\"Perde precisão não ver\" do personagem."
+const dir_n = $s_teste191

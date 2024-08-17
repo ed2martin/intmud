@@ -1,6 +1,75 @@
 classe h_config
 # Configuração padrão, herdada pela classe config
 #
+const admordem = "versao\n\
+modolocal\n\
+inicom1 inicom2 inicom3 inicom4 inicom5\n\
+inicom6 inicom7 inicom8 inicom9 inicom10\n\
+servusr servtempo\n\
+banda1 bandabot1 banda2 bandabot2\n\
+senhaadm\n\
+salaini salasav salafim\n\
+apres apresban apresban2\n\
+l_entrou l_admlog l_cmdlog l_jogchat l_rezou l_mortes l_bug l_ideia\n\
+l_ac l_falar l_telepatia l_autoapagar\n\
+logtempo\n\
+nomesnao\n\
+nivelveterano salvainiciante salvaveterano\n\
+email\n\
+jogconfig promptmsg bpromptmsg\n\
+autorizar\n\
+salvarnivel salvacria\n\
+fomeini fomefim\n\
+atkexp0 atkexp1\n\
+atkmorreuexp atkmatoutipo atkmatouexp\n\
+atkbexp atkcexp atkmaxexp atkexpsecundario atknivel\n\
+atkmtempo atkespera atktempo atkfor atk_evasao1 atk_evasao2\n\
+animal_n\n\
+expmax0 expmax1 expmax2\n\
+horamsg0 horamsg1 horamsg2 horamsg3 horamsg4 horamsg5 horamsg6 horamsg7\n\
+horamsg8 horamsg9 horamsg10 horamsg11 horamsg12 horamsg13 horamsg14 horamsg15\n\
+horamsg16 horamsg17 horamsg18 horamsg19 horamsg20 horamsg21 horamsg22 horamsg23\n\
+mens_tu mens_ti\n\
+perigomsg\n\
+entrou_msgadm entrou_msgjog\n\
+saiu_msgadm saiu_msgjog\n\
+criar_msgadm\n\
+naocriar_msgadm\n\
+criou_msgadm criou_msgjog\n\
+echomsg sechomsg jecho1msg jecho2msg rezou1msg rezou2msg acmsg\n\
+animal1 animal2\n\
+renascer nrenascer nivel_renascer exp_renascer\n\
+aulas a_aulapontos\n\
+casajog casanivel casachave casafechadura casataxa casatempotaxa\n\
+casatempoaviso casatempobloq casatempoperder\n\
+casaabriu1 casaabriu2 casamsgaviso casamsgbloq\n\
+item_tipos item_container item_arma item_luz item_vestimenta\n\
+item_bebida item_comida item_pergaminho item_chave\n\
+atknomes\n\
+item_descsala\n\
+atkespecial\n\
+atk_txt arma_txt social_txt\n\
+equip_txt equip_ordem equip_vestir equip_perso\n\
+vestir0 vestir1 vestir2 vestir3 vestir4 vestir5 vestir6 vestir7\n\
+vestir8 vestir9 vestir10 vestir11 vestir12 vestir13 vestir14 vestir15\n\
+vestir16 vestir17 vestir18 vestir19 vestir20 vestir21 vestir22 vestir23\n\
+vestir24 vestir25 vestir26 vestir27 vestir28 vestir29 vestir30 vestir31\n\
+vestir32 vestir33 vestir34 vestir35 vestir36 vestir37 vestir38 vestir39\n\
+vestir40 vestir41 vestir42 vestir43 vestir44 vestir45 vestir46 vestir47\n\
+vestir48 vestir49\n\
+mudaexp_exp mudaexp_tempo mudaexp_msgini mudaexp_msgrep mudaexp_msgfim\n\
+mudamoedas_valor mudamoedas_tempo mudamoedas_msgini\n\
+mudamoedas_msgrep mudamoedas_msgfim\n\
+p_tipo1 p_tipo2 p_tipo3\n\
+p_objlimite s_objmax i_objmax p_objmax s_volmax i_volmax p_volmax s_recup\n\
+s_pnj s_jog s_som\n\
+s_doarsalas s_doarsim s_doarnao s_atk_move\n\
+p_movervel p_lembra p_perseguevel\n\
+p_atk_alvo a_ataquemin a_ataquemax\n\
+a_fatormin a_fatormax\n\
+a_ataque2 a_ataque2perso a_ataque2nivel\n\
+a_subprecisao a_vel e_renascer"
+#
 # Mensagem de apresentação
 # Primeira mensagem que o jogador recebe ao entrar no MUD
 const apres = ""
@@ -619,6 +688,9 @@ const a_ataque2perso = 1
 # Ataques: Somar em ataque2 o nível do personagem vezes esse número
 const a_ataque2nivel = 0
 #
+# Ataques: Quanta precisão o personagem perde quando não está vendo o alvo
+const a_subprecisao = 5
+#
 # Ataques: velocidade do golpe, 100 significa 100%
 const a_vel = 50
 #
@@ -647,6 +719,7 @@ func salvar # Salva o programa
 func sav # Para salvar acertando indentação e linhas entre classes e funções
   prog p
   p.salvartudo("L99N1I2C2F1V0")
+  $mudaprog.ini # Para indicar que nenhum arquivo foi mudado
 
 func iniclasse
   ret txt(arg0, 0, 2) != "h_", nulo

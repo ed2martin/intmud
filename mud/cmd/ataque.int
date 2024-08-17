@@ -57,6 +57,7 @@ const ataque2perso = config:a_ataque2perso
 const ataque2nivel = config:a_ataque2nivel
 const atknivel = config:atknivel
 const atkfalha = 1
+const subprecisao = config:a_subprecisao
 const vel = config:a_vel # Velocidade do golpe, 100 significa 100%
 const a_prob1 = 100
 const a_prob2 = 100
@@ -96,7 +97,7 @@ ataque2 ataque2perso ataque2nivel atknivel\n\
 aulaini aulafim aulapontos\n\
 depende\n\
 atkfalha falha1 falha2\n\
-addprecisao\n\
+addprecisao subprecisao\n\
 armamove\n\
 tipovestirsim tipovestirnao tipoinvsim tipoinvnao\n\
 tipoarma\n\
@@ -757,7 +758,13 @@ func execgolpe # Calcula o resultado de um ataque e coloca em result e mudavida
   senao # Checa se acertou
     real2 v
     v = result + arg0.precisao + addprecisao + arma1.var.z_armaaddprecisao_ - arg1.evasao
-    !arg1.visivel(arg0) && (v -= 5) # Invisível é mais difícil de acertar
+    se arg1.visivel(arg0)
+      refvar p = arg0.p_precisaover
+      v -= subprecisao * (p !== nulo ? p : $t_[arg0.tipo1].p_precisaover) / 100
+    senao
+      refvar p = arg0.p_precisaoinv
+      v -= subprecisao * (p !== nulo ? p : $t_[arg0.tipo1].p_precisaoinv) / 100
+    fimse
     result = 2
     ret v <= 0, nulo
   fimse

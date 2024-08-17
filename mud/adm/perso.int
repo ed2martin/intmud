@@ -723,35 +723,35 @@ const tipo3 = "opc_atribbit"
 const vari3 = "recalc1_auto"
 const exec3 = "recalc_exec"
 #
-const nome6 = "Texto dono"
-const info6 = "Aparece na frente da descrição do personagem dono, entre parênteses\n\
+const nome8 = "Texto dono"
+const info8 = "Aparece na frente da descrição do personagem dono, entre parênteses\n\
 Para aparecer em baixo, adicionar um * (asterisco) na frente\n\
 Exemplo: *  ... e está protegid$s por uma luz"
-const tipo6 = "opc_linha"
-const vari6 = "m_atribs2"
-const exec6 = "atribs_dono"
+const tipo8 = "opc_linha"
+const vari8 = "m_atribs2"
+const exec8 = "atribs_dono"
 #
-const nome7 = "Números dono"
-const tipo7 = "opc_atribnum"
-const vari7 = "recalc2_auto"
-const exec7 = "recalc_dono"
-#
-const nome8 = "Sim/não dono"
-const tipo8 = "opc_atribbit"
-const vari8 = "recalc2_auto"
-const exec8 = "recalc_dono"
-#
-const nome9 = "Ataque dono"
-const info9 = "Afetam os danos quando o personagem ataca alguém"
-const tipo9 = "opc_atribatk"
+const nome9 = "Números dono"
+const tipo9 = "opc_atribnum"
 const vari9 = "recalc2_auto"
 const exec9 = "recalc_dono"
 #
-const nome10 = "Defesa dono"
-const info10 = "Afetam os danos quando alguém ataca o personagem"
-const tipo10 = "opc_atribdef"
+const nome10 = "Sim/não dono"
+const tipo10 = "opc_atribbit"
 const vari10 = "recalc2_auto"
 const exec10 = "recalc_dono"
+#
+const nome11 = "Ataque dono"
+const info11 = "Afetam os danos quando o personagem ataca alguém"
+const tipo11 = "opc_atribatk"
+const vari11 = "recalc2_auto"
+const exec11 = "recalc_dono"
+#
+const nome12 = "Defesa dono"
+const info12 = "Afetam os danos quando alguém ataca o personagem"
+const tipo12 = "opc_atribdef"
+const vari12 = "recalc2_auto"
+const exec12 = "recalc_dono"
 
 
 classe menu_patribs2
@@ -773,6 +773,20 @@ const info5 = "Afetam os danos quando alguém ataca o personagem"
 const tipo5 = "opc_atribdef"
 const vari5 = "recalc1_auto"
 const exec5 = "recalc_exec"
+#
+const nome6 = "Perde precisão ver"
+const info6 = "Quanto perde de precisão quando está vendo o alvo, geralmente de 0 a 100\n\
+0 não perde, 100 perde o que está na opção \"Imprecisão não ver\" do ataque"
+const tipo6 = "opc_numero"
+const vari6 = "p_precisaover"
+const nulo6 = "\c6" + $t_[[classe]:tipo1].p_precisaover + "\b"
+#
+const nome7 = "Perde precisão não ver"
+const info7 = "Quanto perde de precisão quando não está vendo o alvo, geralmente de 0 a 100\n\
+0 não perde, 100 perde o que está na opção \"Imprecisão não ver\" do ataque"
+const tipo7 = "opc_numero"
+const vari7 = "p_precisaoinv"
+const nulo7 = "\c6" + $t_[[classe]:tipo1].p_precisaoinv + "\b"
 
 
 classe menu_ploja

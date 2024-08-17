@@ -361,9 +361,22 @@ func danosg_precisao # Retorna a taxa de acerto (em porcentagem, de 0 a 100)
     se arma1
       arg2.addfim(txt(++num) + ". Precisão arma: \bsoma " + arma1.var.z_armaaddprecisao_)
     fimse
-    se !arg1.visivel(arg0)
-      arg2.addfim(txt(++num) + ". Alvo invisível: \bsubtrai 5")
-      valor -= 5
+    se arg1.visivel(arg0)
+      refvar p1 = arg0.p_precisaover
+      refvar p2 = (p1 !== nulo ? p1 : $t_[arg0.tipo1].p_precisaover)
+      refvar p3 = subprecisao * p2 / 100
+      valor -= p3
+      arg2.addfim(txt(++num) + ". Alvo visível: \bsubtrai " + p3)
+      arg2.addfim("   Precisão ver (personagem): " + p2 + "%")
+      arg2.addfim("   Precisão não ver (ataque): " + subprecisao)
+    senao
+      refvar p1 = arg0.p_precisaoinv
+      refvar p2 = (p1 !== nulo ? p1 : $t_[arg0.tipo1].p_precisaoinv)
+      refvar p3 = subprecisao * p2 / 100
+      valor -= p3
+      arg2.addfim(txt(++num) + ". Alvo invisível: \bsubtrai " + p3)
+      arg2.addfim("   Precisão não ver (personagem): " + p2 + "%")
+      arg2.addfim("   Precisão não ver (ataque): " + subprecisao)
     fimse
     arg2.addfim(txt(++num) + ". Evasão alvo: \bsubtrai " + arg1.evasao)
     lin = ". Acerta se " + valor + " a " + (valor + 17) + " >= 0: \b"
