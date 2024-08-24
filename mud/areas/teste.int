@@ -2548,6 +2548,48 @@ const taxaaula = arg0.tipo1 == "anao" ? 50 : 100
 const lojaaula = arg0.tipo1 == "anao" ? "m_Ganância 8" : "m_Ganância 5"
 
 
+classe p_teste053
+herda comum_persobat
+const nome = "clone"
+const msexo = 1 # Sexo Msg: 1 Masculino
+const evsala = 1 # Eventos dono sala: Sim
+sav txt40 tipo1 # Raça
+sav txt40 tipo2 # Classe
+sav txt40 tipo3 # Subclasse
+sav uint32 pesoobj # Peso do personagem (em gramas)
+sav uint32 volobj # Volume do personagem
+
+func cmd_ini
+  pesoobj = 30000
+  volobj = 1
+  ajustapeso # Ajusta peso e volume
+
+func clonar # arg0 = personagem que será copiado
+  pnivel = arg0.pnivel
+  psexo = arg0.psexo
+  tipo1 = arg0.tipo1
+  tipo2 = arg0.tipo2
+  tipo3 = arg0.tipo3
+  pesoobj = arg0.pesoobj
+  volobj = arg0.volobj
+  var.z_descnome = "clone de " + arg0.descnome2
+  ajustapeso # Ajusta peso e volume
+  recalc_auto # Recalcula atributos do personagem
+  restaurar # Restaura vida, movimentos e mana
+
+func cmd_chegou
+  ret arg1.jogtot < 2, nulo # Não faz nada se não tem jogador na sala
+  ret var.z_descnome, nulo # Não faz nada se já clonou
+  ref jogador
+  listaitem i
+  epara i = arg1.dentro2.ini, i, i.depois
+    se i.obj.jog && visivel(i.obj) && i.obj.pnivel >= jogador.pnivel
+      jogador = i.obj
+    fimse
+  efim
+  jogador && clonar(jogador)
+
+
 classe s_teste001
 herda b_teste
 const s_titulo = "Entrada"
@@ -5059,10 +5101,12 @@ const dir_n = $s_teste041
 classe s_teste145
 herda b_teste
 const s_titulo = "Subsolo 5: Diversos"
-const s_desc = "Ao norte: checando hora e enviando mensagens telepáticas e personagem clone\n\
-Ao sul: Efeitos e modificadores, e item transportado quando é solto"
+const s_desc = "Ao norte: Checando hora e enviando mensagens telepáticas e personagem clone\n\
+Ao sul: Efeitos e modificadores, e item transportado quando é solto\n\
+A leste: Personagem que clona um jogador"
 const dir_n = $s_teste146
 const dir_s = $s_teste147
+const dir_l = $s_teste193
 const dir_c = $s_teste119
 
 
@@ -5860,3 +5904,32 @@ do personagem (comandos Eperso e Etipo). Também pode acontecer que mesmo\n\
 quando não estiver vendo o alvo, não perca tanta precisão. Isso é a opção\n\
 \"Perde precisão não ver\" do personagem."
 const dir_n = $s_teste191
+
+
+classe s_teste193
+herda b_teste
+const s_titulo = "Antessala do clone"
+const s_desc = "Quando um jogador entra nessa sala, é criado um clone na sala a leste\n\
+se ainda não houver um. Quando alguém fala nessa sala, esse clone vem\n\
+para cá. E ele assume a forma de um jogador na primeira vez que\n\
+encontrar com um."
+const dir_l = $s_teste194
+const dir_o = $s_teste145
+
+func cmd_salaperso # Personagem chegou
+  misc:evento(arg0) # Receber eventos do personagem
+  ret !arg0.jog, nulo # Retorna se não for jogador
+  !$s_teste194.dentro2.objini("p_teste053") && criar("p_teste053", $s_teste194)
+
+func cmd_falou
+  ref pnj = $s_teste194.dentro2.objini("p_teste053")
+  pnj && pnj.teclou("o")
+
+
+classe s_teste194
+herda b_teste
+const s_titulo = "Sala do clone"
+const s_desc = "Aqui fica o personagem clona o primeiro jogador que ele conseguir ver.\n\
+Se houver mais de um, ele clona o de maior nível.\n\
+Ele não é agressivo mas também não foge de uma luta."
+const dir_o = $s_teste193
