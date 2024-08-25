@@ -2565,7 +2565,7 @@ func cmd_ini
   ajustapeso # Ajusta peso e volume
 
 func clonar # arg0 = personagem que será copiado
-  pnivel = arg0.pnivel
+  pnivel = intmin(arg0.pnivel, 10)
   psexo = arg0.psexo
   tipo1 = arg0.tipo1
   tipo2 = arg0.tipo2
@@ -2573,6 +2573,16 @@ func clonar # arg0 = personagem que será copiado
   pesoobj = arg0.pesoobj
   volobj = arg0.volobj
   var.z_descnome = "clone de " + arg0.descnome2
+# Copia as habilidades
+  txt100 nome # Para copiar as habilidades e magias
+  epara nome = arg0.var.ini("h_"), nome, nome = arg0.var.depois(nome, "h_")
+    var.[nome] = arg0.var.[nome]
+  efim
+# Copia as magias
+  epara nome = arg0.var.ini("m_"), nome, nome = arg0.var.depois(nome, "m_")
+    var.[nome] = arg0.var.[nome]
+  efim
+# Acerta personagem
   ajustapeso # Ajusta peso e volume
   recalc_auto # Recalcula atributos do personagem
   restaurar # Restaura vida, movimentos e mana
@@ -5912,7 +5922,7 @@ const s_titulo = "Antessala do clone"
 const s_desc = "Quando um jogador entra nessa sala, é criado um clone na sala a leste\n\
 se ainda não houver um. Quando alguém fala nessa sala, esse clone vem\n\
 para cá. E ele assume a forma de um jogador na primeira vez que\n\
-encontrar com um."
+encontrar com um. Se houver mais de um, ele clona o de maior nível."
 const dir_l = $s_teste194
 const dir_o = $s_teste145
 
@@ -5930,6 +5940,7 @@ classe s_teste194
 herda b_teste
 const s_titulo = "Sala do clone"
 const s_desc = "Aqui fica o personagem clona o primeiro jogador que ele conseguir ver.\n\
-Se houver mais de um, ele clona o de maior nível.\n\
-Ele não é agressivo mas também não foge de uma luta."
+Na prática, clonar sempre com o mesmo nível do jogador não é bom porque\n\
+torna desnecessário procurar personagens mais fortes para subir de nível.\n\
+Por isso, o nível do personagem após a clonagem nunca vai passar de 10."
 const dir_o = $s_teste193

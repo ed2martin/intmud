@@ -46,6 +46,64 @@ Ou seja, 2 * nível ao quadrado. Se você estiver no nível 2, vai precisar
 de 8 pontos (2 ao quadrado vezes 2). No nível 3 vai precisar de 18
 (3 ao quadrado vezes 2). No nível 4 vai ser 32.
 
+*** Quanta experiência se ganha ao matar outro personagem?
+
+Muita coisa está definida no menu "Ataques" do comando Econfig.
+Supondo que um jogador matou um PNJ e os dois estão no nível 0,
+a experiência ganha é o que esta opção "Experiência nível 0".
+O valor que vem no MUD é 600, ou seja 600 pontos de experiência.
+
+Agora digamos que o PNJ esteja no nível 2. Aí entra em cena a opção seguinte,
+"Experiência por nível".
+
+Essas duas opções são inicialmente:
+Experiência nível 0       : 600
+Experiência por nível     : 100
+Ou seja, ganhará 600 pontos de experiência mais 100 por nível do PNJ.
+PNJ no nível 0 dá 600, nível 1 dá 700, nível 2 dá 800, nível 3 dá 900, etc.
+
+Se a opção "Exp nível abaixo" não for 0, matar PNJs abaixo do nível
+do jogador dá menos experiência. Quanto maior a diferença de nível, maior
+a redução, até certo limite. Quando a diferença de nível for maior ou
+igual à opção "Exp nível abaixo", o jogador não ganha nenhuma experiência.
+
+Por exemplo, se essa opção estiver em 4:
+Jogador e PNJ no mesmo nível: não há nenhuma redução
+PNJ um nível abaixo: 75% da experiência (redução de 25%)
+PNJ dois níveis abaixo: 50% da experiência (redução de 50%)
+PNJ três níveis abaixo: 25% da experiência (redução de 75%)
+PNJ quatro níveis abaixo ou mais: não ganha experiência (redução de 100%)
+
+Se a opção "Exp nível acima" não for 0, matar PNJs acima do nível
+do jogador dá mais experiência. Quanto maior a diferença de nível, maior
+o bônus, até certo limite. Quando a diferença de nível for maior ou igual
+à opção "Exp nível acima", o jogador tem o bônus da opção "Exp máxima acima",
+em porcentagem.
+
+Por exemplo, se "Exp nível acima" for 4 e "Exp máxima acima" for 40:
+Jogador e PNJ no mesmo nível: nenhum bônus
+PNJ um nível acima: bônus de 10%
+PNJ dois níveis acima: bônus de 20%
+PNJ três níveis acima: bônus de 30%
+PNJ quatro níveis acima ou mais: bônus de 40%
+
+Existe ainda uma opção chamada "Experiência", no menu "Quando morre" do
+comando Eperso. A experiência ganha é multiplicada por esse número, em
+porcentagem. Esse número costuma ser 100, ou seja, recebe 100 porcento
+da experiência. Se for 50, por exemplo, vai receber metade da experiência.
+
+Quando for jogador contra jogador, o que vale é a opção "Ao matar um jogador"
+do menu "Ataques" do comando Econfig. As opções são as seguintes:
+- Ganhar experiência como ao matar PNJ
+- Ganhar experiência que o jogador perdeu
+- Perder experiência que possui
+E esse valor é multiplicado pela opção seguinte, "Quantidade de experiência".
+
+Inicialmente essas opções estão assim:
+Ao matar um jogador       : 2 Perde experiência que possui
+Quantidade de experiência : 30
+Ou seja, o jogador perderá 30% da experiência que possui.
+
 *** Como é dividida a experiência ao matar um PNJ?
 
 1. Atacar o animal de um PNJ ao invés do próprio PNJ dá 50% mais de experiência.

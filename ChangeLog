@@ -1,3 +1,121 @@
+* 25/8/2024 IntMUD 1.15 MUD baseado na revisão 655
+
+   No IntMUD:
+  1. Corrigido bug: ao mudar o programa, se mudar o tamanho da variável
+     txt1 a txt512 (ex. de txt10 para txt8) não estava acertando o texto
+     corretamente
+  2. Corrigido bug, o seguinte código estava resultando em t="aaaa" ao
+     invés de t="aa":
+     txt4 t = "a"
+     t += t
+  3. Corrigido bug: socket.abrirssl não estava funcionando quando o
+     servidor tem vários domínios em um mesmo IP
+  4. SSL agora carrega corretamente em iOS: procura por arquivos .dylib
+     ao invés de .so
+  5. Criada variável ArqMem com funcionalidades básicas, por enquanto
+     sem utilidade, descrita no arquivo doc/manual.txt
+  6. Função Msg de ArqTxt mudou de nome para Escr
+  7. ArqExec agora pode executar um programa sem esconder a janela no
+     Windows; vide função Abrir no manual.txt
+  8. A verificação do tempo decorrido no Linux, usado principalmente por
+     Inttempo, agora usa um relógio monotônico do sistema (que não é
+     afetado se data/hora atual mudar)
+  9. Função Renomear de Arqdir agora tem o mesmo comportamento no
+     Windows: se o novo arquivo já existir, é substituído.
+ 10. Funções Antes, Depois, Objantes, Objdepois, Removeantes e
+     Removedepois de Listaitem agora retornam a própria variável
+     Listaitem
+ 11. Funções Antes e Depois de Textopos agora retornam a própria
+     variável Textopos
+ 12. Criada função Inverter de Listaobj
+ 13. Criada função Txttipovar, retorna o tipo de uma variável,
+     documentada no arquivo doc/manual.txt
+
+   Outros arquivos:
+  1. Arquivo testes/listaobj.int foi melhorado: uso de cores e de Epara
+     ao invés de Enquanto
+  2. Adicionado arquivo testes/listaobj2.int - demonstração básica sobre
+     listaobj
+
+   No MUD:
+  1. Corrigido bug: Animais conseguem usar magias e habilidades de nível
+     acima do nível atual
+  2. Corrigido bug: Ao reiniciar o MUD com Diag Reset, teclar Adm passa
+     a mostrar a ajuda do comando Aarea
+  3. Corrigido bug: Não estava avisando sala perigosa na direção SE
+  4. Corrigido bug: As opções "14 Som trancou" e "15 Som destrancou" do
+     comando Esai não estavam funcionando
+  5. Corrigido bug: O comando Saídas não mostra nomes corretos das salas
+     cujo título foi alterado com o comando Stitulo
+  6. Corrigido bug: Quando o nome do efeito (opção 1 do comando Eef) tem
+     cores, teclar Efeito seguido do nome do efeito não acha o efeito
+  7. Corrigido bug: Atacar à distância digitando o nome do alvo, como
+     "revolver s camundongo", não estava funcionando
+  8. Corrigido bug: Ao atacar à distância, a mensagem do ataque estava
+     vindo duas vezes para quem ataca
+  9. Corrigido bug: A mensagem da habilidade Arco e flecha era "Você
+     lança um arco" ao invés de "Você lança uma flecha"
+ 10. Corrigido bug: O comando Dhab com ataque automático não estava
+     calculando os danos se o personagem não tinha a habilidade
+ 11. Corrigido bug: Estavam faltando mensagens de apenas fome no comando
+     Econfig, menu "14 mensagens"
+ 12. Corrigido bug: Quando um animal é solto automaticamente devido à
+     batalha, não vem mensagem dizendo que o animal foi solto
+ 13. Corrigido bug nas mensagens: $p1 não estava mostrando você/ti
+ 14. Corrigido bug: "Lutando com você" estava trocado com "Lutando com
+     alguém" na descrição do personagem na sala nos comandos Eperso e
+     Econfig
+ 15. Corrigido bug: Hab/Magia de identificação não estava mostrando
+     raça/classe/subclasse como no comando Estat
+ 16. Criada opção "2 Nível insuficiente animal" no submenu "20
+     Habilidades e magias comuns" do menu "14 Mensagens" do comando
+     Econfig
+ 17. Corrigido bug: ao renascer, só estava verificando o nível dos itens
+     para saber se o personagem pode continuar vestindo
+ 18. A opção "3 Desc de noite" do comando Esala agora aparece vazia
+     quando não houver descrição de noite
+ 19. Na const admordem, arg0=nome da classe
+ 20. Criada opção "18 Conflita com itens" do comando Eitem
+ 21. O colete da sala teste028 não pode ser usado com coisas com metal,
+     como a faca e os óculos
+ 22. Possibilidade de enviar mensagens depois de um tempo, vide ADM
+     CORES
+ 23. Linhas com texto e som, são enviados os textos e os sons, mas se
+     tiver apenas sons, são enviados somente os sons. Não é enviada uma
+     linha vazia.
+ 24. Eventos cmd_configmoedas e cmd_ganhaexp, documentados no arquivo
+     doc/13-eventos.txt
+ 25. Adicionadas mensagens de personagem pegando moedas no comando
+     Econfig, "14 Mensagens", "16 Experiência, nível e moedas"
+ 26. Criada sala teste190 com uma magia que aumenta moedas ganhas ao
+     matar PNJ mas diminui a experiência ganha e um professor que ensina
+     mais e mais barato para anões
+ 27. Criada opção "Tipos imunes" do comando Eef: personagens imunes ao
+     efeito
+ 28. Criada opção "Ao renascer" no comando Eef e na opção "8 Herda" do
+     comando Econfig
+ 29. Mensagens de saiu da sala e entrou na sala quando o personagem muda
+     de sala ao renascer
+ 30. Vários eventos agora também são chamados para o objeto que processa
+     o comando
+ 31. Criados eventos cmd_msg_ver, cmd_msg_olhar e cmd_msg_ident
+ 32. A maioria das opções do comando Econfig agora pode ser apagada
+     (revertida para o valor padrão)
+ 33. Criada classe h_config, arquivo misc/config.int, com os valores
+     padrão do comando Econfig
+ 34. Criada opção "Imprecisão não ver" no menu "16 Ataque" dos comandos
+     Ehab, Emag e Etc e no menu "8 Herda" do comando Econfig
+ 35. Criadas opções "15 Perde precisão ver" e "16 Perde precisão não
+     ver" no comando Etipo
+ 36. Criadas opções "7 Perde precisão ver" e "8 Perde precisão não ver"
+     no menu "34 Atributos" do comando Eperso
+ 37. Criadas salas teste191 e teste192, com continuação da explicação
+     nas salas teste056 a teste058
+ 38. Criadas salas teste193 e teste194 para demonstrar um personagem
+     clone, teste053
+
+   Nota: Esta versão do MUD funciona também com a versão 1.14c do IntMUD
+
 * 14/5/2023 IntMUD 1.14c MUD baseado na revisão 608
 
    No IntMUD:
