@@ -952,20 +952,16 @@ bool TTextoVarSub::FOperadorAdd(TVariavel * v1, TVariavel * v2)
 bool TTextoVarSub::FOperadorIgual2(TVariavel * v1, TVariavel * v2)
 {
     TTextoVarSub * ref = reinterpret_cast<TTextoVarSub*>(v1->endvar) + v1->indice;
-    if (ref->TextoVar == nullptr)
-        return v2->Tipo() == varObj && v2->getObj() == nullptr;
-    TBlocoVar * bl = ref->TextoVar->Procura(ref->NomeVar);
-    if (bl == nullptr)
-        return v2->Tipo() == varObj && v2->getObj() == nullptr;
-    switch (bl->TipoVar())
+    TBlocoVar * bl = (ref->TextoVar ? ref->TextoVar->Procura(ref->NomeVar) : nullptr);
+    switch (ref->TipoVar)
     {
     case TextoVarTipoTxt:
-        return v2->Tipo() == varTxt && strcmp(bl->getTxt(), v2->getTxt()) == 0;
+        return v2->Tipo() == varTxt && strcmp(bl ? bl->getTxt() : "", v2->getTxt()) == 0;
     case TextoVarTipoNum:
     case TextoVarTipoDec:
-        return v2->TipoNumerico() && bl->getDouble() == v2->getDouble();
+        return v2->TipoNumerico() && (bl ? bl->getDouble() : 0) == v2->getDouble();
     case TextoVarTipoRef:
-        return v2->Tipo() == varObj && bl->getObj() == v2->getObj();
+        return v2->Tipo() == varObj && (bl ? bl->getObj() : nullptr) == v2->getObj();
     }
     return false;
 }
@@ -974,23 +970,19 @@ bool TTextoVarSub::FOperadorIgual2(TVariavel * v1, TVariavel * v2)
 unsigned char TTextoVarSub::FOperadorCompara(TVariavel * v1, TVariavel * v2)
 {
     TTextoVarSub * ref = reinterpret_cast<TTextoVarSub*>(v1->endvar) + v1->indice;
-    if (ref->TextoVar == nullptr)
-        return v2->Tipo() != varObj ? 0 : v2->getObj() == nullptr ? 2 : 1;
-    TBlocoVar * bl = ref->TextoVar->Procura(ref->NomeVar);
-    if (bl == nullptr)
-        return v2->Tipo() != varObj ? 0 : v2->getObj() == nullptr ? 2 : 1;
-    switch (bl->TipoVar())
+    TBlocoVar * bl = (ref->TextoVar ? ref->TextoVar->Procura(ref->NomeVar) : nullptr);
+    switch (ref->TipoVar)
     {
     case TextoVarTipoTxt:
-        return TVarInfo::ComparaTxt(bl->getTxt(), v2->getTxt());
+        return TVarInfo::ComparaTxt(bl ? bl->getTxt() : "", v2->getTxt());
     case TextoVarTipoNum:
-        return TVarInfo::ComparaDouble(bl->getDouble(), v2);
+        return TVarInfo::ComparaDouble(bl ? bl->getDouble() : 0, v2);
     case TextoVarTipoDec:
-        return TVarInfo::ComparaInt(bl->getDouble(), v2);
+        return TVarInfo::ComparaInt(bl ? bl->getDouble() : 0, v2);
     case TextoVarTipoRef:
         if (v2->Tipo() == varObj)
         {
-            TObjeto * obj1 = bl->getObj();
+            TObjeto * obj1 = (bl ? bl->getObj() : nullptr);
             TObjeto * obj2 = v2->getObj();
             return (obj1 == obj2 ? 2 : obj1 < obj2 ? 1 : 4);
         }

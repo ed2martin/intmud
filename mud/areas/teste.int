@@ -2593,7 +2593,7 @@ func cmd_chegou
   ref jogador
   listaitem i
   epara i = arg1.dentro2.ini, i, i.depois
-    se i.obj.jog && visivel(i.obj) && i.obj.pnivel >= jogador.pnivel
+    se i.obj.jog && i.obj.visivel(este) && i.obj.pnivel >= jogador.pnivel
       jogador = i.obj
     fimse
   efim

@@ -1173,9 +1173,3 @@ void TTextoPos::setValor(int numfunc, int valor)
     else
         MoverPos(valor - LinhaTxt);
 }
-
-//----------------------------------------------------------------------------
-void TTextoPos::setTxt(int numfunc, const char * txt)
-{
-    setValor(numfunc, TxtToInt(txt));
-}

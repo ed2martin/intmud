@@ -374,9 +374,12 @@ const char * TTextoPos::FGetTxt(TVariavel * v) VARIAVEL_FGETTXT1(TTextoPos)
 //----------------------------------------------------------------------------
 void TTextoPos::FOperadorAtrib(TVariavel * v1, TVariavel * v2)
 {
-    if (v1->defvar[2] != v2->defvar[2])
-        return;
     TTextoPos * r1 = reinterpret_cast<TTextoPos*>(v1->endvar) + v1->indice;
+    if (v1->defvar[2] != v2->defvar[2])
+    {
+        r1->setValor(v1->numfunc, v2->getInt());
+        return;
+    }
     TTextoPos * r2 = reinterpret_cast<TTextoPos*>(v2->endvar) + v2->indice;
     if (r1 == r2)
         return;

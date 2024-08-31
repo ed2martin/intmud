@@ -169,8 +169,6 @@ public:
             ///< Ler valor numérico da variável
     void setValor(int numfunc, int valor);
             ///< Mudar o valor numérico da variável
-    void setTxt(int numfunc, const char * txt);
-            ///< Mudar o texto
 
     TTextoTxt * TextoTxt;   ///< Variável TextoTxt correspondente
     TTextoPos * Antes;      ///< Objeto anterior

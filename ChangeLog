@@ -1,3 +1,17 @@
+* 31/8/2024 IntMUD 1.15a MUD baseado na revisão 656
+
+   No IntMUD:
+  1. Corrigido bug: Atribuir um valor à variável textopos.linha não
+     estava mudando a linha do textopos
+  2. Corrigido bug: Comparações com variáveis de textovar estavam
+     erradas; exemplo, digitar "cmd var.z_moedas_==0" no MUD, quando o
+     jogador não tem moedas, estava retornando 0 (falso)
+
+   No MUD:
+  1. Corrigido bug: Personagem clone da sala teste194 estava clonando o
+     primeiro jogador que conseguisse ver o PNJ, não o primeiro jogador
+     visível ao PNJ
+
 * 25/8/2024 IntMUD 1.15 MUD baseado na revisão 655
 
    No IntMUD:
@@ -89,7 +103,7 @@
      Econfig, "14 Mensagens", "16 Experiência, nível e moedas"
  26. Criada sala teste190 com uma magia que aumenta moedas ganhas ao
      matar PNJ mas diminui a experiência ganha e um professor que ensina
-     mais e mais barato para anões
+     mais barato para anões
  27. Criada opção "Tipos imunes" do comando Eef: personagens imunes ao
      efeito
  28. Criada opção "Ao renascer" no comando Eef e na opção "8 Herda" do
