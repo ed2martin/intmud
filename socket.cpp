@@ -1236,7 +1236,7 @@ void TSocket::ProcEventos(fd_set * set_entrada,
                     obj = obj->sDepois;
                     continue;
                 }
-                SOCK_SOCKLEN_T len = sizeof(coderro);
+                ACCEPT_TYPE_ARG3 len = sizeof(coderro);
                 if (getsockopt(obj->sock, SOL_SOCKET, SO_ERROR,
                             (char*)&coderro, &len) != 0)
                 {
@@ -1275,7 +1275,7 @@ void TSocket::ProcEventos(fd_set * set_entrada,
             if (coderro)
             {
                 int err = 0;
-                SOCK_SOCKLEN_T len = sizeof(err);
+                ACCEPT_TYPE_ARG3 len = sizeof(err);
                 if (getsockopt(obj->sock, SOL_SOCKET, SO_ERROR,
                     (void*)&err, &len) == 0)
                 if (err)

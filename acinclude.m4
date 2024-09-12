@@ -1,3 +1,8 @@
+# config/ac_func_accept_argtypes.m4
+# This comes from the official Autoconf macro archive at
+# <http://research.cys.de/autoconf-archive/>
+
+
 dnl @synopsis AC_FUNC_ACCEPT_ARGTYPES
 dnl
 dnl Checks the data types of the three arguments to accept(). Results are
@@ -9,13 +14,10 @@ dnl       #define ACCEPT_TYPE_ARG1 int
 dnl       #define ACCEPT_TYPE_ARG2 struct sockaddr *
 dnl       #define ACCEPT_TYPE_ARG3 socklen_t
 dnl
-dnl This macro requires AC_CHECK_HEADERS to have already verified the
-dnl presence or absence of sys/types.h and sys/socket.h.
-dnl
 dnl NOTE: This is just a modified version of the AC_FUNC_SELECT_ARGTYPES
 dnl macro. Credit for that one goes to David MacKenzie et. al.
 dnl
-dnl @version Id: ac_func_accept_argtypes.m4,v 1.1 1999/12/03 11:29:29 simons Exp $
+dnl @version $Id: ac_func_accept_argtypes.m4,v 1.1 1999/12/03 11:29:29 simons Exp $
 dnl @author Daniel Richard G. <skunk@mit.edu>
 dnl
 
@@ -33,6 +35,7 @@ dnl
 # 'int' as the result, because that ought to work best.
 #
 # On Win32, accept() returns 'unsigned int PASCAL'
+# Win64 uses SOCKET for return and arg1
 
 AC_DEFUN([AC_FUNC_ACCEPT_ARGTYPES],
 [AC_MSG_CHECKING([types of arguments for accept()])
@@ -40,19 +43,19 @@ AC_DEFUN([AC_FUNC_ACCEPT_ARGTYPES],
  [AC_CACHE_VAL(ac_cv_func_accept_arg1,dnl
   [AC_CACHE_VAL(ac_cv_func_accept_arg2,dnl
    [AC_CACHE_VAL(ac_cv_func_accept_arg3,dnl
-    [for ac_cv_func_accept_return in 'int' 'unsigned int PASCAL'; do
-      for ac_cv_func_accept_arg1 in 'int' 'unsigned int'; do
+    [for ac_cv_func_accept_return in 'int' 'SOCKET WSAAPI' 'unsigned int PASCAL'; do
+      for ac_cv_func_accept_arg1 in 'int' 'SOCKET' 'unsigned int'; do
        for ac_cv_func_accept_arg2 in 'struct sockaddr *' 'const struct sockaddr *' 'void *'; do
         for ac_cv_func_accept_arg3 in 'int' 'size_t' 'socklen_t' 'unsigned int' 'void'; do
-         AC_TRY_COMPILE(
+         AC_COMPILE_IFELSE([AC_LANG_SOURCE(
 [#ifdef HAVE_SYS_TYPES_H
 #include <sys/types.h>
 #endif
 #ifdef HAVE_SYS_SOCKET_H
 #include <sys/socket.h>
 #endif
-extern $ac_cv_func_accept_return accept ($ac_cv_func_accept_arg1, $ac_cv_func_accept_arg2, $ac_cv_func_accept_arg3 *);],
-         [], [ac_not_found=no; break 4], [ac_not_found=yes])
+extern $ac_cv_func_accept_return accept ($ac_cv_func_accept_arg1, $ac_cv_func_accept_arg2, $ac_cv_func_accept_arg3 *);])],
+         [ac_not_found=no; break 4], [ac_not_found=yes])
        done
       done
      done
@@ -77,35 +80,3 @@ extern $ac_cv_func_accept_return accept ($ac_cv_func_accept_arg1, $ac_cv_func_ac
  AC_DEFINE_UNQUOTED(ACCEPT_TYPE_ARG3, $ac_cv_func_accept_arg3,
                     [Define to the type of arg 3 of 'accept'])
 ])
-
-
-dnl From libxml2 - http://www.xmlsoft.org/
-
-dnl Like AC_TRY_EVAL but also errors out if the compiler generates
-dnl _any_ output. Some compilers might issue warnings which we want
-dnl to catch.
-AC_DEFUN([AC_TRY_EVAL2],
-[{ (eval echo configure:__oline__: \"[$]$1\") 1>&AC_FD_CC; dnl
-(eval [$]$1) 2>&AC_FD_CC; _out=`eval [$]$1 2>&1` && test "x$_out" = x; }])
-
-dnl Like AC_TRY_COMPILE but calls AC_TRY_EVAL2 instead of AC_TRY_EVAL
-AC_DEFUN([AC_TRY_COMPILE2],
-[cat > conftest.$ac_ext <<EOF
-[#]line __oline__ "configure"
-#include "confdefs.h"
-[$1]
-int main(void) {
-[$2]
-; return 0; }
-EOF
-if AC_TRY_EVAL2(ac_compile); then
-  ifelse([$3], , :, [rm -rf conftest*
-  $3])
-else
-  echo "configure: failed program was:" >&AC_FD_CC
-  cat conftest.$ac_ext >&AC_FD_CC
-ifelse([$4], , , [  rm -rf conftest*
-  $4
-])dnl
-fi
-rm -f conftest*])

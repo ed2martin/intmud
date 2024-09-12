@@ -60,8 +60,8 @@ const TVarInfo * TVarDebug::Inicializa()
         TVarInfo::FGetObjNulo,
         FOperadorAtrib,
         TVarInfo::FOperadorAddFalse,
-        TVarInfo::FOperadorIgual2Var,
-        TVarInfo::FOperadorComparaVar,
+        FOperadorIgual2,
+        FOperadorCompara,
         TVarInfo::FFuncTextoFalse,
         TVarInfo::FFuncVetorFalse,
         ListaFuncEnd,
@@ -234,7 +234,7 @@ bool TVarDebug::FuncCmd(TVariavel * v)
     mens.Add("\x00\x00", 2); // Zero no fim da mensagem
     mens.AnotarBuf();    // Anota resultado em mens.Buf
 // Verifica se bloco válido
-    int linha=1;
+    int linha = 1;
     Instr::ChecaLinha checalinha;
     checalinha.Inicio();
     checalinha.Instr(Instr::InstrDebugFunc);
@@ -532,4 +532,23 @@ void TVarDebug::FOperadorAtrib(TVariavel * v1, TVariavel * v2)
         int valor = v2->getInt();
         Instr::VarExec = (valor < 1 ? 1 : valor);
     }
+}
+
+//------------------------------------------------------------------------------
+bool TVarDebug::FOperadorIgual2(TVariavel * v1, TVariavel * v2)
+{
+    if (v1->numfunc == 0)
+        return (v1->endvar == v2->endvar && v1->indice == v2->indice &&
+                v1->defvar[2] == v2->defvar[2] && v1->numfunc == v2->numfunc);
+    return (v2->TipoNumerico() && getDouble(v1->numfunc) == v2->getDouble());
+}
+
+//------------------------------------------------------------------------------
+unsigned char TVarDebug::FOperadorCompara(TVariavel * v1, TVariavel * v2)
+{
+    if (v1->numfunc == 0)
+        return (v1->endvar == v2->endvar && v1->indice == v2->indice &&
+                v1->defvar[2] == v2->defvar[2] &&
+                v1->numfunc == v2->numfunc ? 2 : 0);
+    return TVarInfo::ComparaDouble(getDouble(v1->numfunc), v2);
 }

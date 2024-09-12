@@ -71,6 +71,8 @@ private:
     static double FGetDouble(TVariavel * v);
     static const char * FGetTxt(TVariavel * v);
     static void FOperadorAtrib(TVariavel * v1, TVariavel * v2);
+    static bool FOperadorIgual2(TVariavel * v1, TVariavel * v2);
+    static unsigned char FOperadorCompara(TVariavel * v1, TVariavel * v2);
 };
 
 //----------------------------------------------------------------------------
