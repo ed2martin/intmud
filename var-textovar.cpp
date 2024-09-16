@@ -585,10 +585,7 @@ unsigned char TTextoVar::FOperadorCompara(TVariavel * v1, TVariavel * v2)
                 double x2 = bl2->getDouble();
                 if (x1 == x2)
                     break;
-                unsigned char result = 0;
-                if (x1 < x2) result |= 1;
-                if (x1 > x2) result |= 4;
-                return (x1 < x2 ? 1 : 0) | (x1 > x2 ? 4 : 0);
+                return x1 < x2 ? 1 : x1 > x2 ? 4 : 0;
             }
         case TextoVarTipoDec:
             {
@@ -611,7 +608,7 @@ unsigned char TTextoVar::FOperadorCompara(TVariavel * v1, TVariavel * v2)
         bl1 = TBlocoVar::RBnext(bl1);
         bl2 = TBlocoVar::RBnext(bl2);
     }
-    return bl2 ? 1 : bl1 ? 4 : 0;
+    return bl2 ? 1 : bl1 ? 4 : 2;
 }
 
 //----------------------------------------------------------------------------
