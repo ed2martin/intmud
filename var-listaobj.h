@@ -125,6 +125,8 @@ private:
 class TListaX /// Um item de ListaObj
 {
 public:
+    static void Debug(TListaObj * obj);
+    static void Limpar();   ///< Apaga um bloco de memória se possível
     static TListaX * Criar(); ///< Cria um objeto
     void Apagar();          ///< Apaga objeto
                             /**< Importante: ao apagar um objeto TListaX,
@@ -139,24 +141,6 @@ public:
     TListaX * ObjDepois;    ///< Próximo objeto da lista
     TListaItem * ListaItem; ///< Primeira listaitem apontando para esse objeto
     static TListaX * EndMover; ///< Mover() acerta EndMover
-};
-
-//----------------------------------------------------------------------------
-#define TOTAL_LISTAX 1023
-class TGrupoX /// Um grupo de objetos TListaX
-{
-public:
-    static void ProcEventos();  ///< Apaga objetos TGrupoX se necessário
-    static TListaX * Criar();   ///< Aloca TListaX na memória
-    static void Apagar(TListaX *); ///< Libera TListaX da memória
-    static void Debug();        ///< Para testar listaobj e listaitem
-private:
-    static TGrupoX * Disp;      ///< Lista de TGrupoX disponívels (com Total=0)
-    static TGrupoX * Usado;     ///< Lista de TGrupoX usados (com Total!=0)
-    static unsigned long Tempo; ///< Quando o último GrupoX mudou
-    unsigned int Total;         ///< Número de objetos TListaX usados
-    TGrupoX * Depois;           ///< Próxima variável TGrupoX
-    TListaX Lista[TOTAL_LISTAX]; ///< Objetos TListaX
 };
 
 //----------------------------------------------------------------------------

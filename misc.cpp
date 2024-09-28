@@ -576,9 +576,9 @@ char * txtNomeLetras(char * nome, int tamanho)
         else if (ch1 == 'w')
             ch1 = 'u';
         if (ch1 == 'a' || ch1 == 'e' || ch1 == 'i' || ch1 == 'o' || ch1 == 'u')
-            ch2=1;
+            ch2 = 1;
     // ão tem som de ãm
-        if (ch1 == 'o' && ch3==1)
+        if (ch1 == 'o' && ch3 == 1)
             ch1 = 'm';
         ch3 = (*ori == 'ã' || *ori == 'Ã') ? 1 : 0;
     // Fecha o laço

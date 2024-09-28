@@ -17,11 +17,12 @@
 #include "misc.h"
 
 //#define DEBUG_MSG // Alocação de memória
+//#define DEBUG_MEM // Verifica se está alocando corretamente
 
-//----------------------------------------------------------------------------
-TTextoGrupo * TTextoGrupo::Disp = nullptr;
-TTextoGrupo * TTextoGrupo::Usado = nullptr;
-unsigned long TTextoGrupo::Tempo = 0;
+#include "alocamem.h"
+//static TAlocaMem2<TTextoBloco, 250, unsigned char> AlocaMem;
+static TAlocaMemSimples<TTextoBloco, 200> AlocaMem;
+//static TAlocaMemSistema<TTextoBloco> AlocaMem;
 
 //----------------------------------------------------------------------------
 // Obtém o número de linhas correspondente a um texto
@@ -146,7 +147,7 @@ void TTextoTxt::IniBloco()
 {
     if (Inicio)
         return;
-    TTextoBloco * bloco = TTextoGrupo::Criar();
+    TTextoBloco * bloco = AlocaMem.malloc();
     bloco->TextoTxt = this;
     bloco->Antes = nullptr;
     bloco->Depois = nullptr;
@@ -419,7 +420,7 @@ unsigned char TTextoPos::FOperadorCompara(TVariavel * v1, TVariavel * v2)
 //----------------------------------------------------------------------------
 TTextoBloco * TTextoBloco::CriarAntes()
 {
-    TTextoBloco * obj = TTextoGrupo::Criar();
+    TTextoBloco * obj = AlocaMem.malloc();
     obj->TextoTxt = TextoTxt;
     obj->Antes = Antes;
     obj->Depois = this;
@@ -433,7 +434,7 @@ TTextoBloco * TTextoBloco::CriarAntes()
 //----------------------------------------------------------------------------
 TTextoBloco * TTextoBloco::CriarDepois()
 {
-    TTextoBloco * obj = TTextoGrupo::Criar();
+    TTextoBloco * obj = AlocaMem.malloc();
     obj->TextoTxt = TextoTxt;
     obj->Antes = this;
     obj->Depois = Depois;
@@ -454,7 +455,7 @@ TTextoBloco * TTextoBloco::Apagar()
         if (obj->Bloco == this)
             obj->Bloco = nullptr;
 // Apaga objeto
-    return TTextoGrupo::Apagar(this);
+    return AlocaMem.free(this);
 }
 
 //----------------------------------------------------------------------------
@@ -822,13 +823,14 @@ void TBlocoPos::Mudar(const char * texto, unsigned int tamtexto,
         obj = obj->Antes;
     while (obj->Bytes == 0)
     {
-        TTextoBloco * outro = obj->Antes;
-        if (outro == nullptr)
-            outro = obj->Depois;
-        if (outro != obj->Apagar())
-            obj = outro;
-        if (obj)
+        TTextoBloco * outro = (obj->Antes ? obj->Antes : obj->Depois);
+        if (outro)
+        {
+            if (outro != obj->Apagar())
+                obj = outro;
             continue;
+        }
+        obj->Apagar();
     // Texto ficou vazio
         for (TTextoPos * pos = TextoTxt->Posic; pos; pos = pos->Depois)
         {
@@ -898,7 +900,7 @@ void TBlocoPos::Mudar(const char * texto, unsigned int tamtexto,
     int sobrando = bloco_tam - ini->Bytes;
     if (ini->Antes)
     {
-        ini=ini->Antes, sobrando += bloco_tam - ini->Bytes;
+        ini = ini->Antes, sobrando += bloco_tam - ini->Bytes;
         if (ini->Antes)
             ini=ini->Antes, sobrando += bloco_tam - ini->Bytes;
     }
@@ -962,64 +964,7 @@ void TBlocoPos::Mudar(const char * texto, unsigned int tamtexto,
 }
 
 //----------------------------------------------------------------------------
-TTextoBloco * TTextoGrupo::Criar()
+void TTextoBloco::Limpar()
 {
-#ifdef DEBUG_MSG
-    printf("TTextoBloco::Criar\n"); fflush(stdout);
-#endif
-// Se tem objeto TListaX disponível...
-    if (Usado && Usado->Total < TOTAL_TEXTOTXTX)
-        return Usado->Lista + (Usado->Total++);
-// Se não tem objeto disponível...
-    TTextoGrupo * obj;
-    if (Disp == nullptr)    // Não tem objeto TTextoGrupo disponível
-    {
-        obj = new TTextoGrupo;
-#ifdef DEBUG_MSG
-        printf("  TTextoGrupo::Criar(%p)\n", obj); fflush(stdout);
-#endif
-    }
-    else            // Tem objeto TTextoGrupo disponível
-        obj=Disp, Disp = Disp->Depois; // Retira da lista Disp
-    obj->Total = 1;
-    obj->Depois = Usado; // Coloca na lista Usado
-    Usado = obj;
-    return obj->Lista;
-}
-
-//----------------------------------------------------------------------------
-TTextoBloco * TTextoGrupo::Apagar(TTextoBloco * lista)
-{
-#ifdef DEBUG_MSG
-    printf("TTextoBloco::Apagar\n"); fflush(stdout);
-#endif
-    TTextoBloco * lfim = Usado->Lista + Usado->Total - 1;
-    if (lista != lfim)
-        lfim->Mover(lista);
-    Usado->Total--;
-    if (Usado->Total == 0)
-    {
-        if (Disp == nullptr)
-            Tempo = TempoIni;
-        TTextoGrupo * obj = Usado;
-        Usado = Usado->Depois; // Retira da lista Usado
-        obj->Depois = Disp;    // Coloca na lista Disp
-        Disp = obj;
-    }
-    return lfim;
-}
-
-//----------------------------------------------------------------------------
-void TTextoGrupo::ProcEventos()
-{
-    if (Disp && Tempo + 10 < TempoIni)
-    {
-        TTextoGrupo * obj = Disp;
-        Disp = Disp->Depois; // Retira da lista Disp
-#ifdef DEBUG_MSG
-        printf("  TTextoGrupo::Apagar(%p)\n", obj); fflush(stdout);
-#endif
-        delete obj;
-        Tempo = TempoIni;
-    }
+    AlocaMem.LiberaBloco();
 }

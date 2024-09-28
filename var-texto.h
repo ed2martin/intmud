@@ -219,6 +219,7 @@ private:
 class TTextoBloco /// Bloco de texto de um objeto TTextoTxt
 {
 public:
+    static void Limpar();   ///< Apaga um bloco de memória se possível
     TTextoBloco * CriarAntes();
             ///< Cria bloco antes
     TTextoBloco * CriarDepois();
@@ -250,30 +251,8 @@ public:
     TTextoBloco * Depois; ///< Próximo TTextoBloco
     unsigned char Linhas; ///< Número de caracteres Instr::ex_barra_n do bloco
     unsigned char Bytes;  ///< Número de bytes do bloco
-    static const int SizeofTexto = 0xF0;
+    static const int SizeofTexto = 0xF6;
     char Texto[SizeofTexto];     ///< A partir daqui: texto do bloco
-};
-
-//----------------------------------------------------------------------------
-#define TOTAL_TEXTOTXTX 128
-class TTextoGrupo /// Para otimizar alocação de memória de TTextoBloco
-{
-public:
-    static void ProcEventos();
-            ///< Apaga objetos TTextoGrupoupo se necessário
-    static TTextoBloco * Criar();
-            ///< Aloca TTextoBloco na memória
-    static TTextoBloco * Apagar(TTextoBloco *);
-            ///< Libera TTextoBloco da memória
-            /**< @return Endereço do objeto que passou a ocupar
-             *           o endereço objeto apagado */
-private:
-    static TTextoGrupo * Disp;  ///< Lista de objetos disponívels (com Total=0)
-    static TTextoGrupo * Usado; ///< Lista de objetos usados (com Total!=0)
-    static unsigned long Tempo; ///< Quando o último objeto mudou
-    unsigned int Total;         ///< Número de objetos usados
-    TTextoGrupo * Depois;       ///< Próximo objeto
-    TTextoBloco Lista[TOTAL_TEXTOTXTX]; ///< Objetos TTextoBloco
 };
 
 //----------------------------------------------------------------------------

@@ -20,19 +20,20 @@
 
 //#define DEBUG  // Checar listaobj e listaitem
 //#define DEBUG_MSG
+//#define DEBUG_MEM // Verifica se está alocando corretamente
 
-//----------------------------------------------------------------------------
-#ifdef DEBUG
-#define DEBUG1 TGrupoX::Debug();
+#include "alocamem.h"
+#ifdef DEBUG_MEM
+#define DEBUG1(x) TListaX::Debug(x);
+//#define DEBUG1(x) printf("(%d)", __LINE__); fflush(stdout); TListaX::Debug(x);
 #else
-#define DEBUG1
+#define DEBUG1(x)
 #endif
 
-//----------------------------------------------------------------------------
-TGrupoX * TGrupoX::Disp = nullptr;
-TGrupoX * TGrupoX::Usado = nullptr;
-unsigned long TGrupoX::Tempo = 0;
 TListaX * TListaX::EndMover = nullptr;
+//static TAlocaMem2<TListaX, 250, unsigned char> AlocaMem;
+static TAlocaMemSimples<TListaX, 1024> AlocaMem;
+//static TAlocaMemSistema<TListaX> AlocaMem;
 
 //----------------------------------------------------------------------------
 const TVarInfo * TListaObj::Inicializa()
@@ -89,7 +90,7 @@ inline void TListaObj::Apagar()
     else
         while (Inicio)
             Inicio->Apagar();
-    DEBUG1
+    DEBUG1(this)
 }
 
 //----------------------------------------------------------------------------
@@ -128,7 +129,7 @@ TListaX * TListaObj::AddInicio(TObjeto * obj)
     obj->VarListaX = l1;
 // Acerta ListaItem
     l1->ListaItem = nullptr;
-    DEBUG1
+    DEBUG1(this)
     return l1;
 }
 
@@ -158,7 +159,7 @@ TListaX * TListaObj::AddFim(TObjeto * obj)
     obj->VarListaX = l1;
 // Acerta ListaItem
     l1->ListaItem = nullptr;
-    DEBUG1
+    DEBUG1(this)
     return l1;
 }
 
@@ -289,7 +290,7 @@ TListaX * TListaObj::AddLista(TVariavel * v, TListaX * litem, int tipo)
             // Acerta retorno
                 if (retorno == nullptr)
                     retorno = l1;
-                DEBUG1
+                DEBUG1(this)
             }
 
         // Passa para o próximo objeto da lista
@@ -325,7 +326,7 @@ bool TListaObj::FuncIni(TVariavel * v)
         for (obj = ref->Inicio; obj && obj->Objeto->Classe != cl; )
             obj = obj->ListaDepois;
     reinterpret_cast<TListaItem*>(Instr::VarAtual->endvar)->MudarRef(obj);
-    DEBUG1
+    DEBUG1(ref)
     return true;
 }
 
@@ -350,7 +351,7 @@ bool TListaObj::FuncFim(TVariavel * v)
         for (obj = ref->Fim; obj && obj->Objeto->Classe != cl; )
             obj = obj->ListaAntes;
     reinterpret_cast<TListaItem*>(Instr::VarAtual->endvar)->MudarRef(obj);
-    DEBUG1
+    DEBUG1(ref)
     return true;
 }
 
@@ -486,7 +487,7 @@ bool TListaObj::FuncRemove(TVariavel * v)
             l1->Apagar();
             l1 = TListaX::EndMover, total++;
         }
-        DEBUG1
+        DEBUG1(ref)
         return Instr::CriarVarInt(v, total);
     }
 // Remover um objeto
@@ -506,7 +507,7 @@ bool TListaObj::FuncRemove(TVariavel * v)
                 l1->Apagar();
                 l1 = TListaX::EndMover, total++;
             }
-        DEBUG1
+        DEBUG1(ref)
         return Instr::CriarVarInt(v, total);
     }
 // Apagar vários objetos
@@ -540,7 +541,7 @@ bool TListaObj::FuncRemove(TVariavel * v)
         l1->Apagar();
         l1 = TListaX::EndMover, total++;
     }
-    DEBUG1
+    DEBUG1(ref)
     return Instr::CriarVarInt(v, total);
 }
 
@@ -577,7 +578,7 @@ bool TListaObj::FuncRand(TVariavel * v)
 // Desaloca memória
     if (lista != lx)
         delete[] lista;
-    DEBUG1
+    DEBUG1(ref)
     return false;
 }
 
@@ -595,7 +596,7 @@ bool TListaObj::FuncInverter(TVariavel * v)
         obj->ListaAntes = obj2;
         obj = obj2;
     }
-    DEBUG1
+    DEBUG1(ref)
     return false;
 }
 
@@ -606,7 +607,7 @@ bool TListaObj::FuncLimpar(TVariavel * v)
     TListaObj * ref = reinterpret_cast<TListaObj*>(v->endvar) + v->indice;
     while (ref->Inicio)
         ref->Inicio->Apagar();
-    DEBUG1
+    DEBUG1(ref)
     return false;
 }
 
@@ -617,7 +618,7 @@ bool TListaObj::FuncApagar(TVariavel * v)
     TListaObj * ref = reinterpret_cast<TListaObj*>(v->endvar) + v->indice;
     for (TListaX * obj = ref->Inicio; obj; obj = obj->ListaDepois)
         obj->Objeto->MarcarApagar();
-    DEBUG1
+    DEBUG1(ref)
     return false;
 }
 
@@ -775,9 +776,9 @@ inline void TListaItem::Apagar()
         (Antes ? Antes->Depois : ListaX->ListaItem) = Depois;
         if (Depois)
             Depois->Antes = Antes;
+        DEBUG1(ListaX->Lista)
         ListaX = nullptr;
     }
-    DEBUG1
 }
 
 //----------------------------------------------------------------------------
@@ -868,7 +869,7 @@ bool TListaItem::FuncAntes(TVariavel * v)
     else for (int total = v[1].getInt(); total > 0 && obj; total--)
         obj = obj->ListaAntes;
     ref->MudarRef(obj);
-    DEBUG1
+    DEBUG1(ref->ListaX->Lista)
     Instr::ApagarVar(v + 1);
     return true;
 }
@@ -885,8 +886,11 @@ bool TListaItem::FuncDepois(TVariavel * v)
         obj = obj->ListaDepois;
     else for (int total=v[1].getInt(); total>0 && obj; total--)
         obj = obj->ListaDepois;
+#ifdef DEBUG_MEM
+    TListaObj * listaobj = ref->ListaX->Lista;
+#endif
     ref->MudarRef(obj);
-    DEBUG1
+    DEBUG1(listaobj)
     Instr::ApagarVar(v + 1);
     return true;
 }
@@ -909,8 +913,11 @@ bool TListaItem::FuncObjAntes(TVariavel * v)
         if (obj->Objeto->Classe == cl)
             total--;
     }
+#ifdef DEBUG_MEM
+    TListaObj * listaobj = ref->ListaX->Lista;
+#endif
     ref->MudarRef(obj);
-    DEBUG1
+    DEBUG1(listaobj)
     Instr::ApagarVar(v + 1);
     return true;
 }
@@ -933,8 +940,11 @@ bool TListaItem::FuncObjDepois(TVariavel * v)
         if (obj->Objeto->Classe == cl)
             total--;
     }
+#ifdef DEBUG_MEM
+    TListaObj * listaobj = ref->ListaX->Lista;
+#endif
     ref->MudarRef(obj);
-    DEBUG1
+    DEBUG1(listaobj)
     Instr::ApagarVar(v + 1);
     return true;
 }
@@ -946,8 +956,11 @@ bool TListaItem::FuncRemove(TVariavel * v)
     TListaItem * ref = reinterpret_cast<TListaItem*>(v->endvar) + v->indice;
     if (ref->ListaX == nullptr)
         return false;
+#ifdef DEBUG_MEM
+    TListaObj * listaobj = ref->ListaX->Lista;
+#endif
     ref->ListaX->Apagar();
-    DEBUG1
+    DEBUG1(listaobj)
     return false;
 }
 
@@ -958,9 +971,12 @@ bool TListaItem::FuncRemoveAntes(TVariavel * v)
     TListaX * l = ref->ListaX;
     if (l == nullptr)
         return false;
+#ifdef DEBUG_MEM
+    TListaObj * listaobj = ref->ListaX->Lista;
+#endif
     ref->MudarRef(ref->ListaX->ListaAntes);
     l->Apagar();
-    DEBUG1
+    DEBUG1(listaobj)
     Instr::ApagarVar(v + 1);
     return true;
 }
@@ -972,9 +988,12 @@ bool TListaItem::FuncRemoveDepois(TVariavel * v)
     TListaX * l = ref->ListaX;
     if (l == nullptr)
         return false;
+#ifdef DEBUG_MEM
+    TListaObj * listaobj = ref->ListaX->Lista;
+#endif
     ref->MudarRef(ref->ListaX->ListaDepois);
     l->Apagar();
-    DEBUG1
+    DEBUG1(listaobj)
     Instr::ApagarVar(v + 1);
     return true;
 }
@@ -1147,15 +1166,13 @@ void TListaX::Apagar()
 #ifdef DEBUG_MSG
     printf("TListaX::Apagar(%p)\n", this); fflush(stdout);
 #endif
-    TGrupoX::Apagar(this); // Apagar com otimização
-    //delete this;       // Apagar sem otimização
+    AlocaMem.free(this); // Apagar com otimização
 }
 
 //----------------------------------------------------------------------------
 TListaX * TListaX::Criar()
 {
-    TListaX * l = TGrupoX::Criar(); // Criar com otimização
-    //TListaX * l = new TListaX;      // Criar sem otimização
+    TListaX * l = AlocaMem.malloc(); // Criar com otimização
 #ifdef DEBUG_MSG
     printf("TListaX::Criar(%p)\n", l); fflush(stdout);
 #endif
@@ -1186,127 +1203,27 @@ void TListaX::Mover(TListaX * destino)
 }
 
 //----------------------------------------------------------------------------
-TListaX * TGrupoX::Criar()
+void TListaX::Limpar()
 {
-// Se tem objeto TListaX disponível...
-    if (Usado && Usado->Total < TOTAL_LISTAX)
-        return Usado->Lista + (Usado->Total++);
-// Se não tem objeto TListaX disponível...
-    TGrupoX * obj;
-    if (Disp == nullptr)    // Não tem objeto TGrupoX disponível
-    {
-        obj = new TGrupoX;
-#ifdef DEBUG_MSG
-        printf("TGrupoX::Criar(%p)\n", obj); fflush(stdout);
-#endif
-    }
-    else            // Tem objeto TGrupoX disponível
-        obj = Disp, Disp = Disp->Depois; // Retira da lista Disp
-    obj->Total = 1;
-    obj->Depois = Usado; // Coloca na lista Usado
-    Usado = obj;
-    return obj->Lista;
+    AlocaMem.LiberaBloco();
 }
 
 //----------------------------------------------------------------------------
-void TGrupoX::Apagar(TListaX * lista)
+void TListaX::Debug(TListaObj * lista)
 {
-    TListaX * lfim = Usado->Lista + Usado->Total - 1;
-    if (lista != lfim)
-        lfim->Mover(lista);
-    Usado->Total--;
-    if (Usado->Total == 0)
+    for (TListaX * obj = lista->Inicio; obj; obj = obj->ListaDepois)
     {
-        if (Disp == nullptr)
-            Tempo = TempoIni;
-        TGrupoX * obj = Usado;
-        Usado = Usado->Depois; // Retira da lista Usado
-        obj->Depois = Disp;    // Coloca na lista Disp
-        Disp = obj;
-    }
-}
-
-//----------------------------------------------------------------------------
-void TGrupoX::ProcEventos()
-{
-    if (Disp && Tempo + 10 < TempoIni)
-    {
-        TGrupoX * obj = Disp;
-        Disp = Disp->Depois; // Retira da lista Disp
-#ifdef DEBUG_MSG
-        printf("TGrupoX::Apagar(%p)\n", obj); fflush(stdout);
-#endif
-        delete obj;
-        Tempo = TempoIni;
-    }
-}
-
-//----------------------------------------------------------------------------
-void TGrupoX::Debug()
-{
-    for (TGrupoX * gr = Disp; gr; gr = gr->Depois)
-        assert(gr->Total == 0);
-    for (TGrupoX * gr = Usado; gr; gr = gr->Depois)
-    {
-        assert(gr->Total > 0);
-        assert(gr->Total <= TOTAL_LISTAX);
-        for (unsigned int x = 0; x < gr->Total; x++)
-        {
-            TListaX * obj = &gr->Lista[x];
-        // Verifica ListaObj
-            TListaX * obj2 = obj->Lista->Inicio;
-            int encontrou = 0;
-            for (; obj2; obj2=obj2->ListaDepois)
-            {
-                if (obj2==obj)
-                    encontrou++;
-            // TListaX::Lista
-                assert(obj2->Lista = obj->Lista);
-            // TListaX::ListaAntes
-                if (obj2->ListaAntes)
-                    assert(obj2->ListaAntes->ListaDepois == obj2);
-                else
-                    assert(obj2->Lista->Inicio == obj2);
-            // TListaX::ListaDepois
-                if (obj2->ListaDepois)
-                    assert(obj2->ListaDepois->ListaAntes == obj2);
-                else
-                    assert(obj2->Lista->Fim == obj2);
-            }
-            assert(encontrou == 1);
-        // Verifica Objeto
-            obj2 = obj->Objeto->VarListaX;
-            encontrou = 0;
-            for (; obj2; obj2 = obj2->ObjDepois)
-            {
-                if (obj2 == obj)
-                    encontrou++;
-            // TListaX::Objeto
-                assert(obj2->Objeto = obj->Objeto);
-            // TListaX::ObjAntes
-                if (obj2->ObjAntes)
-                    assert(obj2->ObjAntes->ObjDepois == obj2);
-                else
-                    assert(obj2->Objeto->VarListaX == obj2);
-            // TListaX::ObjDepois
-                if (obj2->ObjDepois)
-                    assert(obj2->ObjDepois->ObjAntes == obj2);
-            }
-            assert(encontrou == 1);
-        // Verifica ListaItem
-            for (TListaItem * item=obj->ListaItem; item; item = item->Depois)
-            {
-            // TListaItem::ListaX
-                assert(item->ListaX == obj);
-            // TListaItem::Antes
-                if (item->Antes)
-                    assert(item->Antes->Depois == item);
-                else
-                    assert(obj->ListaItem == item);
-            // TListaItem::Depois
-                if (item->Depois)
-                    assert(item->Depois->Antes == item);
-            }
-        }
+    // TListaX::Lista
+        assert(obj->Lista = lista);
+    // TListaX::ListaAntes
+        if (obj->ListaAntes)
+            assert(obj->ListaAntes->ListaDepois == obj);
+        else
+            assert(lista->Inicio == obj);
+    // TListaX::ListaDepois
+        if (obj->ListaDepois)
+            assert(obj->ListaDepois->ListaAntes == obj);
+        else
+            assert(lista->Fim == obj);
     }
 }

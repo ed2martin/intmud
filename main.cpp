@@ -325,10 +325,10 @@ int main(int argc, char *argv[])
         TVarIntExec::ProcEventos();
 
     // Limpa objetos de listaobj e listaitem
-        TGrupoX::ProcEventos();
+        TListaX::Limpar();
 
     // Limpa objetos de textotxt
-        TTextoGrupo::ProcEventos();
+        TTextoBloco::Limpar();
 
     // Grava logs pendentes
     // Obtém tempo de espera conforme TVarLog
