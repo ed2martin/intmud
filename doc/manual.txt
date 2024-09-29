@@ -8,10 +8,11 @@ IntMUD (Interpretador MUD)
 2.1. Opção INCLUIR
 2.2. Opção EXEC
 2.3. Opção TELATXT
-2.4. Opção LOG
-2.5. Opção ERR
-2.6. Opção COMPLETO
-2.7. Opção ARQEXEC
+2.4. Opção INTNOME
+2.5. Opção LOG
+2.6. Opção ERR
+2.7. Opção COMPLETO
+2.8. Opção ARQEXEC
 3. Classes
 4. Variáveis
 5. Funções
@@ -219,7 +220,23 @@ A comunicação com o usuário se dá sempre através da variável telatxt (vide
 'Outros tipos de variáveis').
 
 
-2.4. OPÇÃO LOG
+2.4. OPÇÃO INTNOME
+
+Sintaxe: INTNOME = 0
+         INTNOME = 1
+
+Se essa opção estiver ausente, assume 1.
+
+Se INTNOME for 0, a função intnome faz menos verificações para saber se
+um nome é válido para nome de personagem. Verifica apenas se o nome
+é muito pequeno, e se tem caracteres não permitidos.
+
+Se INTNOME for 1, a função intnome verifica também algumas combinações
+de caracteres. Por exemplo, não permite sh, gh, etc. em apelidos que
+não tenham nenhuma vogal.
+
+
+2.5. OPÇÃO LOG
 
 Sintaxe: LOG = 0
          LOG = 1
@@ -239,7 +256,7 @@ Por exemplo, se o executável chamar-se 'teste.exe' o arquivo de LOG será
 'teste.log'.
 
 
-2.5. OPÇÃO ERR
+2.6. OPÇÃO ERR
 
 Sintaxe: ERR = 0
          ERR = 1
@@ -260,7 +277,7 @@ esta for a última instrução da função.
 O valor 2 também checa inconsistências, mas não permite omitir FimSe.
 
 
-2.6. OPÇÃO COMPLETO
+2.7. OPÇÃO COMPLETO
 
 Sintaxe: COMPLETO = 0
          COMPLETO = 1
@@ -277,7 +294,7 @@ ArqExec só podem executar programas das opções ArqExec
 Em caso de dúvida, deixar 0.
 
 
-2.7. OPÇÃO ARQEXEC
+2.8. OPÇÃO ARQEXEC
 
 Sintaxe: ARQEXEC = <nome do comando>
 

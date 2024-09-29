@@ -119,12 +119,22 @@ bool arqvalido(char * nome);
  *  @note Se opcao_completo for diferente de 0, sempre retorna true */
 bool arqvalido(char * nome, bool somenteleitura);
 
-/// Verifica se nome válido para apelido
+/// Para saber qual função verifNome usar, se é verificação completa
+extern bool verifNomeTipo;
+
+/// Verifica se nome válido para apelido, não verifica combinações de caracteres */
 /** @param nome1 Texto em ASCIIZ
  *  @retval 0 Apelido válido
  *  @retval 1 Muito pequeno (menos de 2 caracteres)
  *  @retval 2 Contém caracteres inválidos */
-int verifNome(const char * nome1);
+int verifNomeSimples(const char * nome1);
+
+/// Verifica se nome válido para apelido, verifica combinações de caracteres */
+/** @param nome1 Texto em ASCIIZ
+ *  @retval 0 Apelido válido
+ *  @retval 1 Muito pequeno (menos de 2 caracteres)
+ *  @retval 2 Contém caracteres inválidos */
+int verifNomeCompleto(const char * nome1);
 
 /// Verifica se nome válido para senha
 /** @param nome1 Texto em ASCIIZ

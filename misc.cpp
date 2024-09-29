@@ -41,6 +41,8 @@ char * tab7B = nullptr;
 char * tabTXTSEPARA = nullptr;
 char * tabNOMEOBJ = nullptr;
 
+bool verifNomeTipo = true;
+
 //------------------------------------------------------------------------------
 // Prepara tabela ASCII (tabASC)
 void tabASCinic(void)
@@ -465,11 +467,25 @@ bool arqvalido(char * nome, bool somenteleitura)
 
 //------------------------------------------------------------------------------
 // Verifica se nome válido para apelido
-int verifNome(const char * nome1)
+int verifNomeSimples(const char * nome1)
+{
+    for (int tamanho = 0;; tamanho++,nome1++)
+    {
+        if (*nome1 == 0)
+            return (tamanho < 2 ? 1 : 0);
+        char ch = tabNOMES1[*(unsigned char *)nome1];
+        if (ch == 0 || ch == '_')
+            return 2;
+    }
+}
+
+//------------------------------------------------------------------------------
+// Verifica se nome válido para apelido
+int verifNomeCompleto(const char * nome1)
 {
     char anterior = 0;
     char verifH = 0;      // Para não permitir letra antes de h, exceto
-                        // em ch, lh, nh, quando apelido tiver vogal
+                          // em ch, lh, nh, quando apelido tiver vogal
     for (int tamanho = 0;; tamanho++,nome1++)
     {
         if (*nome1 == 0)

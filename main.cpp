@@ -580,9 +580,9 @@ void Inicializa(const char * arg)
             {
                 char * p = valor;
                 for (; p > mens; p--) // Retira espaços antes do igual
-                    if (p[-1]!=' ')
+                    if (p[-1] != ' ')
                         break;
-                *p=0;
+                *p = 0;
                 for (valor++; *valor == ' '; valor++);
             }
             //printf("[%s] [%s]\n", mens, valor);
@@ -592,6 +592,8 @@ void Inicializa(const char * arg)
                 Instr::VarExecIni = TxtToInt(valor);
             if (comparaZ(mens, "telatxt") == 0)
                 telatxt = TxtToInt(valor);
+            if (comparaZ(mens, "intnome") == 0)
+                verifNomeTipo = TxtToInt(valor);
             if (comparaZ(mens, "log") == 0)
                 opcao_log = (TxtToInt(valor) != 0);
             if (comparaZ(mens, "err") == 0)
@@ -633,7 +635,7 @@ void Inicializa(const char * arg)
         {
             err_printf("%s:%d: Classe inválida: %s\n",
                             arqinicio, linhanum, pclasse);
-            erro=true;
+            erro = true;
             continue;
         }
         TClasse * cl = TClasse::Procura(pclasse);
@@ -641,7 +643,7 @@ void Inicializa(const char * arg)
         {
             err_printf("%s:%d: Classe repetida: %s (%s)\n",
                             arqinicio, linhanum, pclasse, cl->Comandos);
-            erro=true;
+            erro = true;
             continue;
         }
 
@@ -723,7 +725,7 @@ void Inicializa(const char * arg)
             if (p)
             {
                 err_printf("%s:%d: %s\n", arqinicio, arq.LinhaAtual(), p);
-                erro=true;
+                erro = true;
             }
             if (classeatual) // Anota instruções da classe
             {
