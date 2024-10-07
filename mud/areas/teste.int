@@ -2600,6 +2600,91 @@ func cmd_chegou
   jogador && clonar(jogador)
 
 
+classe p_teste054
+herda comum_persobat
+const nome = "guarda"
+const descnome = "um guarda"
+const sexoini = 1 # Sexo Perso: 1 Masculino
+const p_recebe = 1 # Recebe itens: Sim
+const inivar = "h_socar=3,h_chutar=3"
+const eveste = 1 # Eventos perso: Sim
+const evsala = 1 # Eventos dono sala: Sim
+
+func cmd_darmoedas
+  se arg1 == este
+    se arg0.var.d_podepassar_
+      $mens.p(este, arg0)
+      $mens.mvis1("$P diz para $a: Você já me deu duas moedas.")
+      ret 1
+    senao arg2 != 2
+      $mens.p(este, arg0)
+      $mens.mvis1("$P diz para $a: Precisa ser duas moedas.")
+      ret 1
+    fimse
+    arg0.var.d_podepassar_ = 1
+  fimse
+
+func cmd_darobj
+  $mens.p(este, arg0)
+  $mens.mvis1("$P diz para $a: Não aceito propina.")
+  ret 1
+
+func cmd_mover
+  se arg2 == "s"
+    uint8 jogadores # Quantos jogadores querem passar
+    uint8 pagou # Quantos personagens pagaram a taxa
+    listaobj l
+    epara l.addfim(arg0, arg0.persolugar), l, l.ini.remove
+      jogadores += l.objini.jog, pagou += l.objini.var.d_podepassar_
+    efim
+    ret jogadores == 0 || pagou != 0, nulo # Se não há jogador ou se já foi pago
+    $mens.p(este, arg0)
+    $mens.mvis1("$P diz para $a: Se quiser ir para o sul, precisa me dar duas moedas.")
+    ret 1
+  fimse
+
+
+classe p_teste055
+herda comum_persobat
+const nome = "guarda"
+const descnome = "uma guarda"
+const sexoini = 0 # Sexo Perso: 0 Feminino
+const p_recebe = 1 # Recebe itens: Sim
+const inivar = "h_socar=3,h_chutar=3"
+const eveste = 1 # Eventos perso: Sim
+const evsala = 1 # Eventos dono sala: Sim
+
+func cmd_chegou # Alguém chegou na mesma sala
+  ret !arg0.jog, nulo # Retorna se não for jogador
+  misc:tempo("entrou", arg0) # Dispara funções 'entrou'
+
+func entrou5
+  arg0.msg("Guarda diz: Libero a passagem ao sul por 2 moedas")
+
+func cmd_darmoedas
+  se arg1 == este
+    se arg0.var.d_podepassar_
+      $mens.p(este, arg0)
+      $mens.mvis1("$P diz para $a: Você já me deu duas moedas.")
+      ret 1
+    senao arg2 != 2
+      $mens.p(este, arg0)
+      $mens.mvis1("$P diz para $a: Precisa ser duas moedas.")
+      ret 1
+    fimse
+    arg0.var.d_podepassar_ = 1
+    misc:tempo("recebeu", arg0)
+  fimse
+
+func recebeu5
+  arg0.msg("Uma saída ao sul acaba de aparecer.")
+
+func cmd_darobj
+  $mens.p(este, arg0)
+  $mens.mvis1("$P diz para $a: Não aceito propina.")
+  ret 1
+
+
 classe s_teste001
 herda b_teste
 const s_titulo = "Entrada"
@@ -5697,9 +5782,11 @@ const dir_se = $s_teste176
 classe s_teste182
 herda b_teste
 const s_titulo = "Sétimo andar"
-const s_desc = "Ao norte mesa, árvore com frutas e itens que somem ao soltar"
+const s_desc = "Ao norte mesa, árvore com frutas e itens que somem ao soltar\n\
+Ao sul, caminho que necessita de pagamento para prosseguir"
 const s_visitou = 1 # Área visitada: Sim
 const dir_n = $s_teste183
+const dir_s = $s_teste195
 const dir_b = $s_teste064
 
 
@@ -5944,3 +6031,63 @@ Na prática, clonar sempre com o mesmo nível do jogador não é bom porque\n\
 torna desnecessário procurar personagens mais fortes para subir de nível.\n\
 Por isso, o nível do personagem após a clonagem nunca vai passar de 10."
 const dir_o = $s_teste193
+
+
+classe s_teste195
+herda b_teste
+const s_titulo = "Pedágio 1"
+const s_desc = "Aqui é necessário dar duas moedas para esse guarda para ir para o sul.\n\
+No entanto, se o jogador vencer esse guarda (se ele não estiver\n\
+presente), é possível ir para o sul sem pagar essa taxa. Se estiver\n\
+montado em algum animal, pelo menos um jogador precisa pagar. Por questão\n\
+de conveniência, ao entrar nessa sala, sempre há algumas moedas no chão."
+const eveste = 1 # Eventos sala: Sim
+const dir_n = $s_teste182
+const dir_s = $s_teste196
+const s_reset = "P 100 teste054 0 0 1"
+
+func s_reset1 # Realiza o reset
+# Não alterar; função criada automaticamente a partir de s_reset
+  se p_teste054:objsolto.total < 1
+    criar("p_teste054", este, 0)
+  fimse
+
+func cmd_chegou
+  !var.z_moedas_ && (var.z_moedas_ = 5)
+
+
+classe s_teste196
+herda b_teste
+const s_titulo = "Pedágio 2"
+const s_desc = "Aqui é semelhante ao Pedágio 1, porém a saída ao sul só aparece quando\n\
+o pagamento é efetuado. Então, se a guarda for morta, a passagem continua\n\
+bloqueada. No entanto, se o jogador falar abrir (com o comando Falar)\n\
+em élfico, e o conhecimento de élfico for avançado ou superior, a passagem\n\
+também abre. Élfico é ensinado na sala teste031."
+const dir_n = $s_teste195
+const s_reset = "P 100 teste055 0 0 1 h_socar=3,h_chutar=3"
+
+func s_reset1 # Realiza o reset
+# Não alterar; função criada automaticamente a partir de s_reset
+  se p_teste055:objsolto.total < 1
+    criar("p_teste055", este, 0, "h_socar=3,h_chutar=3")
+  fimse
+
+func dir_s
+  uint8 jogadores # Quantos jogadores querem passar
+  uint8 pagou # Quantos personagens pagaram a taxa
+  listaobj l
+  epara l.addfim(arg0, arg0.persolugar), l, l.ini.remove
+    jogadores += l.objini.jog, pagou += l.objini.var.d_podepassar_
+  efim
+  ret jogadores == 0 || pagou != 0 ? $s_teste182
+
+func cmd_salaperso # Personagem chegou; necessário para cmd_falou
+  ret !arg0.jog, nulo # Retorna se não for jogador
+  misc:evento(arg0) # Receber eventos do personagem
+
+func cmd_falou
+  se arg1 == "abrir" && arg2 == $idioma_elfico && arg3 >= 5
+    arg0.var.d_podepassar_ = 1
+    arg0.msg("Uma saída ao sul acaba de aparecer.")
+  fimse
