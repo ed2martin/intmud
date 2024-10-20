@@ -12,6 +12,7 @@
 #ifdef __WIN32__
  #include <windows.h>
  #include <winsock.h>
+ #include <ws2tcpip.h>
  #include <fcntl.h>
  #include <io.h>
  #define close closesocket
@@ -20,7 +21,7 @@
  #include <arpa/inet.h>
  #include <fcntl.h>
  #include <netdb.h>
- #include <netinet/in.h> // Contém a estrutura sockaddr_in
+ #include <netinet/in.h> // Contém a estrutura sockaddr_storage
  #include <sys/time.h>
  #include <sys/types.h>
  #include <sys/socket.h> // Comunicação
@@ -108,63 +109,189 @@ static const char desconvirc[] = {
     0 }; // 15
 
 //------------------------------------------------------------------------------
+void TSocket::IpParaString(struct sockaddr * sa, size_t salen,
+        char * dst, size_t maxlen)
+{
+#ifdef __WIN32__
+    unsigned long s = maxlen;
+    if (WSAAddressToString(sa, salen, NULL, dst, &s) != 0)
+        *dst = 0;
+    return;
+#else
+    *dst = 0;
+    if (sa->sa_family == AF_INET)
+        inet_ntop(AF_INET, &(((struct sockaddr_in *)sa)->sin_addr),
+                dst, maxlen);
+    else if (sa->sa_family == AF_INET6)
+        inet_ntop(AF_INET6, &(((struct sockaddr_in6 *)sa)->sin6_addr),
+                dst, maxlen);
+#endif
+}
+
+//------------------------------------------------------------------------------
+bool TSocket::IpValido(const char * host)
+{
+#ifdef __WIN32__
+    struct sockaddr_storage ss;
+    int size = sizeof(ss);
+    char host_copy[INET6_ADDRSTRLEN+1];
+    copiastr(host_copy, host, INET6_ADDRSTRLEN+1); // stupid non-const API
+    memset(&ss, 0, sizeof(ss));
+    if (WSAStringToAddress(host_copy, AF_INET, NULL, (struct sockaddr *)&ss,
+            &size) == 0)
+        return true;
+    memset(&ss, 0, sizeof(ss));
+    if (WSAStringToAddress(host_copy, AF_INET6, NULL, (struct sockaddr *)&ss,
+            &size) == 0)
+        return true;
+    return false;
+#else
+    struct in_addr addr_ipv4;
+    struct in6_addr addr_ipv6;
+    if (inet_pton(AF_INET, host, &addr_ipv4) > 0)
+        return true;
+    if (inet_pton(AF_INET6, host, &addr_ipv6) > 0)
+        return true;
+    return false;
+#endif
+}
+
+//------------------------------------------------------------------------------
+int TSocket::NomeParaIps(const char * nome, char * ip, int tamanho)
+{
+    struct addrinfo hints, *res;
+    memset(&hints, 0, sizeof(hints));
+    hints.ai_family = AF_UNSPEC; // Allow IPv4 and IPv6
+    hints.ai_socktype = SOCK_STREAM; // TCP
+    *ip = 0;
+    int result = getaddrinfo(nome, NULL, &hints, &res);
+    if (result != 0)
+        return result;
+    if (res == nullptr)
+        return -1;
+    bool achou = false;
+    for (struct addrinfo *p = res; p != NULL; p = p->ai_next)
+    {
+        TSocket::IpParaString(p->ai_addr, p->ai_addrlen, ip, tamanho);
+        if (*ip == 0)
+            continue;
+        while (*ip)
+            ip++, tamanho--;
+        if (tamanho < 1)
+        {
+            achou = false;
+            break;
+        }
+        *ip++ = ' ', tamanho--;
+        achou = true;
+    }
+    if (achou)
+        ip[-1] = 0;
+    freeaddrinfo(res);
+    return 0;
+}
+
+//------------------------------------------------------------------------------
+int TSocket::IpParaNome(const char * ip, char * nome, int tamanho)
+{
+#if __WIN32__
+    struct sockaddr_storage ss;
+    int size = sizeof(ss);
+    char src_copy[INET6_ADDRSTRLEN+1];
+    copiastr(src_copy, ip, INET6_ADDRSTRLEN+1); // stupid non-const API
+    memset(&ss, 0, sizeof(ss));
+    if (WSAStringToAddress(src_copy, AF_INET, NULL, (struct sockaddr *)&ss,
+            &size) == 0)
+    {
+        return getnameinfo((sockaddr*)&ss, sizeof(ss),
+                nome, tamanho, NULL, 0, 0);
+    }
+    memset(&ss, 0, sizeof(ss));
+    if (WSAStringToAddress(src_copy, AF_INET6, NULL, (struct sockaddr *)&ss,
+            &size) == 0)
+    {
+        return getnameinfo((sockaddr*)&ss, sizeof(ss),
+                nome, tamanho, NULL, 0, 0);
+    }
+    return -1;
+#else
+    struct sockaddr_in addr_ipv4;
+    struct sockaddr_in6 addr_ipv6;
+    memset(&addr_ipv4, 0, sizeof(addr_ipv4));
+    memset(&addr_ipv6, 0, sizeof(addr_ipv6));
+    *nome = 0;
+    if (inet_pton(AF_INET, ip, &addr_ipv4.sin_addr) > 0)
+    {
+        addr_ipv4.sin_family = AF_INET;
+        return getnameinfo((sockaddr*)&addr_ipv4, sizeof(addr_ipv4),
+                nome, tamanho, NULL, 0, 0);
+    }
+    if (inet_pton(AF_INET6, ip, &addr_ipv6.sin6_addr) > 0)
+    {
+        addr_ipv6.sin6_family = AF_INET6;
+        return getnameinfo((sockaddr*)&addr_ipv6, sizeof(addr_ipv6),
+                nome, tamanho, NULL, 0, 0);
+    }
+    return -1;
+#endif
+}
+
+//------------------------------------------------------------------------------
 TSocket * TSocket::Conectar(const char * ender, int porta, bool ssl)
 {
-    struct sockaddr_in conSock;
-    struct hostent *hnome;
-    int conManip;
-
     if (porta < 0 || porta > 65535)
         return nullptr;
-#ifdef __WIN32__
-    memset(&conSock, 0, sizeof(conSock));
-    conSock.sin_addr.s_addr = inet_addr(ender);
-    if ( conSock.sin_addr.s_addr == INADDR_NONE )
-    {
-        if ( (hnome = gethostbyname(ender)) == NULL )
-            return nullptr;
-        conSock.sin_addr = (*(struct in_addr *)hnome->h_addr);
-    }
-    conSock.sin_family = AF_INET;
-    conSock.sin_port = htons( (u_short)porta );
-    if ( (conManip = socket(PF_INET, SOCK_STREAM, 0)) == INVALID_SOCKET)
+
+    struct addrinfo hints, *res;
+    char port2[20];
+    sprintf(port2, "%d", porta);
+    memset(&hints, 0, sizeof(hints));
+    hints.ai_family = AF_UNSPEC; // Allow IPv4 and IPv6
+    hints.ai_socktype = SOCK_STREAM; // TCP
+    hints.ai_protocol = IPPROTO_TCP;
+    if (getaddrinfo(ender, port2, &hints, &res) != 0)
         return nullptr;
+    if (res == nullptr)
+        return nullptr;
+    auto conManip = socket(res->ai_family, res->ai_socktype, res->ai_protocol);
+
+#ifdef __WIN32__
+    if (conManip == INVALID_SOCKET)
+    {
+        freeaddrinfo(res);
+        return nullptr;
+    }
     SockConfig(conManip);
-    if ( connect(conManip, (struct sockaddr *)&conSock,
-                                      sizeof(struct sockaddr)) == SOCKET_ERROR)
+    if ( connect(conManip, res->ai_addr, (int)res->ai_addrlen) == SOCKET_ERROR)
     {
         if (WSAGetLastError() != WSAEWOULDBLOCK)
         {
             closesocket(conManip);
+            freeaddrinfo(res);
             return nullptr;
         }
     }
 #else
-    memset(&conSock.sin_zero, 0, 8);
-    conSock.sin_family=AF_INET;
-    conSock.sin_port=htons(porta);
-    if (inet_aton(ender, &conSock.sin_addr) == 0)
+    if (conManip < 0)
     {
-        if ( (hnome = gethostbyname(ender)) == nullptr )
-            return nullptr;
-        conSock.sin_addr = (*(struct in_addr *)hnome->h_addr);
-    }
-    if ( (conManip = socket(PF_INET,SOCK_STREAM, 0)) ==-1)
+        freeaddrinfo(res);
         return nullptr;
+    }
     SockConfig(conManip);
-    if ( connect(conManip, (struct sockaddr *)&conSock,
-                                      sizeof(struct sockaddr)) < 0 )
+    if ( connect(conManip, res->ai_addr, res->ai_addrlen) < 0 )
     {
         if (errno != EINPROGRESS)
         {
             close(conManip);
+            freeaddrinfo(res);
             return nullptr;
         }
     }
 #endif
+    freeaddrinfo(res);
     TSocket * s = new TSocket(conManip, nullptr);
     s->proto = (ssl ? spConnect2 : spConnect1);
-    s->conSock = conSock;
+    memcpy(&s->conSock, res->ai_addr, res->ai_addrlen);
     if (ssl)
         copiastr((char*)s->bufRec, ender, sizeof(s->bufRec));
 #ifdef DEBUG_SSL
@@ -534,20 +661,15 @@ void TSocket::Endereco(int num, char * mens, int tam)
         return;
     if (num < 2)
     {
-        struct sockaddr_in conSock;
-#ifdef __WIN32__
-        int tam = sizeof(conSock);
-#else
-        ACCEPT_TYPE_ARG3 tam = sizeof(conSock);
-#endif
-        tam = sizeof(struct sockaddr);
+        struct sockaddr_storage conSock;
+        ACCEPT_TYPE_ARG3 tam2 = sizeof(conSock);
         int r;
         if (num)
-            r = getpeername(sock, (struct sockaddr *)&conSock, &tam);
+            r = getpeername(sock, (struct sockaddr*)&conSock, &tam2);
         else
-            r = getsockname(sock, (struct sockaddr *)&conSock, &tam);
+            r = getsockname(sock, (struct sockaddr*)&conSock, &tam2);
         if (r >= 0)
-            copiastr(mens, inet_ntoa(conSock.sin_addr), tam);
+            TSocket::IpParaString((struct sockaddr*)&conSock, tam2, mens, tam);
         return;
     }
     if (num < 4)

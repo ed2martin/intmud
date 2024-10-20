@@ -31,6 +31,29 @@ public:
     ~TSocket();                 ///< Destrutor
     void Fechar();              ///< Socket fechou
 
+    static int NomeParaIps(const char * nome, char * ip, int tamanho);
+            ///< Obtém os IPs a partir do nome
+            /**< @param nome Endereço
+             *   @param ip Aonde colocar os IPs, separados por espaço
+             *   @param tamanho Tamanho de ip em bytes
+             *   @return 0 se sucesso ou código de erro, -1 se nenhum endereço */
+    static int IpParaNome(const char * ip, char * nome, int tamanho);
+            ///< Obtém o nome a partir do IP
+            /**< @param ip Aonde colocar os IPs, separados por espaço
+             *   @param nome Endereço
+             *   @param tamanho Tamanho de nome em bytes
+             *   @return 0 se sucesso ou código de erro, -1 se nenhum endereço */
+    static void IpParaString(struct sockaddr * sa, size_t salen,
+            char * s, size_t maxlen);
+            ///< Converte endereço IP em sockaddr para texto
+            /**  @param sa Estrutura sockaddr
+             *   @param salen Tamanho da estrutura em sa
+             *   @param s Aonde colocar o texto
+             *   @param maxlen Tamanho de s em bytes
+             *   @note s será um texto vazio se não for possível obter o endereço */
+    static bool IpValido(const char * host);
+            ///< Retorna true se for um endereço IP válido
+
     static void SockConfig(int socknum);
     static TSocket * Conectar(const char * ender, int porta, bool ssl);
             ///< Cria objeto TSocket a partir de endereço e porta
@@ -95,7 +118,7 @@ private:
                                   *  não devem gerar eventos _env */
     unsigned char usaropctelnet:1; ///< Variável socket.opctelnet
     unsigned char sockenvrec:1; ///< 1=socket fechou ao enviar, 0=ao receber
-    struct sockaddr_in conSock; ///< Usado principalmente quando proto=0
+    struct sockaddr_storage conSock; ///< Usado principalmente quando proto=0
 
 // Para enviar mensagens
     char bufEnv[SOCKET_ENV];    ///< Contém a mensagem que será enviada

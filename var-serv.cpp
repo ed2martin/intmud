@@ -10,6 +10,7 @@
 #ifdef __WIN32__
  #include <windows.h>
  #include <winsock.h>
+ #include <ws2tcpip.h>
  #include <fcntl.h>
  #include <io.h>
  #define close closesocket
@@ -18,7 +19,7 @@
  #include <arpa/inet.h>
  #include <fcntl.h>
  #include <netdb.h>
- #include <netinet/in.h> // Contém a estrutura sockaddr_in
+ #include <netinet/in.h> // Contém a estrutura sockaddr_storage
  #include <string.h>
  #include <sys/time.h>
  #include <sys/types.h>
@@ -178,46 +179,37 @@ void TVarServ::EndObjeto(TClasse * c, TObjeto * o)
 //------------------------------------------------------------------------------
 bool TVarServ::Abrir(const char * ender, unsigned short porta)
 {
-    struct sockaddr_in strSock;
-    struct hostent *hnome;
+    if (*ender == 0)
+        ender = "0.0.0.0";
+    struct addrinfo hints, *res = nullptr;
 
     while (true)
     {
-// Fecha socket
+    // Fecha socket
         Fechar();
 
-#ifdef __WIN32__
-    // Windows: Cria socket
-        if ( (sock = socket(PF_INET, SOCK_STREAM, 0)) == INVALID_SOCKET )
-        {
-            sock = -1;
+    // Cria socket
+        char port2[20];
+        sprintf(port2, "%d", porta);
+        memset(&hints, 0, sizeof(hints));
+        hints.ai_family = AF_UNSPEC; // Allow IPv4 and IPv6
+        hints.ai_socktype = SOCK_STREAM; // TCP
+        if (getaddrinfo(ender, port2, &hints, &res) != 0 || res == nullptr)
             break;
-        }
+        auto s1 = socket(res->ai_family, res->ai_socktype, res->ai_protocol);
+
+#ifdef __WIN32__
+    // Windows: Acerta socket
+        if (s1 == INVALID_SOCKET)
+            break;
+        sock = s1;
         //BOOL iopcoes = 1;
         //int  tamanho = sizeof(iopcoes);
         //setsockopt(Sock, SOL_SOCKET, SO_REUSEADDR, (const char*)(void*)&iopcoes, tamanho);
 
-    // Windows: Seleciona o endereço
-        memset(&(strSock.sin_zero), 0, 8);
-        strSock.sin_family = AF_INET;
-        strSock.sin_addr.s_addr = htonl(INADDR_ANY);
-        if (*ender)
-        {
-            strSock.sin_addr.s_addr = inet_addr(ender);
-            if ( strSock.sin_addr.s_addr == INADDR_NONE )
-            {
-                if ( (hnome=gethostbyname(ender)) == NULL )
-                    break;
-                strSock.sin_addr = (*(struct in_addr *)hnome->h_addr);
-            }
-        }
-
-    // Windows: Seleciona a porta
-        strSock.sin_port = htons((u_short)porta);
-        if ( bind(sock, (LPSOCKADDR)&strSock, sizeof(strSock)) )
-            break;
-
     // Windows: Escuta na porta selecionada
+        if ( bind(sock, res->ai_addr, res->ai_addrlen) )
+            break;
         if (listen(sock, 15))
             break;
 
@@ -226,38 +218,24 @@ bool TVarServ::Abrir(const char * ender, unsigned short porta)
         if ( ioctlsocket(sock, FIONBIO, &argp) != 0 )
             break;
 #else
-    // Unix: Cria socket
+    // Unix: Acerta socket
+        if (s1 < 0)
+            break;
+        sock = s1;
         int  iopcoes = 1;
         ACCEPT_TYPE_ARG3 tamanho = sizeof(iopcoes);
-        if ( (sock = socket(PF_INET, SOCK_STREAM, 0)) < 0 )
-            break;
         setsockopt(sock, SOL_SOCKET, SO_REUSEADDR, &iopcoes, tamanho);
 
-    // Unix: Seleciona o endereço
-        memset(&(strSock.sin_zero), 0, 8);
-        strSock.sin_family = AF_INET;
-        strSock.sin_addr.s_addr = htonl(INADDR_ANY);
-        if (*ender)
-            if (inet_aton(ender, &strSock.sin_addr) == 0)
-            {
-                if ( (hnome = gethostbyname(ender)) == nullptr )
-                    break;
-                strSock.sin_addr = (*(struct in_addr *)hnome->h_addr);
-            }
-
-    // Unix: Seleciona a porta
-        strSock.sin_port = htons(porta);
-        if ( bind(sock, (struct sockaddr *)&strSock,
-                            sizeof(struct sockaddr)) < 0)
-            break;
-
     // Unix: Escuta na porta selecionada
+        if ( bind(sock, res->ai_addr, res->ai_addrlen) < 0)
+            break;
         if (listen(sock, 15) < 0)
             break;
 
     // Unix: Modo de não bloqueio
         fcntl(sock, F_SETFL, O_NONBLOCK);
 #endif
+        freeaddrinfo(res);
 
     // Coloca na lista ligada
         Antes = nullptr;
@@ -271,6 +249,8 @@ bool TVarServ::Abrir(const char * ender, unsigned short porta)
 // Ocorreu algum erro
     // UNIX: o erro está em strerror(errno)
     // Windows: chamar WSAGetLastError() e obter o erro de uma tabela
+    if (res)
+        freeaddrinfo(res);
     if (sock >= 0)
         close(sock);
     sock = -1;
@@ -310,7 +290,7 @@ void TVarServ::ProcEventos(fd_set * set_entrada, int tempo)
         varObj = obj;
         while (obj == varObj)
         {
-            struct sockaddr_in SockStr_in;
+            struct sockaddr_storage SockStr_in;
 #ifdef __WIN32__
             int tamsock = sizeof(SockStr_in);
             unsigned int localSocket = accept(obj->sock,

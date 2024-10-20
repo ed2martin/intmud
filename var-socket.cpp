@@ -602,29 +602,11 @@ bool TVarSocket::FuncNomeIP(TVariavel * v)
 {
     if (Instr::VarAtual - v < 1)
         return false;
-    struct sockaddr_in conSock;
-    struct hostent *hnome;
-    const char * ender = v[1].getTxt();
-#ifdef __WIN32__
-    memset(&conSock, 0, sizeof(conSock));
-    conSock.sin_addr.s_addr = inet_addr(ender);
-    if ( conSock.sin_addr.s_addr == INADDR_NONE )
-    {
-        if ( (hnome=gethostbyname(ender)) == nullptr )
-            return Instr::CriarVarTxtFixo(v, "");
-        conSock.sin_addr = (*(struct in_addr *)hnome->h_addr);
-    }
-#else
-    memset(&conSock.sin_zero, 0, 8);
-    if (inet_aton(ender, &conSock.sin_addr) == 0)
-    {
-        if ( (hnome=gethostbyname(ender)) == nullptr )
-            return Instr::CriarVarTxtFixo(v, "");
-        conSock.sin_addr = (*(struct in_addr *)hnome->h_addr);
-    }
-#endif
+    char buf[4096];
+    if (TSocket::NomeParaIps(v[1].getTxt(), buf, sizeof(buf)) != 0)
+        return Instr::CriarVarTxtFixo(v, "");
     Instr::ApagarVar(v);
-    return Instr::CriarVarTexto(inet_ntoa(conSock.sin_addr));
+    return Instr::CriarVarTexto(buf);
 }
 
 //----------------------------------------------------------------------------
@@ -633,27 +615,11 @@ bool TVarSocket::FuncIPNome(TVariavel * v)
 {
     if (Instr::VarAtual - v < 1)
         return false;
-    struct sockaddr_in conSock;
-    struct hostent *hnome;
-    const char * ender = v[1].getTxt();
-#ifdef __WIN32__
-    memset(&conSock, 0, sizeof(conSock));
-    conSock.sin_addr.s_addr = inet_addr(ender);
-    if ( conSock.sin_addr.s_addr == INADDR_NONE )
-        hnome = gethostbyname(ender);
-    else
-        hnome = gethostbyaddr( (char *) &conSock.sin_addr,
-                            sizeof(conSock.sin_addr), AF_INET );
-#else
-    memset(&conSock.sin_zero, 0, 8);
-    if (inet_aton(ender, &conSock.sin_addr) == 0)
-        hnome = gethostbyname(ender);
-    else
-        hnome = gethostbyaddr( (char *) &conSock.sin_addr,
-                            sizeof(conSock.sin_addr), AF_INET );
-#endif
+    char buf[4096];
+    if (TSocket::IpParaNome(v[1].getTxt(), buf, sizeof(buf)) != 0)
+        return Instr::CriarVarTxtFixo(v, "");
     Instr::ApagarVar(v);
-    return Instr::CriarVarTexto(hnome == nullptr ? "" : hnome->h_name);
+    return Instr::CriarVarTexto(buf);
 }
 
 //----------------------------------------------------------------------------
@@ -662,16 +628,7 @@ bool TVarSocket::FuncIPValido(TVariavel * v)
 {
     if (Instr::VarAtual - v < 1)
         return false;
-    int valido = 0;
-    const char * ender = v[1].getTxt();
-#ifdef __WIN32__
-    if ( inet_addr(ender) != INADDR_NONE )
-        valido = 1;
-#else
-    struct sockaddr_in conSock;
-    if (inet_aton(ender, &conSock.sin_addr) != 0)
-        valido = 1;
-#endif
+    int valido = TSocket::IpValido(v[1].getTxt());
     return Instr::CriarVarInt(v, valido);
 }
 
@@ -796,31 +753,35 @@ unsigned char TVarSocket::FOperadorCompara(TVariavel * v1, TVariavel * v2)
 }
 
 //------------------------------------------------------------------------------
+void TDNSSocket::ResolveDNS()
+{
+    if (TSocket::IpValido(nomeini))
+    {
+        if (TSocket::IpParaNome(nomeini, nomefim + 1, sizeof(nomefim) - 1) == 0)
+        {
+            nomefim[0] = 'N';
+            return;
+        }
+    }
+    else
+    {
+        if (TSocket::NomeParaIps(nomeini, nomefim + 1, sizeof(nomefim) - 1) == 0)
+        {
+            nomefim[0] = 'I';
+            return;
+        }
+    }
+    nomefim[0] = ' ';
+    nomefim[1] = 0;
+}
+
+//------------------------------------------------------------------------------
 #ifdef __WIN32__
 /// Resolve endereço em segundo plano no Windows
 static DWORD WINAPI TDNSSocket_Resolve(LPVOID lpParam)
 {
     TDNSSocket * obj = static_cast<TDNSSocket *>(lpParam);
-    struct sockaddr_in conSock;
-    struct hostent *hnome;
-    memset(&conSock, 0, sizeof(conSock));
-    conSock.sin_addr.s_addr=inet_addr(obj->nomeini);
-    if ( conSock.sin_addr.s_addr == INADDR_NONE )
-    {
-        hnome = gethostbyname(obj->nomeini);
-        if (hnome)
-        {
-            conSock.sin_addr = (*(struct in_addr *)hnome->h_addr);
-            copiastr(obj->ip, inet_ntoa(conSock.sin_addr));
-        }
-    }
-    else
-    {
-        hnome = gethostbyaddr( (char *) &conSock.sin_addr,
-                            sizeof(conSock.sin_addr), AF_INET );
-        copiastr(obj->ip, inet_ntoa(conSock.sin_addr));
-    }
-    copiastr(obj->nome, hnome == nullptr ? "" : hnome->h_name, sizeof(obj->nome));
+    obj->ResolveDNS();
     return 0;
 }
 #endif
@@ -862,8 +823,8 @@ TDNSSocket::TDNSSocket(TVarSocket * var, const char * ender)
     if (*ender == 0)
         return;
     *nomeini = 0;
-    *nome = 0;
-    *ip = 0;
+    nomefim[0] = 0;
+    nomefim[1] = 0;
     copiastr(nomeini, ender, sizeof(nomeini));
     if (*nomeini == 0)
         return;
@@ -892,28 +853,8 @@ TDNSSocket::TDNSSocket(TVarSocket * var, const char * ender)
     if (pid == 0) // Processo filho
     {
         close(descrpipe[0]);
-        struct sockaddr_in conSock;
-        struct hostent *hnome;
-        memset(&conSock.sin_zero, 0, 8);
-        if (inet_aton(nomeini, &conSock.sin_addr) == 0)
-        {
-            hnome = gethostbyname(nomeini);
-            if (hnome)
-            {
-                conSock.sin_addr = (*(struct in_addr *)hnome->h_addr);
-                copiastr(ip, inet_ntoa(conSock.sin_addr));
-            }
-        }
-        else
-        {
-            hnome = gethostbyaddr( (char *) &conSock.sin_addr,
-                                sizeof(conSock.sin_addr), AF_INET );
-            copiastr(ip, inet_ntoa(conSock.sin_addr));
-        }
-        char mens[1024];
-        char * p = mprintf(mens, sizeof(mens), "%s%c%s",
-                hnome==NULL ? "" : hnome->h_name, 0, ip);
-        safe_write(descrpipe[1], mens, p - mens + 1);
+        ResolveDNS();
+        safe_write(descrpipe[1], nomefim, strlen(nomefim) + 1);
         _exit(EXIT_SUCCESS);
     }
     close(descrpipe[1]);
@@ -956,8 +897,7 @@ void TDNSSocket::ProcEventos(fd_set * set_entrada)
         }
         CloseHandle(obj->hthread);
 #else
-        char mens[1024];
-        int resposta =  read(obj->recdescr, mens, sizeof(mens) - 2);
+        int resposta =  read(obj->recdescr, &obj->nomefim, sizeof(obj->nomefim));
         if (resposta < 0 && (errno==EINTR || errno==EWOULDBLOCK))
         {
             obj = obj->Depois;
@@ -966,9 +906,9 @@ void TDNSSocket::ProcEventos(fd_set * set_entrada)
         close(obj->recdescr);
         if (resposta < 0)
             resposta = 0;
-        memset(mens + resposta, 0, 2);
-        copiastr(obj->nome, mens, sizeof(obj->nome));
-        copiastr(obj->ip, mens+strlen(mens) + 1, sizeof(obj->ip));
+        if (resposta >= (int)sizeof(obj->nomefim))
+            resposta = (int)sizeof(obj->nomefim) - 1;
+        obj->nomefim[resposta] = 0;
 #endif
     // Checa se pode gerar evento
         TVarSocket * vobj = obj->Socket;
@@ -991,9 +931,23 @@ void TDNSSocket::ProcEventos(fd_set * set_entrada)
     // Executa
         if (prossegue)
         {
-            Instr::ExecArg(obj->nomeini);
-            Instr::ExecArg(obj->nome);
-            Instr::ExecArg(obj->ip);
+            Instr::ExecArg(obj->nomeini); // Nome pesquisado
+            if (obj->nomefim[0] == 'N')
+            {
+                Instr::ExecArg(strcmp(obj->nomeini, obj->nomefim + 1) == 0 ?
+                        "" : obj->nomefim + 1);
+                Instr::ExecArg(obj->nomeini);
+            }
+            else if (obj->nomefim[0] == 'I')
+            {
+                Instr::ExecArg(obj->nomeini);
+                Instr::ExecArg(obj->nomefim + 1);
+            }
+            else
+            {
+                Instr::ExecArg("");
+                Instr::ExecArg("");
+            }
             Instr::ExecArg(vobj->indice);
             Instr::ExecX();
             Instr::ExecFim();

@@ -3933,8 +3933,9 @@ Em servidores, não é recomendável usá-la pois enquanto o nome estiver
 sendo resolvido, o IntMUD fica parado. Melhor usar eventoip.
 
 32.17. nomeip(<nome ou endereço IP>)
-Retorna o endereço IP a partir do nome da máquina ou endereço IP.
-Funciona exatamente como a função ipnome acima.
+Retorna os endereços IP a partir do nome da máquina ou o endereço IP,
+separados por espaço (se houver mais de um) ou um texto vazio se não
+encontrou. Funciona exatamente como a função ipnome acima.
 
 32.18. eventoip(<nome ou endereço IP>)
 Obtém nome e endereço IP a partir de um endereço.
@@ -3996,7 +3997,8 @@ arg1 = Índice da variável vetor, se não for vetor arg1=0.
 Resolveu um endereço fornecido pela função eventoip.
 arg0 = texto recebido pela função eventoip.
 arg1 = Nome da máquina, ou um texto vazio se não encontrou.
-arg2 = Endereço IP da máquina, ou um texto vazio se não encontrou.
+arg2 = Endereços IP da máquina, separados por espaço (se houver mais de um)
+       ou um texto vazio se não encontrou.
 arg3 = Índice da variável vetor, se não for vetor arg3=0.
 
 
@@ -4006,7 +4008,8 @@ Funções:
 
 33.1 abrir(<endereço>, <porta>)
 Abre uma porta para receber conexões.
-Se não quiser especificar um endereço, colocar "" no endereço.
+Se o endereço for "" (um texto vazio), assume 0.0.0.0, que significa todos
+os endereços do IPv4. Para todos os endereços do IPv6, o endereço é "::".
 Retorna 1 se conseguiu abrir ou 0 se não conseguiu.
 
 33.2 abrirssl(<endereço>, <porta>)

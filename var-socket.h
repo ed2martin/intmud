@@ -103,8 +103,11 @@ public:
     static void ProcEventos(fd_set * set_entrada);
                          ///< Processa eventos
     char nomeini[256];   ///< Nome a ser pesquisado
-    char nome[256];      ///< Nome da máquina
-    char ip[256];        ///< Endereço IP
+    char nomefim[4096];  ///< Resultado da pesquisa: identificação + nome
+            /**< IP é anotado como "I" seguido do IP
+             *   Nome é anotado como "N" seguido do nome */
+    void ResolveDNS();
+            ///< Pesquisa o nome em nomeini, retorna o resultado em nomefim
 private:
     TVarSocket * Socket; ///< Para onde gerar os eventos
     static TDNSSocket * Inicio; ///< Lista ligada de TDNSSocket
