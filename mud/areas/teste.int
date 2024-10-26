@@ -2924,13 +2924,15 @@ const s_titulo = "Primeiro andar: Animais e batalha"
 const s_desc = "À leste você pode mudar o seu nível e conseguir animais.\n\
 Ao sul há alguns itens, usados para capturar animais.\n\
 À oeste pode batalhar com animais de níveis diferentes.\n\
-Ao norte fica um pequeno centro de treinamento de animais."
+Ao norte fica um pequeno centro de treinamento de animais.\n\
+Ao sudeste, um elevador."
 const dir_n = $s_teste021
 const dir_s = $s_teste016
 const dir_l = $s_teste015
 const dir_o = $s_teste017
 const dir_c = $s_teste023
 const dir_b = $s_teste002
+const dir_se = $s_teste197
 
 
 classe s_teste015
@@ -3255,6 +3257,7 @@ const s_desc = "À leste há um vendedor, um professor e idioma Latir (cachorro).\
 À oeste trata-se do ponto de retorno.\n\
 Ao norte, animais e montaria.\n\
 Ao sul você pode matar um PNJ e pegar itens e dinheiro do corpo dele.\n\
+Ao sudeste, um elevador.\n\
 Ou pode teclar AA nessa sala, para ficar com mil moedas."
 const dir_n = $s_teste171
 const dir_s = $s_teste051
@@ -3262,6 +3265,7 @@ const dir_l = $s_teste031
 const dir_o = $s_teste049
 const dir_c = $s_teste064
 const dir_b = $s_teste052
+const dir_se = $s_teste197
 
 func cmd_salaperso # Personagem chegou
   misc:evento(arg0) # Receber eventos do personagem
@@ -3742,7 +3746,8 @@ const s_titulo = "Sexto andar: Casas de jogadores e salas de doação"
 const s_desc = "Ao norte itens com sala\n\
 Ao sul sala com saídas embaralhadas\n\
 A oeste há um gerenciador de casas e duas casas\n\
-A leste salas de doação"
+A leste salas de doação\n\
+Ao sudeste, um elevador."
 const dir_n = $s_teste159
 const dir_s = $s_teste176
 const dir_l = $s_teste122
@@ -5783,11 +5788,13 @@ classe s_teste182
 herda b_teste
 const s_titulo = "Sétimo andar"
 const s_desc = "Ao norte mesa, árvore com frutas e itens que somem ao soltar\n\
-Ao sul, caminho que necessita de pagamento para prosseguir"
+Ao sul, caminho que necessita de pagamento para prosseguir\n\
+Ao sudeste, um elevador."
 const s_visitou = 1 # Área visitada: Sim
 const dir_n = $s_teste183
 const dir_s = $s_teste195
 const dir_b = $s_teste064
+const dir_se = $s_teste197
 
 
 classe s_teste183
@@ -6090,4 +6097,42 @@ func cmd_falou
   se arg1 == "abrir" && arg2 == $idioma_elfico && arg3 >= 5
     arg0.var.d_podepassar_ = 1
     arg0.msg("Uma saída ao sul acaba de aparecer.")
+  fimse
+
+
+classe s_teste197
+herda b_teste
+const s_titulo = "Dentro do elevador"
+const s_desc = "Esse elevador só para nos andares 1, 5, 6 e 7. Para ir para um andar\n\
+(e sair do elevador), é só teclar o número do andar."
+const eveste = 1 # Eventos sala: Sim
+ref dir_sair
+#
+const andarini = $s_teste014
+const andar_1 = $s_teste014
+const andar_5 = $s_teste030
+const andar_6 = $s_teste064
+const andar_7 = $s_teste182
+
+func cmd_salaperso # Personagem chegou
+  ref r = arg0.donoantes ?? dir_sair ?? andarini
+  se r != dir_sair
+    dir_sair = r
+    $mens.p(arg0)
+    $mens.mens = r.s_titulo(arg0)
+    $mens.mvis2("", "Elevador foi para $m.")
+  fimse
+  misc:evento(arg0) # Receber eventos do personagem
+
+func cmd_escr # Escreveu algo
+  se andar_[arg1]
+    ref r = andar_[arg1]
+    se r != dir_sair
+      dir_sair = r
+      $mens.p(arg0)
+      $mens.mens = r.s_titulo(arg0)
+      $mens.mvis1("Elevador foi para $m")
+    fimse
+    arg0.teclou("sair")
+    ret 1
   fimse
