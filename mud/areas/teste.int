@@ -3886,15 +3886,15 @@ func s_reset1 # Realiza o reset
 
 classe s_teste074
 herda b_teste
-const s_titulo = "Ações após um tempo"
+const s_titulo = "Ações após um tempo - 1 de 3"
 const s_desc = "No primeiro trigger, o jogador recebe uma mensagem antes da descrição\n\
 da sala. Nessa sala, aonde uma mensagem era enviada foi substituído por:\n\
 misc:tempo(\"entrou\", arg0)\n\
 Isso faz com que funções, cujo nome é \"entrou\" seguido de um número,\n\
 sejam executadas. O número é o tempo decorrido, em décimos de segundo.\n\
-Note que se o personagem sair da sala, as funções páram de ser chamadas\n\
+Note que se o personagem sair da sala, as funções param de ser chamadas\n\
 e o envio das mensagens é interrompido."
-const dir_l = $s_teste075
+const dir_l = $s_teste198
 const dir_o = $s_teste067
 
 func cmd_salaperso
@@ -3919,12 +3919,12 @@ herda b_teste
 const s_titulo = "Mensagem para todos - 1 de 3"
 const s_desc = "Este é como o da sala à oeste, porém está no rato (personagem teste016).\n\
 Uma outra diferença é que a mensagem é enviada para todos na mesma sala.\n\
-Primeiro chama-se a função $mens.p da seguinte forma:\n\
-$mens.p(este, arg0)\n\
+Primeiro chama-se a função $$mens.p da seguinte forma:\n\
+$$mens.p(este, arg0)\n\
 Ou seja, o personagem principal é o objeto este (o próprio rato)\n\
 e o personagem alvo é o objeto arg0 (o jogador que chegou)."
 const dir_l = $s_teste076
-const dir_o = $s_teste074
+const dir_o = $s_teste199
 const s_reset = "P 100 teste016 0 0 1"
 
 func s_reset1 # Realiza o reset
@@ -3938,9 +3938,9 @@ classe s_teste076
 herda b_teste
 const s_titulo = "Mensagem para todos - 2 de 3"
 const s_desc = "Depois envia-se uma mensagem a todos que puderem ver o rato:\n\
-$mens.mvis1(\"$P olha rapidamente para $a, desconfiado.\")\n\
-Aqui, $P é substituído pela descrição do personagem e $a é o alvo.\n\
-Para saber que símbolos podem ser usados em $mens.mvis1, tecle adm mens\n\
+$$mens.mvis1(\"$$P olha rapidamente para $$a, desconfiado.\")\n\
+Aqui, $$P é substituído pela descrição do personagem e $$a é o alvo.\n\
+Para saber que símbolos podem ser usados em $$mens.mvis1, tecle adm mens\n\
 É possível usar cores em qualquer mensagem, veja adm cores"
 const dir_l = $s_teste077
 const dir_o = $s_teste075
@@ -3951,10 +3951,10 @@ herda b_teste
 const s_titulo = "Mensagem para todos - 3 de 3"
 const s_desc = "Para os personagens que não enxergam o rato também receberem a mensagem,\n\
 substitua mvis1 por mtodos1. Exemplo:\n\
-$mens.mtodos1(\"$P olha rapidamente para $a, desconfiado.\")\n\
+$$mens.mtodos1(\"$$P olha rapidamente para $$a, desconfiado.\")\n\
 Para enviar mensagens diferentes para o personagem, o alvo e os outros,\n\
-use $mens.mvis2, $mens.mvis3, $mens.mtodos2 ou $mens.mtodos3. Exemplo:\n\
-$mens.mvis3(\"\", \"Um rato está encarando você\", \"Um rato olha para $A\")\n\
+use $$mens.mvis2, $$mens.mvis3, $$mens.mtodos2 ou $$mens.mtodos3. Exemplo:\n\
+$$mens.mvis3(\"\", \"Um rato está encarando você\", \"Um rato olha para $$A\")\n\
 Mais detalhes vide arquivo mud.txt tópico \"Envio de mensagens formatadas\"."
 const dir_o = $s_teste076
 
@@ -6136,3 +6136,66 @@ func cmd_escr # Escreveu algo
     arg0.teclou("sair")
     ret 1
   fimse
+
+
+classe s_teste198
+herda b_teste
+const s_titulo = "Ações após um tempo - 2 de 3"
+const s_desc = "Essa é outra forma de enviar mensagens para o jogador depois de um tempo.\n\
+O resultado é o mesmo, porém a função misc:tempo foi chamada de outra forma:\n\
+misc:tempo(\"10 treme1\\n40 para1\\n40 treme2\\n40 para2\", arg0)\n\
+O texto tem o seguinte significado: espera 1 segundo, chama a função treme1,\n\
+espera 4 segundos, chama a função para1, espera 4 segundos, chama treme2,\n\
+espera 4 segundos e chama para2. O tempo é sempre em décimos de segundo."
+const dir_l = $s_teste199
+const dir_o = $s_teste074
+
+func cmd_salaperso
+  ret !arg0.jog, nulo # Retorna se não for jogador
+  misc:tempo("10 treme1\n40 para1\n40 treme2\n40 para2", arg0)
+
+func treme1
+  arg0.msg("Você sente o chão tremer.")
+
+func para1
+  arg0.msg("Agora parou.")
+
+func treme2
+  arg0.msg("Voltou a tremer.")
+
+func para2
+  arg0.msg("Parou de novo.")
+
+
+classe s_teste199
+herda b_teste
+const s_titulo = "Ações após um tempo - 3 de 3"
+const s_desc = "Aqui, é enviada uma mensagem logo que o personagem do jogador entra na sala\n\
+e outra após 6 segundos. Se o personagem sair da sala antes, as funções\n\
+deixam de ser chamadas é chamada a função cujo tempo de espera é zero."
+const dir_l = $s_teste075
+const dir_o = $s_teste198
+
+func cmd_salaperso
+  ret !arg0.jog, nulo # Retorna se não for jogador
+  misc:tempo("1 treme\n60 para\n0 saiu", arg0)
+  misc:tempo("entrou", arg0) # Dispara funções 'entrou'
+
+func treme
+  arg0.msg("O chão está tremendo.")
+
+func para
+  arg0.msg("O chão parou de tremer.")
+
+func saiu
+  arg0.msg("Você saiu com o chão tremendo.")
+
+func entrou1
+  arg0.msg("Aguarde 6 segundos antes de mudar de sala.")
+
+func entrou61
+  arg0.msg("Pode mudar de sala.")
+
+func entrou0
+  arg0.msg("Era para esperar 6 segundos.")
+

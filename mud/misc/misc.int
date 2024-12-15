@@ -356,13 +356,8 @@ func removeevento # Faz objeto arg0 deixar de receber eventos do objeto arg1
 
 func tempo # Eventos de tempo (cria objeto), vide classe misc_tempo
   ret !(txt(arg0) && ref(arg1)), nulo
-  refvar r = criar("misc_tempo")
-  r.tempo1 = r.tempo2 = 1
-  r.obj = este, evento.addfim(r)
-  r.func = arg0
-  r.perso1 = arg1, r.perso1.evento.addfim(r)
-  r.perso2 = arg2, r.perso2.evento.addfim(r)
-  r.perso3 = arg3, r.perso3.evento.addfim(r)
+  refvar r = criar("misc_tempo", este, arg0, arg1, arg2, arg3)
+  evento.addfim(r)
 
 
 classe misc_evento
@@ -403,13 +398,19 @@ classe misc_tempo
 # A função com o nome especificado seguido de "0" é executada
 # quando o objeto for apagado.
 #
+# Ao invés do nome da função, pode-se colocar uma ou mais linhas, cada linha
+# contendo quanto tempo deve esperar, em décimos de segundo, seguido de espaço
+# e o nome da função. Exemplo, "20 chegou\n30notas" significa esperar
+# 2 segundos, chamar a func chegou, esperar 3 segundos e chamar a func notas.
+# Para chamar uma função quando o objeto for apagado, acrescentar uma linha
+# no final do texto contendo "0" seguido de espaço e o nome da função.
+#
 # Na função:
 # arg0 a arg2 = personagens
 # arg3 = objeto misc_tempo
 #
 inttempo tempo1 # Para gerar eventos de tempo
-uint32 tempo2 # tempo2-tempo1 = Tempo decorrido
-txt100 func # Nome da função que deve chamar
+textotxt lista # Lista de tempos e nomes das funções
 ref obj # Objeto que contém a função
 ref perso1 # Primeiro personagem
 ref perso2 # Segundo personagem
@@ -417,24 +418,36 @@ ref perso3 # Terceiro personagem
 const cmd_saiu = arg2.perso && apagar(este) # Personagem saiu da sala
 const cmd_fim = apagar(este) # Personagem saiu do jogo
 
+func ini
+  obj = arg0
+  perso1 = arg2, perso1.evento.addfim(este)
+  perso2 = arg3, perso2.evento.addfim(este)
+  perso3 = arg4, perso3.evento.addfim(este)
+  se txtproc(arg1, " ") >= 0
+    lista.addfim(arg1)
+  senao
+    textovar var
+    uint32 v
+    prog p
+    refvar tam = inttotal(arg1)
+    epara p.inifunctudo(arg0, arg1), p.lin, p.depois
+      (v = txt(p.texto, tam)) ? (var.[1000000 + v] = p.texto)
+    efim
+    epara v = 1000000, var.ini, var.[var.ini] = ""
+      lista.addfim(txt(int(var.ini) - v) + " " + var.[var.ini]), v = var.ini
+    efim
+    p.existe(arg0, arg1 + "0") && lista.addfim("0 " + arg1 + "0")
+  fimse
+  (tempo1 = intpos(lista.ini.texto)) == 0 && apagar(este) + lista.limpar
+
 func fim # Este objeto foi apagado
-  obj.[func]0(perso1, perso2, perso3, este)
+  textopos p = lista.ini
+  p.txtproc("\n0 ") >= 0 && obj.[txt2(p.texto)](perso1, perso2, perso3, este)
 
 func tempo1_exec # Executa eventos
-  ret !obj, apagar(este)
-  prog p
-  uint32 x
-  uint32 v
-  x = 1000000
-  refvar tam = inttotal(func)
-  epara p.inifunctudo(obj, func), p.lin, p.depois
-    (v = txt(p.texto, tam)) > tempo2 && v < x && (x = v)
-  efim
-  x == 1000000 && apagar(este)
-  v = tempo2
-  tempo1 = x - tempo2
-  tempo2 = x
-  obj.[func + v](perso1, perso2, perso3, este)
+  refvar func = txt2(lista.remove)
+  (tempo1 = intpos(lista.ini.texto)) == 0 && apagar(este) + lista.limpar
+  obj.[func](perso1, perso2, perso3, este)
 
 func cmd_mudaobjeto # Um objeto foi substituído por outro
 # arg0 = antigo dono, arg1 = novo dono
