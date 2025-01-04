@@ -699,38 +699,63 @@ const nome2 = "Autor"
 const tipo2 = "opc_linha-"
 const vari2 = "a_autor"
 #
-const nome3 = "Tempo de reset"
-const info3 = "Tempo aproximado em minutos"
-const tipo3 = "opc_numero"
-const vari3 = "a_tempo"
-const exec3 = "reset_atualiza"
+const nome3 = "Descrição"
+const info3 = "Aparece ao digitar Área seguido do nome da área"
+const tipo3 = "opc_texto"
+const vari3 = "a_desc"
 #
-const nome4 = "Modo de reset"
-const tipo4 = "opc_opcao"
-const vari4 = "a_reset"
-const extr4 = "Nunca\nQuando não há jogadores\nNormal"
+const nome4 = "Nível mínimo"
+const info4 = "Para comando Área, de 0 a 65535"
+const tipo4 = "opc_numero"
+const vari4 = "a_nivelmin"
 #
-const nome5 = "Mensagem de reset"
-const info5 = "Enviada para os jogadores na área quando ocorre reset"
-const tipo5 = "opc_linha"
-const vari5 = "a_txtreset"
+const nome5 = "Nível máximo"
+const info5 = "Para comando Área, de 0 a 65535, se maior que 65535, não há nível máximo"
+const tipo5 = "opc_numero"
+const vari5 = "a_nivelmax"
 #
-const nome6 = "Região"
-const info6 = "Um nome que identifica a região aonde esta área está ou texto vazio se nenhuma"
-const tipo6 = "opc_linha"
-const vari6 = "a_regiao"
+const nome6 = "No comando Área"
+const info6 = "Se deve aparecer no comando Área"
+const tipo6 = "opc_opcao"
+const vari6 = "a_areatipo"
+const extr6 = "Não\nSe chegou no nível mínimo\nSempre"
+
+func nulo6
+  refvar opcao = txtnulo("h_cmd_area", "v_areatipo")
+  ret "\c6" + opcao + " " + txtsublin(extr6, opcao)
 #
-const nome7 = "Retorna de regiões"
-const info7 = "Quando o personagem escolhe retornar (com hab/magia de retorno) para essa\n\
+const nome7 = "Tempo de reset"
+const info7 = "Tempo aproximado em minutos"
+const tipo7 = "opc_numero"
+const vari7 = "a_tempo"
+const exec7 = "reset_atualiza"
+#
+const nome8 = "Modo de reset"
+const tipo8 = "opc_opcao"
+const vari8 = "a_reset"
+const extr8 = "Nunca\nQuando não há jogadores\nNormal"
+#
+const nome9 = "Mensagem de reset"
+const info9 = "Enviada para os jogadores na área quando ocorre reset"
+const tipo9 = "opc_linha"
+const vari9 = "a_txtreset"
+#
+const nome10 = "Região"
+const info10 = "Um nome que identifica a região aonde esta área está ou texto vazio se nenhuma"
+const tipo10 = "opc_linha"
+const vari10 = "a_regiao"
+#
+const nome11 = "Retorna de regiões"
+const info11 = "Quando o personagem escolhe retornar (com hab/magia de retorno) para essa\n\
 área, de quais regiões pode retornar ou texto vazio se de qualquer região"
-const tipo7 = "opc_listaregioes"
-const vari7 = "a_regiaoori"
+const tipo11 = "opc_listaregioes"
+const vari11 = "a_regiaoori"
 #
-const nome8 = "Retorna para sala"
-const info8 = "Quando o personagem escolhe retornar (com hab/magia de retorno) para essa\n\
+const nome12 = "Retorna para sala"
+const info12 = "Quando o personagem escolhe retornar (com hab/magia de retorno) para essa\n\
 área, para qual sala vai"
-const tipo8 = "opc_sala"
-const vari8 = "a_retornarsala"
+const tipo12 = "opc_sala"
+const vari12 = "a_retornarsala"
 
 
 classe menu_sala

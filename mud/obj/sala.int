@@ -1,10 +1,12 @@
 classe area
 inttempo resetcont # Tempo para o próximo reset
 const iniclasse = arg0 != "area" && !$[arg0] && criar(arg0)
+const a_nivelmin = 0
+const a_nivelmax = 65536
 #
 # Ordem que deve organizar as constantes:
-const admordem = "a_nome a_autor a_tempo a_reset a_txtreset\n\
-a_regiao a_regiaoori a_retornarsala"
+const admordem = "a_nome a_autor a_desc a_nivelmin a_nivelmax a_areatipo\n\
+a_tempo a_reset a_txtreset a_regiao a_regiaoori a_retornarsala"
 
 func ini
   resetcont = rand(a_tempo * 500, a_tempo * 700)

@@ -1,0 +1,206 @@
+classe h_cmd_area
+herda comando_comum
+const objmenu = $m_cmd_area
+const objtipo = 2 # Pode renomear
+const objcmd = v_tipo ? este
+const posic = 0
+const txtajuda = v_tipo ? txtajuda1(m_ajuda)
+#
+const v_tipo = 1
+const m_ajuda = "-t\n\
+-s\n-s [-][+][número]\n-s <nome>\n\
+Sem argumentos, mostra as áreas existentes.\n\
+Seguido de um sinal de menos, ordena pelo nível mínimo ao invés do nome.\n\
+Seguido de um sinal de mais, ordena pelo nível máximo ao invés do nome.\n\
+Seguido de um número, mostra as áreas para o nível especificado.\n\
+É possível adicionar sinal de mais ou de menos na frente de um número.\n\
+Exemplo, AREA -5 mostra as áreas para o nível 5 ordenado pelo nível mínimo.\n\
+Seguido de um nome, mostra informações da primeira área cujo nome começa\n\
+com o nome especificado."
+const m_info_titulo = "Área $area:"
+const m_info_nenhum = "Nenhuma informação disponível."
+const m_titulo = "Áreas por nível:"
+const m_nenhuma_area = "Nenhuma área encontrada."
+const m_linha0 = "$min+  $max  $nome  $autor"
+const m_linha1 = "$min a $max  $nome  $autor"
+const v_areatipo = 2
+const v_mens_min = 1
+const v_mens_max = 0
+const v_mens_nome = 40
+const v_mens_autor = 30
+const admordem = "v_tipo m_ajuda m_info_titulo m_info_nenhum\n\
+m_titulo m_nenhuma_area m_linha0 m_linha1\n\
+v_mens_min v_mens_max v_mens_nome v_mens_autor"
+#
+ref area # Objeto da área
+ref perso # Objeto jogador
+uint8 digitos # Quantos dígitos para o nível
+#
+const t1_area = txt(area.a_nome)
+const t1_nome = txt(area.a_nome) + txtesp(v_mens_nome - inttotal(area.a_nome))
+const t1_autor = txt(area.a_autor) + txtesp(v_mens_autor - inttotal(area.a_autor))
+
+func t1_min
+  refvar nivel = int(area.a_nivelmin)
+  ret v_mens_min == 0, txt(txt(nivel) + "    ", 0, digitos)
+  ret v_mens_min == 3, nivel
+  ret txtfim((v_mens_min == 1 ? "     " : "00000") + nivel, digitos)
+
+func t1_max
+  refvar nivel = int(area.a_nivelmax)
+  ret nivel >= 65535, txtesp(digitos)
+  ret v_mens_max == 0, txt(txt(nivel) + "    ", 0, digitos)
+  ret v_mens_max == 3, nivel
+  ret txtfim((v_mens_max == 1 ? "     " : "00000") + nivel, digitos)
+
+func escr
+  uint16 nmax # Maior nível encontrado, para obter número de dígitos
+  prog p
+  textotxt t0
+  perso = arg0
+  refvar pnivel = arg0.pnivel # Nível do personagem
+  $mens.mens = arg1
+  se txt(arg1, 0, 1) == "-" # Áreas ordenadas por nível mínimo
+    refvar texto = txt(arg1, 1)
+    refvar nivel = int(texto)
+    ret texto && texto != nivel, escr_info(arg0, texto)
+    epara p.iniclasse("a_"), p.lin, p.depois
+      refvar a = $[p.texto]
+      continuar !a.a_nome
+      continuar int(txt(a.a_areatipo) ?? v_areatipo) < (pnivel < a.a_nivelmin ? 2 : 1)
+      nmax < a.a_nivelmin && (nmax = a.a_nivelmin)
+      nmax < a.a_nivelmax && a.a_nivelmax <= 65535 && (nmax = a.a_nivelmax)
+      continuar texto && (nivel < a.a_nivelmin || nivel > a.a_nivelmax)
+      t0.addfim(txt(1000000 + intpos(a.a_nivelmin)) + "\b" + a)
+    efim
+  senao txt(arg1, 0, 1) == "+" # Áreas ordenadas por nível máximo
+    refvar texto = txt(arg1, 1)
+    refvar nivel = int(texto)
+    ret texto && texto != nivel, escr_info(arg0, texto)
+    epara p.iniclasse("a_"), p.lin, p.depois
+      refvar a = $[p.texto]
+      continuar !a.a_nome
+      continuar int(txt(a.a_areatipo) ?? v_areatipo) < (pnivel < a.a_nivelmin ? 2 : 1)
+      nmax < a.a_nivelmin && (nmax = a.a_nivelmin)
+      nmax < a.a_nivelmax && a.a_nivelmax <= 65535 && (nmax = a.a_nivelmax)
+      continuar texto && (nivel < a.a_nivelmin || nivel > a.a_nivelmax)
+      t0.addfim(txt(1000000 + intmin(65536, a.a_nivelmax)) + "\b" + a)
+    efim
+  senao # Áreas ordenadas por nome
+    refvar nivel = int(arg1)
+    ret arg1 && arg1 != nivel, escr_info(arg0, arg1)
+    epara p.iniclasse("a_"), p.lin, p.depois
+      refvar a = $[p.texto]
+      continuar !a.a_nome
+      continuar int(txt(a.a_areatipo) ?? v_areatipo) < (pnivel < a.a_nivelmin ? 2 : 1)
+      nmax < a.a_nivelmin && (nmax = a.a_nivelmin)
+      nmax < a.a_nivelmax && a.a_nivelmax <= 65535 && (nmax = a.a_nivelmax)
+      continuar arg1 && (nivel < a.a_nivelmin || nivel > a.a_nivelmax)
+      t0.addfim(txtcor(a.a_nome) + "\b" + a)
+    efim
+  fimse
+# Monta o texto com a lista de áreas
+  debug d
+  d.ini
+  ret !t0.linhas, $mens.mp(m_nenhuma_area, arg0)
+  t0.ordena
+  refvar t1 = arg0.sock.txtmais
+  t1.limpar, t1.addfim("\b\c6" + m_titulo + "\b")
+  digitos = inttotal(txt(nmax)) # Número de dígitos dos níveis
+  textopos p0
+  epara p0 = t0.ini, p0.lin, p0.depois
+    area = $[p0.texto(1 + p0.txtproc("\b"))]
+    refvar linha = m_linha[area.a_nivelmax <= 65535]
+    t1.addfim(txtremove(vartroca(linha, "$", "t1_"), "d"))
+  efim
+  arg0.sock.txtmostra
+
+func escr_info # Informações da área
+  textotxt t
+  prog p
+  refvar total = inttotal(arg1)
+  epara p.iniclasse("a_"), p.lin, p.depois
+    continuar txt($[p.texto].a_nome, 0, total) != arg1
+    area = $[p.texto]
+    refvar titulo = txtremove(vartroca(m_info_titulo, "$", "t1_"), "d")
+    titulo && t.addfim("\b\c6" + titulo + "\b")
+    t.addfim($[p.texto].a_desc ?? m_info_nenhum)
+    ret arg0.msg2(t.remove(1000))
+  efim
+  $mens.mp("\b" + m_nenhuma_area, arg0)
+
+
+classe m_cmd_area
+herda comando_menu_cmd
+#
+const nome1 = "Comando Area"
+const tipo1 = "opc_opcao"
+const vari1 = "v_tipo"
+const extr1 = "Desabilitado\nHabilitado"
+#
+const nome2 = "Ajuda"
+const tipo2 = "opc_texto"
+const vari2 = "m_ajuda"
+#
+const titu3 = " * Ao pesquisar uma área"
+#
+const nome3 = "Título"
+const tipo3 = "opc_linha"
+const vari3 = "m_info_titulo"
+#
+const nome4 = "Nenhuma informação"
+const tipo4 = "opc_linha"
+const vari4 = "m_info_nenhum"
+#
+const titu5 = " * Ao listar as áreas"
+#
+const nome5 = "Tipo padrão no Earea"
+const info5 = "Quando a opção \"No comando Área\" do comando Earea não for definida"
+const tipo5 = "opc_opcao"
+const vari5 = "v_areatipo"
+const extr5 = "Não\nSe chegou no nível mínimo\nSempre"
+#
+const nome6 = "Título"
+const tipo6 = "opc_linha"
+const vari6 = "m_titulo"
+#
+const nome7 = "Nenhuma área"
+const tipo7 = "opc_linha"
+const vari7 = "m_nenhuma_area"
+#
+const nome8 = "Linha sem nível máximo"
+const info8 = "Aqui $max é composto só de espaços"
+const tipo8 = "opc_linha"
+const vari8 = "m_linha0"
+#
+const nome9 = "Linha com nível máximo"
+const tipo9 = "opc_linha"
+const vari9 = "m_linha1"
+#
+const titu10 = " * Opções"
+#
+const nome10 = "Nível mínimo $min"
+const tipo10 = "opc_opcao"
+const vari10 = "v_mens_min"
+const extr10 = "Com espaços depois\n\
+Com espaços na frente\n\
+Com zeros na frente\n\
+1 a 5 dígitos sem espaço"
+#
+const nome11 = "Nível máximo $max"
+const tipo11 = "opc_opcao"
+const vari11 = "v_mens_max"
+const extr11 = "Com espaços depois\n\
+Com espaços na frente\n\
+Com zeros na frente\n\
+1 a 5 dígitos sem espaço"
+#
+const nome12 = "Caracteres $area"
+const info12 = "Se for 0, o nome da área não será completado com espaços"
+const tipo12 = "opc_numero"
+const vari12 = "v_mens_nome"
+#
+const nome13 = "Caracteres $autor"
+const info13 = "Se for 0, o nome do autor não será completado com espaços"
+const tipo13 = "opc_numero"
+const vari13 = "v_mens_autor"

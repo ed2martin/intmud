@@ -484,8 +484,7 @@ func passo # Alterando uma opção de uma lista de opções
   senao arg1 == "o"
     arg0.txtmais.limpar
     arg0.txtmais.addfim("\bOpções:\n" + arg0.var.opcextra)
-    textopos pos
-    pos = arg0.txtmais.ini
+    textopos pos = arg0.txtmais.ini
     epara pos.depois, pos, pos.depois
       pos.mudar(txt(pos.linha - 1) + " ", 0, 0)
     efim
@@ -848,8 +847,7 @@ func passo2 # Usado intermanente: alterando um vetor de textos
     textotxt t
     t.addfim([arg0.var.opcclasse]:[arg0.var.opcvar])
     t.bytes <= 1 && t.limpar
-    textopos pos
-    pos = t.ini
+    textopos pos = t.ini
     se pos.txtproc("\n" + lin + "\n") >= 0
       pos.remove
     senao !arg2
@@ -1095,8 +1093,7 @@ func passo # Alterando
     textotxt t
     t.addfim([arg0.var.opcclasse]:[arg0.var.opcvar])
     t.bytes <= 1 && t.limpar
-    textopos pos
-    pos = t.ini
+    textopos pos = t.ini
     se pos.txtproc("\n" + nome + "\n") >= 0
       pos.remove
       arg0.msg(m_removido + nome)
