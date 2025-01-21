@@ -619,15 +619,23 @@ func acertanumero # Acerta os números dos animais que possui (variáveis pnumero)
   int32 mask = (2 << config:animal1) - 2 # bits 1 são as posições disponíveis
   epara i = dentro2.ini, i, i.depois
     continuar !i.obj.perso
-    mask & intbit(i.obj.pnumero) ? (mask ^= intbit(i.obj.pnumero)) : l.addfim(i.obj)
+    se i.obj.pnumero <= 30 && (mask & intbit(i.obj.pnumero))
+      mask ^= intbit(i.obj.pnumero)
+    senao
+      l.addfim(i.obj)
+    fimse
   efim
   epara i = lseguir.ini, i, i.depois
     continuar !i.obj.perso || i.obj.tseguir != 3
-    mask & intbit(i.obj.pnumero) ? (mask ^= intbit(i.obj.pnumero)) : l.addfim(i.obj)
+    se i.obj.pnumero <= 30 && (mask & intbit(i.obj.pnumero))
+      mask ^= intbit(i.obj.pnumero)
+    senao
+      l.addfim(i.obj)
+    fimse
   efim
   ret !l, nulo
-  uint8 num
   epara i = l.ini, i, i.depois
+    uint8 num
     !(mask & 0xFFFF) ? (num += 16)
     !((mask >> num) & 0xFF) ? (num += 8)
     !((mask >> num) & 15) ? (num += 4)
