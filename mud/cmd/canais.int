@@ -26,17 +26,28 @@ const m_hist1 = "$R '$m'"
 const v_tipo = 2
 const admordem = "m_ajuda1 m_ajuda2 m_nivel v_nivel m_desab\n\
 m_hist_vazio m_hist_lista m_msg1 m_msg2 m_hist1 v_tipo"
-textovar var
+#
+textotxt historico
+const mens_p = txtcopiamai(nome, arg0)
+const mens_q = txtcopiamai(nome, arg0)
+const mens_r = txtcopiamai(nome, arg0)
+const mens_@g = "$"
+txt512 mens_m # O que o personagem escreveu
+txt20 nome # Nome do personagem
 
 func escr
   $mens.p(arg0)
   $mens.mens = arg1
   se !arg1
-    ret !var.historico, $mens.mp(m_hist_vazio, arg0)
     refvar t = arg0.sock.txtmais
     t.limpar
-    t.addfim(m_hist_lista)
-    t.addfim(var.historico)
+    textopos p
+    epara p = historico.ini, p, p.depois
+      nome = txt1(p.texto), mens_m = txt2(p.texto)
+      !arg0.var.u_[nome] && t.addfim(vartrocacod(m_hist1, "$", "mens_"))
+    efim
+    ret !t.linhas, $mens.mp(m_hist_vazio, arg0)
+    t.addini(m_hist_lista)
     arg0.sock.txtmostra
   senao arg2.c_chat
     $mensjog.msg(arg2.c_chat, arg0)
@@ -47,8 +58,9 @@ func escr
     $mens.mp(m_desab, arg0)
   senao v_tipo == 2 # Escrever para todos
     $misclog.jogchat("chat " + arg0.nome + ": " + arg1)
-    refvar m = var.historico
-    m = $mens.txt(m_hist1) + (m ? "\n") + txtsublin(m, 0, 29)
+    historico.addini(arg0.nome + " " + arg1)
+    textopos p = historico.fim
+    p.linha = 30, p.remove(10)
     indiceitem item
     epara item.ini("un "), txt1(item.txt) == "un", item.depois
       ref r = item.obj.perso
@@ -56,8 +68,9 @@ func escr
     efim
   senao # Escrever para quem estiver na mesma sala
     $misclog.jogchat("chat " + arg0.nome + ": " + arg1)
-    refvar m = var.historico
-    m = $mens.txt(m_hist1) + (m ? "\n") + txtsublin(m, 0, 29)
+    historico.addini(arg0.nome + " " + arg1)
+    textopos p = historico.fim
+    p.linha = 30, p.remove(10)
     listaobj l
     epara arg0.sock.salaobj(l), l, l.ini.remove
       ref r = l.objini.perso
@@ -94,17 +107,28 @@ const m_hist1 = "$R '$m'"
 const v_tipo = 2
 const admordem = "m_ajuda1 m_ajuda2 m_nivel v_nivel m_desab\n\
 m_hist_vazio m_hist_lista m_msg m_hist1 v_tipo"
-textovar var
+#
+textotxt historico
+const mens_p = txtcopiamai(nome, arg0)
+const mens_q = txtcopiamai(nome, arg0)
+const mens_r = txtcopiamai(nome, arg0)
+const mens_@g = "$"
+txt512 mens_m # O que o personagem escreveu
+txt20 nome # Nome do personagem
 
 func escr
   $mens.p(arg0)
   $mens.mens = arg1
   se !arg1
-    ret !var.historico, $mens.mp(m_hist_vazio, arg0)
     refvar t = arg0.sock.txtmais
     t.limpar
-    t.addfim(m_hist_lista)
-    t.addfim(var.historico)
+    textopos p
+    epara p = historico.ini, p, p.depois
+      nome = txt1(p.texto), mens_m = txt2(p.texto)
+      !arg0.var.u_[nome] && t.addfim(vartrocacod(m_hist1, "$", "mens_"))
+    efim
+    ret !t.linhas, $mens.mp(m_hist_vazio, arg0)
+    t.addini(m_hist_lista)
     arg0.sock.txtmostra
   senao arg2.c_novatos
     $mensjog.msg(arg2.c_novatos, arg0)
@@ -115,8 +139,9 @@ func escr
     $mens.mp(m_desab, arg0)
   senao v_tipo == 2 # Escrever para todos
     $misclog.jogchat("novatos " + arg0.nome + ": " + arg1)
-    refvar m = var.historico
-    m = $mens.txt(m_hist1) + (m ? "\n") + txtsublin(m, 0, 29)
+    historico.addini(arg0.nome + " " + arg1)
+    textopos p = historico.fim
+    p.linha = 30, p.remove(10)
     indiceitem item
     epara item.ini("un "), txt1(item.txt) == "un", item.depois
       ref r = item.obj.perso
@@ -124,8 +149,9 @@ func escr
     efim
   senao # Escrever para quem estiver na mesma sala
     $misclog.jogchat("novatos " + arg0.nome + ": " + arg1)
-    refvar m = var.historico
-    m = $mens.txt(m_hist1) + (m ? "\n") + txtsublin(m, 0, 29)
+    historico.addini(arg0.nome + " " + arg1)
+    textopos p = historico.fim
+    p.linha = 30, p.remove(10)
     listaobj l
     epara arg0.sock.salaobj(l), l, l.ini.remove
       ref r = l.objini.perso

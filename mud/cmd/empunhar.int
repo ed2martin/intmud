@@ -46,7 +46,7 @@ func escr
   ret alvo.iempu, $mens.mp(m_empunhando[tipomsg], arg0, alvo)
   txt200 lin
 # Verifica condições para empunhar
-  ref r = misc:itemdentro(arg0, arg1)
+  ref r = misc:itemdentro(arg0.persoesc, arg1)
   se !r
     $mens.mens = arg1
     ret $mens.mp(m_naover, arg0, alvo, r)
