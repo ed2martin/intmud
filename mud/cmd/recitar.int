@@ -24,8 +24,7 @@ func escr
   listaobj l
 # Obtém o objeto
   misc:separa(arg1) # Separa nome do objeto do nome do alvo
-  txt100 nome
-  nome = misc:sep2
+  txt100 nome = misc:sep2
   ret !arg1, $mensjog.msg(m_sem_args, arg0)
   ref r = misc:itemdentro(arg0, misc:sep1)
 # Checa se consegue recitar
@@ -43,12 +42,12 @@ func escr
     ret f, arg0.msg(f)
   fimse
 # Eventos
-  ret cmd_recitar(arg0, r), nulo
+  ret cmd_recitar(arg0, r, nulo, nome), nulo
   epara l.addfim(arg0.evento), l, l.ini.remove
-    ret l.objini.cmd_recitar(arg0, r, arg0), nulo
+    ret l.objini.cmd_recitar(arg0, r, arg0, nome), nulo
   efim
   epara l.addfim(r.evento), l, l.ini.remove
-    ret l.objini.cmd_recitar(arg0, r, r), nulo
+    ret l.objini.cmd_recitar(arg0, r, r, nome), nulo
   efim
 # Recita o objeto
   $mens.p(arg0, nulo, r)
@@ -56,12 +55,12 @@ func escr
   r.apagar(1)
   efeito(arg0, nome, r)
 # Eventos
-  cmd_recitou(arg0, r)
+  cmd_recitou(arg0, r, nulo, nome)
   epara l.addfim(arg0.evento), l, l.ini.remove
-    l.objini.cmd_recitou(arg0, r, arg0)
+    l.objini.cmd_recitou(arg0, r, arg0, nome)
   efim
   epara l.addfim(r.evento), l, l.ini.remove
-    l.objini.cmd_recitou(arg0, r, r)
+    l.objini.cmd_recitou(arg0, r, r, nome)
   efim
 
 

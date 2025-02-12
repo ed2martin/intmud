@@ -1318,6 +1318,28 @@ const i_abertoini = 2 # Container: 2 Inicialmente aberto
 const i_tranc = 1 # Trancar: 1 Pode ser trancado
 
 
+classe i_teste084
+herda comum_itemgrupo
+const nome = "pergaminho de reviver"
+const descnome = "um pergaminho de reviver"
+const f_tipo = 4 # Tipo: 4 Pergaminho, recitar
+const eveste = 1 # Eventos item: Sim
+
+func cmd_recitar
+  refvar alvo = arg0.persoesc
+  se alvo.pvida > 0
+    $mens.mp("$A não está desmaiad$t.", arg0, alvo)
+    ret 1
+  fimse
+
+func cmd_recitou
+  refvar alvo = arg0.persoesc
+  alvo.posicao = 8
+  alvo.restaurar
+  $mens.p(arg0, alvo)
+  $mens.mvis1("$P restaura $a com um pergaminho!")
+
+
 classe p_teste001
 herda comum_perso
 const nome = "Jardineiro"
@@ -1450,6 +1472,7 @@ teste026 0\n\
 teste027 0\n\
 teste028 0\n\
 teste033 0\n\
+teste084 0\n\
 teste069 0\n\
 teste070 0\n\
 teste071 0"
