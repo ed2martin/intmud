@@ -359,6 +359,18 @@ func tempo # Eventos de tempo (cria objeto), vide classe misc_tempo
   refvar r = criar("misc_tempo", este, arg0, arg1, arg2, arg3)
   evento.addfim(r)
 
+func removetempo # Faz objeto arg0 deixar de receber eventos de tempo com o objeto arg1
+  listaitem i
+  epara i = arg1.evento.ini("misc_tempo"), i, i.objdepois
+    i.obj.obj == arg0 && apagar(i.obj)
+  efim
+
+func temtempo # Verifica se removetempo com os mesmos argumentos vai remover um evento
+  listaitem i
+  epara i = arg1.evento.ini("misc_tempo"), i, i.objdepois
+    ret i.obj.obj == arg0, 1
+  efim
+
 
 classe misc_evento
 listaitem perso1 # Primeiro personagem

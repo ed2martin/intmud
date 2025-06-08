@@ -3911,7 +3911,7 @@ func s_reset1 # Realiza o reset
 
 classe s_teste074
 herda b_teste
-const s_titulo = "Ações após um tempo - 1 de 3"
+const s_titulo = "Ações após um tempo - 1 de 4"
 const s_desc = "No primeiro trigger, o jogador recebe uma mensagem antes da descrição\n\
 da sala. Nessa sala, aonde uma mensagem era enviada foi substituído por:\n\
 misc:tempo(\"entrou\", arg0)\n\
@@ -3949,7 +3949,7 @@ $$mens.p(este, arg0)\n\
 Ou seja, o personagem principal é o objeto este (o próprio rato)\n\
 e o personagem alvo é o objeto arg0 (o jogador que chegou)."
 const dir_l = $s_teste076
-const dir_o = $s_teste199
+const dir_o = $s_teste200
 const s_reset = "P 100 teste016 0 0 1"
 
 func s_reset1 # Realiza o reset
@@ -6165,7 +6165,7 @@ func cmd_escr # Escreveu algo
 
 classe s_teste198
 herda b_teste
-const s_titulo = "Ações após um tempo - 2 de 3"
+const s_titulo = "Ações após um tempo - 2 de 4"
 const s_desc = "Essa é outra forma de enviar mensagens para o jogador depois de um tempo.\n\
 O resultado é o mesmo, porém a função misc:tempo foi chamada de outra forma:\n\
 misc:tempo(\"10 treme1\\n40 para1\\n40 treme2\\n40 para2\", arg0)\n\
@@ -6194,11 +6194,11 @@ func para2
 
 classe s_teste199
 herda b_teste
-const s_titulo = "Ações após um tempo - 3 de 3"
+const s_titulo = "Ações após um tempo - 3 de 4"
 const s_desc = "Aqui, é enviada uma mensagem logo que o personagem do jogador entra na sala\n\
 e outra após 6 segundos. Se o personagem sair da sala antes, as funções\n\
 deixam de ser chamadas é chamada a função cujo tempo de espera é zero."
-const dir_l = $s_teste075
+const dir_l = $s_teste200
 const dir_o = $s_teste198
 
 func cmd_salaperso
@@ -6223,3 +6223,43 @@ func entrou61
 
 func entrou0
   arg0.msg("Era para esperar 6 segundos.")
+
+
+classe s_teste200
+herda b_teste
+const s_titulo = "Ações após um tempo - 4 de 4"
+const s_desc = "Aqui a terra treme como nas outras salas, porém, ser o personagem falar\n\
+enquanto a terra estiver tremendo, vem uma mensagem dizendo que ela ficou\n\
+com medo e ela para de tremer.\n\
+Na func cmd_falou, misc:temtempo é usado para saber se tem algum misc:tempo\n\
+em andamento com o personagem e misc:removetempo remove os misc:tempo com\n\
+o personagem. Não é necessário verificar antes de remover."
+const dir_l = $s_teste075
+const dir_o = $s_teste199
+const eveste = 1 # Eventos sala: Sim
+
+func cmd_salaperso
+  ret !arg0.jog, nulo # Retorna se não for jogador
+  misc:evento(arg0) # Receber eventos do jogador
+  misc:tempo("entrou", arg0) # Dispara funções 'entrou'
+
+func cmd_falou
+# Exemplo de como saber se misc:tempo está ativo com o personagem que falou
+  se misc:temtempo(este, arg0)
+    arg0.msg("A terra ouviu as suas palavras e ficou com medo.")
+  fimse
+# Exemplo de como remover misc:tempo
+  misc:removetempo(este, arg0)
+  arg0.msg("A terra não está tremendo.")
+
+func entrou10
+  arg0.msg("Você sente o chão tremer.")
+
+func entrou50
+  arg0.msg("Agora parou.")
+
+func entrou90
+  arg0.msg("Voltou a tremer.")
+
+func entrou130
+  arg0.msg("Parou de novo.")
