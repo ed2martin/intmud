@@ -2,6 +2,7 @@ classe adm_casa
 herda comando_adm_ajuda
 const m_ajuda = "-t Comandos de casas\n\
 -m LCASA Lista casas existentes\n\
+-m JCASA Lista casas por jogador\n\
 -m CCASA Cria uma casa\n\
 -m ECASA Edita uma casa\n\
 -m ACASA Apaga uma ou mais casas"
@@ -43,6 +44,47 @@ func escr # Listar casas
     p.depois
   efim
   arg0.msg2(t.remove(500))
+
+
+classe adm_jcasa
+herda comando_adm
+const m_ajuda = "-t\n\
+-s <nome do personagem>\n\
+Lista as casas que pertencem ao jogador especificado"
+
+func escr # Listar casas
+  ret !arg1, arg0.msg("Digite o nome do personagem de jogador após JCASA")
+  textotxt t
+  indiceitem item
+  datahora hora
+  hora.agora
+  refvar nomesav = "cj " + txts(txtnome(arg1))
+  epara item.ini(nomesav), txtsub(item.txt, 0, 2) == nomesav, item.depois
+    txt100 lin = txt(item.obj, 2) + "  " + (hora.numdias - item.obj.diataxa)
+    casovar item.obj.infotaxa
+    casose "1"
+      lin += "  Atrasado"
+      sair
+    casose "2"
+      lin += "  Bloqueado"
+      sair
+    casose
+      lin += "  Ok"
+    casofim
+   t.addfim(lin)
+  efim
+  se t.linhas
+    t.addini("\b\c6Casas  DiasTaxa  Situação\b")
+    arg0.msg2(t.remove(500))
+  senao
+    arqsav sav
+    item.ini("pn " + txt2(nomesav))
+    se item.obj || sav.existe("sav1/" + txt2(nomesav) + ".sav")
+      arg0.msg("Jogador " + arg1 + " não possui nenhuma casa")
+    senao
+      arg0.msg("Jogador " + arg1 + " não existe")
+    fimse
+  fimse
 
 
 classe adm_ccasa
