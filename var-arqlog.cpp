@@ -122,7 +122,7 @@ void TVarArqLog::Fechar()
     arq = -1;
     (Antes ? Antes->Depois : Inicio) = Depois;
     if (Depois)
-        Depois->Antes = nullptr;
+        Depois->Antes = Antes;
 }
 
 //----------------------------------------------------------------------------
