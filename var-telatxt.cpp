@@ -650,7 +650,7 @@ void TVarTelaTxt::Processa()
             valor = strtol(d, 0, 10); // Obtém a posição Y
             valor = LinhaFinal - valor;
             if (valor < 0) valor = 0;
-            snprintf(d, sizeof(mens) - (d - mens), "%d", (int)valor); // Anota a posição Y
+            snprintf(d, sizeof(d), "%d", (int)valor); // Anota a posição Y
             p = mens;
         }
     // Chama evento que processa tecla
@@ -663,7 +663,7 @@ void TVarTelaTxt::Processa()
             continue;
         }
     // Processa enter
-        copiastr(mens, LerLinha(), sizeof(mens)); // Usar copiastr ao invés de strcpy
+        copiastr(mens, LerLinha(), sizeof(mens)); // Usar copiastr segura
         ProcTecla(p);
         FuncEvento("msg", mens);
     }

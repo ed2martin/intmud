@@ -1,5 +1,5 @@
-/* Este arquivo é software livre; você pode redistribuir e/ou
- * modificar nos termos da licença LGPL. Vide arquivo COPYING.
+/* Este arquivo ï¿½ software livre; vocï¿½ pode redistribuir e/ou
+ * modificar nos termos da licenï¿½a LGPL. Vide arquivo COPYING.
  *
  * This file is free software; you can redistribute it and/or
  * modify it under the terms of the LGPL license. See file COPYING.
@@ -21,12 +21,12 @@
  #include <arpa/inet.h>
  #include <fcntl.h>
  #include <netdb.h>
- #include <netinet/in.h> // Contém a estrutura sockaddr_storage
+ #include <netinet/in.h> // Contï¿½m a estrutura sockaddr_storage
  #include <sys/time.h>
  #include <sys/types.h>
- #include <sys/socket.h> // Comunicação
+ #include <sys/socket.h> // Comunicaï¿½ï¿½o
  #include <signal.h>
- #include <sys/un.h>     // Contém a estrutura sockaddr_un
+ #include <sys/un.h>     // Contï¿½m a estrutura sockaddr_un
  #include <errno.h>
 #endif
 #include "config.h"
@@ -43,29 +43,29 @@
 
 //#define DEBUG_CRIAR  // Mostra objetos criados e apagados
 //#define DEBUG_MSG    // Mostra o que enviou e recebeu
-//#define DEBUG_SSL    // Mostra informações de conexão SSL
-//#define DEBUG_WEBSOCK // Mostra informações de conexão WebSock
+//#define DEBUG_SSL    // Mostra informaï¿½ï¿½es de conexï¿½o SSL
+//#define DEBUG_WEBSOCK // Mostra informaï¿½ï¿½es de conexï¿½o WebSock
 
 TSocket * TSocket::SockAtual = nullptr;
 TSocket * TSocket::sInicio = nullptr;
 bool TSocket::boolenvpend = false;
 
-// Conexão de socket, vide também:
+// Conexï¿½o de socket, vide tambï¿½m:
 // http://www.muq.org/~cynbe/ref/nonblocking-connects.html
 
 //----------------------------------------------------------------------------
 enum TSocketProto ///< Valores de TSocket::proto
 {
-    spConnect1,  ///< Conectando, conexão normal
-    spConnect2,  ///< Conectando, conexão SSL
+    spConnect1,  ///< Conectando, conexï¿½o normal
+    spConnect2,  ///< Conectando, conexï¿½o SSL
     spSslConnect,///< Conectando via SSL - SslConnect
-    spSslAccept, ///< Recebendo conexão via SSL - SslAccept
-    spTelnet1,   ///< Telnet, só mensagens inteiras
+    spSslAccept, ///< Recebendo conexï¿½o via SSL - SslAccept
+    spTelnet1,   ///< Telnet, sï¿½ mensagens inteiras
     spTelnet2,   ///< Telnet, recebe mensagens incompletas (sem o \\n)
     spIRC,       ///< IRC
     spPapovox,   ///< Papovox
-    spWebSockM0, ///< WebSock enviando mensagens sem o campo máscara
-    spWebSockM1, ///< WebSock enviando mensagens com o campo máscara
+    spWebSockM0, ///< WebSock enviando mensagens sem o campo mï¿½scara
+    spWebSockM1, ///< WebSock enviando mensagens com o campo mï¿½scara
     spHexa       ///< Bytes no formato hexadecimal
 };
 
@@ -79,7 +79,7 @@ static const char convirc[] = {
     1, // 4=red   -> 1=vermelho
     3, // 5=brown -> 3=marrom
     5, // 6=purple -> 5=magenta ???
-    9, // 7=orange -> vermelho forte (não tinha outra cor)
+    9, // 7=orange -> vermelho forte (nï¿½o tinha outra cor)
     11, // 8=yellow
     10, // 9=lt.green
     6,  // 10=teal (a kinda green/blue cyan)
@@ -159,6 +159,10 @@ bool TSocket::IpValido(const char * host)
 //------------------------------------------------------------------------------
 int TSocket::NomeParaIps(const char * nome, char * ip, int tamanho)
 {
+    // ValidaÃ§Ã£o de entrada
+    if (!nome || !ip || tamanho <= 0)
+        return -1;
+        
     struct addrinfo hints, *res;
     memset(&hints, 0, sizeof(hints));
     hints.ai_family = AF_UNSPEC; // Allow IPv4 and IPv6
@@ -175,9 +179,9 @@ int TSocket::NomeParaIps(const char * nome, char * ip, int tamanho)
         TSocket::IpParaString(p->ai_addr, p->ai_addrlen, ip, tamanho);
         if (*ip == 0)
             continue;
-        while (*ip)
+        while (*ip && tamanho > 1) // Verificar limite
             ip++, tamanho--;
-        if (tamanho < 1)
+        if (tamanho < 2) // Precisa de espaÃ§o para ' ' e '\0'
         {
             achou = false;
             break;
@@ -185,7 +189,7 @@ int TSocket::NomeParaIps(const char * nome, char * ip, int tamanho)
         *ip++ = ' ', tamanho--;
         achou = true;
     }
-    if (achou)
+    if (achou && ip > nome) // Verificar se ip nÃ£o foi alÃ©m do inÃ­cio
         ip[-1] = 0;
     freeaddrinfo(res);
     return 0;
@@ -312,104 +316,104 @@ const char * TSocket::TxtErro(int erro)
     case WSAEINTR: // (10004) Interrupted system call
         return "Chamada do sistema interrompida";
     case WSAEBADF: // (10009) Bad file number
-        return "Número de arquivo inválido";
+        return "Nï¿½mero de arquivo invï¿½lido";
     case WSAEACCES: // (10013) Permission denied
-        return "Permissão negada";
+        return "Permissï¿½o negada";
     case WSAEFAULT: // (10014) Bad address
-        return "Endereço incorreto";
+        return "Endereï¿½o incorreto";
     case WSAEINVAL: // (10022) Invalid argument
-        return "Argumento inválido";
+        return "Argumento invï¿½lido";
     case WSAEMFILE: // (10024) Too many open files
         return "Muitos arquivos abertos";
     case WSAEWOULDBLOCK: // (10035) Operation would block
-        return "Operação deveria bloquear";
+        return "Operaï¿½ï¿½o deveria bloquear";
     case WSAEINPROGRESS: // (10036) Operation now in progress
-        return "Operação em progresso";
+        return "Operaï¿½ï¿½o em progresso";
     case WSAEALREADY: // (10037) Operation already in progress
-        return "Operação já está em progresso";
+        return "Operaï¿½ï¿½o jï¿½ estï¿½ em progresso";
     case WSAENOTSOCK: // (10038) Socket operation on non-socket
-        return "Operação socket em não socket";
+        return "Operaï¿½ï¿½o socket em nï¿½o socket";
     case WSAEDESTADDRREQ: // (10039) Destination address required
-        return "Faltou o endereço destino";
+        return "Faltou o endereï¿½o destino";
     case WSAEMSGSIZE: // (10040) Message too long
         return "Mensagem longa demais";
     case WSAEPROTOTYPE: // (10041) Protocol wrong type for socket
         return "Protocolo errado para socket";
     case WSAENOPROTOOPT: // (10042) Bad protocol option
-        return "Opção de protocolo inválida";
+        return "Opï¿½ï¿½o de protocolo invï¿½lida";
     case WSAEPROTONOSUPPORT: // (10043) Protocol not supported
-        return "Protocolo não suportado";
+        return "Protocolo nï¿½o suportado";
     case WSAESOCKTNOSUPPORT: // (10044) Socket type not supported
-        return "Tipo de socket não suportado";
+        return "Tipo de socket nï¿½o suportado";
     case WSAEOPNOTSUPP: // (10045) Operation not supported on socket
-        return "Operação não suportada em socket";
+        return "Operaï¿½ï¿½o nï¿½o suportada em socket";
     case WSAEPFNOSUPPORT: // (10046) Protocol family not supported
-        return "Protocolo não suportado";
+        return "Protocolo nï¿½o suportado";
     case WSAEAFNOSUPPORT: // (10047) Address family not supported by protocol family
-        return "Tipo de endereço não suportado pelo protocolo";
+        return "Tipo de endereï¿½o nï¿½o suportado pelo protocolo";
     case WSAEADDRINUSE: // (10048) Address already in use
-        return "Endereço já está em uso";
+        return "Endereï¿½o jï¿½ estï¿½ em uso";
     case WSAEADDRNOTAVAIL: // (10049) Can't assign requested address
-        return "Impossível designar endereço requisitado";
+        return "Impossï¿½vel designar endereï¿½o requisitado";
     case WSAENETDOWN: // (10050) Network is down
-        return "A rede não está funcionando";
+        return "A rede nï¿½o estï¿½ funcionando";
     case WSAENETUNREACH: // (10051) Network is unreachable
-        return "A rede está inacessível";
+        return "A rede estï¿½ inacessï¿½vel";
     case WSAENETRESET: // (10052) Net dropped connection or reset
-        return "A rede derrubou a conexão";
+        return "A rede derrubou a conexï¿½o";
     case WSAECONNABORTED: // (10053) Software caused connection abort
-        return "Software cancelou a conexão";
+        return "Software cancelou a conexï¿½o";
     case WSAECONNRESET: // (10054) Connection reset by peer
-        return "Conexão fechada remotamente";
+        return "Conexï¿½o fechada remotamente";
     case WSAENOBUFS: // (10055) No buffer space available
-        return "Sem espaço disponível no buffer";
+        return "Sem espaï¿½o disponï¿½vel no buffer";
     case WSAEISCONN: // (10056) Socket is already connected
-        return "Socket já está conectado";
+        return "Socket jï¿½ estï¿½ conectado";
     case WSAENOTCONN: // (10057) Socket is not connected
-        return "Socket não está conectado";
+        return "Socket nï¿½o estï¿½ conectado";
     case WSAESHUTDOWN: // (10058) Can't send after socket shutdown
-        return "Impossível enviar após socket fechar";
+        return "Impossï¿½vel enviar apï¿½s socket fechar";
     case WSAETOOMANYREFS: // (10059) Too many references, can't splice
-        return "Muitas referências";
+        return "Muitas referï¿½ncias";
     case WSAETIMEDOUT: // (10060) Connection timed out
-        return "Conexão expirou por excesso de tempo";
+        return "Conexï¿½o expirou por excesso de tempo";
     case WSAECONNREFUSED: // (10061) Connection refused
-        return "Conexão recusada";
+        return "Conexï¿½o recusada";
     case WSAELOOP: // (10062) Too many levels of symbolic links
-        return "Muitos níveis de links simbólicos";
+        return "Muitos nï¿½veis de links simbï¿½licos";
     case WSAENAMETOOLONG: // (10063) File name too long
         return "Nome de arquivo muito longo";
     case WSAEHOSTDOWN: // (10064) Host is down
-        return "Host não está funcionando";
+        return "Host nï¿½o estï¿½ funcionando";
     case WSAEHOSTUNREACH: // (10065) No Route to Host
         return "Nenhuma rota para o host";
     case WSAENOTEMPTY: // (10066) Directory not empty
-        return "Diretório não está vazio";
+        return "Diretï¿½rio nï¿½o estï¿½ vazio";
     case WSAEPROCLIM: // (10067) Too many processes
         return "Muitos processos";
     case WSAEUSERS: // (10068) Too many users
-        return "Muitos usuários";
+        return "Muitos usuï¿½rios";
     case WSAEDQUOT: // (10069) Disc Quota Exceeded
         return "Quota de disco excedida";
     case WSAESTALE: // (10070) Stale NFS file handle
-        return "Arquivo não disponível";
+        return "Arquivo nï¿½o disponï¿½vel";
     case WSASYSNOTREADY: // (10091) Network SubSystem is unavailable
-        return "Sistema de rede indisponível";
+        return "Sistema de rede indisponï¿½vel";
     case WSAVERNOTSUPPORTED: // (10092) WINSOCK DLL Version out of range
-        return "Versão inválida da DLL Winsock";
+        return "Versï¿½o invï¿½lida da DLL Winsock";
     case WSANOTINITIALISED: // (10093) Successful WSASTARTUP not yet performed
-        return "Não foi feito um WSASTARTUP com sucesso";
+        return "Nï¿½o foi feito um WSASTARTUP com sucesso";
     case WSAEREMOTE: // (10071) Too many levels of remote in path
-        return "Muitos níveis remotos no caminho";
+        return "Muitos nï¿½veis remotos no caminho";
     case WSAHOST_NOT_FOUND: // (11001) Host not found
-        return "Host não encontrado";
+        return "Host nï¿½o encontrado";
     case WSATRY_AGAIN: // (11002) Non-Authoritative Host not found
-        return "Host não autorizado não encontrado";
+        return "Host nï¿½o autorizado nï¿½o encontrado";
     case WSANO_RECOVERY: // (11003) Non-Recoverable errors: FORMERR, REFUSED, NOTIMP
-        return "Erro não recuperável";
+        return "Erro nï¿½o recuperï¿½vel";
     //case WSANO_DATA: // (11004)* Valid name, no data record of requested type
     case WSANO_ADDRESS: // (11004)* No address, look for MX record
-        return "Endereço não existe";
+        return "Endereï¿½o nï¿½o existe";
     }
     static char mens[40];
     sprintf(mens, "Erro %d", erro);
@@ -460,7 +464,7 @@ TSocket::TSocket(int socknum, SSL * sslnum)
     if (sInicio)
         sInicio->sAntes = this;
     sInicio = this;
-// Acerta variáveis
+// Acerta variï¿½veis
     sock = socknum;
     sockssl = sslnum;
     pontEnv = 0;
@@ -674,24 +678,24 @@ void TSocket::Endereco(int num, char * mens, int tam)
     }
     if (num < 4)
     {
-    // Obtém objeto X509
+    // Obtï¿½m objeto X509
         if (sockssl == nullptr || sock < 0)
             return;
         X509 * obj509 = SslGetPeerCertificate(sockssl);
         if (obj509 == nullptr)
             return;
-    // Obtém o tamanho do certificado
+    // Obtï¿½m o tamanho do certificado
         int total = SslX509i2d(obj509, nullptr);
         if (total <= 0)
         {
             SslX509free(obj509);
             return;
         }
-    // Obtém o certificado
+    // Obtï¿½m o certificado
         unsigned char * buf = new unsigned char[total];
         unsigned char * p = buf;
         SslX509i2d(obj509, &p);
-    // Obtém o hash
+    // Obtï¿½m o hash
         char texto[50];
         unsigned char digest[20];
         if (num == 2)
@@ -805,7 +809,7 @@ bool TSocket::EnvMens(const char * mensagem, int codigo)
                 *destino++ = valor, valor = 1;
         }
 
-    // Máscara
+    // Mï¿½scara
         if (proto == spWebSockM1)
         {
             char cod[4];
@@ -840,7 +844,7 @@ bool TSocket::EnvMens(const char * mensagem, int codigo)
         if (proto == spWebSockM1)
             ini[0] |= 0x80;
 
-    // Código
+    // Cï¿½digo
         *(--ini) = (codigo < 0 ? 0 : codigo > 255 ? 255 : codigo);
 
     // Envia
@@ -943,7 +947,7 @@ bool TSocket::EnvMens(const char * mensagem, int codigo)
         int ecototal = 0; // Quantidade de comandos ECHO na mensagem
         for (; *mensagem; mensagem++)
         {
-        // Verifica se espaço suficiente
+        // Verifica se espaï¿½o suficiente
             if (destino >= mens + sizeof(mens) - 15)
                 return false;
         // Caracter normal
@@ -981,7 +985,7 @@ bool TSocket::EnvMens(const char * mensagem, int codigo)
                 }
                 continue;
             }
-        // Definição de cor
+        // Definiï¿½ï¿½o de cor
             unsigned int antes = cor;
             unsigned int agora = Num16(mensagem + 1);
             cor = agora;
@@ -1057,10 +1061,10 @@ bool TSocket::EnvMens(const char * mensagem, int codigo)
         unsigned int cor = CorEnvia;
         for (; *mensagem; mensagem++)
         {
-        // Verifica se espaço suficiente
+        // Verifica se espaï¿½o suficiente
             if (destino >= mens + sizeof(mens) - 10)
                 return false;
-        // Próxima linha
+        // Prï¿½xima linha
             if (*mensagem=='\n')
             {
                 *destino++ = 13;
@@ -1074,17 +1078,17 @@ bool TSocket::EnvMens(const char * mensagem, int codigo)
                     *destino++ = *mensagem;
                 continue;
             }
-        // Definição de cor
-            bool numero =   // Se pode ser interpretado como número
+        // Definiï¿½ï¿½o de cor
+            bool numero =   // Se pode ser interpretado como nï¿½mero
                     (mensagem[3] == 0 ||
                     (mensagem[3] >= '0' && mensagem[3] <= '9'));
-            bool virgula =  // Se pode ser interpretado como vírgula
+            bool virgula =  // Se pode ser interpretado como vï¿½rgula
                     (mensagem[3] == 0 || mensagem[3] == ',');
             unsigned int antes = cor ^ Num16(mensagem + 1);
             cor = Num16(mensagem + 1);
             mensagem += 2;
             *destino++ = 3;
-            if (cor==0x70) // Cor padrão
+            if (cor==0x70) // Cor padrï¿½o
             {
                 if (numero == false)
                     *destino = 0;
@@ -1096,7 +1100,7 @@ bool TSocket::EnvMens(const char * mensagem, int codigo)
                             desconvirc[(cor >> 4) & 15],
                             desconvirc[cor & 15]);
             }
-            else if ((antes & 15)==0) // Fundo não mudou
+            else if ((antes & 15)==0) // Fundo nï¿½o mudou
             {
                 if (virgula)
                     sprintf(destino, "%d,%02d",
@@ -1192,16 +1196,16 @@ void TSocket::EnvPend()
             default:
                 resposta = -1;
             }
-            // Se ocorreu erro, só vai enviar novamente após fazer uma leitura
+            // Se ocorreu erro, sï¿½ vai enviar novamente apï¿½s fazer uma leitura
             if (erro != SSL_ERROR_NONE)
             {
                 receberssl = 1;
 #ifdef DEBUG_SSL
-                printf("Não pode SSL_WRITE(%d)\n", sock);
+                printf("Nï¿½o pode SSL_WRITE(%d)\n", sock);
                 fflush(stdout);
 #endif
             }
-            // Próxima chamada a SslWrite deve ser com a mesma quantidade de bytes
+            // Prï¿½xima chamada a SslWrite deve ser com a mesma quantidade de bytes
             if (pontEnvSsl == 0)
                 pontEnvSsl = pontEnv;
         }
@@ -1286,10 +1290,10 @@ void TSocket::Fd_Set(fd_set * set_entrada, fd_set * set_saida, fd_set * set_err)
             // Gera evento
                 SockAtual = obj;
                 obj->FuncFechou(mens);
-            // Passa para próximo objeto TSocket
-                if (SockAtual == obj) // Se objeto Socket não foi apagado, apaga
+            // Passa para prï¿½ximo objeto TSocket
+                if (SockAtual == obj) // Se objeto Socket nï¿½o foi apagado, apaga
                     delete obj;
-                obj = SockAtual;  // SockAtual já está no próximo objeto
+                obj = SockAtual;  // SockAtual jï¿½ estï¿½ no prï¿½ximo objeto
                 continue;
             }
         // Verifica se socket fechado
@@ -1307,7 +1311,7 @@ void TSocket::Fd_Set(fd_set * set_entrada, fd_set * set_saida, fd_set * set_err)
                 obj = SockAtual;
                 continue;
             }
-        // Passa para próximo socket
+        // Passa para prï¿½ximo socket
             obj = obj->sDepois;
         }
         if (!boolenvpend)
@@ -1373,14 +1377,14 @@ void TSocket::ProcEventos(fd_set * set_entrada,
                 }
             }
 #else
-        // Checa se conexão pendente
+        // Checa se conexï¿½o pendente
             if (FD_ISSET(obj->sock, set_entrada) == 0 &&
                     FD_ISSET(obj->sock, set_saida) == 0)
             {
                 obj = obj->sDepois;
                 continue;
             }
-        // Checa se está conectado
+        // Checa se estï¿½ conectado
             if ( connect(obj->sock, (struct sockaddr *)&obj->conSock,
                                       sizeof(struct sockaddr)) < 0 )
             {
@@ -1393,7 +1397,7 @@ void TSocket::ProcEventos(fd_set * set_entrada,
                     continue;
                 }
             }
-        // Se erro: obtém o código de erro
+        // Se erro: obtï¿½m o cï¿½digo de erro
             if (coderro)
             {
                 int err = 0;
@@ -1412,12 +1416,12 @@ void TSocket::ProcEventos(fd_set * set_entrada,
                 if (coderro != -1)
                     copiastr(mens, TxtErro(coderro), sizeof(mens));
                 obj->FuncEvento("err", mens);
-                if (obj == SockAtual) // Se objeto não foi apagado
+                if (obj == SockAtual) // Se objeto nï¿½o foi apagado
                     delete obj; // Apaga objeto e fecha socket automaticamente
-                obj = SockAtual; // SockAtual já está no próximo objeto
+                obj = SockAtual; // SockAtual jï¿½ estï¿½ no prï¿½ximo objeto
                 continue;
             }
-        // Conseguiu conectar, checa se é conexão normal (não SSL)
+        // Conseguiu conectar, checa se ï¿½ conexï¿½o normal (nï¿½o SSL)
             if (obj->proto != spConnect2)
             {
                 SockAtual = obj->sDepois;
@@ -1426,12 +1430,12 @@ void TSocket::ProcEventos(fd_set * set_entrada,
                 obj = SockAtual;
                 continue;
             }
-        // Conexão SSL
+        // Conexï¿½o SSL
             obj->proto = spSslConnect;
             obj->CriaSSL((const char*)obj->bufRec);
         // Erro ao conectar
         }
-    // Verifica conexão SSL
+    // Verifica conexï¿½o SSL
         if (obj->proto == spSslConnect)
         {
             int resposta = SslConnect(obj->sockssl);
@@ -1459,19 +1463,19 @@ void TSocket::ProcEventos(fd_set * set_entrada,
                     obj->sock, resposta, erro);
             fflush(stdout);
 #endif
-            if (resposta >= 0) // Conexão pendente
+            if (resposta >= 0) // Conexï¿½o pendente
             {
                 obj = obj->sDepois;
                 continue;
             }
             SockAtual = obj;
             obj->FuncEvento("err", "Erro ao negociar SSL");
-            if (obj == SockAtual) // Se objeto não foi apagado
+            if (obj == SockAtual) // Se objeto nï¿½o foi apagado
                 delete obj; // Apaga objeto e fecha socket automaticamente
-            obj = SockAtual; // SockAtual já está no próximo objeto
+            obj = SockAtual; // SockAtual jï¿½ estï¿½ no prï¿½ximo objeto
             continue;
         }
-    // Lê e processa dados pendentes
+    // Lï¿½ e processa dados pendentes
         if (obj->sockssl == nullptr && FD_ISSET(obj->sock, set_entrada) == 0)
         {
             obj = obj->sDepois;
@@ -1479,7 +1483,7 @@ void TSocket::ProcEventos(fd_set * set_entrada,
         }
         while (true)
         {
-        // Lê do socket
+        // Lï¿½ do socket
             char mens[4096];
             int resposta, coderro = 0;
             if (obj->sockssl)
@@ -1601,7 +1605,7 @@ int TSocket::Processa(const char * buffer, int tamanho)
         unsigned char dado;
         while (tamanho)
         {
-        // Obtém próximo caracter
+        // Obtï¿½m prï¿½ximo caracter
             dado = *buffer++;
             tamanho--;
 //------- Para mostrar o que chegou
@@ -1645,7 +1649,7 @@ int TSocket::Processa(const char * buffer, int tamanho)
                         EnvMensBytes("\xFF\xFA\x23\x00"
                             "x.y\xFF\xF0", 9);
                         break;
-                    case 39: // Quer saber variáveis de ambiente
+                    case 39: // Quer saber variï¿½veis de ambiente
                         EnvMensBytes("\xFF\xFA\x27\x00\xFF\xF0", 6);
                         break;
                     }
@@ -1783,11 +1787,11 @@ telnet_cor:
                     {
                         switch (x[0])
                         {
-                        case '0': CorAtual =0x70; break; // Cores padrão
+                        case '0': CorAtual =0x70; break; // Cores padrï¿½o
                         case '1': CorAtual |= 0x80; break; // Negrito
                         case '4': CorAtual |= 0x100; break; // Sublinhado
                         case '5': CorAtual |= 0x400; break; // Piscando
-                        case '7': CorAtual |= 0x200; break; // Inversão
+                        case '7': CorAtual |= 0x200; break; // Inversï¿½o
                         }
                     }
                     else if (x[0] == '2') // Remover atributos
@@ -1798,7 +1802,7 @@ telnet_cor:
                             CorAtual &= ~0x100;
                         else if (memcmp(x+1, "5;", 2) == 0) // Sem piscante
                             CorAtual &= ~0x400;
-                        else if (memcmp(x+1, "7;", 2) == 0) // Sem inversão
+                        else if (memcmp(x+1, "7;", 2) == 0) // Sem inversï¿½o
                             CorAtual &= ~0x200;
                     }
                     else if (x[0] == '3' && x[1] >= '0' &&
@@ -1825,13 +1829,13 @@ telnet_cor:
                 }
                 continue;
             }
-        // Sequências de controle - caracter ESC
+        // Sequï¿½ncias de controle - caracter ESC
             if (dado == 27)
             {
                 dadoRecebido = 2;
                 pontESC = 0;
             }
-        // Próxima linha
+        // Prï¿½xima linha
             else if (dado == 10 || dado == 13)
             {
                 if (dado == 13 ? dadoRecebido == 10 : dadoRecebido == 13)
@@ -1851,7 +1855,7 @@ telnet_cor:
                 if (pontRec > 1)
                     pontRec--;
             }
-        // Caracteres imprimíveis
+        // Caracteres imprimï¿½veis
             else if (dado >= ' ' || (usaropctelnet && dado >= 4 && dado <= 7))
             {
                 if (pontRec < sizeof(bufRec) / sizeof(bufRec[0]) - 4)
@@ -1873,7 +1877,7 @@ telnet_cor:
         char dado;
         while (tamanho)
         {
-        // Obtém próximo caracter
+        // Obtï¿½m prï¿½ximo caracter
             dado = *buffer++;
             tamanho--;
 //printf(" CH(%d,%c) ", (unsigned char)dado,
@@ -1923,7 +1927,7 @@ telnet_cor:
                 }
                 dadoRecebido = 0;
             }
-        // Próxima linha
+        // Prï¿½xima linha
             else if (dado == 10)
             {
                 bufRec[pontRec].cor = CorAtual;
@@ -1937,7 +1941,7 @@ telnet_cor:
                 if (pontRec > 1)
                     pontRec--;
             }
-        // Caracteres imprimíveis
+        // Caracteres imprimï¿½veis
             else if ((unsigned char)dado >= ' ')
             {
                 if (pontRec < sizeof(bufRec) / sizeof(bufRec[0]) - 4)
@@ -1957,13 +1961,13 @@ telnet_cor:
     if (proto == spPapovox)
     {
         dadoRecebido = 0;
-        for (; pontRec < 3 && tamanho > 0; tamanho--, buffer++) // Cabeçalho
+        for (; pontRec < 3 && tamanho > 0; tamanho--, buffer++) // Cabeï¿½alho
         {
             bufRec[pontRec].carac = *(unsigned char*)buffer;
             bufRec[pontRec].cor = 0x70;
             pontRec++;
         }
-        if (pontRec < 3) // Verifica se o cabeçalho já chegou
+        if (pontRec < 3) // Verifica se o cabeï¿½alho jï¿½ chegou
             return 0;
         unsigned int mensagem =      // Tamanho da mensagem
                         3 + bufRec[1].carac + bufRec[2].carac * 0x100;
@@ -1998,7 +2002,7 @@ telnet_cor:
 #endif
 
     // bufRec[0] = mensagem
-    // bufRec[1] = identificação do tamanho da mensagem
+    // bufRec[1] = identificaï¿½ï¿½o do tamanho da mensagem
     // bufRec[2] a bufRec[5] = tamanho da mensagem
         switch (pontRec)
         {
@@ -2060,7 +2064,7 @@ telnet_cor:
                 return 0;
             bufRec[pontRec++].carac = *buffer++, tamanho--;
         }
-    // bufRec[10] a bufRec[13] = máscara
+    // bufRec[10] a bufRec[13] = mï¿½scara
         if (pontRec < 14)
         {
             if ((bufRec[1].carac & 0x80) == 0)
@@ -2259,14 +2263,14 @@ void TSocket::EventoMens(bool completo)
         *dest = 0;
         codigo = bufRec[0].carac;
     }
-// Protocolo desconhecido ou não está conectado
+// Protocolo desconhecido ou nï¿½o estï¿½ conectado
     else
     {
         pontRec = 0;
         return;
     }
 
-// Acerta variáveis
+// Acerta variï¿½veis
     pontRec = 0;
 #ifdef DEBUG_MSG
     printf(">>>>>>> Recebeu %s\n", texto);
@@ -2275,10 +2279,10 @@ void TSocket::EventoMens(bool completo)
 // Anti-flooder
     if (AFlooder && completo) // Verifica se anti-flooder ativado
     {
-        if (AFlooder >= TempoIni + 60) // Condição de flooder
+        if (AFlooder >= TempoIni + 60) // Condiï¿½ï¿½o de flooder
             return;
         AFlooder += strlen(texto) / 8 + 5; // Acerta AFlooder
-        if (AFlooder <= TempoIni)  // Acerta valor mínimo de AFlooder
+        if (AFlooder <= TempoIni)  // Acerta valor mï¿½nimo de AFlooder
             AFlooder = TempoIni + 1;
     }
 

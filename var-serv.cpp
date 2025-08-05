@@ -1,5 +1,5 @@
-/* Este arquivo é software livre; você pode redistribuir e/ou
- * modificar nos termos da licença LGPL. Vide arquivo COPYING.
+/* Este arquivo ï¿½ software livre; vocï¿½ pode redistribuir e/ou
+ * modificar nos termos da licenï¿½a LGPL. Vide arquivo COPYING.
  *
  * This file is free software; you can redistribute it and/or
  * modify it under the terms of the LGPL license. See file COPYING.
@@ -19,14 +19,14 @@
  #include <arpa/inet.h>
  #include <fcntl.h>
  #include <netdb.h>
- #include <netinet/in.h> // Contém a estrutura sockaddr_storage
+ #include <netinet/in.h> // Contï¿½m a estrutura sockaddr_storage
  #include <string.h>
  #include <sys/time.h>
  #include <sys/types.h>
- #include <sys/socket.h> // Comunicação
+ #include <sys/socket.h> // Comunicaï¿½ï¿½o
  #include <signal.h>
- #include <netinet/in.h> // Contém a estrutura sockaddr_in
- #include <sys/un.h>     // Contém a estrutura sockaddr_un
+ #include <netinet/in.h> // Contï¿½m a estrutura sockaddr_in
+ #include <sys/un.h>     // Contï¿½m a estrutura sockaddr_un
  #include <errno.h>
 #endif
 #include <assert.h>
@@ -59,11 +59,11 @@ TVarServObj::TVarServObj(TVarServ * serv, int s)
     Depois = nullptr;
     (Antes ? Antes->Depois : Serv->ServInicio) = this;
     Serv->ServFim = this;
-// Acerta outras variáveis
+// Acerta outras variï¿½veis
     sock = s;
     acaossl = 0;
     tempo = 100;
-// Conexão segura
+// Conexï¿½o segura
     sockssl = SslNew(ssl_ctx_servidor);
     SslSetFd(sockssl, s);
 }
@@ -190,7 +190,7 @@ bool TVarServ::Abrir(const char * ender, unsigned short porta)
 
     // Cria socket
         char port2[20];
-        sprintf(port2, "%d", porta);
+        snprintf(port2, sizeof(port2), "%d", porta);
         memset(&hints, 0, sizeof(hints));
         hints.ai_family = AF_UNSPEC; // Allow IPv4 and IPv6
         hints.ai_socktype = SOCK_STREAM; // TCP
@@ -213,7 +213,7 @@ bool TVarServ::Abrir(const char * ender, unsigned short porta)
         if (listen(sock, 15))
             break;
 
-    // Windows: Modo de não bloqueio
+    // Windows: Modo de nï¿½o bloqueio
         unsigned long argp = 1; // 0=bloquear  1=nao bloquear
         if ( ioctlsocket(sock, FIONBIO, &argp) != 0 )
             break;
@@ -232,7 +232,7 @@ bool TVarServ::Abrir(const char * ender, unsigned short porta)
         if (listen(sock, 15) < 0)
             break;
 
-    // Unix: Modo de não bloqueio
+    // Unix: Modo de nï¿½o bloqueio
         fcntl(sock, F_SETFL, O_NONBLOCK);
 #endif
         freeaddrinfo(res);
@@ -247,7 +247,7 @@ bool TVarServ::Abrir(const char * ender, unsigned short porta)
     }
 
 // Ocorreu algum erro
-    // UNIX: o erro está em strerror(errno)
+    // UNIX: o erro estï¿½ em strerror(errno)
     // Windows: chamar WSAGetLastError() e obter o erro de uma tabela
     if (res)
         freeaddrinfo(res);
@@ -277,16 +277,16 @@ int TVarServ::Fd_Set(fd_set * set_entrada, fd_set * set_saida)
 //------------------------------------------------------------------------------
 void TVarServ::ProcEventos(fd_set * set_entrada, int tempo)
 {
-// Recebe conexões
+// Recebe conexï¿½es
     for (TVarServ * obj = Inicio; obj; )
     {
-    // Verifica se tem conexões pendentes
+    // Verifica se tem conexï¿½es pendentes
         if (FD_ISSET(obj->sock, set_entrada) == 0)
         {
             obj = obj->Depois;
             continue;
         }
-    // Recebe conexões
+    // Recebe conexï¿½es
         varObj = obj;
         while (obj == varObj)
         {
@@ -307,17 +307,17 @@ void TVarServ::ProcEventos(fd_set * set_entrada, int tempo)
             TSocket::SockConfig(localSocket); // Acerta socket
 
             if (obj->modossl)
-                new TVarServObj(obj, localSocket); // Conexão segura
+                new TVarServObj(obj, localSocket); // Conexï¿½o segura
             else
                 obj->ExecEvento(localSocket, 0); // Gera evento
         }
-    // Fecha o laço
+    // Fecha o laï¿½o
         if (obj == varObj)
             obj = obj->Depois;
         else
             obj = varObj;
     }
-// Negocia conexões SSL
+// Negocia conexï¿½es SSL
     for (TVarServ * obj = Inicio; obj; )
     {
         varObj = obj;
@@ -332,18 +332,18 @@ void TVarServ::ProcEventos(fd_set * set_entrada, int tempo)
                 continue;
             }
             x->tempo -= tempo;
-        // Prossegue com a conexão
+        // Prossegue com a conexï¿½o
             int resposta = SslAccept(x->sockssl);
-            if (resposta > 0) // Conexão realizada
+            if (resposta > 0) // Conexï¿½o realizada
             {
-            // Apaga objeto x sem fechar a conexão
+            // Apaga objeto x sem fechar a conexï¿½o
                 int local_sock = x->sock;
                 SSL * local_ssl = x->sockssl;
                 TVarServObj * x2 = x->Depois;
                 x->sock = -1;
                 x->sockssl = nullptr;
                 delete x;
-            // Passa para o próximo objeto
+            // Passa para o prï¿½ximo objeto
                 x = x2;
             // Executa evento
                 obj->ExecEvento(local_sock, local_ssl);
@@ -386,13 +386,13 @@ void TVarServ::ExecEvento(int localSocket, SSL * sslSocket)
     if (b_objeto)
     {
         char mens[80];
-        sprintf(mens, "%s_socket", defvar+Instr::endNome);
+        snprintf(mens, sizeof(mens), "%s_socket", defvar+Instr::endNome);
         prossegue = Instr::ExecIni(endobjeto, mens);
     }
     else if (endclasse)
     {
         char mens[80];
-        sprintf(mens, "%s_socket", defvar+Instr::endNome);
+        snprintf(mens, sizeof(mens), "%s_socket", defvar+Instr::endNome);
         prossegue = Instr::ExecIni(endclasse, mens);
     }
     if (prossegue == false)
@@ -409,7 +409,7 @@ void TVarServ::ExecEvento(int localSocket, SSL * sslSocket)
     Instr::ExecArgCriar(Instr::InstrSocket);
     TVariavel * v = Instr::VarAtual;
     TVarSocket * ref = reinterpret_cast<TVarSocket*>(v->endvar) + v->indice;
-        // Cria argumento: índice
+        // Cria argumento: ï¿½ndice
     Instr::ExecArg(indice);
         // Cria TObjSocket com o socket
     TSocket * s = new TSocket(localSocket, sslSocket);
@@ -479,9 +479,9 @@ bool TVarServ::FuncIniSSL(TVariavel * v)
     copiastr(arq_crt, v[1].getTxt(), sizeof(arq_crt));
     copiastr(arq_key, v[2].getTxt(), sizeof(arq_key));
     if (!arqvalido(arq_crt, true))
-        return "Nome do arquivo CRT não é permitido";
+        return "Nome do arquivo CRT nï¿½o ï¿½ permitido";
     if (!arqvalido(arq_key, true))
-        return "Nome do arquivo KEY não é permitido";
+        return "Nome do arquivo KEY nï¿½o ï¿½ permitido";
     const char * err = AbreServidorSSL(arq_crt, arq_key);
     Instr::ApagarVar(v);
     return Instr::CriarVarTexto(err ? err : "");

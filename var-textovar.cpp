@@ -1249,8 +1249,21 @@ void TTextoVarSub::setObj(TObjeto * obj)
 //----------------------------------------------------------------------------
 TBlocoVar::TBlocoVar(TTextoVar * var, const char * nome, const char * texto)
 {
+    // Validação de entrada
+    if (!nome || !var) {
+        TextoVar = nullptr;
+        return;
+    }
+    
     int tam1 = strlen(nome) + 1;
     int tam2 = (texto ? strlen(texto) + 1 : 0);
+    
+    // Verificar se os tamanhos são razoáveis para prevenir overflow
+    if (tam1 > 1024 || tam2 > 1024*1024) {
+        TextoVar = nullptr;
+        return;
+    }
+    
     char * p = new char[tam1 + tam2];
     NomeVar = p;
     memcpy(p, nome, tam1);

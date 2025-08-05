@@ -1,20 +1,21 @@
-/* Este arquivo é software livre; você pode redistribuir e/ou
- * modificar nos termos da licença LGPL. Vide arquivo COPYING.
+/* Este arquivo ï¿½ software livre; vocï¿½ pode redistribuir e/ou
+ * modificar nos termos da licenï¿½a LGPL. Vide arquivo COPYING.
  *
  * This file is free software; you can redistribute it and/or
  * modify it under the terms of the LGPL license. See file COPYING.
  */
 
-#include <stdio.h>      // Entrada/Saída padrão
-#include <stdlib.h>     // Biblioteca padrão
-#include <string.h>     // Funções string
+#include <stdio.h>      // Entrada/Saï¿½da padrï¿½o
+#include <stdlib.h>     // Biblioteca padrï¿½o
+#include <string.h>     // Funï¿½ï¿½es string
 #include <stdarg.h>
 #include <dirent.h>
 #include <errno.h>
 #include <assert.h>
 #include <fcntl.h>
+#include <climits>      // Para INT_MAX e INT_MIN
 #ifdef __WIN32__
-    // O número de sockets padrão no Windows é 64
+    // O nï¿½mero de sockets padrï¿½o no Windows ï¿½ 64
     // Se precisar mudar, definir FD_SETSIZE aqui, antes de winsock.h
  #define FD_SETSIZE 128
  #include <windows.h>
@@ -52,11 +53,11 @@
 #include "random.h"
 #include "misc.h"
 
-#define TESPERA_MAX 30  // Tempo máximo que pode esperar (10 = 1 segundo)
+#define TESPERA_MAX 30  // Tempo mï¿½ximo que pode esperar (10 = 1 segundo)
 
 // ulimit -S -c 200000
 //#define CORE    // Para gerar arquivos core
-//#define DEBUG   // Para não colocar o programa em segundo plano
+//#define DEBUG   // Para nï¿½o colocar o programa em segundo plano
 
 //------------------------------------------------------------------------------
 #if defined CORE && !defined __WIN32__
@@ -74,7 +75,7 @@ static FILE * err_log = nullptr;
 
 //------------------------------------------------------------------------------
 // Semelhante a sprintf(), exceto que:
-// Só processa caracteres %%, %c, %d, %u e %s
+// Sï¿½ processa caracteres %%, %c, %d, %u e %s
 static void err_printf(const char * mens, ...)
 {
     char txt[512];
@@ -109,8 +110,12 @@ static void err_printf(const char * mens, ...)
                 *(destino++) = va_arg(argp, int);
             break;
         case 's':
-            for (p=va_arg(argp, char *); *p && destino<fim; p++,destino++)
-                *destino=*p;
+            p = va_arg(argp, char *);
+            // Verificar se o ponteiro Ã© vÃ¡lido
+            if (p) {
+                for (; *p && destino<fim; p++,destino++)
+                    *destino=*p;
+            }
             break;
         case 'd':
             tamanho=va_arg(argp, int);
@@ -118,8 +123,13 @@ static void err_printf(const char * mens, ...)
                 break;
             if (tamanho < 0)
             {
-                *destino++ = '-';
-                tamanho = -tamanho;
+                if (destino < fim)
+                    *destino++ = '-';
+                // Cuidar do overflow quando tamanho == INT_MIN
+                if (tamanho == INT_MIN)
+                    tamanho = INT_MAX; // Melhor aproximaÃ§Ã£o possÃ­vel
+                else
+                    tamanho = -tamanho;
             }
             for (p2 = numero; p2 < &numero[sizeof(numero)] && tamanho; tamanho /= 10)
                 *p2++ = tamanho % 10 + '0';
@@ -147,7 +157,7 @@ static void err_printf(const char * mens, ...)
     va_end(argp);
 
 // Envia mensagem
-    const char msg1[] = "IntMUD versão " VERSION " (Interpretador MUD)\n";
+    const char msg1[] = "IntMUD versï¿½o " VERSION " (Interpretador MUD)\n";
     if (!opcao_log)
     {
         if (Console == nullptr)
@@ -181,8 +191,8 @@ static void err_printf(const char * mens, ...)
 static unsigned int contador_tempo()
 {
 #ifdef __WIN32__
-    // Nota: a base de tempo do IntMUD é de 100 milissegundos
-    // Se for necessário maior precisào, usar QueryPerformanceFrequency()
+    // Nota: a base de tempo do IntMUD ï¿½ de 100 milissegundos
+    // Se for necessï¿½rio maior precisï¿½o, usar QueryPerformanceFrequency()
     // e QueryPerformanceCounter()
     return timeGetTime();
 #else
@@ -238,7 +248,7 @@ static void err_fim()
 //------------------------------------------------------------------------------
 int main(int argc, char *argv[])
 {
-// Inicialização
+// Inicializaï¿½ï¿½o
     // Se precisar obter HINSTANCE no Windows:
     //HINSTANCE hInstance = GetModuleHandle(NULL);
     Inicializa(argc <= 1 ? argv[0] : argv[1]);
@@ -290,18 +300,18 @@ int main(int argc, char *argv[])
     atual = contador_tempo();
     while (true)
     {
-    // Obtém: espera = tempo decorrido
+    // Obtï¿½m: espera = tempo decorrido
         espera = atual;
         atual = contador_tempo(); // Tempo atual
         espera = atual - espera;// Quanto tempo se passou em milissegundos
-        atual -= espera % 100;  // Para passar para décimos de segundo
-        espera /= 100;          // Arredonda para décimos de segundo
+        atual -= espera % 100;  // Para passar para dï¿½cimos de segundo
+        espera /= 100;          // Arredonda para dï¿½cimos de segundo
         if (espera > 0x800)
             espera = 0;
         if (espera > TESPERA_MAX)
             espera = TESPERA_MAX;
 
-    // Apaga variáveis de textovar
+    // Apaga variï¿½veis de textovar
         TBlocoVarDec::ProcEventos(espera);
 
     // Eventos de IntTempo
@@ -331,10 +341,10 @@ int main(int argc, char *argv[])
         TTextoBloco::Limpar();
 
     // Grava logs pendentes
-    // Obtém tempo de espera conforme TVarLog
+    // Obtï¿½m tempo de espera conforme TVarLog
         espera = TVarArqLog::TempoEspera(espera);
 
-    // Prepara variáveis para select()
+    // Prepara variï¿½veis para select()
     // Acerta tempo de espera conforme TVarServ
         FD_ZERO(&set_entrada);
         FD_ZERO(&set_saida);
@@ -377,8 +387,8 @@ int main(int argc, char *argv[])
         tselect.tv_usec = espera % 1000 * 1000;
 #ifdef __WIN32__
         // Nota:
-        // Se não especificar nenhum socket, o Windows retorna SOCKET_ERROR
-        // Se acontecer da rede falhar, também pode retornar SOCKET_ERROR
+        // Se nï¿½o especificar nenhum socket, o Windows retorna SOCKET_ERROR
+        // Se acontecer da rede falhar, tambï¿½m pode retornar SOCKET_ERROR
         // Nesse caso, usa-se Sleep() para esperar 100 milissegundos
         if (select(FD_SETSIZE, &set_entrada, &set_saida, 0, &tselect)
                 == SOCKET_ERROR)
@@ -394,7 +404,7 @@ int main(int argc, char *argv[])
 }
 
 //------------------------------------------------------------------------------
-/// Adiciona arquivos das instruções incluir
+/// Adiciona arquivos das instruï¿½ï¿½es incluir
 static void AdicionaIncluir()
 {
     TVarArqProg arqprog;
@@ -410,11 +420,11 @@ static void AdicionaIncluir()
 }
 
 //------------------------------------------------------------------------------
-/// Inicialização do programa
-/// @param arg Nome do arquivo .int, ou "" se não foi especificado
+/// Inicializaï¿½ï¿½o do programa
+/// @param arg Nome do arquivo .int, ou "" se nï¿½o foi especificado
 void Inicializa(const char * arg)
 {
-// Variáveis
+// Variï¿½veis
     char mens[BUF_CODIF];
     bool erro = false; // Se ocorreu algum erro
     bool telatxt = false; // Se deve abrir janela do console
@@ -431,33 +441,33 @@ void Inicializa(const char * arg)
         exit(EXIT_FAILURE);
     }
     // Muda prioridade, para o programa executar o mais
-    // lento possível
+    // lento possï¿½vel
     //setpriority(PRIO_PROCESS, (int)getpid(), PRIO_MAX);
 #endif
 
-// Inicializa variáveis
+// Inicializa variï¿½veis
     tabASCinic();   // Prepara tabela ASCII
-    circle_srandom(time(0)); // Para gerar números aleatórios
+    circle_srandom(time(0)); // Para gerar nï¿½meros aleatï¿½rios
     TVariavel::Inicializa();
 
-// Obtém nome do programa: arqnome e arqinicio
+// Obtï¿½m nome do programa: arqnome e arqinicio
     {
         char nome[0xC000];
         char * pnome = nome;
         const char * endfim = nome + sizeof(nome) - 1;
 
-    // Verifica se nome é nulo
+    // Verifica se nome ï¿½ nulo
         while (*arg == ' ')
             arg++;
         if (*arg == 0)
             arg = PACKAGE;
 
-    // Obtém primeiro argumento em nome[]
-    // Obtém: pnome = endereço do 0 no final
+    // Obtï¿½m primeiro argumento em nome[]
+    // Obtï¿½m: pnome = endereï¿½o do 0 no final
         pnome = copiastr(nome, arg, sizeof(nome));
 
-    // Muda para o diretório do nome
-    // Obtém: pnome = endereço do nome do arquivo sem o diretório
+    // Muda para o diretï¿½rio do nome
+    // Obtï¿½m: pnome = endereï¿½o do nome do arquivo sem o diretï¿½rio
 #ifdef __WIN32__
         for (; pnome >= nome; pnome--)
             if (*pnome == '\\')
@@ -480,7 +490,7 @@ void Inicializa(const char * arg)
         pnome++;
 #endif
 
-    // Obtém o nome do arquivo principal, sem o diretório
+    // Obtï¿½m o nome do arquivo principal, sem o diretï¿½rio
         while (true)
         {
             int tam1 = strlen(pnome);
@@ -502,7 +512,7 @@ void Inicializa(const char * arg)
         }
         TArqIncluir::ArqNome(pnome);
 
-    // Coloca em arqnome o nome do diretório atual seguido de uma barra
+    // Coloca em arqnome o nome do diretï¿½rio atual seguido de uma barra
 #ifdef __WIN32__
         if (GetCurrentDirectory((DWORD)(endfim-pnome), pnome) <= 0)
             exit(EXIT_FAILURE);
@@ -515,7 +525,7 @@ void Inicializa(const char * arg)
         sprintf(arqnome, "%s/", pnome);
 #endif
 
-    // Obtém arqinicio
+    // Obtï¿½m arqinicio
         arqinicio = arqnome + strlen(arqnome);
     }
 
@@ -533,7 +543,7 @@ void Inicializa(const char * arg)
     }
     while (true)
     {
-    // Lê próxima linha
+    // Lï¿½ prï¿½xima linha
         int linhanum = arq.Linha(mens, sizeof(mens));
         if (linhanum < 0) // Erro
         {
@@ -542,13 +552,13 @@ void Inicializa(const char * arg)
         }
         if (linhanum == 0) // Fim do arquivo
         {
-        // Fim da configuração: adiciona arquivos a serem buscados
+        // Fim da configuraï¿½ï¿½o: adiciona arquivos a serem buscados
             if (ini_arq)
             {
                 ini_arq = false;
                 AdicionaIncluir();
             }
-        // Pasa para o próximo arquivo
+        // Pasa para o prï¿½ximo arquivo
             mapa = mapa->Proximo;
             if (mapa == 0)
                 break;
@@ -568,10 +578,10 @@ void Inicializa(const char * arg)
             continue;
         }
 
-    // Configuração
+    // Configuraï¿½ï¿½o
         if (ini_arq)
         {
-            if (*mens == '#') // Comentário
+            if (*mens == '#') // Comentï¿½rio
                 continue;
             char * valor = mens;
             while (*valor && *valor != '=') // Procura um igual
@@ -579,7 +589,7 @@ void Inicializa(const char * arg)
             if (*valor == '=')
             {
                 char * p = valor;
-                for (; p > mens; p--) // Retira espaços antes do igual
+                for (; p > mens; p--) // Retira espaï¿½os antes do igual
                     if (p[-1] != ' ')
                         break;
                 *p = 0;
@@ -587,7 +597,7 @@ void Inicializa(const char * arg)
             }
             //printf("[%s] [%s]\n", mens, valor);
 
-        // Verifica opções
+        // Verifica opï¿½ï¿½es
             if (comparaZ(mens, "exec") == 0)
                 Instr::VarExecIni = TxtToInt(valor);
             if (comparaZ(mens, "telatxt") == 0)
@@ -603,12 +613,12 @@ void Inicializa(const char * arg)
             if (comparaZ(mens, "arqexec") == 0)
                 new TArqExec(valor);
 
-        // Verifica instruções incluir
+        // Verifica instruï¿½ï¿½es incluir
             if (comparaZ(mens, "incluir") == 0)
             {
                 if (!TArqMapa::NomeValido(valor, true))
                 {
-                    err_printf("Nome não permitido ao incluir: %s\n", valor);
+                    err_printf("Nome nï¿½o permitido ao incluir: %s\n", valor);
                     err_fim();
                 }
                 for (char * p = valor; *p; p++)
@@ -618,22 +628,22 @@ void Inicializa(const char * arg)
             }
         }
 
-    // Verifica se é definição de classe
+    // Verifica se ï¿½ definiï¿½ï¿½o de classe
         char * pclasse = TClasse::NomeDef(mens);
         if (pclasse == 0)
             continue;
 
-    // Fim da configuração: adiciona arquivos a serem buscados
+    // Fim da configuraï¿½ï¿½o: adiciona arquivos a serem buscados
         if (ini_arq)
         {
             ini_arq = false;
             AdicionaIncluir();
         }
 
-    // Verifica se classe é válida ou já existe
+    // Verifica se classe ï¿½ vï¿½lida ou jï¿½ existe
         if (TClasse::NomeValido(pclasse) == false)
         {
-            err_printf("%s:%d: Classe inválida: %s\n",
+            err_printf("%s:%d: Classe invï¿½lida: %s\n",
                             arqinicio, linhanum, pclasse);
             erro = true;
             continue;
@@ -662,7 +672,7 @@ void Inicializa(const char * arg)
         erro = true;
     }
 
-// Limpa a informação de onde está cada classe
+// Limpa a informaï¿½ï¿½o de onde estï¿½ cada classe
     for (TClasse * cl = TClasse::RBfirst(); cl; cl = TClasse::RBnext(cl))
     {
         delete[] cl->Comandos;
@@ -689,7 +699,7 @@ void Inicializa(const char * arg)
     }
 #endif
 
-// Obtém instruções das classes
+// Obtï¿½m instruï¿½ï¿½es das classes
 // Acerta TClasse::Comandos
     TClasse * classeatual = nullptr;
     Instr::ChecaLinha checalinha;
@@ -707,18 +717,18 @@ void Inicializa(const char * arg)
     mapa = TArqMapa::Inicio;
     while (true)
     {
-    // Lê próxima linha
+    // Lï¿½ prï¿½xima linha
         int linhanum = arq.Linha(mens, sizeof(mens));
         if (linhanum < 0) // Erro
         {
             err_printf("Lendo arquivo %s: %s\n", arqinicio, strerror(errno));
             err_fim();
         }
-        // Verifica se é nome de classe
+        // Verifica se ï¿½ nome de classe
         char * pclasse = nullptr;
         if (linhanum > 0)
             pclasse = TClasse::NomeDef(mens);
-        if (linhanum == 0 || pclasse) // Fim do arquivo ou próxima classe
+        if (linhanum == 0 || pclasse) // Fim do arquivo ou prï¿½xima classe
         {
             ini_arq = false;
             const char * p = checalinha.Fim();
@@ -727,7 +737,7 @@ void Inicializa(const char * arg)
                 err_printf("%s:%d: %s\n", arqinicio, arq.LinhaAtual(), p);
                 erro = true;
             }
-            if (classeatual) // Anota instruções da classe
+            if (classeatual) // Anota instruï¿½ï¿½es da classe
             {
                 classecom.Add("\x00\x00", 2); // Marca fim da lista de comandos
                 classeatual->Comandos = new char[classecom.Total]; // Anota comandos
@@ -739,7 +749,7 @@ void Inicializa(const char * arg)
         }
         if (linhanum == 0) // Fim do arquivo
         {
-        // Avança para próximo arquivo, se existir
+        // Avanï¿½a para prï¿½ximo arquivo, se existir
             if (mapa)
                 mapa = mapa->Proximo;
             if (mapa == nullptr)
@@ -762,22 +772,22 @@ void Inicializa(const char * arg)
             classeatual = TClasse::Procura(pclasse);
             if (classeatual == nullptr)
             {
-                err_printf("%s:%d: Classe não encontrada: %s\n",
+                err_printf("%s:%d: Classe nï¿½o encontrada: %s\n",
                             arqinicio, linhanum, pclasse);
                 erro = true;
                 break;
             }
             continue;
         }
-    // Instruções antes da definição da classe
+    // Instruï¿½ï¿½es antes da definiï¿½ï¿½o da classe
         if (classeatual == nullptr)
         {
-            err_printf("%s:%d: Instruções não pertencem a nenhuma classe\n",
+            err_printf("%s:%d: Instruï¿½ï¿½es nï¿½o pertencem a nenhuma classe\n",
                         arqinicio, linhanum);
             erro = true;
             continue;
         }
-    // Codifica instrução
+    // Codifica instruï¿½ï¿½o
         //err_printf("= %s\n", mens);
         if (!Instr::Codif(comando, mens, sizeof(comando)))
         {
@@ -785,7 +795,7 @@ void Inicializa(const char * arg)
             erro = true;
             continue;
         }
-    // Informações sobre o que codificou
+    // Informaï¿½ï¿½es sobre o que codificou
 #if 0
         unsigned tam = Num16(comando);
         if (tam>sizeof(comando))
@@ -803,7 +813,7 @@ void Inicializa(const char * arg)
         else
             err_printf("-- %s\n", mens);
 #endif
-    // Verifica instrução
+    // Verifica instruï¿½ï¿½o
         if (comando[2] == Instr::cHerda)
         {
             const char * p = comando + 4;
@@ -814,7 +824,7 @@ void Inicializa(const char * arg)
                 while (*p++);
                 if (obj != classeatual)
                     continue;
-                err_printf("%s:%d: Impossível herdar a própria classe\n",
+                err_printf("%s:%d: Impossï¿½vel herdar a prï¿½pria classe\n",
                             arqinicio, linhanum);
                 erro = true;
                 continue;
@@ -845,7 +855,7 @@ void Inicializa(const char * arg)
 // Acerta lista de classes derivadas
     TClasse::AcertaDeriv();
 
-// Para testes - mostra classes e instruções
+// Para testes - mostra classes e instruï¿½ï¿½es
 #if 0
     printf("Classes:\n");
     for (TClasse * obj = TClasse::RBfirst(); obj; obj = TClasse::RBnext(obj))
@@ -881,7 +891,7 @@ void Inicializa(const char * arg)
     //exit(0);
 #endif
 
-// Acerta variáveis das classes
+// Acerta variï¿½veis das classes
     for (TClasse * cl = TClasse::RBfirst(); cl; cl = TClasse::RBnext(cl))
         cl->AcertaVar(false);
 
@@ -912,7 +922,7 @@ void Inicializa(const char * arg)
     signal(SIGPIPE, SIG_IGN);
 #endif
 
-// Executa funções iniclasse das classes
+// Executa funï¿½ï¿½es iniclasse das classes
     for (TClasse * cl = TClasse::RBfirst(); cl;)
     {
         TClasse::ClInic = TClasse::RBnext(cl);
@@ -932,13 +942,13 @@ static int termsign = 0;
 /// Processa sinal que encerra o programa
 static void TerminaSign(int sig)
 {
-// Início
+// Inï¿½cio
     if (termsign)
         raise(sig);
     termsign = 1;
 // Encerra
     TVarTelaTxt::Fim();
-// Gera sinal padrão
+// Gera sinal padrï¿½o
     signal(sig, SIG_DFL);
     raise(sig);
 }

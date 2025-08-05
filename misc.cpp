@@ -1,5 +1,5 @@
-/* Este arquivo é software livre; você pode redistribuir e/ou
- * modificar nos termos da licença LGPL. Vide arquivo COPYING.
+/* Este arquivo ï¿½ software livre; vocï¿½ pode redistribuir e/ou
+ * modificar nos termos da licenï¿½a LGPL. Vide arquivo COPYING.
  *
  * This file is free software; you can redistribute it and/or
  * modify it under the terms of the LGPL license. See file COPYING.
@@ -48,18 +48,18 @@ bool verifNomeTipo = true;
 void tabASCinic(void)
 {
     const char especialASCII[] =
-        // Cada 3 letras: forma sem acento, minúscula, maiúscula
-            "aãÃoõÕ" // Til
-            "aáÁeéÉiíÍoóÓuúÚ" // Acento agudo
-            "aàÀeèÈiìÌoòÒuùÙ" // Acento grave
-            "aâÂeêÊiîÎoôÔuûÛ" // Acento circunflexo
-            "cçÇ"; // C cedilha
+        // Cada 3 letras: forma sem acento, minï¿½scula, maiï¿½scula
+            "aï¿½ï¿½oï¿½ï¿½" // Til
+            "aï¿½ï¿½eï¿½ï¿½iï¿½ï¿½oï¿½ï¿½uï¿½ï¿½" // Acento agudo
+            "aï¿½ï¿½eï¿½ï¿½iï¿½ï¿½oï¿½ï¿½uï¿½ï¿½" // Acento grave
+            "aï¿½ï¿½eï¿½ï¿½iï¿½ï¿½oï¿½ï¿½uï¿½ï¿½" // Acento circunflexo
+            "cï¿½ï¿½"; // C cedilha
     const char * cpont;
     int caract;
 // Verifica se deve acertar alguma tabela
     if (tabNOMES1)
         return;
-// Aloca memória
+// Aloca memï¿½ria
     tabNOMES1 = new char[0xC00];
     tabNOMES2 = tabNOMES1 + 0x100;
     tabCOMPLETO = tabNOMES1 + 0x200;
@@ -76,7 +76,7 @@ void tabASCinic(void)
     memset(tabNOMES1,0,256);
     for (caract = 'a'; caract <= 'z'; caract++) // Letras de A a Z
         tabNOMES1[caract-0x20] = tabNOMES1[caract] = caract;
-    for (caract = '0'; caract <= '9'; caract++) // Números de 0 a 9
+    for (caract = '0'; caract <= '9'; caract++) // Nï¿½meros de 0 a 9
         tabNOMES1[caract] = caract;
     for (cpont=especialASCII; cpont[0] && cpont[1] && cpont[2]; cpont += 3)
     {
@@ -127,7 +127,7 @@ void tabASCinic(void)
     tabTXTCOD[Instr::ex_barra_c] = 'c';
     tabTXTCOD[Instr::ex_barra_d] = 'd';
     tabTXTCOD[Instr::ex_barra_n] = 'n';
-    tabTXTCOD[0x21] = 'e'; // Exclamação
+    tabTXTCOD[0x21] = 'e'; // Exclamaï¿½ï¿½o
     tabTXTCOD[0x22] = 'a'; // Aspas
     tabTXTCOD[(unsigned char)'@'] = '@';
     tabTXTCOD[(unsigned char)' '] = '_';
@@ -159,8 +159,8 @@ void tabASCinic(void)
 // Acerta tabTXTSEPARA
     memset(tabTXTSEPARA, 0, 256);
     tabTXTSEPARA[0] = 1; // Vazio
-    tabTXTSEPARA[(unsigned char)' '] = 8; // Espaço
-    for (int x = '0'; x <= '9'; x++) // Dígitos
+    tabTXTSEPARA[(unsigned char)' '] = 8; // Espaï¿½o
+    for (int x = '0'; x <= '9'; x++) // Dï¿½gitos
         tabTXTSEPARA[x] = 4;
     for (int x = 'a'; x <= 'z'; x++) // Letras de A a Z
         tabTXTSEPARA[x - 0x20] = tabTXTSEPARA[x] = 0x10;
@@ -273,9 +273,15 @@ char * mprintf(char * destino, int tamanho, const char * mens, ...)
 }
 
 //------------------------------------------------------------------------------
-// Semelhante a strcpy(), mas retorna endereço do byte =0 em destino
+// Semelhante a strcpy(), mas retorna endereÃ§o do byte =0 em destino
 char * copiastr(char * destino, const char * origem)
 {
+    // ValidaÃ§Ã£o de entrada
+    if (!destino || !origem) {
+        if (destino) *destino = 0;
+        return destino;
+    }
+    
     while (*origem)
         *(destino++) = *(origem++);
     *destino = 0;
@@ -283,10 +289,16 @@ char * copiastr(char * destino, const char * origem)
 }
 
 //------------------------------------------------------------------------------
-// Semelhante a strcpy(), mas retorna endereço do byte =0 em destino
-// tamanho = número de caracteres que pode escrever em destino
+// Semelhante a strcpy(), mas retorna endereÃ§o do byte =0 em destino
+// tamanho = nÃºmero de caracteres que pode escrever em destino
 char * copiastr(char * destino, const char * origem, int tamanho)
 {
+    // ValidaÃ§Ã£o de entrada
+    if (!destino || !origem || tamanho <= 0) {
+        if (destino && tamanho > 0) *destino = 0;
+        return destino;
+    }
+    
     if (*origem == 0 || tamanho <= 1)
     {
         if (tamanho >= 1)
@@ -319,7 +331,7 @@ char * copiastrmin(char * destino, const char * origem, int tamanho)
 }
 
 //------------------------------------------------------------------------------
-// Compara dois nomes de classes, variáveis ou funções (strings ASCIIZ)
+// Compara dois nomes de classes, variï¿½veis ou funï¿½ï¿½es (strings ASCIIZ)
 int comparaVar(const char * string1, const char * string2)
 {
     for (;; string1++, string2++)
@@ -351,7 +363,7 @@ int comparaZ(const char * string1, const char * string2)
 }
 
 //------------------------------------------------------------------------------
-// Compara duas strings terminadas em espaço ou 0
+// Compara duas strings terminadas em espaï¿½o ou 0
 int compara(const char * string1, const char * string2)
 {
     unsigned char ch1, ch2;
@@ -384,7 +396,7 @@ int compara(const char * string1, const char * string2, int tam)
 }
 
 //------------------------------------------------------------------------------
-// Verifica se nome de arquivo permitido (está no diretório do programa)
+// Verifica se nome de arquivo permitido (estï¿½ no diretï¿½rio do programa)
 bool arqvalido(char * nome)
 {
     if (nome[0] == 0)
@@ -433,7 +445,7 @@ bool arqvalido(char * nome, bool somenteleitura)
         return false;
     if (opcao_completo)
         return true;
-// Checa extensão
+// Checa extensï¿½o
     char ext[3];
     char * p = nome;
     while (*p)
@@ -444,7 +456,7 @@ bool arqvalido(char * nome, bool somenteleitura)
         ext[0] = p[-3] | 0x20;
         ext[1] = p[-2] | 0x20;
         ext[2] = p[-1] | 0x20;
-    // Checa extensão
+    // Checa extensï¿½o
         if (memcmp(ext, "com", 3) == 0 || memcmp(ext, "exe", 3) == 0 ||
             memcmp(ext, "bat", 3) == 0 || memcmp(ext, "pif", 3) == 0 ||
             memcmp(ext, "scr", 3) == 0)
@@ -453,20 +465,20 @@ bool arqvalido(char * nome, bool somenteleitura)
             if (memcmp(ext, "int", 3) == 0 || memcmp(ext, "log", 3) == 0)
                 return false;
     }
-// Checa se é executável
+// Checa se ï¿½ executï¿½vel
 #ifndef __WIN32__
     struct stat buf;
-    if (stat(nome, &buf) < 0) // Obtém dados do arquivo
+    if (stat(nome, &buf) < 0) // Obtï¿½m dados do arquivo
         return true;
-    if (!S_ISDIR(buf.st_mode) && // Não é diretório
-         (buf.st_mode & (S_IXUSR | S_IXGRP | S_IXOTH))) // É executável
+    if (!S_ISDIR(buf.st_mode) && // Nï¿½o ï¿½ diretï¿½rio
+         (buf.st_mode & (S_IXUSR | S_IXGRP | S_IXOTH))) // ï¿½ executï¿½vel
         return false;
 #endif
     return true;
 }
 
 //------------------------------------------------------------------------------
-// Verifica se nome válido para apelido
+// Verifica se nome vï¿½lido para apelido
 int verifNomeSimples(const char * nome1)
 {
     for (int tamanho = 0;; tamanho++,nome1++)
@@ -480,11 +492,11 @@ int verifNomeSimples(const char * nome1)
 }
 
 //------------------------------------------------------------------------------
-// Verifica se nome válido para apelido
+// Verifica se nome vï¿½lido para apelido
 int verifNomeCompleto(const char * nome1)
 {
     char anterior = 0;
-    char verifH = 0;      // Para não permitir letra antes de h, exceto
+    char verifH = 0;      // Para nï¿½o permitir letra antes de h, exceto
                           // em ch, lh, nh, quando apelido tiver vogal
     for (int tamanho = 0;; tamanho++,nome1++)
     {
@@ -500,7 +512,7 @@ int verifNomeCompleto(const char * nome1)
                   anterior != 'w' && anterior != 'p')
             if ((verifH |= 1) == 3)
                 return 2;
-        if ((ch >= 'a' && ch <= 'z') || ch == 'ç')
+        if ((ch >= 'a' && ch <= 'z') || ch == 'ï¿½')
         {
             if (ch == 'a' || ch == 'e' || ch == 'i' || ch == 'o' || ch == 'u')
                 if ((verifH |= 2) == 3)
@@ -513,7 +525,7 @@ int verifNomeCompleto(const char * nome1)
 }
 
 //------------------------------------------------------------------------------
-// Verifica se nome válido para senha
+// Verifica se nome vï¿½lido para senha
 int verifSenha(const char * nome1)
 {
     int letranum = 0;
@@ -533,7 +545,7 @@ int verifSenha(const char * nome1)
 }
 
 //------------------------------------------------------------------------------
-// Codifica apelido para comparação
+// Codifica apelido para comparaï¿½ï¿½o
 // Dois apelidos iguais ou parecidos produzem o mesmo texto
 char * txtNome(char * destino, const char * origem, int tamanho)
 {
@@ -548,7 +560,7 @@ char * txtNome(char * destino, const char * origem, int tamanho)
     for (; *origem && destino < fim; origem++)
     {
         char ch = tabNOMES1[*(unsigned char*)origem];
-        if (ch == 'ç' || (ch >= 'a' && ch <= 'z'))
+        if (ch == 'ï¿½' || (ch >= 'a' && ch <= 'z'))
         {
             *destino++ = *origem;
             copiar++;
@@ -569,20 +581,20 @@ char * txtNome(char * destino, const char * origem, int tamanho)
 }
 
 //------------------------------------------------------------------------------
-// Codifica apelido, constituído só de letras, para comparação
-// O apelido codificado é sempre menor ou igual ao original
-// Retorna o endereço de onde seria o byte =0 no final do nome
+// Codifica apelido, constituï¿½do sï¿½ de letras, para comparaï¿½ï¿½o
+// O apelido codificado ï¿½ sempre menor ou igual ao original
+// Retorna o endereï¿½o de onde seria o byte =0 no final do nome
 char * txtNomeLetras(char * nome, int tamanho)
 {
     char ch1,ch2,ch3,chn,chnn;
     char *ori,*des;
     char * fim = nome+tamanho;
 
-// Busca 1: copia apelido passando para letras minúsculas
+// Busca 1: copia apelido passando para letras minï¿½sculas
     ch1 = ch2 = ch3 = 0;
     for (ori = des = nome; ori < fim; ori++)
     {
-    // Passa para minúsculas, Y=I, W=U
+    // Passa para minï¿½sculas, Y=I, W=U
         char ch = tabNOMES1[*(unsigned char *)ori];
         if (ch == 0)
             break;
@@ -593,16 +605,16 @@ char * txtNomeLetras(char * nome, int tamanho)
             ch1 = 'u';
         if (ch1 == 'a' || ch1 == 'e' || ch1 == 'i' || ch1 == 'o' || ch1 == 'u')
             ch2 = 1;
-    // ão tem som de ãm
+    // ï¿½o tem som de ï¿½m
         if (ch1 == 'o' && ch3 == 1)
             ch1 = 'm';
-        ch3 = (*ori == 'ã' || *ori == 'Ã') ? 1 : 0;
-    // Fecha o laço
+        ch3 = (*ori == 'ï¿½' || *ori == 'ï¿½') ? 1 : 0;
+    // Fecha o laï¿½o
         *des++ = ch1;
     }
     fim = des;
 
-// Retorna se não tem vogal ou nome muito pequeno
+// Retorna se nï¿½o tem vogal ou nome muito pequeno
     if (ch2 == 0 || nome[1] == ' ')
         return fim;
 
@@ -613,7 +625,7 @@ char * txtNomeLetras(char * nome, int tamanho)
 
 // Converte ks, kx, cs, cx, xs, xx em x
 // Ignora h no final,  h e s entre as letras  e  c, h, k, s ou x antes
-    for (des--; *des == 'h'; des--); // Nota: o apelido tem também vogais
+    for (des--; *des == 'h'; des--); // Nota: o apelido tem tambï¿½m vogais
     if (*des == 's' || *des == 'x')
     {
         while (*des == 'h' || *des == 's')
@@ -648,31 +660,31 @@ char * txtNomeLetras(char * nome, int tamanho)
                 ch1 = 'N';
          //   else if (ch1 == 'p')
          //       ch1 = 'f';
-            while (true)  // Pula próximos 'h' da string
+            while (true)  // Pula prï¿½ximos 'h' da string
             {
                 if (ori >= fim)  { chn = ' ';  break; }
                 if (*ori != 'h') { chn = *ori; break; }
                 ori++;
             }
         }
-    // Obtém: chnn = caracter após chn
+    // Obtï¿½m: chnn = caracter apï¿½s chn
         chnn = (ori + 1 < fim ? ori[1] : ' ');
-    // X no início ou antes de N tem som de CH
+    // X no inï¿½cio ou antes de N tem som de CH
         if (ch1 == 'x' && (ch2 == 0 || ch2 == 'n'))
             ch1 = 'C';
-    // S/X antes de CE/CI é ignorado
+    // S/X antes de CE/CI ï¿½ ignorado
         if ((ch1 == 's' || ch1 == 'x') && chn == 'c' && (chnn == 'e' || chnn == 'i'))
             continue;
     // X antes de consoante tem som de S
         if (ch1 == 'x' && chn && chn != 'a' && chn != 'e' && chn != 'i' && chn != 'o' && chn != 'u')
             ch1 = 's';
-    // L que não vem antes de vogal tem som de U
+    // L que nï¿½o vem antes de vogal tem som de U
         if (ch1 == 'l' && chn != 'a' && chn != 'e' && chn != 'i' && chn != 'o' && chn != 'u')
             ch1 = 'u';
     // C exceto CE/CI tem som de K
         if (ch1 == 'c' && chn != 'e' && chn != 'i')
             ch1 = 'k';
-    // Q tem som de K, em QUE/QUI o U é ignorado
+    // Q tem som de K, em QUE/QUI o U ï¿½ ignorado
         else if (ch1 == 'q')
         {
             if (chn == 'u' && (chnn == 'e' || chnn == 'i'))
@@ -686,20 +698,20 @@ char * txtNomeLetras(char * nome, int tamanho)
         else if (ch1 == 'g' && chn == 'u' && (chnn == 'e' || chnn == 'i'))
             ori++;
     // M antes de consoante tem som de N
-        if ( ch1 == 'm' && (chn == 'ç' || (chn>='b' && chn<='z' && chn != 'e' &&
+        if ( ch1 == 'm' && (chn == 'ï¿½' || (chn>='b' && chn<='z' && chn != 'e' &&
                 chn != 'i' && chn != 'o' && chn != 'u')) )
             ch1 = 'n';
     // M/N, existindo M/N antes: ignora letra
         if (ch1 == 'n' && (chn == 'm' || chn == 'n'))
             continue;
     // N antes de P, B ou no fim do apelido tem som de M
-        if (ch1 == 'n' && (chn == 'p' || chn == 'b' || (chn <= 32 && chn != 'ç')))
+        if (ch1 == 'n' && (chn == 'p' || chn == 'b' || (chn <= 32 && chn != 'ï¿½')))
             ch1 = 'm';
-    // Ignora letra se a anterior foi a mesma e não é vogal
+    // Ignora letra se a anterior foi a mesma e nï¿½o ï¿½ vogal
         if (ch1 == ch2 && ch1 >= 'b' && ch1 <= 'z' && ch1 != 'e' && ch1 != 'i'
                 && ch1 != 'o' && ch1 != 'u' && ch1 != 'r' && ch1 != 's')
             continue;
-    // Ignora R/S após não-vogal+R/S
+    // Ignora R/S apï¿½s nï¿½o-vogal+R/S
         if ( (ch1 == 'r' || ch1 == 's') && ch1 == ch2 && ch3 != 'a' && ch3 != 'e' &&
                 ch3 != 'i' && ch3 != 'o' && ch3 != 'u')
             continue;
@@ -708,9 +720,9 @@ char * txtNomeLetras(char * nome, int tamanho)
                 (chn == 'a' || chn == 'e' || chn == 'i' || chn == 'o' || chn == 'u') &&
                 (ch2 == 'a' || ch2 == 'e' || ch2 == 'i' || ch2 == 'o' || ch2 == 'u') )
             ch1 = (ch1 == 's' ? 'z' : 'R');
-    // Ç tem som de S
+    // ï¿½ tem som de S
     // CE/CI tem som de SE/SI (outros C foram convertidos para K)
-        if (ch1 == 'c' || ch1 == 'ç')
+        if (ch1 == 'c' || ch1 == 'ï¿½')
             ch1 = 's';
     // Ignora R/S repetido
         if (ch1 == ch2 && (ch1 == 's' || ch1 == 'r'))
@@ -720,19 +732,19 @@ char * txtNomeLetras(char * nome, int tamanho)
         *des++ = ch2 = ch1;
     }
 
-// Obtém: des=último caracter do nome
+// Obtï¿½m: des=ï¿½ltimo caracter do nome
     if (des > nome)
         des--;
 
 // Verifica S/Z no final do apelido
-// Entrada: des=último caracter do nome
+// Entrada: des=ï¿½ltimo caracter do nome
     ch1 = 0;
     while (des > nome && (*des == 's' || *des == 'z'))
         *des-- = 's', ch1 = 1;
     des += ch1;
 
 // Verifica RR/E/O/AM no final do apelido
-// Entrada: des=último caracter do nome
+// Entrada: des=ï¿½ltimo caracter do nome
     if (des > nome)
     {
         if (*des == 'r' && *(des-1) == 'r')
@@ -748,7 +760,7 @@ char * txtNomeLetras(char * nome, int tamanho)
 // Acerta fim
     fim = des + 1;
 
-// an, am, on, om seguido de não vogal: apaga o n ou m
+// an, am, on, om seguido de nï¿½o vogal: apaga o n ou m
     for (des = nome; des <= fim - 2; des++)
         if ( (*des == 'a' || *des == 'o') && (des[1]=='n' || des[1]=='m') )
         {
@@ -775,13 +787,13 @@ char * txtNomeLetras(char * nome, int tamanho)
 
 //------------------------------------------------------------------------------
 // Copia mensagem, como com copiastr(), mas filtrando a mensagem
-// tamanho é o tamanho do buffer destino
+// tamanho ï¿½ o tamanho do buffer destino
 char * txtFiltro(char * destino, const char * origem, int tamanho)
 {
     bool rep=true;
     char * dest=destino;
     int  tam1 = 0, tam2 = 0, tam3 = 0;
-    while (*origem == ' ') // Ignora espaços iniciais
+    while (*origem == ' ') // Ignora espaï¿½os iniciais
         origem++;
     while (rep)
     {
@@ -793,13 +805,13 @@ char * txtFiltro(char * destino, const char * origem, int tamanho)
         for (; *origem && tamanho > 0; origem++)
         {
             char carac=*origem;
-            // Caracteres inválidos: ignora
+            // Caracteres invï¿½lidos: ignora
             if ((unsigned char)carac < ' ' || (unsigned char)carac == 255)
             {
                 rep = true;
                 continue;
             }
-            // Impede certas sequências de caracteres
+            // Impede certas sequï¿½ncias de caracteres
             passo--;
             if (passo < repete)
                 passo = repete + 5;
@@ -815,7 +827,7 @@ char * txtFiltro(char * destino, const char * origem, int tamanho)
             if (passo[0] != passo[3] || passo[1] != passo[4] ||
                     passo[2] != passo[5])
                 tam3 = 0;
-            // Seqüência de espaços
+            // Seqï¿½ï¿½ncia de espaï¿½os
             if (tam1 > 5 && carac == ' ')
                 tam1 = tam2 = tam3 = 0;
             // Ignora caracteres
@@ -825,7 +837,7 @@ char * txtFiltro(char * destino, const char * origem, int tamanho)
                 continue;
             }
             // Ignora muitos caracteres seguidos sem vogais
-            // Caracteres ' ' e '0' a '9' não entram na comparaçào
+            // Caracteres ' ' e '0' a '9' nï¿½o entram na comparaï¿½ï¿½o
             switch (tabCOMPLETO[(unsigned char)carac])
             {
             case 'a':
@@ -844,11 +856,11 @@ char * txtFiltro(char * destino, const char * origem, int tamanho)
             tamanho--;
             *destino++ = carac;
         }
-        // Ignora espaços finais
+        // Ignora espaï¿½os finais
         for (destino--; destino >= dest; destino--)
             if (*destino != ' ')
                 break;
-        // Próxima verificação
+        // Prï¿½xima verificaï¿½ï¿½o
         destino[1] = 0;
         origem = destino = dest;
         tamanho = 10000;
@@ -876,7 +888,7 @@ char * txtFiltro(char * destino, const char * origem, int tamanho)
 }
 
 //------------------------------------------------------------------------------
-// Obtém as opções para txtRemove
+// Obtï¿½m as opï¿½ï¿½es para txtRemove
 int txtRemove(const char * opcoes)
 {
     int remove = 0;
@@ -899,7 +911,7 @@ int txtRemove(const char * opcoes)
 }
 
 //------------------------------------------------------------------------------
-// Converte texto conforme as opções
+// Converte texto conforme as opï¿½ï¿½es
 char * txtRemove(char * destino, const char * origem, int tam, int opcoes)
 {
     char * remove_s = 0; // Para remover aspas simples
@@ -907,9 +919,9 @@ char * txtRemove(char * destino, const char * origem, int tam, int opcoes)
     const char * tabela = (opcoes & 128 ? tab7B : tab8B); // Filtro de letras acentuadas
     const char * fim = destino + tam - 1;
 
-// Copia texto conforme variável opcoes
-    int ini = 1; // quando encontra algo diferente de espaço vai para 2
-    int esp = 0; // quantos espaços acumulados
+// Copia texto conforme variï¿½vel opcoes
+    int ini = 1; // quando encontra algo diferente de espaï¿½o vai para 2
+    int esp = 0; // quantos espaï¿½os acumulados
 
     while (*origem)
         switch (*origem)
@@ -1011,14 +1023,14 @@ char * txtRemove(char * destino, const char * origem, int tam, int opcoes)
 }
 
 //------------------------------------------------------------------------------
-// Calcula o número do dia a partir de uma data
+// Calcula o nï¿½mero do dia a partir de uma data
 
-//Regra, conforme o Calendário Gregoriano:
-// Mês:  J  F  M  A  M  J  J  A  S  O  N  D
+//Regra, conforme o Calendï¿½rio Gregoriano:
+// Mï¿½s:  J  F  M  A  M  J  J  A  S  O  N  D
 // Dias: 31 ?? 31 30 31 30 31 31 30 31 30 31
-// Fevereiro só tem 29 dias quando:
-// O ano é divisível por 400 ; ou
-// O ano é divisível por 4 e não é divisível por 100
+// Fevereiro sï¿½ tem 29 dias quando:
+// O ano ï¿½ divisï¿½vel por 400 ; ou
+// O ano ï¿½ divisï¿½vel por 4 e nï¿½o ï¿½ divisï¿½vel por 100
 long numdata(const char * data)
 {
     int ano = (data[0] - '0') * 1000 + (data[1] - '0') * 100 +
@@ -1040,23 +1052,23 @@ long numdata(int ano, int mes, int dia)
                  31+28+31+30+31+30+31+31+30+31,  // N
                  31+28+31+30+31+30+31+31+30+31+30 }; // D
 
-// Obtém dia, mês, ano
+// Obtï¿½m dia, mï¿½s, ano
     if (dia <= 0 || dia > 31 || mes <= 0 || mes > 12 || ano < 1900 || ano > 9999)
         return 0;
 
-// Obtém dias conforme meses decorridos
+// Obtï¿½m dias conforme meses decorridos
     dia += Tmes[mes - 1];
     if (mes > 2)
         dia += (ano % 400 == 0) + (ano % 100 != 0 && ano % 4 == 0);
 
-// Obtém dias conforme anos decorridos
+// Obtï¿½m dias conforme anos decorridos
     ano--;
     dia += ano * 365 + ano / 4 - ano / 100 + ano / 400;
     return dia;
 }
 
 //------------------------------------------------------------------------------
-// Funções do clipboard, fontes:
+// Funï¿½ï¿½es do clipboard, fontes:
 // http://stackoverflow.com/questions/342772/convert-lptstr-to-char
 // http://code.google.com/p/agui/source/browse/trunk/src/Agui/Clipboard/WinClipboard.cpp?r=12
 // http://msdn.microsoft.com/en-us/library/windows/desktop/ms649016%28v=vs.85%29.aspx
@@ -1091,9 +1103,9 @@ bool ClipboardMudar(const char * txt)
 #endif
 }
 
-/// Lê texto do clipboard
+/// Lï¿½ texto do clipboard
 /** @return O texto ou 0 se nao conseguiu ler
- *  @note É responsabilidade de quem chama desalocar a memória com delete[] */
+ *  @note ï¿½ responsabilidade de quem chama desalocar a memï¿½ria com delete[] */
 char * ClipboardLer()
 {
 #ifdef __WIN32__
@@ -1230,7 +1242,7 @@ void TAddBuffer::Add(const char * origem, int tamanho)
     while (tamanho > 0)
     {
         int copiar = (int)sizeof(Atual->buf) - PosAtual;
-        if (copiar <= 0) // Se o bloco está cheio
+        if (copiar <= 0) // Se o bloco estï¿½ cheio
         {
             copiar = sizeof(Atual->buf);
             PosAtual = 0;
