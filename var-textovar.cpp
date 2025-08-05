@@ -1,5 +1,5 @@
-/* Este arquivo é software livre; você pode redistribuir e/ou
- * modificar nos termos da licença LGPL. Vide arquivo COPYING.
+/* Este arquivo ï¿½ software livre; vocï¿½ pode redistribuir e/ou
+ * modificar nos termos da licenï¿½a LGPL. Vide arquivo COPYING.
  *
  * This file is free software; you can redistribute it and/or
  * modify it under the terms of the LGPL license. See file COPYING.
@@ -115,7 +115,7 @@ bool TTextoVar::CriarTextoVarSub(TBlocoVar * bl)
 }
 
 //----------------------------------------------------------------------------
-// Variável
+// Variï¿½vel
 bool TTextoVar::FuncValor(TVariavel * v)
 {
     if (Instr::VarAtual < v + 1)
@@ -133,7 +133,7 @@ bool TTextoVar::FuncValor(TVariavel * v)
 }
 
 //----------------------------------------------------------------------------
-// Primeira variável
+// Primeira variï¿½vel
 bool TTextoVar::FuncValorIni(TVariavel * v)
 {
     TTextoVar * ref = reinterpret_cast<TTextoVar*>(v->endvar) + v->indice;
@@ -155,7 +155,7 @@ bool TTextoVar::FuncValorIni(TVariavel * v)
 }
 
 //----------------------------------------------------------------------------
-// Última variável
+// ï¿½ltima variï¿½vel
 bool TTextoVar::FuncValorFim(TVariavel * v)
 {
     TTextoVar * ref = reinterpret_cast<TTextoVar*>(v->endvar) + v->indice;
@@ -177,7 +177,7 @@ bool TTextoVar::FuncValorFim(TVariavel * v)
 }
 
 //----------------------------------------------------------------------------
-// Mudar variável
+// Mudar variï¿½vel
 bool TTextoVar::FuncMudar(TVariavel * v)
 {
     if (Instr::VarAtual < v + 1)
@@ -227,7 +227,7 @@ bool TTextoVar::FuncMudar(TVariavel * v)
 }
 
 //----------------------------------------------------------------------------
-// Nome da variável
+// Nome da variï¿½vel
 bool TTextoVar::FuncNomeVar(TVariavel * v)
 {
     TTextoVar * ref = reinterpret_cast<TTextoVar*>(v->endvar) + v->indice;
@@ -242,7 +242,7 @@ bool TTextoVar::FuncNomeVar(TVariavel * v)
 }
 
 //----------------------------------------------------------------------------
-// Nome da variável
+// Nome da variï¿½vel
 bool TTextoVar::FuncTipo(TVariavel * v)
 {
     const char * texto = "";
@@ -265,7 +265,7 @@ bool TTextoVar::FuncTipo(TVariavel * v)
 }
 
 //----------------------------------------------------------------------------
-// Variável anterior
+// Variï¿½vel anterior
 bool TTextoVar::FuncAntes(TVariavel * v)
 {
     TTextoVar * ref = reinterpret_cast<TTextoVar*>(v->endvar) + v->indice;
@@ -275,7 +275,7 @@ bool TTextoVar::FuncAntes(TVariavel * v)
     if (Instr::VarAtual >= v + 2 && bl)
     {
         int cmp = comparaZ(bl->NomeVar, v[2].getTxt());
-        if (cmp != 0 && cmp != 2) // 0=textos iguais, 2=texto 1 contém texto 2
+        if (cmp != 0 && cmp != 2) // 0=textos iguais, 2=texto 1 contï¿½m texto 2
             bl = nullptr;
     }
     Instr::ApagarVar(v);
@@ -283,7 +283,7 @@ bool TTextoVar::FuncAntes(TVariavel * v)
 }
 
 //----------------------------------------------------------------------------
-// Próxima variável
+// Prï¿½xima variï¿½vel
 bool TTextoVar::FuncDepois(TVariavel * v)
 {
     TTextoVar * ref = reinterpret_cast<TTextoVar*>(v->endvar) + v->indice;
@@ -293,7 +293,7 @@ bool TTextoVar::FuncDepois(TVariavel * v)
     if (Instr::VarAtual >= v + 2 && bl)
     {
         int cmp = comparaZ(bl->NomeVar, v[2].getTxt());
-        if (cmp != 0 && cmp != 2) // 0=textos iguais, 2=texto 1 contém texto 2
+        if (cmp != 0 && cmp != 2) // 0=textos iguais, 2=texto 1 contï¿½m texto 2
             bl = nullptr;
     }
     Instr::ApagarVar(v);
@@ -301,7 +301,7 @@ bool TTextoVar::FuncDepois(TVariavel * v)
 }
 
 //----------------------------------------------------------------------------
-// Início
+// Inï¿½cio
 bool TTextoVar::FuncIni(TVariavel * v)
 {
     TTextoVar * ref = reinterpret_cast<TTextoVar*>(v->endvar) + v->indice;
@@ -517,13 +517,13 @@ bool TTextoVar::FOperadorIgual2(TVariavel * v1, TVariavel * v2)
     TBlocoVar * bl2 = (ref2->RBroot ? ref2->RBroot->RBfirst() : nullptr);
     while (bl1 && bl2)
     {
-    // Compara o nome da variável
+    // Compara o nome da variï¿½vel
         if (strcmp(bl1->NomeVar, bl2->NomeVar) != 0)
             return false;
-    // Compara o tipo de variável
+    // Compara o tipo de variï¿½vel
         if (strcmp(bl1->Tipo(), bl2->Tipo()) != 0)
             return false;
-    // Compara o conteúdo da variável
+    // Compara o conteï¿½do da variï¿½vel
         switch (bl1->TipoVar())
         {
         case TextoVarTipoTxt:
@@ -543,7 +543,7 @@ bool TTextoVar::FOperadorIgual2(TVariavel * v1, TVariavel * v2)
                 return false;
             break;
         }
-    // Passa para a próxima variável
+    // Passa para a prï¿½xima variï¿½vel
         bl1 = TBlocoVar::RBnext(bl1);
         bl2 = TBlocoVar::RBnext(bl2);
     }
@@ -561,15 +561,15 @@ unsigned char TTextoVar::FOperadorCompara(TVariavel * v1, TVariavel * v2)
     TBlocoVar * bl2 = (ref2->RBroot ? ref2->RBroot->RBfirst() : nullptr);
     while (bl1 && bl2)
     {
-    // Compara o nome da variável
+    // Compara o nome da variï¿½vel
         int cmp1 = strcmp(bl1->NomeVar, bl2->NomeVar);
         if (cmp1 != 0)
             return cmp1 < 0 ? 1 : 4;
-    // Compara o tipo de variável
+    // Compara o tipo de variï¿½vel
         int cmp2 = strcmp(bl1->Tipo(), bl2->Tipo());
         if (cmp2 != 0)
             return cmp2 < 0 ? 1 : 4;
-    // Compara o conteúdo da variável
+    // Compara o conteï¿½do da variï¿½vel
         switch (bl1->TipoVar())
         {
         case TextoVarTipoTxt:
@@ -604,7 +604,7 @@ unsigned char TTextoVar::FOperadorCompara(TVariavel * v1, TVariavel * v2)
                 return x1 < x2 ? 1 : 4;
             }
         }
-    // Passa para a próxima variável
+    // Passa para a prï¿½xima variï¿½vel
         bl1 = TBlocoVar::RBnext(bl1);
         bl2 = TBlocoVar::RBnext(bl2);
     }
@@ -637,7 +637,7 @@ TBlocoVar * TTextoVar::ProcIni(const char * texto)
     {
         switch (comparaVar(texto, y->NomeVar))
         {
-        case -2: // string 2 contém string 1
+        case -2: // string 2 contï¿½m string 1
         case 0:  // encontrou
             x = y;
         case -1:
@@ -659,7 +659,7 @@ TBlocoVar * TTextoVar::ProcFim(const char * texto)
     {
         switch (comparaVar(texto, y->NomeVar))
         {
-        case -2: // string 2 contém string 1
+        case -2: // string 2 contï¿½m string 1
         case 0:  // encontrou
             x = y;
             y = y->RBright;
@@ -734,7 +734,7 @@ const TVarInfo * TTextoVarSub::Inicializa()
 //----------------------------------------------------------------------------
 void TTextoVarSub::Criar(TTextoVar * var, const char * nome, bool checatipo)
 {
-// Acerta variável conforme o nome
+// Acerta variï¿½vel conforme o nome
     char * p = copiastr(NomeVar, nome, sizeof(NomeVar));
     if (!checatipo)
         TipoVar = TextoVarTipoTxt;
@@ -751,7 +751,7 @@ void TTextoVarSub::Criar(TTextoVar * var, const char * nome, bool checatipo)
         }
     }
 
-// Checa se é nome válido para variável (não pode ser um texto vazio)
+// Checa se ï¿½ nome vï¿½lido para variï¿½vel (nï¿½o pode ser um texto vazio)
     if (NomeVar[0] == 0)
     {
         TextoVar = nullptr;
@@ -1044,7 +1044,7 @@ void TTextoVarSub::setInt(int valor)
     if (TextoVar == nullptr)
         return;
     TBlocoVar * bl = TextoVar->Procura(NomeVar);
-// Variável existente: checa se deve mudar ou apagar/criar variável
+// Variï¿½vel existente: checa se deve mudar ou apagar/criar variï¿½vel
     if (bl != nullptr)
     {
         if (bl->TipoVar() == TipoVar)
@@ -1055,7 +1055,7 @@ void TTextoVarSub::setInt(int valor)
         delete bl;
         bl = nullptr;
     }
-// Criar variável
+// Criar variï¿½vel
     switch (TipoVar)
     {
     case TextoVarTipoTxt:
@@ -1085,7 +1085,7 @@ void TTextoVarSub::setDouble(double valor)
     if (TextoVar == nullptr)
         return;
     TBlocoVar * bl = TextoVar->Procura(NomeVar);
-// Variável existente: checa se deve mudar ou apagar/criar variável
+// Variï¿½vel existente: checa se deve mudar ou apagar/criar variï¿½vel
     if (bl != nullptr)
     {
         if (bl->TipoVar() == TipoVar)
@@ -1096,7 +1096,7 @@ void TTextoVarSub::setDouble(double valor)
         delete bl;
         bl = nullptr;
     }
-// Criar variável
+// Criar variï¿½vel
     switch (TipoVar)
     {
     case TextoVarTipoTxt:
@@ -1128,7 +1128,7 @@ void TTextoVarSub::setTxt(const char * txt)
     if (TextoVar == nullptr)
         return;
     TBlocoVar * bl = TextoVar->Procura(NomeVar);
-// Variável existente: checa se deve mudar ou apagar/criar variável
+// Variï¿½vel existente: checa se deve mudar ou apagar/criar variï¿½vel
     if (bl != nullptr)
     {
         if (bl->TipoVar() == TipoVar)
@@ -1139,7 +1139,7 @@ void TTextoVarSub::setTxt(const char * txt)
         delete bl;
         bl = nullptr;
     }
-// Criar variável
+// Criar variï¿½vel
     switch (TipoVar)
     {
     case TextoVarTipoTxt:
@@ -1170,7 +1170,7 @@ void TTextoVarSub::addTxt(const char * txt)
 {
     if (TextoVar == nullptr || *txt == 0)
         return;
-// Variável existente: checa se deve mudar ou apagar/criar variável
+// Variï¿½vel existente: checa se deve mudar ou apagar/criar variï¿½vel
     TBlocoVar * bl = TextoVar->Procura(NomeVar);
     if (bl != nullptr)
     {
@@ -1182,7 +1182,7 @@ void TTextoVarSub::addTxt(const char * txt)
         delete bl;
         bl = nullptr;
     }
-// Criar variável
+// Criar variï¿½vel
     switch (TipoVar)
     {
     case TextoVarTipoTxt:
@@ -1213,14 +1213,14 @@ void TTextoVarSub::setObj(TObjeto * obj)
     if (TextoVar == nullptr)
         return;
     TBlocoVar * bl = TextoVar->Procura(NomeVar);
-// Nenhum objeto: apaga variável
+// Nenhum objeto: apaga variï¿½vel
     if (obj == nullptr)
     {
         if (bl)
             delete bl;
         return;
     }
-// Variável existente: checa se deve mudar ou apagar/criar variável
+// Variï¿½vel existente: checa se deve mudar ou apagar/criar variï¿½vel
     if (bl != nullptr)
     {
         if (bl->TipoVar() == TipoVar)
@@ -1231,7 +1231,7 @@ void TTextoVarSub::setObj(TObjeto * obj)
         delete bl;
         bl = nullptr;
     }
-// Criar variável
+// Criar variï¿½vel
     switch (TipoVar)
     {
     case TextoVarTipoTxt:
@@ -1278,7 +1278,7 @@ int TBlocoVar::RBcomp(TBlocoVar * x, TBlocoVar * y)
 
 //----------------------------------------------------------------------------
 #define CLASS TBlocoVar          // Nome da classe
-#define RBmask 1 // Máscara para bit 0
+#define RBmask 1 // Mï¿½scara para bit 0
 #define RBroot TextoVar->RBroot
 #include "rbt.cpp.h"
 
@@ -1297,7 +1297,7 @@ TBlocoVarTxt::~TBlocoVarTxt()
 //----------------------------------------------------------------------------
 bool TBlocoVarTxt::getBool()
 {
-    return true; // Texto não está vazio
+    return true; // Texto nï¿½o estï¿½ vazio
     //return NomeVar[Texto] != 0;
 }
 
@@ -1329,7 +1329,7 @@ TObjeto * TBlocoVarTxt::getObj()
 void TBlocoVarTxt::setInt(int valor)
 {
     char mens[80];
-    sprintf(mens, "%d", valor);
+    snprintf(mens, sizeof(mens), "%d", valor);
     setTxt(mens);
 }
 
@@ -1473,8 +1473,8 @@ void TBlocoVarDec::ProcEventos(int TempoDecorrido)
 {
     while (TempoDecorrido-- > 0)
     {
-    // Avança TempoMenos
-    // Move objetos de VetMais para VetMenos se necessário
+    // Avanï¿½a TempoMenos
+    // Move objetos de VetMais para VetMenos se necessï¿½rio
         if (TempoMenos < INTTEMPO_MAX-1)
             TempoMenos++;
         else
@@ -1546,7 +1546,7 @@ double TBlocoVarDec::getDouble()
 const char * TBlocoVarDec::getTxt()
 {
     char * txtnum = TVarInfo::BufferTxt();
-    sprintf(txtnum, "%d", getInt());
+    snprintf(txtnum, 0x400, "%d", getInt()); // 0x400 Ã© o tamanho do buffer conforme variavel.cpp
     return txtnum;
 }
 
@@ -1600,7 +1600,7 @@ void TBlocoVarDec::setObj(TObjeto * obj)
 //----------------------------------------------------------------------------
 void TBlocoVarDec::InsereLista(int valor)
 {
-// Acerta os valores mínimo e máximo
+// Acerta os valores mï¿½nimo e mï¿½ximo
     if (valor <= 0)
         valor = 1;
     if (valor >= INTTEMPO_MAX * INTTEMPO_MAX)

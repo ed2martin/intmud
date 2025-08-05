@@ -1,5 +1,5 @@
-/* Este arquivo é software livre; você pode redistribuir e/ou
- * modificar nos termos da licença LGPL. Vide arquivo COPYING.
+/* Este arquivo ï¿½ software livre; vocï¿½ pode redistribuir e/ou
+ * modificar nos termos da licenï¿½a LGPL. Vide arquivo COPYING.
  *
  * This file is free software; you can redistribute it and/or
  * modify it under the terms of the LGPL license. See file COPYING.
@@ -52,7 +52,7 @@ TObjSocket::TObjSocket()
 #ifdef DEBUG_CRIAR
     printf("new TObjSocket\n"); fflush(stdout);
 #endif
-// Acerta variáveis
+// Acerta variï¿½veis
     CorEnvia = 0x70;
     ColunaEnvia = 0;
     Inicio = nullptr;
@@ -71,7 +71,7 @@ TObjSocket::~TObjSocket()
 void TObjSocket::RetiraVarSocket()
 {
 // Retira dos objetos TVarSocket
-// Nota: não pode chamar Inicio->MudarSock(nullptr) porque
+// Nota: nï¿½o pode chamar Inicio->MudarSock(nullptr) porque
 // isso executaria um segundo delete[] em TObjSocket
     while (Inicio)
     {
@@ -101,7 +101,7 @@ bool TObjSocket::Enviar(const char * mensagem, int codigo)
     char * destino = mens; // Aonde colocar a mensagem
     const char * fim = mens + sizeof(mens) - 6; // Aonde termina
 
-// Mostra o que está enviando
+// Mostra o que estï¿½ enviando
 #ifdef DEBUG_MSG
     printf(">>>>>>> Enviou: ");
     for (int x=0; mensagem[x]; x++)
@@ -174,7 +174,7 @@ bool TObjSocket::Enviar(const char * mensagem, int codigo)
                 mensagem++;
             }
             break;
-        case Instr::ex_barra_n: // Próxima linha
+        case Instr::ex_barra_n: // Prï¿½xima linha
             if (agora != antes)
             {
                 destino[0] = 1;
@@ -217,7 +217,7 @@ bool TObjSocket::Enviar(const char * mensagem, int codigo)
     }
     *destino = 0;
 
-// Mostra o que está enviando
+// Mostra o que estï¿½ enviando
 #ifdef DEBUG_MSG
     for (const char * x=mens; *x; x++)
         if (*x != 1)
@@ -231,7 +231,7 @@ bool TObjSocket::Enviar(const char * mensagem, int codigo)
     if (EnvMens(mens, codigo) == false)
         return false;
 
-// Conseguiu - acerta variáveis
+// Conseguiu - acerta variï¿½veis
     ColunaEnvia = coluna;
     CorEnvia = agora;
     return true;
@@ -247,7 +247,7 @@ void TObjSocket::FuncFechou(const char * txt)
             TObjeto * end = varObj->endobjeto;
             char mens[80];
             int indice = varObj->indice;
-            sprintf(mens, "%s_fechou", varObj->defvar + Instr::endNome);
+            snprintf(mens, sizeof(mens), "%s_fechou", varObj->defvar + Instr::endNome);
             varObj->MudarSock(nullptr);
                 // A partir daqui varObj pode ser nulo
             if (Instr::ExecIni(end, mens) == false)
@@ -265,7 +265,7 @@ void TObjSocket::FuncFechou(const char * txt)
             TClasse * end = varObj->endclasse;
             char mens[80];
             int indice = varObj->indice;
-            sprintf(mens, "%s_fechou", varObj->defvar + Instr::endNome);
+            snprintf(mens, sizeof(mens), "%s_fechou", varObj->defvar + Instr::endNome);
             varObj->MudarSock(nullptr);
                 // A partir daqui varObj pode ser nulo
             if (Instr::ExecIni(end, mens) == false)
@@ -315,7 +315,7 @@ void TObjSocket::FuncEvento(const char * evento, const char * texto, int v1, int
             Instr::ExecX();
             Instr::ExecFim();
         }
-    // Passa para próximo objeto
+    // Passa para prï¿½ximo objeto
         vobj = varObj;
     } // for (TVarSocket ...
 }
@@ -378,7 +378,7 @@ void TVarSocket::Apagar()
 //------------------------------------------------------------------------------
 void TVarSocket::MudarSock(TObjSocket * obj)
 {
-// Verifica se o endereço vai mudar
+// Verifica se o endereï¿½o vai mudar
     if (obj == Socket)
         return;
 // Retira da lista
@@ -433,7 +433,7 @@ void TVarSocket::EndObjeto(TClasse * c, TObjeto * o)
 }
 
 //----------------------------------------------------------------------------
-// Envia mensagem: de longe é a função mais usada
+// Envia mensagem: de longe ï¿½ a funï¿½ï¿½o mais usada
 bool TVarSocket::FuncMsg(TVariavel * v)
 {
     TVarSocket * ref = reinterpret_cast<TVarSocket*>(v->endvar) + v->indice;
@@ -597,7 +597,7 @@ bool TVarSocket::FuncEventoIP(TVariavel * v)
 }
 
 //----------------------------------------------------------------------------
-/// Endereço IP a partir do nome ou IP
+/// Endereï¿½o IP a partir do nome ou IP
 bool TVarSocket::FuncNomeIP(TVariavel * v)
 {
     if (Instr::VarAtual - v < 1)
@@ -623,7 +623,7 @@ bool TVarSocket::FuncIPNome(TVariavel * v)
 }
 
 //----------------------------------------------------------------------------
-/// Checa se é um endereço IP válido
+/// Checa se ï¿½ um endereï¿½o IP vï¿½lido
 bool TVarSocket::FuncIPValido(TVariavel * v)
 {
     if (Instr::VarAtual - v < 1)
@@ -777,7 +777,7 @@ void TDNSSocket::ResolveDNS()
 
 //------------------------------------------------------------------------------
 #ifdef __WIN32__
-/// Resolve endereço em segundo plano no Windows
+/// Resolve endereï¿½o em segundo plano no Windows
 static DWORD WINAPI TDNSSocket_Resolve(LPVOID lpParam)
 {
     TDNSSocket * obj = static_cast<TDNSSocket *>(lpParam);
@@ -789,7 +789,7 @@ static DWORD WINAPI TDNSSocket_Resolve(LPVOID lpParam)
 //------------------------------------------------------------------------------
 #ifndef __WIN32__
 /// Interpreta sinal SIGCHLD
-// Nota: Já está sendo processado em TExec::proc_sigchld_handler()
+// Nota: Jï¿½ estï¿½ sendo processado em TExec::proc_sigchld_handler()
 /*static void dns_sigchld_handler(int signum)
 {
     int pid, status, serrno;
@@ -860,7 +860,7 @@ TDNSSocket::TDNSSocket(TVarSocket * var, const char * ender)
     close(descrpipe[1]);
     fcntl(descrpipe[0], F_SETFL, O_NONBLOCK);
     //signal(SIGCHLD,dns_sigchld_handler); // Processar sinal SIGCHLD
-    // Nota: Já está sendo processado em TExec::proc_sigchld_handler()
+    // Nota: Jï¿½ estï¿½ sendo processado em TExec::proc_sigchld_handler()
     recdescr = descrpipe[0];
 #endif
 }
@@ -888,7 +888,7 @@ void TDNSSocket::ProcEventos(fd_set * set_entrada)
     for (TDNSSocket * obj = Inicio; obj;)
     {
         bool prossegue = false;
-    // Checa se já tem todas as informações
+    // Checa se jï¿½ tem todas as informaï¿½ï¿½es
 #ifdef __WIN32__
         if (WaitForSingleObject(obj->hthread, 0) == WAIT_TIMEOUT)
         {
@@ -952,7 +952,7 @@ void TDNSSocket::ProcEventos(fd_set * set_entrada)
             Instr::ExecX();
             Instr::ExecFim();
         }
-    // Passa para o próximo objeto
+    // Passa para o prï¿½ximo objeto
         TDNSSocket * obj2 = obj;
         obj = obj->Depois;
         delete obj2;

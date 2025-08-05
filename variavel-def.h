@@ -94,7 +94,7 @@
 { \
     classname * ref = reinterpret_cast<classname*>(v->endvar) + v->indice; \
     char * buf = TVarInfo::BufferTxt(); \
-    sprintf(buf, "%d", ref->getValor()); \
+    snprintf(buf, sizeof(buf), "%d", ref->getValor()); \
     return buf; \
 }
 
@@ -102,7 +102,7 @@
 { \
     classname * ref = reinterpret_cast<classname*>(v->endvar) + v->indice; \
     char * buf = TVarInfo::BufferTxt(); \
-    sprintf(buf, "%d", ref->getValor(v->numfunc)); \
+    snprintf(buf, sizeof(buf), "%d", ref->getValor(v->numfunc)); \
     return buf; \
 }
 

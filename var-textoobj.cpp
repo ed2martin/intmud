@@ -1,5 +1,5 @@
-/* Este arquivo é software livre; você pode redistribuir e/ou
- * modificar nos termos da licença LGPL. Vide arquivo COPYING.
+/* Este arquivo ï¿½ software livre; vocï¿½ pode redistribuir e/ou
+ * modificar nos termos da licenï¿½a LGPL. Vide arquivo COPYING.
  *
  * This file is free software; you can redistribute it and/or
  * modify it under the terms of the LGPL license. See file COPYING.
@@ -17,7 +17,7 @@
 #include "instr.h"
 #include "misc.h"
 
-//#define DEBUG_MEM // Mostra variáveis criadas e apagadas
+//#define DEBUG_MEM // Mostra variï¿½veis criadas e apagadas
 
 //----------------------------------------------------------------------------
 const TVarInfo * TTextoObj::Inicializa()
@@ -78,7 +78,7 @@ bool TTextoObj::FFuncTexto(TVariavel * v, const char * nome)
 }
 
 //----------------------------------------------------------------------------
-// Variável como texto
+// Variï¿½vel como texto
 bool TTextoObj::FuncValor(TVariavel * v)
 {
     TTextoObj * ref = reinterpret_cast<TTextoObj*>(v->endvar) + v->indice;
@@ -96,7 +96,7 @@ bool TTextoObj::FuncValor(TVariavel * v)
 }
 
 //----------------------------------------------------------------------------
-// Primeira variável como texto
+// Primeira variï¿½vel como texto
 bool TTextoObj::FuncValorIni(TVariavel * v)
 {
     TTextoObj * ref = reinterpret_cast<TTextoObj*>(v->endvar) + v->indice;
@@ -116,7 +116,7 @@ bool TTextoObj::FuncValorIni(TVariavel * v)
 }
 
 //----------------------------------------------------------------------------
-// Última variável como texto
+// ï¿½ltima variï¿½vel como texto
 bool TTextoObj::FuncValorFim(TVariavel * v)
 {
     TTextoObj * ref = reinterpret_cast<TTextoObj*>(v->endvar) + v->indice;
@@ -136,7 +136,7 @@ bool TTextoObj::FuncValorFim(TVariavel * v)
 }
 
 //----------------------------------------------------------------------------
-// Nome da variável
+// Nome da variï¿½vel
 bool TTextoObj::FuncNomeVar(TVariavel * v)
 {
     TTextoObj * ref = reinterpret_cast<TTextoObj*>(v->endvar) + v->indice;
@@ -150,7 +150,7 @@ bool TTextoObj::FuncNomeVar(TVariavel * v)
 }
 
 //----------------------------------------------------------------------------
-// Mudar variável
+// Mudar variï¿½vel
 bool TTextoObj::FuncMudar(TVariavel * v)
 {
     TTextoObj * ref = reinterpret_cast<TTextoObj*>(v->endvar) + v->indice;
@@ -166,7 +166,7 @@ bool TTextoObj::FuncMudar(TVariavel * v)
 }
 
 //----------------------------------------------------------------------------
-// Variável anterior
+// Variï¿½vel anterior
 bool TTextoObj::FuncAntes(TVariavel * v)
 {
     TTextoObj * ref = reinterpret_cast<TTextoObj*>(v->endvar) + v->indice;
@@ -176,7 +176,7 @@ bool TTextoObj::FuncAntes(TVariavel * v)
     if (Instr::VarAtual >= v + 2 && bl)
     {
         int cmp = comparaZ(bl->NomeVar, v[2].getTxt());
-        if (cmp != 0 && cmp != 2) // 0=textos iguais, 2=texto 1 contém texto 2
+        if (cmp != 0 && cmp != 2) // 0=textos iguais, 2=texto 1 contï¿½m texto 2
             bl = nullptr;
     }
     Instr::ApagarVar(v);
@@ -184,7 +184,7 @@ bool TTextoObj::FuncAntes(TVariavel * v)
 }
 
 //----------------------------------------------------------------------------
-// Próxima variável
+// Prï¿½xima variï¿½vel
 bool TTextoObj::FuncDepois(TVariavel * v)
 {
     TTextoObj * ref = reinterpret_cast<TTextoObj*>(v->endvar) + v->indice;
@@ -194,7 +194,7 @@ bool TTextoObj::FuncDepois(TVariavel * v)
     if (Instr::VarAtual >= v+2 && bl)
     {
         int cmp = comparaZ(bl->NomeVar, v[2].getTxt());
-        if (cmp != 0 && cmp != 2) // 0=textos iguais, 2=texto 1 contém texto 2
+        if (cmp != 0 && cmp != 2) // 0=textos iguais, 2=texto 1 contï¿½m texto 2
             bl = nullptr;
     }
     Instr::ApagarVar(v);
@@ -202,7 +202,7 @@ bool TTextoObj::FuncDepois(TVariavel * v)
 }
 
 //----------------------------------------------------------------------------
-// Início
+// Inï¿½cio
 bool TTextoObj::FuncIni(TVariavel * v)
 {
     TTextoObj * ref = reinterpret_cast<TTextoObj*>(v->endvar) + v->indice;
@@ -396,7 +396,7 @@ TBlocoObj * TTextoObj::ProcIni(const char * texto)
     {
         switch (comparaVar(texto, y->NomeVar))
         {
-        case -2: // string 2 contém string 1
+        case -2: // string 2 contï¿½m string 1
         case 0:  // encontrou
             x = y;
         case -1:
@@ -418,7 +418,7 @@ TBlocoObj * TTextoObj::ProcFim(const char * texto)
     {
         switch (comparaVar(texto, y->NomeVar))
         {
-        case -2: // string 2 contém string 1
+        case -2: // string 2 contï¿½m string 1
         case 0:  // encontrou
             x = y;
             y = y->RBright;
@@ -469,7 +469,7 @@ TBlocoObj * TTextoObj::ProcDepois(const char * texto)
 void TTextoObj::Mudar(const char * nomevar, TObjeto * obj)
 {
     TBlocoObj * bl = Procura(nomevar);
-// Inserir texto (não está no textoobj)
+// Inserir texto (nï¿½o estï¿½ no textoobj)
     if (bl == nullptr)
     {
         if (obj == nullptr)
@@ -492,7 +492,8 @@ void TTextoObj::Mudar(const char * nomevar, TObjeto * obj)
 // Alterar objeto
     else
     {
-        strcpy(bl->NomeVar, nomevar); // Acerta o nome da variável
+        // Usar copiastr que Ã© mais segura que strcpy
+        copiastr(bl->NomeVar, nomevar); // Acerta o nome da variÃ¡vel
         bl->RemoveLista(); // Remove da lista ligada
         bl->InsereLista(obj); // Adiciona na lista ligada
     }
@@ -783,6 +784,6 @@ int TBlocoObj::RBcomp(TBlocoObj * x, TBlocoObj * y)
 
 //----------------------------------------------------------------------------
 #define CLASS TBlocoObj          // Nome da classe
-#define RBmask 1 // Máscara para bit 0
+#define RBmask 1 // Mï¿½scara para bit 0
 #define RBroot TextoObj->RBroot
 #include "rbt.cpp.h"
