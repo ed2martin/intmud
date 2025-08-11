@@ -1026,6 +1026,7 @@ func carregar_perso # Carrega personagem
     d.ini
     ref obj = item.obj
     obj.jog && obj.ajustajog
+    obj.item == 2 && !obj.objtot && (obj.objtot = 1)
     obj.var.limpar("d_", "j_")
     obj.ajustapeso, obj.acertapos, obj.acertanumero, obj.recalc = 1
   efim

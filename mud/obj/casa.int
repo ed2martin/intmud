@@ -36,15 +36,17 @@ func inicasa_exec # Carrega objetos da casa
   efim
   epara item = l1.fim, item, item.antes
     d.ini
-    se txt(item.obj, 0, 2) == "s_" # Se for sala
-      $[item.obj] != item.obj && apagar($[item.obj]) # Apaga a sala que já existia
-      item.obj.ini # Inicializa essa sala
-    senao !item.obj.dono # Se for item sem dono
-      apagar(item.obj) # Apaga o item
+    ref obj = item.obj
+    se txt(obj, 0, 2) == "s_" # Se for sala
+      $[obj] != obj && apagar($[obj]) # Apaga a sala que já existia
+      obj.ini # Inicializa essa sala
+    senao !obj.dono # Se for item sem dono
+      apagar(obj) # Apaga o item
     fimse
-    item.obj.var.limpar("d_", "j_")
-    item.obj.ajustapeso, item.obj.acertapos, item.obj.recalc = 1
-    $casa_reset.l.addfim(item.obj) # Para chamar a função cmd_sav do item
+    obj.var.limpar("d_", "j_")
+    obj.item == 2 && !obj.objtot && (obj.objtot = 1)
+    obj.ajustapeso, obj.acertapos, obj.recalc = 1
+    $casa_reset.l.addfim(obj) # Para chamar a função cmd_sav do item
   efim
 # Indica que nenhuma sala mudou
   zerar

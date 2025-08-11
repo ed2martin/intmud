@@ -40,7 +40,7 @@ const txtmoedas = txttroca(arg0, "$o", "$1")
 func escr
   ref item # Item aonde está soltando os itens
   ref sala # Aonde soltar os itens
-  txt100 erro # Mensagem de erro
+  txt512 erro # Mensagem de erro
   listaobj l
   refvar perm_msg = $perm_[arg0.jogperm].item
   ret perm_msg, $mensjog.msg(perm_msg, arg0)
@@ -77,7 +77,6 @@ func escr
   n.ini(misc:sep1, misc:objmax, misc:tudo)
 # Pega os itens
   int8 achou # Quantos itens achou
-  txt100 erro # Mensagem de erro
   epara l.addfim(sala.dentro1), l && achou < 10, l.ini.remove
     refvar obj = l.objini
     continuar !obj.visivel(arg0) || !n.nome(obj.ident2, obj.objtot)

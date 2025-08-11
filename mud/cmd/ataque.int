@@ -293,7 +293,8 @@ func exechab # Chamado quando personagem usa habilidade ou magia
       ret 0
     fimse
   casose "6"
-    ret cmd_alvo(arg0, arg1, este), 1
+    ret comando_ataque_cfg:cmd_alvo(arg0, arg1, este, nulo, 1), 1
+    ret cmd_alvo(arg0, arg1, este, nulo, 1), 1
     epara l.addfim(contr0.evento), l, l.ini.remove
       ret l.objini.cmd_alvocontr(arg0, arg1, este, arg0), 1
     efim
@@ -301,10 +302,10 @@ func exechab # Chamado quando personagem usa habilidade ou magia
       ret l.objini.cmd_alvocontr(arg0, arg1, este, arg1), 1
     efim
     epara l.addfim(arg0.evento), l, l.ini.remove
-      ret l.objini.cmd_alvo(arg0, arg1, este, arg0), 1
+      ret l.objini.cmd_alvo(arg0, arg1, este, arg0, 1), 1
     efim
     epara l.addfim(arg0 != arg1 ? arg1.evento), l, l.ini.remove
-      ret l.objini.cmd_alvo(arg0, arg1, este, arg1), 1
+      ret l.objini.cmd_alvo(arg0, arg1, este, arg1, 1), 1
     efim
     se !arg4.item
       custohab2(arg0, arg2)
@@ -323,12 +324,13 @@ func exechab # Chamado quando personagem usa habilidade ou magia
     fimse
     arg1.p_imortal && (arg1.pvida = intmax(arg1.pvida, arg1.pvidamax)) # Imortal
     mensgolpe(arg0, arg1, arg5)
-    cmd_alvofim(arg0, arg1, este)
+    comando_ataque_cfg:cmd_alvofim(arg0, arg1, este, nulo, 1)
+    cmd_alvofim(arg0, arg1, este, nulo, 1)
     epara l.addfim(arg0.evento), l, l.ini.remove
-      l.objini.cmd_alvofim(arg0, arg1, este, arg0)
+      l.objini.cmd_alvofim(arg0, arg1, este, arg0, 1)
     efim
     epara l.addfim(arg0 != arg1 ? arg1.evento), l, l.ini.remove
-      l.objini.cmd_alvofim(arg0, arg1, este, arg1)
+      l.objini.cmd_alvofim(arg0, arg1, este, arg1, 1)
     efim
     se tipoalvo == 8 && result == 0
       ref r
@@ -339,12 +341,14 @@ func exechab # Chamado quando personagem usa habilidade ou magia
         r = outros.objini.persobat
         continuar r.dono != contr0.dono
         l.limpar
+        continuar comando_ataque_cfg:cmd_alvo(arg0, r, este, nulo, 0)
+        continuar cmd_alvo(arg0, r, este, nulo, 0)
         epara l.addfim(arg0.evento), l, l.ini.remove
-          sair l.objini.cmd_alvo(arg0, r, este, arg0)
+          sair l.objini.cmd_alvo(arg0, r, este, arg0, 0)
         efim
         continuar l
         epara l.addfim(arg0 != arg1 ? arg1.evento), l, l.ini.remove
-          sair l.objini.cmd_alvo(arg0, r, este, r)
+          sair l.objini.cmd_alvo(arg0, r, este, r, 0)
         efim
         continuar l
         acertou += ", " + txtcopiamai(r.contr.descnome2, "A")
@@ -352,11 +356,13 @@ func exechab # Chamado quando personagem usa habilidade ou magia
         efeitohab(arg0, r, arg2, arg3)
         r.p_imortal && (r.pvida = intmax(r.pvida, r.pvidamax)) # Imortal
         mensgolpe2(arg0, r, arg5)
+        comando_ataque_cfg:cmd_alvofim(arg0, r, este, nulo, 0)
+        cmd_alvofim(arg0, r, este, nulo, 0)
         epara l.addfim(arg0.evento), l, l.ini.remove
-          l.objini.cmd_alvofim(arg0, r, este, arg0)
+          l.objini.cmd_alvofim(arg0, r, este, arg0, 0)
         efim
         epara l.addfim(r.evento), l, l.ini.remove
-          l.objini.cmd_alvofim(arg0, r, este, r)
+          l.objini.cmd_alvofim(arg0, r, este, r, 0)
         efim
       efim
       acertou = "Acertou: " + acertou
@@ -421,6 +427,7 @@ func exechab # Chamado quando personagem usa habilidade ou magia
     fimse
   fimse
 # Dispara eventos do primeiro alvo
+  ret comando_ataque_cfg:cmd_atacar(arg0, arg1, este, nulo, 1), 1
   ret cmd_atacar(arg0, arg1, este, nulo, 1), 1
   epara l.addfim(contr0.evento), l, l.ini.remove
     ret l.objini.cmd_atacarcontr(arg0, arg1, este, contr0), 1
@@ -561,6 +568,7 @@ func exechab # Chamado quando personagem usa habilidade ou magia
     !result && (contr0.atkdanos += intpos(-mudavida))
     arg1.p_imortal && (arg1.pvida = intmax(arg1.pvida, arg1.pvidamax)) # Imortal
     mensgolpe(arg0, arg1, arg5)
+    comando_ataque_cfg:cmd_atacou(arg0, arg1, este, nulo, 1)
     cmd_atacou(arg0, arg1, este, nulo, 1)
     epara e.addfim(arg0.evento), e, e.ini.remove
       e.objini.cmd_atacou(arg0, arg1, este, arg0, 1)
@@ -577,6 +585,7 @@ func exechab # Chamado quando personagem usa habilidade ou magia
     continuar l.objini.perso < 2 # Não prossegue se for pacífico
     r = l.objini.persobat
     continuar !r.contr.p_agressivo(arg0)
+    continuar comando_ataque_cfg:cmd_atacar(arg0, r, este, nulo, 0)
     continuar cmd_atacar(arg0, r, este, nulo, 0)
     e.limpar
     epara e.addfim(arg0.evento), e, e.ini.remove
@@ -606,6 +615,7 @@ func exechab # Chamado quando personagem usa habilidade ou magia
     acertou && efeitohab(arg0, r, arg2, arg3) # Acertou: aplica os efeitos
     r.p_imortal && (r.pvida = intmax(r.pvida, r.pvidamax)) # Imortal
     mensgolpe2(arg0, r, arg5)
+    comando_ataque_cfg:cmd_atacou(arg0, r, este, nulo, 0)
     cmd_atacou(arg0, r, este, nulo, 0)
     epara e.addfim(arg0.evento), e, e.ini.remove
       e.objini.cmd_atacou(arg0, r, este, arg0, 0)

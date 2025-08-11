@@ -396,8 +396,10 @@ arg1 = personagem alvo
 arg2 = objeto que trata do comando
 arg2.result = resultado do ataque:
     0=acertou o alvo, 1=não teve efeito, 2=errou o alvo, 3=cancelar ataque
-arg3 = origem do evento: arg0 ou arg1
-É chamada também a função cmd_alvofim do objeto que trata do comando.
+arg3 = origem do evento: arg0, arg1 ou nulo (se objeto que processa o comando)
+arg4 = tipo de alvo: 0=principal, 1=segundário (em ataques de área)
+É chamada também a função cmd_alvofim da classe comando_ataque e do objeto
+que trata do comando.
 
 func cmd_atacou
 arg0 = personagem que usou uma habilidade ou magia agressiva
@@ -410,7 +412,8 @@ arg2.arma2 = munição usada, ou nulo se não houver
 arg2.mudavida = quantos pontos de vida mudaram no alvo
 arg3 = origem do evento: arg0, arg1 ou nulo
 arg4 = tipo de alvo: 0=principal, 1=segundário (em ataques de área)
-É chamada também a função cmd_atacou do objeto que trata do comando.
+É chamada também a função cmd_atacou da classe comando_ataque e do objeto
+que trata do comando.
 
 func cmd_acordou
 arg0 = personagem que estava dormindo
@@ -635,6 +638,9 @@ arg0 = personagem que quer usar uma habilidade ou magia não agressiva
 arg1 = personagem alvo
 arg2 = objeto que trata do comando
 arg3 = origem do evento: arg0, arg1 ou nulo (se objeto que processa o comando)
+arg4 = tipo de alvo: 0=principal, 1=segundário (em ataques de área)
+É chamada também a função cmd_alvo da classe comando_ataque e do objeto
+que trata do comando.
 
 func cmd_atacarcontr
 arg0 = personagem que quer usar uma habilidade ou magia agressiva
@@ -654,6 +660,8 @@ arg2.arma1 = arma usada, ou nulo se não houver
 arg2.arma2 = munição usada, ou nulo se não houver
 arg3 = origem do evento: arg0, arg1 ou nulo (se objeto que processa o comando)
 arg4 = tipo de alvo: 0=principal, 1=segundário (em ataques de área)
+É chamada também a função cmd_atacar da classe comando_ataque e do objeto
+que trata do comando.
 
 func cmd_atkenv
 func cmd_atkrec
