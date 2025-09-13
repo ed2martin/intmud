@@ -39,14 +39,14 @@ criou_msgadm criou_msgjog\n\
 echomsg sechomsg jecho1msg jecho2msg rezou1msg rezou2msg acmsg\n\
 animal1 animal2\n\
 renascer nrenascer nivel_renascer exp_renascer\n\
-aulas a_aulapontos\n\
+aulas a_aulapontos a_aularenascer\n\
 casajog casanivel casachave casafechadura casataxa casatempotaxa\n\
 casatempoaviso casatempobloq casatempoperder\n\
 casaabriu1 casaabriu2 casamsgaviso casamsgbloq\n\
 item_tipos item_container item_arma item_luz item_vestimenta\n\
 item_bebida item_comida item_pergaminho item_chave\n\
 atknomes\n\
-item_descsala\n\
+item_descsala i_escondepeso i_escondevolume \n\
 atkespecial\n\
 atk_txt arma_txt social_txt\n\
 equip_txt equip_ordem equip_vestir equip_perso\n\
@@ -363,6 +363,9 @@ const aulas = 0
 # Quantos pontos de aula consome por aula
 const a_aulapontos = 0
 #
+# Reduz para essa quantidade de aulas ao renascer
+const a_aularenascer = 3
+#
 # Quantas casas um jogador pode ter (sendo uma casa por área)
 const casajog = 3
 #
@@ -454,6 +457,12 @@ Fantasma\nDragão"
 #
 # Mensagem quando um item está na sala
 const item_descsala = "$P está aqui."
+#
+# Se não deve mostrar o peso ao ver/olhar/identificar
+const i_escondepeso = 0
+#
+# Se não deve mostrar o volume ao ver/olhar/identificar
+const i_escondevolume = 0
 #
 # Tipos de ataque que usam ataque e defesa especiais (cada bit é um tipo)
 # Nota: é bem mais fácil editar essa opção com o comando ECONFIG, dentro do MUD
