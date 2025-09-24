@@ -169,7 +169,7 @@ func passoeditor # Processamento de qualquer editor de texto
 # arg3 = nome da opção
 # teditor contém o texto, leditor é a linha atual
 # Retorna sempre 1
-  casovar txtmin(txt(arg1, 0, 1))
+  casovar txtmin(arg1)
   casose "\n"
     arg0.leditor = arg0.teditor.ini
     arg0.leditor1 = arg0.teditor.ini
@@ -177,151 +177,6 @@ func passoeditor # Processamento de qualquer editor de texto
   casose "" # Entrou na opção ou apenas pressionou ENTER
     arg0.msg("Editando " + arg3 + ", O opções, Z sair")
     ret 1
-  casose "." # Insere linha removendo espaços
-    se arg0.teditor.bytes + inttotal(arg1) > arg2
-      arg0.msg("Editor não suporta tantos caracteres")
-      ret 1
-    fimse
-    arg0.leditor.add(txtremove(txt(arg1, 1), "ED"))
-    arg0.leditor.depois
-    arg0.msg("Adicionada linha " + arg0.leditor.linha)
-    ret 1
-  casose "," # Insere linha
-    se arg0.teditor.bytes + inttotal(arg1) > arg2
-      arg0.msg("Editor não suporta tantos caracteres")
-      ret 1
-    fimse
-    arg0.leditor.add(txt(arg1, 1))
-    arg0.leditor.depois
-    arg0.msg("Adicionada linha " + arg0.leditor.linha)
-    ret 1
-  casose "a" # Apaga a linha atual
-    se !arg0.leditor.lin
-      arg0.msg("Está no fim do texto")
-      ret 1
-    fimse
-    arg0.leditor.remove
-    arg0.msg(arg0.leditor.lin ? "Linha apagada" : "Linha apagada; fim do texto")
-    ret 1
-  casose "i" # Informações sobre a linha atual
-    txt100 t
-    t = "Linha " + (arg0.leditor.linha + 1) + "/" + arg0.teditor.linhas
-    t += ", " + inttotal(arg0.leditor.texto)
-    t += " caracteres, " + arg0.teditor.bytes + "/" + arg2 + " bytes"
-    arg0.msg(t)
-    t = "Bloco linhas " + (arg0.leditor1.linha + 1)
-    t += " a " + (arg0.leditor2.linha + 1)
-    arg0.msg(t)
-    ret 1
-  casose "l" # Mostra a linha atual
-    arg0.msg(txt(arg0.leditor.linha + 1) + " " + arg0.leditor.texto)
-    ret 1
-  casose "m" # Executa comando do MUD
-    arg0.perso.teclou(txtremove(txt(arg1, 1), "E"))
-    ret 1
-  casose "o" # Mostra opções do editor
-    arg0.txtmais.limpar
-    arg0.txtmais.addfim(ajudaeditor)
-    arg0.txtmostra
-    ret 1
-  casose "s" # Sobe uma ou mais linhas
-    arg0.leditor.linha == 0 && arg0.msg("Início do texto")
-    uint8 x = txtremove(txt(arg1, 1), "E")
-    x > 8 && (x = 8)
-    x < 1 && (x = 1)
-    enquanto x > 0
-      arg0.leditor.antes, x--
-      arg0.msg(txt(arg0.leditor.linha + 1) + " " + arg0.leditor.texto)
-      ret !arg0.leditor.linha, 1
-    efim
-    ret 1
-  casose "d"
-    uint8 x = txtremove(txt(arg1, 1), "E")
-    x > 8 && (x = 8)
-    x < 1 && (x = 1)
-    enquanto x > 0
-      arg0.leditor.depois, x--
-      se !arg0.leditor.lin
-        arg0.msg("Fim do texto")
-        ret 1
-      fimse
-      arg0.msg(txt(arg0.leditor.linha + 1) + " " + arg0.leditor.texto)
-    efim
-    ret 1
-  casose "p" # Procurar
-    int16 col # Coluna aonde encontrou
-    textopos pos # Posição aonde encontrou
-    refvar t = txtremove(txt(arg1, 1), "ED")
-    se t # Procura texto
-      arg0.peditor = t, pos = arg0.leditor
-      col = pos.txtproc(t, 0)
-    senao arg0.peditor # Procura novamente
-      pos = arg0.leditor, pos.depois
-      col = pos.txtproc(arg0.peditor, 0)
-    senao # Nada para procurar
-      col = -1
-    fimse
-    se col >= 0
-      arg0.leditor = pos
-      arg0.msg("Encontrado linha " + (arg0.leditor.linha + 1) + " coluna " + (col + 1))
-      arg0.msg(arg0.leditor.texto)
-    senao
-      arg0.msg("Nada encontrado")
-    fimse
-    ret 1
-  casose "t" # Trocar na linha atual
-    se !arg0.peditor
-      arg0.msg("Nenhum texto procurado")
-      ret 1
-    fimse
-    refvar t = txttroca(arg0.leditor.texto, arg0.peditor, txtremove(txt(arg1, 1), "ED"))
-    se t === arg0.leditor.texto
-      arg0.msg("Nada trocado")
-    senao arg0.teditor.bytes + inttotal(t) - inttotal(arg0.leditor.texto) > arg2
-      arg0.msg("Editor não suporta tantos caracteres")
-    senao
-      arg0.leditor.mudar(t)
-      arg0.msg("Troca efetuada")
-    fimse
-    ret 1
-  casose "u" # Trocar no texto inteiro
-    se !arg0.peditor
-      arg0.msg("Nenhum texto procurado")
-      ret 1
-    fimse
-    textopos pos
-    pos = arg0.teditor.ini
-    se pos.txtproc(arg0.peditor, 0) < 0
-      arg0.msg("Nada trocado")
-      ret 1
-    fimse
-    enquanto pos.txtproc(arg0.peditor, 0) >= 0
-      refvar t = txttroca(pos.texto, arg0.peditor, txtremove(txt(arg1, 1), "ED"))
-      se arg0.teditor.bytes + inttotal(t) - inttotal(pos.texto) > arg2
-        arg0.msg("Editor não suporta tantos caracteres")
-        ret 1
-      fimse
-      pos.mudar(t), pos.depois
-    efim
-    arg0.msg("Troca efetuada")
-    ret 1
-  casose "e" # Embelezar o texto
-    arg0.teditor.addini(txttroca(arg0.teditor.remove(10000), "\n", " "))
-    arg0.teditor.dividelin(57, 77)
-    arg0.msg("Texto embelezado; voltando à linha 1")
-    ret 1
-  casose "c" # Mostrar texto com as definições de cores
-    textopos pos
-    arg0.txtmais.limpar
-    arg0.txtmais.addfim("\bTexto com cores:")
-    epara pos = arg0.teditor.ini, pos.lin, pos.depois
-      arg0.txtmais.addfim(txtinvis(pos.texto))
-    efim
-    arg0.txtmostra
-    ret 1
-  casofim
-# Comandos de dois caracteres
-  casovar txtmin(arg1)
   casose "bi"
     arg0.leditor1 = arg0.leditor
     arg0.msg("Início de bloco linha " + (arg0.leditor1.linha + 1))
@@ -434,6 +289,169 @@ func passoeditor # Processamento de qualquer editor de texto
       arg0.txtmostra
     fimse
     ret 1
+  casose "lin" # Inserir linhas
+    arg0.var.editor_linhas_ = 0
+    arg0.var.editor_bytes_ = arg2
+    arg0.var.editor_passo = arg0.passo
+    arg0.passo = "comando_editor_lin"
+    arg0.msg("Digite seu texto. Finalize com uma linha contendo apenas um ponto (.)")
+    ret 1
+  casofim
+  # Comandos de um caracter
+  casovar txtmin(txt(arg1, 0, 1))
+  casose "." # Insere linha removendo espaços
+    se arg0.teditor.bytes + inttotal(arg1) > arg2
+      arg0.msg("Editor não suporta tantos caracteres")
+      ret 1
+    fimse
+    arg0.leditor.add(txtremove(txt(arg1, 1), "ED"))
+    arg0.leditor.depois
+    arg0.msg("Adicionada linha " + arg0.leditor.linha)
+    ret 1
+  casose "," # Insere linha
+    se arg0.teditor.bytes + inttotal(arg1) > arg2
+      arg0.msg("Editor não suporta tantos caracteres")
+      ret 1
+    fimse
+    arg0.leditor.add(txt(arg1, 1))
+    arg0.leditor.depois
+    arg0.msg("Adicionada linha " + arg0.leditor.linha)
+    ret 1
+  casose "a" # Apaga a linha atual
+    se !arg0.leditor.lin
+      arg0.msg("Está no fim do texto")
+      ret 1
+    fimse
+    arg0.leditor.remove
+    arg0.msg(arg0.leditor.lin ? "Linha apagada" : "Linha apagada; fim do texto")
+    ret 1
+  casose "i" # Informações sobre a linha atual
+    txt100 t
+    t = "Linha " + (arg0.leditor.linha + 1) + "/" + arg0.teditor.linhas
+    t += ", " + inttotal(arg0.leditor.texto)
+    t += " caracteres, " + arg0.teditor.bytes + "/" + arg2 + " bytes"
+    arg0.msg(t)
+    t = "Bloco linhas " + (arg0.leditor1.linha + 1)
+    t += " a " + (arg0.leditor2.linha + 1)
+    arg0.msg(t)
+    ret 1
+  casose "l" # Mostra a linha atual ou mostra texto
+    uint16 x = txtremove(txt(arg1, 1), "E")
+    se x
+      arg0.txtmais.limpar
+      enquanto x-- && arg0.leditor.lin
+        arg0.txtmais.addfim(arg0.leditor.texto)
+        arg0.leditor.depois
+      efim
+      !arg0.leditor.lin && arg0.txtmais.addfim("\b\c3Fim do texto\b")
+      arg0.txtmostra
+    senao
+      arg0.msg(txt(arg0.leditor.linha + 1) + " " + arg0.leditor.texto)
+    fimse
+    ret 1
+  casose "m" # Executa comando do MUD
+    arg0.perso.teclou(txtremove(txt(arg1, 1), "E"))
+    ret 1
+  casose "o" # Mostra opções do editor
+    arg0.txtmais.limpar
+    arg0.txtmais.addfim(ajudaeditor)
+    arg0.txtmostra
+    ret 1
+  casose "s" # Sobe uma ou mais linhas
+    arg0.leditor.linha == 0 && arg0.msg("Início do texto")
+    uint8 x = txtremove(txt(arg1, 1), "E")
+    x > 8 && (x = 8)
+    x < 1 && (x = 1)
+    enquanto x > 0
+      arg0.leditor.antes, x--
+      arg0.msg(txt(arg0.leditor.linha + 1) + " " + arg0.leditor.texto)
+      ret !arg0.leditor.linha, 1
+    efim
+    ret 1
+  casose "d"
+    uint8 x = txtremove(txt(arg1, 1), "E")
+    x > 8 && (x = 8)
+    x < 1 && (x = 1)
+    enquanto x > 0
+      arg0.leditor.depois, x--
+      se !arg0.leditor.lin
+        arg0.msg("Fim do texto")
+        ret 1
+      fimse
+      arg0.msg(txt(arg0.leditor.linha + 1) + " " + arg0.leditor.texto)
+    efim
+    ret 1
+  casose "p" # Procurar
+    int16 col # Coluna aonde encontrou
+    textopos pos # Posição aonde encontrou
+    refvar t = txtremove(txt(arg1, 1), "ED")
+    se t # Procura texto
+      arg0.peditor = t, pos = arg0.leditor
+      col = pos.txtproc(t, 0)
+    senao arg0.peditor # Procura novamente
+      pos = arg0.leditor, pos.depois
+      col = pos.txtproc(arg0.peditor, 0)
+    senao # Nada para procurar
+      col = -1
+    fimse
+    se col >= 0
+      arg0.leditor = pos
+      arg0.msg("Encontrado linha " + (arg0.leditor.linha + 1) + " coluna " + (col + 1))
+      arg0.msg(arg0.leditor.texto)
+    senao
+      arg0.msg("Nada encontrado")
+    fimse
+    ret 1
+  casose "t" # Trocar na linha atual
+    se !arg0.peditor
+      arg0.msg("Nenhum texto procurado")
+      ret 1
+    fimse
+    refvar t = txttroca(arg0.leditor.texto, arg0.peditor, txtremove(txt(arg1, 1), "ED"))
+    se t === arg0.leditor.texto
+      arg0.msg("Nada trocado")
+    senao arg0.teditor.bytes + inttotal(t) - inttotal(arg0.leditor.texto) > arg2
+      arg0.msg("Editor não suporta tantos caracteres")
+    senao
+      arg0.leditor.mudar(t)
+      arg0.msg("Troca efetuada")
+    fimse
+    ret 1
+  casose "u" # Trocar no texto inteiro
+    se !arg0.peditor
+      arg0.msg("Nenhum texto procurado")
+      ret 1
+    fimse
+    textopos pos
+    pos = arg0.teditor.ini
+    se pos.txtproc(arg0.peditor, 0) < 0
+      arg0.msg("Nada trocado")
+      ret 1
+    fimse
+    enquanto pos.txtproc(arg0.peditor, 0) >= 0
+      refvar t = txttroca(pos.texto, arg0.peditor, txtremove(txt(arg1, 1), "ED"))
+      se arg0.teditor.bytes + inttotal(t) - inttotal(pos.texto) > arg2
+        arg0.msg("Editor não suporta tantos caracteres")
+        ret 1
+      fimse
+      pos.mudar(t), pos.depois
+    efim
+    arg0.msg("Troca efetuada")
+    ret 1
+  casose "e" # Embelezar o texto
+    arg0.teditor.addini(txttroca(arg0.teditor.remove(10000), "\n", " "))
+    arg0.teditor.dividelin(57, 77)
+    arg0.msg("Texto embelezado; voltando à linha 1")
+    ret 1
+  casose "c" # Mostrar texto com as definições de cores
+    textopos pos
+    arg0.txtmais.limpar
+    arg0.txtmais.addfim("\bTexto com cores:")
+    epara pos = arg0.teditor.ini, pos.lin, pos.depois
+      arg0.txtmais.addfim(txtinvis(pos.texto))
+    efim
+    arg0.txtmostra
+    ret 1
   casofim
 # Checa número de linha
   uint16 lin = arg1
@@ -449,9 +467,11 @@ func passoeditor # Processamento de qualquer editor de texto
 
 const ajudaeditor = "\b\c3Comandos do editor\b\n\
 \c2I\b  Informações sobre a linha atual, quantidade de linhas, e bloco marcado\n\
-\c2L\b  Mostra a linha atual\n\
-\c2S\b  seguido ou não de um número: Sobe uma ou mais linhas no texto\n\
-\c2D\b  seguido ou não de um número: Desce uma ou mais linhas no texto\n\
+\c2L\b  Mostra o número e o texto da linha atual\n\
+\c2L\b  seguido de um número: Avança linhas mostrando o conteúdo de cada uma\n\
+(sem numeração); ideal para ler grandes quantidades de texto\n\
+\c2S\b  seguido ou não de um número: Sobe uma a 8 linhas no texto\n\
+\c2D\b  seguido ou não de um número: Desce uma a 8 linhas no texto\n\
 \c2Um número qualquer:\b  Vai para a linha correspondente\n\
 As linhas começam em 1; um número bem grande, vai para o fim do texto\n\
 \c2Um ponto seguido de um texto:\b\n\
@@ -461,6 +481,9 @@ A linha atual avança automaticamente\n\
 Insere um texto entre a linha atual e a anterior, sem remover espaços\n\
 Exemplo: vírgula seguido de dois espaços e a letra A insere uma linha\n\
 que contém dois espaços e a letra A\n\
+\c2LIN\b  Inserir linhas:\n\
+Cada linha digitada será inserida no texto. Quando terminar de inserir,\n\
+envie uma linha contendo apenas um ponto (.) para finalizar.\n\
 \c2A\b  Apaga a linha atual\n\
 \c2P\b  seguido de um texto: Procura um texto a partir da linha atual\n\
 \c2P\b  Procura a próxima linha que contém o texto\n\
@@ -482,3 +505,29 @@ que contém dois espaços e a letra A\n\
 \c2BO\b  Coloca em ordem alfabética as linhas do bloco marcado\n\
 \c2BT\b  Mostra o conteúdo da área de transferência"
 
+
+classe comando_editor_lin
+const iniclasse = !$[arg0] && criar(arg0)
+
+func passo
+  se arg1 == "."
+    se arg0.var.editor_linhas_ == 0
+      arg0.msg("Texto recebido. Nenhuma linha inserida")
+    senao arg0.var.editor_linhas_ == 1
+      arg0.msg("Texto recebido. Uma linha inserida")
+    senao
+      arg0.msg("Texto recebido. " + arg0.var.editor_linhas_ + " linhas inseridas")
+    fimse
+    arg0.passo = arg0.var.editor_passo
+    arg0.var.editor_passo = ""
+    arg0.var.editor_linhas_ = 0
+    arg0.var.editor_bytes_ = 0
+    ret 1
+  senao arg0.teditor.bytes + inttotal(arg1) + 1 > arg0.var.editor_bytes_
+    arg0.msg("Editor não suporta tantos caracteres")
+  senao
+    arg0.leditor.add(arg1)
+    arg0.leditor.depois
+    arg0.var.editor_linhas_++
+  fimse
+  ret 1

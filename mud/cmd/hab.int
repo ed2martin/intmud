@@ -6,6 +6,7 @@ const m_nao_obedece = "$A não quer obedecer você."
 const m_sem_arma = "Não possui a arma necessária."
 const m_com_arma = "Empunhando uma arma?"
 const m_arma_errada = "Com essa arma?"
+const m_tipoefeitosim = "Precisa estar com efeito $m"
 const m_tipovestirsim = "Falta vestir algo."
 const m_tipovestirnao = "Está vestindo algo que impede."
 const m_tipoinvsim = "Falta carregar algo."
@@ -15,7 +16,7 @@ const m_vida = "Pontos de vida insuficientes."
 const m_mana = "Mana insuficiente."
 const m_move = "Vigor insuficiente."
 const admordem = "m_desmaiado0 m_desmaiado1 m_nao_obedece\n\
-m_sem_arma m_com_arma m_arma_errada m_tipovestirsim\n\
+m_sem_arma m_com_arma m_arma_errada m_tipoefeitosim m_tipovestirsim\n\
 m_tipovestirnao m_tipoinvsim m_tipoinvnao m_sem_efeito m_vida m_mana m_move"
 
 
@@ -105,6 +106,16 @@ func habajuda # Retorna um texto que contém informações
     senao
       t.addfim("Consome " + min + " pontos de movimento.")
     fimse
+  fimse
+  se tipoefeitosim
+    lin = txtproc(tipoefeitosim, "\n") >= 0 ? "Requer efeitos: " : "Requer efeito: "
+    textotxt t2
+    t2.addfim(tipoefeitosim)
+    lin += (e_[t2.ini.texto]:e_nome ?? txte(t2.ini.texto))
+    epara t2.remove, t2.linhas, t2.remove
+      lin += ", " + (e_[t2.ini.texto]:e_nome ?? txte(t2.ini.texto))
+    efim
+    t.addfim(lin)
   fimse
   se tipoperso
     t.addfim("Somente classes/raças: " + txttroca(tipoperso, "\n", ", "))
@@ -231,6 +242,15 @@ func checahab2 # Checa se personagem pode usar habilidade/magia e avisa o person
     $mens.mp(comando_hab_cfg:m_arma_errada, contr0, arg0)
     ret
   fimse
+  se tipoefeitosim
+    textotxt t
+    epara t.addfim(tipoefeitosim), t.linhas, t.remove
+      continuar arg0.dentro2.objini("e_" + t.ini.texto)
+      $mens.mens = e_[t.ini.texto]:e_nome ?? txte(t.ini.texto)
+      $mens.mp(comando_hab_cfg:m_tipoefeitosim, contr0, arg0)
+      ret
+    efim
+  fimse
   se txtbith(tipovestirsim) && !txtbith(tipovestirsim & arg0.tipoitemvestir)
     $mens.mp(comando_hab_cfg:m_tipovestirsim, contr0, arg0)
     ret
@@ -294,6 +314,12 @@ func autohab2 # Checa se personagem pode usar habilidade/magia em ataque automát
   fimse
   ret !arg0.pvidaok || arg0.posicao < posic, nulo
   ret contr0 != arg0 && contr0.pnivel + config:animal_n < arg0.pnivel, nulo
+  se tipoefeitosim
+    textotxt t
+    epara t.addfim(tipoefeitosim), t.linhas, t.remove
+      ret !arg0.dentro2.objini("e_" + t.ini.texto), nulo
+    efim
+  fimse
   ret txtbith(tipovestirsim) && !txtbith(tipovestirsim & arg0.tipoitemvestir), nulo
   ret txtbith(tipovestirnao) && txtbith(tipovestirnao & arg0.tipoitemvestir), nulo
   ret txtbith(tipoinvsim) && !txtbith(tipoinvsim & arg0.tipoiteminv), nulo
@@ -348,34 +374,38 @@ const nome6 = "Arma errada"
 const tipo6 = "opc_linha"
 const vari6 = "m_arma_errada"
 #
-const nome7 = "Vestir item"
+const nome7 = "Efeito"
 const tipo7 = "opc_linha"
-const vari7 = "m_tipovestirsim"
+const vari7 = "m_tipoefeitosim"
 #
-const nome8 = "Não vestir item"
+const nome8 = "Vestir item"
 const tipo8 = "opc_linha"
-const vari8 = "m_tipovestirnao"
+const vari8 = "m_tipovestirsim"
 #
-const nome9 = "Carregar item"
+const nome9 = "Não vestir item"
 const tipo9 = "opc_linha"
-const vari9 = "m_tipoinvsim"
+const vari9 = "m_tipovestirnao"
 #
-const nome10 = "Não carregar item"
+const nome10 = "Carregar item"
 const tipo10 = "opc_linha"
-const vari10 = "m_tipoinvnao"
+const vari10 = "m_tipoinvsim"
 #
-const nome11 = "Não teve efeito"
+const nome11 = "Não carregar item"
 const tipo11 = "opc_linha"
-const vari11 = "m_sem_efeito"
+const vari11 = "m_tipoinvnao"
 #
-const nome12 = "Vida insuficiente"
+const nome12 = "Não teve efeito"
 const tipo12 = "opc_linha"
-const vari12 = "m_vida"
+const vari12 = "m_sem_efeito"
 #
-const nome13 = "Mana insuficiente"
+const nome13 = "Vida insuficiente"
 const tipo13 = "opc_linha"
-const vari13 = "m_mana"
+const vari13 = "m_vida"
 #
-const nome14 = "Vigor insuficiente"
+const nome14 = "Mana insuficiente"
 const tipo14 = "opc_linha"
-const vari14 = "m_move"
+const vari14 = "m_mana"
+#
+const nome15 = "Vigor insuficiente"
+const tipo15 = "opc_linha"
+const vari15 = "m_move"

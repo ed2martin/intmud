@@ -1041,20 +1041,25 @@ const m_limite = "Atingido limite de salas"
 const m_nome = $s_[arg1].s_titulo(arg0)
 const m_total = arg0 == 1 ? "\c6Uma sala\b" : "\c6" + arg0 + " salas\b"
 
+func m_total2 # arg0 = texto com as opções
+  uint16 total = intsublin(arg0)
+  ret total == 0 || total >= 4, m_total(total)
+  ret m_total(total) + " (" + txttroca(arg0, "\n", ", ") + ")"
+
 func menu # Retorna quantidade de linhas de texto de várias linhas
 # arg0=nome da classe, arg1=nome da variável, arg2=nomes das opções (não usado)
   prog p
   casovar p.existe(arg0, arg1)
   casose "1" # Na própria classe
-    ret p_vartexto(arg0, arg1), m_total(intsublin([arg0]:[arg1]))
+    ret p_vartexto(arg0, arg1), m_total2([arg0]:[arg1])
     p.inilinha(arg0, arg1)
     ret "<" + txt1(p.texto) + ">"
   casose "2" # Em uma classe herdada
-    ret p_vartexto(arg0, arg1), "<herda> " + m_total(intsublin([arg0]:[arg1]))
+    ret p_vartexto(arg0, arg1), "<herda> " + m_total2([arg0]:[arg1])
     p.inilinha(arg0, arg1)
     ret "<herda " + txt1(p.texto) + ">"
   casose # Não foi definido
-    ret "<nulo> " + m_total(intsublin([arg0]:[arg1]))
+    ret "<nulo> " + m_total2([arg0]:[arg1])
   casofim
 
 func passo # Alterando
