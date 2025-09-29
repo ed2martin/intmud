@@ -25,6 +25,7 @@ sav txt40 tipo2 # Classe do jogador; vide classes "t_*" em config/tipo.int
 sav txt40 tipo3 # Subclasse do jogador; vide classes "t_*" em config/tipo.int
 sav uint32 pesoobj # Peso do personagem (em gramas)
 sav uint32 volobj # Volume do personagem
+const objmax = config:j_objmax
 const p_agressivo = int($perm_[jogperm].batalha)
 const p_atktipo = $t_[tipo1].atipo ?? $t_[tipo2].atipo ?? $t_[tipo3].atipo ?? config:atk_txt
 const p_naoseguir = !jogconfig.5

@@ -70,15 +70,6 @@ func ini
     dbg.ini
     criafunc("e_congelado", "func cmd_mover\narg0.msg(\"Você congelou\")\nret 1")
     criafunc("e_congelado", "func cmd_recalc2\narg0.atribs.addfim(\"Congelado\")")
-    criafunc("config", "const echomsg = \"\b\cb(ADM) $m\b\"")
-    criafunc("config", "const chatmsg = \"(chat) $R '$m'\"")
-    criafunc("config", "const novatosmsg = \"(novatos) $R '$m'\"")
-    criafunc("config", "const falarmsg = \"$P falou '$m'\"")
-    criafunc("config", "const perguntarmsg = \"$P perguntou '$m'\"")
-    criafunc("config", "const exclamarmsg = \"$P exclamou '$m'\"")
-    criafunc("config", "const ponderarmsg = \"$P ponderou '$m'\"")
-    criafunc("config", "const continuarmsg = \"$P continuou '$m'\"")
-    dbg.ini
   fimse
 # Para cada habilidade ou magia:
 # msgauto1 = msgacertou1
@@ -114,8 +105,6 @@ func ini
       p.apagar(obj, "msgnulo2")
     efim
     dbg.ini
-# Cria constante config:atk_txt
-    criafunc("config", "const atk_txt = \"bater\"")
 # Cria habilidade bater
     t.addfim("cmd_Bater\nb-hab\nherda comando_ataque")
     t.addfim("const nomevar = \"h_Bater\"")
@@ -178,14 +167,8 @@ func ini
     p.apagar("config", "arma_errou")
     p.apagar("config", "arma_nulo")
     p.apagar("config", "atktipo")
-    criafunc("config", "const matartipo = 1")
     criar("admordena", "b-hab")
     dbg.ini
-  fimse
-# Comando gritar
-  se versao < 297
-    criafunc("config", "const gritarmsg = \"$P gritou '$m'\"")
-    criafunc("config", "const gritarmove = 2")
   fimse
 
 func ini2_exec
@@ -239,18 +222,8 @@ func ini2_exec
       p.apagar(p.texto, "msgini")
     efim
   fimse
-# Mensagens do comando Sussurrar
-  se versao < 303
-    criafunc("config", "const sussurrar1msg = \"$P sussurrou algumas palavras.\"")
-    criafunc("config", "const sussurrar2msg = \"$P sussurou para $a '$m'\"")
-    criafunc("config", "const sussurrar3msg = \"$P sussurou algumas palavras para $a.\"")
-  fimse
-# Mensagens dos comandos Telepatia e Rezar e funções de reset das salas
+# Funções de reset das salas
   se versao < 307
-    criafunc("config", "const telepatia1 = \"(+telepatia) $R '$m'\"")
-    criafunc("config", "const telepatia2 = \"(telepatia) $R '$m'\"")
-    criafunc("config", "const rezar1msg = \"(rezar) $R '$m'\"")
-    criafunc("config", "const rezar2msg = \"Você rezou '$m'\"")
     epara p.iniclasse("s_"), p.lin, p.depois
       $reset.atualiza(p.texto, "a_reset", [p.texto]:a_reset)
       $reset.atualiza(p.texto, "s_reset", [p.texto]:s_reset)
@@ -290,73 +263,17 @@ func ini2_exec
       casofim
     efim
   fimse
-# Controle de banda
-  se versao < 310
-    criafunc("config", "const banda1 = 4000")
-    criafunc("config", "const banda2 = 500")
-    criafunc("config", "const nivelveterano = 10")
-    criafunc("config", "const salvainiciante = 30")
-    criafunc("config", "const salvaveterano = 60")
-  fimse
 # Retira mostraimortal e salvartipo, coloca mensagens de hora e nível
   se versao < 314
     p.apagar("config", "mostraimortal")
     p.apagar("config", "salvartipo")
-    criafunc("config", "const horamsg5 = \"Começa a amanhecer.\"")
-    criafunc("config", "const horamsg6 = \"O sol surge no leste.\"")
-    criafunc("config", "const horamsg17 = \"O sol começa a se por no oeste.\"")
-    criafunc("config", "const horamsg18 = \"A noite chega.\"")
-    criafunc("config", "const nivelmsg1 = \"$P avança para o nível $m.\"")
-    criafunc("config", "const nivelmsg2 = \"$1 avança para o nível $m.\"")
-  fimse
-# Diversos
-  se versao < 318
-    criafunc("config", "const atalhos = 50")
-    criafunc("config", "const apresban = \"Seu endereço IP está bloqueado para novos personagens\"\
-")
-    criafunc("config", "const rezou1msg = \"(rezou) $R para $c '$m'\"")
-    criafunc("config", "const rezou2msg = \"Os deuses responderam '$m'\"")
-    criafunc("config", "const casajog = 3")
-    criafunc("config", "const casanivel = 30")
-    criafunc("config", "const casachave = 100")
-    criafunc("config", "const casafechadura = 500")
-  fimse
-# Diversos
-  se versao < 319
-    criafunc("config", "const casaabriu1 = \"Você segura uma chave e abre a porta da sua \
-casa.\"")
-    criafunc("config", "const casaabriu2 = \"$P segura uma chave e abre a porta da casa del$v.\""\
-)
-  fimse
-# Casas
-  se versao < 321
-    criafunc("config", "const casataxa = 5")
-    criafunc("config", "const casatempotaxa = 30")
-    criafunc("config", "const casatempoaviso = 5")
-    criafunc("config", "const casatempobloq = 20")
-    criafunc("config", "const casatempoperder = 180")
-    criafunc("config", "const casamsgaviso = \"Há uma nota avisando que a taxa de manutenção da \
-casa está atrasada.\"")
-    criafunc("config", "const casamsgbloq = \"A porta foi lacrada por falta de pagamento.\"")
   fimse
 # Echo, fórmula de experiência em batalha e sala fora da casa
   se versao < 324
-    criafunc("config", "const jecho1msg = \"\b\cb$m\b\"")
-    criafunc("config", "const jecho2msg = \"\bJEcho para $a '$m'\"")
-    criafunc("config", "const sechomsg = \"\b\cb$m\b\"")
-    criafunc("config", "const atkbexp = 8")
-    criafunc("config", "const atkcexp = 8")
-    criafunc("config", "const atkmaxexp = 100")
-    criafunc("config", "const ptitulonivel = 10")
-    criafunc("config", "const pdescnivel = 5")
     epara p.iniclasse("c_"), p.lin, p.depois
       dbg.ini
       p.apagar(p.texto, "sfora")
     efim
-  fimse
-# SVN 326
-  se versao < 326
-    criafunc("config", "const atknivel = 1")
   fimse
 # SVN 334
   se versao < 334
@@ -397,11 +314,6 @@ casa está atrasada.\"")
   fimse
 # Opções do comando Econfig
   se versao < 338
-    criafunc("config", "const atkmtempo = 40")
-    criafunc("config", "const gchatmsg = \"(gchat) $R '$m'\"")
-    criafunc("config", "const gruponivel = 10")
-    criafunc("config", "const ptitulomax = 30")
-    criafunc("config", "const pdescmax = 1000")
     arqdir dir
     epara dir.abrir("sav1"), dir.lin, dir.depois
       continuar dir.texto == txts(dir.texto)
@@ -472,25 +384,6 @@ casa está atrasada.\"")
     p.apagar("config", "sala")
     p.apagar("config", "senha")
   fimse
-# Renascer e banido
-  se versao < 362
-    criafunc("config", "const exp_renascer = 100")
-    criafunc("config", "const nivel_renascer = 0")
-    criafunc("config", "const apresban2 = \"Seu endereço IP está bloqueado\"")
-  fimse
-# Bug e Ideia
-  se versao < 371
-    criafunc("config", "const bug1msg = \"(bug) $R '$m'\"")
-    criafunc("config", "const bug2msg = \"Bug enviado '$m'\"")
-    criafunc("config", "const bugtipo = 0")
-    criafunc("config", "const bugnivel = 0")
-    criafunc("config", "const l_bug = 0")
-    criafunc("config", "const ideia1msg = \"(ideia) $R '$m'\"")
-    criafunc("config", "const ideia2msg = \"Ideia enviada '$m'\"")
-    criafunc("config", "const ideiatipo = 0")
-    criafunc("config", "const ideianivel = 0")
-    criafunc("config", "const l_ideia = 0")
-  fimse
 # Correção de recalc_auto para recalc1_auto e recalc2_auto
   se versao < 374
     epara p.iniclasse("p_"), p.lin, p.depois
@@ -514,10 +407,6 @@ casa está atrasada.\"")
     se !p.existe("perm_jog")
       p.criar("perm_jog\nconfig/perm\nherda comum_perm")
     fimse
-  fimse
-# Canal Schat
-  se versao < 401
-    criafunc("config", "const schatmsg = \"(chat) $m\"")
   fimse
 # Tipos de arma Arco e flecha e Revolver
   se versao < 413
@@ -576,59 +465,12 @@ casa está atrasada.\"")
       fimse
       p.apagar(p.texto, "precisao")
     efim
-    criafunc("config", "const s_objmax = 100")
-    criafunc("config", "const i_objmax = 100")
-    criafunc("config", "const p_objmax = 100")
-    criafunc("config", "const s_volmax = 1000000")
-    criafunc("config", "const i_volmax = 1000000")
-    criafunc("config", "const p_volmax = 1000000")
-    criafunc("config", "const s_recup = 100")
-    criafunc("config", "const s_pnj = 10")
-    criafunc("config", "const s_jog = 100")
-    criafunc("config", "const s_som = \"sala\"")
-    criafunc("config", "const s_atk_move = 1")
-    criafunc("config", "const p_corpo = 0")
-    criafunc("config", "const p_exp = 100")
-    criafunc("config", "const p_morreu1 = \"$P morreu.\"")
-    criafunc("config", "const p_morreu2 = \"$P desmaiou.\"")
-    criafunc("config", "const p_movervel = 140")
-    criafunc("config", "const p_perseguevel = 20")
-    criafunc("config", "const a_ataquemin = 25")
-    criafunc("config", "const a_ataquemax = 75")
-    criafunc("config", "const a_fatormin = 270")
-    criafunc("config", "const a_fatormax = 330")
-    criafunc("config", "const a_vel = 50")
   fimse
 # Tempo para salvar jogo de admin
   se versao < 421
     p.apagar("config", "salvaadmin")
     uint16 tempo = config:salvaadmin ?? 120
     criafunc("perm_admin", "const salvardias = " + tempo)
-  fimse
-# Tipos de produtos
-  se versao < 422
-    criafunc("config", "const item_container = 2048")
-    criafunc("config", "const item_arma = 2")
-    criafunc("config", "const item_luz = 256")
-    criafunc("config", "const item_vestimenta = 8")
-    criafunc("config", "const item_bebida = 1024")
-    criafunc("config", "const item_comida = 8192")
-    criafunc("config", "const item_pergaminho = 64")
-    criafunc("config", "const item_chave = 0")
-  fimse
-# Mensagens do canal AC
-  se versao < 425
-    criafunc("config", "const acmsg = \"(ac) $R: $m\"")
-  fimse
-# Experiência máxima e opção "Tempo lembra" dos personagens
-  se versao < 430
-    criafunc("config", "const expmax0 = 20")
-    criafunc("config", "const expmax1 = 0")
-    criafunc("config", "const expmax2 = 1")
-    criafunc("config", "const p_lembra = 0")
-    criafunc("config", "const atkexp0 = " + config:atkexp * 6)
-    criafunc("config", "const atkexp1 = " + config:atkexp)
-    p.apagar("config", "atkexp")
   fimse
 
 func ini3_exec
@@ -639,7 +481,6 @@ func ini3_exec
   config:salvar
 # Espera em ataques manuais, mensagens dos ataques
   se versao < 434
-    criafunc("config", "const atkespera = 8")
     movefunc("config", "itens", "config", "p_objlimite")
     int8 y
     epara p.iniherdainv("comando_ataque"), p.lin, p.depois
@@ -658,25 +499,6 @@ func ini3_exec
         efim
       efim
     efim
-  fimse
-# Linhas de PDesc, mensagens de Capturar, mensagens entrando no MUD
-  se versao < 438
-    criafunc("config", "const pdesclinhas = 8")
-    criafunc("config", "const capturar_nao = \"$P joga $o para $a, mas $a recusa.\"")
-    criafunc("config", "const capturar_sim = \"$P joga $o para $a.\"")
-    criafunc("config", "const capturar_equipe = \"$A entrou para a sua equipe.\"")
-    criafunc("config", "const capturar_reserva = \"$A entrou para a sua equipe como reserva.\"")
-    criafunc("config", "const capturar_outros = \"$A entrou para a equipe de $P.\"")
-    criafunc("config", "const entrou_msgadm = \"*. Entrou: $P, $C, N$N, $$$M\"")
-    criafunc("config", "const entrou_msgjog = \"*. $P entrou\"")
-    criafunc("config", "const saiu_msgadm = \"*. Saiu: $P, $C\"")
-    criafunc("config", "const saiu_msgjog = \"*. $P saiu\"")
-    criafunc("config", "const criar_msgadm = \"*. Criando personagem: $P, $C\"")
-    criafunc("config", "const naocriar_msgadm = \"*. Desistiu de criar: $P, $C\"")
-    criafunc("config", "const criou_msgadm = \"*. Criou personagem: $P, $C\"")
-    criafunc("config", "const criou_msgjog = \"*. $P entrou\"")
-    criafunc("config", "const promptmsg = \"<%c3%hhp %c2%mmn %c6%vmv%b>\"")
-    criafunc("config", "const bpromptmsg = \"<%c3%hhp %c2%mmn %c6%vmv%b>\"")
   fimse
 # Constantes usadas ao vestir
   se versao < 451
@@ -734,7 +556,6 @@ func ini4_exec
   config:salvar
 # Comando Fim e Dicas aleatórias
   se versao < 457
-    criafunc("config", "const fimmsg = \"Até mais. Aguardamos o seu retorno.\"")
     se !existe("config_dicas")
       p.criar("config_dicas\nconfig/config\nconst tempo=30\nconst texto=\"\"")
     fimse
@@ -1033,7 +854,6 @@ func ini4_exec
     movefunc("config", "p_morreu1", "perso_cfg", "p_morreu1")
     movefunc("config", "p_morreu2", "perso_cfg", "p_morreu2")
     movefunc("config", "p_corpo", "perso_cfg", "p_corpo_tipo")
-    criafunc("config", "const item_descsala = \"$P está aqui.\"")
     epara p.iniherdainv("comum_perso"), p.lin, p.depois
       dbg.ini
       continuar txt(p.texto, 0, 2) != "p_"
