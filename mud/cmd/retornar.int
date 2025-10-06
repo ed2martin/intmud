@@ -17,7 +17,7 @@ const msglistalugares = "Você pode retornar para:"
 const msglistavazia = "Você não pode retornar para nenhum lugar."
 #
 # Ordem que deve organizar as constantes:
-const admordem = "nomevar nivel escolhearea sala regiaodest\n\
+const admordem = "nomevar nivel escolhearea sala regiaodest movemontaria\n\
 a_dormindo a_descansando a_sentado a_montado\n\
 a_em_pe a_bat_sentado a_bat_montado a_bat_em_pe\n\
 c_espera\n\
@@ -99,11 +99,18 @@ func escrhab # Personagem retorna
   senao rand(100) < falha1 + (falha2 - falha1) * intpos(arg0.var.[nomevar]_ - 1) / 7
     ret $mens.p(arg0) + $mens.mvis2(msgerrou1, msgerrou2)
   fimse
+# Decide se move personagem sozinho ou com montaria
+  ref perso = arg0
+  se movemontaria == 1 && arg0.poslugar.objlista.persodomador == arg0
+    perso = arg0.poslugar.objlista
+  senao movemontaria == 2 && arg0.poslugar.objlista
+    perso = arg0.poslugar.objlista
+  fimse
 # Retorna
-  $mens.p(arg0)
+  $mens.p(perso)
   $mens.mvis2(msgantes1, msgantes2)
-  arg0.mudadono(r)
-  $mens.p(arg0)
+  perso.mudadono(r)
+  $mens.p(perso)
   $mens.mvis2(msgdepois1, msgdepois2)
 
 func habsintaxe # Retorna um texto que contém a sintaxe do comando

@@ -234,6 +234,50 @@ const atk1_errou1 = "$P tenta endurecer."
 const atk1_nulo1 = "$P parece tão dur$s quanto antes."
 
 
+classe cmd_espiar_inventário
+herda comando_ataque
+const nomevar = "h_Espiar Inventário"
+const tipoalvo = 6 # Alvo: 6 Qualquer um; não é ataque
+const falha1 = 70
+const falha2 = 20
+const msgextra = "Quando falha, todos na sala ficam sabendo que você tentou espiar o que o\n\
+personagem alvo está carregando, mas você não é atacado por tentar espiar.\n\
+Não é permitido espiar jogadores."
+const atk1_perso1 = ""
+const atk1_errou1 = "$P tenta espiar o inventário $d $a sem sucesso."
+
+func cmd_alvo
+  se arg0 == arg1
+    $mens.mp("Espiar você mesm$s?", arg0)
+    ret 1
+  senao arg1.jog
+    $mens.mp("Não é possível espiar jogadores.", arg0)
+    ret 1
+  senao arg1.persodomador.jog
+    $mens.mp("Não é possível espiar animais de jogadores.", arg0)
+    ret 1
+  fimse
+
+func cmd_alvofim
+  se arg2.result == 0
+    textotxt t
+    listaitem item
+    epara item = arg1.dentro1.fim, item, item.antes
+      refvar i = item.obj
+      continuar !i.visivel(arg0)
+      t.addfim(txt(i.objtot) + " " + txtcopiamai(i.descnome2, "A"))
+    efim
+    t.juntalin("(", "x)")
+    se t
+      $mens.p(arg0, arg1)
+      t.addini($mens.txt("\b\c6$A carrega:\b", arg0))
+      arg0.msg2(t.remove(1000))
+    senao
+      $mens.mp("$A não está carregando nada.", arg0, arg1)
+    fimse
+  fimse
+
+
 classe cmd_explodir
 herda comando_ataque
 const nomevar = "h_Explodir"
@@ -250,6 +294,57 @@ const atk1_nulo1 = "$P explodiu, nada acontece com $a, nada acontece"
 
 func cmd_atacou # Desmaia após o ataque
   arg0.pvida = 0
+
+
+classe cmd_furtar
+herda comando_ataque
+const nomevar = "h_Furtar"
+const tipoalvo = 6 # Alvo: 6 Qualquer um; não é ataque
+const falha1 = 70
+const falha2 = 20
+const msgextra = "Tenta furtar algo que outro personagem está carregando sem ninguém perceber.\n\
+Quando falha, o personagem alvo ataca. Não é permitido furtar jogadores."
+const atk1_perso1 = ""
+const atk1_errou1 = "$P tenta furtar $a sem sucesso."
+
+func cmd_alvo
+  se arg0 == arg1
+    $mens.mp("Espiar você mesm$s?", arg0)
+    ret 1
+  senao arg1.jog
+    $mens.mp("Não é possível furtar jogadores.", arg0)
+    ret 1
+  senao arg1.persodomador.jog
+    $mens.mp("Não é possível furtar animais de jogadores.", arg0)
+    ret 1
+  fimse
+
+func cmd_alvofim
+  se arg2.result == 0 # Teve sucesso
+    listaobj l # Lista de objetos que podem ser roubados
+    listaitem i
+    epara i = arg1.dentro1.ini, i, i.depois
+      i.obj.item && i.obj.visivel(arg0) && l.addfim(i.obj)
+    efim
+    se l.total == 0
+      $mens.mp("$A não está carregando nada.", arg0, arg1)
+      ret
+    fimse
+    i = l.ini.depois(rand(l.total)) # Escolhe um objeto aleatoriamente
+    $mens.mp("Você furta $o de $a.", arg0, arg1, i.obj)
+    i.obj.mudadono(arg0, 1)
+  senao # Não teve sucesso
+    se arg1.perso == 1 || !arg1.p_agressivo(arg0) # Não participa de batalha
+      uint32 danos = arg0.pvida / 4 # Tirar 1/4 dos pontos de vida
+      $mens.p(arg1, arg0)
+      $mens.mens = -danos
+      $mens.mvis1("$P bate com força em $a, $m")
+      arg0.pvida -= danos
+      arg0.acertapos
+    senao # Participa de batalha
+      arg1.persobat.atkauto(arg0.persobat, 8)
+    fimse
+  fimse
 
 
 classe cmd_furtividade
