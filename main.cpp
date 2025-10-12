@@ -592,8 +592,6 @@ void Inicializa(const char * arg)
                 Instr::VarExecIni = TxtToInt(valor);
             if (comparaZ(mens, "telatxt") == 0)
                 telatxt = TxtToInt(valor);
-            if (comparaZ(mens, "intnome") == 0)
-                verifNomeTipo = TxtToInt(valor);
             if (comparaZ(mens, "log") == 0)
                 opcao_log = (TxtToInt(valor) != 0);
             if (comparaZ(mens, "err") == 0)

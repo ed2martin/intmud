@@ -482,7 +482,7 @@ func passo
     $jogsock_msg.msgsock(arg0, perso_cfg:ini_perso1 + "\cn")
   senao inttotal(arg1) < 3 || inttotal(arg1) > 16
     $jogsock_msg.msgsock(arg0, perso_cfg:ini_perso_caract)
-  senao intnome(arg1) || txtproc(txtsepara("a" + arg1, "L+D"), " ") >= 0
+  senao !misc:nomeperso(arg1)
     $jogsock_msg.msgsock(arg0, perso_cfg:ini_perso_invalido)
   senao sav1.existe("sav1/" + texto + ".sav") # Carregar jogo salvo
     $jogsock_msg.msgsock(arg0, perso_cfg:ini_perso_existe, txtmaimin(arg1))

@@ -296,24 +296,31 @@ herda comando_menu_econfig
 const titulo = "Criar e salvar personagem"
 const menufim = "menu_econfig"
 #
-const nome1 = "Nomes proibidos"
-const info1 = "Nomes não permitidos para personagens dos jogadores, uma linha por nome"
-const tipo1 = "opc_texto"
-const vari1 = "nomesnao"
-const exec1 = "admnomesnao:atualiza"
+const nome1 = "Nomes podem ter"
+const info1 = "Nomes permitidos para personagens de jogadores"
+const tipo1 = "opc_opcao"
+const vari1 = "nomeperso"
+const extr1 = "Qualquer letra e/ou número\n\
+Algumas combinações de letras/números"
 #
-const nome2 = "E-mail"
-const info2 = "Para saber o e-mail de um jogador, abra o arquivo sav do jogo salvo\n\
+const nome2 = "Nomes proibidos"
+const info2 = "Nomes não permitidos para personagens dos jogadores, uma linha por nome"
+const tipo2 = "opc_texto"
+const vari2 = "nomesnao"
+const exec2 = "admnomesnao:atualiza"
+#
+const nome3 = "E-mail"
+const info3 = "Para saber o e-mail de um jogador, abra o arquivo sav do jogo salvo\n\
 e procure por uma linha que contém o texto z_email"
-const tipo2 = "opc_opcao"
-const vari2 = "email"
-const extr2 = "Não pede\nOpcional\nObrigatório"
+const tipo3 = "opc_opcao"
+const vari3 = "email"
+const extr3 = "Não pede\nOpcional\nObrigatório"
 #
-const nome3 = "Config"
-const info3 = "Opções ativas do comando CONFIG quando um jogador cria um personagem"
-const tipo3 = "opc_vetor"
-const vari3 = "jogconfig"
-const extr3 = "desc\n\
+const nome4 = "Config"
+const info4 = "Opções ativas do comando CONFIG quando um jogador cria um personagem"
+const tipo4 = "opc_vetor"
+const vari4 = "jogconfig"
+const extr4 = "desc\n\
 saidas\n\
 cores\n\
 acento\n\
@@ -326,52 +333,52 @@ emocao\n\
 moedas\n\
 novatos\ndicas"
 #
-const nome4 = "Prompt"
-const info4 = "Prompt ao criar personagem; vide comando Prompt"
-const tipo4 = "opc_linha"
-const vari4 = "promptmsg"
-#
-const nome5 = "BPrompt"
-const info5 = "BPrompt ao criar personagem; vide comando BPrompt"
+const nome5 = "Prompt"
+const info5 = "Prompt ao criar personagem; vide comando Prompt"
 const tipo5 = "opc_linha"
-const vari5 = "bpromptmsg"
+const vari5 = "promptmsg"
 #
-const nome6 = "Autorizar personagens"
-const info6 = "Se sim, após criar personagem, ele fica no grupo de permissões Autorizar\n\
+const nome6 = "BPrompt"
+const info6 = "BPrompt ao criar personagem; vide comando BPrompt"
+const tipo6 = "opc_linha"
+const vari6 = "bpromptmsg"
+#
+const nome7 = "Autorizar personagens"
+const info7 = "Se sim, após criar personagem, ele fica no grupo de permissões Autorizar\n\
 Autorizar significa usar o comando MPERM para mudar a permissão para Jog\n\
 Para definir o que esses jogadores podem fazer, tecle EPERM AUTORIZAR"
-const tipo6 = "opc_simnao"
-const vari6 = "autorizar"
+const tipo7 = "opc_simnao"
+const vari7 = "autorizar"
 #
-const nome7 = "Salvar a partir do nível"
-const info7 = "Abaixo desse nível, só pode salvar quem já tem jogo salvo\n\
+const nome8 = "Salvar a partir do nível"
+const info8 = "Abaixo desse nível, só pode salvar quem já tem jogo salvo\n\
 Se for um número acima de 65535, quem não tem jogo salvo não salva"
-const tipo7 = "opc_numero"
-const vari7 = "salvarnivel"
+const tipo8 = "opc_numero"
+const vari8 = "salvarnivel"
 #
-const nome8 = "Salvar ao criar"
-const tipo8 = "opc_simnao"
-const vari8 = "salvacria"
+const nome9 = "Salvar ao criar"
+const tipo9 = "opc_simnao"
+const vari9 = "salvacria"
 #
-const nome9 = "Veterano a partir do nível"
-const info9 = "A partir de que nível um jogador é considerado veterano"
-const tipo9 = "opc_numero"
-const vari9 = "nivelveterano"
-const extr9 = "0 65535"
-#
-const nome10 = "Dias salvar iniciante"
-const info10 = "Quantos dias personagens de iniciantes ficam salvos\n\
-Essa opção é atualizada quando um jogo é salvo"
+const nome10 = "Veterano a partir do nível"
+const info10 = "A partir de que nível um jogador é considerado veterano"
 const tipo10 = "opc_numero"
-const vari10 = "salvainiciante"
-const extr10 = "1 10000"
+const vari10 = "nivelveterano"
+const extr10 = "0 65535"
 #
-const nome11 = "Dias salvar veterano"
-const info11 = "Quantos dias personagens de veteranos ficam salvos\n\
+const nome11 = "Dias salvar iniciante"
+const info11 = "Quantos dias personagens de iniciantes ficam salvos\n\
 Essa opção é atualizada quando um jogo é salvo"
 const tipo11 = "opc_numero"
-const vari11 = "salvaveterano"
+const vari11 = "salvainiciante"
 const extr11 = "1 10000"
+#
+const nome12 = "Dias salvar veterano"
+const info12 = "Quantos dias personagens de veteranos ficam salvos\n\
+Essa opção é atualizada quando um jogo é salvo"
+const tipo12 = "opc_numero"
+const vari12 = "salvaveterano"
+const extr12 = "1 10000"
 
 
 classe menu_econfig_itens

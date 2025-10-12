@@ -1542,8 +1542,7 @@ bool InstrFunc::FuncTxtRepete(TVariavel * v)
 bool InstrFunc::FuncIntNome(TVariavel * v)
 {
     const char * txt = VarAtual >= v + 1 ? v[1].getTxt() : "";
-    return CriarVarInt(v, verifNomeTipo ?
-            verifNomeCompleto(txt) : verifNomeSimples(txt));
+    return CriarVarInt(v, verifNome(txt));
 }
 
 //----------------------------------------------------------------------------

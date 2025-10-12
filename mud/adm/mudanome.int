@@ -23,7 +23,7 @@ func escr
     ret arg0.msg("Os dois nomes correspondem ao mesmo personagem.")
   senao inttotal(nome.1) < 3 || inttotal(nome.1) > 16
     ret arg0.msg("O novo nome deve ter de 3 a 16 caracteres.")
-  senao intnome(nome.1)
+  senao !misc:nomeperso(nome.1)
     ret arg0.msg("O novo nome não é válido.")
   senao ind.obj("un " + codif.1)
     ret arg0.msg("Personagem " + nome.1 + " já está sendo usado.")

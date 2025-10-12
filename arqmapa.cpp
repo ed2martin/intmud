@@ -157,15 +157,12 @@ void TArqMapa::SalvarArq(bool tudo)
                 "exec = %d\n\n"
                 "# Se deve abrir uma janela de texto - variável telatxt\n"
                 "telatxt = %d\n\n"
-                "# Se a função intnome deve verificar também algumas "
-                "combinações de caracteres\n"
-                "intnome = %d\n\n"
                 "# Aonde apresentar mensagens de erro no programa\n"
                 "log = %d\n\n"
                 "# Erros em blocos de instruções:\n"
                 "# 0=ignorar, 1=permitir apenas FimSe sem Se, 2=checar tudo\n"
                 "err = %d\n\n",
-                Instr::VarExecIni, Console != nullptr, verifNomeTipo,
+                Instr::VarExecIni, Console != nullptr,
                 opcao_log, Instr::ChecaLinha::ChecaErro);
             fprintf(arq,
                 "# Se o programa roda sem restrições (0=não, 1=sim)\n"
