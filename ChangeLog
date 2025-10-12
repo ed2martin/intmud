@@ -1,3 +1,82 @@
+* 12/10/2025 IntMUD 1.16 MUD baseado na revisão 680
+
+   No IntMUD:
+  1. Corrigido bug em arqlog: o MUD pode cair principalmente se for
+     colocado um arqlog em uma função para abrir um arquivo e gravar um
+     texto
+  2. Corrigido bug: Comparar duas variáveis textovar com == nunca estava
+     resultado em verdadeiro
+  3. Adicionado suporte a IPv6
+  4. A função nomeip e o evento _eventoip de socket agora podem retornar
+     mais de um endereço IP, separados por espaço
+
+   No MUD:
+  1. Corrigidas Explicações das salas teste075 a teste077: o $ não
+     estava aparecendo
+  2. Corrigido bug: Ao carregar um jogo salvo, não estava acertando
+     corretamente números inválidos para animais. Por exemplo, se
+     acontecer de ter um animal de número 62, ele continuava sendo
+     número 62.
+  3. Corrigido bug: Comandos ver, olhar e empunhar não atuam sobre o
+     inventário de um animal quando se escolhe um animal
+  4. Corrigido bug: Histórico dos canais Chat e Novatos estavam
+     mostrando histórico de jogadores ignorados com o comando Ignorar
+  5. Corrigido bug: Em comandos sociais que têm mensagem para o próprio
+     personagem mas não para outros personagens, não estava funcionando
+     com o próprio personagem
+  6. Corrigido bug: Comando Lugar não estava considerando as permissões
+     do jogador; por exemplo, fazia os comandos ver e olhar não
+     mostrarem o nome da sala cadastrada para administradores
+  7. Criadas salas teste195 e teste196 com guardas que só permitem ir
+     para o sul após um pagamento em moedas
+  8. Criado elevador, sala teste197, acessível pelos andares 1, 5, 6 e 7
+  9. Criada mais uma forma de usar misc:tempo, vide salas teste198 e
+     teste199
+ 10. Criado comando Area
+ 11. Adicionadas opções Descrição, Nível mínimo, Nível máximo e Comando
+     área no comando Earea
+ 12. Eventos cmd_recitar e cmd_recitou agora têm também o que o usuário
+     digitou como alvo
+ 13. Criado pergaminho de reviver, item teste084, vendido na sala
+     teste031
+ 14. Criadas funções misc:temtempo e misc:removetempo e a sala sala
+     teste200 para demonstrar como funcionam
+ 15. Criado comando de administração Jcasa, para saber as casas de um
+     jogador
+ 16. O texto da opção "31 Ao pegar" do comando Eitem estava cortando em
+     100 caracteres. Esse limite foi aumentado para 512 caracteres
+ 17. Quando arquivos sav de jogadores e de casas são carregados, se
+     houver algum item que agrupa correspondente zero itens, agora passa
+     a ser um item
+ 18. Agora são chamadas também as funções cmd_atacar, cmd_atacou,
+     cmd_alvo e cmd_alvofim da classe comando_ataque
+ 19. Os argumentos das funções cmd_alvo e cmd_alvofim agora estão como
+     cmd_atacar e cmd_atacou
+ 20. Adicionadas opções "4 Esconde peso" e "5 Esconde volume" no submenu
+     "2 Itens" do menu "8 Herda" do comando Econfig
+ 21. Adicionada opção "7 Renascer aulas" no menu "8 Herda" do comando
+     Econfig
+ 22. Adicionada opção "12 Renascer aulas" nos comandos Ehab e Emag
+ 23. Removida função acertahab de cmd_renascer porque não há mais
+     necessidade
+ 24. Adicionada opção "6 Efeitos" no menu "5 Requer" dos comandos Ehab e
+     Emag
+ 25. Criado comando LIN no editor de texto, para inserir linhas sem usar
+     ponto na frente
+ 26. Comando L seguido de um número visualiza linhas sem o número da
+     linha na frente
+ 27. Opção "Objetos inventário" do menu Herda/Personagens do Econfig foi
+     dividida em duas, uma para PNJs e outra para jogadores
+ 28. Algumas linhas do arquivo misc/atualiza.int foram apagadas porque
+     não têm necessidade, uma vez que a classe config herda h_config
+ 29. Criadas habilidades "Espiar inventário" e "Furtar", ensinadas na
+     sala teste031
+ 30. Criada opção "17 Transporta a montaria" nos comandos Ehab e Emag
+ 31. No comando Eperso, "8 Outras descrições", nas descrições curtas com
+     dono agora é aceito $u (vira "o" ou "a" na descrição)
+ 32. No comando Econfig, "7 Criar e salvar personagem", opção "1 Nomes
+     podem ter"
+
 * 14/9/2024 IntMUD 1.15b MUD baseado na revisão 657
 
    No IntMUD:
