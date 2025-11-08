@@ -495,11 +495,6 @@ func teclouperm # Processa comando com permissões específicas
   ret !arg0, nulo
 # Obtém o comando
   enquanto 1
-    se arg0 == intpos(arg0) && config:animal1 >= arg0 && config:animal1
-      obj = $comando_escolhe_animal
-      obj.num = arg0
-      sair
-    fimse
     sair obj = $cmd_[txt1(arg0)].objcmd(este, arg1) # Checa comando exato
     sair obj = $soc_[txt1(arg0)].objcmd(este, arg1) # Checa social exato
     uint8 nivel1 = 255

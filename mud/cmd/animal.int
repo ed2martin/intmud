@@ -107,10 +107,65 @@ func escr
   fimse
 
 
+classe cmd_0
+herda comando_comum
+const posic = 5
+const objtipo = 0 # Não pode ser renomeado ou criar atalho para esse comando
+const objcmd = config:animal1 ? este
+const escr = $comando_escolhe_animal.escr(arg0, arg1, arg2, 0)
+
+
+classe cmd_1
+herda cmd_0
+const objcmd = config:animal1 >= 1 ? este
+const escr = $comando_escolhe_animal.escr(arg0, arg1, arg2, 1)
+
+
+classe cmd_2
+herda cmd_0
+const objcmd = config:animal1 >= 2 ? este
+const escr = $comando_escolhe_animal.escr(arg0, arg1, arg2, 2)
+
+
+classe cmd_3
+herda cmd_0
+const objcmd = config:animal1 >= 3 ? este
+const escr = $comando_escolhe_animal.escr(arg0, arg1, arg2, 3)
+
+
+classe cmd_4
+herda cmd_0
+const objcmd = config:animal1 >= 4 ? este
+const escr = $comando_escolhe_animal.escr(arg0, arg1, arg2, 4)
+
+
+classe cmd_5
+herda cmd_0
+const objcmd = config:animal1 >= 5 ? este
+const escr = $comando_escolhe_animal.escr(arg0, arg1, arg2, 5)
+
+
+classe cmd_6
+herda cmd_0
+const objcmd = config:animal1 >= 6 ? este
+const escr = $comando_escolhe_animal.escr(arg0, arg1, arg2, 6)
+
+
+classe cmd_7
+herda cmd_0
+const objcmd = config:animal1 >= 7 ? este
+const escr = $comando_escolhe_animal.escr(arg0, arg1, arg2, 7)
+
+
+classe cmd_8
+herda cmd_0
+const objcmd = config:animal1 >= 8 ? este
+const escr = $comando_escolhe_animal.escr(arg0, arg1, arg2, 8)
+
+
 classe h_comando_escolhe_animal
 herda comando_comum
 const posic = 5
-int8 num # Número do animal; preenchido pela função "teclou" do personagem
 #
 const m_ausente = "Você não possui $m."
 const m_escolheu = "Você já escolheu $m."
@@ -120,6 +175,7 @@ const m_escolhe1 = "Você escolhe $b."
 const m_escolhe2 = "$P escolhe $b."
 
 func escr # Chamado pela função "teclou" do personagem ao escolher um animal
+  refvar num = arg3 # Número do animal
   refvar r = misc:personum(arg0, num)
   se !r
     $mens.mens = num

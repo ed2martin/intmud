@@ -190,15 +190,12 @@ Só pode ser usado na área de teste."
 const habsintaxe = "Sintaxe: Lançar Fecha_Saída [direção]"
 
 func escrhab
-  refvar perm = $perm_[arg0.jogperm]
-  refvar m1 = txt1(txte(nomevar)) == "m" ? perm.usar_mag : perm.usar_hab
-  se m1
-    arg0.msg(m1)
-  senao arg0.dono.s_area != "teste"
+  refvar sala = arg0.contr.dono
+  se sala.s_area != "teste"
     $mens.mp("Você não está na área de testes", arg0)
   senao !arg1
     $mens.mp("Fechar saída em qual direção? Tecle Lançar Fecha_saída e a direção.", arg0)
-  senao !arg0.dono.dirsala(arg1, arg0)
+  senao !sala.dirsala(arg1, arg0)
     $mens.mens = arg1
     $mens.mp("Saída não existe: $m", arg0)
   senao
@@ -209,7 +206,7 @@ func escrhab
     $mens.p(arg0)
     $mens.mtodos1("$P lança Fecha Saida na direção $M")
 # Cria efeito na sala para fechar a saída na direção especificada
-    criar("e_fecha_saida", arg0.dono, arg0.pnivel, arg1)
+    criar("e_fecha_saida", sala, arg0.pnivel, arg1)
   fimse
 
 
@@ -303,7 +300,7 @@ herda comando_ataque
 const nomevar = "m_Invisibilidade"
 const tipoalvo = 7 # Alvo: 7 O personagem; não é ataque
 const a_bat_sentado = 0 # Lutando sentado: Não
-const a_bat_montado = 0 # Lutando nontado: Não
+const a_bat_montado = 0 # Lutando montado: Não
 const a_bat_em_pe = 0 # Lutando em pé: Não
 const a_efeito1 = "invisibilidade"
 const c_mana1 = 20

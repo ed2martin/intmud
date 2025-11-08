@@ -237,9 +237,10 @@ arg0 = objeto do personagem
 Retorna um texto que contém informações, para os comandos hab, magia e
 quando o jogador pede informações sobre uma aula.
 
-func escr( personagem, o que escreveu )
+func escr( personagem, o que escreveu, permissões )
 É chamado quando o jogador digita o comando para usar a hab/magia.
-Tem o mesmo efeito que chamar escrhab( personagem, o que escreveu ).
+Obtém o personagem (que pode ser um animal) que vai usar a hab/magia,
+verifica se pode usar, e chama escrhab(personagem, o que escreveu, permissões)
 
 func escrhab( personagem, o que escreveu, item, nível )
 É chamado quando o jogador digita o comando para usar a hab/magia ou

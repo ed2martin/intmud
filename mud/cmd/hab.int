@@ -15,20 +15,34 @@ const m_sem_efeito = "A magia não teve efeito."
 const m_vida = "Pontos de vida insuficientes."
 const m_mana = "Mana insuficiente."
 const m_move = "Vigor insuficiente."
+const m_nivel0 = "Você ainda não consegue fazer isso."
+const m_nivel1 = "$A ainda não consegue fazer isso."
 const admordem = "m_desmaiado0 m_desmaiado1 m_nao_obedece\n\
 m_sem_arma m_com_arma m_arma_errada m_tipoefeitosim m_tipovestirsim\n\
-m_tipovestirnao m_tipoinvsim m_tipoinvnao m_sem_efeito m_vida m_mana m_move"
+m_tipovestirnao m_tipoinvsim m_tipoinvnao m_sem_efeito m_vida m_mana m_move\n\
+m_nivel0 m_nivel1"
 
 
 classe comando_hab
 herda comando_comum
 const objcmd = arg0.persobat.var.[nomevar] ? este
-const objnivel = !tipoarma || tipoarma & intbit(int(arg0.iempu.obj.armatipo)) ? 0 : 2
+const objnivel = !tipoarma || (tipoarma & intbit(int(arg0.iempu.obj.armatipo))) ? 0 : 2
 const posic = 4
 const falha1 = 0
 const falha2 = 0
 const tipoalvo = 6
 const aularenascer = config:a_aularenascer
+const aulapontos = config:a_aulapontos
+
+func escr # Obtém o personagem e chama escrhab
+  refvar m1 = txt1(txte(nomevar)) == "m" ? arg2.usar_mag : arg2.usar_hab
+  ret m1, arg0.msg(m1)
+  refvar p = arg0.persoesc
+  se p.pnivel < intpos(int(aulaini) - config:nrenascer * txt2(p.var.[nomevar]))
+    ret $mens.mp(comando_hab_cfg:m_nivel[p == arg0], arg0, p)
+  fimse
+  escrhab(p, arg1, arg2)
+  arg0.p_espera < p.p_espera && (arg0.p_espera = p.p_espera)
 
 func habajuda # Retorna um texto que contém informações
 # arg0 = objeto do personagem
@@ -263,7 +277,7 @@ func checahab2 # Checa se personagem pode usar habilidade/magia e avisa o person
   senao txtbith(tipoinvnao) && txtbith(tipoinvnao & arg0.tipoiteminv)
     $mens.mp(comando_hab_cfg:m_tipoinvnao, contr0, arg0)
     ret
-  senao arg0.dono.s_semmagia && txt(nomevar, 0, 1) == "m"
+  senao contr0.dono.s_semmagia && txt(nomevar, 0, 1) == "m"
     $mens.mp(comando_hab_cfg:m_sem_efeito, contr0, arg0)
     ret
   senao arg2.item # Usou algum objeto: não tem custo
@@ -409,3 +423,11 @@ const vari14 = "m_mana"
 const nome15 = "Vigor insuficiente"
 const tipo15 = "opc_linha"
 const vari15 = "m_move"
+#
+const nome16 = "Nível insuficiente perso"
+const tipo16 = "opc_linha"
+const vari16 = "m_nivel0"
+#
+const nome17 = "Nível insuficiente animal"
+const tipo17 = "opc_linha"
+const vari17 = "m_nivel1"
