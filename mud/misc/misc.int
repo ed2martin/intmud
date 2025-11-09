@@ -342,7 +342,7 @@ func txtmoedas # Retorna texto correspondente à quantidade de moedas
 func nomeperso # Verifica se um texto é válido para nome de personagem
 # arg0 = texto a verificar
   ret txt(arg0, 0, 1) >= "0" && txt(arg0, 0, 1) <= "9", 0
-  ret txtproc(txtsepara("a" + arg0, "LD+O,O+LD"), " ") >= 0, 0
+  ret txtproc(txtsepara("a" + txttroca(arg0, "_", ""), "LD+O,O+LD"), " ") >= 0, 0
   ret inttotal(arg0) < 2, 0
   ret config:nomeperso && intnome(arg0), 0
   ret 1
