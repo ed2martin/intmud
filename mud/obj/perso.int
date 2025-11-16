@@ -40,7 +40,7 @@ inttempo p_espera # Tempo de espera para o próximo comando
 txt100 p_comando # Próximo comando (usado no comando Ordenar)
 sav uint8 posicao # Posição do personagem
 const pospadr = 8 # Posição padrão do personagem
-sav uint8 pnumero # Número do personagem ou 0 se não tem dono
+sav uint8 pnumero # Número do personagem, 0 é o primeiro personagem
 sav listaitem poslugar # Em qual móvel o personagem está sentado/deitado/montado
 sav listaobj persolugar # Quem está montado
 sav listaitem iempu # Arma que está empunhando
@@ -611,7 +611,12 @@ func descpos
 func acertanumero # Acerta os números dos animais que possui (variáveis pnumero)
   listaobj l
   listaitem i
-  int32 mask = (2 << config:animal1) - 2 # bits 1 são as posições disponíveis
+  int32 mask = (2 << config:animal1) - 1 # bits 1 são as posições disponíveis
+  se pnumero <= 30 && (mask & intbit(pnumero))
+    mask ^= intbit(pnumero)
+  senao
+    l.addfim(este)
+  fimse
   epara i = dentro2.ini, i, i.depois
     continuar !i.obj.perso
     se i.obj.pnumero <= 30 && (mask & intbit(i.obj.pnumero))

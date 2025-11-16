@@ -37,7 +37,7 @@ func escr
     ret arg0.msg(t.remove(1000))
   fimse
 # Obtém o animal
-  ref anim = misc:persodentro(arg0, arg1) ?? misc:persooutro(arg0, arg1)
+  ref anim = misc:animalnum(arg0, arg1) ?? misc:persooutro(arg0, arg1)
   se !anim
     $mens.mens = arg1
     ret $mens.mp(m_naover, arg0)

@@ -15,8 +15,7 @@ const m_ajudaA = "-h_cmd_animal Mostra $seus-animais\n\
 -h_cmd_dar Dá $um-animal a outro personagem\n\
 -h_cmd_chamar Traz $um-animal da sala para o comando $Cmd-animal\n\
 -h_cmd_soltar Traz $um-animal do comando $Cmd-animal para a sala\n\
-  \c20\b            Não escolhe $nenhum-animal para batalha\n\
-  \c21\b a \c2$num-animais\b        Escolhe $um-animal, de 1 a $num-animais\n\
+  \c21\b a \c2$num-animais\b        Escolhe um personagem, de 1 a $num-animais\n\
 -h_cmd_trocar Dá itens para $um-animal e troca $animais de lugar"
 const m_ajuda1 = "Nota: $Seus-animais acima do seu nível não lutam."
 const m_ajuda2 = "Nota: $Seus-animais $m níveis acima do seu nível não lutam."
@@ -41,7 +40,7 @@ m_lugar_perso m_lugar_sala m_lugar_longe m_des_sim m_des_nao m_obe_sim m_obe_nao
 #
 ref perso # Objeto do personagem
 ref animal # Objeto do animal
-const t1_num = animal.pnumero
+const t1_num = misc:persotxt(animal.pnumero)
 const t1_nivel = animal.pnivel
 const t1_esc = perso.persoesc == animal ? m_esc_sim : m_esc_nao
 const t1_des = animal.pvidaok ? m_des_nao : m_des_sim
@@ -86,7 +85,8 @@ func escr
   efim
 # Adiciona o próprio personagem
   perso = animal = arg0
-  t.addfim("100 " + txtremove(vartroca(m_linhaperso, "$", "t1_"), "d"))
+  refvar l1 = txt(arg0.pnumero + 100) + " "
+  t.addfim(l1 + txtremove(vartroca(m_linhaperso, "$", "t1_"), "d"))
 # Adiciona outros personagens
   epara i = l.ini, i, i.depois
     continuar !i.obj.perso
@@ -107,60 +107,60 @@ func escr
   fimse
 
 
-classe cmd_0
+classe cmd_1
 herda comando_comum
 const posic = 5
 const objtipo = 0 # Não pode ser renomeado ou criar atalho para esse comando
 const objcmd = config:animal1 ? este
-const escr = $comando_escolhe_animal.escr(arg0, arg1, arg2, 0)
-
-
-classe cmd_1
-herda cmd_0
-const objcmd = config:animal1 >= 1 ? este
-const escr = $comando_escolhe_animal.escr(arg0, arg1, arg2, 1)
+const escr = $comando_escolhe_animal.escr(arg0, arg1, arg2, "1")
 
 
 classe cmd_2
-herda cmd_0
-const objcmd = config:animal1 >= 2 ? este
-const escr = $comando_escolhe_animal.escr(arg0, arg1, arg2, 2)
+herda cmd_1
+const objcmd = config:animal1 >= 1 ? este
+const escr = $comando_escolhe_animal.escr(arg0, arg1, arg2, "2")
 
 
 classe cmd_3
-herda cmd_0
-const objcmd = config:animal1 >= 3 ? este
-const escr = $comando_escolhe_animal.escr(arg0, arg1, arg2, 3)
+herda cmd_1
+const objcmd = config:animal1 >= 2 ? este
+const escr = $comando_escolhe_animal.escr(arg0, arg1, arg2, "3")
 
 
 classe cmd_4
-herda cmd_0
-const objcmd = config:animal1 >= 4 ? este
-const escr = $comando_escolhe_animal.escr(arg0, arg1, arg2, 4)
+herda cmd_1
+const objcmd = config:animal1 >= 3 ? este
+const escr = $comando_escolhe_animal.escr(arg0, arg1, arg2, "4")
 
 
 classe cmd_5
-herda cmd_0
-const objcmd = config:animal1 >= 5 ? este
-const escr = $comando_escolhe_animal.escr(arg0, arg1, arg2, 5)
+herda cmd_1
+const objcmd = config:animal1 >= 4 ? este
+const escr = $comando_escolhe_animal.escr(arg0, arg1, arg2, "5")
 
 
 classe cmd_6
-herda cmd_0
-const objcmd = config:animal1 >= 6 ? este
-const escr = $comando_escolhe_animal.escr(arg0, arg1, arg2, 6)
+herda cmd_1
+const objcmd = config:animal1 >= 5 ? este
+const escr = $comando_escolhe_animal.escr(arg0, arg1, arg2, "6")
 
 
 classe cmd_7
-herda cmd_0
-const objcmd = config:animal1 >= 7 ? este
-const escr = $comando_escolhe_animal.escr(arg0, arg1, arg2, 7)
+herda cmd_1
+const objcmd = config:animal1 >= 6 ? este
+const escr = $comando_escolhe_animal.escr(arg0, arg1, arg2, "7")
 
 
 classe cmd_8
-herda cmd_0
+herda cmd_1
+const objcmd = config:animal1 >= 7 ? este
+const escr = $comando_escolhe_animal.escr(arg0, arg1, arg2, "8")
+
+
+classe cmd_9
+herda cmd_1
 const objcmd = config:animal1 >= 8 ? este
-const escr = $comando_escolhe_animal.escr(arg0, arg1, arg2, 8)
+const escr = $comando_escolhe_animal.escr(arg0, arg1, arg2, "9")
 
 
 classe h_comando_escolhe_animal
@@ -175,13 +175,16 @@ const m_escolhe1 = "Você escolhe $b."
 const m_escolhe2 = "$P escolhe $b."
 
 func escr # Chamado pela função "teclou" do personagem ao escolher um animal
-  refvar num = arg3 # Número do animal
-  refvar r = misc:personum(arg0, num)
+# arg0 = personagem
+# arg1 = o que teclou
+# arg2 = permissões
+# arg3 = número do animal
+  refvar r = misc:personum(arg0, arg3)
   se !r
-    $mens.mens = num
+    $mens.mens = arg3
     $mens.mp(m_ausente, arg0)
   senao arg0.persoesc == r
-    $mens.mens = num
+    $mens.mens = arg3
     $mens.mp(m_escolheu, arg0)
   senao r == arg0
     se arg0.persoesc.pvidaok && arg0.atkenv # Animal está bom e está lutando

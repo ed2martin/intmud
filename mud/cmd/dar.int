@@ -47,8 +47,8 @@ func escr
     ret l.objini.cmd_dar(arg0, arg1), nulo
   efim
 # Dar animal a outro personagem
-  se txt1(arg1) == intpos(arg1) && int(arg1) && intsub(arg1) <= 2 && config:animal1 >= arg1
-    refvar r = misc:persodentro(arg0, txt1(arg1))
+  se misc:persoindice(txt1(arg1)) >= 0
+    refvar r = misc:animalnum(arg0, txt1(arg1))
     se !r
       $mens.mens = arg1
       ret $mens.mp(m_nao_possui, arg0)

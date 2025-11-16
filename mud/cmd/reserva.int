@@ -90,7 +90,7 @@ func guardar # Guarda um animal na reserva
 # arg0 = personagem
 # arg1 = nome ou número do animal
   ret arg0.dentro3.total >= config:animal2, $mens.mp(m_reserva_cheio, arg0)
-  ref r = misc:persodentro(arg0, arg1)
+  ref r = misc:animalnum(arg0, arg1)
   $mens.mens = arg1
   ret !r, $mens.mp(m_sem_animal, arg0)
   ret r.dono != arg0 && r.dono != arg0.dono, $mens.mp(m_outra_sala, arg0)

@@ -26,7 +26,7 @@ func escr
   $mens.mens = arg1
   ref r
 # Checa animal do comando Animal
-  se arg1 == intpos(arg1) && int(arg1) && config:animal1 >= arg1
+  se misc:persoindice(arg1) >= 0
     r = misc:personum(arg0, arg1)
     ret !r, $mens.mp(m_nao_possui, arg0)
     ret r.p_soltar == 2, $mens.mp(m_nao_despedir, arg0, r)

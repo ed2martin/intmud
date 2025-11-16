@@ -32,7 +32,7 @@ func escr
   ref item = misc:itemdentro(arg0, txt1(arg1))
   ret !item, $mens.mp(m_naover, arg0)
   ref tec = $tecnica_[item.i_item_tecnica]
-  ref anim = misc:persodentro(arg0, txt2(arg1)) ?? misc:persodono(arg0, txt2(arg1))
+  ref anim = misc:animalnum(arg0, txt2(arg1)) ?? misc:persodono(arg0, txt2(arg1))
   refvar cl = item.i_evoluir_p_[txt(anim, 2)]
 # Tenta evoluir animal
   se !cl

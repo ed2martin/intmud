@@ -36,15 +36,10 @@ func escr
   ret perm_msg, $mensjog.msg(perm_msg, arg0)
   ret arg0.atkenv, $mens.mp(m_batalha, arg0)
   ret !arg1, escr_pegar(arg0)
-  uint8 p1
-  uint8 p2
-  p1 = txt1(arg1), p2 = txt2(arg1)
-  se txt1(arg1) != p1 || !p1 || p1 > config:animal1
-    escr_dar(arg0, arg1)
-  senao txt2(arg1) != p2 || !p2 || p2 > config:animal1
+  se misc:persoindice(txt1(arg1)) < 0 || misc:persoindice(txt2(arg1)) < 0
     escr_dar(arg0, arg1)
   senao
-    escr_trocar(arg0, p1, p2)
+    escr_trocar(arg0, txt1(arg1), txt2(arg1))
   fimse
 
 func escr_pegar # Pegar item do animal
@@ -97,8 +92,8 @@ func escr_trocar # Trocar dois animais de lugar
   refvar a2 = misc:personum(arg0, arg2)
   ret a1 == a2, arg0.msg(m_semtroca)
 # Faz a troca
-  a1.pnumero = arg2
-  a2.pnumero = arg1
+  a1.pnumero = misc:persoindice(arg2)
+  a2.pnumero = misc:persoindice(arg1)
 # Mensagens
   $mens.o_1 = arg1
   $mens.o_2 = arg2

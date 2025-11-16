@@ -42,7 +42,7 @@ func escr
   efim
   arg0.p_espera < 3 && (arg0.p_espera = 3)
 # Checa soltar animal
-  se !cmdsg && arg1 == intpos(arg1) && int(arg1) && config:animal1 >= arg1
+  se !cmdsg && misc:persoindice(arg1) >= 0
     $mens.mens = arg1
     refvar r = misc:personum(arg0, arg1)
     ret !r, $mens.mp(m_nao_possui, arg0)

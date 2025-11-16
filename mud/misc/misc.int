@@ -228,27 +228,43 @@ func persooutro # Obtém um personagem na sala que não seja o próprio personagem
     ret r != arg0 && r.visivel(arg0) && n.nome(r.ident2, r.objtot), ref(r)
   efim
 
-func persodentro # Obtém um animal no personagem (no comando Animal)
-# arg0 = personagem, arg1 = número do personagem (o que o usuário digitou)
-  ret arg1 != intpos(arg1) || config:animal1 < arg1 || !config:animal1, nulo
-  listaitem i
-  epara i = arg0.dentro2.ini, i, i.depois
-    ret i.obj.perso && i.obj.pnumero == arg1, ref(i.obj)
-  efim
-  epara i = arg0.lseguir.ini, i, i.depois
-    ret i.obj.perso && i.obj.tseguir == 3 && i.obj.pnumero == arg1, ref(i.obj)
-  efim
-
 func personum # Obtém um personagem a partir do número no comando Animal
 # arg0 = personagem, arg1 = número do personagem (o que o usuário digitou)
-  ret arg1 == "0", arg0
-  ret arg1 != intpos(arg1) || config:animal1 < arg1 || !config:animal1, nulo
+  uint8 num = arg1
+  ret arg1 != num || !num || num > config:animal1 + 1 || !config:animal1, nulo
+  ret --num == arg0.pnumero, arg0
   listaitem i
   epara i = arg0.dentro2.ini, i, i.depois
-    ret i.obj.perso && i.obj.pnumero == arg1, ref(i.obj)
+    ret i.obj.perso && i.obj.pnumero == num, ref(i.obj)
   efim
   epara i = arg0.lseguir.ini, i, i.depois
-    ret i.obj.perso && i.obj.tseguir == 3 && i.obj.pnumero == arg1, ref(i.obj)
+    ret i.obj.perso && i.obj.tseguir == 3 && i.obj.pnumero == num, ref(i.obj)
+  efim
+
+func persoindice # Obtém índice do personagem a partir do número no comando Animal
+# arg0 = número do personagem (o que o usuário digitou)
+# Retorna valor da variável pnumero ou -1 se não for um número de animal
+  uint8 num = arg0
+  ret arg0 != num || num > config:animal1 + 1 || !config:animal1, -1
+  ret num - 1
+
+func persotxt # Obtém o número no comando Animal a partir do índice do personagem
+# arg0 = valor da variável pnumero
+# Retorna um texto correspondente ao número do animal ou um texto vazio se inválido
+  uint8 num = arg0
+  ret num <= config:animal1 ? txt(num + 1) : ""
+
+func animalnum # Obtém animal do personagem a partir do número no comando Animal
+# arg0 = personagem, arg1 = número do personagem (o que o usuário digitou)
+  uint8 num = arg1
+  ret arg1 != num || !num || num > config:animal1 + 1 || !config:animal1, nulo
+  num--
+  listaitem i
+  epara i = arg0.dentro2.ini, i, i.depois
+    ret i.obj.perso && i.obj.pnumero == num, ref(i.obj)
+  efim
+  epara i = arg0.lseguir.ini, i, i.depois
+    ret i.obj.perso && i.obj.tseguir == 3 && i.obj.pnumero == num, ref(i.obj)
   efim
 
 func itemlista # Obtém item ou personagem a partir de uma listaobj
@@ -273,7 +289,7 @@ func persoinfo # Obtém o personagem que o jogador quer consultar a partir de um 
   ref r
   se !arg1
     ret arg0.persoesc
-  senao arg1 == intpos(arg1) && config:animal1 >= arg1
+  senao misc:persoindice(arg1) >= 0
     r = misc:personum(arg0, arg1)
     $mens.mens = arg1
     !r && $mens.mp(arg3 ?? "Você não possui $animal $m.", arg0)
@@ -295,12 +311,11 @@ func persoinfo # Obtém o personagem que o jogador quer consultar a partir de um 
     $mens.mp(arg2 ?? "Você não vê $m.", arg0)
     ret
   fimse
-  refvar num = txt2(arg1)
-  ret num != intpos(num) || config:animal1 < num, r
-  refvar rr = misc:personum(arg0, num)
+  ret misc:persoindice(txt2(arg1)) < 0, r
+  refvar rr = misc:personum(arg0, txt2(arg1))
+  ret rr, rr
   $mens.mens = arg1
-  !rr && arg0.mp("$P não possui $animal $m.")
-  ret rr
+  arg0.mp("$P não possui $animal $m.")
 
 func txtmoedas # Retorna texto correspondente à quantidade de moedas
 # arg0 = quantidade de moedas
