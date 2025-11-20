@@ -64,7 +64,7 @@ func escr
     $mens.mens = $miscbebida.msgperso(txt2(arg1), arg0.p_bebida)
     $mens.mtodos3(m_msg1, m_msg2, m_msg3)
     se arg0.sock && perso.sock
-      $misclog.telepatia("suss " + arg0.nome + " para " + perso.nome + ": " + txt2(arg1))
+      $misclog.telepatia("suss " + arg0.sock.nome + " para " + perso.sock.nome + ": " + txt2(arg1))
       refvar r = arg0.sock.var.z_hist_sussurrar
       refvar e = perso.sock.var.z_hist_sussurrar
       r = $mens.txt(m_hist1, perso) + (r ? "\n") + txtsublin(r, 0, 29)
