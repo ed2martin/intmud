@@ -2,6 +2,7 @@ classe h_cmd_vestir
 herda comando_comum, comum_vestir
 const objmenu = $m_cmd_vestir
 const objtipo = 2 # Pode renomear
+const objprocessa = 2 # Pode ser usado com o número do animal na frente
 const posic = 5
 txt12 lugar # Posições aonde quer vestir
 txt12 vest1 # Posições principais e extras aonde está vestindo alguma coisa
@@ -13,7 +14,6 @@ Para vestir tudo (até 10 objetos) tecle TUDO ao invés do objeto.\n\
 Para saber em que posições pode vestir algo, tecle EQUIP TUDO"
 const m_sem_args = "Vestir o quê?"
 const m_naover = "Você não vê $m."
-const m_longe_a = "$A está longe."
 const m_nao_consegue_p = "Você não consegue vestir $o."
 const m_nao_consegue_a = "$A não consegue vestir $o."
 const m_nivel_p = "Você precisa chegar no nível $m para vestir $o."
@@ -31,58 +31,57 @@ const m_em_cima_p = "Antes você precisa parar de usar $o."
 const m_em_cima_a = "Antes $A precisa parar de usar $o."
 const m_item_p = "$N impede que você use $o."
 const m_item_a = "$N impede que $a use $o."
-const admordem = "m_ajuda m_sem_args m_naover m_longe_a m_nao_consegue_p\n\
+const admordem = "m_ajuda m_sem_args m_naover m_nao_consegue_p\n\
 m_nao_consegue_a m_nivel_p m_nivel_a m_renascer1 m_renascer2 m_renascer3\n\
 m_conhecimento_p m_conhecimento_a m_posicao_p m_posicao_a\n\
 m_em_uso_p m_em_uso_a m_em_cima_p m_em_cima_a m_item_p m_item_a"
 
 func escr
-  ret !arg1, $mensjog.msg(m_sem_args, arg0)
-  refvar perm_msg = $perm_[arg0.jogperm].vestir
-  ret perm_msg, $mensjog.msg(perm_msg, arg0)
-  refvar alvo = ref(arg0.persoesc) # Quem vai vestir
-  ret alvo.dono != arg0 && alvo.dono != arg0.dono, $mens.mp(m_longe_a, arg0, alvo)
-  refvar tipomsg = arg0 == alvo ? "_p" : "_a"
+  refvar contr = arg0.contr # Quem recebe as mensagens
+  ret !arg1, $mensjog.msg(m_sem_args, contr, arg0)
+  refvar perm_msg = arg2.vestir
+  ret perm_msg, $mensjog.msg(perm_msg, contr, arg0)
+  refvar tipomsg = (contr == arg0 ? "_p" : "_a")
 # Variáveis
   int8 achou # Se 0, não achou nenhum item para vestir
   nomeobj n # Para reconhecer os itens
   listaitem item
   lugar = "0"
-  vest1 = alvo.positemvestir
+  vest1 = arg0.positemvestir
 # Descobre aonde quer vestir
   misc:separa(arg1) # Separa nome do objeto do nome da posição
   se !misc:sep2
-    lugar = alvo.positemtotal # Todas as posições que possui
+    lugar = arg0.positemtotal # Todas as posições que possui
   senao
     n.ini(misc:sep2, 100)
     textotxt t
     textopos p
     t.addfim(config:equip_txt)
-    refvar lug2 = ~txthex(alvo.positemtotal, 12)
+    refvar lug2 = ~txthex(arg0.positemtotal, 12)
     epara p = t.ini, p, p.depois
       lug2 & intbith(p.linha) == "0" && n.nome(p.texto) && (lugar |= intbith(p.linha))
     efim
     se lugar == "0"
       $mens.mens = misc:sep2
-      $mens.mp(m_posicao[tipomsg], arg0, alvo)
+      $mens.mp(m_posicao[tipomsg], contr, arg0)
       ret
     fimse
   fimse
 # Vestir itens
   listaobj l
   n.ini(misc:sep1, misc:objmax, misc:tudo)
-  epara l.addfim(alvo.dentro1), l, l.ini.remove
+  epara l.addfim(arg0.dentro1), l, l.ini.remove
     ref r = l.objini
     continuar !r.visivel(arg0) || !n.nome(r.ident2, r.objtot)
     achou = 1
-    refvar msg = checavestir(alvo, r)
-    msg ? $mens.mp(msg, arg0, alvo, r) : objvestir(alvo, r, int(n))
+    refvar msg = checavestir(arg0, r)
+    msg ? $mens.mp(msg, contr, arg0, r) : objvestir(arg0, r, int(n))
   efim
 # Avisa se não encontrou nenhum item
   se !achou
     misc:separa(arg1)
     $mens.mens = misc:sep1
-    $mens.mp(m_naover, arg0)
+    $mens.mp(m_naover, contr, arg0)
   fimse
 
 func objvestir # Quer vestir um item
@@ -131,8 +130,8 @@ func objvestir # Quer vestir um item
 # Verifica se conflita com algum outro tipo de item
     listaitem i
     epara i = arg0.dentro2.ini, i, i.depois
-      se i.obj.item && ((txt(i.obj.tipoitem2) & arg1.vestiritem) != "0" || \
-(txt(arg1.tipoitem2) & i.obj.vestiritem) != "0")
+      se i.obj.item && (txt(i.obj.tipoitem2) & arg1.vestiritem != "0" || txt(arg1.tipoitem2) & \
+i.obj.vestiritem != "0")
         ret $mens.mp(m_item[tipomsg], arg0.contr, arg0, arg1, i.obj)
       fimse
     efim
@@ -227,26 +226,22 @@ const nome13 = "Conhecimento"
 const tipo13 = "opc_linha"
 const vari13 = "m_conhecimento_a"
 #
-const nome14 = "Animal longe"
+const nome14 = "Não consegue"
 const tipo14 = "opc_linha"
-const vari14 = "m_longe_a"
+const vari14 = "m_nao_consegue_a"
 #
-const nome15 = "Não consegue"
+const nome15 = "Posição não existe"
 const tipo15 = "opc_linha"
-const vari15 = "m_nao_consegue_a"
+const vari15 = "m_posicao_a"
 #
-const nome16 = "Posição não existe"
+const nome16 = "Já tem outro item"
 const tipo16 = "opc_linha"
-const vari16 = "m_posicao_a"
+const vari16 = "m_em_uso_a"
 #
-const nome17 = "Já tem outro item"
+const nome17 = "Outro item em cima"
 const tipo17 = "opc_linha"
-const vari17 = "m_em_uso_a"
+const vari17 = "m_em_cima_a"
 #
-const nome18 = "Outro item em cima"
+const nome18 = "Conflita com item"
 const tipo18 = "opc_linha"
-const vari18 = "m_em_cima_a"
-#
-const nome19 = "Conflita com item"
-const tipo19 = "opc_linha"
-const vari19 = "m_item_a"
+const vari18 = "m_item_a"

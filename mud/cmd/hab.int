@@ -25,6 +25,7 @@ m_nivel0 m_nivel1"
 
 classe comando_hab
 herda comando_comum
+const objprocessa = 2 # Pode ser usado com o número do animal na frente
 const objcmd = arg0.persobat.var.[nomevar] ? este
 const objnivel = !tipoarma || (tipoarma & intbit(int(arg0.iempu.obj.armatipo))) ? 0 : 2
 const posic = 4
@@ -34,15 +35,14 @@ const tipoalvo = 6
 const aularenascer = config:a_aularenascer
 const aulapontos = config:a_aulapontos
 
-func escr # Obtém o personagem e chama escrhab
+func escr # Checa se pode usra habilidade/magia e chama escrhab
   refvar m1 = txt1(txte(nomevar)) == "m" ? arg2.usar_mag : arg2.usar_hab
-  ret m1, arg0.msg(m1)
-  refvar p = arg0.persoesc
-  se p.pnivel < intpos(int(aulaini) - config:nrenascer * txt2(p.var.[nomevar]))
-    ret $mens.mp(comando_hab_cfg:m_nivel[p == arg0], arg0, p)
+  ret m1, arg0.contr.msg(m1)
+  se arg0.pnivel < intpos(int(aulaini) - config:nrenascer * txt2(arg0.var.[nomevar]))
+    ref contr = arg0.contr
+    ret $mens.mp(comando_hab_cfg:m_nivel[contr == arg0], contr, arg0)
   fimse
-  escrhab(p, arg1, arg2)
-  arg0.p_espera < p.p_espera && (arg0.p_espera = p.p_espera)
+  escrhab(arg0, arg1)
 
 func habajuda # Retorna um texto que contém informações
 # arg0 = objeto do personagem
@@ -56,7 +56,7 @@ func habajuda # Retorna um texto que contém informações
     t.addfim("Requer conhecimentos de: " + txttroca(t.remove(1000), "\n", ", ") + ".")
     t.juntar, t.dividelin(40, 75)
   fimse
-  refvar sintaxe = habsintaxe(arg0)
+  refvar sintaxe = $mens.tp(habsintaxe(arg0), arg0)
   txt512 lin = "\c3" + misc:nomevar(nomevar) + "\b" + (sintaxe ? "\n" + sintaxe)
   se tipoalvo < 6
     lin += "\nAtaque do tipo " + txtsublin(config:atknomes, tipoatk, 1)
@@ -142,12 +142,12 @@ func habsintaxe # Retorna um texto que contém a sintaxe do comando
   se tipoalvo >= 9
     ret ""
   senao tipoalvo == 7 || tipoalvo == 8
-    ret "Sintaxe: " + sintaxe
+    ret "Sintaxe: $arg-animal" + sintaxe
   senao armamove
-    refvar lin = "Sintaxe: " + sintaxe + " [personagem]\n"
+    refvar lin = "Sintaxe: $arg-animal" + sintaxe + " [personagem]\n"
     ret lin + "         " + sintaxe + " <direção> [personagem]"
   senao
-    ret "Sintaxe: " + sintaxe + " [personagem]"
+    ret "Sintaxe: $arg-animal" + sintaxe + " [personagem]"
   fimse
 
 func habcomando # Retorna o nome do comando; se for magia, vem precedido de "Lançar"
@@ -161,23 +161,23 @@ func hablista # Informações nos comandos Lhab, Lmag e Ltec
   casovar tipoalvo
   casose "0"
     ret tipo
-  casose "1":
+  casose "1"
     ret tipo + ", Outros"
-  casose "2":
+  casose "2"
     ret tipo + ", Todos dividindo ataque"
-  casose "3":
+  casose "3"
     ret tipo + ", Outros dividindo ataque"
-  casose "4":
+  casose "4"
     ret tipo + ", Todos sem dividir ataque"
-  casose "5":
+  casose "5"
     ret tipo + ", Outros sem dividir ataque"
-  casose "6":
+  casose "6"
     ret "Não agressivo"
-  casose "7":
+  casose "7"
     ret "Não agressivo, O próprio"
-  casose "8":
+  casose "8"
     ret "Não agressivo, O grupo"
-  casose "9":
+  casose "9"
     ret "Automático"
   casofim
   ret "Nenhum"
@@ -356,6 +356,29 @@ func custohab2 # Aplica os custos da habilidade/magia
   arg0.pmana -= arg1 * (c_mana2 - c_mana1) + c_mana1
   arg0.pmove -= arg1 * (c_move2 - c_move1) + c_move1
   arg0.contr.p_espera < c_espera && (arg0.contr.p_espera = c_espera)
+
+func salahab # Coloca o personagem na sala se necessário (tira do comando Animal)
+# arg0 = personagem
+  ret !arg0.dono.perso || arg0.p_animal != 3, nulo
+  prog p
+  p.iniherdainv("h_cmd_soltar")
+  refvar soltar = $[p.texto]
+  ref contr0 = arg0.dono
+  ref sala = contr0.dono
+  arg0.mudadono(sala)
+  $mens.p(contr0, arg0)
+  $mens.mvis2(soltar.m_soltar_anim1, soltar.m_soltar_anim2)
+  listaobj e
+  soltar.cmd_soltouanim(contr0, sala, arg0)
+  epara e.addfim(contr0.evento), e, e.ini.remove
+    e.objini.cmd_soltouanim(contr0, sala, arg0, contr0)
+  efim
+  epara e.addfim(sala.evento), e, e.ini.remove
+    e.objini.cmd_soltouanim(contr0, sala, arg0, sala)
+  efim
+  epara e.addfim(arg0.evento), e, e.ini.remove
+    e.objini.cmd_soltouanim(contr0, sala, arg0, arg0)
+  efim
 
 
 classe menu_habcomum

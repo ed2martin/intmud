@@ -180,7 +180,7 @@ func mover # Personagem anda em uma direção
 # Muda de sala
   $comando_mover.andou = 1
   !arg0.j_imortal && (arg0.pmove -= intdiv((total + 1) / 2))
-  arg0.p_espera = intmin(30, total ?? 1) * 2
+  arg0.sock.cmd_espera = arg0.p_espera = intmin(30, total ?? 1) * 2
   se !(s1.socktot || arg1.socktot) # Não tem jogador por perto
     arg0.mudadono(arg1)
   senao arg0.p_bebida >= $miscfome.bebedir - rand(20) # Cambaleando não anda em silêncio
@@ -194,7 +194,7 @@ func mover # Personagem anda em uma direção
   senao arg0.bitinv & 48 # Voando ou voando alto
     refvar m1 = (!arg2 ? s1.msg_sai0_[dir])
     (abriu1 || m1) && $mens.mp(abriu1 + (abriu1 && m1 ? "\n") + m1, p1, nulo, arg2)
-    refvar m2 =((arg2 ? arg2.i_entraitem3 : s1.msg_sai3_[dir]) ?? m_sai3)
+    refvar m2 = ((arg2 ? arg2.i_entraitem3 : s1.msg_sai3_[dir]) ?? m_sai3)
     msgsair(arg0, arg2, abriu2 + (abriu2 ? "\n") + m2, 1)
     arg2.i_entraitem0 && $mens.msg(arg2.i_entraitem0, arg0)
     arg0.mudadono(arg1)

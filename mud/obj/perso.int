@@ -24,8 +24,6 @@ const volmax = config:p_volmax
 const objmax = config:p_objmax
 const objlimite = config:p_objlimite
 const pesomax = 1000000 # Para poder receber itens
-const persoesc = este # Personagem escolhido; alguns comandos usam
-const persobat = este # Personagem usado na batalha; alguns comandos usam
 const pvidaok = 1 # Para não dizer que o alvo está desmaiado
 const pvida = 1000 # Para não dizer que o alvo está desmaiado
 const msg = sock.msg(arg0) # Mensagem pequena para o jogador
@@ -36,8 +34,9 @@ const objsav = 2 # Se deve salvar o personagem ao salvar personagem do jogador
 const luztipo = 1 # 1=não é fonte de luz, mas repassa a luz
 sav uint16 pnivel # Nível atual (apenas para mostrar ao jogador)
 sav uint32 mortes # Quantas vezes morreu (chamou a função morreu)
-inttempo p_espera # Tempo de espera para o próximo comando
-txt100 p_comando # Próximo comando (usado no comando Ordenar)
+inttempo p_espera # Tempo de espera para processar o próximo comando
+textotxt p_comando # Próximos comandos (geralmente não tem mais de um)
+ref p_cmdperm # Permissões para o próximo comando
 sav uint8 posicao # Posição do personagem
 const pospadr = 8 # Posição padrão do personagem
 sav uint8 pnumero # Número do personagem, 0 é o primeiro personagem
@@ -55,6 +54,13 @@ const lojainvisivel = perso_cfg:loja_invisivel
 const lojanaonegocia = perso_cfg:loja_naonegocia
 const lojafechada = perso_cfg:loja_fechada
 const lojamsgidioma = perso_cfg:loja_msgidioma
+#
+uint8 p_persoluta # Atualizado/usado por persoluta
+# 0 = precisa atualizar a variável (nunca é retornado por essa função)
+# 1 = combatente (está entre os personagens que participam das lutas)
+# 2 = próximo combatente (pode ser usado fora das batalhas)
+# 3 = pode lutar sozinho se for atacado (outra sala ou não obedece o dono)
+# 4 = não luta porque está desmaiado
 #
 const descsala0 = perso_cfg:descperso0
 const descsala1 = perso_cfg:descperso1
@@ -179,14 +185,11 @@ func fim # Objeto foi apagado
     refvar obj = ind.obj("pn " + txt2(sock.cnome))
     obj ? sock.mudaperso(obj) : sock.reinicia
   fimse
-  refvar contr = dono.perso ? dono : tseguir == 3 ? iseguir.objlista
-  contr.persoesc == este && (contr.persoesc = contr)
-  persolugar.limpar, batalhafim, comum_obj:fim, dono = nulo
+  persoluta_recalc, persolugar.limpar, batalhafim, comum_obj:fim, dono = nulo
 
 func contr # Quem está controlando o personagem
   ret dono.perso, ref(dono)
-  ret tseguir != 3 || p_animal != 3 || iseguir.objlista.dono != dono, este
-  ret ref(iseguir.objlista)
+  ret tseguir != 3 || iseguir.objlista.dono != dono ? este : ref(iseguir.objlista)
 
 func persodomador # A quem pertence o personagem
   ret dono.perso, dono
@@ -195,10 +198,40 @@ func persodomador # A quem pertence o personagem
 func temdomador # Retorna verdadeiro se pertence a outro personagem
   ret dono.perso || (tseguir == 3 && ref(iseguir.objlista))
 
+func persobat # Retorna o personagem alvo dos ataques
+  se dono.perso
+    !(p_persoluta && dono.p_persoluta) && dono.persoluta
+    ret ref(dono.p_persobat ?? dono)
+  senao tseguir == 3 && iseguir.objlista.dono == dono
+    ref r = iseguir.objlista
+    !(p_persoluta && r.p_persoluta) && r.persoluta
+    ret ref(r.p_persobat ?? r)
+  senao
+    ret este
+  fimse
+
+func persoluta # Obtém informações do personagem no comando Animal
+# Vide variável p_persoluta na classe comum_perso
+  se dono.perso # Está guardado no dono
+    !(p_persoluta && dono.p_persoluta) && dono.persoluta
+    ret p_persoluta
+  senao tseguir == 3 && iseguir.objlista # Tem dono
+    !(p_persoluta && iseguir.objlista.p_persoluta) && iseguir.objlista.persoluta
+    ret p_persoluta
+  senao # Não tem dono
+    ret 1
+  fimse
+
+func persoluta_recalc # Indica que precisa atualizar p_persoluta
+  p_persoluta = 0, tseguir == 3 && (iseguir.objlista.p_persoluta = 0)
+  dono.perso && (dono.p_persoluta = 0)
+
 func mudadono # Coloca personagem em outra sala ou outro personagem
 # arg0 = nova sala ou novo personagem
 # arg1 = quantidade (é ignorado por essa função)
   listaobj l
+# Obtém variáveis antes de mudar de sala
+  ref sala1 = dono.perso ? dono.dono : dono
   ref contr1 = dono.perso ? dono : tseguir == 3 ? iseguir.objlista
 # Muda de sala
 # Nota: mdono() checa const persopnj, que checa iseguir e tseguir
@@ -217,9 +250,10 @@ func mudadono # Coloca personagem em outra sala ou outro personagem
   !dono && persolugar.limpar
   ref contr2 = dono.perso ? dono : tseguir == 3 ? iseguir.objlista
   se contr1 != contr2
-    pnumero = 0
-    contr1.persoesc == este && (contr1.persoesc = contr1)
-    contr2.acertanumero
+    contr1.acertanumero, contr2.acertanumero
+    contr1.p_persoluta = 0, contr2.p_persoluta = 0, p_persoluta = 0
+  senao sala1 != (dono.perso ? dono.dono : dono)
+    contr1.p_persoluta = 0, p_persoluta = 0
   fimse
 # Eventos cmd_mudadono, cmd_saiu e variável donoantes.s_item
   cmd_mudadono
@@ -346,7 +380,8 @@ func mudaobjeto # Muda o objeto desse personagem
     l.objini.mudaobjdono(arg0, r)
   efim
 # Acerta o animal usado pelo personagem
-  dono.persoesc == este && (dono.persoesc = r)
+  r.pnumero = pnumero
+  dono.p_persobat == este && (dono.p_persobat = r)
 # Gera eventos
   r.recalc = 1
   epara l.addfim(evento), l, l.ini.remove
@@ -365,10 +400,10 @@ func mudadomador # Muda o domador
 # Não tem efeito se estiver no comando Animal (estiver em outro personagem)
   ret dono.perso, nulo
   ref alvo = arg0
-  iseguir.objlista.persoesc == este && (iseguir.objlista.persoesc = iseguir.objlista)
+  p_persoluta = 0, tseguir == 3 && (iseguir.objlista.p_persoluta = 0)
   se alvo
     tseguir = 3, iseguir.remove, iseguir = alvo.lseguir.addfim(este), ajustajogpnj
-    pnumero = 0, alvo.acertanumero
+    pnumero = 30, alvo.acertanumero, alvo.p_persoluta = 0
     se !var.z_dono
       var.z_dono = alvo.descnome2
       var.z_pnivel = pnivel
@@ -458,7 +493,7 @@ func varherda # Obtém variável do personagem, do tipo ou de perso_cfg
 
 func recalc_exec # Ajusta variáveis
 # Acerta atributos básicos
-  bitver = 17, bitinv = 3
+  bitver = 17, bitinv = 3, persoluta_recalc
 # Acerta atributos conforme o tipo de personagem
   config:atribcfg, recalc1_auto
   t_[tipo1]:recalc_auto, t_[tipo2]:recalc_auto, t_[tipo3]:recalc_auto
@@ -517,6 +552,14 @@ func teclouperm # Processa comando com permissões específicas
     efim
     sair
   efim
+# Verifica se o comando é imediato ou se fica na fila
+  se p_espera && obj.objprocessa # Se comando precisa ficar na fila
+    p_comando.limpar
+    p_comando.addfim(arg0)
+    p_cmdperm = arg1
+    contr.msg(txtmaiini(txt(obj, 4)) + " em " + p_espera / 10 + "s")
+    ret
+  fimse
 # Gera eventos
   listaobj l
   epara l.addfim(este.evento), l, l.ini.remove
@@ -528,8 +571,9 @@ func teclouperm # Processa comando com permissões específicas
   ret obj.escr(este, txt2(arg0), arg1)
 
 func p_espera_exec # Pega o próximo comando
-  sock ? sock.espera_exec : p_comando ? teclou(p_comando) : p_proc_exec
-  p_comando = ""
+  ret !p_comando.linhas, p_proc_exec
+  p_comando.linhas > 1 && (p_espera = 2)
+  teclouperm(p_comando.remove, p_cmdperm)
 
 func podeposicao # Verifica se uma posição é válida para o personagem
 # arg0 = posição (vide variável posicao) ou "M" se for montar

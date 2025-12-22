@@ -288,14 +288,14 @@ func persoinfo # Obtém o personagem que o jogador quer consultar a partir de um 
 # Retorna o objeto do personagem, ou nulo se não encontrou (e avisa o jogador)
   ref r
   se !arg1
-    ret arg0.persoesc
+    ret arg0
   senao misc:persoindice(arg1) >= 0
     r = misc:personum(arg0, arg1)
     $mens.mens = arg1
     !r && $mens.mp(arg3 ?? "Você não possui $animal $m.", arg0)
     ret r
   senao !$perm_[arg0.jogperm].i_perso
-    ret arg0.persoesc
+    ret arg0
   fimse
   listaobj l
   nomeobj n # Para reconhecer os itens

@@ -15,12 +15,17 @@ const perso = 1
 2 = personagem que batalha (classe comum_persobat)
 3 = personagem que batalha e carrega animais (classe comum_persoanimal)
 
-ref persoesc
-Animal escolhido pelo personagem. Na maioria dos personagens, persoesc = este.
-
 func persobat
 Animal que recebe os ataques ao personagem. Na maioria dos personagens,
 persobat = este.
+
+func persoluta
+Obtém informações do personagem no comando Animal
+0 = precisa atualizar a variável (nunca é retornado por essa função)
+1 = combatente (está entre os personagens que participam das lutas)
+2 = próximo combatente (pode ser usado fora das batalhas)
+3 = pode lutar sozinho se for atacado (outra sala ou não obedece o dono)
+4 = não luta porque está desmaiado
 
 func contr
 Quem está controlando o personagem. Se estiver sendo controlado por outro

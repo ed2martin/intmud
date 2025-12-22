@@ -8,11 +8,10 @@ const m_ajuda1 = "-t\n\
 -s\n\
 Mostra as estatísticas e diversas informações sobre o seu personagem."
 const m_ajuda2 = "-t\n\
--s\n\
--s <número>\n\
-Mostra as estatísticas e diversas informações sobre o seu personagem\n\
-ou $o-animal que você escolheu. Seguido de um número de 1 a $num-animais mostra\n\
-as estatísticas $d $o-animal correspondente."
+-s $arg-animal\n\
+Mostra as estatísticas e diversas informações sobre o seu personagem.\n\
+Seguido de um número de 1 a $num-animais, mostra as estatísticas\n\
+$d $o-animal correspondente."
 const m_naover = "Você não vê $m."
 const m_sem_animal = "Você não possui $animal $m."
 
@@ -303,31 +302,35 @@ func escr
 classe h_cmd_moedas
 herda comando_comum
 const objtipo = 2 # Pode renomear
-const m_ajuda = "-t\n-s\nMostra quantas moedas você está carregando."
 const posic = 0
+const txtajuda = txtajuda1(config:animal1 ? m_ajuda2 : m_ajuda1)
+#
+const m_ajuda1 = "-t\n-s\nMostra quantas moedas você está carregando."
+const m_ajuda2 = "-t\n\
+-s $arg-animal\n\
+Mostra quantas moedas você está carregando. Seguido de um número de 1 a $num-animais,\n\
+mostra as estatísticas $d $o-animal correspondente."
+const m_naover = "Você não vê $m."
+const m_sem_animal = "Você não possui $animal $m."
 
 func escr
+# Obtém o personagem
+  refvar r = misc:persoinfo(arg0, arg1, m_naover, m_sem_animal)
+  ret !r, nulo
+  t.addfim("\b\c6Estatísticas de \"" + r.descnome2 + "\"\b")
+# Mostra moedas
   txt100 lin
-  txt100 lin2
-  se !arg0.var.z_moedas_
+  se !r.var.z_moedas_
     lin = "Nenhuma moeda"
-  senao arg0.var.z_moedas_ == 1
+  senao r.var.z_moedas_ == 1
     lin = "Uma moeda"
-  senao arg0.var.z_moedas_ == 2
+  senao r.var.z_moedas_ == 2
     lin = "Duas moedas"
   senao
-    lin = txtnum(arg0.var.z_moedas_, ".") + " moedas"
+    lin = txtnum(r.var.z_moedas_, ".") + " moedas"
   fimse
-  se arg0.persoesc == arg0 || !arg0.persoesc.var.z_moedas_
-  senao arg0.persoesc.var.z_moedas_ == 1
-    lin2 = " uma moeda"
-  senao arg0.var.z_moedas_ == 2
-    lin2 = " duas moeda"
-  senao
-    lin2 = " " + txtnum(arg0.var.z_moedas_, ".") + " moedas"
-  fimse
-  lin2 && (lin += ", " + txtcopiamai(arg0.persoesc.descnome2, "A") + lin2)
-  arg0.msg(lin + ".")
+  $mens.mens = lin
+  $mens.mp(r == arg0 ? "$m" : "$C: $m", arg0, r)
 
 
 classe h_cmd_relatar
@@ -354,11 +357,17 @@ classe h_cmd_efeito
 herda comando_comum, opc_atribcomum
 const objtipo = 2 # Pode renomear
 const posic = 0
+const txtajuda = txtajuda1(config:animal1 ? m_ajuda2 : m_ajuda1)
 #
-const m_ajuda = "-t\n\
+const m_ajuda1 = "-t\n\
 -s [nome do efeito]\n\
 Sem argumentos mostra os efeitos que estão afetando o seu personagem.\n\
 Seguido de um nome, mostra informações sobre o efeito."
+const m_ajuda2 = "-t\n\
+-s $arg-animal [nome do efeito]\n\
+Mostra os efeitos que estão afetando um personagem seu.\n\
+Seguido de um nome, mostra informações sobre o efeito."
+const m_sem_animal = "Você não possui $animal $m."
 const m_nada1 = "Nenhum efeito afetando você."
 const m_nada2 = "Nenhum efeito afetando $a."
 const m_lista1 = "Efeitos afetando você:"
@@ -366,12 +375,21 @@ const m_lista2 = "Efeitos afetando $a:"
 const m_sem_info = "Nenhuma informação sobre o efeito: $m"
 
 func escr
+  ref r = arg0
+  txt100 lin = arg1
+  se misc:persoindice(txt1(arg1)) >= 0
+    se !(r = misc:personum(arg0, txt1(arg1)))
+      $mens.mens = txt1(arg1)
+      $mens.mp(m_sem_animal, arg0)
+      ret
+    fimse
+    lin = txt2(arg1)
+  fimse
   listaitem i
-  ref r = arg0.persoesc
-  se arg1
+  se lin
     ref obj
     nomeobj n
-    n.ini(arg1, 1)
+    n.ini(lin, 1)
     epara i = r.dentro2.ini, i, i.depois
       continuar !txtcor(i.obj.e_nome) || !n.nome(txtcor(i.obj.e_nome))
       textotxt t
@@ -383,7 +401,7 @@ func escr
       i.obj.e_desc && t.addfim(i.obj.e_desc)
       ret arg0.msg2(t.remove(1000))
     efim
-    $mens.mens = arg1
+    $mens.mens = lin
     ret $mens.mp(m_sem_info, arg0)
   fimse
   textotxt h
@@ -392,7 +410,6 @@ func escr
     h.addfim("1 " + i.obj.e_nome + (i.obj.t_duracao ? " (" + int(i.obj.t_duracao / 10) + \
 ")"))
   efim
-  refvar nome = r == arg0 ? "você" : r.descnome2
   ret !h.linhas, $mens.mp(r == arg0 ? m_nada1 : m_nada2, arg0, r)
   $mens.p(arg0, r)
   h.ordenalin("", "x")
@@ -409,19 +426,45 @@ const m_ajuda1 = "-t\n\
 -s\n\
 Mostra os pontos de vida, mana, vigor, nível e experiência do seu personagem."
 const m_ajuda2 = "-t\n\
--s\n\
--s <número>\n\
+-s $arg-animal\n\
+-s -\n\
 Mostra os pontos de vida, mana, vigor, nível e experiência do seu personagem.\n\
-Seguido de um número de 1 a $num-animais, mostra as informações $d $o-animal correspondente."
+Seguido de um número de 1 a $num-animais, mostra as informações $d $o-animal correspondente.\n\
+Seguido de um hífen, mostra as informações d$genero-animals $seus-animais."
 const m_naover = "Você não vê $m."
 const m_sem_animal = "Você não possui $animal $m."
 
 func escr
-  refvar r = misc:persoinfo(arg0, arg1, m_naover, m_sem_animal)
-  ret !r, nulo
-  $mens.mens = vidalin(r)
-  $mens.p(arg0, r)
-  $mens.msgvis(r == arg0 ? "$m" : "$C: $m", arg0)
+  se arg1 != "-" || !config:animal1
+    refvar r = misc:persoinfo(arg0, arg1, m_naover, m_sem_animal)
+    ret !r, nulo
+    $mens.mens = vidalin(r)
+    $mens.p(arg0, r)
+    $mens.mp(r == arg0 ? "$m" : "$C: $m", arg0, r)
+    ret
+  fimse
+  textotxt t
+  listaobj l
+  listaitem i
+# Obtém os personagens
+  epara i = arg0.dentro2.ini, i, i.depois
+    i.obj.perso && l.addfim(i.obj)
+  efim
+  epara i = arg0.lseguir.ini, i, i.depois
+    i.obj.perso && i.obj.tseguir == 3 && l.addfim(i.obj)
+  efim
+# Adiciona os personagens na lista de textos
+  epara i = l.ini, i, i.depois
+    $mens.mens = vidalin(i.obj)
+    t.addfim(txt(i.obj.pnumero + 100) + " " + $mens.tp("$C: $m", arg0, i.obj))
+  efim
+# Mostra os personagens
+  t.ordena
+  textopos pos
+  epara pos = t.ini, pos, pos.depois
+    pos.mudar("", 0, 4)
+  efim
+  arg0.msg2(t.remove(1000))
 
 func vidalin
   txt100 lin
@@ -481,26 +524,36 @@ const objtipo = 2 # Pode renomear
 const posic = 5
 #
 const m_ajuda = "-t\n\
--s [nome da habilidade]\n\
+-s $arg-animal [nome da habilidade]\n\
 Sem argumentos mostra as habilidades do seu personagem.\n\
 Seguido de um nome, mostra informações sobre a habilidade.\n\
 Geralmente pode-se usar uma habilidade teclando-se o nome dela."
+const m_sem_animal = "Você não possui $animal $m."
 const m_sem_info = "Nenhuma informação sobre a habilidade: $m"
 const m_nenhum = "Nenhuma habilidade."
 const m_lista1 = "Habilidades:"
 const m_lista2 = "Habilidades de $c:"
 
 func escr
-  ref r = arg0.persoesc
-  se arg1
+  ref r = arg0
+  txt100 lin = arg1
+  se misc:persoindice(txt1(arg1)) >= 0
+    se !(r = misc:personum(arg0, txt1(arg1)))
+      $mens.mens = txt1(arg1)
+      $mens.mp(m_sem_animal, arg0)
+      ret
+    fimse
+    lin = txt2(arg1)
+  fimse
+  se lin
     ref obj
     prog p
-    epara p.iniclasse("cmd_" + txt1(arg1)), p.lin, p.depois
+    epara p.iniclasse("cmd_" + txt1(lin)), p.lin, p.depois
       continuar !r.var.[$[p.texto].nomevar]
       refvar t1 = $[p.texto].habajuda(r)
       ret t1, arg0.msg2(t1)
     efim
-    $mens.mens = arg1
+    $mens.mens = lin
     ret $mens.mp(m_sem_info, arg0)
   fimse
   textotxt h
@@ -513,7 +566,7 @@ func escr
     h.addfim(t2)
   efim
   ret !h.linhas, $mens.mp(m_nenhum, arg0)
-  $mens.p(arg0, arg0.persoesc)
+  $mens.p(arg0, r)
   h.addini("\b\c6" + $mens.txt(r == arg0 ? m_lista1 : m_lista2, arg0) + "\b")
   arg0.msg2(h.remove(1000))
 
@@ -524,18 +577,28 @@ const objtipo = 2 # Pode renomear
 const posic = 5
 #
 const m_ajuda = "-t\n\
--s [nome da magia]\n\
+-s $arg-animal [nome da magia]\n\
 Sem argumentos mostra as magias do seu personagem.\n\
 Seguido de um nome, mostra informações sobre a magia.\n\
 Geralmente pode-se usar uma magia teclando-se lançar e o nome dela."
+const m_sem_animal = "Você não possui $animal $m."
 const m_sem_info = "Nenhuma informação sobre a magia: $m"
 const m_nenhum = "Nenhuma magia."
 const m_lista1 = "Magias:"
 const m_lista2 = "Magias de $c:"
 
 func escr
-  ref r = arg0.persoesc
-  se arg1
+  ref r = arg0
+  txt100 lin = arg1
+  se misc:persoindice(txt1(arg1)) >= 0
+    se !(r = misc:personum(arg0, txt1(arg1)))
+      $mens.mens = txt1(arg1)
+      $mens.mp(m_sem_animal, arg0)
+      ret
+    fimse
+    lin = txt2(arg1)
+  fimse
+  se lin
     ref obj
     prog p
     epara p.iniclasse("magia_" + txt1(arg1)), p.lin, p.depois
@@ -556,7 +619,7 @@ func escr
     h.addfim(t2)
   efim
   ret !h.linhas, $mens.mp(m_nenhum, arg0)
-  $mens.p(arg0, arg0.persoesc)
+  $mens.p(arg0, r)
   h.addini("\b\c6" + $mens.txt(r == arg0 ? m_lista1 : m_lista2, arg0) + "\b")
   arg0.msg2(h.remove(1000))
 
@@ -567,15 +630,23 @@ const objtipo = 2 # Pode renomear
 const posic = 5
 #
 const m_ajuda = "-t\n\
--s\n\
+-s $arg-animal\n\
 Mostra itens e habilidades extras. Geralmente são permanentes (não pode-se\n\
 pegar, soltar, dar e vestir)."
+const m_sem_animal = "Você não possui $animal $m."
 const m_nenhum = "Nenhum item."
 const m_lista1 = "Outros:"
 const m_lista2 = "Outros de $c:"
 
 func escr
-  ref r = arg0.persoesc
+  ref r = arg0
+  se misc:persoindice(arg1) >= 0
+    se !(r = misc:personum(arg0, arg1))
+      $mens.mens = arg1
+      $mens.mp(m_sem_animal, arg0)
+      ret
+    fimse
+  fimse
   textotxt h
   txt100 t1
   txt100 t2

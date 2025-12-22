@@ -5,7 +5,8 @@ const objtipo = 2 # Pode renomear
 const objcmd = config:animal1 ? este
 const posic = 0
 #
-const m_ajudaI = "-t\n-h_cmd_capturar Pega $o-animal que está lutando com você\n\
+const m_ajudaI = "-t\n\
+-h_cmd_capturar Pega $o-animal que está lutando com você\n\
 -h_cmd_despedir Se despede (desfaz) de $um-animal\n\
 -h_cmd_montar Monta em um personagem\n\
 -h_cmd_desmontar Desmonta de um personagem\n\
@@ -15,7 +16,6 @@ const m_ajudaA = "-h_cmd_animal Mostra $seus-animais\n\
 -h_cmd_dar Dá $um-animal a outro personagem\n\
 -h_cmd_chamar Traz $um-animal da sala para o comando $Cmd-animal\n\
 -h_cmd_soltar Traz $um-animal do comando $Cmd-animal para a sala\n\
-  \c21\b a \c2$num-animais\b        Escolhe um personagem, de 1 a $num-animais\n\
 -h_cmd_trocar Dá itens para $um-animal e troca $animais de lugar"
 const m_ajuda1 = "Nota: $Seus-animais acima do seu nível não lutam."
 const m_ajuda2 = "Nota: $Seus-animais $m níveis acima do seu nível não lutam."
@@ -23,10 +23,12 @@ const m_ajuda3 = "Nota: $Seus-animais a partir de 1 nível abaixo do seu não luta
 const m_ajuda4 = "Nota: $Seus-animais a partir de $m níveis abaixo do seu não lutam."
 const m_sem_animais = "Não possui $nenhum-animal."
 const m_animais = "$Animais:"
-const m_linhaperso = "$num$esc Você  N$nivel"
-const m_linhaanimal = "$num$esc$lugar $nome  N$nivel$des$obe"
-const m_esc_sim = "*"
-const m_esc_nao = " "
+const m_linhaperso = "$num$sinal Você  N$nivel $comb"
+const m_linhaanimal = "$num$sinal $nome  N$nivel $comb$des$obe$lugar"
+const m_sinal1 = "*"
+const m_sinal2 = "+"
+const m_sinal3 = " "
+const m_sinal4 = m_sinal3
 const m_lugar_perso = ""
 const m_lugar_sala = " (na sala)"
 const m_lugar_longe = " (longe)"
@@ -34,22 +36,33 @@ const m_des_sim = " (desmaiado)"
 const m_des_nao = ""
 const m_obe_sim = ""
 const m_obe_nao = " (não obedece)"
+const m_comb1 = " (combatente)"
+const m_comb2 = " (próximo combatente)"
+const m_comb3 = ""
+const m_comb4 = m_comb3
+const m_comb5 = m_comb3
 const admordem = "m_ajudaI m_ajuda1 m_ajuda2 m_ajuda3 m_ajuda4\n\
-m_sem_animais m_animais m_linhaperso m_linhaanimal m_esc_sim m_esc_nao\n\
+m_sem_animais m_animais m_linhaperso m_linhaanimal m_sinal1 m_sinal2 m_sinal3\n\
 m_lugar_perso m_lugar_sala m_lugar_longe m_des_sim m_des_nao m_obe_sim m_obe_nao"
 #
 ref perso # Objeto do personagem
 ref animal # Objeto do animal
 const t1_num = misc:persotxt(animal.pnumero)
 const t1_nivel = animal.pnivel
-const t1_esc = perso.persoesc == animal ? m_esc_sim : m_esc_nao
 const t1_des = animal.pvidaok ? m_des_nao : m_des_sim
+const t1_comb = m_comb[animal.persoluta]
+const t1_sinal = m_sinal[animal.persoluta]
+
+func t1_esc
+  refvar luta = animal.persoluta
+  ret luta == 1 ? m_sinal1 : luta == 2 ? m_sinal2 : m_sinal3
 
 func t1_nome
   refvar m = animal.descnome2
   ret txtcopiamai(txtproclin("o\na\num\numa", txt1(m + "x")) < 0 ? m : txt2(m), "A")
 
 func t1_lugar
+  ret animal == perso, ""
   ret animal.dono == perso.dono, m_lugar_sala
   ret animal.dono == perso ? m_lugar_perso : m_lugar_longe
 
@@ -83,28 +96,23 @@ func escr
   epara i = arg0.lseguir.ini, i, i.depois
     i.obj.perso && i.obj.tseguir == 3 && l.addfim(i.obj)
   efim
-# Adiciona o próprio personagem
+# Adiciona os personagens na lista de textos
+  txt10 indice
   perso = animal = arg0
-  refvar l1 = txt(arg0.pnumero + 100) + " "
-  t.addfim(l1 + txtremove(vartroca(m_linhaperso, "$", "t1_"), "d"))
-# Adiciona outros personagens
+  indice = txt(arg0.pnumero + 100) + " "
+  t.addfim(indice + txtremove(vartroca(m_linhaperso, "$", "t1_"), "d"))
   epara i = l.ini, i, i.depois
-    continuar !i.obj.perso
     animal = i.obj
-    refvar l1 = txt(i.obj.pnumero + 100) + " "
-    t.addfim(l1 + txtremove(vartroca(m_linhaanimal, "$", "t1_"), "d"))
+    indice = txt(animal.pnumero + 100) + " "
+    t.addfim(indice + txtremove(vartroca(m_linhaanimal, "$", "t1_"), "d"))
   efim
 # Mostra os personagens
-  se t.linhas == 1
-    $mens.mp(m_sem_animais, arg0)
-  senao
-    t.ordena
-    textopos pos
-    epara pos = t.ini, pos, pos.depois
-      pos.mudar("", 0, 4)
-    efim
-    arg0.msg2("\b\c6" + $mens.tp(m_animais, arg0) + "\b\n" + t.remove(1000))
-  fimse
+  t.ordena
+  textopos pos
+  epara pos = t.ini, pos, pos.depois
+    pos.mudar("", 0, 4)
+  efim
+  arg0.msg2("\b\c6" + $mens.tp(m_animais, arg0) + "\b\n" + t.remove(1000))
 
 
 classe cmd_1
@@ -167,40 +175,66 @@ classe h_comando_escolhe_animal
 herda comando_comum
 const posic = 5
 #
+const m_sem_args = "Digite o comando após $m."
 const m_ausente = "Você não possui $m."
-const m_escolheu = "Você já escolheu $m."
-const m_ninguem1 = "Você não escolhe ninguém."
-const m_ninguem2 = "$P não escolhe ninguém."
-const m_escolhe1 = "Você escolhe $b."
-const m_escolhe2 = "$P escolhe $b."
+const m_longe = "$A está longe."
+const m_cmd_nao = "Comando não existe: $M"
+const m_espera = "$M em $1s"
+const admordem = "m_sem_args m_ausente m_cmd_nao m_espera"
 
 func escr # Chamado pela função "teclou" do personagem ao escolher um animal
 # arg0 = personagem
 # arg1 = o que teclou
 # arg2 = permissões
 # arg3 = número do animal
-  refvar r = misc:personum(arg0, arg3)
-  se !r
+  ref perso = misc:personum(arg0, arg3)
+  se !perso
     $mens.mens = arg3
     $mens.mp(m_ausente, arg0)
-  senao arg0.persoesc == r
+    ret
+  senao perso.dono != arg0 && perso.dono != arg0.dono
+    $mens.mp(m_longe, arg0, perso)
+    ret
+  senao !arg1
     $mens.mens = arg3
-    $mens.mp(m_escolheu, arg0)
-  senao r == arg0
-    se arg0.persoesc.pvidaok && arg0.atkenv # Animal está bom e está lutando
-      arg0.p_espera = 40 # Espera 4 segundos
-    fimse
-    arg0.persoesc = arg0
-    $mens.p(arg0)
-    $mens.mvis2(m_ninguem1, m_ninguem2)
-  senao
-    se arg0.persoesc.pvidaok && arg0.atkenv # Animal está bom e está lutando
-      arg0.p_espera = 40 # Espera 4 segundos
-    fimse
-    arg0.persoesc = r
-    $mens.p(arg0, r)
-    $mens.mvis2(m_escolhe1, m_escolhe2)
+    $mens.mp(m_sem_args, arg0, perso)
+    ret
   fimse
+# Obtém o comando
+  ref obj = ref($cmd_[txt1(arg1)].objcmd(perso, arg2))
+  se obj.objprocessa != 2
+    obj = nulo
+    prog p
+    uint8 nivel1 = 255
+    ref obj1
+    nomeobj n
+    n.ini("1000 cmd_" + txt1(arg1), 1000)
+    epara p.iniclasse("cmd_" + txt1(txte(arg1))), p.lin, p.depois
+      continuar !(obj1 = $[p.texto].objcmd(perso, arg2)) || !n.nome(obj1)
+      continuar nivel1 <= obj1.objnivel(perso, arg2) || obj1.objprocessa != 2
+      obj = obj1, nivel1 = obj1.objnivel(perso, arg2)
+      sair !nivel1
+    efim
+  fimse
+# Verifica se o comando pode ser usado com animal
+  se !obj
+    $mens.mens = txt1(arg1)
+    $mens.mp(m_cmd_nao, arg0)
+    ret
+  fimse
+# Verifica tempo de espera
+  se perso.p_espera
+    perso.p_comando.limpar
+    perso.p_comando.addfim(txt(obj, 4) + " " + txt2(arg1))
+    perso.p_cmdperm = arg2
+    $mens.mens = txt(obj, 4)
+    $mens.o_1 = txtnum(perso.p_espera / 10, ".")
+    $mens.mp(m_espera, arg0, perso)
+    ret
+  fimse
+# Executa o comando
+  ret perso.posicao < obj.posic, perso.msgposicao(arg0)
+  ret obj.escr(perso, txt2(arg1), arg2)
 
 
 classe m_cmd_animal
@@ -214,47 +248,44 @@ const clas1 = "config"
 const vari1 = "animal1"
 const extr1 = "0 8"
 #
-const titu2 = " * Não consegue escolher"
+const titu2 = " * Não consegue escolher animal"
 #
-const nome2 = "Não possui animal"
+const nome2 = "Sem argumentos"
 const tipo2 = "opc_linha"
 const clas2 = "comando_escolhe_animal"
-const vari2 = "m_ausente"
+const vari2 = "m_sem_args"
 #
-const nome3 = "Já escolheu animal"
+const nome3 = "Não possui animal"
 const tipo3 = "opc_linha"
 const clas3 = "comando_escolhe_animal"
-const vari3 = "m_escolheu"
+const vari3 = "m_ausente"
 #
-const titu4 = " * Escolhe o personagem"
-#
-const nome4 = "Perso"
+const nome4 = "Animal está longe"
 const tipo4 = "opc_linha"
 const clas4 = "comando_escolhe_animal"
-const vari4 = "m_ninguem1"
+const vari4 = "m_longe"
 #
-const nome5 = "Outros"
+const titu5 = " * Comando"
+#
+const nome5 = "Comando não existe"
 const tipo5 = "opc_linha"
 const clas5 = "comando_escolhe_animal"
-const vari5 = "m_ninguem2"
+const vari5 = "m_cmd_nao"
 #
-const titu6 = " * Escolhe um animal"
-#
-const nome6 = "Perso"
+const nome6 = "Comando após espera"
 const tipo6 = "opc_linha"
 const clas6 = "comando_escolhe_animal"
-const vari6 = "m_escolhe1"
+const vari6 = "m_espera"
 #
-const nome7 = "Outros"
-const tipo7 = "opc_linha"
-const clas7 = "comando_escolhe_animal"
-const vari7 = "m_escolhe2"
+const titu7 = " * Ajuda Animal"
 #
-const titu8 = " * Ajuda Animal"
+const nome7 = "Ajuda"
+const tipo7 = "opc_texto"
+const vari7 = "m_ajudaI"
 #
-const nome8 = "Ajuda"
+const nome8 = "Comandos com animais"
 const tipo8 = "opc_texto"
-const vari8 = "m_ajudaI"
+const vari8 = "m_ajudaA"
 #
 const nome9 = "Animais acima"
 const tipo9 = "opc_linha"
@@ -292,38 +323,54 @@ const vari16 = "m_linhaanimal"
 #
 const titu17 = " * Opções"
 #
-const nome17 = "$esc escolhido"
+const nome17 = "$sinal combatente"
 const tipo17 = "opc_linha"
-const vari17 = "m_esc_sim"
+const vari17 = "m_sinal1"
 #
-const nome18 = "$esc não escolhido"
+const nome18 = "$sinal próximo combatente"
 const tipo18 = "opc_linha"
-const vari18 = "m_esc_nao"
+const vari18 = "m_sinal2"
 #
-const nome19 = "$lugar no jogador"
+const nome19 = "$sinal não combatente"
 const tipo19 = "opc_linha"
-const vari19 = "m_lugar_perso"
+const vari19 = "m_sinal3"
 #
-const nome20 = "$lugar na mesma sala"
+const nome20 = "$comb combatente"
 const tipo20 = "opc_linha"
-const vari20 = "m_lugar_sala"
+const vari20 = "m_comb1"
 #
-const nome21 = "$lugar em outra sala"
+const nome21 = "$comb próximo combatente"
 const tipo21 = "opc_linha"
-const vari21 = "m_lugar_longe"
+const vari21 = "m_comb2"
 #
-const nome22 = "$des desmaiado"
+const nome22 = "$comb não combatente"
 const tipo22 = "opc_linha"
-const vari22 = "m_des_sim"
+const vari22 = "m_comb3"
 #
-const nome23 = "$des não desmaiado"
+const nome23 = "$lugar no jogador"
 const tipo23 = "opc_linha"
-const vari23 = "m_des_nao"
+const vari23 = "m_lugar_perso"
 #
-const nome24 = "$obe obedece"
+const nome24 = "$lugar na mesma sala"
 const tipo24 = "opc_linha"
-const vari24 = "m_obe_sim"
+const vari24 = "m_lugar_sala"
 #
-const nome25 = "$obe não obedece"
+const nome25 = "$lugar em outra sala"
 const tipo25 = "opc_linha"
-const vari25 = "m_obe_nao"
+const vari25 = "m_lugar_longe"
+#
+const nome26 = "$des desmaiado"
+const tipo26 = "opc_linha"
+const vari26 = "m_des_sim"
+#
+const nome27 = "$des não desmaiado"
+const tipo27 = "opc_linha"
+const vari27 = "m_des_nao"
+#
+const nome28 = "$obe obedece"
+const tipo28 = "opc_linha"
+const vari28 = "m_obe_sim"
+#
+const nome29 = "$obe não obedece"
+const tipo29 = "opc_linha"
+const vari29 = "m_obe_nao"

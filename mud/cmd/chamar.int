@@ -6,24 +6,74 @@ const objcmd = config:animal1 ? este
 const txtajuda = config:animal1 ? txtajuda1(m_ajuda)
 const posic = 5
 #
-const m_ajuda = "-t\n-s\nChama de volta para o comando $Cmd-animal $um-animal que está solt$genero-animal."
+const m_ajuda = "-t\n\
+-s $arg-animal\n\
+-s -\n\
+Chama de volta para o comando $Cmd-animal $um-animal que está solt$genero-animal.\n\
+Com um hífen, chama todos os animais que for possível chamar.\n\
+Sem argumentos, mostra $seus-animais solt$genero-animals."
 const m_sem_animal = "Não possui $nenhum-animal solt$genero-animal."
-const m_montado = "$O está montad$u em $a."
+const m_titulo = "Chamar quem?"
+const m_linha = "$num  $nome  N$nivel"
+const m_numero_invalido = "$m não é número de $animal."
 const m_nao_tem = "Você não tem $m."
-const m_chama_solta = "Não é possível chamar $a."
+const m_nao_solto = "$M não está solto."
+const m_auto = "Chamar a si própri$s?"
+const m_montado = "$O está montad$u em $a."
+const m_nao_chamar = "Não é possível chamar $a."
+const m_nenhum_chamar = "Não é possível chamar nenhum animal."
 const m_entra1 = "Você traz $a de volta."
 const m_entra2 = "$P traz $a de volta."
-const admordem = "m_ajuda m_sem_animal m_montado m_nao_tem\n\
-m_chama_solta m_entra1 m_entra2"
+const admordem = "m_ajuda m_sem_animal m_titulo m_linha m_numero_invalido\n\
+m_nao_tem m_nao_solto m_auto m_montado m_nao_chamar m_nenhum_chamar\n\
+m_entra1 m_entra2"
+#
+ref animal # Objeto do animal
+const t1_num = misc:persotxt(animal.pnumero)
+const t1_nivel = animal.pnivel
+
+func t1_nome
+  refvar m = animal.descnome2
+  ret txtcopiamai(txtproclin("o\na\num\numa", txt1(m + "x")) < 0 ? m : txt2(m), "A")
 
 func escr
-  listaitem i
-  epara i = arg0.lseguir.ini, i && i.obj.tseguir != 3, i.depois
-  efim
-  ret !i, $mens.mp(m_sem_animal, arg0)
-  ref r = i.obj
+  se !arg1 # Sem argumentos
+    textotxt t
+    listaitem i
+    epara i = arg0.lseguir.ini, i, i.depois
+      continuar i.obj.tseguir != 3
+      animal = i.obj
+      refvar indice = txt(i.obj.pnumero + 100) + " "
+      t.addfim(indice + txtremove(vartroca(m_linha, "$", "t1_"), "d"))
+    efim
+    ret !t.linhas, $mens.mp(m_sem_animal, arg0)
+    t.ordena
+    textopos pos
+    epara pos = t.ini, pos, pos.depois
+      pos.mudar("", 0, 4)
+    efim
+    ret arg0.msg2("\b\c6" + $mens.tp(m_titulo, arg0) + "\b\n" + t.remove(1000))
+  senao arg1 == "-"
+    listaobj animais
+    listaitem i
+    epara i = arg0.lseguir.ini, i, i.depois
+      ref r = i.obj
+      r.perso && r.tseguir == 3 && !r.persolugar && 1 != r.p_animal && animais.addfim(r)
+    efim
+    ret !animais, $mens.mp(m_nenhum_chamar, arg0)
+    epara i = animais.ini, i, i.depois
+      chamar(arg0, i.obj)
+    efim
+    ret
+  fimse
+  $mens.mens = arg1
+  ret misc:persoindice(arg1) < 0, $mens.mp(m_numero_invalido, arg0)
+  ref r = misc:personum(arg0, arg1)
+  ret !r, $mens.mp(m_nao_tem, arg0)
+  ret r.dono.perso, $mens.mp(m_nao_solto, arg0, r)
+  ret r == arg0, $mens.mp(m_auto, arg0, r)
   ret r.persolugar, $mens.mp(m_montado, arg0, r, r.persolugar.objini)
-  ret r.p_animal < 2, $mens.mp(m_chama_solta, arg0, r)
+  ret r.p_animal == 1, $mens.mp(m_nao_chamar, arg0, r)
   chamar(arg0, r)
 
 func chamar
@@ -41,7 +91,7 @@ func chamar
   epara e.addfim(arg1.evento), e, e.ini.remove
     ret e.objini.cmd_chamaranim(arg0, sala, arg1, arg1), nulo
   efim
-  arg1.batalhafim
+  arg1.atkenv && arg1.batalhafim # Encerra batalha se este personagem está lutando
   e.addfim1(sala.dono.dentro2, arg1.dono.dentro2)
   arg1.mudadono(arg0)
   $mens.p(arg0, arg1)
@@ -72,22 +122,50 @@ const nome2 = "Nenhum animal solto"
 const tipo2 = "opc_linha"
 const vari2 = "m_sem_animal"
 #
-const nome3 = "Montado no animal"
+const nome3 = "Título"
 const tipo3 = "opc_linha"
-const vari3 = "m_montado"
+const vari3 = "m_sem_animal"
 #
-const nome4 = "Não tem animal"
+const nome4 = "Um animal solto"
 const tipo4 = "opc_linha"
-const vari4 = "m_nao_tem"
+const vari4 = "m_sem_animal"
 #
-const nome5 = "Não chama"
+const nome5 = "Um animal solto"
 const tipo5 = "opc_linha"
-const vari5 = "m_chama_solta"
+const vari5 = "m_sem_animal"
 #
-const nome6 = "Pegou perso"
+const nome6 = "Animal inválido"
 const tipo6 = "opc_linha"
-const vari6 = "m_entra1"
+const vari6 = "m_numero_invalido"
 #
-const nome7 = "Pegou outros"
+const nome7 = "Não tem animal"
 const tipo7 = "opc_linha"
-const vari7 = "m_entra2"
+const vari7 = "m_nao_tem"
+#
+const nome8 = "Animal não está solto"
+const tipo8 = "opc_linha"
+const vari8 = "m_nao_solto"
+#
+const nome9 = "Charar a si próprio"
+const tipo9 = "opc_linha"
+const vari9 = "m_auto"
+#
+const nome10 = "Montado no animal"
+const tipo10 = "opc_linha"
+const vari10 = "m_montado"
+#
+const nome11 = "Não chama animal"
+const tipo11 = "opc_linha"
+const vari11 = "m_nao_chamar"
+#
+const nome12 = "Não chama ninguém"
+const tipo12 = "opc_linha"
+const vari12 = "m_nenhum_chamar"
+#
+const nome13 = "Pegou perso"
+const tipo13 = "opc_linha"
+const vari13 = "m_entra1"
+#
+const nome14 = "Pegou outros"
+const tipo14 = "opc_linha"
+const vari14 = "m_entra2"

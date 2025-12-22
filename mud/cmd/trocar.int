@@ -2,17 +2,19 @@ classe h_cmd_trocar
 herda comando_comum
 const objmenu = $m_cmd_trocar
 const objtipo = 2 # Pode renomear
+const posic = 7 # Posição mínima para usar o comando
 const objcmd = config:animal1 ? este
 const txtajuda = config:animal1 ? txtajuda1(m_ajuda)
 #
 const m_ajuda = "-t\n\
--s\n\
--s <item>\n\
--s <número> <número>\n\
-Sem argumentos pega um item $d $o-animal escolhid$genero-animal.\n\
-Com o nome de um item, dá um item para $o-animal escolhid$genero-animal.\n\
-Com dois números, troca $os-animais de lugar."
-const m_batalha = "Você não consegue trocar durante a batalha."
+-s <número>\n\
+-s <número> <item>\n\
+-s <número> <numero>\n\
+Com um número, pega um item $d $o-animal.\n\
+Com um número e um nome, dá um item para $o-animal.\n\
+Com dois números, troca $seus-animais de lugar."
+const m_sem_args = "Trocar o quê?"
+const m_sem_animal = "Você não possui $animal $m."
 const m_animal_escolha = "Primeiro escolha $um-animal."
 const m_animal_sem = "$A não carrega nenhum item."
 const m_perso_cheio = "Você não consegue carregar $o."
@@ -26,25 +28,36 @@ const m_pegar_dar2 = "$P pega $n de $b e dá $o."
 const m_dar1 = "Você dá $o para $a."
 const m_dar2 = "$P dá $o para $a."
 const m_semtroca = "Nada para ser trocado."
-const m_trocar = "Você troca de lugar $1 $o e $2 $n."
-const admordem = "m_ajuda m_batalha m_animal_escolha m_animal_sem\n\
+const m_trocar1 = "Você coloca $1 $o na posição $2."
+const m_trocar2 = "Você troca de lugar $1 $o e $2 $n."
+const v_troca_batalha = 20
+const m_troca_batalha = "Tempo de espera $ms."
+const admordem = "m_ajuda m_animal_escolha m_animal_sem\n\
 m_perso_cheio m_naover m_longe m_animal_cheio m_pegar1 m_pegar2\n\
-m_pegar_dar1 m_pegar_dar2 m_dar1 m_dar2 m_semtroca m_trocar"
+m_pegar_dar1 m_pegar_dar2 m_dar1 m_dar2 m_semtroca m_trocar1 m_trocar2\n\
+v_troca_batalha m_troca_batalha"
 
 func escr
   refvar perm_msg = $perm_[arg0.jogperm].item
   ret perm_msg, $mensjog.msg(perm_msg, arg0)
-  ret arg0.atkenv, $mens.mp(m_batalha, arg0)
-  ret !arg1, escr_pegar(arg0)
-  se misc:persoindice(txt1(arg1)) < 0 || misc:persoindice(txt2(arg1)) < 0
-    escr_dar(arg0, arg1)
+  ret !arg1, $mensjog.msg(m_sem_args, arg0)
+  ref alvo = misc:personum(arg0, txt1(arg1))
+  se !alvo
+    $mens.mens = txt1(arg1)
+    $mens.mp(m_sem_animal, arg0)
+    ret
+  senao !txt2(arg1)
+    escr_pegar(arg0, alvo)
+  senao misc:persoindice(txt2(arg1)) < 0
+    escr_dar(arg0, alvo, txt2(arg1))
   senao
     escr_trocar(arg0, txt1(arg1), txt2(arg1))
   fimse
 
 func escr_pegar # Pegar item do animal
-# arg0 = personagem
-  refvar animal = ref(arg0.persoesc)
+# arg0 = personagem que digitou o comando
+# arg1 = animal
+  refvar animal = arg1
   ret animal == arg0, $mens.mp(m_animal_escolha, arg0)
   ret animal.dono != arg0 && animal.dono != arg0.dono, $mens.mp(m_longe, arg0, animal)
   refvar rec = ref(animal.dentro1.ini.obj)
@@ -59,15 +72,16 @@ func escr_pegar # Pegar item do animal
   fimse
 
 func escr_dar # Dar item para o animal
-# arg0 = personagem
-# arg1 = nome do item
-  refvar animal = ref(arg0.persoesc)
+# arg0 = personagem que digitou o comando
+# arg1 = animal
+# arg2 = nome do item
+  refvar animal = arg1
   ret animal == arg0, $mens.mp(m_animal_escolha, arg0)
   ret animal.dono != arg0 && animal.dono != arg0.dono, $mens.mp(m_longe, arg0, animal)
-  ref env = misc:itemdentro(arg0, arg1)
+  ref env = misc:itemdentro(arg0, arg2)
   ref rec = animal.dentro1.ini.obj
   se !env
-    $mens.mens = arg1
+    $mens.mens = arg2
     $mens.mp(m_naover, arg0)
   senao env.objnum >> 1 > 1 # Animal não carrega objetos com coisas dentro
     $mens.mp(m_animal_cheio, arg0, animal, env)
@@ -91,13 +105,26 @@ func escr_trocar # Trocar dois animais de lugar
   refvar a1 = misc:personum(arg0, arg1)
   refvar a2 = misc:personum(arg0, arg2)
   ret a1 == a2, arg0.msg(m_semtroca)
+# Verifica se tem combatente lutando
+  refvar combatente = arg0.posicao == 7 && (a1.persoluta == 1 || a2.persoluta == 1)
 # Faz a troca
   a1.pnumero = misc:persoindice(arg2)
   a2.pnumero = misc:persoindice(arg1)
+  arg0.persoluta_recalc
 # Mensagens
   $mens.o_1 = arg1
   $mens.o_2 = arg2
-  $mens.mp(m_trocar, arg0, nulo, a1, a2)
+  $mens.mp(a2 ? m_trocar2 : m_trocar1, arg0, nulo, a1, a2)
+# Verifica mexeu com algum combatente
+  se arg0.atkenv && (combatente || a1.persoluta == 1 || a2.persoluta == 1)
+    uint8 espera = intmax(arg0.p_espera, a1.p_espera, a2.p_espera, v_troca_batalha)
+    arg0.p_espera = espera
+    a1.p_espera = espera
+    a2.p_espera = espera
+    arg0.sock.cmd_espera = espera
+    $mens.mens = txtnum(espera / 10, ".")
+    $mens.mp(m_troca_batalha, arg0)
+  fimse
 
 
 classe m_cmd_trocar
@@ -107,62 +134,84 @@ const nome1 = "Ajuda"
 const tipo1 = "opc_texto"
 const vari1 = "m_ajuda"
 #
-const nome2 = "Durante a batalha"
-const tipo2 = "opc_linha"
-const vari2 = "m_batalha"
+const nome2 = "Tempo de troca"
+const info2 = "Tempo mínimo que precisa esperar, em décimos de segundo, ao trocar\n\
+combatentes durante a luta. Pode ser maior se um dos combatentes estiver\n\
+esperando um tempo maior para o próximo comando."
+const tipo2 = "opc_numero"
+const vari2 = "v_troca_batalha"
 #
-const nome3 = "Escolher animal"
+const nome3 = "Sem argumentos"
 const tipo3 = "opc_linha"
-const vari3 = "m_animal_escolha"
+const vari3 = "m_sem_args"
 #
-const nome4 = "Animal sem item"
+const nome4 = "Sem animal"
 const tipo4 = "opc_linha"
-const vari4 = "m_animal_sem"
+const vari4 = "m_sem_animal"
 #
-const nome5 = "Animal cheio"
+const nome5 = "Escolher animal"
 const tipo5 = "opc_linha"
-const vari5 = "m_perso_cheio"
+const vari5 = "m_animal_escolha"
 #
-const nome6 = "Não vê item"
+const nome6 = "Animal sem item"
 const tipo6 = "opc_linha"
-const vari6 = "m_naover"
+const vari6 = "m_animal_sem"
 #
-const nome7 = "Animal longe"
+const nome7 = "Animal cheio"
 const tipo7 = "opc_linha"
-const vari7 = "m_longe"
+const vari7 = "m_perso_cheio"
 #
-const nome8 = "Perso cheio"
+const nome8 = "Não vê item"
 const tipo8 = "opc_linha"
-const vari8 = "m_animal_cheio"
+const vari8 = "m_naover"
 #
-const nome9 = "Pegar item: perso"
+const nome9 = "Animal longe"
 const tipo9 = "opc_linha"
-const vari9 = "m_pegar1"
+const vari9 = "m_longe"
 #
-const nome10 = "Pegar item: outros"
+const nome10 = "Perso cheio"
 const tipo10 = "opc_linha"
-const vari10 = "m_pegar2"
+const vari10 = "m_animal_cheio"
 #
-const nome11 = "Pegar/dar item: perso"
+const nome11 = "Pegar item: perso"
 const tipo11 = "opc_linha"
-const vari11 = "m_pegar_dar1"
+const vari11 = "m_pegar1"
 #
-const nome12 = "Pegar/dar item: outros"
+const nome12 = "Pegar item: outros"
 const tipo12 = "opc_linha"
-const vari12 = "m_pegar_dar2"
+const vari12 = "m_pegar2"
 #
-const nome13 = "Dar item: perso"
+const nome13 = "Pegar/dar item: perso"
 const tipo13 = "opc_linha"
-const vari13 = "m_dar1"
+const vari13 = "m_pegar_dar1"
 #
-const nome14 = "Dar item: outros"
+const nome14 = "Pegar/dar item: outros"
 const tipo14 = "opc_linha"
-const vari14 = "m_dar2"
+const vari14 = "m_pegar_dar2"
 #
-const nome15 = "Sem troca"
+const nome15 = "Dar item: perso"
 const tipo15 = "opc_linha"
-const vari15 = "m_semtroca"
+const vari15 = "m_dar1"
 #
-const nome16 = "Trocar de lugar"
+const nome16 = "Dar item: outros"
 const tipo16 = "opc_linha"
-const vari16 = "m_trocar"
+const vari16 = "m_dar2"
+#
+const nome17 = "Sem troca"
+const tipo17 = "opc_linha"
+const vari17 = "m_semtroca"
+#
+const nome18 = "Mudar o número"
+const info18 = "Quando não tem um personagem no segundo número"
+const tipo18 = "opc_linha"
+const vari18 = "m_trocar1"
+#
+const nome19 = "Trocar de lugar"
+const info19 = "Quando tem um personagem no segundo número"
+const tipo19 = "opc_linha"
+const vari19 = "m_trocar2"
+#
+const nome20 = "Troca na luta"
+const info20 = "Ao trocar combatentes na luta, avisa quanto tempo esperar"
+const tipo20 = "opc_linha"
+const vari20 = "m_troca_batalha"

@@ -1,12 +1,15 @@
 classe comando_comum_ajuda
 herda mens_tabela
 # Comando para os jogadores que contém somente páginas de ajuda
-
 const objtipo = 0 # Tipo de comando
 # 0 = não pode ser renomeado ou criar atalho para esse comando
 # 1 = não pode ser renomeado mas pode criar atalho
 # 2 = pode ser renomeado e criar atalho
 # 3 = atalho para comando
+const objprocessa = 0 # Como o comando é processado
+# 0 = processamento imediato (ex. comandos de informação)
+# 1 = fica na fila
+# 2 = fica na fila, pode-se digitar o número do animal na frente
 
 func iniclasse
   ret txt(arg0, 0, 2) != "h_", !$[arg0] && criar(arg0)
@@ -27,16 +30,17 @@ func txtajuda1 # Prepara um texto de ajuda
   textopos p = t.ini
   enquanto p.lin
     casovar txt1(txte(p.texto(0, 4)))
-    casose "-t"
+    casose "-t" # Título do comando
       p.mudar("\b\c3" + (p.texto(3) ?? txtmaimin(txt2(txte(este)))) + "\b")
       p.depois
       continuar
-    casose "-s"
-      p.mudar(sintaxe + txtmai(txt2(txte(este))), 0, 2)
+    casose "-s" # Sintaxe seguido do nome do comando
+      refvar num = (objprocessa == 2 ? "$arg-animal")
+      p.mudar(sintaxe + num + txtmai(txt2(txte(este))), 0, 2)
       p.depois
       sintaxe = "         "
       continuar
-    casose "-ss"
+    casose "-ss" # Espaços para ter o mesmo alinhamento da sintaxe
       p.mudar(sintaxe, 0, 4)
       p.depois
       sintaxe = "         "

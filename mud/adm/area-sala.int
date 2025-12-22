@@ -604,86 +604,93 @@ const tipo32 = "opc_numero"
 const clas32 = var.classe1
 const vari32 = "s_jog"
 #
-const nome33 = "Soltar itens"
-const tipo33 = "opc_opcao"
+const nome33 = "Auxiliares na luta"
+const info33 = "Quantos personagens extra um personagem pode controlar ao mesmo tempo na \
+luta"
+const tipo33 = "opc_numero"
 const clas33 = var.classe1
-const vari33 = "s_soltartipo"
-const extr33 = "Permitido\nNão permitido\nDestrói"
+const vari33 = "s_auxluta"
 #
-const nome34 = "Msg perso soltar"
-const tipo34 = "opc_linha"
+const nome34 = "Soltar itens"
+const tipo34 = "opc_opcao"
 const clas34 = var.classe1
-const vari34 = "s_soltarmsg1"
-const nulo34 = "\c3" + txtnulo("h_cmd_soltar", "m_soltar_sala1")
+const vari34 = "s_soltartipo"
+const extr34 = "Permitido\nNão permitido\nDestrói"
 #
-const nome35 = "Msg outros soltar"
+const nome35 = "Msg perso soltar"
 const tipo35 = "opc_linha"
 const clas35 = var.classe1
-const vari35 = "s_soltarmsg2"
-const nulo35 = "\c3" + txtnulo("h_cmd_soltar", "m_soltar_sala2")
+const vari35 = "s_soltarmsg1"
+const nulo35 = "\c3" + txtnulo("h_cmd_soltar", "m_soltar_sala1")
 #
-const nome36 = "Msg perso pegar"
+const nome36 = "Msg outros soltar"
 const tipo36 = "opc_linha"
 const clas36 = var.classe1
-const vari36 = "s_pegarmsg1"
-const nulo36 = "\c3" + txtnulo("h_cmd_pegar", "m_pegar_sala1")
+const vari36 = "s_soltarmsg2"
+const nulo36 = "\c3" + txtnulo("h_cmd_soltar", "m_soltar_sala2")
 #
-const nome37 = "Msg outros pegar"
+const nome37 = "Msg perso pegar"
 const tipo37 = "opc_linha"
 const clas37 = var.classe1
-const vari37 = "s_pegarmsg2"
-const nulo37 = "\c3" + txtnulo("h_cmd_pegar", "m_pegar_sala2")
+const vari37 = "s_pegarmsg1"
+const nulo37 = "\c3" + txtnulo("h_cmd_pegar", "m_pegar_sala1")
 #
-const nome38 = "Volume dentro"
-const tipo38 = "opc_numero"
+const nome38 = "Msg outros pegar"
+const tipo38 = "opc_linha"
 const clas38 = var.classe1
-const vari38 = "volmax"
+const vari38 = "s_pegarmsg2"
+const nulo38 = "\c3" + txtnulo("h_cmd_pegar", "m_pegar_sala2")
 #
-const nome39 = "Objetos máximo"
-const info39 = "Inclui objetos dentro de outros objetos que estão na sala"
+const nome39 = "Volume dentro"
 const tipo39 = "opc_numero"
 const clas39 = var.classe1
-const vari39 = "objmax"
+const vari39 = "volmax"
 #
-const nome40 = "Som da sala"
-const info40 = "Nome do som tocado ao entrar na sala; vide adm som"
-const tipo40 = "opc_linha"
+const nome40 = "Objetos máximo"
+const info40 = "Inclui objetos dentro de outros objetos que estão na sala"
+const tipo40 = "opc_numero"
 const clas40 = var.classe1
-const vari40 = "s_som"
+const vari40 = "objmax"
 #
-const nome41 = "Som de noite"
-const info41 = "Se ausente, \"Som da sala\" é do dia e da noite"
+const nome41 = "Som da sala"
+const info41 = "Nome do som tocado ao entrar na sala; vide adm som"
 const tipo41 = "opc_linha"
 const clas41 = var.classe1
-const vari41 = "s_somnoite"
+const vari41 = "s_som"
 #
-const nome42 = "Salas de doação"
-const info42 = "Para que salas os itens doados vão"
-const tipo42 = "opc_listasala"
+const nome42 = "Som de noite"
+const info42 = "Se ausente, \"Som da sala\" é do dia e da noite"
+const tipo42 = "opc_linha"
 const clas42 = var.classe1
-const vari42 = "s_doarsalas"
-const extr42 = "20"
+const vari42 = "s_somnoite"
 #
-const info43 = "Itens doados que essa sala aceita; se vazio aceita qualquer item"
-const nome43 = "Itens doados"
-const tipo43 = "opc_vetorhex"
+const nome43 = "Salas de doação"
+const info43 = "Para que salas os itens doados vão"
+const tipo43 = "opc_listasala"
 const clas43 = var.classe1
-const vari43 = "s_doarsim"
-const extr43 = config:item_tipos
+const vari43 = "s_doarsalas"
+const extr43 = "20"
 #
-const nome44 = "Itens não doados"
-const info44 = "Itens doados que essa sala não aceita"
+const info44 = "Itens doados que essa sala aceita; se vazio aceita qualquer item"
+const nome44 = "Itens doados"
 const tipo44 = "opc_vetorhex"
 const clas44 = var.classe1
-const vari44 = "s_doarnao"
+const vari44 = "s_doarsim"
 const extr44 = config:item_tipos
 #
-const nome45 = "Nome da entrada"
-const info45 = "Nome da porta correspondente a essa sala, quando ela pertence a um item\n\
-Se definido, pode-se entrar no item por essa sala, e sair sai do item"
-const tipo45 = "opc_linha"
+const nome45 = "Itens não doados"
+const info45 = "Itens doados que essa sala não aceita"
+const tipo45 = "opc_vetorhex"
 const clas45 = var.classe1
-const vari45 = "s_entrada"
+const vari45 = "s_doarnao"
+const extr45 = config:item_tipos
+#
+const nome46 = "Nome da entrada"
+const info46 = "Nome da porta correspondente a essa sala, quando ela pertence a um item\n\
+Se definido, pode-se entrar no item por essa sala, e sair sai do item"
+const tipo46 = "opc_linha"
+const clas46 = var.classe1
+const vari46 = "s_entrada"
 
 
 classe menu_area
@@ -724,6 +731,7 @@ func nulo6
   refvar opcao = txtnulo("h_cmd_area", "v_areatipo")
   ret "\c6" + opcao + " " + txtsublin(extr6, opcao)
 #
+
 const nome7 = "Tempo de reset"
 const info7 = "Tempo aproximado em minutos"
 const tipo7 = "opc_numero"

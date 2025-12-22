@@ -361,7 +361,8 @@ func renascer
   efim
   d.ini
 # Muda de sala
-  ref sala = acertasala(perso, $t_[perso.tipo1].sala_renascer ?? $t_[perso.tipo2].sala_renascer ?? $t_[perso.tipo3].sala_renascer ?? config:sala_renascer)
+  ref sala = acertasala(perso, $t_[perso.tipo1].sala_renascer ?? $t_[perso.tipo2].sala_renascer \
+?? $t_[perso.tipo3].sala_renascer ?? config:sala_renascer)
   se sala && sala != perso.dono
     $mens.p(perso)
     $mens.mvis2(m_antes1, m_antes2)

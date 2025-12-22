@@ -209,13 +209,14 @@ const objtipo = 2 # Pode renomear
 func txtajuda
   prog p
   p.iniherdainv("h_cmd_matar")
-  ret txtajuda1(m_ajuda1 + ($[p.texto].objcmd ? m_ajuda2 : m_ajuda3) + m_ajuda4)
+  refvar t1 = ($[p.texto].objcmd ? m_ajuda2 : m_ajuda3) + "\n" + m_ajuda4
+  ret txtajuda1(m_ajuda1 + "\n" + t1 + (config:animal1 ? "\n" + m_ajuda5))
 
-const m_ajuda1 = "-t Combate\n"
+const m_ajuda1 = "-t Combate"
 const m_ajuda2 = "Para começar uma luta basta teclar MATAR ou um comando agressivo,\n\
-seguido do personagem que você quiser atacar.\n"
+seguido do personagem que você quiser atacar."
 const m_ajuda3 = "Para começar uma luta basta teclar um comando agressivo, seguido\n\
-do nome do personagem que você quiser atacar.\n"
+do nome do personagem que você quiser atacar."
 const m_ajuda4 = "Para lançar magias tecle lançar e o nome da magia, e o alvo, se houver \
 um.\n\
 Antes de começar uma luta, você pode checar ter uma ideia da dificuldade\n\
@@ -229,7 +230,20 @@ Se teclar FUGIR seguido de um número, quando seus pontos de vida caírem\n\
 abaixo desse número em uma luta, seu personagem foge automaticamente.\n\
 Se outro jogador estiver por perto, muitas vezes poderá resgatar você.\n\
 Veja o comando RESGATAR."
-const admordem = "m_ajuda1 m_ajuda2 m_ajuda3 m_ajuda4"
+const m_ajuda5 = "Esse é o básico. Lidar com $animais é um pouco mais complicado.\n\
+Cada um dos seus personagens pode estar apto a lutar (combatente) ou não,\n\
+por estar desmaiado, em longe em outra sala, etc. O primeiro combatente\n\
+(o de menor número) recebe os ataques e faz ataques automáticos.\n\
+Os outros são os reservas, o segundo entra quando o primeiro desmaia,\n\
+e assim por diante. No entanto, em alguns lugares pode ser permitido usar\n\
+mais de um combatente ao mesmo tempo.\n\
+Você pode ver quem é combatente e quem não é com o comando $Cmd-animal.\n\
+Para atacar com $um-animal, é só acrescentar o número na frente do comando.\n\
+Exemplo, se quiser que $o-animal de número 1 chute, você tecla 1 chutar\n\
+ao invés de chutar.\n\
+Essa sintaxe, com o número na frente, só é permitida para habilidades,\n\
+magias e vestir, empunhar e remover."
+const admordem = "m_ajuda1 m_ajuda2 m_ajuda3 m_ajuda4 m_ajuda5"
 
 
 classe h_cmd_jog

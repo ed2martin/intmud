@@ -21,6 +21,7 @@ txt20 jogarea # Área aonde o personagem tem permissão
 int1 jogconfig.32 # Configurações do personagem
 txt512 ultimocom # Último comando digitado pelo usuário
 textotxt comandos # Cada 2 linhas = comando em espera para ser processado + permissões
+inttempo cmd_espera # Tempo de espera para processar o próximo comando
 intexec execprompt # Para enviar mensagens do prompt
 intinc tempojogo # Tempo da sessão
 txt100 msgsom_t # Nome do último som enviado ao jogador
@@ -254,19 +255,23 @@ func recebe1 # Função recebe após todos os atalhos
     com = arg0
   casofim
 # Comando para o persongem
-  se !perso.p_espera # Checa se pode processar o comando
+  se !cmd_espera # Checa se pode processar o comando
+    cmd_espera = 2
     perso.teclouperm(com, arg1)
-    perso.p_espera < 2 && (perso.p_espera = 2)
-  senao perso.atktempo # Checa se está batalhando
-    comandos.limpar
-    comandos.addfim(com)
-    comandos.addfim(arg1)
   senao comandos.bytes < 1024 # Não chegou ao limite de comandos
     comandos.addfim(com)
     comandos.addfim(arg1)
   senao # Chegou ao limite de comandos
     msg("Aguarde")
     ret 1
+  fimse
+
+func cmd_espera_exec # Processa o próximo comando na fila
+  se comandos
+    refvar com = comandos.remove(1)
+    refvar perm = $[comandos.remove(1)]
+    comandos.total && (cmd_espera = 2)
+    perso.teclouperm(com, perm) # Personagem processa comando
   fimse
 
 func avisamonit # Avisa quem está monitorando o personagem
@@ -285,14 +290,6 @@ func avisamonit # Avisa quem está monitorando o personagem
   casose "ini_mudasenha3"
   casose "cmd_autoapagar"
   casofim
-
-func espera_exec # Chamado por p_espera do personagem
-  se comandos
-    refvar com = comandos.remove(1)
-    refvar perm = $[comandos.remove(1)]
-    perso.teclouperm(com, perm) # Personagem processa comando
-    perso.p_espera < 2 && (perso.p_espera = 2)
-  fimse
 
 func temposair # Acerta variáveis de tempo para sair do MUD
   tempofim2 = 1
@@ -452,7 +449,7 @@ func execprompt_exec
   se passo || !perso
   senao perso.atkenv
     ret !jogconfig.7, j_t_prompt
-    refvar t1 = $mens_prompt.mens(perso.var.z_bprompt, perso) + "\b"
+    refvar t1 = $mens_prompt.mens(perso.var.z_bprompt, perso.persobat) + "\b"
     msg(t1, 1)
   senao
     ret !jogconfig.6, j_t_prompt

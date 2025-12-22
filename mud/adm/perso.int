@@ -85,9 +85,7 @@ func escr
 classe adm_iperso
 herda comando_adm
 const objcmd = arg1.c_iperso ? este
-const m_ajuda = "-t\n\
--s <nome>\n\
-Mostra aonde está cada personagem do tipo especificado."
+const m_ajuda = "-t\n-s <nome>\nMostra aonde está cada personagem do tipo especificado."
 
 func escr # Listar personagens
   prog p
@@ -280,9 +278,7 @@ func infonome
 classe adm_eperso
 herda comando_adm
 const objcmd = arg1.c_eperso ? este
-const m_ajuda = "-t\n\
--s <nome>\n\
-Edita o personagem com o nome especificado."
+const m_ajuda = "-t\n-s <nome>\nEdita o personagem com o nome especificado."
 
 func escr # Editar personagem
   prog p
@@ -1098,10 +1094,10 @@ const menufim = var.menufim
 const nome1 = "Lugar após domar"
 const tipo1 = "opc_opcao"
 const vari1 = "p_animal"
-const extr1 = "Comando Animal, protege o dono\n\
-Sala, luta sozinho, sai do jogo se morrer\n\
-Comando Animal ou sala, luta sozinho\n\
-Comando Animal ou sala, protege o dono"
+const extr1 = "Comando Animal\n\
+Sala, sai do jogo se morrer\n\
+Comando Animal ou sala\n\
+Comando Animal ou sala, vai para sala na luta"
 #
 const nome2 = "Domar"
 const info2 = "Se pode ser domado"

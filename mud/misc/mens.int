@@ -66,11 +66,15 @@ const x_h@_uns@_ = "nos "
 #
 const o_animal = txtcopiamai(mens_cfg:m_animal, intchr(arg0) < 95 ? "A" : "")
 const o_animais = txtcopiamai(mens_cfg:m_animais, intchr(arg0) < 95 ? "A" : "")
-const o_genero@qanimal = txtcopiamai(mens_cfg:m_genero_animal, intchr(arg0) < 95 ? "A" : "")
+const o_genero@qanimal = txtcopiamai(mens_cfg:m_genero_animal, intchr(arg0) < 95 ? "A" : \
+"")
 const o_o@qanimal = o_genero@qanimal(arg0) + " " + mens_cfg:m_animal
 const o_um@qanimal = txtcopiamai(mens_cfg:m_um_animal, intchr(arg0) < 95 ? "A" : "")
 const o_seus@qanimais = txtcopiamai(mens_cfg:m_seus_animais, intchr(arg0) < 95 ? "A" : "")
-const o_nenhum@qanimal = txtcopiamai(mens_cfg:m_nenhum_animal, intchr(arg0) < 95 ? "A" : "")
+const o_nenhum@qanimal = txtcopiamai(mens_cfg:m_nenhum_animal, intchr(arg0) < 95 ? "A" : \
+"")
+const o_arg@qanimal = config:animal1 ? mens_cfg:m_arg_animal + " "
+const o_arg@qanimal@_ = config:animal1 ? mens_cfg:m_arg_animal + " "
 const o_capturar = txtcopiamai(mens_cfg:m_capturar, intchr(arg0) < 95 ? "A" : "")
 const o_num@qanimais = misc:persotxt(config:animal1)
 
@@ -542,10 +546,10 @@ const o_u = txtcopiamai(obj1.msexo2 ? "o" : "a", arg0)
 const o_v = txtcopiamai(perso.msexo2 ? "e" : "a", arg0)
 const o_w = txtcopiamai(alvo.msexo2 ? "e" : "a", arg0)
 const o_x = txtcopiamai(obj1.msexo2 ? "e" : "a", arg0)
-const o_p =  txtcopiamai(persomsg(config:mens_tu), arg0 === "P" ? "A" : "")
-const o_a =  txtcopiamai(alvomsg(config:mens_tu), arg0 === "A" ? "A" : "")
-const o_k =  txtcopiamai(obj1msg(config:mens_tu), arg0 === "K" ? "A" : "")
-const o_l =  txtcopiamai(obj2msg(config:mens_tu), arg0 === "L" ? "A" : "")
+const o_p = txtcopiamai(persomsg(config:mens_tu), arg0 === "P" ? "A" : "")
+const o_a = txtcopiamai(alvomsg(config:mens_tu), arg0 === "A" ? "A" : "")
+const o_k = txtcopiamai(obj1msg(config:mens_tu), arg0 === "K" ? "A" : "")
+const o_l = txtcopiamai(obj2msg(config:mens_tu), arg0 === "L" ? "A" : "")
 const o_p1 = txtcopiamai(persomsg(config:mens_ti), arg0 === "P1" ? "A" : "")
 const o_a1 = txtcopiamai(alvomsg(config:mens_ti), arg0 === "A1" ? "A" : "")
 const o_k1 = txtcopiamai(obj1msg(config:mens_ti), arg0 === "K1" ? "A" : "")
@@ -760,7 +764,7 @@ const iniclasse = !$[arg0] && criar(arg0)
 func mens
 # arg0 = mensagem
 # arg1 = personagem
-  p1 = ref(arg1), p2 = ref(p1.persoesc)
+  p1 = ref(arg1), p2 = p1
   a1 = ref(p1.atkenv.objlista), a2 = ref(a1.persobat)
   ret vartroca(arg0, "%", "m_")
 

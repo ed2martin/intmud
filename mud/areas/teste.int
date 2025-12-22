@@ -1326,18 +1326,30 @@ const f_tipo = 4 # Tipo: 4 Pergaminho, recitar
 const eveste = 1 # Eventos item: Sim
 
 func cmd_recitar
-  refvar alvo = arg0.persoesc
-  se alvo.pvida > 0
+  $mens.mens = arg3
+  se !arg3
+    $mens.mp("Reviver quem? Faltou o número do animal.", arg0)
+    ret 1
+  senao misc:persoindice(arg3) < 0
+    $mens.mp("$M não é o número de um animal.", arg0)
+    ret 1
+  fimse
+  ref alvo = misc:personum(arg0, arg3)
+  se !alvo
+    $mens.mp("Você não possui $m.", arg0)
+    ret 1
+  senao alvo.pvida > 0
     $mens.mp("$A não está desmaiad$t.", arg0, alvo)
     ret 1
   fimse
 
 func cmd_recitou
-  refvar alvo = arg0.persoesc
+  ref alvo = misc:personum(arg0, arg3)
   alvo.posicao = 8
   alvo.restaurar
   $mens.p(arg0, alvo)
   $mens.mvis1("$P restaura $a com um pergaminho!")
+  arg0.p_espera = 20
 
 
 classe p_teste001
@@ -1388,6 +1400,7 @@ const pesoobj = 30500
 const volobj = 500
 const tipo1 = "luta"
 const p_agressivo = 2 # Agressivo: 2 Sim
+const p_animal = 2 # Lugar após domar: 2 Comando Animal ou sala
 const p_captura = 3 # Capturar: 3 Normal
 const inivar = "h_socar=1,h_chutar=1"
 
@@ -1403,6 +1416,7 @@ const msexo = 1 # Sexo Msg: 1 Masculino
 const pesoobj = 30100
 const volobj = 300
 const p_agressivo = 2 # Agressivo: 2 Sim
+const p_animal = 0 # Lugar após domar: 0 Comando Animal
 const p_captura = 2 # Domar: 2 Fácil
 const inivar = "h_arremessar=1"
 
@@ -1419,6 +1433,7 @@ const pesoobj = 30500
 const volobj = 100
 const tipo1 = "ar"
 const p_agressivo = 2 # Agressivo: 2 Sim
+const p_animal = 3 # Lugar após domar: 3 Comando Animal ou sala, vai para sala na luta
 const p_captura = 4 # Capturar: 4 Difícil
 const inivar = "h_arremessar=1"
 
@@ -2052,9 +2067,10 @@ const eveste = 1 # Eventos perso: Sim
 
 func cmd_social
   se arg1 == este && arg2.tipo == 1
-    $magia_curar.exechabperso(este, arg0.persoesc)
+    $magia_curar.exechabperso(este, arg0.persobat)
   senao arg1 == este && arg2.tipo == 2
-    $cmd_socar.exechabperso(este, arg0.persobat)
+    $mens.p(este, arg1)
+    $mens.mtodos2("$P dá um tapa na cara de $a.", "$P dá um tapa na sua cara.")
   fimse
 
 
@@ -2373,7 +2389,7 @@ const nome = "lagarto verde"
 const descnome = "um lagarto verde"
 const sexoini = 2 # Sexo Perso: 2 Aleatório
 const msexo = 1 # Sexo Msg: 1 Masculino
-const p_animal = 3 # Lugar após domar: 3 Comando Animal ou sala, protege o dono
+const p_animal = 3 # Lugar após domar: 3 Comando Animal ou sala, vai para sala na luta
 const p_montar_tipo = 1 # Montar: 1 Somente se tiver dono
 const p_lugar = 2
 const eveste = 1 # Eventos perso: Sim
@@ -2395,7 +2411,7 @@ const nome = "lagarto vermelho"
 const descnome = "um lagarto vermelho"
 const sexoini = 2 # Sexo Perso: 2 Aleatório
 const msexo = 1 # Sexo Msg: 1 Masculino
-const p_animal = 3 # Lugar após domar: 3 Comando Animal ou sala, protege o dono
+const p_animal = 3 # Lugar após domar: 3 Comando Animal ou sala, vai para sala na luta
 const p_montar_tipo = 1 # Montar: 1 Somente se tiver dono
 const p_lugar = 2
 const p_evoluiperso = "teste046"
@@ -2421,7 +2437,7 @@ const sexoini = 2 # Sexo Perso: 2 Aleatório
 const msexo = 1 # Sexo Msg: 1 Masculino
 const tipo1 = "normal"
 const tipo2 = "vegetal"
-const p_animal = 3 # Lugar após domar: 3 Comando Animal ou sala, protege o dono
+const p_animal = 3 # Lugar após domar: Comando Animal ou sala, vai para sala na luta
 const p_montar_tipo = 1 # Montar: 1 Somente se tiver dono
 const p_lugar = 3
 
@@ -2435,7 +2451,7 @@ const sexoini = 2 # Sexo Perso: 2 Aleatório
 const msexo = 1 # Sexo Msg: 1 Masculino
 const tipo1 = "normal"
 const tipo2 = "fogo"
-const p_animal = 3 # Lugar após domar: 3 Comando Animal ou sala, protege o dono
+const p_animal = 3 # Lugar após domar: Comando Animal ou sala, vai para sala na luta
 const p_montar_tipo = 1 # Montar: 1 Somente se tiver dono
 const p_lugar = 3
 const p_evoluimsg1 = "$P se transforma momentaneamente em chamas, e quando elas se apagam, você \
@@ -2711,6 +2727,25 @@ func cmd_darobj
   $mens.p(este, arg0)
   $mens.mvis1("$P diz para $a: Não aceito propina.")
   ret 1
+
+
+classe p_teste156
+herda comum_persobat
+const nome = "super cão"
+const descnome = "um super cão"
+const descver = "Mamífero da família dos canídeos."
+const descsala8 = "$P late para você."
+const sexoini = 2 # Sexo Perso: 2 Aleatório
+const msexo = 1 # Sexo Msg: 1 Masculino
+const pesoobj = 30100
+const volobj = 300
+const p_agressivo = 2 # Agressivo: 2 Sim
+const p_captura = 2 # Domar: 2 Fácil
+const inivar = "h_arremessar=1"
+
+func recalc1_auto # Altera atributos do personagem
+# Não alterar; função criada automaticamente
+  pvidamax += 800
 
 
 classe s_teste001
@@ -3055,10 +3090,11 @@ func cmd_escr # Escreveu algo
 classe s_teste018
 herda b_teste
 const s_titulo = "Macaco"
-const s_desc = "Aqui fica um mamífero quadrúmeno. Se alimentam de frutas e de sementes,\n\
-ma quem sabe algum deles se interesse por uma bisteca. Geralmente são\n\
-inteligentes, sociáveis e muito ágeis, mas esses aqui se sentiram\n\
-ameaçados quando você entrou na jaula."
+const s_desc = "Aqui fica um mamífero quadrúmeno singular. Após domado, pode ir para a sala,\n\
+mas não vai automaticamente durante as lutas. Quadrúmenos se alimentam\n\
+de frutas e de sementes, mas quem sabe se interesse por uma bisteca.\n\
+Geralmente são inteligentes, sociáveis e muito ágeis, mas esses aqui\n\
+se sentiram ameaçados quando você entrou na jaula."
 const dir_s = $s_teste017
 const s_reset = "P 100 teste002 3 6 1"
 
@@ -3074,7 +3110,8 @@ herda b_teste
 const s_titulo = "Cão"
 const s_desc = "Aqui é a jaula de um mamífero da família dos canídeos. São quadrúpedes,\n\
 mas de vez em quando ficam em pé apoiados em duas patas apenas. Esses\n\
-aqui são um pouco selvagens, pouco acostumados com a presença humana."
+aqui são um pouco selvagens, pouco acostumados com a presença humana.\n\
+Porém, após domados, são tão apegados que nunca vão para a sala."
 const dir_l = $s_teste017
 const s_reset = "P 100 teste003 3 6 1 h_socar=1,h_arremessar=1"
 
@@ -3088,9 +3125,10 @@ func s_reset1 # Realiza o reset
 classe s_teste020
 herda b_teste
 const s_titulo = "Morcego"
-const s_desc = "Esta é a jaula de alguns mamíferos da ordem dos quirópteros. Esses aqui\n\
-são basicamente ratos voadores, mas os membros inferiores possuem patágio,\n\
-por isso podem funcionar como asas, e esses animais podem voar."
+const s_desc = "Esta é a jaula de alguns mamíferos da ordem dos quirópteros. Esses aqui,\n\
+diferentemente dos quadrúmenos, vão para a sala quando estão lutando.\n\
+Eles são basicamente ratos voadores, mas os membros inferiores possuem\n\
+patágio, por isso podem funcionar como asas, e esses animais podem voar."
 const dir_n = $s_teste017
 const s_reset = "P 100 teste004 3 6 1 h_arremessar=1"
 
@@ -3104,11 +3142,14 @@ func s_reset1 # Realiza o reset
 classe s_teste021
 herda b_teste
 const s_titulo = "Centro de treinamento"
-const s_desc = "Aqui os funcionários do zoológico treinam animais e fazem duelos\n\
-entre si. No momento estão descansando, mas você pode desafiá-los\n\
-seguindo ao norte."
+const s_desc = "Aqui os funcionários do zoológico treinam animais e fazem duelos entre si.\n\
+No momento estão descansando, mas você pode desafiá-los seguindo ao norte.\n\
+À leste, é possível lutar com um cão usando 3 combatentes ao mesmo tempo.\n\
+Ao norte, luta-se com um treinador e à oeste também, mas com 2 combatentes."
 const dir_n = $s_teste022
 const dir_s = $s_teste014
+const dir_l = $s_teste133
+const dir_o = $s_teste134
 
 
 classe s_teste022
@@ -4436,13 +4477,11 @@ const s_titulo = "Controlando outros personagens"
 const s_desc = "Ao norte, monitorando o cmd e outros comandos\n\
 Ao sul, comandos para os personagens\n\
 A nordeste, usando atalhos\n\
-A noroeste, animais de personagens\n\
 A sudeste, Limpar itens,habilidades,magias"
 const dir_n = $s_teste099
 const dir_s = $s_teste100
 const dir_l = $s_teste043
 const dir_ne = $s_teste101
-const dir_no = $s_teste133
 const dir_se = $s_teste135
 
 
@@ -4964,7 +5003,7 @@ const s_titulo = "Transporte e poça"
 const s_desc = "Aqui, quem tentar beijar volta para a sala do relógio.\n\
 Há também uma pequena poça d'água. O suficiente para tomar três goles.\n\
 Ao agradecer a curandeira (exemplo, reverenciar curandeira), ela lança\n\
-uma magia de cura em você. Porém, ria dela e leavará um soco."
+uma magia de cura em você. Porém, ria dela e levará um tapa na cara."
 const dir_n = $s_teste119
 const dir_s = $s_teste130
 const s_reset = "P 100 teste028 0 0 1\nS 100 teste046 0 S"
@@ -5049,26 +5088,45 @@ const dir_no = $s_teste043
 
 classe s_teste133
 herda b_teste
-const s_titulo = "Animais de personagens"
-const s_desc = "O animal escolhido é sempre persoesc. Assim, se seu animal número 2 for um\n\
-macaco e você quiser mudar o nível dele para 4, primeiro você tecla 2.\n\
-Depois, os comandos:\n\
-cmd persoesc.pnivel=4,persoesc.recalc=1\n\
-Basicamente foi colocado persoesc seguido de ponto antes de cada variável."
-const dir_no = $s_teste134
-const dir_se = $s_teste098
+const s_titulo = "Luta com 3 combatentes"
+const s_desc = "Aqui é permitido 2 auxiliares na luta, ou seja, os seus três primeiros\n\
+combatentes. Esse cão, embora seja nível 1, tem uma quantidade enorme\n\
+de pontos de vida, por isso a luta pode ser longa."
+const dir_o = $s_teste021
+const s_auxluta = 2
+const s_reset = "P 100 teste156 1 1 1"
+
+func s_reset1 # Realiza o reset
+# Não alterar; função criada automaticamente a partir de s_reset
+  se p_teste156:objsolto.total < 1
+    criar("p_teste156", este, 1)
+  fimse
 
 
 classe s_teste134
 herda b_teste
-const s_titulo = "Continuação de animais de personagens"
-const s_desc = "Outro exemplo, animal com habilidade Socar no nível perito:\n\
-cmd persoesc.var.h_Socar=8\n\
-Animais desmaiam ao invés de morrer, e nesse caso não se recupera\n\
-automaticamente. Mas você pode recuperá-lo com:\n\
-cmd persoesc.restaurar\n\
-Para restaurar todos os animais, vide comando Deitar da sala casa001."
-const dir_se = $s_teste133
+const s_titulo = "Sala grande"
+const s_desc = "Esta sala é grande o suficiente para cada um lutar com dois combatentes\n\
+ao mesmo tempo."
+const dir_l = $s_teste021
+const s_auxluta = 1
+const s_reset = "P 100 teste005 6 6 1 h_chutar=1,e_apagar=5\n\
+A 100 teste003 4 4 h_socar=1\n\
+A 100 teste003 5 5 h_socar=1"
+
+func s_reset1 # Realiza o reset
+# Não alterar; função criada automaticamente a partir de s_reset
+  ref p # Último personagem criado
+  ref u # Último personagem ou animal criado
+  se p_teste005:objsolto.total < 1
+    p = u = criar("p_teste005", este, 6, "h_chutar=1,e_apagar=5")
+  fimse
+  se p.animalmais
+    criar("p_teste003", p, 4, "h_socar=1")
+  fimse
+  se p.animalmais
+    criar("p_teste003", p, 5, "h_socar=1")
+  fimse
 
 
 classe s_teste135

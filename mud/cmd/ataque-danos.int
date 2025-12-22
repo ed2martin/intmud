@@ -131,13 +131,15 @@ func danosgolpe # Obtém informações sobre os danos que o ataque causaria
   fimse
   se ataque1municao && arma2
     refvar m = ataque1municao == 1 ? "" : "*" + ataque1municao
-    lin += "\n   Na munição: " + arma2.var.z_armamin_ + m + " a " + arma2.var.z_armamax_ + m
+    lin += "\n   Na munição: " + arma2.var.z_armamin_ + m + " a " + arma2.var.z_armamax_ + \
+m
     temp1 += arma2.var.z_armamin_ * ataque1municao
     temp2 += arma2.var.z_armamax_ * ataque1municao
   fimse
   se ataque1item && arg4
     refvar m = ataque1item == 1 ? "" : "*" + ataque1item
-    lin += "\n   Na munição: " + arg4.var.z_armamin_ + m + " a " + arg4.var.z_armamax_ + m
+    lin += "\n   Na munição: " + arg4.var.z_armamin_ + m + " a " + arg4.var.z_armamax_ + \
+m
     temp1 += arg4.var.z_armamin_ * ataque1item
     temp2 += arg4.var.z_armamax_ * ataque1item
   fimse

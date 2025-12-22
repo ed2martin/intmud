@@ -2,11 +2,10 @@ classe h_cmd_empunhar
 herda comando_comum, comum_vestir
 const objmenu = $m_cmd_empunhar
 const objtipo = 2 # Pode renomear
+const objprocessa = 2 # Pode ser usado com o número do animal na frente
 const posic = 5
 #
-const m_ajuda = "-t\n\
--s <objeto>\n\
-Seu personagem empunha uma arma que está carregando."
+const m_ajuda = "-t\n-s <objeto>\nSeu personagem empunha uma arma que está carregando."
 const m_sem_args = "Empunhar o quê?"
 const m_naover = "Você não vê $m."
 const m_nao_arma = "$O não é arma."
@@ -38,67 +37,67 @@ m_em_uso_p m_em_uso_a m_em_cima_p m_em_cima_a\n\
 m_empunhou1_p m_empunhou1_a m_empunhou2_p m_empunhou2_a m_item_p m_item_a"
 
 func escr
-  ret !arg1, $mensjog.msg(m_sem_args, arg0)
+  refvar contr = arg0.contr # Quem recebe as mensagens
+  ret !arg1, $mensjog.msg(m_sem_args, contr, arg0)
   refvar perm_msg = $perm_[arg0.jogperm].vestir
-  ret perm_msg, $mensjog.msg(perm_msg, arg0)
-  refvar alvo = ref(arg0.persoesc) ?? arg0
-  refvar tipomsg = arg0 == alvo ? "_p" : "_a"
-  ret alvo.iempu, $mens.mp(m_empunhando[tipomsg], arg0, alvo)
+  ret perm_msg, $mensjog.msg(perm_msg, contr, arg0)
+  refvar tipomsg = contr == arg0 ? "_p" : "_a"
+  ret arg0.iempu, $mens.mp(m_empunhando[tipomsg], contr, arg0)
   txt200 lin
 # Verifica condições para empunhar
-  ref r = misc:itemdentro(arg0.persoesc, arg1)
+  ref r = misc:itemdentro(arg0, arg1)
   se !r
     $mens.mens = arg1
-    ret $mens.mp(m_naover, arg0, alvo, r)
+    ret $mens.mp(m_naover, contr, arg0, r)
   fimse
-  ret !r.armatipo, $mens.mp(m_nao_arma, arg0, alvo, r)
-  refvar msg = checavestir(alvo, r)
-  ret msg, $mens.mp(msg, arg0, alvo, r)
-  se !alvo.var.h_[txtsublin(config:arma_txt, r.armatipo, 1)]
+  ret !r.armatipo, $mens.mp(m_nao_arma, contr, arg0, r)
+  refvar msg = checavestir(arg0, r)
+  ret msg, $mens.mp(msg, contr, arg0, r)
+  se !arg0.var.h_[txtsublin(config:arma_txt, r.armatipo, 1)]
     $mens.mens = txtsublin(config:arma_txt, r.armatipo, 1)
-    ret $mens.mp(m_conhecimento[tipomsg], arg0, alvo, r)
+    ret $mens.mp(m_conhecimento[tipomsg], contr, arg0, r)
   fimse
 # Verifica posições extras
-  refvar vest1 = alvo.positemvestir
+  refvar vest1 = arg0.positemvestir
   se vest1 & r.vestirextra != "0"
     refvar obj = arg0.objitemvestir(r.vestirextra)
-    ret $mens.mp(m_em_uso[tipomsg], arg0.contr, arg0, obj)
+    ret $mens.mp(m_em_uso[tipomsg], contr, arg0, obj)
   fimse
 # Verifica itens em cima nas posições extras
   epara lin = txtbith(r.vestirextra), lin, lin = txt2(lin)
     continuar vest1 & config:vestir[txt1(lin)] == "0"
     refvar obj = arg0.objitemvestir(config:vestir[txt1(lin)])
-    ret $mens.mp(m_em_cima[tipomsg], arg0.contr, arg0, obj)
+    ret $mens.mp(m_em_cima[tipomsg], contr, arg0, obj)
   efim
 # Verifica se conflita com algum outro tipo de item
   listaitem i
   epara i = arg0.dentro2.ini, i, i.depois
-    se i.obj.item && ((txt(i.obj.tipoitem2) & r.vestiritem) != "0" || \
-(txt(r.tipoitem2) & i.obj.vestiritem) != "0")
-      ret $mens.mp(m_item[tipomsg], arg0.contr, arg0, r, i.obj)
+    se i.obj.item && (txt(i.obj.tipoitem2) & r.vestiritem != "0" || txt(r.tipoitem2) & i.obj.vest\
+iritem != "0")
+      ret $mens.mp(m_item[tipomsg], contr, arg0, r, i.obj)
     fimse
   efim
 # Eventos
-  ret cmd_vestir(alvo, r, 50), nulo
+  ret cmd_vestir(arg0, r, 50), nulo
   listaobj e
-  epara e.addfim(alvo.evento), e, e.ini.remove
-    ret e.objini.cmd_vestir(alvo, r, 50, alvo), nulo
+  epara e.addfim(arg0.evento), e, e.ini.remove
+    ret e.objini.cmd_vestir(arg0, r, 50, arg0), nulo
   efim
   epara e.addfim(r.evento), e, e.ini.remove
-    ret e.objini.cmd_vestir(alvo, r, 50, r), nulo
+    ret e.objini.cmd_vestir(arg0, r, 50, r), nulo
   efim
 # Empunha
   r.vestir(50)
   $mens.p(arg0, nulo, r)
-  $mens.msgsomvis(m_empunhou1[tipomsg], r.i_som_emp1, arg0)
+  $mens.msgsomvis(m_empunhou1[tipomsg], r.i_som_emp1, contr)
   $mens.mvis2som(m_empunhou2[tipomsg], r.i_som_emp1)
 # Eventos
-  cmd_vestiu(alvo, r, 50)
-  epara e.addfim(alvo.evento), e, e.ini.remove
-    e.objini.cmd_vestiu(alvo, r, 50, alvo)
+  cmd_vestiu(arg0, r, 50)
+  epara e.addfim(arg0.evento), e, e.ini.remove
+    e.objini.cmd_vestiu(arg0, r, 50, arg0)
   efim
   epara e.addfim(r.evento), e, e.ini.remove
-    e.objini.cmd_vestiu(alvo, r, 50, r)
+    e.objini.cmd_vestiu(arg0, r, 50, r)
   efim
 
 
