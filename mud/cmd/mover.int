@@ -8,12 +8,17 @@ const m_flutuando = "Você não consegue porque não está flutuando."
 const m_cansado = "Você está cansad$s demais."
 const m_animcansado = "$A está cansad$t demais."
 const m_seguir = "Você segue $a."
+const m_fugir_seguir = "$P foge com $a."
+const m_fugir_desmontou1 = "Você desmontou $d $a para lutar."
+const m_fugir_desmontou2 = "$P desmontou $d $a para lutar."
+const m_nao_fugir = "$A não conseguiu fugir porque tem alguém montado."
 const m_ignorar = "$A não quer obedecer."
 const m_escuro = "Está escuro..."
 const m_cego = "Você está ceg$s."
 const m_dormindo = "Você vê estranhas imagens em seus sonhos..."
 const admordem = "m_impossivel m_portafechada m_itemfechado m_espaco m_flutuando\n\
-m_cansado m_animcansado m_seguir m_ignorar m_escuro m_cego m_dormindo"
+m_cansado m_animcansado m_seguir m_fugir_seguir m_fugir_desmontou1\n\
+m_fugir_desmontou2 m_ignorar m_escuro m_cego m_dormindo"
 
 
 classe comando_mover
@@ -182,6 +187,9 @@ func mover # Personagem anda em uma direção
   !arg0.j_imortal && (arg0.pmove -= intdiv((total + 1) / 2))
   arg0.sock.cmd_espera = arg0.p_espera = intmin(30, total ?? 1) * 2
   se !(s1.socktot || arg1.socktot) # Não tem jogador por perto
+    epara l.addfim(arg0.persolugar), l, l.ini.remove
+      l.objini.atkenv && l.objini.poslugar.remove # Desmonta se está lutando
+    efim
     arg0.mudadono(arg1)
   senao arg0.p_bebida >= $miscfome.bebedir - rand(20) # Cambaleando não anda em silêncio
     refvar m1 = (!arg2 ? s1.msg_sai0_[dir])
@@ -279,25 +287,41 @@ func mover # Personagem anda em uma direção
   efim
   ret 1
 
-func msgsair # Envia mensagens do personagem saindo da sala
+func msgsair # Envia mensagens do personagem saindo da sala, desmonta quem está lutando
 # arg0 = personagem
 # arg1 = item aonde está entrando (na sala origem) ou nulo
 # arg2 = mensagem saiu da sala origem
 # arg3 = verdadeiro se não deve andar em silêncio
+  txt100 txtcarga
   listaobj l
+# Desmonta quem está montado e lutando
+  epara l.addfim(arg0.persolugar), l, l.ini.remove
+    continuar !l.objini.atkenv
+    l.objini.poslugar.remove
+    $mens.p(l.objini, arg0)
+    $mens.mvis2(comando_mover_cfg:m_fugir_desmontou1, comando_mover_cfg:m_fugir_desmontou2)
+  efim
+# Prepara mensagem
   $mens.p(arg0, nulo, arg1)
   refvar ssai = arg0.bitinv & 0x30 ? arg0.p_som_voasai : arg0.p_som_sai
-  txt100 carga = arg0.desccarga
-  carga && (carga = arg0.perso ? " carregando " + carga : " com " + carga)
+  se arg0.persolugar
+    l.addfim(arg0.persolugar)
+    txtcarga = (arg0.perso ? " carregando " : " com ") + l.objini.descnome2
+    epara l.ini.remove, l, l.ini.remove
+      txtcarga += (l.total > 1 ? ", " : " e ") + l.objini.descnome2
+    efim
+  fimse
+# Obtém lista de personagens
   l.addfim(arg0.dono.dentro2)
   l.remove(arg0, arg0.persolugar)
+# Envia mensagens
   se !arg3 && arg0.bitver & 256 # Anda em silêncio
-    $mens.mens = " em silêncio" + carga
+    $mens.mens = " em silêncio" + txtcarga
     epara nulo, l, l.ini.remove
       l.objini.bitver & 0x1000 && $mens.msgsomvis(arg2, ssai, l.objini)
     efim
   senao
-    $mens.mens = carga
+    $mens.mens = txtcarga
     epara nulo, l, l.ini.remove
       $mens.msgsomvis(arg2, ssai, l.objini)
     efim
@@ -308,19 +332,29 @@ func msgentrar # Envia mensagens do personagem entrando na sala
 # arg1 = item de onde está saindo (na sala destino) ou nulo
 # arg2 = mensagem entrou na sala destino
 # arg3 = verdadeiro se não deve andar em silêncio
-  $mens.p(arg0, nulo, arg1)
+  txt100 txtcarga
   listaobj l
+# Prepara mensagem
+  $mens.p(arg0, nulo, arg1)
   refvar sent = arg0.bitinv & 0x30 ? arg0.p_som_voaentra : arg0.p_som_entra
-  txt100 carga = arg0.desccarga
+  se arg0.persolugar
+    l.addfim(arg0.persolugar)
+    txtcarga = (arg0.perso ? " carregando " : " com ") + l.objini.descnome2
+    epara l.ini.remove, l, l.ini.remove
+      txtcarga += (l.total > 1 ? ", " : " e ") + l.objini.descnome2
+    efim
+  fimse
+# Obtém lista de personagens
   l.addfim(arg0.dono.dentro2)
   l.remove(arg0, arg0.persolugar)
+# Envia mensagens
   se !arg3 && arg0.bitver & 256 # Anda em silêncio
-    $mens.mens = " em silêncio" + (carga ? " carregando " + carga)
+    $mens.mens = " em silêncio" + txtcarga
     epara nulo, l, l.ini.remove
       l.objini.bitver & 0x1000 && $mens.msgsomvis(arg2, sent, l.objini)
     efim
   senao
-    $mens.mens = carga ? " carregando " + carga
+    $mens.mens = txtcarga
     epara nulo, l, l.ini.remove
       $mens.msgsomvis(arg2, sent, l.objini)
     efim
@@ -344,7 +378,15 @@ func fugir # Foge nessa direção
 # arg1 = sala destino ou nulo se deve obter a sala a partir do personagem
   ref r = arg1 ?? arg0.dono.dirsala(dir, arg0)
   ret !r, nulo
+# Obtém o personagem e os animais do personagem que estão na mesma sala
   ref perso = arg0.poslugar.objlista ?? arg0
+  listaobj l
+  listaitem i
+  epara i = arg0.lseguir.ini, i, i.depois
+    i.obj.perso && i.obj.tseguir == 3 && i.obj.dono == perso.dono && l.addfim(i.obj)
+  efim
+  l.remove(perso)
+# Foge
   arg0.pmove -= 5
   arg0.batalhafim
   perso.batalhafim
@@ -354,6 +396,18 @@ func fugir # Foge nessa direção
   msgsair(perso, nulo, m_fugir2, 1)
   perso.mudadono(r)
   msgentrar(perso, nulo, mentra, 1)
+# Faz animais do personagem também fugirem
+  epara i = l.ini, i, i.depois
+    se i.obj.p_animal != 1
+      $mens.p(i.obj, arg0)
+      $mens.mvis2("", comando_mover_cfg:m_fugir_seguir)
+      i.obj.mudadono(arg0)
+    senao
+      msgsair(i.obj, nulo, m_fugir2, 1)
+      i.obj.mudadono(r)
+      msgentrar(i.obj, nulo, mentra, 1)
+    fimse
+  efim
 
 
 classe h_cmd_n
@@ -711,22 +765,35 @@ const nome8 = "Seguir"
 const tipo8 = "opc_linha"
 const vari8 = "m_seguir"
 #
-const nome9 = "Animal não obede"
-const info9 = "Quando está montado em um animal"
+const nome9 = "Animal foge com dono"
+const info9 = "Animal vai para o comando Animal"
 const tipo9 = "opc_linha"
-const vari9 = "m_ignorar"
+const vari9 = "m_fugir_seguir"
 #
-const nome10 = "Está escuro"
+const nome10 = "Desmontou na fuga perso"
 const tipo10 = "opc_linha"
-const vari10 = "m_escuro"
+const vari10 = "m_fugir_desmontou1"
 #
-const nome11 = "Está cego"
+const nome11 = "Desmontou na fuga outros"
 const tipo11 = "opc_linha"
-const vari11 = "m_cego"
+const vari11 = "m_fugir_desmontou2"
 #
-const nome12 = "Não está acordado"
+const nome12 = "Animal não obedece"
+const info12 = "Quando está montado em um animal"
 const tipo12 = "opc_linha"
-const vari12 = "m_dormindo"
+const vari12 = "m_ignorar"
+#
+const nome13 = "Está escuro"
+const tipo13 = "opc_linha"
+const vari13 = "m_escuro"
+#
+const nome14 = "Está cego"
+const tipo14 = "opc_linha"
+const vari14 = "m_cego"
+#
+const nome15 = "Não está acordado"
+const tipo15 = "opc_linha"
+const vari15 = "m_dormindo"
 
 
 classe menu_mover_comum

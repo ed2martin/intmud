@@ -12,12 +12,12 @@ const m_ajuda = "-t\n\
 Chama de volta para o comando $Cmd-animal $um-animal que está solt$genero-animal.\n\
 Com um hífen, chama todos os animais que for possível chamar.\n\
 Sem argumentos, mostra $seus-animais solt$genero-animals."
-const m_sem_animal = "Não possui $nenhum-animal solt$genero-animal."
+const m_sem_animal = "Não há $nenhum-animal para chamar."
 const m_titulo = "Chamar quem?"
 const m_linha = "$num  $nome  N$nivel"
 const m_numero_invalido = "$m não é número de $animal."
 const m_nao_tem = "Você não tem $m."
-const m_nao_solto = "$M não está solto."
+const m_nao_solto = "$A não está solt$t."
 const m_auto = "Chamar a si própri$s?"
 const m_montado = "$O está montad$u em $a."
 const m_nao_chamar = "Não é possível chamar $a."
@@ -41,7 +41,7 @@ func escr
     textotxt t
     listaitem i
     epara i = arg0.lseguir.ini, i, i.depois
-      continuar i.obj.tseguir != 3
+      continuar i.obj.tseguir != 3 || i.obj.p_animal == 1
       animal = i.obj
       refvar indice = txt(i.obj.pnumero + 100) + " "
       t.addfim(indice + txtremove(vartroca(m_linha, "$", "t1_"), "d"))
@@ -58,7 +58,7 @@ func escr
     listaitem i
     epara i = arg0.lseguir.ini, i, i.depois
       ref r = i.obj
-      r.perso && r.tseguir == 3 && !r.persolugar && 1 != r.p_animal && animais.addfim(r)
+      r.perso && r.tseguir == 3 && !r.persolugar && r.p_animal != 1 && animais.addfim(r)
     efim
     ret !animais, $mens.mp(m_nenhum_chamar, arg0)
     epara i = animais.ini, i, i.depois

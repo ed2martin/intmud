@@ -421,9 +421,9 @@ func montar # Monta em arg0 (ou desmonta, se arg0 for nulo)
       persolugar.ini.remove
     efim
     poslugar = alvo.persolugar.addfim(este)
-    posicao = 6
+    posicao = (atkenv ? 7 : 6)
   senao
-    posicao = 8
+    posicao = (atkenv ? 7 : 8)
   fimse
 
 func cabedentro # Retorna 1 se personagem cabe em uma sala ou 0 se não cabe
