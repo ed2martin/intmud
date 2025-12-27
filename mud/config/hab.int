@@ -454,6 +454,9 @@ func escrhab
   senao !(saladest = sala.dirsala(arg1, arg0))
     $mens.mens = arg1
     $mens.mp("Saída não existe: $m", arg0)
+  senao sala.porta_[arg1] >= 2
+    $mens.mens = arg1
+    $mens.mp("A porta na direção $m está fechada.", arg0)
   senao !saladest.visivel(arg0)
     $mens.mens = arg1
     $mens.mp("$P não enxerga nada na direção $m.", arg0)
