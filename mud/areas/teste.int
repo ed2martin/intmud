@@ -257,7 +257,7 @@ func cmd_podevestir
 
 func recalc2_auto # Altera atributos do personagem
 # Não alterar; função criada automaticamente
-  defnorm += 15
+  defnorm += 15 * arg0
 
 
 classe i_teste015
@@ -270,7 +270,7 @@ const vestir1 = "40"
 
 func recalc2_auto # Altera atributos do personagem
 # Não alterar; função criada automaticamente
-  bitinv = 4 | bitinv
+  bitinv |= 4
 
 
 classe i_teste016
@@ -285,7 +285,7 @@ const vestir1 = "2"
 
 func recalc2_auto # Altera atributos do personagem
 # Não alterar; função criada automaticamente
-  bitver = 4 | bitver
+  bitver |= 4
 
 
 classe i_teste017
@@ -304,9 +304,9 @@ const vestir1 = "40000"
 
 func recalc2_auto # Altera atributos do personagem
 # Não alterar; função criada automaticamente
-  pmovemax += 5
-  atknorm += 10
-  precisao += -4
+  pmovemax += 5 * arg0
+  atknorm += 10 * arg0
+  precisao += -4 * arg0
 
 
 classe i_teste019
@@ -345,9 +345,9 @@ func cmd_remover
 
 func recalc2_auto # Altera atributos do personagem
 # Não alterar; função criada automaticamente
-  pveloc1 += -2 * pnivel - 3
-  atknorm += -2 * pnivel - 10
-  evasao += -1 * pnivel - 2
+  pveloc1 += (-2 * pnivel - 3) * arg0
+  atknorm += (-2 * pnivel - 10) * arg0
+  evasao += (-1 * pnivel - 2) * arg0
 
 
 classe i_teste020
@@ -1179,7 +1179,7 @@ const vestir1 = "20" # Aonde vestir: 5-corpo
 
 func recalc2_auto # Altera atributos do personagem
 # Não alterar; função criada automaticamente
-  defnorm += 3
+  defnorm += 3 * arg0
 
 
 classe i_teste078
@@ -2628,7 +2628,7 @@ func clonar # arg0 = personagem que será copiado
   efim
 # Acerta personagem
   ajustapeso # Ajusta peso e volume
-  recalc_auto # Recalcula atributos do personagem
+  recalc_auto(1) # Recalcula atributos do personagem
   restaurar # Restaura vida, movimentos e mana
 
 func cmd_chegou

@@ -502,12 +502,12 @@ func recalc_exec # Ajusta variáveis
 # Modificadores
   txt512 lin
   epara lin = var.ini("f_"), lin, lin = var.depois(lin, "f_")
-    [lin]:recalc2_auto, $[lin].cmd_recalc2(este)
+    [lin]:recalc2_auto(1), $[lin].cmd_recalc2(este)
   efim
 # Efeitos conforme o que está vestindo
   listaitem i
   epara i = dentro2.ini, i, i.depois
-    [i.obj]:recalc2_auto, i.obj.cmd_recalc2(este)
+    [i.obj]:recalc2_auto(1), i.obj.cmd_recalc2(este)
   efim
   epara i = evento.ini, i, i.depois
     i.obj.cmd_recalc3(este)
@@ -525,11 +525,12 @@ func teclou # Processa comando
 func teclouperm # Processa comando com permissões específicas
 # arg0 = comando
 # arg1 = objeto perm que contém as permissões
-  ref obj # Objeto que vai processar o comando
-  prog p # Para procurar o objeto
+# arg2 = objeto que vai processar o comando; se nulo, obtém a partir de arg0
   ret !arg0, nulo
+  ref obj = arg2
 # Obtém o comando
-  enquanto 1
+  enquanto !obj
+    prog p # Para procurar o objeto
     sair obj = $cmd_[txt1(arg0)].objcmd(este, arg1) # Checa comando exato
     sair obj = $soc_[txt1(arg0)].objcmd(este, arg1) # Checa social exato
     uint8 nivel1 = 255
@@ -557,7 +558,14 @@ func teclouperm # Processa comando com permissões específicas
     p_comando.limpar
     p_comando.addfim(arg0)
     p_cmdperm = arg1
-    contr.msg(txtmaiini(txt(obj, 4)) + " em " + p_espera / 10 + "s")
+    refvar contr1 = contr # Porque contr é uma função, obj é uma variável ref
+    se !contr1.atkenv # Se não está lutando
+      contr1.sock.cmd_espera = p_espera + 1 # Acerta tempo de espera do jogador
+    senao # Se está lutando, ordem para um personagem não trava o jogador
+      $mens.o_1 = p_espera / 10
+      $mens.mens = txte(txt(obj, 4))
+      $mens.mp(config:m_atk_espera, contr1, este)
+    fimse
     ret
   fimse
 # Gera eventos

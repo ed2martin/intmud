@@ -63,6 +63,7 @@ const a_prob2 = 100
 const a_prob3 = 100
 const c_espera = config:atkespera # Tempo de esperar após usar esse comando
 int32 mudavida # Para calcular mudança nos pontos de vida do alvo
+int1 mudacritico # Se é golpe crítico
 int8 result # Resultado da batalha:
 # 0=acertou o alvo, 1=não teve efeito, 2=errou o alvo, 3=esquivou, 4=cancelar ataque
 ref arma1 # Arma usada
@@ -110,30 +111,35 @@ vel\n\
 msgextra\n\
 atk1_usar1 atk1_usar2 atk1_usar3\n\
 atk1_auto1 atk1_auto2 atk1_perso1 atk1_perso2 atk1_perso3\n\
+atk1_critico1 atk1_critico2 atk1_critico3\n\
 atk1_matou1 atk1_matou2 atk1_matou3\n\
 atk1_errou1 atk1_errou2 atk1_errou3\n\
 atk1_nulo1 atk1_nulo2 atk1_nulo3\n\
 atk1_esquivou1 atk1_esquivou2 atk1_esquivou3\n\
 atk2_usar1 atk2_usar2 atk2_usar3\n\
 atk2_auto1 atk2_auto2 atk2_perso1 atk2_perso2 atk2_perso3\n\
+atk2_critico1 atk2_critico2 atk2_critico3\n\
 atk2_matou1 atk2_matou2 atk2_matou3\n\
 atk2_errou1 atk2_errou2 atk2_errou3\n\
 atk2_nulo1 atk2_nulo2 atk2_nulo3\n\
 atk2_esquivou1 atk2_esquivou2 atk2_esquivou3\n\
 atk3_usar1 atk3_usar2 atk3_usar3\n\
 atk3_auto1 atk3_auto2 atk3_perso1 atk3_perso2 atk3_perso3\n\
+atk3_critico1 atk3_critico2 atk3_critico3\n\
 atk3_matou1 atk3_matou2 atk3_matou3\n\
 atk3_errou1 atk3_errou2 atk3_errou3\n\
 atk3_nulo1 atk3_nulo2 atk3_nulo3\n\
 atk3_esquivou1 atk3_esquivou2 atk3_esquivou3\n\
 atk4_usar1 atk4_usar2 atk4_usar3\n\
 atk4_auto1 atk4_auto2 atk4_perso1 atk4_perso2 atk4_perso3\n\
+atk4_critico1 atk4_critico2 atk4_critico3\n\
 atk4_matou1 atk4_matou2 atk4_matou3\n\
 atk4_errou1 atk4_errou2 atk4_errou3\n\
 atk4_nulo1 atk4_nulo2 atk4_nulo3\n\
 atk4_esquivou1 atk4_esquivou2 atk4_esquivou3\n\
 atk5_usar1 atk5_usar2 atk5_usar3\n\
 atk5_auto1 atk5_auto2 atk5_perso1 atk5_perso2 atk5_perso3\n\
+atk5_critico1 atk5_critico2 atk5_critico3\n\
 atk5_matou1 atk5_matou2 atk5_matou3\n\
 atk5_errou1 atk5_errou2 atk5_errou3\n\
 atk5_nulo1 atk5_nulo2 atk5_nulo3\n\
@@ -302,7 +308,7 @@ func exechab # Chamado quando personagem usa habilidade ou magia
     fimse
     arg6 && $[txt1(arg6)].[txt2(arg6)](arg0, arg1, arg2, arg3, arg4, arg5)
     tipomunicao == 2 && arma2.apagar(1)
-    mudavida = 0
+    mudavida = mudacritico = 0
     se rand(100) < falha1 + arg2 * (falha2 - falha1)
       result = 2 # Errou o alvo
     senao
@@ -674,7 +680,7 @@ func velgolpe # Acerta o tempo de espera conforme o golpe
     p_espera = intmax(p_espera, t2)
   fimse
 
-func execgolpe # Calcula o resultado de um ataque e coloca em result e mudavida
+func execgolpe # Calcula resultado do ataque e coloca em result/mudavida/mudacritico
 # arg0 = personagem que está atacando
 # arg1 = personagem alvo
 # arg2 = quanto sabe da habilidade ou magia (0=iniciante até 1=perito)
@@ -686,7 +692,7 @@ func execgolpe # Calcula o resultado de um ataque e coloca em result e mudavida
   real2 danoadd
   uint8 danotipo
 # Checa se pode realmente atacar
-  result = 4, mudavida = 0, dano = 1
+  result = 4, mudavida = mudacritico = 0, dano = 1
   listaobj l
   ret cmd_atkenv(arg0, arg1, este, dano, danoadd, danotipo), nulo
   epara l.addfim(arg0.evento), l, l.ini.remove
@@ -799,6 +805,11 @@ func execgolpe # Calcula o resultado de um ataque e coloca em result e mudavida
     dano *= 1.333
     sair
   casofim
+# Golpe crítico
+  se arg0 != arg1 && rand(100) < arg0.pcriticoacerto
+    dano += arg0.pcriticoatk * dano / 100
+    mudacritico = 1
+  fimse
 # Atualiza pontos de vida conforme os danos (pelo menos 1 de dano)
   mudavida = -intmax(1, danoadd + dano * arg5)
 
@@ -820,12 +831,16 @@ func mensgolpe # Envia mensagens de alvo principal de acordo com o resultado do 
   casovar result
   casose "0" # Acertou o alvo
     $mens.mens = mudavida
+    $mens.o_1 = $mens.txt(mudacritico ? config:m_dano_critico : config:m_dano_normal, este)
     se !arg1.pvidaok # Se morreu
       ret !menssub(lin, "matou"), nulo
       ret $mens.mtodos3dir(lin.0, lin.1, lin.2, arg2)
     senao arg0 == arg1 # Se o alvo for o próprio personagem
       ret !menssub(lin, "auto"), nulo
       ret $mens.mtodos3dir(lin.0, lin.1, lin.1, arg2)
+    senao mudacritico # Se for golpe crítico
+      ret !(menssub(lin, "critico") || menssub(lin, "perso")), nulo
+      ret $mens.mtodos3dir(lin.0, lin.1, lin.2, arg2)
     senao # Outros casos
       ret !menssub(lin, "perso"), nulo
       ret $mens.mtodos3dir(lin.0, lin.1, lin.2, arg2)
@@ -850,12 +865,16 @@ func mensgolpe2 # Envia mensagens de alvo secundário de acordo com o resultado d
   casovar result
   casose "0" # Acertou o alvo
     $mens.mens = mudavida
-    se arg1.pvidaok
-      ret !arg1.contr.sock || !menssub(lin, "perso"), nulo
-      ret $mens.msginvdir(lin.1, arg1.contr, arg2)
-    senao
+    $mens.o_1 = $mens.txt(mudacritico ? config:m_dano_critico : config:m_dano_normal, este)
+    se !arg1.pvidaok
       ret !menssub(lin, "matou"), nulo
       ret $mens.mtodos3dir(lin.0, lin.1, lin.2, arg2)
+    senao mudacritico
+      ret !(arg1.contr.sock && (menssub(lin, "critico") || menssub(lin, "perso"))), nulo
+      ret $mens.msginvdir(lin.1, arg1.contr, arg2)
+    senao
+      ret !arg1.contr.sock || !menssub(lin, "perso"), nulo
+      ret $mens.msginvdir(lin.1, arg1.contr, arg2)
     fimse
   casose "1" # Não teve efeito
     ret !(arg1.contr.sock && menssub(lin, "nulo")), nulo

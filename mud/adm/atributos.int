@@ -2,7 +2,7 @@ classe opc_atribcomum
 herda comando_adm
 # Funções para mudar atributos de personagens e itens
 #
-real2 atribnum.22 # Atributos numéricos
+real2 atribnum.24 # Atributos numéricos
 real2 atribobj.8 # Atributos de itens
 int8 atribbit.20 # Atributos de bit
 real2 atribatk.32 # Ataques
@@ -28,6 +28,8 @@ Evasão\n\
 Evasão por nível\n\
 Precisão\n\
 Precisão por nível\n\
+Acerto de dano crítico (porcent)\n\
+Bônus de dano crítico (porcent)\n\
 Carrega (gramas)\n\
 Carrega (gramas) por nível"
 #
@@ -60,14 +62,65 @@ Está voando alto\n\
 Está dormindo\n\
 Imune a dormir"
 #
-const p_atrib_atk = "Tipos Normais\nTipos Especiais\n" + config:atknomes
+const p_atrib_atk = "Tipos Físicos\nTipos Especiais\n" + config:atknomes
 
-func atrib2txt # Usado internamente em atrib_salvar
-# arg0 e arg1 = variáveis
-  ret !arg1, txt(0 + arg0) # Exemplo: 5
-  ret !arg0, txt(arg1) + "*pnivel" # Exemplo: 10*pnivel
-  ret arg0 < 0, txt(arg1) + "*pnivel" + txt(arg0) # Exemplo: 10*pnivel-5
-  ret txt(arg1) + "*pnivel+" + txt(arg0) # Exemplo: 10*pnivel+5
+func atrib_dec # Decodifica: extrai números de um texto
+# arg0 = texto do tipo "a = 5" ou "a = 10 * pnivel + 5"
+# arg1 e arg2 = variáveis
+  txt100 lin = txttroca(arg0, "(", " ")
+  se txtsub(lin, 3, 3) == "* pnivel -"
+    arg2 = txtsub(lin, 2, 1)
+    arg1 = -1 * txtsub(lin, 6)
+  senao txtsub(lin, 3, 2) == "* pnivel"
+    arg2 = txtsub(lin, 2, 1)
+    arg1 = txtsub(lin, 6)
+  senao
+    arg1 = txtsub(lin, 2)
+  fimse
+
+func atrib_cod1 # Codifica: monta texto do tipo "a+=5*arg0" a partir de números
+# arg0 = nome da variável
+# arg1 = valor da variável pura
+# arg2 = valor da variável multiplicada por pnivel
+# arg3 = falso (0) se sem a eficiência, como "a+=5"
+# arg3 = verdadeiro (1) se com a eficiência, como "a+=5*arg0"
+  refvar ini = arg0 + " += "
+  se !arg3
+    ret !arg2, ini + txt(arg1) # Exemplo: a+=5
+    ret !arg1, ini + txt(arg2) + "*pnivel" # Exemplo: a+=10*pnivel
+    ret arg1 < 0, ini + txt(arg2) + "*pnivel" + txt(arg1) # Exemplo: a=10+pnivel-5
+    ret ini + txt(arg2) + "*pnivel+" + txt(arg1)
+  fimse
+  ret !arg2, ini + txt(arg1) + "*arg0" # Exemplo: a+=5*arg0
+  ret !arg1, ini + txt(arg2) + "*pnivel*arg0" # Exemplo: a+=10*pnivel*arg0
+  ret arg1 < 0, ini + "(" + txt(arg2) + "*pnivel" + txt(arg1) + ")*arg0"
+# Exemplo: a+=(10*pnivel-5)*arg0
+  ret ini + "(" + txt(arg2) + "*pnivel+" + txt(arg1) + ")*arg0"
+# Exemplo: a=(10*pnivel+5)*arg0
+
+func atrib_cod2 # Codifica: monta texto do tipo "a=5" a partir de números
+# arg0 = nome da variável
+# arg1 = valor da variável pura
+# arg2 = valor da variável multiplicada por pnivel
+  ret !arg2, arg0 + "=" + txt(arg1) # Exemplo: a=5
+  ret !arg1, arg0 + "=" + txt(arg2) + "*pnivel" # Exemplo: a=10*pnivel
+  ret arg1 < 0, arg0 + "=" + txt(arg2) + "*pnivel" + txt(arg1) # Exemplo: a=10*pnivel-5
+  ret arg0 + "=" + txt(arg2) + "*pnivel+" + arg1 # Exemplo: a=10*pnivel+5
+
+func atrib_muldec # Decodifica: extrai um número de atributo de multiplicação
+# arg0 = texto do tipo "atktipo.1 *= 0.3" ou "atktipo.1 *= -0.7 * arg0 + 1
+  ret txtsub(arg0, 2, 1) == "0", 0
+  ret txtsub(arg0, 2, 1) == "intmax(0.01,", 100 * txtsub(arg0, 3) + 100
+  ret 100 * txtsub(arg0, 2)
+
+func atrib_mulcod # Codifica: monta texto do tipo "a*=intmax(0.01,10*arg0+1)"
+# arg0 = nome da variável
+# arg1 = valor da variável, sendo que 100 é não alterar
+# arg2 = falso (0) se sem a eficiência, como "a*=1.5"
+# arg2 = verdadeiro (1) se com a eficiência, como "a*=intmax(0.01, 0.5*arg0+1)"
+  ret arg1 <= 0, arg0 + " = 0"
+  ret !arg2, arg0 + " *= " + arg1 / 100
+  ret arg0 + " *= intmax(0.01, " + (arg1 / 100 - 1) + " * arg0 + 1)"
 
 func atrib_ler # Extrai os atributos de uma função para variáveis atrib
 # arg0 = nome da classe
@@ -82,69 +135,75 @@ func atrib_ler # Extrai os atributos de uma função para variáveis atrib
   epara p.inilinha(arg0, arg1), p.lin, p.depois
     casovar txt1(p.texto)
     casose "pvidamax"
-      atrib_ler2(p.texto, atribnum.0, atribnum.1)
+      atrib_dec(p.texto, atribnum.0, atribnum.1)
       sair
     casose "pmanamax"
-      atrib_ler2(p.texto, atribnum.2, atribnum.3)
+      atrib_dec(p.texto, atribnum.2, atribnum.3)
       sair
     casose "pmovemax"
-      atrib_ler2(p.texto, atribnum.4, atribnum.5)
+      atrib_dec(p.texto, atribnum.4, atribnum.5)
       sair
     casose "pveloc1"
-      atrib_ler2(p.texto, atribnum.6, atribnum.7)
+      atrib_dec(p.texto, atribnum.6, atribnum.7)
       sair
     casose "atknorm"
-      atrib_ler2(p.texto, atribnum.8, atribnum.9)
+      atrib_dec(p.texto, atribnum.8, atribnum.9)
       sair
     casose "defnorm"
-      atrib_ler2(p.texto, atribnum.10, atribnum.11)
+      atrib_dec(p.texto, atribnum.10, atribnum.11)
       sair
     casose "atkesp"
-      atrib_ler2(p.texto, atribnum.12, atribnum.13)
+      atrib_dec(p.texto, atribnum.12, atribnum.13)
       sair
     casose "defesp"
-      atrib_ler2(p.texto, atribnum.14, atribnum.15)
+      atrib_dec(p.texto, atribnum.14, atribnum.15)
       sair
     casose "evasao"
-      atrib_ler2(p.texto, atribnum.16, atribnum.17)
+      atrib_dec(p.texto, atribnum.16, atribnum.17)
       sair
     casose "precisao"
-      atrib_ler2(p.texto, atribnum.18, atribnum.19)
+      atrib_dec(p.texto, atribnum.18, atribnum.19)
+      sair
+    casose "pcriticoacerto"
+      atrib_dec(p.texto, atribnum.20, nulo)
+      sair
+    casose "pcriticoatk"
+      atrib_dec(p.texto, atribnum.21, nulo)
       sair
     casose "pesomax"
-      atrib_ler2(p.texto, atribnum.20, atribnum.21)
+      atrib_dec(p.texto, atribnum.22, atribnum.23)
       sair
     casose "var.z_armafalha_"
-      atrib_ler2(p.texto, atribobj.0, atribobj.1)
+      atrib_dec(p.texto, atribobj.0, atribobj.1)
       sair
     casose "var.z_armaaddprecisao_"
-      atrib_ler2(p.texto, atribobj.2, atribobj.3)
+      atrib_dec(p.texto, atribobj.2, atribobj.3)
       sair
     casose "var.z_armamin_"
-      atrib_ler2(p.texto, atribobj.4, atribobj.5)
+      atrib_dec(p.texto, atribobj.4, atribobj.5)
       sair
     casose "var.z_armamax_"
-      atrib_ler2(p.texto, atribobj.6, atribobj.7)
+      atrib_dec(p.texto, atribobj.6, atribobj.7)
       sair
     casose "bitver"
       refvar abit = atribbit
       se txtsub(p.texto, 3, 1) == "&" || txtsub(p.texto, 1, 1) == "&="
         x = txt(txtsub(p.texto, 2), 1)
-        x & 1 && (abit.7 = 1) # Está cego
-        x & 16 && (abit.4 = 1) # Não pode ver voando
-        x & 32 && (abit.6 = 1) # Não pode ver voando alto
+        (x & 1) && (abit.7 = 1) # Está cego
+        (x & 16) && (abit.4 = 1) # Não pode ver voando
+        (x & 32) && (abit.6 = 1) # Não pode ver voando alto
       senao
         x = txtsub(p.texto, 2)
-        x & 2 && (abit.0 = 1) # Visão noturna
-        x & 4 && (abit.1 = 1) # Pode ver invisível
-        x & 8 && (abit.2 = 1) # Pode ver oculto
-        x & 16 && (abit.3 = 1) # Pode ver voando
-        x & 32 && (abit.5 = 1) # Pode ver voando alto
-        x & 0x100 && (abit.12 = 1) # Anda em silêncio
-        x & 0x1000 && (abit.13 = 1) # Percebe quem anda em silêncio
-        x & 0x200 && (abit.14 = 1) # Voando ou flutuando
-        x & 0x400 && (abit.17 = 1) # Dormindo
-        x & 0x800 && (abit.18 = 1) # Imune a dormir
+        (x & 2) && (abit.0 = 1) # Visão noturna
+        (x & 4) && (abit.1 = 1) # Pode ver invisível
+        (x & 8) && (abit.2 = 1) # Pode ver oculto
+        (x & 16) && (abit.3 = 1) # Pode ver voando
+        (x & 32) && (abit.5 = 1) # Pode ver voando alto
+        (x & 0x100) && (abit.12 = 1) # Anda em silêncio
+        (x & 0x1000) && (abit.13 = 1) # Percebe quem anda em silêncio
+        (x & 0x200) && (abit.14 = 1) # Voando ou flutuando
+        (x & 0x400) && (abit.17 = 1) # Dormindo
+        (x & 0x800) && (abit.18 = 1) # Imune a dormir
       fimse
       sair
     casose "bitinv"
@@ -153,60 +212,73 @@ func atrib_ler # Extrai os atributos de uma função para variáveis atrib
         abit.11 = 1 # Visível no escuro
       senao
         x = txtsub(p.texto, 2)
-        x & 4 && (abit.8 = 1) # Torna invisível
-        x & 8 && (abit.9 = 1) # Torna oculto
-        x & 16 && (abit.15 = 1) # Voando
-        x & 32 && (abit.16 = 1) # Voando alto
-        x & 128 && (abit.10 = 1) # Invisível a não admin
+        (x & 4) && (abit.8 = 1) # Torna invisível
+        (x & 8) && (abit.9 = 1) # Torna oculto
+        (x & 16) && (abit.15 = 1) # Voando
+        (x & 32) && (abit.16 = 1) # Voando alto
+        (x & 128) && (abit.10 = 1) # Invisível a não admin
       fimse
       sair
     casose
-      se txt(p.texto, 0, 8) == "atktipo." && txtsub(p.texto, 1, 1) == "*="
-        atribatk.[int(txt(p.texto, 8))] = 100 * txtsub(p.texto, 2)
-      senao txt(p.texto, 0, 8) == "deftipo." && txtsub(p.texto, 1, 1) == "*="
-        atribdef.[int(txt(p.texto, 8))] = 100 * txtsub(p.texto, 2)
+      sair txtsub(p.texto, 1, 1) != "*=" && txtsub(p.texto, 1, 1) != "="
+      se txt(p.texto, 0, 8) == "atktipo."
+        atribatk.[int(txt(p.texto, 8))] = atrib_muldec(p.texto)
+      senao txt(p.texto, 0, 8) == "deftipo."
+        atribdef.[int(txt(p.texto, 8))] = atrib_muldec(p.texto)
       fimse
     casofim
   efim
 
-func atrib_ler2 # Usado internamente em atrib_ler
-# arg0 = texto do tipo "a = 5" ou "a = 10 * pnivel + 5"
-# arg1 e arg2 = variáveis
-  se txtsub(arg0, 3, 3) == "* pnivel -"
-    arg2 = txtsub(arg0, 2, 1)
-    arg1 = -1 * txtsub(arg0, 6)
-  senao txtsub(arg0, 3, 2) == "* pnivel"
-    arg2 = txtsub(arg0, 2, 1)
-    arg1 = txtsub(arg0, 6)
-  senao
-    arg1 = txtsub(arg0, 2)
-  fimse
-
-func atrib_salvar # Salva os atributos em função conforme variáveis atrib
-# arg0 = objeto jogsock do jogador
-# arg0.var.opcclasse e arg0.var.opcvar = nomes da classe e da função
-# Usa também arg0.var.opcnome e arg0.var.opcexec
+func atrib_cod_ini # Gera código da função para inicializar atributos do personagem
+# O código é gerado a partir das variáveis atrib
+# arg0 = nome da função
   textotxt t
-  t.addfim("func " + arg0.var.opcvar + " # Altera atributos do personagem")
+  t.addfim("func " + arg0 + " # Altera atributos do personagem")
+  t.addfim("# Função criada automaticamente")
+  t.addfim(atrib_cod2("pvidamax", atribnum.0, atribnum.1))
+  t.addfim(atrib_cod2("pmanamax", atribnum.2, atribnum.3))
+  t.addfim(atrib_cod2("pmovemax", atribnum.4, atribnum.5))
+  t.addfim(atrib_cod2("pveloc1", atribnum.6, atribnum.7))
+  t.addfim(atrib_cod2("atknorm", atribnum.8, atribnum.9))
+  t.addfim(atrib_cod2("defnorm", atribnum.10, atribnum.11))
+  t.addfim(atrib_cod2("atkesp", atribnum.12, atribnum.13))
+  t.addfim(atrib_cod2("defesp", atribnum.14, atribnum.15))
+  t.addfim(atrib_cod2("evasao", atribnum.16, atribnum.17))
+  t.addfim(atrib_cod2("precisao", atribnum.18, atribnum.19))
+  t.addfim(atrib_cod2("pcriticoacerto", atribnum.20, 0))
+  t.addfim(atrib_cod2("pcriticoatk", atribnum.21, 0))
+  t.addfim(atrib_cod2("pesomax", atribnum.22, atribnum.23))
+  ret t.remove(1000)
+
+func atrib_cod_mudar # Gera código da função para mudar atributos do personagem
+# O código é gerado a partir das variáveis atrib
+# arg0 = nome da função
+# arg1 = 0 se codificar sem a eficiência (sem multiplicar por arg0)
+# arg1 != 0 se codificar com a eficiência (multiplicando por arg0)
+# Se não vai mudar nenhum atributo, retorna um texto vazio
+  textotxt t
+  t.addfim("func " + arg0 + " # Altera atributos do personagem")
   t.addfim("# Não alterar; função criada automaticamente")
   refvar anum = atribnum
   refvar aobj = atribobj
   refvar abit = atribbit
-  (anum.0 || anum.1) && t.addfim("pvidamax+=" + atrib2txt(anum.0, anum.1))
-  (anum.2 || anum.3) && t.addfim("pmanamax+=" + atrib2txt(anum.2, anum.3))
-  (anum.4 || anum.5) && t.addfim("pmovemax+=" + atrib2txt(anum.4, anum.5))
-  (anum.6 || anum.7) && t.addfim("pveloc1+=" + atrib2txt(anum.6, anum.7))
-  (anum.8 || anum.9) && t.addfim("atknorm+=" + atrib2txt(anum.8, anum.9))
-  (anum.10 || anum.11) && t.addfim("defnorm+=" + atrib2txt(anum.10, anum.11))
-  (anum.12 || anum.13) && t.addfim("atkesp+=" + atrib2txt(anum.12, anum.13))
-  (anum.14 || anum.15) && t.addfim("defesp+=" + atrib2txt(anum.14, anum.15))
-  (anum.16 || anum.17) && t.addfim("evasao+=" + atrib2txt(anum.16, anum.17))
-  (anum.18 || anum.19) && t.addfim("precisao+=" + atrib2txt(anum.18, anum.19))
-  (anum.20 || anum.21) && t.addfim("pesomax+=" + atrib2txt(anum.20, anum.21))
-  (aobj.0 || aobj.1) && t.addfim("var.z_armafalha_+=" + atrib2txt(aobj.0, aobj.1))
-  (aobj.2 || aobj.3) && t.addfim("var.z_armaaddprecisao_+=" + atrib2txt(aobj.2, aobj.3))
-  (aobj.4 || aobj.5) && t.addfim("var.z_armamin_+=" + atrib2txt(aobj.4, aobj.5))
-  (aobj.6 || aobj.7) && t.addfim("var.z_armamax_+=" + atrib2txt(aobj.6, aobj.7))
+  (anum.0 || anum.1) && t.addfim(atrib_cod1("pvidamax", anum.0, anum.1, arg1))
+  (anum.2 || anum.3) && t.addfim(atrib_cod1("pmanamax", anum.2, anum.3, arg1))
+  (anum.4 || anum.5) && t.addfim(atrib_cod1("pmovemax", anum.4, anum.5, arg1))
+  (anum.6 || anum.7) && t.addfim(atrib_cod1("pveloc1",  anum.6, anum.7, arg1))
+  (anum.8 || anum.9) && t.addfim(atrib_cod1("atknorm", anum.8, anum.9, arg1))
+  (anum.10 || anum.11) && t.addfim(atrib_cod1("defnorm", anum.10, anum.11, arg1))
+  (anum.12 || anum.13) && t.addfim(atrib_cod1("atkesp", anum.12, anum.13, arg1))
+  (anum.14 || anum.15) && t.addfim(atrib_cod1("defesp", anum.14, anum.15, arg1))
+  (anum.16 || anum.17) && t.addfim(atrib_cod1("evasao", anum.16, anum.17, arg1))
+  (anum.18 || anum.19) && t.addfim(atrib_cod1("precisao", anum.18, anum.19, arg1))
+  anum.20 && t.addfim(atrib_cod1("pcriticoacerto", anum.20, 0, arg1))
+  anum.21 && t.addfim(atrib_cod1("pcriticoatk", anum.21, 0, arg1))
+  (anum.22 || anum.23) && t.addfim(atrib_cod1("pesomax", anum.20, anum.21, arg1))
+  (aobj.0 || aobj.1) && t.addfim(atrib_cod1("var.z_armafalha_", aobj.0, aobj.1, arg1))
+  (aobj.2 || aobj.3) && t.addfim(atrib_cod1("var.z_armaaddprecisao_", aobj.2, aobj.3, arg1))
+  (aobj.4 || aobj.5) && t.addfim(atrib_cod1("var.z_armamin_", aobj.4, aobj.5, arg1))
+  (aobj.6 || aobj.7) && t.addfim(atrib_cod1("var.z_armamax_", aobj.6, aobj.7, arg1))
   abit.11 && t.addfim("bitinv &= ~2") # Visível no escuro
   int32 x
   abit.4 && (x += 16) # Não pode ver voando
@@ -232,23 +304,31 @@ func atrib_salvar # Salva os atributos em função conforme variáveis atrib
   abit.16 && (x += 32) # Voando alto
   abit.10 && (x += 128) # Invisível a não admin
   x && t.addfim("bitinv|=" + x)
-  txt100 lin
   refvar total = intsublin(p_atrib_atk)
   epara x = 0, x < total, x++
     continuar atribatk.[x] == 100
-    lin = " # " + txtsublin(p_atrib_atk, x, 1)
-    t.addfim("atktipo." + x + "*=" + atribatk.[x] / 100 + lin)
+    refvar lin = " # " + txtsublin(p_atrib_atk, x, 1)
+    t.addfim(atrib_mulcod("atktipo." + x, atribatk.[x], arg1) + lin)
   efim
   epara x = 0, x < total, x++
     continuar atribdef.[x] == 100
-    lin = " # " + txtsublin(p_atrib_atk, x, 1)
-    t.addfim("deftipo." + x + "*=" + atribdef.[x] / 100 + lin)
+    refvar lin = " # " + txtsublin(p_atrib_atk, x, 1)
+    t.addfim(atrib_mulcod("deftipo." + x, atribdef.[x], arg1) + lin)
   efim
-# msg("----------\n" + t.ini.textolin(10000) + "\n----------")
+  ret t.linhas > 2 ? t.remove(1000) : ""
+
+func atrib_salvar # Salva os atributos em função conforme variáveis atrib
+# arg0 = objeto jogsock do jogador
+# arg0.var.opcclasse e arg0.var.opcvar = nomes da classe e da função
+# Usa também arg0.var.opcnome e arg0.var.opcexec
+# arg1 = 0 se codificar simples (sem multiplicar por arg0)
+# arg1 != 0 se codificar completo (multiplicando por arg0)
+  refvar codigo = atrib_cod_mudar(arg0.var.opcvar, arg1)
+# msg("----------\n" + codigo + "\n----------")
   prog p
   refvar var = arg0.var
-  se t.linhas > 2
-    p.criar(var.opcclasse, t.remove(10000))
+  se codigo
+    p.criar(var.opcclasse, codigo)
     config:salvar
     criar("admmudou", var.opcclasse, var.opcexec)
     admlog(arg0, "mudou " + var.opcclasse + ":" + var.opcvar + " " + var.opcnome)
@@ -262,10 +342,10 @@ func atrib_salvar # Salva os atributos em função conforme variáveis atrib
 func atrib_txt # Obtém texto com informações dos atributos, para os usuários
 # arg0 = textotxt aonde colocar as informações
 # Nota: antes chamar atrib_ler para preencher as variáveis atrib
-  refvar p_atrib_atk1 = "normais\nespeciais\n" + config:atknomes
-  refvar p_atrib_def1 = "normal\nespecial\n" + config:atknomes
-  refvar p_atrib_def2 = "ataques normais\nataques especiais\n" + config:atknomes
-  txt100 lin
+  refvar p_atrib_atk1 = "físicos\nespeciais\n" + config:atknomes
+  refvar p_atrib_def1 = "física\nespecial\n" + config:atknomes
+  refvar p_atrib_def2 = "ataques físicos\nataques especiais\n" + config:atknomes
+  txt512 lin
 # Efeitos numéricos
   int8 x
   int8 total = intsublin(p_atrib_num)
@@ -311,9 +391,10 @@ func atrib_txt # Obtém texto com informações dos atributos, para os usuários
   efim
 
 
-classe opc_atribnum
+classe opc_atribnum_perso
 herda opc_atribcomum
-# Atributos numéricos
+# Atributos numéricos para personagem, não leva em conta eficiência
+const com_eficiencia = 0
 const vetor = atribnum
 const lista = p_atrib_num
 
@@ -348,7 +429,7 @@ func passo # Editando atributos
   senao arg1 == "n" && !arg0.var.opcvalido
     atrib_ler(arg0.var.opcclasse, arg0.var.opcvar)
     vetor.limpar(0)
-    atrib_salvar(arg0)
+    atrib_salvar(arg0, com_eficiencia)
     arg0.msg("Apagado: " + arg0.var.opcnome)
     ret passosair(arg0)
   senao arg1 == "z"
@@ -385,16 +466,34 @@ func passo # Editando atributos
   ret 1
 
 
-classe opc_atribobj
-herda opc_atribnum
-# Atributos numéricos de itens
+classe opc_atribnum_item
+herda opc_atribnum_perso
+# Atributos numéricos para item, leva em conta eficiência
+const com_eficiencia = 1
+const vetor = atribnum
+const lista = p_atrib_num
+
+
+classe opc_atribobj_perso
+herda opc_atribnum_perso
+# Atributos numéricos de itens, não leva em conta eficiência
+const com_eficiencia = 0
 const vetor = atribobj
 const lista = p_atrib_obj
 
 
-classe opc_atribbit
+classe opc_atribobj_item
+herda opc_atribnum_perso
+# Atributos numéricos de itens, leva em conta eficiência
+const com_eficiencia = 1
+const vetor = atribobj
+const lista = p_atrib_obj
+
+
+classe opc_atribbit_perso
 herda opc_atribcomum
-# Atributos sim/não
+# Atributos sim/não para personagem, não leva em conta eficiência
+const com_eficiencia = 0
 
 func menu # Retorna a quantidade de atributos sim/não
 # arg0=nome da classe, arg1=nome da variável
@@ -424,7 +523,7 @@ func passo # Editando atributos
   senao arg1 == "n" && !arg0.var.opcvalido
     atrib_ler(arg0.var.opcclasse, arg0.var.opcvar)
     atribbit.limpar(0)
-    atrib_salvar(arg0)
+    atrib_salvar(arg0, com_eficiencia)
     arg0.msg("Apagado: " + arg0.var.opcnome)
     ret passosair(arg0)
   senao arg1 == "z"
@@ -460,9 +559,16 @@ func passo # Editando atributos
   ret 1
 
 
-classe opc_atribatk
+classe opc_atribbit_item
+herda opc_atribbit_perso
+# Atributos sim/não para item, leva em conta eficiência
+const com_eficiencia = 1
+
+
+classe opc_atribatk_perso
 herda opc_atribcomum
-# Ataques
+# Ataques, não leva em conta eficiência
+const com_eficienciao = 0
 const vetor = atribatk # Variável que contém os atributos
 const nome = "atktipo" # Nome da variável
 
@@ -494,7 +600,7 @@ func passo # Editando atributos
   senao arg1 == "n" && !arg0.var.opcvalido
     atrib_ler(arg0.var.opcclasse, arg0.var.opcvar)
     vetor.limpar(100)
-    atrib_salvar(arg0)
+    atrib_salvar(arg0, com_eficiencia)
     arg0.msg("Apagado: " + arg0.var.opcnome)
     ret passosair(arg0)
   senao arg1 == "z"
@@ -533,9 +639,26 @@ func passo # Editando atributos
   ret 1
 
 
-classe opc_atribdef
-herda opc_atribatk
-# Defesas
+classe opc_atribatk_item
+herda opc_atribatk_perso
+# Ataques, leva em conta eficiência
+const com_eficiencia = 1
+const vetor = atribatk # Variável que contém os atributos
+const nome = "atktipo" # Nome da variável
+
+
+classe opc_atribdef_perso
+herda opc_atribatk_perso
+# Defesas, não leva em conta eficiência
+const com_eficiencia = 0
+const vetor = atribdef # Variável que contém os atributos
+const nome = "deftipo" # Nome da variável
+
+
+classe opc_atribdef_item
+herda opc_atribatk_perso
+# Defesas, leva em conta eficiência
+const com_eficiencia = 1
 const vetor = atribdef # Variável que contém os atributos
 const nome = "deftipo" # Nome da variável
 
@@ -549,12 +672,16 @@ func passo
   num = arg1, arg0.passo = este
   se arg1 == "" || arg1 == "\b"
     casovar arg0.var.opcpasso2
-    casose "opc_atribnum"
-    casose "opc_atribbit"
+    casose "opc_atribnum_perso"
+    casose "opc_atribnum_item"
+    casose "opc_atribbit_perso"
+    casose "opc_atribbit_item"
       arg0.msg("Entre com a quantidade, 0=não alterar, Z cancela")
       sair
-    casose "opc_atribatk"
-    casose "opc_atribdef"
+    casose "opc_atribatk_perso"
+    casose "opc_atribatk_item"
+    casose "opc_atribdef_perso"
+    casose "opc_atribdef_item"
       arg0.msg("Entre com a porcentagem, 100=danos normais, Z cancela")
     casofim
   senao arg1 == "z"
@@ -565,15 +692,17 @@ func passo
     arg0.msg("Opção inválida, entre com outra")
   senao
     casovar arg0.var.opcpasso2
-    casose "opc_atribatk"
-    casose "opc_atribdef"
+    casose "opc_atribatk_perso"
+    casose "opc_atribatk_item"
+    casose "opc_atribdef_perso"
+    casose "opc_atribdef_item"
       sair num >= 0
       arg0.msg("A porcentagem não pode ser menor que zero, entre com outra")
       ret 1
     casofim
     atrib_ler(arg0.var.opcclasse, arg0.var.opcvar)
-    atrib[txt(arg0.var.opcpasso2, 9)].[arg0.var.opclin] = num
-    atrib_salvar(arg0)
+    atrib[txt(arg0.var.opcpasso2, 9, 3)].[arg0.var.opclin] = num
+    atrib_salvar(arg0, [arg0.var.opcpasso2]:com_eficiencia)
     $[arg0.var.opcpasso2].passo(arg0, "")
     arg0.var.opcpasso2 = ""
     arg0.var.opclin = ""
@@ -662,22 +791,9 @@ func passo
   senao
     atrib_ler(arg0.var.opcclasse, arg0.var.opcvar)
     atribnum.[arg0.var.opclin] = num
-    textotxt t
-    t.addfim("func " + arg0.var.opcvar + " # Altera atributos do personagem")
-    t.addfim("# Função criada automaticamente")
-    t.addfim("pvidamax=" + atrib2txt(atribnum.0, atribnum.1))
-    t.addfim("pmanamax=" + atrib2txt(atribnum.2, atribnum.3))
-    t.addfim("pmovemax=" + atrib2txt(atribnum.4, atribnum.5))
-    t.addfim("pveloc1=" + atrib2txt(atribnum.6, atribnum.7))
-    t.addfim("atknorm=" + atrib2txt(atribnum.8, atribnum.9))
-    t.addfim("defnorm=" + atrib2txt(atribnum.10, atribnum.11))
-    t.addfim("atkesp=" + atrib2txt(atribnum.12, atribnum.13))
-    t.addfim("defesp=" + atrib2txt(atribnum.14, atribnum.15))
-    t.addfim("evasao=" + atrib2txt(atribnum.16, atribnum.17))
-    t.addfim("precisao=" + atrib2txt(atribnum.18, atribnum.19))
-    t.addfim("pesomax=" + atrib2txt(atribnum.20, atribnum.21))
+    refvar codigo = atrib_cod_ini(arg0.var.opcvar)
     prog p
-    p.criar(arg0.var.opcclasse, t.remove(10000))
+    p.criar(arg0.var.opcclasse, codigo)
     config:salvar
     criar("admmudou", arg0.var.opcclasse, arg0.var.opcexec)
     admlog(arg0, "mudou " + arg0.var.opcclasse + ":" + arg0.var.opcvar + " " + arg0.var.opcnome)
@@ -729,4 +845,78 @@ func atuitem
     epara r = $[p.texto], r, r = objdepois(r)
       r.recalc = 1
     efim
+  efim
+
+
+classe teste_atrib
+herda opc_atribcomum
+# Classe criada para testar e validar atrib_ler e atrib_codif em opc_atribcomum
+const testar = 0 # Pode ser 1 para validar ou 0 para não validar
+intexec exec1
+textotxt info # Informações
+
+func iniclasse
+  ret ![arg0]:testar, nulo
+  ref r1 = criar(arg0)
+  ref r2 = criar(arg0)
+  uint8 x
+  epara x = 0, x < 32, x++
+    r1.atribnum.[x] = (x % 5 < 3 ? rand(100) - 50 : 0)
+    r1.atribobj.[x] = rand(100) - 50
+    r1.atribbit.[x] = rand(2)
+    r1.atribatk.[x] = (x % 7 ? rand(200) : 0)
+    r1.atribdef.[x] = (x % 7 ? rand(200) : 0)
+  efim
+  r1.atrib_txt(info)
+  r2.exec1 = 1
+  refvar codigo1 = r1.atrib_cod_mudar("teste1", 0)
+  refvar codigo2 = r1.atrib_cod_mudar("teste2", 1)
+  prog p
+  p.criar(arg0, codigo1)
+  p.criar(arg0, codigo2)
+  telatxt tela
+  tela.msg("\nCódigo sem arg0:\n" + codigo1 + "\n")
+  tela.msg("\nCódigo com arg0:\n" + codigo2 + "\n")
+
+func exec1_exec
+  telatxt tela
+  refvar r1 = $[este]
+  atrib_ler(este, "teste1")
+  atrib_txt(info)
+  tela.msg("\nDescrição:\n" + info.ini.textolin(1000) + "\n\n")
+  r1 == este && tela.msg("Mesmo objeto\n")
+  enquanto r1.linhas || r2.linhas
+    refvar l1 = r1.remove
+    refvar l2 = r2.remove
+    l1 != l2 && tela.msg("Descrição difere:\n " + lin1 + "\n " + lin2 + "\n")
+  efim
+  tela.msg("Comparando sem arg0\n")
+  compara1
+  atribnum.limpar(0)
+  atribobj.limpar(0)
+  atribbit.limpar(0)
+  atribatk.limpar(0)
+  atribdef.limpar(0)
+  atrib_ler(este, "teste2")
+  tela.msg("Comparando com arg0\n")
+  compara1
+
+func compara1
+  refvar r1 = $[este]
+  epara x = 0, x < 32, x++
+    se r1.atribnum.[x] != atribnum.[x]
+      tela.msg("atribnum." + x + ": " + r1.atribnum.[x] + " " + atribnum.[x] + "\n")
+    fimse
+    se r1.atribobj.[x] != atribobj.[x]
+      tela.msg("atribobj." + x + ": " + r1.atribobj.[x] + " " + atribobj.[x] + "\n")
+    fimse
+    se r1.atribbit.[x] != atribbit.[x]
+      tela.msg("atribbit." + x + ": " + r1.atribbit.[x] + " " + atribbit.[x] + "\n")
+    fimse
+    se r1.atribatk.[x] != atribatk.[x]
+      tela.msg("atribatk." + x + ": " + r1.atribatk.[x] + " " + atribatk.[x] + "\n")
+    fimse
+    se r1.atribdef.[x] != atribdef.[x]
+      tela.msg("atribdef." + x + ": " + r1.atribdef.[x] + " " + atribdef.[x] + "\n")
+    fimse
   efim

@@ -25,6 +25,7 @@ atkexp0 atkexp1\n\
 atkmorreuexp atkmatoutipo atkmatouexp\n\
 atkbexp atkcexp atkmaxexp atkexpsecundario atknivel\n\
 atkmtempo atkespera atktempo atkfor atk_evasao1 atk_evasao2\n\
+m_atk_espera m_dano_normal m_dano_critico\n\
 animal_n\n\
 expmax0 expmax1 expmax2\n\
 horamsg0 horamsg1 horamsg2 horamsg3 horamsg4 horamsg5 horamsg6 horamsg7\n\
@@ -267,6 +268,15 @@ const atk_evasao1 = "Esquiva"
 #
 # Quantos pontos de evasão por aula de esquiva
 const atk_evasao2 = 2
+#
+# Mensagem ao digitar um comando durante a luta, quando outro está em andamento
+const m_atk_espera = "$M em $1s"
+#
+# Nas mensagens de dano normal, substitui o $m (valor do dano) por esse texto
+const m_dano_normal = ", $m"
+#
+# Nas mensagens de dano crítico, substitui o $m (valor do dano) por esse texto
+const m_dano_critico = " (crítico), $m"
 #
 # Animais não obedecem mais os jogadores se o nível do jogador somado
 # com esse número for menor que o nível do animal
@@ -729,6 +739,8 @@ func atribcfg # Altera atributos do personagem
   defesp = 10 * pnivel + 30
   evasao = 2 * pnivel + 30
   precisao = 2 * pnivel + 30
+  pcriticoacerto = 5
+  pcriticoatk = 50
   pesomax = 20000
 
 func salvar # Salva o programa

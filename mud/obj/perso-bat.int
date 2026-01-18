@@ -27,6 +27,8 @@ int32 atkesp # Quantidade de ataque especial, sem modificadores em atktipo
 int32 defesp # Quantidade de defesa especial, sem modificadores em deftipo
 int16 evasao # Habilidade de desviar dos golpes (thac0)
 int16 precisao # Habilidade de acertar os golpes (hitroll)
+int8 pcriticoacerto # Porcentagem de acerto de dano crítico
+int8 pcriticoatk # Bônus de dano crítico em porcentagem
 int32 pesoveste # Metade do peso de tudo que está vestindo
 int32 pesomax # Quanto peso consegue carregar
 #
@@ -184,12 +186,12 @@ func recalc_exec # Ajusta variáveis, principalmente batalha
 # Modificadores
   txt512 lin
   epara lin = var.ini("f_"), lin, lin = var.depois(lin, "f_")
-    [lin]:recalc2_auto, $[lin].cmd_recalc2(este)
+    [lin]:recalc2_auto(1), $[lin].cmd_recalc2(este)
   efim
 # Bônus conforme o que está vestindo e os efeitos
   listaitem i
   epara i = dentro2.ini, i, i.depois
-    [i.obj]:recalc2_auto, i.obj.cmd_recalc2(este), pesoveste += i.obj.pesotot
+    [i.obj]:recalc2_auto(1), i.obj.cmd_recalc2(este), pesoveste += i.obj.pesotot
   efim
   pesoveste /= 2
   epara i = evento.ini, i, i.depois

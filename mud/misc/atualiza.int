@@ -1,4 +1,4 @@
-classe atualiza_601
+classe atualiza_688
 # Atualiza arquivos mud/config/* e mud/areas/* de acordo com novas mudanças
 prog p
 debug dbg
@@ -551,8 +551,8 @@ func ini3_exec
 func ini4_exec
   apagar(este)
 # Checa e muda a versão
-  ret (versao = config:versao) >= 601, nulo
-  p.criar("config", "const versao = 601 # Para atualizar diretórios areas e config")
+  ret (versao = config:versao) >= 688, nulo
+  p.criar("config", "const versao = 688 # Para atualizar diretórios areas e config")
   config:salvar
 # Comando Fim e Dicas aleatórias
   se versao < 457
@@ -870,6 +870,17 @@ func ini4_exec
       continuar txt(p.texto, 0, 2) != "i_" || p.existe(p.texto, "descpos") != 1
       movefunc(p.texto, "descpos", p.texto, "descsala")
     efim
+  fimse
+# Acerta atributos padrão dos personagens
+  se versao < 688
+    se p.existe("config", "atribcfg") == 1
+      dbg.ini
+      $opc_atribcomum.atrib_ler("config", "atribcfg")
+      $opc_atribcomum.atribnum.20 = 5 # pcriticoacerto
+      $opc_atribcomum.atribnum.21 = 50 # pcriticoatk
+      p.criar("config", $opc_atribcomum.atrib_cod_ini("atribcfg"))
+      config:salvar
+    fimse
   fimse
 # Avisa que atualizou arquivos
   tela.msg("Diretórios areas e config atualizados\n")

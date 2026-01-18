@@ -4,9 +4,9 @@ const nomevar = "h_Arco_e_flecha"
 const tipoalvo = 1 # Alvo: 1 Exceto o personagem; ataque
 const tipoarma = 64 # Requer arma: 6-Arco e flecha
 const tipomunicao = 2 # Munição: 2 Usa e perde uma munição
-const atk1_auto1 = "$P lança $n $e $a, $m"
-const atk1_perso1 = "$P lança $n $e $a, $m"
-const atk1_matou1 = "$P lança $n e mata $a, $m"
+const atk1_auto1 = "$P lança $n $e $a$1"
+const atk1_perso1 = "$P lança $n $e $a$1"
+const atk1_matou1 = "$P lança $n e mata $a$1"
 const atk1_errou1 = "$P lança $n, mas $a desvia"
 const atk1_nulo1 = "$P lança $n, mas $a sente apenas cóssegas"
 
@@ -16,9 +16,9 @@ herda comando_ataque
 const nomevar = "h_arma_exótica"
 const tipoalvo = 9
 const tipoarma = 256 # Usa arma: 8-Arma exótica
-const atk1_auto1 = "$P ataca $a, $m"
-const atk1_perso1 = "$P ataca $a, $m"
-const atk1_matou1 = "$P ataca $a, $m"
+const atk1_auto1 = "$P ataca $a$1"
+const atk1_perso1 = "$P ataca $a$1"
+const atk1_matou1 = "$P ataca $a$1"
 const atk1_errou1 = "$P ataca $a, errou"
 const atk1_nulo1 = "$P ataca $a, nada acontece"
 
@@ -31,9 +31,10 @@ const ataquemax = 120
 const tipoatk = 0 # Tipo: 0 Contusão
 const vel = 30
 const msgextra = "Golpe físico de força"
-const atk1_auto1 = "$P se joga contra $a, $m"
-const atk1_perso1 = "$P se joga contra $a, $m"
-const atk1_matou1 = "$P se joga contra $a, $m"
+const atk1_auto1 = "$P se joga contra $a$1"
+const atk1_perso1 = "$P se joga contra $a$1"
+const atk1_critico1 = "$P se joga com tudo em $a$1"
+const atk1_matou1 = "$P se joga contra $a$1"
 const atk1_errou1 = "$P se joga contra $a, errou"
 const atk1_nulo1 = "$P se joga contra $a, nada acontece"
 
@@ -42,9 +43,10 @@ classe cmd_Bater
 herda comando_ataque
 const nomevar = "h_Bater"
 const tipoalvo = 9
-const atk1_auto1 = "$P bate em $a, $m"
-const atk1_perso1 = "$P bate em $a, $m"
-const atk1_matou1 = "$P dá uma batida fatal em $a, $m"
+const atk1_auto1 = "$P bate em $a$1"
+const atk1_perso1 = "$P bate em $a$1"
+const atk1_critico1 = "$P bate com força em $a$1"
+const atk1_matou1 = "$P dá uma batida fatal em $a$1"
 const atk1_errou1 = "$P olha para $a e bate no ar"
 const atk1_nulo1 = "$P bate em $a, nada acontece"
 const atk1_esquivou1 = "$A se esquiva da sua batida"
@@ -62,10 +64,10 @@ const c_mana1 = 30
 const c_mana2 = 20
 const tipoatk = 4 # Tipo: 4 Fogo
 const msgextra = "Pode causar queimaduras."
-const atk1_auto1 = "$P lança brasa em $a, $m"
-const atk1_perso1 = "$P lança brasa em $a, $m"
-const atk1_matou1 = "$P transforma $a em brasa, $m"
-const atk1_errou1 = "$P lança brasa mas não acerta $a, $m"
+const atk1_auto1 = "$P lança brasa em $a$1"
+const atk1_perso1 = "$P lança brasa em $a$1"
+const atk1_matou1 = "$P transforma $a em brasa$1"
+const atk1_errou1 = "$P lança brasa mas não acerta $a$1"
 
 
 classe cmd_cajado
@@ -73,9 +75,9 @@ herda comando_ataque
 const nomevar = "h_cajado"
 const tipoalvo = 9
 const tipoarma = 4 # Usa arma: 2-Cajado
-const atk1_auto1 = "$P lança um raio com um cajado em $a, $m"
-const atk1_perso1 = "$P lança um raio com um cajado em $a, $m"
-const atk1_matou1 = "$P lança um raio com um cajado em $a, $m"
+const atk1_auto1 = "$P lança um raio com um cajado em $a$1"
+const atk1_perso1 = "$P lança um raio com um cajado em $a$1"
+const atk1_matou1 = "$P lança um raio com um cajado em $a$1"
 const atk1_errou1 = "$P lança um raio com um cajado em $a, mas erra"
 const atk1_nulo1 = "$P lança um raio com um cajado em $a mas nada acontece"
 
@@ -85,9 +87,9 @@ herda comando_ataque
 const nomevar = "h_chicote_e_corrente"
 const tipoalvo = 9
 const tipoarma = 128 # Usa arma: 7-Chicote e Corrente
-const atk1_auto1 = "$P ataca $a, $m"
-const atk1_perso1 = "$P ataca $a, $m"
-const atk1_matou1 = "$P ataca $a, $m"
+const atk1_auto1 = "$P ataca $a$1"
+const atk1_perso1 = "$P ataca $a$1"
+const atk1_matou1 = "$P ataca $a$1"
 const atk1_errou1 = "$P ataca $a, errou"
 const atk1_nulo1 = "$P ataca $a, nada acontece"
 
@@ -99,9 +101,10 @@ const a_efeito1 = "paralisado"
 const a_prob1 = 10
 const tipoatk = 12 # Tipo: 12 Elétrico
 const msgextra = "Dá uma descarga elétrica que pode paralisar."
-const atk1_auto1 = "$P dá um choque em $a, $m"
-const atk1_perso1 = "$P dá um choque em $a, $m"
-const atk1_matou1 = "$P dá um choque em $a, $m"
+const atk1_auto1 = "$P dá um choque em $a$1"
+const atk1_perso1 = "$P dá um choque em $a$1"
+const atk1_critico1 = "$P dá alguns choques em $a$1"
+const atk1_matou1 = "$P dá um choque em $a$1"
 const atk1_errou1 = "$P erra um choque em $a, errou"
 const atk1_nulo1 = "$P dá um choque em $a, nada acontece"
 
@@ -116,9 +119,10 @@ const tipoatk = 0 # Tipo: 0 Contusão
 const valor = 80
 const vel = 50
 const msgextra = "Golpe físico de força"
-const atk1_auto1 = "$P chuta $a, $m"
-const atk1_perso1 = "$P chuta $a, $m"
-const atk1_matou1 = "$P chuta $a, $m"
+const atk1_auto1 = "$P chuta $a$1"
+const atk1_perso1 = "$P chuta $a$1"
+const atk1_critico1 = "$P acerta um chute forte em $a$1"
+const atk1_matou1 = "$P chuta $a$1"
 const atk1_errou1 = "$P dá um chute bem longe de $a"
 const atk1_nulo1 = "Seu chute parece não fazer efeito em $a"
 const atk1_nulo2 = "O chute de $p parece não fazer efeito em $a"
@@ -139,9 +143,9 @@ suficiente, consome 20 pontos de vida.\n\
 Se usado contra elfos, é uma magia de cura.\n\
 Se usado contra anões, é um chute comum.\n\
 Contra outras raças, chuta e lança o efeito Dreno de Mana."
-const atk1_auto1 = "$P chuta $a, $m"
-const atk1_perso1 = "$P chuta $a, $m"
-const atk1_matou1 = "$P chuta $a, $m"
+const atk1_auto1 = "$P chuta $a$1"
+const atk1_perso1 = "$P chuta $a$1"
+const atk1_matou1 = "$P chuta $a$1"
 const atk1_errou1 = "$P chuta $a, errou"
 const atk1_nulo1 = "$P mostra para $a como se chuta"
 
@@ -181,9 +185,9 @@ const c_move1 = 5
 const c_move2 = 5
 const tipoarma = 8 # Requer arma: Lâmina curta
 const tipoatk = 2 # Tipo: 2 Cortante
-const atk1_auto1 = "$P corta $a, $m"
-const atk1_perso1 = "$P corta $a, $m"
-const atk1_matou1 = "$P corta $a, $m"
+const atk1_auto1 = "$P corta $a$1"
+const atk1_perso1 = "$P corta $a$1"
+const atk1_matou1 = "$P corta $a$1"
 const atk1_errou1 = "$P tenta cortar $a, errou"
 const atk1_nulo1 = "$P corta $a, nada acontece"
 
@@ -195,9 +199,9 @@ const c_move1 = 10
 const c_move2 = 5
 const tipoatk = 13 # Tipo: 13 Vegetal
 const msgextra = "Absorve metade dos danos que causa."
-const atk1_auto1 = "$P drena $a, $m"
-const atk1_perso1 = "$P drena $a, $m"
-const atk1_matou1 = "$P drena $a, $m"
+const atk1_auto1 = "$P drena $a$1"
+const atk1_perso1 = "$P drena $a$1"
+const atk1_matou1 = "$P drena $a$1"
 const atk1_errou1 = "$P tenta drena $a, errou"
 const atk1_nulo1 = "$P drena $a, nada acontece"
 int32 pontos
@@ -287,9 +291,9 @@ const ataquemax = 300
 const atkfalha = 0 # Pode falhar: Não
 const vel = 100
 const msgextra = "Extremamente forte, mas quem aplica esse golpe desmaia."
-const atk1_auto1 = "$P explodiu na direção de $a, $m"
-const atk1_perso1 = "$P explodiu na direção de $a, $m"
-const atk1_matou1 = "$P explodiu na direção de $a, $m"
+const atk1_auto1 = "$P explodiu na direção de $a$1"
+const atk1_perso1 = "$P explodiu na direção de $a$1"
+const atk1_matou1 = "$P explodiu na direção de $a$1"
 const atk1_errou1 = "$P explodiu mas $a desviou em tempo."
 const atk1_nulo1 = "$P explodiu, nada acontece com $a, nada acontece"
 
@@ -339,7 +343,7 @@ func cmd_alvofim
       uint32 danos = arg0.pvida / 4 # Tirar 1/4 dos pontos de vida
       $mens.p(arg1, arg0)
       $mens.mens = -danos
-      $mens.mvis1("$P bate com força em $a, $m")
+      $mens.mvis1("$P bate com força em $a$1")
       arg0.pvida -= danos
       arg0.acertapos
     senao # Participa de batalha
@@ -376,9 +380,9 @@ const c_move1 = 5
 const c_move2 = 2
 const tipoatk = 15 # Tipo: 15 Veneno
 const msgextra = "Tem grandes chances de envenenar."
-const atk1_auto1 = "$P lança gás tóxico em $a, $m"
-const atk1_perso1 = "$P lança gás tóxico em $a, $m"
-const atk1_matou1 = "$P lança gás tóxico em $a, $m"
+const atk1_auto1 = "$P lança gás tóxico em $a$1"
+const atk1_perso1 = "$P lança gás tóxico em $a$1"
+const atk1_matou1 = "$P lança gás tóxico em $a$1"
 const atk1_errou1 = "$P lança gás tóxico em $a, errou"
 const atk1_nulo1 = "$P lança gás tóxico em $a, nada acontece"
 
@@ -388,9 +392,9 @@ herda comando_ataque
 const nomevar = "h_lâmina_curta"
 const tipoalvo = 9
 const tipoarma = 8 # Usa arma: 3-Lâmina curta
-const atk1_auto1 = "$P fura $a com $o, $m"
-const atk1_perso1 = "$P fura $a com $o, $m"
-const atk1_matou1 = "$P fura $a com $o, $m"
+const atk1_auto1 = "$P fura $a com $o$1"
+const atk1_perso1 = "$P fura $a com $o$1"
+const atk1_matou1 = "$P fura $a com $o$1"
 const atk1_errou1 = "$P tenta furar $a com $o, mas erra"
 const atk1_nulo1 = "$P tenta furar $a com $o, sem sucesso"
 
@@ -400,9 +404,9 @@ herda comando_ataque
 const nomevar = "h_lâmina_longa"
 const tipoalvo = 9
 const tipoarma = 16 # Usa arma: 4-Lâmina longa
-const atk1_auto1 = "$P corta $a, $m"
-const atk1_perso1 = "$P corta $a, $m"
-const atk1_matou1 = "$P corta $a, $m"
+const atk1_auto1 = "$P corta $a$1"
+const atk1_perso1 = "$P corta $a$1"
+const atk1_matou1 = "$P corta $a$1"
 const atk1_errou1 = "$P tenta cortar $a, mas erra"
 const atk1_nulo1 = "$P tenta cortar $a, sem sucesso"
 
@@ -412,9 +416,9 @@ herda comando_ataque
 const nomevar = "h_maca_e_martelo"
 const tipoalvo = 9
 const tipoarma = 32 # Usa arma: 5-Maca e Martelo
-const atk1_auto1 = "$P ataca $a, $m"
-const atk1_perso1 = "$P ataca $a, $m"
-const atk1_matou1 = "$P ataca $a, $m"
+const atk1_auto1 = "$P ataca $a$1"
+const atk1_perso1 = "$P ataca $a$1"
+const atk1_matou1 = "$P ataca $a$1"
 const atk1_errou1 = "$P ataca $a, errou"
 const atk1_nulo1 = "$P ataca $a, nada acontece"
 
@@ -424,9 +428,9 @@ herda comando_ataque
 const nomevar = "h_mangual"
 const tipoalvo = 9
 const tipoarma = 64 # Usa arma: 6-Mangual
-const atk1_auto1 = "$P ataca $a, $m"
-const atk1_perso1 = "$P ataca $a, $m"
-const atk1_matou1 = "$P ataca $a, $m"
+const atk1_auto1 = "$P ataca $a$1"
+const atk1_perso1 = "$P ataca $a$1"
+const atk1_matou1 = "$P ataca $a$1"
 const atk1_errou1 = "$P ataca $a, errou"
 const atk1_nulo1 = "$P ataca $a, nada acontece"
 
@@ -495,9 +499,10 @@ const tipoatk = 2 # Tipo: 2 Cortante
 const valor = 120
 const vel = 60
 const msgextra = "Golpe físico de força"
-const atk1_auto1 = "$P morde $a, $m"
-const atk1_perso1 = "$P morde $a, $m"
-const atk1_matou1 = "$P morde $a, $m"
+const atk1_auto1 = "$P morde $a$1"
+const atk1_perso1 = "$P morde $a$1"
+const atk1_critico1 = "$P morde ferozmente $a$1"
+const atk1_matou1 = "$P morde $a$1"
 const atk1_errou1 = "$P morde $a, errou"
 const atk1_nulo1 = "$P morde $a, nada acontece"
 
@@ -511,9 +516,10 @@ const ataquemax = 105
 const falha1 = 30
 const falha2 = 30
 const tipoatk = 1 # Tipo: 1 Luta
-const atk1_auto1 = "$P acerta um belo soco em si mesm$s, $m"
-const atk1_perso1 = "$P dá um soco múltiplo em $a, $m"
-const atk1_matou1 = "$P mata $a com um multissoco, $m"
+const atk1_auto1 = "$P acerta um belo soco em si mesm$s$1"
+const atk1_perso1 = "$P dá um soco múltiplo em $a$1"
+const atk1_critico1 = "$P dá vários socos múltiplos em $a$1"
+const atk1_matou1 = "$P mata $a com um multissoco$1"
 const atk1_errou1 = "$P dá um multissoco em $a, errou"
 const atk1_nulo1 = "$P dá um multissoco em $a, nada acontece"
 
@@ -563,9 +569,9 @@ const nomevar = "h_Revolver"
 const tipoalvo = 1 # Alvo: 1 Exceto o personagem; ataque
 const tipoarma = 256 # Requer arma: 8-Revolver
 const tipomunicao = 2 # Munição: 2 Usa e perde uma munição
-const atk1_auto1 = "$P atira $e $a, $m"
-const atk1_perso1 = "$P atira $e $a, $m"
-const atk1_matou1 = "$P atira $e e mata $a, $m"
+const atk1_auto1 = "$P atira $e $a$1"
+const atk1_perso1 = "$P atira $e $a$1"
+const atk1_matou1 = "$P atira $e e mata $a$1"
 const atk1_errou1 = "$P atira, mas $a desvia"
 const atk1_nulo1 = "$P atira, mas $a sente apenas cóssegas"
 
@@ -587,13 +593,16 @@ const ataquemax = 105
 const atkfalha = 0 # Pode falhar: Não
 const tipoatk = 9 # Tipo: 9 Aéreo/vento
 const msgextra = "Só pode ser usado enquanto estiver dormindo."
-const atk1_auto1 = "$P ronca alto e se machuca, $m"
-const atk1_perso1 = "Seu ronco potente atinge $a, $m"
-const atk1_perso2 = "O ronco potente de $p atinge $a, $m"
-const atk1_perso3 = "O ronco potente de $p atinge $a, $m"
-const atk1_matou1 = "$A sucumbe com o seu ronco ensurdecedor, $m"
-const atk1_matou2 = "$A sucumbe com o ronco ensurdecedor de $P, $m"
-const atk1_matou3 = "$A sucumbe com o ronco ensurdecedor de $P, $m"
+const atk1_auto1 = "$P ronca alto e se machuca$1"
+const atk1_perso1 = "Seu ronco potente atinge $a$1"
+const atk1_perso2 = "O ronco potente de $p atinge $a$1"
+const atk1_perso3 = "O ronco potente de $p atinge $a$1"
+const atk1_critico1 = "Seu ronco potente atinge $a em cheio$1"
+const atk1_critico2 = "O ronco potente de $p atinge $a em cheio$1"
+const atk1_critico3 = "O ronco potente de $p atinge $a em cheio$1"
+const atk1_matou1 = "$A sucumbe com o seu ronco ensurdecedor$1"
+const atk1_matou2 = "$A sucumbe com o ronco ensurdecedor de $P$1"
+const atk1_matou3 = "$A sucumbe com o ronco ensurdecedor de $P$1"
 const atk1_errou1 = "$P ronca alto mas $a se afasta a tempo."
 const atk1_nulo1 = "$A apenas observa $p roncando alto."
 
@@ -624,9 +633,9 @@ const ataquemax = 45
 const tipomunicao = 1 # Munição: 1 Usa mas não perde
 const itemmunicao = "teste018\nteste048"
 const msgextra = "Ataca atirando sapatos e botas, que vão parar na sala."
-const atk1_auto1 = "$P joga $o em $a, $m"
-const atk1_perso1 = "$P joga $o em $a, $m"
-const atk1_matou1 = "$P mata $a jogando $o, $m"
+const atk1_auto1 = "$P joga $o em $a$1"
+const atk1_perso1 = "$P joga $o em $a$1"
+const atk1_matou1 = "$P mata $a jogando $o$1"
 const atk1_errou1 = "$P joga $o, mas $a desvia"
 const atk1_nulo1 = "$P joga $o, que cai centímetros antes de acertar $a"
 
@@ -643,9 +652,10 @@ const ataquemax = 60
 const tipoatk = 0 # Tipo: 0 Contusão
 const vel = 80
 const msgextra = "Golpe físico de força"
-const atk1_auto1 = "$P soca $a, $m"
-const atk1_perso1 = "$P soca $a, $m"
-const atk1_matou1 = "$P dá o último soco em $a, $m"
+const atk1_auto1 = "$P soca $a$1"
+const atk1_perso1 = "$P soca $a$1"
+const atk1_critico1 = "$P dá um mega soco em $a$1"
+const atk1_matou1 = "$P dá o último soco em $a$1"
 const atk1_errou1 = "$P soca $a, errou"
 const atk1_nulo1 = "$A observa sem entender o seu soco"
 const atk1_nulo2 = "$A observa sem entender o soco de $P"
@@ -663,9 +673,9 @@ const a_efeito1 = "soneca"
 const a_vida1 = 10000
 const msgextra = "Recupera os pontos de vida e dorme por 15 segundos\n\
 Depois disso, você deve teclar acorar para acordar"
-const atk1_auto1 = "$P boceja, $m"
-const atk1_perso1 = "$P boceja, $m"
-const atk1_matou1 = "$P boceja, $m"
+const atk1_auto1 = "$P boceja$1"
+const atk1_perso1 = "$P boceja$1"
+const atk1_matou1 = "$P boceja$1"
 const atk1_errou1 = "$P boceja, errou"
 const atk1_nulo1 = "$P boceja, nada acontece"
 
@@ -675,9 +685,9 @@ herda comando_ataque
 const nomevar = "h_varinha"
 const tipoalvo = 9
 const tipoarma = 2 # Usa arma: 1-Varinha
-const atk1_auto1 = "$P lança um feitiço em $a, $m"
-const atk1_perso1 = "$P lança um feitiço em $a, $m"
-const atk1_matou1 = "$P lança um feitiço em $a, $m"
+const atk1_auto1 = "$P lança um feitiço em $a$1"
+const atk1_perso1 = "$P lança um feitiço em $a$1"
+const atk1_matou1 = "$P lança um feitiço em $a$1"
 const atk1_errou1 = "$P lança um feitiço na direção de $a"
 const atk1_nulo1 = "$P lança um feitiço em $a mas nada acontece"
 
@@ -708,9 +718,10 @@ const aulafim = 12
 const depende = "h_chutar"
 const valor = 100
 const vel = 40
-const atk1_auto1 = "$P dá uma voadora em $a, $m"
-const atk1_perso1 = "$P dá uma voadora em $a, $m"
-const atk1_matou1 = "$P dá uma voadora em $a, $m"
+const atk1_auto1 = "$P dá uma voadora em $a$1"
+const atk1_perso1 = "$P dá uma voadora em $a$1"
+const atk1_critico1 = "$P dá uma voadora violenta em $a$1"
+const atk1_matou1 = "$P dá uma voadora em $a$1"
 const atk1_errou1 = "$P dá uma voadora em $a, errou"
 const atk1_nulo1 = "$P dá uma voadora em $a, nada acontece"
 

@@ -268,6 +268,7 @@ func recebe1 # Função recebe após todos os atalhos
 
 func cmd_espera_exec # Processa o próximo comando na fila
   se comandos
+    cmd_espera = 2
     refvar com = comandos.remove(1)
     refvar perm = $[comandos.remove(1)]
     comandos.total && (cmd_espera = 2)

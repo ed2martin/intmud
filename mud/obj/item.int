@@ -194,16 +194,16 @@ func recalc_exec # Ajusta variáveis
   var.z_armaaddprecisao_ = armaaddprecisao
   var.z_armamin_ = armamin
   var.z_armamax_ = armamax
-  recalc1_auto, cmd_recalc1(este)
+  recalc1_auto(1), cmd_recalc1(este)
 # Modificadores
   txt512 lin
   epara lin = var.ini("f_"), lin, lin = var.depois(lin, "f_")
-    [lin]:recalc2_auto, $[lin].cmd_recalc2(este)
+    [lin]:recalc2_auto(1), $[lin].cmd_recalc2(este)
   efim
 # Efeitos
   listaitem i
   epara i = dentro2.ini, i, i.depois
-    [i.obj]:recalc2_auto, i.obj.cmd_recalc2(este)
+    [i.obj]:recalc2_auto(1), i.obj.cmd_recalc2(este)
   efim
   epara i = evento.ini, i, i.depois
     i.obj.cmd_recalc3(este)
@@ -470,7 +470,7 @@ func recalc_exec # Acerta variáveis
   var.z_armaaddprecisao_ = armaaddprecisao
   var.z_armamin_ = armamin
   var.z_armamax_ = armamax
-  recalc1_auto, cmd_recalc1(este)
+  recalc1_auto(1), cmd_recalc1(este)
   int(i_abertoini) < 2 || i_aberto < 2 ? (i_aberto = i_abertoini)
   se int(luzitem) != 7 # Se não acende ao vestir
   senao vestpos && luztempo < 0 # Vestiu: acende
@@ -502,12 +502,12 @@ func recalc_exec # Acerta variáveis
 # Modificadores
   txt512 lin
   epara lin = var.ini("f_"), lin, lin = var.depois(lin, "f_")
-    [lin]:recalc2_auto, $[lin].cmd_recalc2(este)
+    [lin]:recalc2_auto(1), $[lin].cmd_recalc2(este)
   efim
 # Efeitos
   listaitem i
   epara i = dentro2.ini, i, i.depois
-    [i.obj]:recalc2_auto, i.obj.cmd_recalc2(este)
+    [i.obj]:recalc2_auto(1), i.obj.cmd_recalc2(este)
   efim
   epara i = evento.ini, i, i.depois
     i.obj.cmd_recalc3(este)
