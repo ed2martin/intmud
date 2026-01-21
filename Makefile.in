@@ -103,26 +103,32 @@ CONFIG_CLEAN_FILES =
 CONFIG_CLEAN_VPATH_FILES =
 am__installdirs = "$(DESTDIR)$(bindir)"
 PROGRAMS = $(bin_PROGRAMS)
-am_intmud_OBJECTS = main.$(OBJEXT) classe.$(OBJEXT) objeto.$(OBJEXT) \
-	variavel.$(OBJEXT) arqmapa.$(OBJEXT) instr-codif.$(OBJEXT) \
-	instr-decod.$(OBJEXT) instr-mostra.$(OBJEXT) \
-	instr-exec.$(OBJEXT) instr-func.$(OBJEXT) \
-	instr-vartroca.$(OBJEXT) instr-misc.$(OBJEXT) socket.$(OBJEXT) \
-	console.$(OBJEXT) var-telatxt.$(OBJEXT) var-socket.$(OBJEXT) \
-	var-serv.$(OBJEXT) var-ref.$(OBJEXT) var-incdec.$(OBJEXT) \
-	var-inttempo.$(OBJEXT) var-intexec.$(OBJEXT) \
-	var-basico.$(OBJEXT) var-outros.$(OBJEXT) \
-	var-listaobj.$(OBJEXT) var-texto.$(OBJEXT) \
-	var-texto-bloco.$(OBJEXT) var-texto-func.$(OBJEXT) \
-	var-textovar.$(OBJEXT) var-textoobj.$(OBJEXT) \
-	var-nomeobj.$(OBJEXT) var-arqlog.$(OBJEXT) \
-	var-arqsav.$(OBJEXT) var-arqtxt.$(OBJEXT) var-arqmem.$(OBJEXT) \
-	var-arqdir.$(OBJEXT) var-indiceobj.$(OBJEXT) \
-	var-prog.$(OBJEXT) var-arqprog.$(OBJEXT) var-debug.$(OBJEXT) \
-	getrss.$(OBJEXT) var-datahora.$(OBJEXT) exec.$(OBJEXT) \
-	var-arqexec.$(OBJEXT) mudarclasse.$(OBJEXT) arqler.$(OBJEXT) \
-	misc.$(OBJEXT) procurar.$(OBJEXT) random.$(OBJEXT) \
-	sha1.$(OBJEXT) md5.$(OBJEXT) ssl.$(OBJEXT)
+am__dirstamp = $(am__leading_dot)dirstamp
+am_intmud_OBJECTS = src/main.$(OBJEXT) src/classe.$(OBJEXT) \
+	src/objeto.$(OBJEXT) src/variavel.$(OBJEXT) \
+	src/arqmapa.$(OBJEXT) src/instr-codif.$(OBJEXT) \
+	src/instr-decod.$(OBJEXT) src/instr-mostra.$(OBJEXT) \
+	src/instr-exec.$(OBJEXT) src/instr-func.$(OBJEXT) \
+	src/instr-vartroca.$(OBJEXT) src/instr-misc.$(OBJEXT) \
+	src/socket.$(OBJEXT) src/console.$(OBJEXT) \
+	src/var-telatxt.$(OBJEXT) src/var-socket.$(OBJEXT) \
+	src/var-serv.$(OBJEXT) src/var-ref.$(OBJEXT) \
+	src/var-incdec.$(OBJEXT) src/var-inttempo.$(OBJEXT) \
+	src/var-intexec.$(OBJEXT) src/var-basico.$(OBJEXT) \
+	src/var-outros.$(OBJEXT) src/var-listaobj.$(OBJEXT) \
+	src/var-texto.$(OBJEXT) src/var-texto-bloco.$(OBJEXT) \
+	src/var-texto-func.$(OBJEXT) src/var-textovar.$(OBJEXT) \
+	src/var-textoobj.$(OBJEXT) src/var-nomeobj.$(OBJEXT) \
+	src/var-arqlog.$(OBJEXT) src/var-arqsav.$(OBJEXT) \
+	src/var-arqtxt.$(OBJEXT) src/var-arqmem.$(OBJEXT) \
+	src/var-arqdir.$(OBJEXT) src/var-indiceobj.$(OBJEXT) \
+	src/var-prog.$(OBJEXT) src/var-arqprog.$(OBJEXT) \
+	src/var-debug.$(OBJEXT) src/getrss.$(OBJEXT) \
+	src/var-datahora.$(OBJEXT) src/exec.$(OBJEXT) \
+	src/var-arqexec.$(OBJEXT) src/mudarclasse.$(OBJEXT) \
+	src/arqler.$(OBJEXT) src/misc.$(OBJEXT) src/procurar.$(OBJEXT) \
+	src/random.$(OBJEXT) src/sha1.$(OBJEXT) src/md5.$(OBJEXT) \
+	src/ssl.$(OBJEXT)
 intmud_OBJECTS = $(am_intmud_OBJECTS)
 intmud_LDADD = $(LDADD)
 AM_V_P = $(am__v_P_@AM_V@)
@@ -140,31 +146,32 @@ am__v_at_1 =
 DEFAULT_INCLUDES = -I.@am__isrc@
 depcomp = $(SHELL) $(top_srcdir)/depcomp
 am__maybe_remake_depfiles = depfiles
-am__depfiles_remade = ./$(DEPDIR)/arqler.Po ./$(DEPDIR)/arqmapa.Po \
-	./$(DEPDIR)/classe.Po ./$(DEPDIR)/console.Po \
-	./$(DEPDIR)/exec.Po ./$(DEPDIR)/getrss.Po \
-	./$(DEPDIR)/instr-codif.Po ./$(DEPDIR)/instr-decod.Po \
-	./$(DEPDIR)/instr-exec.Po ./$(DEPDIR)/instr-func.Po \
-	./$(DEPDIR)/instr-misc.Po ./$(DEPDIR)/instr-mostra.Po \
-	./$(DEPDIR)/instr-vartroca.Po ./$(DEPDIR)/main.Po \
-	./$(DEPDIR)/md5.Po ./$(DEPDIR)/misc.Po \
-	./$(DEPDIR)/mudarclasse.Po ./$(DEPDIR)/objeto.Po \
-	./$(DEPDIR)/procurar.Po ./$(DEPDIR)/random.Po \
-	./$(DEPDIR)/sha1.Po ./$(DEPDIR)/socket.Po ./$(DEPDIR)/ssl.Po \
-	./$(DEPDIR)/var-arqdir.Po ./$(DEPDIR)/var-arqexec.Po \
-	./$(DEPDIR)/var-arqlog.Po ./$(DEPDIR)/var-arqmem.Po \
-	./$(DEPDIR)/var-arqprog.Po ./$(DEPDIR)/var-arqsav.Po \
-	./$(DEPDIR)/var-arqtxt.Po ./$(DEPDIR)/var-basico.Po \
-	./$(DEPDIR)/var-datahora.Po ./$(DEPDIR)/var-debug.Po \
-	./$(DEPDIR)/var-incdec.Po ./$(DEPDIR)/var-indiceobj.Po \
-	./$(DEPDIR)/var-intexec.Po ./$(DEPDIR)/var-inttempo.Po \
-	./$(DEPDIR)/var-listaobj.Po ./$(DEPDIR)/var-nomeobj.Po \
-	./$(DEPDIR)/var-outros.Po ./$(DEPDIR)/var-prog.Po \
-	./$(DEPDIR)/var-ref.Po ./$(DEPDIR)/var-serv.Po \
-	./$(DEPDIR)/var-socket.Po ./$(DEPDIR)/var-telatxt.Po \
-	./$(DEPDIR)/var-texto-bloco.Po ./$(DEPDIR)/var-texto-func.Po \
-	./$(DEPDIR)/var-texto.Po ./$(DEPDIR)/var-textoobj.Po \
-	./$(DEPDIR)/var-textovar.Po ./$(DEPDIR)/variavel.Po
+am__depfiles_remade = src/$(DEPDIR)/arqler.Po src/$(DEPDIR)/arqmapa.Po \
+	src/$(DEPDIR)/classe.Po src/$(DEPDIR)/console.Po \
+	src/$(DEPDIR)/exec.Po src/$(DEPDIR)/getrss.Po \
+	src/$(DEPDIR)/instr-codif.Po src/$(DEPDIR)/instr-decod.Po \
+	src/$(DEPDIR)/instr-exec.Po src/$(DEPDIR)/instr-func.Po \
+	src/$(DEPDIR)/instr-misc.Po src/$(DEPDIR)/instr-mostra.Po \
+	src/$(DEPDIR)/instr-vartroca.Po src/$(DEPDIR)/main.Po \
+	src/$(DEPDIR)/md5.Po src/$(DEPDIR)/misc.Po \
+	src/$(DEPDIR)/mudarclasse.Po src/$(DEPDIR)/objeto.Po \
+	src/$(DEPDIR)/procurar.Po src/$(DEPDIR)/random.Po \
+	src/$(DEPDIR)/sha1.Po src/$(DEPDIR)/socket.Po \
+	src/$(DEPDIR)/ssl.Po src/$(DEPDIR)/var-arqdir.Po \
+	src/$(DEPDIR)/var-arqexec.Po src/$(DEPDIR)/var-arqlog.Po \
+	src/$(DEPDIR)/var-arqmem.Po src/$(DEPDIR)/var-arqprog.Po \
+	src/$(DEPDIR)/var-arqsav.Po src/$(DEPDIR)/var-arqtxt.Po \
+	src/$(DEPDIR)/var-basico.Po src/$(DEPDIR)/var-datahora.Po \
+	src/$(DEPDIR)/var-debug.Po src/$(DEPDIR)/var-incdec.Po \
+	src/$(DEPDIR)/var-indiceobj.Po src/$(DEPDIR)/var-intexec.Po \
+	src/$(DEPDIR)/var-inttempo.Po src/$(DEPDIR)/var-listaobj.Po \
+	src/$(DEPDIR)/var-nomeobj.Po src/$(DEPDIR)/var-outros.Po \
+	src/$(DEPDIR)/var-prog.Po src/$(DEPDIR)/var-ref.Po \
+	src/$(DEPDIR)/var-serv.Po src/$(DEPDIR)/var-socket.Po \
+	src/$(DEPDIR)/var-telatxt.Po src/$(DEPDIR)/var-texto-bloco.Po \
+	src/$(DEPDIR)/var-texto-func.Po src/$(DEPDIR)/var-texto.Po \
+	src/$(DEPDIR)/var-textoobj.Po src/$(DEPDIR)/var-textovar.Po \
+	src/$(DEPDIR)/variavel.Po
 am__mv = mv -f
 CXXCOMPILE = $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) \
 	$(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS)
@@ -218,8 +225,7 @@ am__define_uniq_tagged_files = \
   done | $(am__uniquify_input)`
 AM_RECURSIVE_TARGETS = cscope
 am__DIST_COMMON = $(srcdir)/Makefile.in $(srcdir)/config.h.in AUTHORS \
-	COPYING ChangeLog INSTALL NEWS README TODO compile depcomp \
-	install-sh missing
+	COPYING ChangeLog README.md compile depcomp install-sh missing
 DISTFILES = $(DIST_COMMON) $(DIST_SOURCES) $(TEXINFOS) $(EXTRA_DIST)
 distdir = $(PACKAGE)-$(VERSION)
 top_distdir = $(distdir)
@@ -331,31 +337,107 @@ target_alias = @target_alias@
 top_build_prefix = @top_build_prefix@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
-EXTRA_DIST = doc/* mud/*.int mud/*/*.txt mud/*/*.int casa/*.int casa/*.txt testes/*.int programas-int/* editmud/editmud* make-mingw-* intmud.int Doxyfile TODO
-intmud_SOURCES = main.cpp classe.cpp classe.h objeto.cpp objeto.h \
-	variavel.cpp variavel.h variavel-def.h arqmapa.cpp arqmapa.h \
-	instr-codif.cpp instr-decod.cpp instr-mostra.cpp \
-	instr-exec.cpp instr-func.cpp instr-vartroca.cpp \
-	instr-misc.cpp instr.h instr-enum.h instr-func.h socket.cpp \
-	socket.h console.cpp console.h var-telatxt.cpp var-telatxt.h \
-	var-socket.cpp var-socket.h var-serv.cpp var-serv.h \
-	var-ref.cpp var-ref.h var-incdec.cpp var-incdec.h \
-	var-inttempo.cpp var-inttempo.h var-intexec.cpp var-intexec.h \
-	var-basico.cpp var-basico.h var-outros.cpp var-outros.h \
-	var-listaobj.cpp var-listaobj.h var-texto.cpp \
-	var-texto-bloco.cpp var-texto-func.cpp var-texto.h \
-	var-textovar.cpp var-textovar.h var-textoobj.cpp \
-	var-textoobj.h var-nomeobj.cpp var-nomeobj.h var-arqlog.cpp \
-	var-arqlog.h var-arqsav.cpp var-arqsav.h var-arqtxt.cpp \
-	var-arqtxt.h var-arqmem.cpp var-arqmem.h var-arqdir.cpp \
-	var-arqdir.h var-indiceobj.cpp var-indiceobj.h var-prog.cpp \
-	var-prog.h var-arqprog.cpp var-arqprog.h var-debug.cpp \
-	var-debug.h getrss.cpp var-datahora.cpp var-datahora.h \
-	exec.cpp exec.h var-arqexec.cpp var-arqexec.h mudarclasse.cpp \
-	mudarclasse.h arqler.cpp arqler.h misc.cpp misc.h procurar.cpp \
-	procurar.h random.cpp random.h sha1.cpp sha1.h md5.cpp md5.h \
-	ssl.cpp ssl.h alocamem.h rbt.cpp.h
-AM_CXXFLAGS = -Wall -fno-exceptions -fno-rtti -std=c++11
+EXTRA_DIST = AUTHORS ChangeLog COPYING README.md doc/* mud/*.int mud/*/*.txt mud/*/*.int casa/*.int casa/*.txt testes/*.int programas-int/* intmud.int Doxyfile
+intmud_SOURCES = \
+  src/main.cpp \
+  src/classe.cpp \
+  src/classe.h \
+  src/objeto.cpp \
+  src/objeto.h \
+  src/variavel.cpp \
+  src/variavel.h \
+  src/variavel-def.h \
+  src/arqmapa.cpp \
+  src/arqmapa.h \
+  src/instr-codif.cpp \
+  src/instr-decod.cpp \
+  src/instr-mostra.cpp \
+  src/instr-exec.cpp \
+  src/instr-func.cpp \
+  src/instr-vartroca.cpp \
+  src/instr-misc.cpp \
+  src/instr.h \
+  src/instr-enum.h \
+  src/instr-func.h \
+  src/socket.cpp \
+  src/socket.h \
+  src/console.cpp \
+  src/console.h \
+  src/var-telatxt.cpp \
+  src/var-telatxt.h \
+  src/var-socket.cpp \
+  src/var-socket.h \
+  src/var-serv.cpp \
+  src/var-serv.h \
+  src/var-ref.cpp \
+  src/var-ref.h \
+  src/var-incdec.cpp \
+  src/var-incdec.h \
+  src/var-inttempo.cpp \
+  src/var-inttempo.h \
+  src/var-intexec.cpp \
+  src/var-intexec.h \
+  src/var-basico.cpp \
+  src/var-basico.h \
+  src/var-outros.cpp \
+  src/var-outros.h \
+  src/var-listaobj.cpp \
+  src/var-listaobj.h \
+  src/var-texto.cpp \
+  src/var-texto-bloco.cpp \
+  src/var-texto-func.cpp \
+  src/var-texto.h \
+  src/var-textovar.cpp \
+  src/var-textovar.h \
+  src/var-textoobj.cpp \
+  src/var-textoobj.h \
+  src/var-nomeobj.cpp \
+  src/var-nomeobj.h \
+  src/var-arqlog.cpp \
+  src/var-arqlog.h \
+  src/var-arqsav.cpp \
+  src/var-arqsav.h \
+  src/var-arqtxt.cpp \
+  src/var-arqtxt.h \
+  src/var-arqmem.cpp \
+  src/var-arqmem.h \
+  src/var-arqdir.cpp \
+  src/var-arqdir.h \
+  src/var-indiceobj.cpp \
+  src/var-indiceobj.h \
+  src/var-prog.cpp \
+  src/var-prog.h \
+  src/var-arqprog.cpp \
+  src/var-arqprog.h \
+  src/var-debug.cpp \
+  src/var-debug.h \
+  src/getrss.cpp \
+  src/var-datahora.cpp \
+  src/var-datahora.h \
+  src/exec.cpp \
+  src/exec.h \
+  src/var-arqexec.cpp \
+  src/var-arqexec.h \
+  src/mudarclasse.cpp \
+  src/mudarclasse.h \
+  src/arqler.cpp \
+  src/arqler.h \
+  src/misc.cpp \
+  src/misc.h \
+  src/procurar.cpp \
+  src/procurar.h \
+  src/random.cpp \
+  src/random.h \
+  src/sha1.cpp \
+  src/sha1.h \
+  src/md5.cpp \
+  src/md5.h \
+  src/ssl.cpp \
+  src/ssl.h \
+  src/alocamem.h \
+  src/rbt.cpp.h
+
+AM_CXXFLAGS = -Wall -fno-exceptions -fno-rtti -std=c++11 -Isrc
 all: config.h
 	$(MAKE) $(AM_MAKEFLAGS) all-am
 
@@ -367,15 +449,15 @@ $(srcdir)/Makefile.in:  $(srcdir)/Makefile.am  $(am__configure_deps)
 	@for dep in $?; do \
 	  case '$(am__configure_deps)' in \
 	    *$$dep*) \
-	      echo ' cd $(srcdir) && $(AUTOMAKE) --gnu'; \
-	      $(am__cd) $(srcdir) && $(AUTOMAKE) --gnu \
+	      echo ' cd $(srcdir) && $(AUTOMAKE) --foreign'; \
+	      $(am__cd) $(srcdir) && $(AUTOMAKE) --foreign \
 		&& exit 0; \
 	      exit 1;; \
 	  esac; \
 	done; \
-	echo ' cd $(top_srcdir) && $(AUTOMAKE) --gnu Makefile'; \
+	echo ' cd $(top_srcdir) && $(AUTOMAKE) --foreign Makefile'; \
 	$(am__cd) $(top_srcdir) && \
-	  $(AUTOMAKE) --gnu Makefile
+	  $(AUTOMAKE) --foreign Makefile
 Makefile: $(srcdir)/Makefile.in $(top_builddir)/config.status
 	@case '$?' in \
 	  *config.status*) \
@@ -451,6 +533,108 @@ uninstall-binPROGRAMS:
 
 clean-binPROGRAMS:
 	-test -z "$(bin_PROGRAMS)" || rm -f $(bin_PROGRAMS)
+src/$(am__dirstamp):
+	@$(MKDIR_P) src
+	@: > src/$(am__dirstamp)
+src/$(DEPDIR)/$(am__dirstamp):
+	@$(MKDIR_P) src/$(DEPDIR)
+	@: > src/$(DEPDIR)/$(am__dirstamp)
+src/main.$(OBJEXT): src/$(am__dirstamp) src/$(DEPDIR)/$(am__dirstamp)
+src/classe.$(OBJEXT): src/$(am__dirstamp) \
+	src/$(DEPDIR)/$(am__dirstamp)
+src/objeto.$(OBJEXT): src/$(am__dirstamp) \
+	src/$(DEPDIR)/$(am__dirstamp)
+src/variavel.$(OBJEXT): src/$(am__dirstamp) \
+	src/$(DEPDIR)/$(am__dirstamp)
+src/arqmapa.$(OBJEXT): src/$(am__dirstamp) \
+	src/$(DEPDIR)/$(am__dirstamp)
+src/instr-codif.$(OBJEXT): src/$(am__dirstamp) \
+	src/$(DEPDIR)/$(am__dirstamp)
+src/instr-decod.$(OBJEXT): src/$(am__dirstamp) \
+	src/$(DEPDIR)/$(am__dirstamp)
+src/instr-mostra.$(OBJEXT): src/$(am__dirstamp) \
+	src/$(DEPDIR)/$(am__dirstamp)
+src/instr-exec.$(OBJEXT): src/$(am__dirstamp) \
+	src/$(DEPDIR)/$(am__dirstamp)
+src/instr-func.$(OBJEXT): src/$(am__dirstamp) \
+	src/$(DEPDIR)/$(am__dirstamp)
+src/instr-vartroca.$(OBJEXT): src/$(am__dirstamp) \
+	src/$(DEPDIR)/$(am__dirstamp)
+src/instr-misc.$(OBJEXT): src/$(am__dirstamp) \
+	src/$(DEPDIR)/$(am__dirstamp)
+src/socket.$(OBJEXT): src/$(am__dirstamp) \
+	src/$(DEPDIR)/$(am__dirstamp)
+src/console.$(OBJEXT): src/$(am__dirstamp) \
+	src/$(DEPDIR)/$(am__dirstamp)
+src/var-telatxt.$(OBJEXT): src/$(am__dirstamp) \
+	src/$(DEPDIR)/$(am__dirstamp)
+src/var-socket.$(OBJEXT): src/$(am__dirstamp) \
+	src/$(DEPDIR)/$(am__dirstamp)
+src/var-serv.$(OBJEXT): src/$(am__dirstamp) \
+	src/$(DEPDIR)/$(am__dirstamp)
+src/var-ref.$(OBJEXT): src/$(am__dirstamp) \
+	src/$(DEPDIR)/$(am__dirstamp)
+src/var-incdec.$(OBJEXT): src/$(am__dirstamp) \
+	src/$(DEPDIR)/$(am__dirstamp)
+src/var-inttempo.$(OBJEXT): src/$(am__dirstamp) \
+	src/$(DEPDIR)/$(am__dirstamp)
+src/var-intexec.$(OBJEXT): src/$(am__dirstamp) \
+	src/$(DEPDIR)/$(am__dirstamp)
+src/var-basico.$(OBJEXT): src/$(am__dirstamp) \
+	src/$(DEPDIR)/$(am__dirstamp)
+src/var-outros.$(OBJEXT): src/$(am__dirstamp) \
+	src/$(DEPDIR)/$(am__dirstamp)
+src/var-listaobj.$(OBJEXT): src/$(am__dirstamp) \
+	src/$(DEPDIR)/$(am__dirstamp)
+src/var-texto.$(OBJEXT): src/$(am__dirstamp) \
+	src/$(DEPDIR)/$(am__dirstamp)
+src/var-texto-bloco.$(OBJEXT): src/$(am__dirstamp) \
+	src/$(DEPDIR)/$(am__dirstamp)
+src/var-texto-func.$(OBJEXT): src/$(am__dirstamp) \
+	src/$(DEPDIR)/$(am__dirstamp)
+src/var-textovar.$(OBJEXT): src/$(am__dirstamp) \
+	src/$(DEPDIR)/$(am__dirstamp)
+src/var-textoobj.$(OBJEXT): src/$(am__dirstamp) \
+	src/$(DEPDIR)/$(am__dirstamp)
+src/var-nomeobj.$(OBJEXT): src/$(am__dirstamp) \
+	src/$(DEPDIR)/$(am__dirstamp)
+src/var-arqlog.$(OBJEXT): src/$(am__dirstamp) \
+	src/$(DEPDIR)/$(am__dirstamp)
+src/var-arqsav.$(OBJEXT): src/$(am__dirstamp) \
+	src/$(DEPDIR)/$(am__dirstamp)
+src/var-arqtxt.$(OBJEXT): src/$(am__dirstamp) \
+	src/$(DEPDIR)/$(am__dirstamp)
+src/var-arqmem.$(OBJEXT): src/$(am__dirstamp) \
+	src/$(DEPDIR)/$(am__dirstamp)
+src/var-arqdir.$(OBJEXT): src/$(am__dirstamp) \
+	src/$(DEPDIR)/$(am__dirstamp)
+src/var-indiceobj.$(OBJEXT): src/$(am__dirstamp) \
+	src/$(DEPDIR)/$(am__dirstamp)
+src/var-prog.$(OBJEXT): src/$(am__dirstamp) \
+	src/$(DEPDIR)/$(am__dirstamp)
+src/var-arqprog.$(OBJEXT): src/$(am__dirstamp) \
+	src/$(DEPDIR)/$(am__dirstamp)
+src/var-debug.$(OBJEXT): src/$(am__dirstamp) \
+	src/$(DEPDIR)/$(am__dirstamp)
+src/getrss.$(OBJEXT): src/$(am__dirstamp) \
+	src/$(DEPDIR)/$(am__dirstamp)
+src/var-datahora.$(OBJEXT): src/$(am__dirstamp) \
+	src/$(DEPDIR)/$(am__dirstamp)
+src/exec.$(OBJEXT): src/$(am__dirstamp) src/$(DEPDIR)/$(am__dirstamp)
+src/var-arqexec.$(OBJEXT): src/$(am__dirstamp) \
+	src/$(DEPDIR)/$(am__dirstamp)
+src/mudarclasse.$(OBJEXT): src/$(am__dirstamp) \
+	src/$(DEPDIR)/$(am__dirstamp)
+src/arqler.$(OBJEXT): src/$(am__dirstamp) \
+	src/$(DEPDIR)/$(am__dirstamp)
+src/misc.$(OBJEXT): src/$(am__dirstamp) src/$(DEPDIR)/$(am__dirstamp)
+src/procurar.$(OBJEXT): src/$(am__dirstamp) \
+	src/$(DEPDIR)/$(am__dirstamp)
+src/random.$(OBJEXT): src/$(am__dirstamp) \
+	src/$(DEPDIR)/$(am__dirstamp)
+src/sha1.$(OBJEXT): src/$(am__dirstamp) src/$(DEPDIR)/$(am__dirstamp)
+src/md5.$(OBJEXT): src/$(am__dirstamp) src/$(DEPDIR)/$(am__dirstamp)
+src/ssl.$(OBJEXT): src/$(am__dirstamp) src/$(DEPDIR)/$(am__dirstamp)
 
 intmud$(EXEEXT): $(intmud_OBJECTS) $(intmud_DEPENDENCIES) $(EXTRA_intmud_DEPENDENCIES) 
 	@rm -f intmud$(EXEEXT)
@@ -458,61 +642,62 @@ intmud$(EXEEXT): $(intmud_OBJECTS) $(intmud_DEPENDENCIES) $(EXTRA_intmud_DEPENDE
 
 mostlyclean-compile:
 	-rm -f *.$(OBJEXT)
+	-rm -f src/*.$(OBJEXT)
 
 distclean-compile:
 	-rm -f *.tab.c
 
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/arqler.Po@am__quote@ # am--include-marker
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/arqmapa.Po@am__quote@ # am--include-marker
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/classe.Po@am__quote@ # am--include-marker
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/console.Po@am__quote@ # am--include-marker
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/exec.Po@am__quote@ # am--include-marker
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/getrss.Po@am__quote@ # am--include-marker
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/instr-codif.Po@am__quote@ # am--include-marker
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/instr-decod.Po@am__quote@ # am--include-marker
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/instr-exec.Po@am__quote@ # am--include-marker
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/instr-func.Po@am__quote@ # am--include-marker
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/instr-misc.Po@am__quote@ # am--include-marker
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/instr-mostra.Po@am__quote@ # am--include-marker
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/instr-vartroca.Po@am__quote@ # am--include-marker
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/main.Po@am__quote@ # am--include-marker
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/md5.Po@am__quote@ # am--include-marker
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/misc.Po@am__quote@ # am--include-marker
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/mudarclasse.Po@am__quote@ # am--include-marker
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/objeto.Po@am__quote@ # am--include-marker
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/procurar.Po@am__quote@ # am--include-marker
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/random.Po@am__quote@ # am--include-marker
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/sha1.Po@am__quote@ # am--include-marker
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/socket.Po@am__quote@ # am--include-marker
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ssl.Po@am__quote@ # am--include-marker
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/var-arqdir.Po@am__quote@ # am--include-marker
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/var-arqexec.Po@am__quote@ # am--include-marker
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/var-arqlog.Po@am__quote@ # am--include-marker
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/var-arqmem.Po@am__quote@ # am--include-marker
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/var-arqprog.Po@am__quote@ # am--include-marker
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/var-arqsav.Po@am__quote@ # am--include-marker
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/var-arqtxt.Po@am__quote@ # am--include-marker
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/var-basico.Po@am__quote@ # am--include-marker
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/var-datahora.Po@am__quote@ # am--include-marker
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/var-debug.Po@am__quote@ # am--include-marker
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/var-incdec.Po@am__quote@ # am--include-marker
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/var-indiceobj.Po@am__quote@ # am--include-marker
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/var-intexec.Po@am__quote@ # am--include-marker
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/var-inttempo.Po@am__quote@ # am--include-marker
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/var-listaobj.Po@am__quote@ # am--include-marker
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/var-nomeobj.Po@am__quote@ # am--include-marker
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/var-outros.Po@am__quote@ # am--include-marker
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/var-prog.Po@am__quote@ # am--include-marker
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/var-ref.Po@am__quote@ # am--include-marker
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/var-serv.Po@am__quote@ # am--include-marker
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/var-socket.Po@am__quote@ # am--include-marker
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/var-telatxt.Po@am__quote@ # am--include-marker
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/var-texto-bloco.Po@am__quote@ # am--include-marker
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/var-texto-func.Po@am__quote@ # am--include-marker
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/var-texto.Po@am__quote@ # am--include-marker
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/var-textoobj.Po@am__quote@ # am--include-marker
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/var-textovar.Po@am__quote@ # am--include-marker
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/variavel.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@src/$(DEPDIR)/arqler.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@src/$(DEPDIR)/arqmapa.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@src/$(DEPDIR)/classe.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@src/$(DEPDIR)/console.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@src/$(DEPDIR)/exec.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@src/$(DEPDIR)/getrss.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@src/$(DEPDIR)/instr-codif.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@src/$(DEPDIR)/instr-decod.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@src/$(DEPDIR)/instr-exec.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@src/$(DEPDIR)/instr-func.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@src/$(DEPDIR)/instr-misc.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@src/$(DEPDIR)/instr-mostra.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@src/$(DEPDIR)/instr-vartroca.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@src/$(DEPDIR)/main.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@src/$(DEPDIR)/md5.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@src/$(DEPDIR)/misc.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@src/$(DEPDIR)/mudarclasse.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@src/$(DEPDIR)/objeto.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@src/$(DEPDIR)/procurar.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@src/$(DEPDIR)/random.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@src/$(DEPDIR)/sha1.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@src/$(DEPDIR)/socket.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@src/$(DEPDIR)/ssl.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@src/$(DEPDIR)/var-arqdir.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@src/$(DEPDIR)/var-arqexec.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@src/$(DEPDIR)/var-arqlog.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@src/$(DEPDIR)/var-arqmem.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@src/$(DEPDIR)/var-arqprog.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@src/$(DEPDIR)/var-arqsav.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@src/$(DEPDIR)/var-arqtxt.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@src/$(DEPDIR)/var-basico.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@src/$(DEPDIR)/var-datahora.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@src/$(DEPDIR)/var-debug.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@src/$(DEPDIR)/var-incdec.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@src/$(DEPDIR)/var-indiceobj.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@src/$(DEPDIR)/var-intexec.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@src/$(DEPDIR)/var-inttempo.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@src/$(DEPDIR)/var-listaobj.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@src/$(DEPDIR)/var-nomeobj.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@src/$(DEPDIR)/var-outros.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@src/$(DEPDIR)/var-prog.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@src/$(DEPDIR)/var-ref.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@src/$(DEPDIR)/var-serv.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@src/$(DEPDIR)/var-socket.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@src/$(DEPDIR)/var-telatxt.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@src/$(DEPDIR)/var-texto-bloco.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@src/$(DEPDIR)/var-texto-func.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@src/$(DEPDIR)/var-texto.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@src/$(DEPDIR)/var-textoobj.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@src/$(DEPDIR)/var-textovar.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@src/$(DEPDIR)/variavel.Po@am__quote@ # am--include-marker
 
 $(am__depfiles_remade):
 	@$(MKDIR_P) $(@D)
@@ -521,15 +706,17 @@ $(am__depfiles_remade):
 am--depfiles: $(am__depfiles_remade)
 
 .cpp.o:
-@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXXCOMPILE) -MT $@ -MD -MP -MF $(DEPDIR)/$*.Tpo -c -o $@ $<
-@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/$*.Tpo $(DEPDIR)/$*.Po
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)depbase=`echo $@ | sed 's|[^/]*$$|$(DEPDIR)/&|;s|\.o$$||'`;\
+@am__fastdepCXX_TRUE@	$(CXXCOMPILE) -MT $@ -MD -MP -MF $$depbase.Tpo -c -o $@ $< &&\
+@am__fastdepCXX_TRUE@	$(am__mv) $$depbase.Tpo $$depbase.Po
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='$<' object='$@' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXXCOMPILE) -c -o $@ $<
 
 .cpp.obj:
-@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXXCOMPILE) -MT $@ -MD -MP -MF $(DEPDIR)/$*.Tpo -c -o $@ `$(CYGPATH_W) '$<'`
-@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/$*.Tpo $(DEPDIR)/$*.Po
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)depbase=`echo $@ | sed 's|[^/]*$$|$(DEPDIR)/&|;s|\.obj$$||'`;\
+@am__fastdepCXX_TRUE@	$(CXXCOMPILE) -MT $@ -MD -MP -MF $$depbase.Tpo -c -o $@ `$(CYGPATH_W) '$<'` &&\
+@am__fastdepCXX_TRUE@	$(am__mv) $$depbase.Tpo $$depbase.Po
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='$<' object='$@' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXXCOMPILE) -c -o $@ `$(CYGPATH_W) '$<'`
@@ -797,6 +984,8 @@ clean-generic:
 distclean-generic:
 	-test -z "$(CONFIG_CLEAN_FILES)" || rm -f $(CONFIG_CLEAN_FILES)
 	-test . = "$(srcdir)" || test -z "$(CONFIG_CLEAN_VPATH_FILES)" || rm -f $(CONFIG_CLEAN_VPATH_FILES)
+	-rm -f src/$(DEPDIR)/$(am__dirstamp)
+	-rm -f src/$(am__dirstamp)
 
 maintainer-clean-generic:
 	@echo "This command is intended for maintainers to use"
@@ -807,57 +996,57 @@ clean-am: clean-binPROGRAMS clean-generic mostlyclean-am
 
 distclean: distclean-am
 	-rm -f $(am__CONFIG_DISTCLEAN_FILES)
-		-rm -f ./$(DEPDIR)/arqler.Po
-	-rm -f ./$(DEPDIR)/arqmapa.Po
-	-rm -f ./$(DEPDIR)/classe.Po
-	-rm -f ./$(DEPDIR)/console.Po
-	-rm -f ./$(DEPDIR)/exec.Po
-	-rm -f ./$(DEPDIR)/getrss.Po
-	-rm -f ./$(DEPDIR)/instr-codif.Po
-	-rm -f ./$(DEPDIR)/instr-decod.Po
-	-rm -f ./$(DEPDIR)/instr-exec.Po
-	-rm -f ./$(DEPDIR)/instr-func.Po
-	-rm -f ./$(DEPDIR)/instr-misc.Po
-	-rm -f ./$(DEPDIR)/instr-mostra.Po
-	-rm -f ./$(DEPDIR)/instr-vartroca.Po
-	-rm -f ./$(DEPDIR)/main.Po
-	-rm -f ./$(DEPDIR)/md5.Po
-	-rm -f ./$(DEPDIR)/misc.Po
-	-rm -f ./$(DEPDIR)/mudarclasse.Po
-	-rm -f ./$(DEPDIR)/objeto.Po
-	-rm -f ./$(DEPDIR)/procurar.Po
-	-rm -f ./$(DEPDIR)/random.Po
-	-rm -f ./$(DEPDIR)/sha1.Po
-	-rm -f ./$(DEPDIR)/socket.Po
-	-rm -f ./$(DEPDIR)/ssl.Po
-	-rm -f ./$(DEPDIR)/var-arqdir.Po
-	-rm -f ./$(DEPDIR)/var-arqexec.Po
-	-rm -f ./$(DEPDIR)/var-arqlog.Po
-	-rm -f ./$(DEPDIR)/var-arqmem.Po
-	-rm -f ./$(DEPDIR)/var-arqprog.Po
-	-rm -f ./$(DEPDIR)/var-arqsav.Po
-	-rm -f ./$(DEPDIR)/var-arqtxt.Po
-	-rm -f ./$(DEPDIR)/var-basico.Po
-	-rm -f ./$(DEPDIR)/var-datahora.Po
-	-rm -f ./$(DEPDIR)/var-debug.Po
-	-rm -f ./$(DEPDIR)/var-incdec.Po
-	-rm -f ./$(DEPDIR)/var-indiceobj.Po
-	-rm -f ./$(DEPDIR)/var-intexec.Po
-	-rm -f ./$(DEPDIR)/var-inttempo.Po
-	-rm -f ./$(DEPDIR)/var-listaobj.Po
-	-rm -f ./$(DEPDIR)/var-nomeobj.Po
-	-rm -f ./$(DEPDIR)/var-outros.Po
-	-rm -f ./$(DEPDIR)/var-prog.Po
-	-rm -f ./$(DEPDIR)/var-ref.Po
-	-rm -f ./$(DEPDIR)/var-serv.Po
-	-rm -f ./$(DEPDIR)/var-socket.Po
-	-rm -f ./$(DEPDIR)/var-telatxt.Po
-	-rm -f ./$(DEPDIR)/var-texto-bloco.Po
-	-rm -f ./$(DEPDIR)/var-texto-func.Po
-	-rm -f ./$(DEPDIR)/var-texto.Po
-	-rm -f ./$(DEPDIR)/var-textoobj.Po
-	-rm -f ./$(DEPDIR)/var-textovar.Po
-	-rm -f ./$(DEPDIR)/variavel.Po
+		-rm -f src/$(DEPDIR)/arqler.Po
+	-rm -f src/$(DEPDIR)/arqmapa.Po
+	-rm -f src/$(DEPDIR)/classe.Po
+	-rm -f src/$(DEPDIR)/console.Po
+	-rm -f src/$(DEPDIR)/exec.Po
+	-rm -f src/$(DEPDIR)/getrss.Po
+	-rm -f src/$(DEPDIR)/instr-codif.Po
+	-rm -f src/$(DEPDIR)/instr-decod.Po
+	-rm -f src/$(DEPDIR)/instr-exec.Po
+	-rm -f src/$(DEPDIR)/instr-func.Po
+	-rm -f src/$(DEPDIR)/instr-misc.Po
+	-rm -f src/$(DEPDIR)/instr-mostra.Po
+	-rm -f src/$(DEPDIR)/instr-vartroca.Po
+	-rm -f src/$(DEPDIR)/main.Po
+	-rm -f src/$(DEPDIR)/md5.Po
+	-rm -f src/$(DEPDIR)/misc.Po
+	-rm -f src/$(DEPDIR)/mudarclasse.Po
+	-rm -f src/$(DEPDIR)/objeto.Po
+	-rm -f src/$(DEPDIR)/procurar.Po
+	-rm -f src/$(DEPDIR)/random.Po
+	-rm -f src/$(DEPDIR)/sha1.Po
+	-rm -f src/$(DEPDIR)/socket.Po
+	-rm -f src/$(DEPDIR)/ssl.Po
+	-rm -f src/$(DEPDIR)/var-arqdir.Po
+	-rm -f src/$(DEPDIR)/var-arqexec.Po
+	-rm -f src/$(DEPDIR)/var-arqlog.Po
+	-rm -f src/$(DEPDIR)/var-arqmem.Po
+	-rm -f src/$(DEPDIR)/var-arqprog.Po
+	-rm -f src/$(DEPDIR)/var-arqsav.Po
+	-rm -f src/$(DEPDIR)/var-arqtxt.Po
+	-rm -f src/$(DEPDIR)/var-basico.Po
+	-rm -f src/$(DEPDIR)/var-datahora.Po
+	-rm -f src/$(DEPDIR)/var-debug.Po
+	-rm -f src/$(DEPDIR)/var-incdec.Po
+	-rm -f src/$(DEPDIR)/var-indiceobj.Po
+	-rm -f src/$(DEPDIR)/var-intexec.Po
+	-rm -f src/$(DEPDIR)/var-inttempo.Po
+	-rm -f src/$(DEPDIR)/var-listaobj.Po
+	-rm -f src/$(DEPDIR)/var-nomeobj.Po
+	-rm -f src/$(DEPDIR)/var-outros.Po
+	-rm -f src/$(DEPDIR)/var-prog.Po
+	-rm -f src/$(DEPDIR)/var-ref.Po
+	-rm -f src/$(DEPDIR)/var-serv.Po
+	-rm -f src/$(DEPDIR)/var-socket.Po
+	-rm -f src/$(DEPDIR)/var-telatxt.Po
+	-rm -f src/$(DEPDIR)/var-texto-bloco.Po
+	-rm -f src/$(DEPDIR)/var-texto-func.Po
+	-rm -f src/$(DEPDIR)/var-texto.Po
+	-rm -f src/$(DEPDIR)/var-textoobj.Po
+	-rm -f src/$(DEPDIR)/var-textovar.Po
+	-rm -f src/$(DEPDIR)/variavel.Po
 	-rm -f Makefile
 distclean-am: clean-am distclean-compile distclean-generic \
 	distclean-hdr distclean-tags
@@ -905,57 +1094,57 @@ installcheck-am:
 maintainer-clean: maintainer-clean-am
 	-rm -f $(am__CONFIG_DISTCLEAN_FILES)
 	-rm -rf $(top_srcdir)/autom4te.cache
-		-rm -f ./$(DEPDIR)/arqler.Po
-	-rm -f ./$(DEPDIR)/arqmapa.Po
-	-rm -f ./$(DEPDIR)/classe.Po
-	-rm -f ./$(DEPDIR)/console.Po
-	-rm -f ./$(DEPDIR)/exec.Po
-	-rm -f ./$(DEPDIR)/getrss.Po
-	-rm -f ./$(DEPDIR)/instr-codif.Po
-	-rm -f ./$(DEPDIR)/instr-decod.Po
-	-rm -f ./$(DEPDIR)/instr-exec.Po
-	-rm -f ./$(DEPDIR)/instr-func.Po
-	-rm -f ./$(DEPDIR)/instr-misc.Po
-	-rm -f ./$(DEPDIR)/instr-mostra.Po
-	-rm -f ./$(DEPDIR)/instr-vartroca.Po
-	-rm -f ./$(DEPDIR)/main.Po
-	-rm -f ./$(DEPDIR)/md5.Po
-	-rm -f ./$(DEPDIR)/misc.Po
-	-rm -f ./$(DEPDIR)/mudarclasse.Po
-	-rm -f ./$(DEPDIR)/objeto.Po
-	-rm -f ./$(DEPDIR)/procurar.Po
-	-rm -f ./$(DEPDIR)/random.Po
-	-rm -f ./$(DEPDIR)/sha1.Po
-	-rm -f ./$(DEPDIR)/socket.Po
-	-rm -f ./$(DEPDIR)/ssl.Po
-	-rm -f ./$(DEPDIR)/var-arqdir.Po
-	-rm -f ./$(DEPDIR)/var-arqexec.Po
-	-rm -f ./$(DEPDIR)/var-arqlog.Po
-	-rm -f ./$(DEPDIR)/var-arqmem.Po
-	-rm -f ./$(DEPDIR)/var-arqprog.Po
-	-rm -f ./$(DEPDIR)/var-arqsav.Po
-	-rm -f ./$(DEPDIR)/var-arqtxt.Po
-	-rm -f ./$(DEPDIR)/var-basico.Po
-	-rm -f ./$(DEPDIR)/var-datahora.Po
-	-rm -f ./$(DEPDIR)/var-debug.Po
-	-rm -f ./$(DEPDIR)/var-incdec.Po
-	-rm -f ./$(DEPDIR)/var-indiceobj.Po
-	-rm -f ./$(DEPDIR)/var-intexec.Po
-	-rm -f ./$(DEPDIR)/var-inttempo.Po
-	-rm -f ./$(DEPDIR)/var-listaobj.Po
-	-rm -f ./$(DEPDIR)/var-nomeobj.Po
-	-rm -f ./$(DEPDIR)/var-outros.Po
-	-rm -f ./$(DEPDIR)/var-prog.Po
-	-rm -f ./$(DEPDIR)/var-ref.Po
-	-rm -f ./$(DEPDIR)/var-serv.Po
-	-rm -f ./$(DEPDIR)/var-socket.Po
-	-rm -f ./$(DEPDIR)/var-telatxt.Po
-	-rm -f ./$(DEPDIR)/var-texto-bloco.Po
-	-rm -f ./$(DEPDIR)/var-texto-func.Po
-	-rm -f ./$(DEPDIR)/var-texto.Po
-	-rm -f ./$(DEPDIR)/var-textoobj.Po
-	-rm -f ./$(DEPDIR)/var-textovar.Po
-	-rm -f ./$(DEPDIR)/variavel.Po
+		-rm -f src/$(DEPDIR)/arqler.Po
+	-rm -f src/$(DEPDIR)/arqmapa.Po
+	-rm -f src/$(DEPDIR)/classe.Po
+	-rm -f src/$(DEPDIR)/console.Po
+	-rm -f src/$(DEPDIR)/exec.Po
+	-rm -f src/$(DEPDIR)/getrss.Po
+	-rm -f src/$(DEPDIR)/instr-codif.Po
+	-rm -f src/$(DEPDIR)/instr-decod.Po
+	-rm -f src/$(DEPDIR)/instr-exec.Po
+	-rm -f src/$(DEPDIR)/instr-func.Po
+	-rm -f src/$(DEPDIR)/instr-misc.Po
+	-rm -f src/$(DEPDIR)/instr-mostra.Po
+	-rm -f src/$(DEPDIR)/instr-vartroca.Po
+	-rm -f src/$(DEPDIR)/main.Po
+	-rm -f src/$(DEPDIR)/md5.Po
+	-rm -f src/$(DEPDIR)/misc.Po
+	-rm -f src/$(DEPDIR)/mudarclasse.Po
+	-rm -f src/$(DEPDIR)/objeto.Po
+	-rm -f src/$(DEPDIR)/procurar.Po
+	-rm -f src/$(DEPDIR)/random.Po
+	-rm -f src/$(DEPDIR)/sha1.Po
+	-rm -f src/$(DEPDIR)/socket.Po
+	-rm -f src/$(DEPDIR)/ssl.Po
+	-rm -f src/$(DEPDIR)/var-arqdir.Po
+	-rm -f src/$(DEPDIR)/var-arqexec.Po
+	-rm -f src/$(DEPDIR)/var-arqlog.Po
+	-rm -f src/$(DEPDIR)/var-arqmem.Po
+	-rm -f src/$(DEPDIR)/var-arqprog.Po
+	-rm -f src/$(DEPDIR)/var-arqsav.Po
+	-rm -f src/$(DEPDIR)/var-arqtxt.Po
+	-rm -f src/$(DEPDIR)/var-basico.Po
+	-rm -f src/$(DEPDIR)/var-datahora.Po
+	-rm -f src/$(DEPDIR)/var-debug.Po
+	-rm -f src/$(DEPDIR)/var-incdec.Po
+	-rm -f src/$(DEPDIR)/var-indiceobj.Po
+	-rm -f src/$(DEPDIR)/var-intexec.Po
+	-rm -f src/$(DEPDIR)/var-inttempo.Po
+	-rm -f src/$(DEPDIR)/var-listaobj.Po
+	-rm -f src/$(DEPDIR)/var-nomeobj.Po
+	-rm -f src/$(DEPDIR)/var-outros.Po
+	-rm -f src/$(DEPDIR)/var-prog.Po
+	-rm -f src/$(DEPDIR)/var-ref.Po
+	-rm -f src/$(DEPDIR)/var-serv.Po
+	-rm -f src/$(DEPDIR)/var-socket.Po
+	-rm -f src/$(DEPDIR)/var-telatxt.Po
+	-rm -f src/$(DEPDIR)/var-texto-bloco.Po
+	-rm -f src/$(DEPDIR)/var-texto-func.Po
+	-rm -f src/$(DEPDIR)/var-texto.Po
+	-rm -f src/$(DEPDIR)/var-textoobj.Po
+	-rm -f src/$(DEPDIR)/var-textovar.Po
+	-rm -f src/$(DEPDIR)/variavel.Po
 	-rm -f Makefile
 maintainer-clean-am: distclean-am maintainer-clean-generic
 

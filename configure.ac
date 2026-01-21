@@ -3,8 +3,8 @@
 
 AC_PREREQ([2.71])
 AC_INIT([intmud],[1.16],[edx2martin@gmail.com])
-AM_INIT_AUTOMAKE
-AC_CONFIG_SRCDIR([misc.cpp])
+AM_INIT_AUTOMAKE([-Wall -Werror foreign subdir-objects])
+AC_CONFIG_SRCDIR([src/misc.cpp])
 AC_CONFIG_HEADERS([config.h])
 
 # Checks for programs.
