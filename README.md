@@ -57,7 +57,7 @@ O projeto é dividido em três componentes principais:
 4.  **Para rodar o MUD de exemplo:**
     ```bash
     # Copie o executável para o diretório do MUD
-    cp intmud mud/mud
+    cp intmud mud/mud.int
     # Entre no diretório e execute
     cd mud
     ./mud
@@ -112,11 +112,14 @@ interativos e de longa duração.
   configurável de instruções são interrompidas para evitar loops infinitos,
   garantindo a estabilidade do servidor.
 - **Linguagem em português**: É uma decisão de projeto. Facilita para
-  iniciantes e pode ser um trampolim para outras linguagens de programação. |
+  iniciantes e pode ser um trampolim para outras linguagens de programação.
 
 ## A Base de MUD
 
-A base de MUD do projeto serve como um ponto de partida robusto e um exemplo prático. Seus princípios são:
+A base de MUD do projeto é um codebase pronto para uso, projetado para
+construir mundos virtuais mais rapidamente e com menos dificuldades.
+
+Seus princípios são:
 
 - **Criação sem código**: Permitir a construção de muita coisa complexa sem
   programação, através de um sistema de comandos de administração e menus
