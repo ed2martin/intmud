@@ -23,7 +23,7 @@
 #include "ssl.h"
 
 //------------------------------------------------------------------------------
-#ifdef __WIN32__
+#ifdef _WIN32
 #include <windows.h>
 #define HANDLE_DLL HMODULE
 #define GETPROC GetProcAddress
@@ -82,7 +82,7 @@ void FechaSSL()
     if (ssl_ctx_servidor)
         SslCtxFree(ssl_ctx_servidor);
     ssl_ctx_servidor = nullptr;
-#ifdef __WIN32__
+#ifdef _WIN32
     FreeLibrary(ssl_handle1);
     FreeLibrary(ssl_handle2);
 #else
@@ -97,7 +97,7 @@ const char * AbreSSL()
 {
     if (ssl_handle1)
         return nullptr;
-#ifdef __WIN32__
+#ifdef _WIN32
     ssl_handle1 = LoadLibrary("ssleay32.dll");
     if (ssl_handle1 == nullptr)
         ssl_handle1 = LoadLibrary("libssl32.dll");

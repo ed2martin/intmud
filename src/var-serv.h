@@ -1,9 +1,9 @@
 #ifndef VAR_SERV_H
 #define VAR_SERV_H
 
-#ifdef __WIN32__
+#ifdef _WIN32
+ #include <winsock2.h>
  #include <windows.h>
- #include <winsock.h>
 #else
  #include <sys/types.h>
 #endif

@@ -13,7 +13,7 @@
 #include <sys/stat.h>
 #include <assert.h>
 #include <vector>
-#ifdef __WIN32__
+#ifdef _WIN32
  #include <windows.h>
 #endif
 #include "var-arqsav.h"
@@ -92,7 +92,7 @@ const TVarInfo * TVarSav::Inicializa()
 void TVarSav::ProcEventos(int tempoespera)
 {
 // Obtém data e hora para o registro
-#ifdef __WIN32__
+#ifdef _WIN32
     SYSTEMTIME lt = {};
     GetLocalTime(&lt);
     int dia = numdata(lt.wYear, lt.wMonth, lt.wDay) - 584389;
@@ -1323,7 +1323,7 @@ int TVarSav::Salvar(TVariavel * v, const char * arqnome, bool senhacod)
 // Fecha arquivo
     fclose(arq);
 // Renomeia arquivo
-#ifdef __WIN32__
+#ifdef _WIN32
     if (MoveFileEx("intmud-temp.txt", arqnome,
             MOVEFILE_REPLACE_EXISTING | MOVEFILE_COPY_ALLOWED))
         return 1;
@@ -1491,7 +1491,7 @@ bool TVarSavDir::Checa()
                 continue;
     // Apaga arquivo se expirou
             char arq[2048];
-#ifdef __WIN32__
+#ifdef _WIN32
             mprintf(arq, sizeof(arq), "%s\\%s", Inicio->Nome, sdir->d_name);
 #else
             mprintf(arq, sizeof(arq), "%s/%s", Inicio->Nome, sdir->d_name);

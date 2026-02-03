@@ -9,7 +9,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <assert.h>
-#ifdef __WIN32__
+#ifdef _WIN32
 #include <windows.h>
 #else
 #include <unistd.h>
@@ -362,7 +362,7 @@ double TVarDebug::getDouble(int numfunc)
         return Instr::VarExec;
     else if (numfunc == 2 || numfunc == 3)
     {
-#ifdef __WIN32__
+#ifdef _WIN32
         FILETIME CreationTime;
         FILETIME ExitTime;
         FILETIME KernelTime; // 1 = 100nanossegundos

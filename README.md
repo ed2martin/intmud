@@ -33,6 +33,21 @@ O projeto é dividido em três componentes principais:
 
 ## Começando
 
+### No Windows
+
+Existem duas maneiras de executar o IntMUD no Windows:
+
+-  **Opção 1 (Recomendada):**
+   1. Baixar o pacote já compilado para Windows a partir da
+      [página de Releases](https://github.com/ed2martin/intmud/releases).
+   2. Copiar o arquivo intmud.exe para a pasta mud e renomear para mud.exe.
+   3. Duplo clique no arquivo mud.exe da pasta mud.
+
+-  **Opção 2 (Compilação manual):**
+   1. Instale o ambiente de desenvolvimento **MinGW clássico** ou **MSYS2**.
+   2. Abra o terminal MSYS2
+   3. Siga as mesmas instruções de compilação para Linux.
+
 ### No Linux e sistemas UNIX-like
 
 1.  **Clone o repositório e entre no diretório:**
@@ -41,20 +56,32 @@ O projeto é dividido em três componentes principais:
     cd intmud
     ```
 
-    Ou baixe o arquivo ZIP e descompacte (na máquina onde será compilado).
+    Ou baixe o arquivo ZIP e descompacte (na máquina onde será compilado)
+    e entre no diretório do programa.
 
-2.  **Compile o programa:**
+2.  **Instale as ferramentas de compilação**
+    Em cada sistema é um comando diferente. Por exemplo:
+    ```bash
+    # No Ubuntu
+    sudo apt install build-essential
+    # No CentOS
+    yum install gcc-c++ glibc-devel binutils
+    # No Msys2
+    pacman -S mingw-w64-x86_64-toolchain
+    ```
+
+3.  **Compile o programa:**
     ```bash
     ./configure && make
     ```
     Este comando criará o executável `intmud`, que é o interpretador da linguagem.
 
-3.  **(Opcional) Reduza o tamanho do executável:**
+4.  **(Opcional) Reduza o tamanho do executável:**
     ```bash
     strip --strip-all intmud
     ```
 
-4.  **Para rodar o MUD de exemplo:**
+5.  **Para rodar o MUD de exemplo:**
     ```bash
     # Copie o executável para o diretório do MUD
     cp intmud mud/mud.int
@@ -67,21 +94,6 @@ O projeto é dividido em três componentes principais:
     ```bash
     ./intmud mud/mud
     ```
-
-### No Windows
-
-Existem duas maneiras de executar o IntMUD no Windows:
-
--  **Opção 1 (Recomendada):**
-   1. Baixar o pacote já compilado para Windows a partir da
-      [página de Releases](https://github.com/ed2martin/intmud/releases).
-   2. Copiar o arquivo intmud.exe para a pasta mud e renomear para mud.exe.
-   3. Duplo clique no arquivo mud.exe da pasta mud.
-
--  **Opção 2 (Compilação manual):**
-   1. Instale o ambiente de desenvolvimento **MinGW** ou **MinGW2**.
-   2. Abra o terminal MSYS (parte do MinGW).
-   3. Siga as mesmas instruções de compilação para Linux.
 
 ## Princípios da Linguagem IntMUD
 
@@ -119,7 +131,7 @@ interativos e de longa duração.
 A base de MUD do projeto é um codebase pronto para uso, projetado para
 construir mundos virtuais mais rapidamente e com menos dificuldades.
 
-Seus princípios são:
+Seguem os princípios:
 
 - **Criação sem código**: Permitir a construção de muita coisa complexa sem
   programação, através de um sistema de comandos de administração e menus

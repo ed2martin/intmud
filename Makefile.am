@@ -1,4 +1,18 @@
-EXTRA_DIST = AUTHORS ChangeLog COPYING README.md doc/* mud/*.int mud/*/*.txt mud/*/*.int casa/*.int casa/*.txt testes/*.int programas-int/* intmud.int Doxyfile
+EXTRA_DIST = \
+  AUTHORS \
+  ChangeLog \
+  COPYING \
+  README.md \
+  doc/* \
+  mud/*.int \
+  mud/*/*.txt \
+  mud/*/*.int \
+  casa/*.int \
+  casa/*.txt \
+  testes/*.int \
+  programas-int/* \
+  intmud.int \
+  Doxyfile
 bin_PROGRAMS = intmud
 intmud_SOURCES = \
   src/main.cpp \
@@ -96,6 +110,8 @@ intmud_SOURCES = \
   src/md5.h \
   src/ssl.cpp \
   src/ssl.h \
+  src/crash.cpp \
   src/alocamem.h \
   src/rbt.cpp.h
-AM_CXXFLAGS = -Wall -fno-exceptions -fno-rtti -std=c++11 -Isrc
+AM_CXXFLAGS = -Wall -fno-exceptions -fno-rtti -std=c++11 -Isrc $(PTHREAD_CFLAGS)
+LDADD = $(PTHREAD_LIBS)

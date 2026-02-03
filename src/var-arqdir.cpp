@@ -13,7 +13,7 @@
 #include <sys/stat.h>
 #include <time.h>
 #include <errno.h>
-#ifdef __WIN32__
+#ifdef _WIN32
  #include <windows.h>
 #endif
 #include "var-arqdir.h"
@@ -21,7 +21,7 @@
 #include "instr.h"
 #include "misc.h"
 
-#ifdef __WIN32__
+#ifdef _WIN32
  #define DIR_VALIDO (ref->wdir != INVALID_HANDLE_VALUE)
 #else
  #define DIR_VALIDO (ref->dir != nullptr)
@@ -71,7 +71,7 @@ const TVarInfo * TVarArqDir::Inicializa()
 //------------------------------------------------------------------------------
 inline void TVarArqDir::Criar()
 {
-#ifdef __WIN32__
+#ifdef _WIN32
     wdir = INVALID_HANDLE_VALUE;
 #else
     dir = nullptr;
@@ -81,7 +81,7 @@ inline void TVarArqDir::Criar()
 //------------------------------------------------------------------------------
 inline void TVarArqDir::Apagar()
 {
-#ifdef __WIN32__
+#ifdef _WIN32
     if (wdir != INVALID_HANDLE_VALUE)
         FindClose(wdir);
     wdir = INVALID_HANDLE_VALUE;
@@ -129,7 +129,7 @@ bool TVarArqDir::FuncBarra(TVariavel * v)
         char ch = *txt++;
         if (ch == 0)
             break;
-#ifdef __WIN32__
+#ifdef _WIN32
         if (ch == '/')
             ch = '\\';
 #else
@@ -160,7 +160,7 @@ bool TVarArqDir::FuncAbrir(TVariavel * v)
     if (!arqvalido(mens))
         return Instr::CriarVarTxtFixo(v, "Nome não permitido");
 // Abre o diretório
-#ifdef __WIN32__
+#ifdef _WIN32
     WIN32_FIND_DATA ffd;
     strcat(mens, "\\*");
     ref->wdir = FindFirstFile(mens, &ffd);
@@ -239,7 +239,7 @@ bool TVarArqDir::FuncTamanho(TVariavel * v)
         copiastr(mens, v[1].getTxt(), sizeof(mens));
         if (!arqvalido(mens))
             break;
-#ifdef __WIN32__
+#ifdef _WIN32
         HANDLE hFile = CreateFile(mens, // file to open
                 GENERIC_READ,     // open for reading
                 FILE_SHARE_READ,  // share for reading
@@ -273,7 +273,7 @@ static inline void VarDirObtemTempo(char * nomearq, char * buffer, int tipo)
 {
     if (!arqvalido(nomearq))
         return;
-#ifdef __WIN32__
+#ifdef _WIN32
     FILETIME ftCreate, ftAccess, ftWrite;
     SYSTEMTIME stUTC, stLocal;
     HANDLE hFile = CreateFile(nomearq, // file to open
@@ -375,7 +375,7 @@ bool TVarArqDir::FuncCriarDir(TVariavel * v)
     Instr::ApagarVar(v);
     if (!arqvalido(mens))
         return Instr::CriarVarTxtFixo("Nome de diretório não permitido");
-#ifdef __WIN32__
+#ifdef _WIN32
     int err = mkdir(mens);
 #else
     int err = mkdir(mens, S_IRWXU|S_IRWXG|S_IRWXO);
@@ -417,7 +417,7 @@ bool TVarArqDir::FuncRenomear(TVariavel * v)
     Instr::ApagarVar(v);
     if (!arqvalido(antes, true) || !arqvalido(depois, true))
         return Instr::CriarVarTxtFixo("Nome de arquivo não permitido");
-#ifdef __WIN32__
+#ifdef _WIN32
     if (MoveFileEx(antes, depois,
             MOVEFILE_REPLACE_EXISTING | MOVEFILE_COPY_ALLOWED))
 #else
@@ -432,7 +432,7 @@ bool TVarArqDir::FuncRenomear(TVariavel * v)
 //------------------------------------------------------------------------------
 void TVarArqDir::Proximo()
 {
-#ifdef __WIN32__
+#ifdef _WIN32
     WIN32_FIND_DATA ffd;
     if (wdir == INVALID_HANDLE_VALUE)
         return;

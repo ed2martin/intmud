@@ -395,7 +395,7 @@ bool TVarArqTxt::FuncTruncar(TVariavel * v)
 // Se conseguiu abrir arquivo...
     if (descr >= 0)
     {
-#ifdef __WIN32__
+#ifdef _WIN32
         valor = (chsize(descr, tamanho) == 0);
 #else
         valor = (ftruncate(descr, tamanho) == 0);

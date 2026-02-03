@@ -9,9 +9,9 @@
 #include <stdlib.h>
 #include <string.h>
 #include <assert.h>
-#ifdef __WIN32__
+#ifdef _WIN32
+ #include <winsock2.h>
  #include <windows.h>
- #include <winsock.h>
  #include <ws2tcpip.h>
  #include <fcntl.h>
  #include <io.h>
@@ -112,7 +112,7 @@ static const char desconvirc[] = {
 void TSocket::IpParaString(struct sockaddr * sa, size_t salen,
         char * dst, size_t maxlen)
 {
-#ifdef __WIN32__
+#ifdef _WIN32
     unsigned long s = maxlen;
     if (WSAAddressToString(sa, salen, NULL, dst, &s) != 0)
         *dst = 0;
@@ -131,7 +131,7 @@ void TSocket::IpParaString(struct sockaddr * sa, size_t salen,
 //------------------------------------------------------------------------------
 bool TSocket::IpValido(const char * host)
 {
-#ifdef __WIN32__
+#ifdef _WIN32
     struct sockaddr_storage ss;
     int size = sizeof(ss);
     char host_copy[INET6_ADDRSTRLEN+1];
@@ -194,7 +194,7 @@ int TSocket::NomeParaIps(const char * nome, char * ip, int tamanho)
 //------------------------------------------------------------------------------
 int TSocket::IpParaNome(const char * ip, char * nome, int tamanho)
 {
-#if __WIN32__
+#if _WIN32
     struct sockaddr_storage ss;
     int size = sizeof(ss);
     char src_copy[INET6_ADDRSTRLEN+1];
@@ -255,7 +255,7 @@ TSocket * TSocket::Conectar(const char * ender, int porta, bool ssl)
         return nullptr;
     auto conManip = socket(res->ai_family, res->ai_socktype, res->ai_protocol);
 
-#ifdef __WIN32__
+#ifdef _WIN32
     if (conManip == INVALID_SOCKET)
     {
         freeaddrinfo(res);
@@ -303,7 +303,7 @@ TSocket * TSocket::Conectar(const char * ender, int porta, bool ssl)
 //------------------------------------------------------------------------------
 const char * TSocket::TxtErro(int erro)
 {
-#ifdef __WIN32__
+#ifdef _WIN32
     // Lista de erros de: http://www.sockets.com/err_lst1.htm
     switch (erro)
     {
@@ -422,7 +422,7 @@ const char * TSocket::TxtErro(int erro)
 //------------------------------------------------------------------------------
 void TSocket::SockConfig(int localSocket)
 {
-#ifdef __WIN32__
+#ifdef _WIN32
     int sopcoes;
     int stamanho;
     unsigned long argp = 1; // 0=bloquear  1=nao bloquear
@@ -1215,7 +1215,7 @@ void TSocket::EnvPend()
     }
     else
     {
-#ifdef __WIN32__
+#ifdef _WIN32
         resposta = send(sock, bufEnv, pontEnv, 0);
         //if (resposta==0)
         //    resposta=-1, coderro=0;
@@ -1317,7 +1317,7 @@ void TSocket::Fd_Set(fd_set * set_entrada, fd_set * set_saida, fd_set * set_err)
     {
         if (obj->proto == spConnect1 || obj->proto == spConnect2)
         {
-#ifdef __WIN32__
+#ifdef _WIN32
             FD_SET(obj->sock, set_err);
             FD_SET(obj->sock, set_saida);
 #else
@@ -1350,7 +1350,7 @@ void TSocket::ProcEventos(fd_set * set_entrada,
         if (obj->proto == spConnect1 || obj->proto == spConnect2)
         {
             int coderro = 0;
-#ifdef __WIN32__
+#ifdef _WIN32
             if (! FD_ISSET(obj->sock, set_saida))
             {
                 if (! FD_ISSET(obj->sock, set_err))
@@ -1512,7 +1512,7 @@ void TSocket::ProcEventos(fd_set * set_entrada,
             }
             else
             {
-#ifdef __WIN32__
+#ifdef _WIN32
                 resposta = recv(obj->sock, mens, sizeof(mens), 0);
                 if (resposta == 0)
                     resposta = -1;

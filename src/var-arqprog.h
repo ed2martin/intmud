@@ -2,7 +2,7 @@
 #define VAR_ARQPROG_H
 
 #include <dirent.h>
-#ifdef __WIN32__
+#ifdef _WIN32
 #include <windows.h>
 #endif
 
@@ -64,7 +64,7 @@ public:
     char Arquivo[ARQINCLUIR_TAM]; ///< Nome da entrada encontrada, ou "" se nenhuma
 
 private:
-#ifdef __WIN32__
+#ifdef _WIN32
     HANDLE wdir; ///< Diretório sendo verificado, ou 0 se nenhum
 #else
     DIR * dir; ///< Diretório sendo verificado, ou 0 se nenhum

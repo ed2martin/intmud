@@ -118,7 +118,7 @@ const TVarInfo * TVarArqProg::Inicializa()
 //----------------------------------------------------------------------------
 void TVarArqProg::Criar()
 {
-#ifdef __WIN32__
+#ifdef _WIN32
     wdir = INVALID_HANDLE_VALUE;
 #else
     dir = nullptr;
@@ -145,7 +145,7 @@ void TVarArqProg::Abrir()
 void TVarArqProg::Fechar()
 {
     *Arquivo = 0;
-#ifdef __WIN32__
+#ifdef _WIN32
     if (wdir != INVALID_HANDLE_VALUE)
         FindClose(wdir);
     wdir = INVALID_HANDLE_VALUE;
@@ -166,7 +166,7 @@ void TVarArqProg::Proximo()
     {
 
 // Se diretório fechado: começa a busca e obtém a primeira entrada
-#ifdef __WIN32__
+#ifdef _WIN32
         if (wdir == INVALID_HANDLE_VALUE)
 #else
         if (dir == nullptr)
@@ -186,7 +186,7 @@ void TVarArqProg::Proximo()
                 if (*p == '/' || *p == '\\')
                     ArqBarra = p + 1 - Arquivo;
             ArqPadrao = p - Arquivo;
-#ifdef __WIN32__
+#ifdef _WIN32
         // Obtém o nome a procurar
             copiastr(mens, Incluir->Padrao, sizeof(mens) - 1);
             strcat(mens, "*");
@@ -239,7 +239,7 @@ void TVarArqProg::Proximo()
 
 // Diretório está aberto: obtém a próxima entrada
         {
-#ifdef __WIN32__
+#ifdef _WIN32
             WIN32_FIND_DATA ffd;
             if (FindNextFile(wdir, &ffd) == 0)
             {

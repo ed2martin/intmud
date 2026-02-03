@@ -10,8 +10,9 @@ IntMUD (Interpretador MUD)
 2.3. Opção TELATXT
 2.4. Opção LOG
 2.5. Opção ERR
-2.6. Opção COMPLETO
-2.7. Opção ARQEXEC
+2.6. Opção CRASH
+2.7. Opção COMPLETO
+2.8. Opção ARQEXEC
 3. Classes
 4. Variáveis
 5. Funções
@@ -260,7 +261,19 @@ esta for a última instrução da função.
 O valor 2 também checa inconsistências, mas não permite omitir FimSe.
 
 
-2.6. OPÇÃO COMPLETO
+2.6. OPÇÃO CRASH
+
+Sintaxe: CRASH = 0
+         CRASH = 1
+
+Se essa opção estiver ausente, assume 0.
+
+Quando essa opção for 1, será gerado um arquivo de log caso o programa
+encerre por erro fatal. Esse arquivo contém informações úteis para
+para identificar o ponto da falha e auxiliar na correção do problema.
+
+
+2.7. OPÇÃO COMPLETO
 
 Sintaxe: COMPLETO = 0
          COMPLETO = 1
@@ -277,7 +290,7 @@ ArqExec só podem executar programas das opções ArqExec
 Em caso de dúvida, deixar 0.
 
 
-2.7. OPÇÃO ARQEXEC
+2.8. OPÇÃO ARQEXEC
 
 Sintaxe: ARQEXEC = <nome do comando>
 

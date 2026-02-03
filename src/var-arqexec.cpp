@@ -9,8 +9,8 @@
 #include <stdlib.h>
 #include <string.h>
 #include <assert.h>
-#include "exec.h"
 #include "var-arqexec.h"
+#include "exec.h"
 #include "variavel.h"
 #include "variavel-def.h"
 #include "classe.h"
@@ -94,7 +94,7 @@ bool TObjExec::Enviar(const char * txt)
                 txt++;
             break;
         case Instr::ex_barra_n:
-#ifdef __WIN32__
+#ifdef _WIN32
             buf[tamanho++] = 13;
 #endif
             buf[tamanho++] = 10;
@@ -218,7 +218,7 @@ void TObjExec::Fd_Set(fd_set * set_entrada, fd_set * set_saida)
             break;
     }
 
-#ifndef __WIN32__
+#ifndef _WIN32
     for (TObjExec * obj = Inicio; obj; obj = obj->Depois)
     {
         int entra = obj->pipein();

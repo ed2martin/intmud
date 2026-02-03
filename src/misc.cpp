@@ -13,7 +13,7 @@
 #include <errno.h>
 #include <math.h>
 #include <time.h>
-#ifdef __WIN32__
+#ifdef _WIN32
  #include <windows.h> // Para acessar o clipboard
 #else
  #include <sys/stat.h>
@@ -28,6 +28,7 @@ char * arqnome = nullptr;
 char * arqinicio = nullptr;
 bool opcao_completo = false;
 bool opcao_log = false;
+bool opcao_crash = false;
 char * tabNOMES1 = nullptr;
 char * tabNOMES2 = nullptr;
 char * tabCOMPLETO = nullptr;
@@ -388,7 +389,7 @@ bool arqvalido(char * nome)
     if (nome[0] == 0)
         return false;
     char * p = nome;
-#ifdef __WIN32__
+#ifdef _WIN32
 // Acerta nome
     for (; *p; p++)
         if (*p == '/')
@@ -452,7 +453,7 @@ bool arqvalido(char * nome, bool somenteleitura)
                 return false;
     }
 // Checa se é executável
-#ifndef __WIN32__
+#ifndef _WIN32
     struct stat buf;
     if (stat(nome, &buf) < 0) // Obtém dados do arquivo
         return true;
@@ -1049,7 +1050,7 @@ long numdata(int ano, int mes, int dia)
 /** @return verdadeiro se conseguiu copiar */
 bool ClipboardMudar(const char * txt)
 {
-#ifdef __WIN32__
+#ifdef _WIN32
     const int codePage = 1252; // 1252=windows-1252, CP_UTF8=UTF-8
     if (!OpenClipboard(NULL))
         return false;
@@ -1080,7 +1081,7 @@ bool ClipboardMudar(const char * txt)
  *  @note É responsabilidade de quem chama desalocar a memória com delete[] */
 char * ClipboardLer()
 {
-#ifdef __WIN32__
+#ifdef _WIN32
     const int codePage = 1252; // 1252=windows-1252, CP_UTF8=UTF-8
     if (!IsClipboardFormatAvailable(CF_UNICODETEXT))
         return nullptr;

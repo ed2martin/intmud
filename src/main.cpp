@@ -13,12 +13,9 @@
 #include <errno.h>
 #include <assert.h>
 #include <fcntl.h>
-#ifdef __WIN32__
-    // O número de sockets padrão no Windows é 64
-    // Se precisar mudar, definir FD_SETSIZE aqui, antes de winsock.h
- #define FD_SETSIZE 128
+#ifdef _WIN32
+ #include <winsock2.h>
  #include <windows.h>
- #include <winsock.h>
  #include <io.h>
 #else
  #include <sys/types.h>
@@ -28,6 +25,7 @@
  #include <ulimit.h>
 #endif
 #include <time.h>       // Obter data/hora do sistema
+#include <pthread.h>
 #include "config.h"
 #include "arqler.h"
 #include "classe.h"
@@ -58,15 +56,18 @@
 //#define CORE    // Para gerar arquivos core
 //#define DEBUG   // Para não colocar o programa em segundo plano
 
+void crashInicializa(const char * arquivo);
+void crashAtualizaHora();
+
 //------------------------------------------------------------------------------
-#if defined CORE && !defined __WIN32__
+#if defined CORE && !defined _WIN32
  #include <sys/resource.h>
  #include <sys/vtimes.h>
 #endif
 
 static void Inicializa(const char * arg);
 void Termina();
-#ifndef __WIN32__
+#ifndef _WIN32
 static void TerminaSign(int sig);
 #endif
 
@@ -155,7 +156,7 @@ static void err_printf(const char * mens, ...)
             Console = new TConsole;
             if (!Console->Inic(false))
                 exit(EXIT_FAILURE);
-#ifdef __WIN32__
+#ifdef _WIN32
             Console->CorTxt(0x70);
 #endif
             Console->EnvTxt(msg1, strlen(msg1));
@@ -180,7 +181,7 @@ static void err_printf(const char * mens, ...)
 // Retorna contador de tempo sendo quem 1000 equivale a 1 segundo
 static unsigned int contador_tempo()
 {
-#ifdef __WIN32__
+#ifdef _WIN32
     // Nota: a base de tempo do IntMUD é de 100 milissegundos
     // Se for necessário maior precisào, usar QueryPerformanceFrequency()
     // e QueryPerformanceCounter()
@@ -201,7 +202,7 @@ static unsigned int contador_tempo()
 //------------------------------------------------------------------------------
 static void err_fim()
 {
-#ifdef __WIN32__
+#ifdef _WIN32
     if (Console == nullptr)
         exit(EXIT_FAILURE);
     const char msg1[] = "Pressione ENTER para fechar\n";
@@ -236,6 +237,21 @@ static void err_fim()
 }
 
 //------------------------------------------------------------------------------
+// Atualiza data/hora de tempos em tempos, para rotina de crash, caso aconteça
+void * crash_thread(void *arg)
+{
+    while (true)
+    {
+        crashAtualizaHora();
+#ifdef _WIN32
+        Sleep(10000); // Em milissegundos
+#else
+        sleep(10); // Em segundos
+#endif
+    }
+}
+
+//------------------------------------------------------------------------------
 int main(int argc, char *argv[])
 {
 // Inicialização
@@ -244,7 +260,7 @@ int main(int argc, char *argv[])
     Inicializa(argc <= 1 ? argv[0] : argv[1]);
 
 // Coloca o programa em segundo plano
-#if !defined DEBUG && !defined __WIN32__
+#if !defined DEBUG && !defined _WIN32
     if (Console == nullptr)
     {
         fflush(stdout);
@@ -276,6 +292,14 @@ int main(int argc, char *argv[])
         close(arq);
     }
 #endif
+
+// Thread para manter atualizado data/hora do arquivo de crash
+    if (opcao_crash)
+    {
+        pthread_t t;
+        pthread_create(&t, nullptr, crash_thread, nullptr);
+        pthread_detach(t);
+    }
 
 // Processamento de eventos
     struct timeval tselect;
@@ -348,7 +372,7 @@ int main(int argc, char *argv[])
 
     // Processamento pendente no console
         TVarTelaTxt::ProcFim();
-#ifdef __WIN32__
+#ifdef _WIN32
         espera = 2;
 #else
         if (Console)
@@ -375,7 +399,7 @@ int main(int argc, char *argv[])
     // Espera
         tselect.tv_sec = espera / 1000;
         tselect.tv_usec = espera % 1000 * 1000;
-#ifdef __WIN32__
+#ifdef _WIN32
         // Nota:
         // Se não especificar nenhum socket, o Windows retorna SOCKET_ERROR
         // Se acontecer da rede falhar, também pode retornar SOCKET_ERROR
@@ -421,7 +445,7 @@ void Inicializa(const char * arg)
     TArqLer arq;
 
 // Gerar arquivos core
-#if defined CORE && !defined __WIN32__
+#if defined CORE && !defined _WIN32
     struct rlimit limites;
     limites.rlim_cur = 4000000;
     limites.rlim_max = 4000000;
@@ -458,7 +482,7 @@ void Inicializa(const char * arg)
 
     // Muda para o diretório do nome
     // Obtém: pnome = endereço do nome do arquivo sem o diretório
-#ifdef __WIN32__
+#ifdef _WIN32
         for (; pnome >= nome; pnome--)
             if (*pnome == '\\')
             {
@@ -503,7 +527,7 @@ void Inicializa(const char * arg)
         TArqIncluir::ArqNome(pnome);
 
     // Coloca em arqnome o nome do diretório atual seguido de uma barra
-#ifdef __WIN32__
+#ifdef _WIN32
         if (GetCurrentDirectory((DWORD)(endfim-pnome), pnome) <= 0)
             exit(EXIT_FAILURE);
         arqnome = new char[strlen(pnome) + INT_NOME_TAM + 10];
@@ -554,7 +578,7 @@ void Inicializa(const char * arg)
                 break;
             mprintf(arqinicio, INT_NOME_TAM, "%s." INT_EXT, mapa->Arquivo);
             for (char * p = arqinicio; *p; p++)
-#ifdef __WIN32__
+#ifdef _WIN32
                 if (*p == '/') *p = '\\';
 #else
                 if (*p == '\\') *p = '/';
@@ -600,6 +624,13 @@ void Inicializa(const char * arg)
                 opcao_completo = (TxtToInt(valor) != 0);
             if (comparaZ(mens, "arqexec") == 0)
                 new TArqExec(valor);
+            if (!opcao_crash && comparaZ(mens, "crash") == 0 && TxtToInt(valor))
+            {
+                opcao_crash = true;
+                mprintf(arqinicio, INT_NOME_TAM, "%s-crash",
+                        TArqIncluir::ArqNome());
+                crashInicializa(arqnome);
+            }
 
         // Verifica instruções incluir
             if (comparaZ(mens, "incluir") == 0)
@@ -891,12 +922,12 @@ void Inicializa(const char * arg)
         err_printf("Problema iniciando console\n");
         err_fim();
     }
-#ifndef __WIN32__
+#ifndef _WIN32
     signal(SIGINT, TerminaSign);
     signal(SIGQUIT, TerminaSign);
 #endif
 
-#ifdef __WIN32__
+#ifdef _WIN32
 // Inicializa WinSock
     WSADATA info;
     bool xinic=(WSAStartup(MAKEWORD(1, 1), &info) == 0);
@@ -925,7 +956,7 @@ void Inicializa(const char * arg)
 }
 
 //------------------------------------------------------------------------------
-#ifndef __WIN32__
+#ifndef _WIN32
 static int termsign = 0;
 /// Processa sinal que encerra o programa
 static void TerminaSign(int sig)
@@ -946,7 +977,7 @@ static void TerminaSign(int sig)
 /// Encerra o programa
 void Termina()
 {
-#ifdef __WIN32__
+#ifdef _WIN32
     WSACleanup();
 #endif
     TVarTelaTxt::Fim();

@@ -9,9 +9,9 @@
 #include <stdlib.h>
 #include <string.h>
 #include <assert.h>
-#ifdef __WIN32__
+#ifdef _WIN32
+ #include <winsock2.h>
  #include <windows.h>
- #include <winsock.h>
 #else
  #include <errno.h>
  #include <sys/types.h>
@@ -776,7 +776,7 @@ void TDNSSocket::ResolveDNS()
 }
 
 //------------------------------------------------------------------------------
-#ifdef __WIN32__
+#ifdef _WIN32
 /// Resolve endereço em segundo plano no Windows
 static DWORD WINAPI TDNSSocket_Resolve(LPVOID lpParam)
 {
@@ -787,7 +787,7 @@ static DWORD WINAPI TDNSSocket_Resolve(LPVOID lpParam)
 #endif
 
 //------------------------------------------------------------------------------
-#ifndef __WIN32__
+#ifndef _WIN32
 /// Interpreta sinal SIGCHLD
 // Nota: Já está sendo processado em TExec::proc_sigchld_handler()
 /*static void dns_sigchld_handler(int signum)
@@ -828,7 +828,7 @@ TDNSSocket::TDNSSocket(TVarSocket * var, const char * ender)
     copiastr(nomeini, ender, sizeof(nomeini));
     if (*nomeini == 0)
         return;
-#ifdef __WIN32__
+#ifdef _WIN32
     hthread = CreateThread(nullptr, 0, &TDNSSocket_Resolve,
                            reinterpret_cast<DWORD*>(this), 0, nullptr);
     if (hthread == nullptr)
@@ -876,7 +876,7 @@ TDNSSocket::~TDNSSocket()
 //------------------------------------------------------------------------------
 void TDNSSocket::Fd_Set(fd_set * set_entrada)
 {
-#ifndef __WIN32__
+#ifndef _WIN32
     for (TDNSSocket * obj = Inicio; obj; obj = obj->Depois)
         FD_SET(obj->recdescr, set_entrada);
 #endif
@@ -889,7 +889,7 @@ void TDNSSocket::ProcEventos(fd_set * set_entrada)
     {
         bool prossegue = false;
     // Checa se já tem todas as informações
-#ifdef __WIN32__
+#ifdef _WIN32
         if (WaitForSingleObject(obj->hthread, 0) == WAIT_TIMEOUT)
         {
             obj = obj->Depois;

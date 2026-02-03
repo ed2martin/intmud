@@ -9,7 +9,8 @@
 #include <stdlib.h>
 #include <string.h>
 #include <assert.h>
-#ifdef __WIN32__
+#ifdef _WIN32
+ #include <winsock2.h>
  #include <windows.h>
 #endif
 #include "classe.h"
@@ -118,7 +119,7 @@ void TArqMapa::SalvarArq(bool tudo)
                 *arqmapa->Arquivo ? arqmapa->Arquivo
                                   : TArqIncluir::ArqNome());
         for (char * p = arqinicio; *p; p++)
-#ifdef __WIN32__
+#ifdef _WIN32
             if (*p == '/') *p = '\\';
 #else
             if (*p == '\\') *p = '/';
@@ -158,12 +159,16 @@ void TArqMapa::SalvarArq(bool tudo)
                 "# Se deve abrir uma janela de texto - variável telatxt\n"
                 "telatxt = %d\n\n"
                 "# Aonde apresentar mensagens de erro no programa\n"
+                "# 0=mostrar na tela, 1=salvar em arquivo de log\n"
                 "log = %d\n\n"
                 "# Erros em blocos de instruções:\n"
                 "# 0=ignorar, 1=permitir apenas FimSe sem Se, 2=checar tudo\n"
-                "err = %d\n\n",
+                "err = %d\n\n"
+                "# Gerar arquivo de log em caso de erro fatal (o programa fechar):\n"
+                "# 0=não, 1=sim\n"
+                "crash = %d\n\n",
                 Instr::VarExecIni, Console != nullptr,
-                opcao_log, Instr::ChecaLinha::ChecaErro);
+                opcao_log, Instr::ChecaLinha::ChecaErro, opcao_crash);
             fprintf(arq,
                 "# Se o programa roda sem restrições (0=não, 1=sim)\n"
                 "# Em caso de dúvida, deixar 0. Nesse caso, as restrições são:\n"
@@ -310,7 +315,7 @@ void TArqMapa::SalvarArq(bool tudo)
 #ifdef DEBUG
         printf("TArqMapa::Salvar( %s )\n", arqnome); fflush(stdout);
 #endif
-#ifdef __WIN32__
+#ifdef _WIN32
         bool salvou = MoveFileEx("intmud-temp.txt", arqnome,
             MOVEFILE_REPLACE_EXISTING | MOVEFILE_COPY_ALLOWED);
 

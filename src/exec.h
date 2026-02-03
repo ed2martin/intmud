@@ -1,7 +1,7 @@
 #ifndef EXEC_H
 #define EXEC_H
 
-#ifdef __WIN32__
+#ifdef _WIN32
 #include <windows.h>
 #else
 #include <stdio.h>
@@ -35,7 +35,7 @@ public:
         ///< Escreve no STDIN do programa
     int CodRetorno;
         ///< Código de retorno, quando InfoProg() retorna 2
-#ifdef __WIN32__
+#ifdef _WIN32
     HANDLE pipein() { return pipe_in; }
     HANDLE pipeout() { return pipe_out; }
 #else
@@ -50,7 +50,7 @@ private:
     TExec * Depois; ///< Próximo objeto
     bool  Rodando; // Verdadeiro se tem programa rodando
 
-#ifdef __WIN32__
+#ifdef _WIN32
     HANDLE pipe_in;     // Para ler mensagens do programa
     HANDLE pipe_out;    // Para enviar mensagens para o programa
     PROCESS_INFORMATION     ProcessInfo;

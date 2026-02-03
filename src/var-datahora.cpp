@@ -13,7 +13,7 @@
 #include <string.h>
 #include <math.h>
 #include <time.h>
-#ifdef __WIN32__
+#ifdef _WIN32
  #include <windows.h>
 #endif
 #include "var-datahora.h"
@@ -116,7 +116,7 @@ void TVarDataHora::Mover(TVarDataHora * destino)
 bool TVarDataHora::FuncAgora(TVariavel * v)
 {
     TVarDataHora * ref = reinterpret_cast<TVarDataHora*>(v->endvar);
-#ifdef __WIN32__
+#ifdef _WIN32
     SYSTEMTIME lt = {};
     GetLocalTime(&lt);
     ref->Ano = lt.wYear;

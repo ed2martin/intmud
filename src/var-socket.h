@@ -1,9 +1,9 @@
 #ifndef VAR_SOCKET_H
 #define VAR_SOCKET_H
 
-#ifdef __WIN32__
+#ifdef _WIN32
+ #include <winsock2.h>
  #include <windows.h>
- #include <winsock.h>
 #else
  #include <sys/types.h>
  #include <netinet/in.h>
@@ -113,7 +113,7 @@ private:
     static TDNSSocket * Inicio; ///< Lista ligada de TDNSSocket
     TDNSSocket * Antes;  ///< Objeto anterior
     TDNSSocket * Depois; ///< Próximo objeto
-#ifdef __WIN32__
+#ifdef _WIN32
     HANDLE hthread;      ///< Para saber quando a Thread terminou
 #else
     int recdescr;        ///< Para receber informações do outro processo

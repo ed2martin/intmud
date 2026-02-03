@@ -2,7 +2,7 @@
 #define VAR_ARQDIR_H
 
 #include <dirent.h>
-#ifdef __WIN32__
+#ifdef _WIN32
 #include <windows.h>
 #endif
 
@@ -22,7 +22,7 @@ public:
     void Apagar();
             ///< Chamado ao apagar objeto
     void Proximo(); ///< Passa para a próxima entrada
-#ifdef __WIN32__
+#ifdef _WIN32
     HANDLE wdir; ///< Diretório sendo verificado, ou 0 se nenhum
 #else
     DIR * dir; ///< Diretório sendo verificado, ou 0 se nenhum

@@ -10,6 +10,10 @@
 #include <string.h>
 #include <errno.h>
 #include <assert.h>
+#ifdef _WIN32
+ // winsock2.h precisa ser incluído antes de windows.h
+ #include <winsock2.h>
+#endif
 #include "variavel.h"
 #include "instr.h"
 #include "instr-enum.h"

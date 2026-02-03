@@ -8,7 +8,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#ifdef __WIN32__
+#ifdef _WIN32
  #include <windows.h>
  //#include <stdafx.h>
 #else
@@ -24,7 +24,7 @@
 TExec * TExec::Inicio = nullptr;
 
 //------------------------------------------------------------------------------
-#ifndef __WIN32__
+#ifndef _WIN32
 void TExec::proc_sigchld_handler(int signum)
 {
     int pid, status, serrno;
@@ -59,7 +59,7 @@ void TExec::proc_sigchld_handler(int signum)
 //------------------------------------------------------------------------------
 void TExec::Inicializa()
 {
-#ifndef __WIN32__
+#ifndef _WIN32
     signal(SIGCHLD, proc_sigchld_handler); // Processar sinal SIGCHLD
 #endif
 }
@@ -74,7 +74,7 @@ TExec::TExec()
         Depois->Antes = this;
     Inicio = this;
     CodRetorno = 0;
-#ifdef __WIN32__
+#ifdef _WIN32
     pipe_in = pipe_out = INVALID_HANDLE_VALUE;
 #else
     pipe_in = pipe_out = -1;
@@ -102,7 +102,7 @@ const char * TExec::Abrir(const char * nomeprog, bool visivel)
     if (*nomeprog == 0)
         return "Arquivo não existe";
 
-#ifdef __WIN32__
+#ifdef _WIN32
     BOOL Success;
     HANDLE descrpipe[4];
 
@@ -364,7 +364,7 @@ void TExec::Fechar()
 {
     if (Rodando)
     {
-#ifdef __WIN32__
+#ifdef _WIN32
         if (TerminateProcess(ProcessInfo.hProcess, 0))
             Rodando = false;
 #else
@@ -379,7 +379,7 @@ void TExec::Fechar()
 //------------------------------------------------------------------------------
 void TExec::FecharPipe()
 {
-#ifdef __WIN32__
+#ifdef _WIN32
     if (pipe_in != INVALID_HANDLE_VALUE)  CloseHandle(pipe_in);
     if (pipe_out != INVALID_HANDLE_VALUE) CloseHandle(pipe_out);
     pipe_in = pipe_out = INVALID_HANDLE_VALUE;
@@ -393,7 +393,7 @@ void TExec::FecharPipe()
 //------------------------------------------------------------------------------
 int TExec::InfoProg()
 {
-#ifdef __WIN32__
+#ifdef _WIN32
     if (!Rodando)
         return 0;
     if ( WaitForSingleObject(ProcessInfo.hProcess, 0) != WAIT_OBJECT_0 )  //lint !e1924 (warning about C-style cast)
@@ -420,7 +420,7 @@ int TExec::InfoProg()
 //------------------------------------------------------------------------------
 int TExec::Ler(char * destino, int total)
 {
-#ifdef __WIN32__
+#ifdef _WIN32
     if (total <= 0 || pipe_in == INVALID_HANDLE_VALUE)
         return 0;
     DWORD   NumBytesRead = 0;
@@ -479,7 +479,7 @@ int TExec::Ler(char * destino, int total)
 //------------------------------------------------------------------------------
 int TExec::Escrever(const char * destino, int total)
 {
-#ifdef __WIN32__
+#ifdef _WIN32
     if (total <= 0 || pipe_out == INVALID_HANDLE_VALUE)
         return 0;
     unsigned long bytesescritos = 0;
@@ -509,7 +509,7 @@ int TExec::Escrever(const char * destino, int total)
 //------------------------------------------------------------------------------
 // Teste do exec
 /*
-#ifndef __WIN32__
+#ifndef _WIN32
 void Sleep(int tempo)
 {
     struct timeval tselect;

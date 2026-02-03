@@ -1,7 +1,7 @@
 #ifndef CONSOLE_H
 #define CONSOLE_H
 
-#ifdef __WIN32__
+#ifdef _WIN32
  #include <windows.h>
 #else
  #include <termios.h>
@@ -15,7 +15,7 @@ public:
         ///< Construtor
     ~TConsole() { Fim(); }
         ///< Destrutor
-#ifdef __WIN32__
+#ifdef _WIN32
     HANDLE Stdin(void); ///< Entrada padrão
     HANDLE Stdout(void); ///< Saída padrão
 #else
@@ -115,7 +115,7 @@ private:
     char StrConv[0x100]; ///< Para converter códigos ASCII 128 a 255
     char StrLer[0x100];  ///< Para converter teclas lidas
 
-#ifdef __WIN32__
+#ifdef _WIN32
     HANDLE con_in;  ///< Entrada padrão
     HANDLE con_out; ///< Saída padrão
     WORD CorAtributos; ///< Cor selecionada em CorTxt()

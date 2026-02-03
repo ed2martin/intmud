@@ -25,6 +25,7 @@ extern char * arqinicio; ///< A partir de onde colocar os nomes dos arquivos
                          /** Tem espaço para pelo menos 0x200 caracteres. */
 extern bool opcao_completo;///< Opção completo do arquivo int principal
 extern bool opcao_log;     ///< Opção log do arquivo int principal
+extern bool opcao_crash;   ///< Opção crash do arquivo int principal
 
 /// Prepara tabNOMES[] e tabCOMPLETO[]
 /** Usado para transformação de caracteres.

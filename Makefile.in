@@ -86,11 +86,13 @@ POST_INSTALL = :
 NORMAL_UNINSTALL = :
 PRE_UNINSTALL = :
 POST_UNINSTALL = :
+build_triplet = @build@
+host_triplet = @host@
 bin_PROGRAMS = intmud$(EXEEXT)
 subdir = .
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
-am__aclocal_m4_deps = $(top_srcdir)/acinclude.m4 \
-	$(top_srcdir)/configure.ac
+am__aclocal_m4_deps = $(top_srcdir)/m4/ac_func_accept_argtypes.m4 \
+	$(top_srcdir)/m4/ax_pthread.m4 $(top_srcdir)/configure.ac
 am__configure_deps = $(am__aclocal_m4_deps) $(CONFIGURE_DEPENDENCIES) \
 	$(ACLOCAL_M4)
 DIST_COMMON = $(srcdir)/Makefile.am $(top_srcdir)/configure \
@@ -128,9 +130,11 @@ am_intmud_OBJECTS = src/main.$(OBJEXT) src/classe.$(OBJEXT) \
 	src/var-arqexec.$(OBJEXT) src/mudarclasse.$(OBJEXT) \
 	src/arqler.$(OBJEXT) src/misc.$(OBJEXT) src/procurar.$(OBJEXT) \
 	src/random.$(OBJEXT) src/sha1.$(OBJEXT) src/md5.$(OBJEXT) \
-	src/ssl.$(OBJEXT)
+	src/ssl.$(OBJEXT) src/crash.$(OBJEXT)
 intmud_OBJECTS = $(am_intmud_OBJECTS)
 intmud_LDADD = $(LDADD)
+am__DEPENDENCIES_1 =
+intmud_DEPENDENCIES = $(am__DEPENDENCIES_1)
 AM_V_P = $(am__v_P_@AM_V@)
 am__v_P_ = $(am__v_P_@AM_DEFAULT_V@)
 am__v_P_0 = false
@@ -144,31 +148,32 @@ am__v_at_ = $(am__v_at_@AM_DEFAULT_V@)
 am__v_at_0 = @
 am__v_at_1 = 
 DEFAULT_INCLUDES = -I.@am__isrc@
-depcomp = $(SHELL) $(top_srcdir)/depcomp
+depcomp = $(SHELL) $(top_srcdir)/build-aux/depcomp
 am__maybe_remake_depfiles = depfiles
 am__depfiles_remade = src/$(DEPDIR)/arqler.Po src/$(DEPDIR)/arqmapa.Po \
 	src/$(DEPDIR)/classe.Po src/$(DEPDIR)/console.Po \
-	src/$(DEPDIR)/exec.Po src/$(DEPDIR)/getrss.Po \
-	src/$(DEPDIR)/instr-codif.Po src/$(DEPDIR)/instr-decod.Po \
-	src/$(DEPDIR)/instr-exec.Po src/$(DEPDIR)/instr-func.Po \
-	src/$(DEPDIR)/instr-misc.Po src/$(DEPDIR)/instr-mostra.Po \
-	src/$(DEPDIR)/instr-vartroca.Po src/$(DEPDIR)/main.Po \
-	src/$(DEPDIR)/md5.Po src/$(DEPDIR)/misc.Po \
-	src/$(DEPDIR)/mudarclasse.Po src/$(DEPDIR)/objeto.Po \
-	src/$(DEPDIR)/procurar.Po src/$(DEPDIR)/random.Po \
-	src/$(DEPDIR)/sha1.Po src/$(DEPDIR)/socket.Po \
-	src/$(DEPDIR)/ssl.Po src/$(DEPDIR)/var-arqdir.Po \
-	src/$(DEPDIR)/var-arqexec.Po src/$(DEPDIR)/var-arqlog.Po \
-	src/$(DEPDIR)/var-arqmem.Po src/$(DEPDIR)/var-arqprog.Po \
-	src/$(DEPDIR)/var-arqsav.Po src/$(DEPDIR)/var-arqtxt.Po \
-	src/$(DEPDIR)/var-basico.Po src/$(DEPDIR)/var-datahora.Po \
-	src/$(DEPDIR)/var-debug.Po src/$(DEPDIR)/var-incdec.Po \
-	src/$(DEPDIR)/var-indiceobj.Po src/$(DEPDIR)/var-intexec.Po \
-	src/$(DEPDIR)/var-inttempo.Po src/$(DEPDIR)/var-listaobj.Po \
-	src/$(DEPDIR)/var-nomeobj.Po src/$(DEPDIR)/var-outros.Po \
-	src/$(DEPDIR)/var-prog.Po src/$(DEPDIR)/var-ref.Po \
-	src/$(DEPDIR)/var-serv.Po src/$(DEPDIR)/var-socket.Po \
-	src/$(DEPDIR)/var-telatxt.Po src/$(DEPDIR)/var-texto-bloco.Po \
+	src/$(DEPDIR)/crash.Po src/$(DEPDIR)/exec.Po \
+	src/$(DEPDIR)/getrss.Po src/$(DEPDIR)/instr-codif.Po \
+	src/$(DEPDIR)/instr-decod.Po src/$(DEPDIR)/instr-exec.Po \
+	src/$(DEPDIR)/instr-func.Po src/$(DEPDIR)/instr-misc.Po \
+	src/$(DEPDIR)/instr-mostra.Po src/$(DEPDIR)/instr-vartroca.Po \
+	src/$(DEPDIR)/main.Po src/$(DEPDIR)/md5.Po \
+	src/$(DEPDIR)/misc.Po src/$(DEPDIR)/mudarclasse.Po \
+	src/$(DEPDIR)/objeto.Po src/$(DEPDIR)/procurar.Po \
+	src/$(DEPDIR)/random.Po src/$(DEPDIR)/sha1.Po \
+	src/$(DEPDIR)/socket.Po src/$(DEPDIR)/ssl.Po \
+	src/$(DEPDIR)/var-arqdir.Po src/$(DEPDIR)/var-arqexec.Po \
+	src/$(DEPDIR)/var-arqlog.Po src/$(DEPDIR)/var-arqmem.Po \
+	src/$(DEPDIR)/var-arqprog.Po src/$(DEPDIR)/var-arqsav.Po \
+	src/$(DEPDIR)/var-arqtxt.Po src/$(DEPDIR)/var-basico.Po \
+	src/$(DEPDIR)/var-datahora.Po src/$(DEPDIR)/var-debug.Po \
+	src/$(DEPDIR)/var-incdec.Po src/$(DEPDIR)/var-indiceobj.Po \
+	src/$(DEPDIR)/var-intexec.Po src/$(DEPDIR)/var-inttempo.Po \
+	src/$(DEPDIR)/var-listaobj.Po src/$(DEPDIR)/var-nomeobj.Po \
+	src/$(DEPDIR)/var-outros.Po src/$(DEPDIR)/var-prog.Po \
+	src/$(DEPDIR)/var-ref.Po src/$(DEPDIR)/var-serv.Po \
+	src/$(DEPDIR)/var-socket.Po src/$(DEPDIR)/var-telatxt.Po \
+	src/$(DEPDIR)/var-texto-bloco.Po \
 	src/$(DEPDIR)/var-texto-func.Po src/$(DEPDIR)/var-texto.Po \
 	src/$(DEPDIR)/var-textoobj.Po src/$(DEPDIR)/var-textovar.Po \
 	src/$(DEPDIR)/variavel.Po
@@ -224,8 +229,16 @@ am__define_uniq_tagged_files = \
     if test -f "$$i"; then echo $$i; else echo $(srcdir)/$$i; fi; \
   done | $(am__uniquify_input)`
 AM_RECURSIVE_TARGETS = cscope
-am__DIST_COMMON = $(srcdir)/Makefile.in $(srcdir)/config.h.in AUTHORS \
-	COPYING ChangeLog README.md compile depcomp install-sh missing
+am__DIST_COMMON = $(srcdir)/Makefile.in $(srcdir)/config.h.in \
+	$(top_srcdir)/build-aux/compile \
+	$(top_srcdir)/build-aux/config.guess \
+	$(top_srcdir)/build-aux/config.sub \
+	$(top_srcdir)/build-aux/depcomp \
+	$(top_srcdir)/build-aux/install-sh \
+	$(top_srcdir)/build-aux/missing AUTHORS COPYING ChangeLog \
+	README.md build-aux/compile build-aux/config.guess \
+	build-aux/config.sub build-aux/depcomp build-aux/install-sh \
+	build-aux/missing
 DISTFILES = $(DIST_COMMON) $(DIST_SOURCES) $(TEXINFOS) $(EXTRA_DIST)
 distdir = $(PACKAGE)-$(VERSION)
 top_distdir = $(distdir)
@@ -255,6 +268,7 @@ AWK = @AWK@
 CC = @CC@
 CCDEPMODE = @CCDEPMODE@
 CFLAGS = @CFLAGS@
+CPP = @CPP@
 CPPFLAGS = @CPPFLAGS@
 CSCOPE = @CSCOPE@
 CTAGS = @CTAGS@
@@ -267,8 +281,10 @@ DEPDIR = @DEPDIR@
 ECHO_C = @ECHO_C@
 ECHO_N = @ECHO_N@
 ECHO_T = @ECHO_T@
+EGREP = @EGREP@
 ETAGS = @ETAGS@
 EXEEXT = @EXEEXT@
+GREP = @GREP@
 INSTALL = @INSTALL@
 INSTALL_DATA = @INSTALL_DATA@
 INSTALL_PROGRAM = @INSTALL_PROGRAM@
@@ -289,6 +305,11 @@ PACKAGE_TARNAME = @PACKAGE_TARNAME@
 PACKAGE_URL = @PACKAGE_URL@
 PACKAGE_VERSION = @PACKAGE_VERSION@
 PATH_SEPARATOR = @PATH_SEPARATOR@
+PTHREAD_CC = @PTHREAD_CC@
+PTHREAD_CFLAGS = @PTHREAD_CFLAGS@
+PTHREAD_CXX = @PTHREAD_CXX@
+PTHREAD_LIBS = @PTHREAD_LIBS@
+SED = @SED@
 SET_MAKE = @SET_MAKE@
 SHELL = @SHELL@
 STRIP = @STRIP@
@@ -304,15 +325,24 @@ am__leading_dot = @am__leading_dot@
 am__quote = @am__quote@
 am__tar = @am__tar@
 am__untar = @am__untar@
+ax_pthread_config = @ax_pthread_config@
 bindir = @bindir@
+build = @build@
 build_alias = @build_alias@
+build_cpu = @build_cpu@
+build_os = @build_os@
+build_vendor = @build_vendor@
 builddir = @builddir@
 datadir = @datadir@
 datarootdir = @datarootdir@
 docdir = @docdir@
 dvidir = @dvidir@
 exec_prefix = @exec_prefix@
+host = @host@
 host_alias = @host_alias@
+host_cpu = @host_cpu@
+host_os = @host_os@
+host_vendor = @host_vendor@
 htmldir = @htmldir@
 includedir = @includedir@
 infodir = @infodir@
@@ -337,7 +367,22 @@ target_alias = @target_alias@
 top_build_prefix = @top_build_prefix@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
-EXTRA_DIST = AUTHORS ChangeLog COPYING README.md doc/* mud/*.int mud/*/*.txt mud/*/*.int casa/*.int casa/*.txt testes/*.int programas-int/* intmud.int Doxyfile
+EXTRA_DIST = \
+  AUTHORS \
+  ChangeLog \
+  COPYING \
+  README.md \
+  doc/* \
+  mud/*.int \
+  mud/*/*.txt \
+  mud/*/*.int \
+  casa/*.int \
+  casa/*.txt \
+  testes/*.int \
+  programas-int/* \
+  intmud.int \
+  Doxyfile
+
 intmud_SOURCES = \
   src/main.cpp \
   src/classe.cpp \
@@ -434,10 +479,12 @@ intmud_SOURCES = \
   src/md5.h \
   src/ssl.cpp \
   src/ssl.h \
+  src/crash.cpp \
   src/alocamem.h \
   src/rbt.cpp.h
 
-AM_CXXFLAGS = -Wall -fno-exceptions -fno-rtti -std=c++11 -Isrc
+AM_CXXFLAGS = -Wall -fno-exceptions -fno-rtti -std=c++11 -Isrc $(PTHREAD_CFLAGS)
+LDADD = $(PTHREAD_LIBS)
 all: config.h
 	$(MAKE) $(AM_MAKEFLAGS) all-am
 
@@ -635,6 +682,7 @@ src/random.$(OBJEXT): src/$(am__dirstamp) \
 src/sha1.$(OBJEXT): src/$(am__dirstamp) src/$(DEPDIR)/$(am__dirstamp)
 src/md5.$(OBJEXT): src/$(am__dirstamp) src/$(DEPDIR)/$(am__dirstamp)
 src/ssl.$(OBJEXT): src/$(am__dirstamp) src/$(DEPDIR)/$(am__dirstamp)
+src/crash.$(OBJEXT): src/$(am__dirstamp) src/$(DEPDIR)/$(am__dirstamp)
 
 intmud$(EXEEXT): $(intmud_OBJECTS) $(intmud_DEPENDENCIES) $(EXTRA_intmud_DEPENDENCIES) 
 	@rm -f intmud$(EXEEXT)
@@ -651,6 +699,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@src/$(DEPDIR)/arqmapa.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@src/$(DEPDIR)/classe.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@src/$(DEPDIR)/console.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@src/$(DEPDIR)/crash.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@src/$(DEPDIR)/exec.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@src/$(DEPDIR)/getrss.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@src/$(DEPDIR)/instr-codif.Po@am__quote@ # am--include-marker
@@ -1000,6 +1049,7 @@ distclean: distclean-am
 	-rm -f src/$(DEPDIR)/arqmapa.Po
 	-rm -f src/$(DEPDIR)/classe.Po
 	-rm -f src/$(DEPDIR)/console.Po
+	-rm -f src/$(DEPDIR)/crash.Po
 	-rm -f src/$(DEPDIR)/exec.Po
 	-rm -f src/$(DEPDIR)/getrss.Po
 	-rm -f src/$(DEPDIR)/instr-codif.Po
@@ -1098,6 +1148,7 @@ maintainer-clean: maintainer-clean-am
 	-rm -f src/$(DEPDIR)/arqmapa.Po
 	-rm -f src/$(DEPDIR)/classe.Po
 	-rm -f src/$(DEPDIR)/console.Po
+	-rm -f src/$(DEPDIR)/crash.Po
 	-rm -f src/$(DEPDIR)/exec.Po
 	-rm -f src/$(DEPDIR)/getrss.Po
 	-rm -f src/$(DEPDIR)/instr-codif.Po

@@ -9,7 +9,7 @@
 #include <stdlib.h>
 #include <unistd.h>
 #include <string.h>
-#ifdef __WIN32__
+#ifdef _WIN32
  #include <windows.h>
 #else
  #include <termios.h>
@@ -22,7 +22,7 @@
 TConsole * Console = nullptr;
 
 //---------------------------------------------------------------------------
-#ifdef __WIN32__
+#ifdef _WIN32
 HANDLE TConsole::Stdin(void) { return con_in; } ///< Entrada padrão
 HANDLE TConsole::Stdout(void) { return con_out; } ///< Saída padrão
 #else
@@ -45,7 +45,7 @@ bool TConsole::Inic(bool completo)
     Charset = 0x100;
     LerUTF8 = 0;
 
-#ifdef __WIN32__
+#ifdef _WIN32
 // Aloca console
     if (!AllocConsole())
         return false;
@@ -215,7 +215,7 @@ bool TConsole::Inic(bool completo)
         return true;
     }
 
-#ifndef __WIN32__
+#ifndef _WIN32
 // Verifica se é um terminal
     if (!isatty(STDIN_FILENO))
         return false;
@@ -252,7 +252,7 @@ void TConsole::Fim()
     Aberto = 0;
     if (antes < 2)
         return;
-#ifdef __WIN32__
+#ifdef _WIN32
     FreeConsole();
 #else
     printf("\x1B[0m\n");
@@ -264,7 +264,7 @@ void TConsole::Fim()
 //---------------------------------------------------------------------------
 void TConsole::MudaTitulo(const char * texto)
 {
-#ifdef __WIN32__
+#ifdef _WIN32
     char mens[100];
     copiastr(mens, texto, sizeof(mens));
     for (char * p = mens; *p; p++)
@@ -276,7 +276,7 @@ void TConsole::MudaTitulo(const char * texto)
 //---------------------------------------------------------------------------
 void TConsole::Beep()
 {
-#ifdef __WIN32__
+#ifdef _WIN32
     MessageBeep(0xFFFFFFFF);
 #else
     putchar(7);
@@ -286,7 +286,7 @@ void TConsole::Beep()
 //---------------------------------------------------------------------------
 const char * TConsole::LerTecla()
 {
-#ifdef __WIN32__
+#ifdef _WIN32
     while (true)
     {
         if (LerCont >= LerTotal)
@@ -609,7 +609,7 @@ const char * TConsole::LerTecla()
 //---------------------------------------------------------------------------
 void TConsole::Flush()
 {
-#ifdef __WIN32__
+#ifdef _WIN32
     if (MoverCursor)
     {
         COORD posic;
@@ -629,7 +629,7 @@ void TConsole::Flush()
 //---------------------------------------------------------------------------
 void TConsole::EnvTxt(const char * texto, int tamanho)
 {
-#ifdef __WIN32__
+#ifdef _WIN32
     MoverCursor = true;
     while (tamanho > 0)
     {
@@ -734,7 +734,7 @@ void TConsole::CorTxt(unsigned int novacor)
         antes = (antes & ~0x277) | ((antes >> 4) & 7) | ((antes << 4) & 0x70);
     if (novacor & 0x200)
         novacor = (novacor & ~0x277) | ((novacor >> 4) & 7) | ((novacor<<4) & 0x70);
-#ifdef __WIN32__
+#ifdef _WIN32
     if (((antes ^ novacor) & 0xF7) == 0)
         return;
     WORD atributos = 0;
@@ -809,7 +809,7 @@ void TConsole::CorTxt(unsigned int novacor)
 //---------------------------------------------------------------------------
 void TConsole::CursorIni()
 {
-#ifdef __WIN32__
+#ifdef _WIN32
     MoverCursor = true;
 #else
     putchar('\r');
@@ -822,7 +822,7 @@ void TConsole::CursorLin(int valor)
 {
     if (valor == 0)
         return;
-#ifdef __WIN32__
+#ifdef _WIN32
     MoverCursor = true;
 #else
     if (valor>0)
@@ -842,7 +842,7 @@ void TConsole::CursorCol(int valor)
 {
     if (valor == 0)
         return;
-#ifdef __WIN32__
+#ifdef _WIN32
     MoverCursor = true;
 #else
     if (valor > 0)
@@ -862,7 +862,7 @@ void TConsole::CursorPosic(int lin, int col)
 {
     LinAtual = (lin < 0 ? 0 : lin >= (int)LinTotal ? LinTotal - 1 : lin);
     ColAtual = (col < 0 ? 0 : col >= (int)ColTotal ? ColTotal - 1 : col);
-#ifdef __WIN32__
+#ifdef _WIN32
     MoverCursor = true;
 #else
     printf("\x1B[%d;%dH", LinAtual + 1, ColAtual + 1);
@@ -874,7 +874,7 @@ void TConsole::InsereLin(int valor)
 {
     if (valor <= 0)
         return;
-#ifdef __WIN32__
+#ifdef _WIN32
     SMALL_RECT scroll;  // Região que será movida
     COORD dest;         // Para onde mover
     CHAR_INFO charinfo; // Como preencher a região que ficou vazia
@@ -897,7 +897,7 @@ void TConsole::ApagaLin(int valor)
 {
     if (valor <= 0)
         return;
-#ifdef __WIN32__
+#ifdef _WIN32
     SMALL_RECT scroll;  // Região que será movida
     COORD dest;         // Para onde mover
     CHAR_INFO charinfo; // Como preencher a região que ficou vazia
@@ -920,7 +920,7 @@ void TConsole::InsereCol(int valor)
 {
     if (valor <= 0)
         return;
-#ifdef __WIN32__
+#ifdef _WIN32
     SMALL_RECT scroll;  // Região que será movida
     COORD dest;         // Para onde mover
     CHAR_INFO charinfo; // Como preencher a região que ficou vazia
@@ -941,7 +941,7 @@ void TConsole::ApagaCol(int valor)
 {
     if (valor <= 0)
         return;
-#ifdef __WIN32__
+#ifdef _WIN32
     SMALL_RECT scroll;  // Região que será movida
     COORD dest;         // Para onde mover
     CHAR_INFO charinfo; // Como preencher a região que ficou vazia
@@ -967,7 +967,7 @@ void TConsole::ApagaCol(int valor)
 //---------------------------------------------------------------------------
 void TConsole::LimpaFim()
 {
-#ifdef __WIN32__
+#ifdef _WIN32
     DWORD CharsWritten;
     COORD posic;
     posic.X = ColAtual;
@@ -984,7 +984,7 @@ void TConsole::LimpaFim()
 //---------------------------------------------------------------------------
 void TConsole::LimpaTela()
 {
-#ifdef __WIN32__
+#ifdef _WIN32
     DWORD CharsWritten;
     COORD posic = { 0, 0 };
     FillConsoleOutputCharacter(con_out, ' ', ColTotal*LinTotal,

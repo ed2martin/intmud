@@ -7,9 +7,9 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-#ifdef __WIN32__
+#ifdef _WIN32
+ #include <winsock2.h>
  #include <windows.h>
- #include <winsock.h>
  #include <ws2tcpip.h>
  #include <fcntl.h>
  #include <io.h>
@@ -198,7 +198,7 @@ bool TVarServ::Abrir(const char * ender, unsigned short porta)
             break;
         auto s1 = socket(res->ai_family, res->ai_socktype, res->ai_protocol);
 
-#ifdef __WIN32__
+#ifdef _WIN32
     // Windows: Acerta socket
         if (s1 == INVALID_SOCKET)
             break;
@@ -291,7 +291,7 @@ void TVarServ::ProcEventos(fd_set * set_entrada, int tempo)
         while (obj == varObj)
         {
             struct sockaddr_storage SockStr_in;
-#ifdef __WIN32__
+#ifdef _WIN32
             int tamsock = sizeof(SockStr_in);
             unsigned int localSocket = accept(obj->sock,
                 (struct sockaddr *)&SockStr_in, &tamsock);

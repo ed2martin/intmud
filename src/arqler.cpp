@@ -31,7 +31,7 @@ bool TArqLer::Abrir(const char * arquivo)
 {
     if (arq >= 0)
         close(arq);
-#ifdef __WIN32__
+#ifdef _WIN32
     arq=open(arquivo, O_RDONLY|O_BINARY);
 #else
     arq=open(arquivo, O_RDONLY);
