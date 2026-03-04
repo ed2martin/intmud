@@ -17,21 +17,7 @@ O projeto é dividido em três componentes principais:
 2. Um **interpretador** leve e com o mínimo de dependências.
 3. Uma **base de MUD** pronta para uso, escrita na própria linguagem do IntMUD.
 
-## Princípios da Plataforma
-
-- **Foco em Simplicidade:** O objetivo é permitir a criação de MUDs e outros
-  jogos de texto de forma simples e acessível.
-- **Autossuficiente:** Projetado para ter o mínimo de dependências, sem exigir
-  a instalação de frameworks ou bibliotecas externas. O código que compila
-  hoje provavelmente vai continuar compilando daqui algumas décadas.
-- **Multiplataforma:** Compila e roda nativamente em Windows, Linux, Mac
-  (devido à compatibilidade com BSD) e outros sistemas UNIX-like.
-- **Pronto para uso:** É possível rodar um jogo localmente sem a necessidade
-  de configurar uma conexão de rede ou usar um cliente de MUD, ou mesmo um
-  navegador. O MUD vem configurado dessa forma, abre uma janela própria de
-  console no Windows, e em outros sistemas, roda diretamente no terminal.
-
-## Começando
+## Como executar e testar a base de MUD
 
 ### No Windows
 
@@ -41,10 +27,10 @@ Existem duas maneiras de executar o IntMUD no Windows:
    1. Baixar o pacote já compilado para Windows a partir da
       [página de Releases](https://github.com/ed2martin/intmud/releases).
    2. Copiar o arquivo intmud.exe para a pasta mud e renomear para mud.exe.
-   3. Duplo clique no arquivo mud.exe da pasta mud.
+   3. Duplo clique no arquivo mud.exe.
 
 -  **Opção 2 (Compilação manual):**
-   1. Instale o ambiente de desenvolvimento **MinGW clássico** ou **MSYS2**.
+   1. Instale o ambiente de desenvolvimento **MSYS2**.
    2. Abra o terminal MSYS2
    3. Siga as mesmas instruções de compilação para Linux.
 
@@ -60,6 +46,7 @@ Existem duas maneiras de executar o IntMUD no Windows:
     e entre no diretório do programa.
 
 2.  **Instale as ferramentas de compilação**
+
     Em cada sistema é um comando diferente. Por exemplo:
     ```bash
     # No Ubuntu
@@ -94,6 +81,20 @@ Existem duas maneiras de executar o IntMUD no Windows:
     ```bash
     ./intmud mud/mud
     ```
+
+## Princípios da Plataforma
+
+- **Foco em Simplicidade:** O objetivo é permitir a criação de MUDs e outros
+  jogos de texto de forma simples e acessível.
+- **Autossuficiente:** Projetado para ter o mínimo de dependências, sem exigir
+  a instalação de frameworks ou bibliotecas externas. O código que compila
+  hoje provavelmente vai continuar compilando daqui algumas décadas.
+- **Multiplataforma:** Compila e roda nativamente em Windows, Linux, Mac
+  (devido à compatibilidade com BSD) e outros sistemas UNIX-like.
+- **Pronto para uso:** É possível rodar um jogo localmente sem a necessidade
+  de configurar uma conexão de rede ou usar um cliente de MUD, ou mesmo um
+  navegador. O MUD vem configurado dessa forma, abre uma janela própria de
+  console no Windows, e em outros sistemas, roda diretamente no terminal.
 
 ## Princípios da Linguagem IntMUD
 

@@ -198,8 +198,8 @@ func recalc_exec # Ajusta variáveis, principalmente batalha
     i.obj.cmd_recalc3(este)
   efim
 # Acerta atributo dormindo de bitver
-  bitver & 2048 && (bitver = bitver & ~1024)
-  bitver & 1024 && posicao > 4 && (posicao = 4)
+  (bitver & 2048) && (bitver = bitver & ~1024)
+  (bitver & 1024) && posicao > 4 && (posicao = 4)
   atribs_exec
   recalc = 0
 # Se for jogador, checa PNJs agressivos
@@ -869,7 +869,7 @@ func persoluta # Obtém informações do personagem no comando Animal
       i.obj.perso && (i.obj.p_persoluta = 3)
     efim
     epara i = lseguir.ini, i, i.depois
-      i.obj.perso & i.obj.tseguir == 3 && (i.obj.p_persoluta = 3)
+      (i.obj.perso & i.obj.tseguir) == 3 && (i.obj.p_persoluta = 3)
     efim
     ret p_persoluta
   fimse
