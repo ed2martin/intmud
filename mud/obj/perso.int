@@ -561,7 +561,7 @@ func teclouperm # Processa comando com permissões específicas
     refvar contr1 = contr # Porque contr é uma função, obj é uma variável ref
     se !contr1.atkenv # Se não está lutando
       contr1.sock.cmd_espera = p_espera + 1 # Acerta tempo de espera do jogador
-    senao # Se está lutando, ordem para um personagem não trava o jogador
+    senao config:m_atk_espera # Lutando: ordem para personagem não trava o jogador
       $mens.o_1 = p_espera / 10
       $mens.mens = txte(txt(obj, 4))
       $mens.mp(config:m_atk_espera, contr1, este)
