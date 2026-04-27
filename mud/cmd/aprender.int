@@ -1,7 +1,8 @@
 classe h_cmd_aprender
 herda comando_comum, comum_negociar
-#
+const objmenu = $m_cmd_aprender
 const objtipo = 2 # Pode renomear
+#
 const m_ajuda = "-t\n\
 -s <nome ou número do curso>\n\
 Aprende um pouco sobre uma habilidade ou idioma.\n\
@@ -114,3 +115,23 @@ func evento # Gera evento para arg0 e arg1
   epara l.addfim(arg1.evento), l, l.ini.remove
     ret l.objini.cmd_aprender(arg0, arg1, arg1), 1
   efim
+
+
+classe m_cmd_aprender
+herda comando_menu_cmd
+#
+const nome1 = "Ajuda"
+const tipo1 = "opc_texto"
+const vari1 = "m_ajuda"
+#
+const nome2 = "Sem argumentos"
+const tipo2 = "opc_linha"
+const vari2 = "m_sem_args"
+#
+const nome3 = "Precisa de um ponto"
+const tipo3 = "opc_linha"
+const vari3 = "m_pontos1"
+#
+const nome4 = "Precisa de pontos"
+const tipo4 = "opc_linha"
+const vari4 = "m_pontos2"
