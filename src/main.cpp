@@ -52,6 +52,8 @@
 
 #define TESPERA_MAX 30  // Tempo máximo que pode esperar (10 = 1 segundo)
 
+//#define MOSTRA_ARQUIVOS // Mostrar os arquivos sendo processados
+
 // ulimit -S -c 200000
 //#define CORE    // Para gerar arquivos core
 //#define DEBUG   // Para não colocar o programa em segundo plano
@@ -547,6 +549,7 @@ void Inicializa(const char * arg)
     bool ini_arq = true;
     TArqMapa * mapa = new TArqMapa(""); // Arquivo .int principal
     mapa->Existe = true;
+    bool ConverteCodigo = false; // Converter código do arquivo principal
 
     // Abre o arquivo principal
     mprintf(arqinicio, INT_NOME_TAM, "%s." INT_EXT, TArqIncluir::ArqNome());
@@ -645,6 +648,29 @@ void Inicializa(const char * arg)
                         *p = '/';
                 new TArqIncluir(valor);
             }
+        // Converter de versões anteriores do IntMUD
+            if (comparaZ(mens, "conv") == 0)
+            {
+                for (char * p = valor; *p; p++)
+                    if (*p == '\\')
+                        *p = '/';
+                if (*valor == 0)
+                {
+                    ConverteCodigo = true;
+                    TArqMapa::Inicio->Mudou = true;
+                }
+                else
+                {
+                    TArqIncluir * arq = TArqIncluir::ProcObj(valor);
+                    if (arq == nullptr)
+                    {
+                        err_printf("conv - não foi incluído: incluir %s\n", valor);
+                        err_fim();
+                    }
+                    arq->ConverteCodigo = true;
+                    TArqMapa::Inicio->Mudou = true;
+                }
+            }
         }
 
     // Verifica se é definição de classe
@@ -678,12 +704,13 @@ void Inicializa(const char * arg)
 
     // Cria classe
         //puts(mens);
+        bool b = mapa->Mudou;
         cl = new TClasse(pclasse, mapa);
+        mapa->Mudou = b;
         assert(cl->Comandos == nullptr);
         sprintf(mens, "em %s:%d", arqinicio, linhanum);
         cl->Comandos = new char[strlen(mens) + 1];
         strcpy(cl->Comandos, mens);
-        mapa->Mudou = false;
     }
     if (TClasse::RBfirst() == nullptr)
     {
@@ -733,6 +760,9 @@ void Inicializa(const char * arg)
         err_printf("Abrindo arquivo %s: %s\n", arqinicio, strerror(errno));
         err_fim();
     }
+#ifdef MOSTRA_ARQUIVOS
+    printf("ARQ %s %d\n", arqnome, ConverteCodigo);
+#endif
     mapa = TArqMapa::Inicio;
     while (true)
     {
@@ -780,6 +810,13 @@ void Inicializa(const char * arg)
                         arqinicio, strerror(errno));
                 err_fim();
             }
+            TArqIncluir * arq = TArqIncluir::ProcArq(arqinicio);
+            ConverteCodigo = (arq && arq->ConverteCodigo);
+            if (ConverteCodigo)
+                mapa->Mudou = true;
+#ifdef MOSTRA_ARQUIVOS
+            printf("ARQ %s %d\n", arqnome, ConverteCodigo);
+#endif
             continue;
         }
     // Verifica linha MAPAGRANDE
@@ -808,7 +845,7 @@ void Inicializa(const char * arg)
         }
     // Codifica instrução
         //err_printf("= %s\n", mens);
-        if (!Instr::Codif(comando, mens, sizeof(comando)))
+        if (!Instr::Codif(comando, mens, sizeof(comando), ConverteCodigo))
         {
             err_printf("%s:%d: %s\n", arqinicio, linhanum, comando);
             erro = true;
@@ -940,6 +977,9 @@ void Inicializa(const char * arg)
         // Ignora sinal PIPE
     signal(SIGPIPE, SIG_IGN);
 #endif
+
+// Salva arquivos, para o caso de ter convertido algo (opção CONV)
+    TArqMapa::SalvarArq(false);
 
 // Executa funções iniclasse das classes
     for (TClasse * cl = TClasse::RBfirst(); cl;)

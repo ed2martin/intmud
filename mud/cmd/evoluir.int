@@ -29,7 +29,7 @@ func escr
       continuar l.objini.tseguir != 3 && l.objini.dono != arg0
       continuar !evoluir(l.objini, arg0)
       refvar cl = "p_" + l.objini.p_evoluiperso
-      $mens.mens = (!l.objini.psexo ? [cl]:descnomefem) ?? [cl]:descnome
+      $mens.mens = (!l.objini.psexo ? [cl]:descnomefem) ?: [cl]:descnome
       $mens.p(l.objini)
       t.addfim($mens.txt(m_animal, arg0))
     efim
@@ -37,7 +37,7 @@ func escr
     ret arg0.msg(t.remove(1000))
   fimse
 # Obtém o animal
-  ref anim = misc:animalnum(arg0, arg1) ?? misc:persooutro(arg0, arg1)
+  ref anim = misc:animalnum(arg0, arg1) ?: misc:persooutro(arg0, arg1)
   se !anim
     $mens.mens = arg1
     ret $mens.mp(m_naover, arg0)
@@ -52,7 +52,7 @@ func escr
   $mens.p(anim, anim2)
   listaobj l
   epara l.addfim(arg0.dono.dentro2), l, l.ini.remove
-    $mens.msginv(anim2.p_evoluimsg1 ?? m_evoluir1, l.objini)
+    $mens.msginv(anim2.p_evoluimsg1 ?: m_evoluir1, l.objini)
   efim
 
 func evoluir # Verifica se um personagem pode evoluir
@@ -68,7 +68,7 @@ func infoevoluir # Informa o dono se o personagem já pode evoluir
   ref dono = arg0.dono.perso ? arg0.dono : arg0.tseguir == 3 ? arg0.iseguir.objlista
   se dono && evoluir(arg0, dono)
     refvar cl = "p_" + arg0.p_evoluiperso
-    $mens.mens = (!arg0.psexo ? [cl]:descnomefem) ?? [cl]:descnome
+    $mens.mens = (!arg0.psexo ? [cl]:descnomefem) ?: [cl]:descnome
     $mens.p(arg0, arg0.dono)
     $mens.msginv(m_podeevoluir, dono)
   fimse

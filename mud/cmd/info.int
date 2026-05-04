@@ -34,9 +34,9 @@ func escr
     t.addfim(t1)
   fimse
 # Tipo
-  refvar v1 = !r.msexo2 ? $t_[r.tipo1].nome2 ?? $t_[r.tipo1].nome
-  refvar v2 = !r.msexo2 ? $t_[r.tipo2].nome2 ?? $t_[r.tipo2].nome
-  refvar v3 = !r.msexo2 ? $t_[r.tipo3].nome2 ?? $t_[r.tipo3].nome
+  refvar v1 = !r.msexo2 ? $t_[r.tipo1].nome2 ?: $t_[r.tipo1].nome
+  refvar v2 = !r.msexo2 ? $t_[r.tipo2].nome2 ?: $t_[r.tipo2].nome
+  refvar v3 = !r.msexo2 ? $t_[r.tipo3].nome2 ?: $t_[r.tipo3].nome
   se v1 || v2 || v3
     t1 = (v1 ? ", " + v1 : "") + (v2 ? ", " + v2) + (v3 ? ", " + v3)
     t.addfim("Tipo,raça,classe: " + txt(t1, 2))
@@ -111,7 +111,7 @@ sav textovar var # Variáveis criadas sob demanda
 sav txt20 nome # Nome do personagem
 txt100 cnome # Para obter o nome codificado
 sav int1 psexo
-const msexo2 = int(var.z_msexo ?? psexo)
+const msexo2 = int(var.z_msexo ?: psexo)
 sav uint16 pnivel
 sav uint16 prenascer
 sav txt32 tipo1
@@ -145,11 +145,11 @@ func escr
   t.addfim("Nível:         " + (p.prenascer ? "R" + p.prenascer + " ") + p.pnivel)
   lin = ""
   txt100 nome
-  nome = !p.msexo2 ? $t_[p.tipo1].nome2 ?? $t_[p.tipo1].nome ?? p.tipo1
+  nome = !p.msexo2 ? $t_[p.tipo1].nome2 ?: $t_[p.tipo1].nome ?: p.tipo1
   nome && (lin += ", " + nome)
-  nome = !p.msexo2 ? $t_[p.tipo2].nome2 ?? $t_[p.tipo2].nome ?? p.tipo2
+  nome = !p.msexo2 ? $t_[p.tipo2].nome2 ?: $t_[p.tipo2].nome ?: p.tipo2
   nome && (lin += ", " + nome)
-  nome = !p.msexo2 ? $t_[p.tipo3].nome2 ?? $t_[p.tipo3].nome ?? p.tipo3
+  nome = !p.msexo2 ? $t_[p.tipo3].nome2 ?: $t_[p.tipo3].nome ?: p.tipo3
   nome && (lin += ", " + nome)
   lin && t.addfim("Raça/classe:   " + txt2(lin))
   lin = "Tempo de jogo: "
@@ -252,7 +252,7 @@ func escr
     epara r = item.obj.dono, r.dono, r = r.dono
     efim
     continuar area != r.s_area
-    refvar titulo = item.obj.dono.var.z_titulo ?? item.obj.dono.s_titulo(arg0)
+    refvar titulo = item.obj.dono.var.z_titulo ?: item.obj.dono.s_titulo(arg0)
     t0.addfim(item.obj.nome + "    " + titulo)
   efim
   t0.txtmostra
@@ -286,7 +286,7 @@ func escr
     se int(dono.porta_[nome]) >= 2
       t.addfim(txt(txtmai(nome) + "       ", 0, 8) + m_dir_fechado)
     senao sala.visivel(arg0)
-      refvar titulo = sala.var.z_titulo ?? sala.s_titulo(arg0)
+      refvar titulo = sala.var.z_titulo ?: sala.s_titulo(arg0)
       t.addfim(txt(txtmai(nome) + "       ", 0, 8) + titulo)
     senao
       t.addfim(txt(txtmai(nome) + "       ", 0, 8) + m_dir_escuro)

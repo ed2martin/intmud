@@ -251,7 +251,7 @@ func fim
     continuar !(l.objini.jog || l.objini.temdomador)
     p.iniherdainv("b_" + s_area)
     p.texto == este && p.depois
-    l.objini.mudadono(ref(s_voltar(l.objini)) ?? $[p.texto] ?? config:salasav)
+    l.objini.mudadono(ref(s_voltar(l.objini)) ?: $[p.texto] ?: config:salasav)
   efim
 
 func msg # Mensagem para todos da sala
@@ -320,14 +320,15 @@ func descsala # Retorna descrição da sala
     senao dirsala("entrar", arg0).s_morre || dirsala("sair", arg0).s_morre
       t.addfim(config:perigomsg)
     fimse
-    refvar titulo = txt(var.z_titulo ?? s_titulo(arg0))
+    refvar titulo = txt(var.z_titulo ?: s_titulo(arg0))
     titulo && t.addfim("\b\c6" + titulo + "\b")
     se arg1 & 1
-      t.addfim(var.z_desc ?? $mensjog.txt((!misc:luz ? s_noite(arg0)) ?? s_desc(arg0), arg0))
+      t.addfim(var.z_desc ?: $mensjog.txt(!misc:luz ? s_noite(arg0) ?: s_desc(arg0), arg0))
     fimse
     se arg1 & 2
       refvar s = txtsai(arg0)
-      t.addfim("\bSaídas: " + (!s ? "Nenhuma" : arg0.jogconfig.25 ? txttroca(s, " ", ", ") : s))
+      t.addfim("\bSaídas: " + (!s ? "Nenhuma" : arg0.jogconfig.25 ? txttroca(s, " ", ", ") : \
+s))
     fimse
     arg1 & 4 && var.z_moedas && t.addfim("Aqui há " + misc:txtmoedas(var.z_moedas) + ".")
   senao 1 & arg0.bitver
@@ -344,7 +345,7 @@ func descsala # Retorna descrição da sala
     enquanto l
       r = l.fim.obj, l.fim.remove
       continuar !r.visivel(arg0)
-      refvar a1 = r.var.z_descpos ?? r.descpos(arg0)
+      refvar a1 = r.var.z_descpos ?: r.descpos(arg0)
       refvar a2 = txtsublin(r.atribs.ini.textolin(2), 1)
       t2.addfim(txt(r.objtot) + r.atribs.ini.texto + a1 + a2)
     efim
@@ -412,7 +413,7 @@ func dirsalaitem # Retorna a sala ou item em uma direção ou nulo se não houver
   ret r
 
 func s_mudadir1 # Acerta opção de embaralhar as saídas da sala
-  refvar r = $sala_mudadir ?? criar("sala_mudadir")
+  refvar r = $sala_mudadir ?: criar("sala_mudadir")
   se !intpos(s_mudadir)
     dentrodir.remove(r)
     s_salarand = 0
@@ -526,12 +527,12 @@ func mensporta1 # Envia mensagem sobre porta abrindo/fechando
   listaobj l
   prog p
   refvar tipo = portaartigo_[arg0] & 1 ? 4 : 3
-  $mens.mens = portanome_[arg0] ?? $cmd_[arg0].m_porta ?? "uma porta"
+  $mens.mens = portanome_[arg0] ?: $cmd_[arg0].m_porta ?: "uma porta"
   casovar arg1
   casose "0"
     p.iniherdainv("h_cmd_abrir")
     refvar s1 = som_abrir_[arg0]
-    refvar m1 = arg2 ?? msg_abrir3_[arg0] ?? $[p.texto].m_porta_abriu[tipo]
+    refvar m1 = arg2 ?: msg_abrir3_[arg0] ?: $[p.texto].m_porta_abriu[tipo]
     sair !m1
     epara l.addfim(dentro2), l, l.ini.remove
       $mens.msgsominv(m1, s1, l.objini)
@@ -540,7 +541,7 @@ func mensporta1 # Envia mensagem sobre porta abrindo/fechando
   casose "1"
     p.iniherdainv("h_cmd_fechar")
     refvar s1 = som_fechar_[arg0]
-    refvar m1 = arg2 ?? msg_fechar3_[arg0] ?? $[p.texto].m_porta_fechou[tipo]
+    refvar m1 = arg2 ?: msg_fechar3_[arg0] ?: $[p.texto].m_porta_fechou[tipo]
     sair !m1
     epara l.addfim(dentro2), l, l.ini.remove
       $mens.msgsominv(m1, s1, l.objini)
@@ -549,7 +550,7 @@ func mensporta1 # Envia mensagem sobre porta abrindo/fechando
   casose "2"
     p.iniherdainv("h_cmd_trancar")
     refvar s1 = som_tranc_[arg0]
-    refvar m1 = arg2 ?? msg_tranc3_[arg0]
+    refvar m1 = arg2 ?: msg_tranc3_[arg0]
     sair !m1
     epara l.addfim(dentro2), l, l.ini.remove
       $mens.msgsominv(m1, s1, l.objini)
@@ -558,7 +559,7 @@ func mensporta1 # Envia mensagem sobre porta abrindo/fechando
   casose "3"
     p.iniherdainv("h_cmd_destrancar")
     refvar s1 = som_destr_[arg0]
-    refvar m1 = arg2 ?? msg_destr3_[arg0]
+    refvar m1 = arg2 ?: msg_destr3_[arg0]
     sair !m1
     epara l.addfim(dentro2), l, l.ini.remove
       $mens.msgsominv(m1, s1, l.objini)
@@ -572,13 +573,13 @@ func mensporta2 # Envia mensagem sobre alguém abrindo/fechando uma porta
 # arg3 = mensagem para os outros personagens, pode ser nulo
   listaobj l
   prog p
-  $mens.mens = portanome_[arg0] ?? $cmd_[arg0].m_porta ?? "uma porta"
+  $mens.mens = portanome_[arg0] ?: $cmd_[arg0].m_porta ?: "uma porta"
   casovar arg1
   casose "0"
     p.iniherdainv("h_cmd_abrir")
     refvar s1 = som_abrir_[arg0]
-    refvar m1 = arg2 ?? msg_abrir1_[arg0] ?? $[p.texto].m_porta_abriu1
-    refvar m2 = arg3 ?? msg_abrir2_[arg0] ?? $[p.texto].m_porta_abriu2
+    refvar m1 = arg2 ?: msg_abrir1_[arg0] ?: $[p.texto].m_porta_abriu1
+    refvar m2 = arg3 ?: msg_abrir2_[arg0] ?: $[p.texto].m_porta_abriu2
     epara l.addfim(dentro2), l, l.ini.remove
       $mens.msgsominv(l.objini == perso ? m1 : m2, s1, l.objini)
     efim
@@ -586,8 +587,8 @@ func mensporta2 # Envia mensagem sobre alguém abrindo/fechando uma porta
   casose "1"
     p.iniherdainv("h_cmd_fechar")
     refvar s1 = som_fechar_[arg0]
-    refvar m1 = arg2 ?? msg_fechar1_[arg0] ?? $[p.texto].m_porta_fechou1
-    refvar m2 = arg3 ?? msg_fechar2_[arg0] ?? $[p.texto].m_porta_fechou2
+    refvar m1 = arg2 ?: msg_fechar1_[arg0] ?: $[p.texto].m_porta_fechou1
+    refvar m2 = arg3 ?: msg_fechar2_[arg0] ?: $[p.texto].m_porta_fechou2
     epara l.addfim(dentro2), l, l.ini.remove
       $mens.msgsominv(l.objini == perso ? m1 : m2, s1, l.objini)
     efim
@@ -595,8 +596,8 @@ func mensporta2 # Envia mensagem sobre alguém abrindo/fechando uma porta
   casose "2"
     p.iniherdainv("h_cmd_trancar")
     refvar s1 = som_tranc_[arg0]
-    refvar m1 = arg2 ?? msg_tranc1_[arg0] ?? $[p.texto].m_porta_trancou1
-    refvar m2 = arg3 ?? msg_tranc2_[arg0] ?? $[p.texto].m_porta_trancou2
+    refvar m1 = arg2 ?: msg_tranc1_[arg0] ?: $[p.texto].m_porta_trancou1
+    refvar m2 = arg3 ?: msg_tranc2_[arg0] ?: $[p.texto].m_porta_trancou2
     epara l.addfim(dentro2), l, l.ini.remove
       $mens.msgsominv(l.objini == perso ? m1 : m2, s1, l.objini)
     efim
@@ -604,8 +605,8 @@ func mensporta2 # Envia mensagem sobre alguém abrindo/fechando uma porta
   casose "3"
     p.iniherdainv("h_cmd_destrancar")
     refvar s1 = som_destr_[arg0]
-    refvar m1 = arg2 ?? msg_destr1_[arg0] ?? $[p.texto].m_porta_destrancou1
-    refvar m2 = arg3 ?? msg_destr2_[arg0] ?? $[p.texto].m_porta_destrancou2
+    refvar m1 = arg2 ?: msg_destr1_[arg0] ?: $[p.texto].m_porta_destrancou1
+    refvar m2 = arg3 ?: msg_destr2_[arg0] ?: $[p.texto].m_porta_destrancou2
     epara l.addfim(dentro2), l, l.ini.remove
       $mens.msgsominv(l.objini == perso ? m1 : m2, s1, l.objini)
     efim

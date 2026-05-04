@@ -59,21 +59,21 @@ func escr
   fimse
 # Verifica posições extras
   refvar vest1 = arg0.positemvestir
-  se vest1 & r.vestirextra != "0"
+  se (vest1 & r.vestirextra) != "0"
     refvar obj = arg0.objitemvestir(r.vestirextra)
     ret $mens.mp(m_em_uso[tipomsg], contr, arg0, obj)
   fimse
 # Verifica itens em cima nas posições extras
   epara lin = txtbith(r.vestirextra), lin, lin = txt2(lin)
-    continuar vest1 & config:vestir[txt1(lin)] == "0"
+    continuar (vest1 & config:vestir[txt1(lin)]) == "0"
     refvar obj = arg0.objitemvestir(config:vestir[txt1(lin)])
     ret $mens.mp(m_em_cima[tipomsg], contr, arg0, obj)
   efim
 # Verifica se conflita com algum outro tipo de item
   listaitem i
   epara i = arg0.dentro2.ini, i, i.depois
-    se i.obj.item && (txt(i.obj.tipoitem2) & r.vestiritem != "0" || txt(r.tipoitem2) & i.obj.vest\
-iritem != "0")
+    se i.obj.item && ((txt(i.obj.tipoitem2) & r.vestiritem) != "0" || (txt(r.tipoitem2) & \
+i.obj.vestiritem) != "0")
       ret $mens.mp(m_item[tipomsg], contr, arg0, r, i.obj)
     fimse
   efim

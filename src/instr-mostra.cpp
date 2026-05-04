@@ -501,6 +501,8 @@ bool Instr::Mostra(char * destino, const char * origem, int tamanho)
         case exo_int2:         strcpy(nome, " ?fim"); break;
         case exo_intint1:      strcpy(nome, " ??início"); break;
         case exo_intint2:      strcpy(nome, " ??fim"); break;
+        case exo_intpto1:      strcpy(nome, " ?:início"); break;
+        case exo_intpto2:      strcpy(nome, " ?:fim"); break;
         case exo_dponto1:      strcpy(nome, " :início"); break;
         case exo_dponto2:      strcpy(nome, " :fim"); break;
 

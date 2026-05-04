@@ -68,8 +68,8 @@ func escr
   ref r
 # Checa posição
   se !arg0.podeposicao(6)
-    refvar m = arg0.podeposicao6msg ?? $t_[arg0.tipo1].podeposicao6msg
-    ret $mens.mp(m ?? m_nao_consegue, arg0)
+    refvar m = arg0.podeposicao6msg ?: $t_[arg0.tipo1].podeposicao6msg
+    ret $mens.mp(m ?: m_nao_consegue, arg0)
   fimse
   casovar arg0.posicao
   casose "5" # Descansando
@@ -166,8 +166,8 @@ func escr
   ref r
 # Checa posição
   se !arg0.podeposicao(5)
-    refvar m = arg0.podeposicao5msg ?? $t_[arg0.tipo1].podeposicao5msg
-    ret $mens.mp(m ?? m_nao_consegue, arg0)
+    refvar m = arg0.podeposicao5msg ?: $t_[arg0.tipo1].podeposicao5msg
+    ret $mens.mp(m ?: m_nao_consegue, arg0)
   fimse
   casovar arg0.posicao
   casose "5" # Descansando

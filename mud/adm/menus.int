@@ -73,7 +73,7 @@ func passo
     arg0.perso.teclou(txtremove(txt(arg1, 1), "E"))
   senao nome[arg1] # Editar opção do menu
     arg0.var.opcnome = txtremove(nome[arg1], "ED")
-    arg0.var.opcclasse = clas[arg1] ?? classe
+    arg0.var.opcclasse = clas[arg1] ?: classe
     arg0.var.opcvar = vari[arg1]
     arg0.var.opcextra = extr[arg1]
     arg0.var.opcpasso = este
@@ -93,7 +93,7 @@ func passo
     txt20 opc
     opc = txt(arg1, 1)
     arg0.var.opcnome = txtremove(nome[opc], "ED")
-    arg0.var.opcclasse = clas[opc] ?? classe
+    arg0.var.opcclasse = clas[opc] ?: classe
     arg0.var.opcvar = vari[opc]
     arg0.var.opcextra = extr[opc]
     arg0.var.opcpasso = este
@@ -115,7 +115,7 @@ func menu2 # Usado em m_menu para obter o texto de uma opção do menu
   refvar maximo = int(arg1) + 4
   inttotal(lin) < maximo && (lin = txt(lin + txtesp(maximo), 0, maximo))
   refvar tipo = txttroca(tipo[arg0], "-", "")
-  refvar classe = clas[arg0] ?? classe
+  refvar classe = clas[arg0] ?: classe
   ret !["nulo" + arg0], lin + ": " + $[tipo].menu(classe, vari[arg0], extr[arg0])
   prog p
   ret !p.existe(classe, vari[arg0]), lin + ": <nulo> " + ["nulo" + arg0] + "\b"
@@ -127,7 +127,7 @@ func menu3 # Usado em m_menu para obter o nome da variável
   txt100 lin = arg0 + (txt(arg0, 1) ? "." : ". ") + nome[arg0]
   refvar maximo = arg1
   inttotal(lin) < maximo && (lin = txt(lin + txtesp(maximo), 0, maximo))
-  ret lin + ": " + (vari[arg0] ? (clas[arg0] ?? classe) + ":" + vari[arg0] : "")
+  ret lin + ": " + (vari[arg0] ? (clas[arg0] ?: classe) + ":" + vari[arg0] : "")
 
 func menu_colunas # Retorna o número de colunas
   uint8 col = colunas
@@ -696,7 +696,7 @@ func menu2 # Retorna o texto correspondente a uma opção
   int8 x
   txt100 valor = arg1
   epara t.addfim(arg2), t.linhas, valor >>= 1
-    valor & "1" != "0" ? (lin += ", " + x + "-" + t.remove) : t.remove, x++
+    (valor & "1") != "0" ? (lin += ", " + x + "-" + t.remove) : t.remove, x++
   efim
   ret lin ? "\c6" + txt(lin, 2) + "\b" : ""
 

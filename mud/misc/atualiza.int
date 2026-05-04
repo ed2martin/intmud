@@ -469,7 +469,7 @@ func ini2_exec
 # Tempo para salvar jogo de admin
   se versao < 421
     p.apagar("config", "salvaadmin")
-    uint16 tempo = config:salvaadmin ?? 120
+    uint16 tempo = config:salvaadmin ?: 120
     criafunc("perm_admin", "const salvardias = " + tempo)
   fimse
 

@@ -411,15 +411,15 @@ func exechab # Chamado quando personagem usa habilidade ou magia
     $mens.mp(comando_ataque_cfg:m_perso_pacifico, contr0, contr1)
     ret 0
   senao
-    ref p0 = (contr0.tseguir == 3 ? contr0.iseguir.objlista : contr0) ?? contr0
-    ref p1 = (contr1.tseguir == 3 ? contr1.iseguir.objlista : contr1) ?? contr1
+    ref p0 = (contr0.tseguir == 3 ? contr0.iseguir.objlista : contr0) ?: contr0
+    ref p1 = (contr1.tseguir == 3 ? contr1.iseguir.objlista : contr1) ?: contr1
     se p0.jog && p1.jog && (contr0.dono.s_luta == 1 || contr1.dono.s_luta == 1)
       se arg0 != arg1
         $mens.mp(comando_ataque_cfg:m_jog_pacifico, contr0, contr1)
         ret 0
       fimse
     fimse
-    refvar m = contr0.p_atk_individual ?? contr1.p_atk_individual
+    refvar m = contr0.p_atk_individual ?: contr1.p_atk_individual
     se m && (contr0.atkenv || contr1.atkenv)
       se !contr0.atkrec.possui(contr1) || !contr1.atkrec.possui(contr0)
         $mens.mp(m, contr0, contr1)
@@ -465,7 +465,7 @@ func exechab # Chamado quando personagem usa habilidade ou magia
     se contr0.jog && contr0.dono.s_luta < 2 # Sala não permite luta entre jogadores
       i = l.ini
       enquanto i
-        ref p1 = (i.obj.tseguir == 3 ? i.obj.iseguir.objlista : i.obj) ?? i.obj
+        ref p1 = (i.obj.tseguir == 3 ? i.obj.iseguir.objlista : i.obj) ?: i.obj
         p1.jog ? i.removedepois : i.depois
       efim
     fimse
@@ -899,8 +899,8 @@ func menssub # Usado em mensgolpe
   ret !lin, 0
   lin = "atk" + txt(lin, rand(inttotal(lin)), 1) + "_" + arg1
   arg0.0 = [lin]1
-  arg0.1 = [lin]2 ?? arg0.0
-  arg0.2 = [lin]3 ?? arg0.0
+  arg0.1 = [lin]2 ?: arg0.0
+  arg0.2 = [lin]3 ?: arg0.0
   ret 1
 
 

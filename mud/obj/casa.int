@@ -159,7 +159,7 @@ func salvar # Salva objetos da casa
   addlista(lista)
   item = lista.ini, item.depois
   enquanto item
-    se item.obj.objsav & 1 != 1 # Se item.obj.objsav!=1 e item.obj.objsav!=3
+    se (item.obj.objsav & 1) != 1 # Se item.obj.objsav!=1 e item.obj.objsav!=3
       item.removedepois
     senao lista.total < 2000
       lista.addfim(item.obj.dentro1, item.obj.dentro2, item.obj.dentro3), item.depois

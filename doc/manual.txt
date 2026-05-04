@@ -6,13 +6,14 @@ IntMUD (Interpretador MUD)
 1. Sobre o IntMUD
 2. Opções dos arquivos *.INT
 2.1. Opção INCLUIR
-2.2. Opção EXEC
-2.3. Opção TELATXT
-2.4. Opção LOG
-2.5. Opção ERR
-2.6. Opção CRASH
-2.7. Opção COMPLETO
-2.8. Opção ARQEXEC
+2.2. Opção CONV
+2.3. Opção EXEC
+2.4. Opção TELATXT
+2.5. Opção LOG
+2.6. Opção ERR
+2.7. Opção CRASH
+2.8. Opção COMPLETO
+2.9. Opção ARQEXEC
 3. Classes
 4. Variáveis
 5. Funções
@@ -29,9 +30,10 @@ IntMUD (Interpretador MUD)
 13.3. Precedência de operadores
 13.4. Operadores ? e :
 13.5. Operador ??
-13.6. Conversão de tipos em operadores binários
-13.7. Operadores de bit
-13.8. Operadores de bit com textos
+13.6. Operador ?:
+13.7. Conversão de tipos em operadores binários
+13.8. Operadores de bit
+13.9. Operadores de bit com textos
 14. Instruções de controle de fluxo
 15. Lista de funções
 15.1. Funções chamadas pelo interpretador
@@ -159,7 +161,47 @@ com a palavra mud. O quarto incluir todos os arquivos do diretório teste2,
 que é um sub-diretório de teste1.
 
 
-2.2. OPÇÃO EXEC
+2.2. OPÇÃO CONV (Conversão Automática)
+
+Esta opção realiza a conversão e correção automática de operadores no código
+fonte, salvando as alterações diretamente nos arquivos int. Ela foi
+criada para facilitar a migração para a versão 1.17 do IntMUD, que corrige
+algumas discrepâncias com os operadores, ficando assim:
+- Os operadores & ^ | devem ter menor precedência que <= < > >= == === != !==
+- O operador ?? deve checar se o primeiro argumento é nulo ao invés de falso
+- O operador ?: deve fazer o que o ?? fazia, checar se o argumento é falso
+
+Sintaxe: CONV = <nome do arquivo ou diretório>
+
+A regra de seleção de arquivos segue exatamente a mesma lógica da opção INCLUIR.
+Serão convertidos todos os arquivos que começam com o nome especificado. Caso
+o nome termine com uma / (barra), será interpretado como sendo um diretório,
+convertendo assim todos os seus arquivos .int.
+
+Após a conversão, o arquivo principal e os arquivos convertidos são salvos,
+sem as linhas CONV do arquivo principal.
+
+Regras de Uso:
+- As linhas com CONV devem vir depois das linhas INCLUIR.
+- Para converter arquivos incluídos, a linha CONV deve ser exatamente igual
+  à linha INCLUIR correspondente, apenas trocando a palavra INCLUIR por CONV.
+- Atenção: As linhas INCLUIR são necessárias para que as linhas CONV funcionem.
+
+Exceção (arquivo Principal):
+Quando a linha tem apenas CONV = (deixando o lado direito vazio), a conversão
+é aplicada exclusivamente ao arquivo principal.
+
+Exemplo:
+incluir = misc/
+incluir = teste/
+conv =
+conv = teste/
+
+Nesse caso, são convertidos o arquivo principal (devido ao conv =) e os
+arquivos do diretório teste. Os arquivos do diretório misc não são alterados.
+
+
+2.3. OPÇÃO EXEC
 
 Sintaxe: EXEC = <número de instruções>
 
@@ -193,7 +235,7 @@ Exemplo: Para executar 10 mil linhas antes do controle retornar
 EXEC = 10000
 
 
-2.3. OPÇÃO TELATXT
+2.4. OPÇÃO TELATXT
 
 Sintaxe: TELATXT = 0
          TELATXT = 1
@@ -220,7 +262,7 @@ A comunicação com o usuário se dá sempre através da variável telatxt (vide
 'Outros tipos de variáveis').
 
 
-2.4. OPÇÃO LOG
+2.5. OPÇÃO LOG
 
 Sintaxe: LOG = 0
          LOG = 1
@@ -240,7 +282,7 @@ Por exemplo, se o executável chamar-se 'teste.exe' o arquivo de LOG será
 'teste.log'.
 
 
-2.5. OPÇÃO ERR
+2.6. OPÇÃO ERR
 
 Sintaxe: ERR = 0
          ERR = 1
@@ -261,7 +303,7 @@ esta for a última instrução da função.
 O valor 2 também checa inconsistências, mas não permite omitir FimSe.
 
 
-2.6. OPÇÃO CRASH
+2.7. OPÇÃO CRASH
 
 Sintaxe: CRASH = 0
          CRASH = 1
@@ -273,7 +315,7 @@ encerre por erro fatal. Esse arquivo contém informações úteis para
 identificar o ponto da falha e auxiliar na correção do problema.
 
 
-2.7. OPÇÃO COMPLETO
+2.8. OPÇÃO COMPLETO
 
 Sintaxe: COMPLETO = 0
          COMPLETO = 1
@@ -290,7 +332,7 @@ ArqExec só podem executar programas das opções ArqExec
 Em caso de dúvida, deixar 0.
 
 
-2.8. OPÇÃO ARQEXEC
+2.9. OPÇÃO ARQEXEC
 
 Sintaxe: ARQEXEC = <nome do comando>
 
@@ -1202,15 +1244,16 @@ Os operadores são avaliados na seguinte ordem:
 * / %           - Multiplicação, divisão e resto;
 + -             - Soma e subtração;
 << >>           - Rotação para esquerda e para direita;
-&               - 'E' para bits;
-^               - 'OU exclusivo' para bits;
-|               - 'OU' para bits;
 <= < > >=       - Comparação;
 == === != !==   - Igual a, exatamente igual a, diferente de, não
                   exatamente igual a;
+&               - 'E' para bits;
+^               - 'OU exclusivo' para bits;
+|               - 'OU' para bits;
 &&              - 'E' lógico;
 ||              - 'OU' lógico;
-? : ??          - Comparação similar a 'se' e 'senao' e operador ??;
+??              - Operador ??;
+? : ?:          - Comparação similar a 'se' e 'senao' e operador ?:;
 = *= /= += -=   - Atribuição e formas compactas de atribuição.
 
 Todos os operadores são processados da esquerda para a direita, com
@@ -1279,17 +1322,30 @@ Já 'a:b' significa a função ou variável b da classe a.
 
 É usado da seguinte forma:
 a ?? b
+Se a não for mulo, resulta em a. Se for nulo, resulta em b.
+
+Exemplos:
+0 ?? 2
+Resulta em 0, porque 0 não é nulo.
+nulo ?? 2
+Resulta em 2.
+
+
+13.6. OPERADOR ?:
+
+É usado da seguinte forma:
+a ?: b
 Se a for verdadeiro, resulta em a. Se for falso, resulta em b.
 Vide também tópico 13.1 Verdadeiro e falso.
 
 Exemplos:
-1 ?? 2
+1 ?: 2
 Resulta em 1, porque 1 é considerado verdadeiro.
-0 ?? 2
+0 ?: 2
 Resulta em 2, porque 0 é considerado falso.
 
 
-13.6. CONVERSÃO DE TIPOS EM OPERADORES BINÁRIOS
+13.7. CONVERSÃO DE TIPOS EM OPERADORES BINÁRIOS
 
 Via de regra, os operadores binários convertem o segundo operando para
 o mesmo tipo do primeiro.
@@ -1304,7 +1360,7 @@ Exemplos:
 1 + "2" # É o mesmo que 1 + 2, portanto resulta em 3
 
 
-13.7. OPERADORES DE BIT
+13.8. OPERADORES DE BIT
 
 Bit é a menor unidade de informação e pode assumir apenas dois valores,
 0 ou 1. Variáveis int1 correspondem a um bit.
@@ -1548,7 +1604,7 @@ dígito hexadecimal pelos quatro dígitos correspondente em binário:
 001011111000
 
 
-13.8. OPERADORES DE BIT COM TEXTOS
+13.9. OPERADORES DE BIT COM TEXTOS
 
 Para converter entre sistemas de numeração pelo IntMUD, usar a função
 txtconv. Por exemplo, a conversão de 0x2f8 em binário pode ser feita assim:

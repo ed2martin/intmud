@@ -254,7 +254,7 @@ func tela_msg # Usuário digitou alguma coisa
   casose "0" # Desconectado
     ret arg0 == "", nulo
     passo = 0
-    txt200 linha = _serv:[arg0] ?? txtremove(arg0, "ED")
+    txt200 linha = _serv:[arg0] ?: txtremove(arg0, "ED")
     se txtsub(linha, 3) # Tem som
       se !msp_ativo
         refvar msg1 = msp_ffplay.abrir("ffplay -version")

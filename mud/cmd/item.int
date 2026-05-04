@@ -33,7 +33,7 @@ func escr
   ref item = misc:itemdentro(arg0, txt1(arg1))
   ret !item, $mens.mp(m_naover, arg0)
   ref tec = $tecnica_[item.i_item_tecnica]
-  ref anim = misc:animalnum(arg0, txt2(arg1)) ?? misc:persodono(arg0, txt2(arg1))
+  ref anim = misc:animalnum(arg0, txt2(arg1)) ?: misc:persodono(arg0, txt2(arg1))
   refvar cl = item.i_evoluir_p_[txt(anim, 2)]
 # Tenta evoluir animal
   se !cl
@@ -47,7 +47,7 @@ func escr
     $mens.p(anim, anim2)
     listaobj l
     epara l.addfim(arg0.dono.dentro2), l, l.ini.remove
-      $mens.msginv(anim2.p_evoluimsg1 ?? m_evoluir1, l.objini)
+      $mens.msginv(anim2.p_evoluimsg1 ?: m_evoluir1, l.objini)
     efim
     ret
   fimse
@@ -86,11 +86,11 @@ func inicio # Envia mensagem que usou o item e apaga o item
   arg4.apagar(1)
   $mens.p(arg0, arg1, arg4)
   se arg0 == arg1
-    $mens.mtodos2(arg4.i_item_auto1 ?? m_item_auto1, arg4.i_item_auto2 ?? m_item_auto2)
+    $mens.mtodos2(arg4.i_item_auto1 ?: m_item_auto1, arg4.i_item_auto2 ?: m_item_auto2)
   senao
-    refvar m1 = arg4.i_item_outro1 ?? m_item_outro1
-    refvar m2 = arg4.i_item_outro2 ?? m_item_outro2
-    refvar m3 = arg4.i_item_outro3 ?? m_item_outro3
+    refvar m1 = arg4.i_item_outro1 ?: m_item_outro1
+    refvar m2 = arg4.i_item_outro2 ?: m_item_outro2
+    refvar m3 = arg4.i_item_outro3 ?: m_item_outro3
     $mens.mtodos3(m1, m2, m3)
   fimse
 

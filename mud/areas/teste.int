@@ -2164,13 +2164,13 @@ func entrou20
 func info20
   $mens.p(este)
   $mens.mtodos1("$P: Alguém chegou aqui, eu posso sentir!")
-  se arg0.bitinv & 4 != 0
+  se (arg0.bitinv & 4) != 0
     $mens.mtodos1("$P: E está invisível...")
   fimse
-  se arg0.bitinv & 8 != 0
+  se (arg0.bitinv & 8) != 0
     $mens.mtodos1("$P: E está oculto...")
   fimse
-  se arg0.bitver & 0x100 != 0
+  se (arg0.bitver & 0x100) != 0
     $mens.mtodos1("$P: E anda em silêncio...")
   fimse
 
@@ -6201,7 +6201,7 @@ const andar_6 = $s_teste064
 const andar_7 = $s_teste182
 
 func cmd_salaperso # Personagem chegou
-  ref r = arg0.donoantes ?? dir_sair ?? andarini
+  ref r = arg0.donoantes ?: dir_sair ?: andarini
   se r != dir_sair
     dir_sair = r
     $mens.p(arg0)

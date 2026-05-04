@@ -169,64 +169,122 @@ int Instr::InfoFunc(const char * nome)
 //------------------------------------------------------------------------------
 /// Retorna um número que corresponde à prioridade do operador
 /** @param operador Operador em Instr::Expressao
+ *  @param converte Converter de versões anteriores
  *  @retval 2-0x2F Número que corresponde à prioridade do operador;
  *          2 é operador unitário (é também o de maior prioridade);
  *          3 é operador unitário que vem depois do operando
  *          20 é atribuição (processado da direita para a esquerda)
  *  @retval 0 Operador inválido */
-int Instr::Prioridade(int operador)
+int Instr::Prioridade(int operador, bool converte)
 {
-    switch (operador)
-    {
-    case exo_virgula:    return 22;
-    case exo_virg_expr:  return 22;
-    case exo_neg:        return 2;
-    case exo_exclamacao: return 2;
-    case exo_b_comp:     return 2;
-    case exo_add_antes:  return 2;
-    case exo_sub_antes:  return 2;
-    case exo_add_depois: return 3;
-    case exo_sub_depois: return 3;
-    case exo_add_sub1:   return 3;
-    case exo_add_sub2:   return 3;
-    case exo_mul:        return 4;
-    case exo_div:        return 4;
-    case exo_porcent:    return 4;
-    case exo_add:        return 5;
-    case exo_sub:        return 5;
-    case exo_b_shl:      return 6;
-    case exo_b_shr:      return 6;
-    case exo_b_e:        return 7;
-    case exo_b_ouou:     return 8;
-    case exo_b_ou:       return 9;
-    case exo_menor:      return 10;
-    case exo_menorigual: return 10;
-    case exo_maior:      return 10;
-    case exo_maiorigual: return 10;
-    case exo_igual:      return 11;
-    case exo_igual2:     return 11;
-    case exo_diferente:  return 11;
-    case exo_diferente2: return 11;
-    case exo_e:          return 12;
-    case exo_ou:         return 13;
-    case exo_int1:       return 14;
-    case exo_int2:       return 14;
-    case exo_intint1:    return 14;
-    case exo_intint2:    return 14;
-    case exo_dponto1:    return 14;
-    case exo_dponto2:    return 14;
-    case exo_atrib:      return 20;
-    case exo_i_mul:      return 20;
-    case exo_i_div:      return 20;
-    case exo_i_porcent:  return 20;
-    case exo_i_add:      return 20;
-    case exo_i_sub:      return 20;
-    case exo_i_b_shl:    return 20;
-    case exo_i_b_shr:    return 20;
-    case exo_i_b_e:      return 20;
-    case exo_i_b_ouou:   return 20;
-    case exo_i_b_ou:     return 20;
-    }
+    if (!converte)
+        switch (operador)
+        {
+        case exo_virgula:    return 22;
+        case exo_virg_expr:  return 22;
+        case exo_neg:        return 2;
+        case exo_exclamacao: return 2;
+        case exo_b_comp:     return 2;
+        case exo_add_antes:  return 2;
+        case exo_sub_antes:  return 2;
+        case exo_add_depois: return 3;
+        case exo_sub_depois: return 3;
+        case exo_add_sub1:   return 3;
+        case exo_add_sub2:   return 3;
+        case exo_mul:        return 4;
+        case exo_div:        return 4;
+        case exo_porcent:    return 4;
+        case exo_add:        return 5;
+        case exo_sub:        return 5;
+        case exo_b_shl:      return 6;
+        case exo_b_shr:      return 6;
+        case exo_menor:      return 7;
+        case exo_menorigual: return 7;
+        case exo_maior:      return 7;
+        case exo_maiorigual: return 7;
+        case exo_igual:      return 8;
+        case exo_igual2:     return 8;
+        case exo_diferente:  return 8;
+        case exo_diferente2: return 8;
+        case exo_b_e:        return 9;
+        case exo_b_ouou:     return 10;
+        case exo_b_ou:       return 11;
+        case exo_e:          return 12;
+        case exo_ou:         return 13;
+        case exo_intint1:    return 14;
+        case exo_intint2:    return 14;
+        case exo_int1:       return 15;
+        case exo_int2:       return 15;
+        case exo_intpto1:    return 15;
+        case exo_intpto2:    return 15;
+        case exo_dponto1:    return 15;
+        case exo_dponto2:    return 15;
+        case exo_atrib:      return 20;
+        case exo_i_mul:      return 20;
+        case exo_i_div:      return 20;
+        case exo_i_porcent:  return 20;
+        case exo_i_add:      return 20;
+        case exo_i_sub:      return 20;
+        case exo_i_b_shl:    return 20;
+        case exo_i_b_shr:    return 20;
+        case exo_i_b_e:      return 20;
+        case exo_i_b_ouou:   return 20;
+        case exo_i_b_ou:     return 20;
+        }
+    else
+        switch (operador)
+        {
+        case exo_virgula:    return 22;
+        case exo_virg_expr:  return 22;
+        case exo_neg:        return 2;
+        case exo_exclamacao: return 2;
+        case exo_b_comp:     return 2;
+        case exo_add_antes:  return 2;
+        case exo_sub_antes:  return 2;
+        case exo_add_depois: return 3;
+        case exo_sub_depois: return 3;
+        case exo_add_sub1:   return 3;
+        case exo_add_sub2:   return 3;
+        case exo_mul:        return 4;
+        case exo_div:        return 4;
+        case exo_porcent:    return 4;
+        case exo_add:        return 5;
+        case exo_sub:        return 5;
+        case exo_b_shl:      return 6;
+        case exo_b_shr:      return 6;
+        case exo_b_e:        return 7;
+        case exo_b_ouou:     return 8;
+        case exo_b_ou:       return 9;
+        case exo_menor:      return 10;
+        case exo_menorigual: return 10;
+        case exo_maior:      return 10;
+        case exo_maiorigual: return 10;
+        case exo_igual:      return 11;
+        case exo_igual2:     return 11;
+        case exo_diferente:  return 11;
+        case exo_diferente2: return 11;
+        case exo_e:          return 12;
+        case exo_ou:         return 13;
+        case exo_int1:       return 14;
+        case exo_int2:       return 14;
+        case exo_intint1:    return 14;
+        case exo_intint2:    return 14;
+        case exo_intpto1:    return 14;
+        case exo_intpto2:    return 14;
+        case exo_dponto1:    return 14;
+        case exo_dponto2:    return 14;
+        case exo_atrib:      return 20;
+        case exo_i_mul:      return 20;
+        case exo_i_div:      return 20;
+        case exo_i_porcent:  return 20;
+        case exo_i_add:      return 20;
+        case exo_i_sub:      return 20;
+        case exo_i_b_shl:    return 20;
+        case exo_i_b_shr:    return 20;
+        case exo_i_b_e:      return 20;
+        case exo_i_b_ouou:   return 20;
+        case exo_i_b_ou:     return 20;
+        }
     return 0;
 }
 
@@ -920,6 +978,7 @@ const char * Instr::ProcuraExpr(const char * expr, int valor)
         case exo_ou:
         case exo_int2:
         case exo_intint2:
+        case exo_intpto2:
         case exo_dponto2:
             contagem--;
             break;
@@ -927,6 +986,7 @@ const char * Instr::ProcuraExpr(const char * expr, int valor)
         case exo_ouou:
         case exo_int1:
         case exo_intint1:
+        case exo_intpto1:
         case exo_dponto1:
             contagem++;
             break;
@@ -1234,6 +1294,8 @@ const char * Instr::NomeExpr(int valor)
     case exo_int2:          return "exo_int2";
     case exo_intint1:       return "exo_intint1";
     case exo_intint2:       return "exo_intint2";
+    case exo_intpto1:       return "exo_intpto1";
+    case exo_intpto2:       return "exo_intpto2";
     case exo_dponto1:       return "exo_dponto1";
     case exo_dponto2:       return "exo_dponto2";
 

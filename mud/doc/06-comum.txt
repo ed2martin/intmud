@@ -200,7 +200,12 @@ Essa função retorna o próprio personagem ou item que foi movido.
 Isso é útil principalmente em itens que agrupam.
 
 func apagar( quantidade )
-Apaga o personagem ou uma quantidade do item.
+Apaga o personagem ou uma quantidade do item. Se houver mais de um item da
+mesma classe, pode apagar mais de um objeto.
+
+func itemtotal
+Se for item, retorna a quantidade de itens, juntado todos os objetos da mesma
+classe que possuem o mesmo dono. Caso contrário, retorna nulo.
 
 func seguir( personagem ou item )
 Faz seguir um personagem ou item.

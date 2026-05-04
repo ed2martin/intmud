@@ -158,10 +158,10 @@ func escr
       t.addfim(txt(item.obj.objtot) + " " + txtcopiamai(item.obj.descnome2, "A"))
     efim
     se !t.linhas
-      t.addini($mens.txt(r2.i_olharvazio ?? m_vazio, arg0))
+      t.addini($mens.txt(r2.i_olharvazio ?: m_vazio, arg0))
     senao completo
       t.juntalin("(", "x)")
-      t.addini($mens.txt(r2.i_olhardentro ?? m_dentro, arg0))
+      t.addini($mens.txt(r2.i_olhardentro ?: m_dentro, arg0))
     senao
       t.limpar
     fimse
@@ -204,7 +204,7 @@ func escr
   senao
     refvar m1 = !arg0.psexo && r1.var.z_mdesc ? r1.var.z_mdesc : r1.var.z_desc
     refvar mm = r1.temdomador ? r1.descdonover(arg0)
-    refvar m2 = mm ?? (2 == r1.i_aberto ? r1.descaberto(arg0)) ?? r1.descver(arg0)
+    refvar m2 = mm ?: (2 == r1.i_aberto ? r1.descaberto(arg0)) ?: r1.descver(arg0)
     se m1 || m2 # Com descrição extra
       t2 && t.addini(txtcopiamai(r1.descnome2, "A") + t2 + ".")
       m1 && t.addini(m1)
@@ -239,11 +239,11 @@ func niveltipo # Usado para informar nível, raça e classe do personagem
   arg0.jog ? (t = arg0.msexo2 ? " jogador" : " jogadora")
   se v_olhartipo
     txt100 nome
-    nome = !arg0.msexo2 ? $t_[arg0.tipo1].nome2 ?? $t_[arg0.tipo1].nome ?? arg0.tipo1
+    nome = (!arg0.msexo2 ? $t_[arg0.tipo1].nome2) ?: $t_[arg0.tipo1].nome ?: arg0.tipo1
     nome && (t += " " + nome)
-    nome = !arg0.msexo2 ? $t_[arg0.tipo2].nome2 ?? $t_[arg0.tipo2].nome ?? arg0.tipo2
+    nome = (!arg0.msexo2 ? $t_[arg0.tipo2].nome2) ?: $t_[arg0.tipo2].nome ?: arg0.tipo2
     nome && (t += " " + nome)
-    nome = !arg0.msexo2 ? $t_[arg0.tipo3].nome2 ?? $t_[arg0.tipo3].nome ?? arg0.tipo3
+    nome = (!arg0.msexo2 ? $t_[arg0.tipo3].nome2) ?: $t_[arg0.tipo3].nome ?: arg0.tipo3
     nome && (t += " " + nome)
   fimse
   se v_olharnivel && (arg0.pnivel || arg0.prenascer)

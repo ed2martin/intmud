@@ -110,36 +110,36 @@ func desccond # Retorna texto que contém o estado atual do personagem
   casovar !pvidamax ? 6 : !pvidaok ? -1 : intpos(intdiv(pvida * 6 / pvidamax))
   casose "-1"
     $mens.p(este)
-    refvar m1 = desccond0(arg0) ?? $t_[tipo1].desccond0(arg0) ?? $t_[tipo2].desccond0(arg0)
-    ret $mens.txt(m1 ?? $t_[tipo3].desccond0(arg0) ?? perso_cfg:desccond0, arg0)
+    refvar m1 = desccond0(arg0) ?: $t_[tipo1].desccond0(arg0) ?: $t_[tipo2].desccond0(arg0)
+    ret $mens.txt(m1 ?: $t_[tipo3].desccond0(arg0) ?: perso_cfg:desccond0, arg0)
   casose "0"
     $mens.p(este)
-    refvar m1 = desccond1(arg0) ?? $t_[tipo1].desccond1(arg0) ?? $t_[tipo2].desccond1(arg0)
-    ret $mens.txt(m1 ?? $t_[tipo3].desccond1(arg0) ?? perso_cfg:desccond1, arg0)
+    refvar m1 = desccond1(arg0) ?: $t_[tipo1].desccond1(arg0) ?: $t_[tipo2].desccond1(arg0)
+    ret $mens.txt(m1 ?: $t_[tipo3].desccond1(arg0) ?: perso_cfg:desccond1, arg0)
   casose "1"
     $mens.p(este)
-    refvar m1 = desccond2(arg0) ?? $t_[tipo1].desccond2(arg0) ?? $t_[tipo2].desccond2(arg0)
-    ret $mens.txt(m1 ?? $t_[tipo3].desccond2(arg0) ?? perso_cfg:desccond2, arg0)
+    refvar m1 = desccond2(arg0) ?: $t_[tipo1].desccond2(arg0) ?: $t_[tipo2].desccond2(arg0)
+    ret $mens.txt(m1 ?: $t_[tipo3].desccond2(arg0) ?: perso_cfg:desccond2, arg0)
   casose "2"
     $mens.p(este)
-    refvar m1 = desccond3(arg0) ?? $t_[tipo1].desccond3(arg0) ?? $t_[tipo2].desccond3(arg0)
-    ret $mens.txt(m1 ?? $t_[tipo3].desccond3(arg0) ?? perso_cfg:desccond3, arg0)
+    refvar m1 = desccond3(arg0) ?: $t_[tipo1].desccond3(arg0) ?: $t_[tipo2].desccond3(arg0)
+    ret $mens.txt(m1 ?: $t_[tipo3].desccond3(arg0) ?: perso_cfg:desccond3, arg0)
   casose "3"
     $mens.p(este)
-    refvar m1 = desccond4(arg0) ?? $t_[tipo1].desccond4(arg0) ?? $t_[tipo2].desccond4(arg0)
-    ret $mens.txt(m1 ?? $t_[tipo3].desccond4(arg0) ?? perso_cfg:desccond4, arg0)
+    refvar m1 = desccond4(arg0) ?: $t_[tipo1].desccond4(arg0) ?: $t_[tipo2].desccond4(arg0)
+    ret $mens.txt(m1 ?: $t_[tipo3].desccond4(arg0) ?: perso_cfg:desccond4, arg0)
   casose "4"
     $mens.p(este)
-    refvar m1 = desccond5(arg0) ?? $t_[tipo1].desccond5(arg0) ?? $t_[tipo2].desccond5(arg0)
-    ret $mens.txt(m1 ?? $t_[tipo3].desccond5(arg0) ?? perso_cfg:desccond5, arg0)
+    refvar m1 = desccond5(arg0) ?: $t_[tipo1].desccond5(arg0) ?: $t_[tipo2].desccond5(arg0)
+    ret $mens.txt(m1 ?: $t_[tipo3].desccond5(arg0) ?: perso_cfg:desccond5, arg0)
   casose "5"
     $mens.p(este)
-    refvar m1 = desccond6(arg0) ?? $t_[tipo1].desccond6(arg0) ?? $t_[tipo2].desccond6(arg0)
-    ret $mens.txt(m1 ?? $t_[tipo3].desccond6(arg0) ?? perso_cfg:desccond6, arg0)
+    refvar m1 = desccond6(arg0) ?: $t_[tipo1].desccond6(arg0) ?: $t_[tipo2].desccond6(arg0)
+    ret $mens.txt(m1 ?: $t_[tipo3].desccond6(arg0) ?: perso_cfg:desccond6, arg0)
   casose
     $mens.p(este)
-    refvar m1 = desccond7(arg0) ?? $t_[tipo1].desccond7(arg0) ?? $t_[tipo2].desccond7(arg0)
-    ret $mens.txt(m1 ?? $t_[tipo3].desccond7(arg0) ?? perso_cfg:desccond7, arg0)
+    refvar m1 = desccond7(arg0) ?: $t_[tipo1].desccond7(arg0) ?: $t_[tipo2].desccond7(arg0)
+    ret $mens.txt(m1 ?: $t_[tipo3].desccond7(arg0) ?: perso_cfg:desccond7, arg0)
   casofim
 
 func recalc_exec # Ajusta variáveis, principalmente batalha
@@ -684,7 +684,7 @@ func p_proc_exec # Processar comportamento do personagem
     casose "1" # Atacar qualquer um aleatoriamente
       listaitem i = atkrec.ini
       i.depois(rand(atkrec.total))
-      p_proc_atacar(i.obj ?? atkenv.objlista)
+      p_proc_atacar(i.obj ?: atkenv.objlista)
       ret
     casose "2" # Atacar o personagem de menor nível
       ref r = atkenv.objlista
@@ -770,7 +770,7 @@ func p_proc_atacar # Realiza um ataque
       obj.exechab(pbat, arg0.persobat, aulas, pbat.pnivel)
     senao # Habilitade/magia não agressiva
       l.limpar, listagrupo(l), i = l.ini, i.depois(rand(l.total))
-      refvar r = (i.obj.contr.dono == dono ? i.obj.persobat) ?? persobat
+      refvar r = i.obj.contr.dono == dono ? i.obj.persobat ?: persobat
       obj.exechab(pbat, r, aulas, pbat.pnivel)
     fimse
     ret 1
@@ -856,7 +856,7 @@ func ini
 
 func persobat # Retorna personagem alvo dos ataques
   !p_persoluta && persoluta
-  ret ref(p_persobat ?? este)
+  ret ref(p_persobat ?: este)
 
 func persoluta # Obtém informações do personagem no comando Animal
 # Vide variável p_persoluta na classe comum_perso
@@ -903,7 +903,7 @@ func persoluta # Obtém informações do personagem no comando Animal
 # Obtém os personagens que lutam
   txt10 nome
   uint8 total = dono.s_auxluta + 1
-  p_persobat = pos.valorini ?? este
+  p_persobat = pos.valorini ?: este
   epara nome = pos.ini, nome, nome = pos.depois(nome)
     pos.[nome].p_persoluta = (total ? 1 : 2), total--
   efim

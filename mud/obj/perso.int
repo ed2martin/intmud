@@ -13,10 +13,10 @@ const tipo3 = config:p_tipo3 # Terceiro tipo do personagem
 sav int1 psexo # Sexo do personagem: 0=feminino, 1=masculino
 const sexoini = 2 # Sexo inicial: 0=feminino, 1=masculino, 2=aleatório
 const msexo = 2 # Sexo nas mensagens: 0=feminino, 1=masculino, 2=psexo
-const msexo2 = int(var.z_msexo ?? (msexo == 2 ? psexo : msexo))
+const msexo2 = int(var.z_msexo ?: (msexo == 2 ? psexo : msexo))
 const nome = "sem nome"
-const ident2 = var.z_ident ?? (!psexo ? identfem) ?? ident ?? nome
-const descnome2 = var.z_descnome ?? (!psexo ? descnomefem) ?? descnome ?? nome
+const ident2 = var.z_ident ?: (!psexo ? identfem) ?: ident ?: nome
+const descnome2 = var.z_descnome ?: (!psexo ? descnomefem) ?: descnome ?: nome
 const descdono1 = "$s $q"
 const descdono2 = "$q de $d"
 const volexp = 1 # Volume expande se tiver itens dentro
@@ -146,7 +146,7 @@ batalhafim_t1 batalhafim_t2 batalhafim_t3 batalhafim_fim\n\
 inivar evhora eveste evperso evitem evsala"
 
 func ini # Coloca o objeto dentro de outro
-  posicao = pospadr, p_proc = 1, p_tmove = 80, pnivel = arg1 ?? nivel
+  posicao = pospadr, p_proc = 1, p_tmove = 80, pnivel = arg1 ?: nivel
   psexo = sexoini == 2 ? rand(2) : sexoini
   se arg2 || inivar
     textotxt t
@@ -193,7 +193,7 @@ func contr # Quem está controlando o personagem
 
 func persodomador # A quem pertence o personagem
   ret dono.perso, dono
-  ret (tseguir == 3 ? ref(iseguir.objlista)) ?? este
+  ret (tseguir == 3 ? ref(iseguir.objlista)) ?: este
 
 func temdomador # Retorna verdadeiro se pertence a outro personagem
   ret dono.perso || (tseguir == 3 && ref(iseguir.objlista))
@@ -201,11 +201,11 @@ func temdomador # Retorna verdadeiro se pertence a outro personagem
 func persobat # Retorna o personagem alvo dos ataques
   se dono.perso
     !(p_persoluta && dono.p_persoluta) && dono.persoluta
-    ret ref(dono.p_persobat ?? dono)
+    ret ref(dono.p_persobat ?: dono)
   senao tseguir == 3 && iseguir.objlista.dono == dono
     ref r = iseguir.objlista
     !(p_persoluta && r.p_persoluta) && r.persoluta
-    ret ref(r.p_persobat ?? r)
+    ret ref(r.p_persobat ?: r)
   senao
     ret este
   fimse
@@ -310,7 +310,7 @@ func mudadono # Coloca personagem em outra sala ou outro personagem
     $mensjog.msg(comando_mover_cfg:m_dormindo, este)
   senao
     dono.t_item = 0
-    msgsom((!misc:luz ? dono.s_somnoite) ?? dono.s_som, 1)
+    msgsom((!misc:luz ? dono.s_somnoite) ?: dono.s_som, 1)
     int8 cfg = jogconfig.bits & 3 | (dono.s_morre ? 5 : 4)
     se jogconfig.16 && int($perm_[jogperm].c_lsala) && $perm_[jogperm].c_config & 2
       ($perm_[jogperm].c_lsala > 1 || jogarea == dono.s_area) && (cfg |= 8)
@@ -462,12 +462,12 @@ func positemtotal # Retorna as posições aonde pode vestir itens
   txt100 lin
   txt12 pos
   lin = "t_" + tipo1
-  pos = (([lin]:equip1 ?? "FFFFFFFFFFFF") | [lin]:equip2) & ~txthex([lin]:equip3, 12)
+  pos = (([lin]:equip1 ?: "FFFFFFFFFFFF") | [lin]:equip2) & ~txthex([lin]:equip3, 12)
   lin = "t_" + tipo2
-  pos = (([lin]:equip1 ?? pos) | [lin]:equip2) & ~txthex([lin]:equip3, 12)
+  pos = (([lin]:equip1 ?: pos) | [lin]:equip2) & ~txthex([lin]:equip3, 12)
   lin = "t_" + tipo3
-  pos = (([lin]:equip1 ?? pos) | [lin]:equip2) & ~txthex([lin]:equip3, 12)
-  ret ((equip1 ?? pos) | equip2) & ~txthex(equip3, 12)
+  pos = (([lin]:equip1 ?: pos) | [lin]:equip2) & ~txthex([lin]:equip3, 12)
+  ret ((equip1 ?: pos) | equip2) & ~txthex(equip3, 12)
 
 func positemvestir # Retorna as posições aonde está usando alguma coisa
   txt12 vest1
@@ -483,13 +483,13 @@ func objitemvestir # Retorna primeiro item em uma das posições
 # arg0 = posições (texto hexadecimal)
   listaitem item
   epara item = dentro2.ini, item, item.depois
-    ret arg0 & item.obj.vestpos2 != "0", ref(item.obj)
+    ret (arg0 & item.obj.vestpos2) != "0", ref(item.obj)
   efim
 
 func varherda # Obtém variável do personagem, do tipo ou de perso_cfg
 # arg0 = nome da variável
-  refvar m = txt([arg0]) ?? txt($t_[tipo1].[arg0](este)) ?? txt($t_[tipo2].[arg0](este))
-  ret m ?? txt($t_[tipo3].[arg0](este)) ?? txt(perso_cfg:[arg0])
+  refvar m = txt([arg0]) ?: txt($t_[tipo1].[arg0](este)) ?: txt($t_[tipo2].[arg0](este))
+  ret m ?: txt($t_[tipo3].[arg0](este)) ?: txt(perso_cfg:[arg0])
 
 func recalc_exec # Ajusta variáveis
 # Acerta atributos básicos
@@ -589,13 +589,13 @@ func podeposicao # Verifica se uma posição é válida para o personagem
   casovar arg0
   casose "4" # Dormir
     ret bitver & 0x800, 0
-    ret int(txt(podeposicao4tipo) ?? txt($t_[tipo1].podeposicao4tipo) ?? 1) != 0
+    ret int(txt(podeposicao4tipo) ?: txt($t_[tipo1].podeposicao4tipo) ?: 1) != 0
   casose "5" # Descansar
-    ret int(txt(podeposicao5tipo) ?? txt($t_[tipo1].podeposicao5tipo) ?? 1) != 0
+    ret int(txt(podeposicao5tipo) ?: txt($t_[tipo1].podeposicao5tipo) ?: 1) != 0
   casose "6" # Sentar
-    ret int(txt(podeposicao6tipo) ?? txt($t_[tipo1].podeposicao6tipo) ?? 1) != 0
+    ret int(txt(podeposicao6tipo) ?: txt($t_[tipo1].podeposicao6tipo) ?: 1) != 0
   casose "M" # Montar
-    ret int(txt(podeposicaoMtipo) ?? txt($t_[tipo1].podeposicaoMtipo) ?? 1) != 0
+    ret int(txt(podeposicaoMtipo) ?: txt($t_[tipo1].podeposicaoMtipo) ?: 1) != 0
   casofim
   ret 1
 
@@ -689,10 +689,10 @@ func acertanumero # Acerta os números dos animais que possui (variáveis pnumero)
   epara i = l.ini, i, i.depois
     uint8 num
     !(mask & 0xFFFF) ? (num += 16)
-    !((mask >> num) & 0xFF) ? (num += 8)
-    !((mask >> num) & 15) ? (num += 4)
-    !((mask >> num) & 3) ? (num += 2)
-    !((mask >> num) & 1) ? num++
+    !(mask >> num & 0xFF) ? (num += 8)
+    !(mask >> num & 15) ? (num += 4)
+    !(mask >> num & 3) ? (num += 2)
+    !(mask >> num & 1) ? num++
     i.obj.pnumero = num
     mask ^= intbit(num)
   efim

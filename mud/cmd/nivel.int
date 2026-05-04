@@ -16,7 +16,7 @@ const admordem = "m_ajuda m_nao_existe m_maximo m_exp_nivel m_exp_niveis"
 
 func escr
   uint16 nivel = arg1
-  uint16 nmax = arg0.pnivelmax ?? 65535
+  uint16 nmax = arg0.pnivelmax ?: 65535
   se !arg1
     nivel = arg0.pnivel
   senao txt(nivel) != arg1

@@ -31,7 +31,7 @@ func txtajuda1 # Prepara um texto de ajuda
   enquanto p.lin
     casovar txt1(txte(p.texto(0, 4)))
     casose "-t" # Título do comando
-      p.mudar("\b\c3" + (p.texto(3) ?? txtmaimin(txt2(txte(este)))) + "\b")
+      p.mudar("\b\c3" + (p.texto(3) ?: txtmaimin(txt2(txte(este)))) + "\b")
       p.depois
       continuar
     casose "-s" # Sintaxe seguido do nome do comando
@@ -124,7 +124,7 @@ func negociar_msg # Checa se PNJ pode negociar e obtém o motivo
       epara x = 0, x < total, x++
         refvar i = txtsublin(arg1.lojaidioma, x, 1)
         x > 0 && ($mens.mens += x == total - 1 ? " e " : ", ")
-        $mens.mens += $idioma_[i].falar ?? i
+        $mens.mens += $idioma_[i].falar ?: i
       efim
       $mens.o_1 = txtmin(txtsublin(misc:aulas, arg1.lojaaulaidioma, 1))
       $mens.p(arg1, arg0)
@@ -155,14 +155,14 @@ func negociar_msg # Checa se PNJ pode negociar e obtém o motivo
   se naotipos
     txt100 lin
     txt100 nome
-    nome = !arg0.msexo2 ? $t_[arg0.tipo1].nome2 ?? $t_[arg0.tipo1].nome ?? arg0.tipo1
+    nome = !arg0.msexo2 ? $t_[arg0.tipo1].nome2 ?: $t_[arg0.tipo1].nome ?: arg0.tipo1
     naotipos & 1 && nome && (lin += " " + nome)
-    nome = !arg0.msexo2 ? $t_[arg0.tipo2].nome2 ?? $t_[arg0.tipo2].nome ?? arg0.tipo2
+    nome = !arg0.msexo2 ? $t_[arg0.tipo2].nome2 ?: $t_[arg0.tipo2].nome ?: arg0.tipo2
     naotipos & 2 && nome && (lin += " " + nome)
-    nome = !arg0.msexo2 ? $t_[arg0.tipo3].nome2 ?? $t_[arg0.tipo3].nome ?? arg0.tipo3
+    nome = !arg0.msexo2 ? $t_[arg0.tipo3].nome2 ?: $t_[arg0.tipo3].nome ?: arg0.tipo3
     naotipos & 4 && nome && (lin += " " + nome)
     $mens.p(arg1, arg0)
-    $mens.mens = txt(lin, 1) ?? config:mens_tu
+    $mens.mens = txt(lin, 1) ?: config:mens_tu
     ret $mens.txt(arg1.lojanaonegocia, arg0)
   fimse
   refvar abre = int(arg1.lojaini) - misc:hora

@@ -14,7 +14,7 @@ func txtajuda1 # Prepara um texto de ajuda
   enquanto p.lin
     casovar txt1(txte(p.texto(0, 4)))
     casose "-t"
-      p.mudar("\b\c3" + (p.texto(3) ?? txtmaimin(txt2(txte(este)))) + "\b")
+      p.mudar("\b\c3" + (p.texto(3) ?: txtmaimin(txt2(txte(este)))) + "\b")
       p.depois
       continuar
     casose "-s"
@@ -139,7 +139,7 @@ func p_vartexto # Mesmo prog.vartexto, porém checa redirecionamento como "const 
   ret txt1(p.texto) != "const", 0
   refvar lin = txtsub(p.texto, 3)
   refvar ind1 = txtproc(lin, ":") # Aonde termina o nome da classe
-  refvar ind2 = txtproc(lin, "#") + 1 ?? 10000 # Aonde termina o nome da função
+  refvar ind2 = txtproc(lin, "#") + 1 ?: 10000 # Aonde termina o nome da função
   refvar funcao = txtremove(txt(lin, ind1 + 1, ind2 - ind1 - 2), "d")
   ret p.vartexto(txt(lin, 0, ind1), funcao)
 
@@ -150,7 +150,7 @@ func p_varnum # Mesmo prog.varnum, porém checa redirecionamento como "const a = 
   ret txt1(p.texto) != "const", 0
   refvar lin = txtsub(p.texto, 3)
   refvar ind1 = txtproc(lin, ":") # Aonde termina o nome da classe
-  refvar ind2 = txtproc(lin, "#") + 1 ?? 10000 # Aonde termina o nome da função
+  refvar ind2 = txtproc(lin, "#") + 1 ?: 10000 # Aonde termina o nome da função
   refvar funcao = txtremove(txt(lin, ind1 + 1, ind2 - ind1 - 2), "d")
   ret p.varnum(txt(lin, 0, ind1), funcao)
 

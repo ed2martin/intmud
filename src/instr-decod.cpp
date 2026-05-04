@@ -627,6 +627,7 @@ bool Instr::Decod(char * destino, const char * origem, int tamanho)
         case exo_ou:           strcpy(nome, " || ");  indica = 32; break;
         case exo_int2:         strcpy(nome, " ? ");   indica = 32; break;
         case exo_intint2:      strcpy(nome, " ?? ");  indica = 32; break;
+        case exo_intpto2:      strcpy(nome, " ?: ");  indica = 32; break;
         case exo_dponto2:      strcpy(nome, " : ");   indica = 32; break;
         case exo_atrib:        strcpy(nome, " = ");   indica = 32; break;
         case exo_i_mul:        strcpy(nome, " *= ");  indica = 32, origem += 2; break;
@@ -644,6 +645,7 @@ bool Instr::Decod(char * destino, const char * origem, int tamanho)
         case exo_ouou:
         case exo_int1:
         case exo_intint1:
+        case exo_intpto1:
         case exo_dponto1:      indica = 0x80; break;
         }
         origem++;

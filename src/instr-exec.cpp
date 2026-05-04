@@ -1913,7 +1913,7 @@ bool Instr::ExecX()
             if (VarFuncIni())
                 break;
             FuncAtual->expr++;
-            if (VarAtual->getBool())
+            if (VarAtual->Tipo() != varObj || VarAtual->getObj() != nullptr)
             {
                 const char * p = ProcuraExpr(FuncAtual->expr, exo_intint2);
                 assert(p != nullptr);
@@ -1922,7 +1922,21 @@ bool Instr::ExecX()
             }
             ApagarVar(VarAtual);
             break;
+        case exo_intpto1:       // Operador: Início do operador "?:"
+            if (VarFuncIni())
+                break;
+            FuncAtual->expr++;
+            if (VarAtual->getBool())
+            {
+                const char * p = ProcuraExpr(FuncAtual->expr, exo_intpto2);
+                assert(p != nullptr);
+                FuncAtual->expr = p + 1;
+                break;
+            }
+            ApagarVar(VarAtual);
+            break;
         case exo_intint2:       // Operador: Fim do operador "??"
+        case exo_intpto2:       // Operador: Fim do operador "?:"
             FuncAtual->expr++;
             break;
         case exo_dponto1:       // Operador: Início do operador ":"

@@ -16,11 +16,11 @@ namespace Instr {
 
 //----------------------------------------------------------------------------
 // Funções
-bool Codif(char * destino, const char * origem, int tamanho);
+bool Codif(char * destino, const char * origem, int tamanho, bool converte = false);
 bool Decod(char * destino, const char * origem, int tamanho);
 bool Mostra(char * destino, const char * origem, int tamanho);
 
-int  Prioridade(int operador);
+int  Prioridade(int operador, bool converte = false);
 bool ChecaHerda(const char * instr, const char * nomeclasse);
 const char * ProximaInstr(const char * instr, const char * texto, int tamanho);
 

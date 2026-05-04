@@ -2,7 +2,7 @@
 # Process this file with autoconf to produce a configure script.
 
 AC_PREREQ([2.71])
-AC_INIT([intmud],[1.16a],[edx2martin@gmail.com])
+AC_INIT([intmud],[1.16b],[edx2martin@gmail.com])
 AC_CONFIG_SRCDIR([src/misc.cpp])
 AC_CONFIG_HEADERS([config.h])
 AC_CONFIG_MACRO_DIR([m4])

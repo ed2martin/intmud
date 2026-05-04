@@ -1612,10 +1612,10 @@ bool TVarProg::FuncSalvar(TVariavel * v)
     if (TMudarClasse::Salvar == 0)
         TMudarClasse::Salvar = 1;
 // Acerta valor padrão das variáveis
-    TArqMapa::ParamLinha = 4000;
-    TArqMapa::ParamN = 0;
+    TArqMapa::ParamLinha = 99;
+    TArqMapa::ParamN = 1;
     TArqMapa::ParamIndent = 2;
-    TArqMapa::ParamClasse = 1;
+    TArqMapa::ParamClasse = 2;
     TArqMapa::ParamFunc = 1;
     TArqMapa::ParamVar = 0;
 // Obtém variáveis de acordo com texto

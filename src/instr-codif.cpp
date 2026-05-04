@@ -390,11 +390,12 @@ static char * anotaModo(char * destino, int modo)
  *  @param destino Endereço destino (instrução codificada)
  *  @param origem  Endereço origem (string ASCIIZ)
  *  @param tamanho Tamanho do buffer em destino
+ *  @param converte Converter de versões anteriores
  *  @retval true Conseguiu codificar com sucesso
  *  @retval false Erro, destino contém a mensagem de erro
  *  @sa codif
  */
-bool Instr::Codif(char * destino, const char * origem, int tamanho)
+bool Instr::Codif(char * destino, const char * origem, int tamanho, bool converte)
 {
     char * dest_ini = destino;
     char * dest_fim = destino + tamanho;
@@ -1641,8 +1642,10 @@ bool Instr::Codif(char * destino, const char * origem, int tamanho)
                       sinal = exo_b_ouou;
                   break;
         case '?': sinal = exo_int2;
-                  if (origem[1] == '?')
-                      sinal = exo_intint2, origem++;
+                  if (origem[1] == ':')
+                      sinal = exo_intpto2, origem++;
+                  else if (origem[1] == '?')
+                      sinal = (converte ? exo_intpto2 : exo_intint2), origem++;
                   break;
         case ':': sinal = exo_dponto2; break;
 
@@ -1660,14 +1663,14 @@ bool Instr::Codif(char * destino, const char * origem, int tamanho)
         }
 
     // Anota operadores que têm mais prioridade sobre o operador encontrado
-        int pri_sinal = Instr::Prioridade(sinal);
+        int pri_sinal = Instr::Prioridade(sinal, converte);
         if (pri_sinal == 20)
             pri_sinal--;
         while (true)
         {
             if (modo <= exo_ini || modo >= exo_fim || destino >= dest_fim - 3)
                 break;
-            int pri_modo = Instr::Prioridade(modo);
+            int pri_modo = Instr::Prioridade(modo, converte);
             // Checar (pri_sinal==2 && pri_modo==2) resolve bug causado com
             // dois ou mais operadores unitários consecutivos, como: !!1
             if (pri_sinal < pri_modo || (pri_sinal == 2 && pri_modo == 2))
@@ -1683,6 +1686,7 @@ bool Instr::Codif(char * destino, const char * origem, int tamanho)
         case exo_e: *destino++ = exo_ee; break;
         case exo_ou: *destino++ = exo_ouou; break;
         case exo_int2: *destino++ = exo_int1; break;
+        case exo_intpto2: *destino++ = exo_intpto1; break;
         case exo_intint2: *destino++ = exo_intint1; break;
         case exo_dponto2: *destino++ = exo_dponto1; break;
         case exo_virgula:

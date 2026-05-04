@@ -108,7 +108,7 @@ const objmax = 2000000000
 func equip # Traduz número para lugar aonde está vestindo um item
 # Retorna um texto ou "desconhecido" se não for um lugar válido
   ret arg0 == 50, "empunhando"
-  ret txtsublin(config:equip_txt, int(arg0) - 1, 1) ?? "desconhecido"
+  ret txtsublin(config:equip_txt, int(arg0) - 1, 1) ?: "desconhecido"
 
 func atkesp # Tipos de golpes
 # arg0 = número do golpe
@@ -292,7 +292,7 @@ func persoinfo # Obtém o personagem que o jogador quer consultar a partir de um 
   senao misc:persoindice(arg1) >= 0
     r = misc:personum(arg0, arg1)
     $mens.mens = arg1
-    !r && $mens.mp(arg3 ?? "Você não possui $animal $m.", arg0)
+    !r && $mens.mp(arg3 ?: "Você não possui $animal $m.", arg0)
     ret r
   senao !$perm_[arg0.jogperm].i_perso
     ret arg0
@@ -308,7 +308,7 @@ func persoinfo # Obtém o personagem que o jogador quer consultar a partir de um 
   efim
   se !r
     $mens.mens = arg1
-    $mens.mp(arg2 ?? "Você não vê $m.", arg0)
+    $mens.mp(arg2 ?: "Você não vê $m.", arg0)
     ret
   fimse
   ret misc:persoindice(txt2(arg1)) < 0, r
@@ -407,7 +407,7 @@ func fim # Este objeto foi apagado
 
 func cmd_mudaobjeto # Um objeto foi substituído por outro
 # arg0 = antigo dono, arg1 = novo dono
-  ref p = perso1.obj ?? perso2.obj ?? perso3.obj
+  ref p = perso1.obj ?: perso2.obj ?: perso3.obj
   arg0.evento.remove(este)
   se perso1.objlista == arg0
     perso1.remove, perso1 = arg1.evento.addfim(p, este) # p=personagem

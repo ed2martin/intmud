@@ -56,7 +56,7 @@ chave])
       continuar !t2.ini.texto
       lin = "i_" + txt1(t2.ini.texto), linha++
       continuar !n.nome([lin]:nome, 1) && txt(linha) != nomeitem
-      nivel = txt2(t2.ini.texto) ?? [lin]:nivel
+      nivel = txt2(t2.ini.texto) ?: [lin]:nivel
       valor = (100 + p.taxavenda(arg0)) / 100 * [lin]:valor
       total > 100 && (total = 100)
       se arg0.var.z_moedas_ < valor * total
@@ -162,7 +162,7 @@ chave])
         p.var.z_moedas_ += valor * total
         r.salvar, arg0.salvar # Salva casa e personagem do jogador
         $mens.p(arg0, p)
-        $mens.mens = r.nome ?? "uma casa"
+        $mens.mens = r.nome ?: "uma casa"
         $mens.mtodos2(m_casa1, m_casa2)
         ret
       efim

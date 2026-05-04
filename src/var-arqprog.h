@@ -21,8 +21,10 @@ public:
     ~TArqIncluir();
     static bool ProcPadrao(const char * nome);
         ///< Checa se nome é um padrão da lista
-    static bool ProcArq(const char * nome);
-        ///< Checa se nome pertence a um padrão da lista
+    static TArqIncluir * ProcObj(const char * nome);
+        ///< Procura o objeto que corresponde ao padrão
+    static TArqIncluir * ProcArq(const char * nome);
+        ///< Procura o objeto que pertence a um padrão da lista
     static void ArqNome(const char * nome);
         ///< Muda o nome do arquivo principal
     static const char * ArqNome();
@@ -33,6 +35,7 @@ public:
         ///< Retorna o próximo objeto TIncluir ou 0 se não houver
     const char * IncluirNome() { return Padrao; }
         ///< Retorna o nome para início de arquivo
+    bool ConverteCodigo;        ///< Converter de versões anteriores na inicialização
 
 private:
     static char * arqnome;      ///< Nome do arquivo principal

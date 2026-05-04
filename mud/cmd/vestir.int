@@ -59,7 +59,7 @@ func escr
     t.addfim(config:equip_txt)
     refvar lug2 = ~txthex(arg0.positemtotal, 12)
     epara p = t.ini, p, p.depois
-      lug2 & intbith(p.linha) == "0" && n.nome(p.texto) && (lugar |= intbith(p.linha))
+      (lug2 & intbith(p.linha)) == "0" && n.nome(p.texto) && (lugar |= intbith(p.linha))
     efim
     se lugar == "0"
       $mens.mens = misc:sep2
@@ -104,14 +104,14 @@ func objvestir # Quer vestir um item
       ret
     fimse
 # Verifica posições extras
-    se vest1 & arg1.vestirextra != "0"
+    se (vest1 & arg1.vestirextra) != "0"
       refvar obj = arg0.objitemvestir(arg1.vestirextra)
       $mens.mp(m_em_uso[tipomsg], arg0.contr, arg0, obj)
       ret
     fimse
 # Exclui posições em que tem item em cima e obtém: numpos = posição
     epara lin = txtbith(lugar2), lin, lin = txt2(lin)
-      sair vest1 & config:vestir[txt1(lin)] == "0"
+      sair (vest1 & config:vestir[txt1(lin)]) == "0"
     efim
     se !lin
       lin = txtbith(lugar2)
@@ -122,7 +122,7 @@ func objvestir # Quer vestir um item
     refvar numpos = 1 + txt1(lin)
 # Verifica itens em cima nas posições extras
     epara lin = txtbith(arg1.vestirextra), lin, lin = txt2(lin)
-      continuar vest1 & config:vestir[txt1(lin)] == "0"
+      continuar (vest1 & config:vestir[txt1(lin)]) == "0"
       refvar obj = arg0.objitemvestir(config:vestir[txt1(lin)])
       $mens.mp(m_em_cima[tipomsg], arg0.contr, arg0, obj)
       ret
@@ -130,8 +130,8 @@ func objvestir # Quer vestir um item
 # Verifica se conflita com algum outro tipo de item
     listaitem i
     epara i = arg0.dentro2.ini, i, i.depois
-      se i.obj.item && (txt(i.obj.tipoitem2) & arg1.vestiritem != "0" || txt(arg1.tipoitem2) & \
-i.obj.vestiritem != "0")
+      se i.obj.item && ((txt(i.obj.tipoitem2) & arg1.vestiritem) != "0" || (txt(arg1.tipoitem2) \
+& i.obj.vestiritem) != "0")
         ret $mens.mp(m_item[tipomsg], arg0.contr, arg0, arg1, i.obj)
       fimse
     efim
@@ -149,8 +149,8 @@ i.obj.vestiritem != "0")
     efim
 # Veste o item
     arg1.vestir(numpos)
-    refvar mvestir_a = txtsublin(config:equip_vestir, numpos - 1, 1) ?? "$P veste $o."
-    refvar mvestir_p = txtsublin(config:equip_perso, numpos - 1, 1) ?? mvestir_a
+    refvar mvestir_a = txtsublin(config:equip_vestir, numpos - 1, 1) ?: "$P veste $o."
+    refvar mvestir_p = txtsublin(config:equip_perso, numpos - 1, 1) ?: mvestir_a
     $mens.p(arg0, nulo, arg1)
     $mens.msgsomvis(mvestir[tipomsg], arg1.i_som_vest1, arg0.contr)
     $mens.mvis2som(mvestir_a, arg1.i_som_vest1)

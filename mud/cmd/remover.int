@@ -42,7 +42,7 @@ func escr
 # Verifica itens em cima
     refvar vest2 = vest1 & ~txthex(r.vestpos2, 12)
     epara lin = txtbith(r.vestpos2), lin, lin = txt2(lin)
-      continuar vest2 & config:vestir[txt1(lin)] == "0"
+      continuar (vest2 & config:vestir[txt1(lin)]) == "0"
       refvar obj = arg0.objitemvestir(vest2 & config:vestir[txt1(lin)])
       $mens.mp(m_em_cima[tipomsg], contr, arg0, obj)
       sair

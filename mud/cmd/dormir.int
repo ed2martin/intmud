@@ -23,8 +23,8 @@ func escr
   ref r
 # Checa posição
   se !arg0.podeposicao(4)
-    refvar m = arg0.podeposicao4msg ?? $t_[arg0.tipo1].podeposicao4msg
-    ret $mens.mp(m ?? m_nao_consegue, arg0)
+    refvar m = arg0.podeposicao4msg ?: $t_[arg0.tipo1].podeposicao4msg
+    ret $mens.mp(m ?: m_nao_consegue, arg0)
   fimse
   casovar arg0.posicao
   casose "5" # Descansando
@@ -128,7 +128,7 @@ func escr
       ret
     senao r.posicao != 4
       ret $mens.mp(m_alvo_acordado, arg0, r)
-    senao r.bitver & 0xC00 == 0x400
+    senao (r.bitver & 0xC00) == 0x400
       $mens.p(arg0, r)
       $mens.mtodos2(m_nao_consegue1, m_nao_consegue1)
       ret
@@ -154,7 +154,7 @@ func escr
 # Acordar o próprio personagem
   senao arg0.posicao > 4
     ret $mens.mp(m_perso_acordado, arg0)
-  senao arg0.bitver & 0xC00 == 0x400
+  senao (arg0.bitver & 0xC00) == 0x400
     ret $mens.mp(m_nao_perso, arg0, r)
   senao
     ret cmd_acordar(arg0, nulo), nulo

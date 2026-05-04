@@ -27,7 +27,7 @@ sav uint32 pesoobj # Peso do personagem (em gramas)
 sav uint32 volobj # Volume do personagem
 const objmax = config:j_objmax
 const p_agressivo = int($perm_[jogperm].batalha)
-const p_atktipo = $t_[tipo1].atipo ?? $t_[tipo2].atipo ?? $t_[tipo3].atipo ?? config:atk_txt
+const p_atktipo = $t_[tipo1].atipo ?: $t_[tipo2].atipo ?: $t_[tipo3].atipo ?: config:atk_txt
 const p_naoseguir = !jogconfig.5
 const p_imortal = jogconfig.20
 const j_imortal = jogconfig.20
@@ -55,7 +55,7 @@ const descsala8 = j_imortal ? perso_cfg:descimortal8 : perso_cfg:descperso8
 const descsalaN = j_imortal ? perso_cfg:descimortalN : perso_cfg:descpersoN
 
 func p_animalatk # Obtém animalatk a partir da raça e da classe
-  ret intpos(($t_[tipo1].animalatk ?? $t_[tipo2].animalatk ?? $t_[tipo3].animalatk) - 1)
+  ret intpos(($t_[tipo1].animalatk ?: $t_[tipo2].animalatk ?: $t_[tipo3].animalatk) - 1)
 
 func ini # Objeto foi criado
   tempojogo1 = 864000
@@ -322,9 +322,9 @@ func salvar # Salva o jogo, desde que a senha não seja nula
 # Obtém o tempo do jogo salvo, em dias, e salva o jogo
   int32 tempo
   se pnivel < config:nivelveterano && prenascer == 0
-    tempo = $perm_[jogperm].salvardias ?? config:salvainiciante
+    tempo = $perm_[jogperm].salvardias ?: config:salvainiciante
   senao
-    tempo = $perm_[jogperm].salvardias ?? config:salvaveterano
+    tempo = $perm_[jogperm].salvardias ?: config:salvaveterano
   fimse
 # Salva o arquivo
   arqsav sav1
@@ -351,11 +351,11 @@ func ajustajog # Ajusta variáveis do jogador: pesoobj e volobj
   int8 ajusta
   refvar r = $t_[tipo1]
   se volobj < r.volmin || volobj > r.volmax
-    volobj = rand(r.volmin, r.volmax) ?? volobj
+    volobj = rand(r.volmin, r.volmax) ?: volobj
     ajusta = 1
   fimse
   se pesoobj < r.pesomin || pesoobj > r.pesomax
-    pesoobj = rand(r.pesomin, r.pesomax) ?? pesoobj
+    pesoobj = rand(r.pesomin, r.pesomax) ?: pesoobj
     ajusta = 1
   fimse
   ret !ajusta, nulo

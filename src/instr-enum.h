@@ -279,11 +279,13 @@ enum Expressao
     exo_i_b_ouou,   ///< Operador: a ^= b   (segue exo_b_ouou, exo_atrib)
     exo_i_b_ou,     ///< Operador: a |= b   (segue exo_b_ou, exo_atrib)
     exo_int2,       ///< Operador: Fim de ?
+    exo_intpto2,    ///< Operador: Fim de ?:
     exo_intint2,    ///< Operador: Fim de ??
     exo_dponto2,    ///< Operador: Fim de :
     exo_fim,        ///< Operador: Marca o fim dos operadores
     exo_int1,       ///< Operador: Início de ?
     exo_dponto1,    ///< Operador: Início de :
+    exo_intpto1,    ///< Operador: Início de ?:
     exo_intint1,    ///< Operador: Início de ??
     exo_ee,         ///< Operador: Início do operador &&
     exo_ouou,       ///< Operador: Início do operador ||

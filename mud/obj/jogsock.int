@@ -92,7 +92,8 @@ func mudaperso # Muda o personagem, arg0=novo personagem
     fimse
   fimse
 # Som da sala
-  perso.dono != arg0.dono && msgsom((!misc:luz ? arg0.dono.s_somnoite) ?? arg0.dono.s_som, 1)
+  perso.dono != arg0.dono && msgsom(!misc:luz ? arg0.dono.s_somnoite ?: arg0.dono.s_som, \
+1)
 # Indica que o jogador não controla o antigo personagem
   ref r
   epara r = perso, r, r = r.dono
@@ -659,13 +660,13 @@ func passo1
     senao txtproclin(r.classes, arg0.var.j_tipo2) < 0
       continuar
     fimse
-    refvar nome = arg0.var.j_sexo == "0" ? r.nome2 ?? r.nome
+    refvar nome = arg0.var.j_sexo == "0" ? r.nome2 ?: r.nome
     arg0.txtmais.addfim(txt(arg0.txtmais.linhas + 1) + ". " + nome)
     lin = p.texto
     continuar txt(arg1) != txt(arg0.txtmais.linhas)
     arg0.txtmais.limpar
     tpasso += " " + p.texto
-    arg0.msg2(arg0.var.j_sexo == "0" ? r.desc2 ?? r.desc ?? nome)
+    arg0.msg2(arg0.var.j_sexo == "0" ? r.desc2 ?: r.desc ?: nome)
     ret 1
   efim
 # Uma ou nenhuma: escolhe automaticamente
@@ -907,7 +908,7 @@ func opc_artigo
   ret txtcopiamai(perso.var.j_sexo == "0" ? "a" : "o", intchr(arg0) < 95 ? "A" : "")
 
 func o_tipo
-  refvar t1 = perso.var.j_sexo == "0" ? $t_[arg1].nome2 ?? $t_[arg1].nome
+  refvar t1 = perso.var.j_sexo == "0" ? $t_[arg1].nome2 ?: $t_[arg1].nome
   ret txtcopiamai(t1, intchr(arg0) < 95 ? "A" : "")
 
 func iniclasse
@@ -977,8 +978,8 @@ func criar_perso # Cria personagem
   p.senhacod = p.senha != "" # Se a senha está codificada
   !p.senhacod && (p.senha = arg0.var.j_senha)
   p.var.z_email = arg0.var.j_email
-  refvar salaini = $t_[p.tipo1].salaini ?? $t_[p.tipo2].salaini ?? $t_[p.tipo3].salaini
-  p.mudadono(salaini ?? config:salaini)
+  refvar salaini = $t_[p.tipo1].salaini ?: $t_[p.tipo2].salaini ?: $t_[p.tipo3].salaini
+  p.mudadono(salaini ?: config:salaini)
   arg0.temposair # Acerta tempo para sair do MUD
   arg0.jogperm = config:autorizar ? "autorizar" : "jog"
   p.jogperm = arg0.jogperm
@@ -1111,7 +1112,7 @@ func ini
 
 func ex1_exec # Coloca o jogador em uma sala
   ex2 = 1
-  ref s = ref(sala.s_voltar(perso)) ?? sala ?? config:salasav
+  ref s = ref(sala.s_voltar(perso)) ?: sala ?: config:salasav
   s = perso.cabedentro(s) ? s : config:salasav
   listaitem item
   debug d

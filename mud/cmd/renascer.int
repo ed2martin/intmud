@@ -139,7 +139,7 @@ func passo1 # Escolha da raça, classe e subclasse
     senao
       lin = int(tpasso) == 1 ? "1" : int(tpasso) == 2 ? "2" : "3"
       refvar r = $[txt2(tpasso)]
-      $mens.mens = (arg0.perso.msexo2 ? "" : r.nome2) ?? r.nome
+      $mens.mens = (arg0.perso.msexo2 ? "" : r.nome2) ?: r.nome
       $mens.mp(m_confirma[lin], arg0.perso)
       ret 0
     fimse
@@ -168,13 +168,13 @@ func passo1 # Escolha da raça, classe e subclasse
     senao txtproclin(r.classes, arg0.var.j_tipo2) < 0
       continuar
     fimse
-    refvar nome = (arg0.perso.msexo2 ? "" : r.nome2) ?? r.nome
+    refvar nome = (arg0.perso.msexo2 ? "" : r.nome2) ?: r.nome
     arg0.txtmais.addfim(txt(arg0.txtmais.linhas + 1) + ". " + nome)
     lin = var.ini
     continuar txt(arg1) != txt(arg0.txtmais.linhas)
     arg0.txtmais.limpar
     tpasso += " " + var.ini
-    arg0.msg2((arg0.perso.msexo2 ? "" : r.desc2) ?? r.desc ?? nome)
+    arg0.msg2((arg0.perso.msexo2 ? "" : r.desc2) ?: r.desc ?: nome)
     ret 1
   efim
 # Uma ou nenhuma: escolhe automaticamente
@@ -361,8 +361,8 @@ func renascer
   efim
   d.ini
 # Muda de sala
-  ref sala = acertasala(perso, $t_[perso.tipo1].sala_renascer ?? $t_[perso.tipo2].sala_renascer \
-?? $t_[perso.tipo3].sala_renascer ?? config:sala_renascer)
+  ref sala = acertasala(perso, $t_[perso.tipo1].sala_renascer ?: $t_[perso.tipo2].sala_renascer \
+?: $t_[perso.tipo3].sala_renascer ?: config:sala_renascer)
   se sala && sala != perso.dono
     $mens.p(perso)
     $mens.mvis2(m_antes1, m_antes2)

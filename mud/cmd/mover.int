@@ -54,7 +54,7 @@ func escr # Executa o comando
     refvar saladest = obj.dono.dirsala(dir1, obj)
     ret !mover(obj, saladest, nulo, obj.dono.diritem(dir1, obj), arg0), nulo
   senao # Bêbado andando em uma direção aleatória
-    dir1 = txt(fugirdir(obj)) ?? dir
+    dir1 = txt(fugirdir(obj)) ?: dir
     refvar saladest = obj.dono.dirsala(dir1, obj)
     ret !$cmd_[dir1].mover(obj, saladest, nulo, nulo, arg0), nulo
   fimse
@@ -105,7 +105,7 @@ func mover # Personagem anda em uma direção
 # arg3 = item de onde está saindo (na sala destino) ou nulo
 # arg4 = personagem no controle e para quem enviar mensagens; se nulo assume arg0
 # Retorna 1 se conseguiu mover ou 0 se não conseguiu
-  refvar p1 = arg4 ?? arg0
+  refvar p1 = arg4 ?: arg0
   refvar perm_msg = $perm_[p1.jogperm].andar
   se perm_msg
     $mensjog.msg(perm_msg, p1)
@@ -122,7 +122,7 @@ func mover # Personagem anda em uma direção
   se !arg1.s_sala
     $mens.mp(comando_mover_cfg:m_impossivel, p1)
     ret 0
-  senao !arg0.j_imortal && (arg2 ? arg2.i_aberto >= 3 : s1.porta_[dir] & 3 >= 2)
+  senao !arg0.j_imortal && (arg2 ? arg2.i_aberto >= 3 : (s1.porta_[dir] & 3) >= 2)
     ret !s1.socktot, 0
     refvar casa = $c_[arg2 ? arg2.i_fechadura(p1) : s1.fechadura_[dir](p1)]
     refvar cod = casa.chave
@@ -185,7 +185,7 @@ func mover # Personagem anda em uma direção
 # Muda de sala
   $comando_mover.andou = 1
   !arg0.j_imortal && (arg0.pmove -= intdiv((total + 1) / 2))
-  arg0.sock.cmd_espera = arg0.p_espera = intmin(30, total ?? 1) * 2
+  arg0.sock.cmd_espera = arg0.p_espera = intmin(30, total ?: 1) * 2
   se !(s1.socktot || arg1.socktot) # Não tem jogador por perto
     epara l.addfim(arg0.persolugar), l, l.ini.remove
       l.objini.atkenv && l.objini.poslugar.remove # Desmonta se está lutando
@@ -194,35 +194,35 @@ func mover # Personagem anda em uma direção
   senao arg0.p_bebida >= $miscfome.bebedir - rand(20) # Cambaleando não anda em silêncio
     refvar m1 = (!arg2 ? s1.msg_sai0_[dir])
     (abriu1 || m1) && $mens.mp(abriu1 + (abriu1 && m1 ? "\n") + m1, p1, nulo, arg2)
-    refvar m2 = ((arg2 ? arg2.i_entraitem4 : s1.msg_sai4_[dir]) ?? m_sai4)
+    refvar m2 = ((arg2 ? arg2.i_entraitem4 : s1.msg_sai4_[dir]) ?: m_sai4)
     msgsair(arg0, arg2, abriu2 + (abriu2 ? "\n") + m2, 1)
     arg2.i_entraitem0 && $mens.msg(arg2.i_entraitem0, arg0)
     arg0.mudadono(arg1)
-    msgentrar(arg0, arg3, (arg3 ? arg3.i_saiitem4 : s1.msg_entra4_[dir]) ?? m_entra4)
+    msgentrar(arg0, arg3, (arg3 ? arg3.i_saiitem4 : s1.msg_entra4_[dir]) ?: m_entra4)
   senao arg0.bitinv & 48 # Voando ou voando alto
     refvar m1 = (!arg2 ? s1.msg_sai0_[dir])
     (abriu1 || m1) && $mens.mp(abriu1 + (abriu1 && m1 ? "\n") + m1, p1, nulo, arg2)
-    refvar m2 = ((arg2 ? arg2.i_entraitem3 : s1.msg_sai3_[dir]) ?? m_sai3)
+    refvar m2 = ((arg2 ? arg2.i_entraitem3 : s1.msg_sai3_[dir]) ?: m_sai3)
     msgsair(arg0, arg2, abriu2 + (abriu2 ? "\n") + m2, 1)
     arg2.i_entraitem0 && $mens.msg(arg2.i_entraitem0, arg0)
     arg0.mudadono(arg1)
-    msgentrar(arg0, arg3, (arg3 ? arg3.i_saiitem3 : s1.msg_entra3_[dir]) ?? m_entra3)
+    msgentrar(arg0, arg3, (arg3 ? arg3.i_saiitem3 : s1.msg_entra3_[dir]) ?: m_entra3)
   senao arg0.bitver & 0x200 # Flutuando
     refvar m1 = (!arg2 ? s1.msg_sai0_[dir])
     (abriu1 || m1) && $mens.mp(abriu1 + (abriu1 && m1 ? "\n") + m1, p1, nulo, arg2)
-    refvar m2 = ((arg2 ? arg2.i_entraitem2 : s1.msg_sai2_[dir]) ?? m_sai2)
+    refvar m2 = ((arg2 ? arg2.i_entraitem2 : s1.msg_sai2_[dir]) ?: m_sai2)
     msgsair(arg0, arg2, abriu2 + (abriu2 ? "\n") + m2, 1)
     arg2.i_entraitem0 && $mens.msg(arg2.i_entraitem0, arg0)
     arg0.mudadono(arg1)
-    msgentrar(arg0, arg3, (arg3 ? arg3.i_saiitem2 : arg0.s1.msg_entra2_[dir]) ?? m_entra2)
+    msgentrar(arg0, arg3, (arg3 ? arg3.i_saiitem2 : arg0.s1.msg_entra2_[dir]) ?: m_entra2)
   senao # Não está voando nem flutuando
     refvar m1 = (!arg2 ? s1.msg_sai0_[dir])
     (abriu1 || m1) && $mens.mp(abriu1 + (abriu1 && m1 ? "\n") + m1, p1, nulo, arg2)
-    refvar m2 = ((arg2 ? arg2.i_entraitem1 : s1.msg_sai1_[dir]) ?? m_sai1)
+    refvar m2 = ((arg2 ? arg2.i_entraitem1 : s1.msg_sai1_[dir]) ?: m_sai1)
     msgsair(arg0, arg2, abriu2 + (abriu2 ? "\n") + m2, 1)
     arg2.i_entraitem0 && $mens.msg(arg2.i_entraitem0, arg0)
     arg0.mudadono(arg1)
-    msgentrar(arg0, arg3, (arg3 ? arg3.i_saiitem1 : s1.msg_entra1_[dir]) ?? m_entra1)
+    msgentrar(arg0, arg3, (arg3 ? arg3.i_saiitem1 : s1.msg_entra1_[dir]) ?: m_entra1)
   fimse
 # Eventos depois
   epara l.addfim(arg0.evento), l, l.ini.remove
@@ -376,10 +376,10 @@ func fugirdir # Obtém direção para onde pode fugir
 func fugir # Foge nessa direção
 # arg0 = personagem
 # arg1 = sala destino ou nulo se deve obter a sala a partir do personagem
-  ref r = arg1 ?? arg0.dono.dirsala(dir, arg0)
+  ref r = arg1 ?: arg0.dono.dirsala(dir, arg0)
   ret !r, nulo
 # Obtém o personagem e os animais do personagem que estão na mesma sala
-  ref perso = arg0.poslugar.objlista ?? arg0
+  ref perso = arg0.poslugar.objlista ?: arg0
   listaobj l
   listaitem i
   epara i = arg0.lseguir.ini, i, i.depois
@@ -392,7 +392,7 @@ func fugir # Foge nessa direção
   perso.batalhafim
   $mens.mens = ""
   $mens.mp(m_fugir1, perso)
-  refvar mentra = arg0.dono.msg_entra1_[dir] ?? m_entra1
+  refvar mentra = arg0.dono.msg_entra1_[dir] ?: m_entra1
   msgsair(perso, nulo, m_fugir2, 1)
   perso.mudadono(r)
   msgentrar(perso, nulo, mentra, 1)

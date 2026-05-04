@@ -41,7 +41,7 @@ func escr
 # Obtém o item
   $mens.mens = arg1
   ret !arg1 && !arg0.var.z_captura, $mens.mp(m_sem_item, arg0)
-  ref item = misc:itemdentro(arg0, arg1 ?? arg0.var.z_captura)
+  ref item = misc:itemdentro(arg0, arg1 ?: arg0.var.z_captura)
   ret !item, $mens.mp(arg1 ? m_naover_item : m_sem_item, arg0)
   ret !item.i_captura, $mens.mp(m_nao_serve, arg0, nulo, item)
   arg1 && (arg0.var.z_captura = arg1)

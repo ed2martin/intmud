@@ -92,7 +92,7 @@ func escr
     ret arg0.msg("Digite CMDI seguido do nome do item e o comando")
   fimse
   refvar nome = txt1(arg1)
-  ref r = misc:itemdentro(arg0, nome) ?? misc:itemdono(arg0, nome)
+  ref r = misc:itemdentro(arg0, nome) ?: misc:itemdono(arg0, nome)
   ret !r, arg0.msg("Não há nenhum item chamado " + nome)
   prog p
   refvar erro = p.classe(este, "func f\n" + txt2(arg1))

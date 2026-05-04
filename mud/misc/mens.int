@@ -81,7 +81,7 @@ const o_num@qanimais = misc:persotxt(config:animal1)
 func o_cmd@qanimal
   prog p
   p.iniherdainv("h_cmd_animal")
-  ret txtcopiamai(txt(p.texto, 4) ?? arg0, intchr(arg0) < 95 ? "A" : "")
+  ret txtcopiamai(txt(p.texto, 4) ?: arg0, intchr(arg0) < 95 ? "A" : "")
 
 
 classe mens
@@ -453,7 +453,7 @@ func mfalar2 # Mensagem de personagem falando
   o_1 = arg3.falar
   se arg0 && contr.sock && contr.posicao >= 4
     mens = sabe1 < 100 ? arg3.converte(m1, sabe1) : m1
-    refvar m2 = este.txt(!sabe1 ? arg3.naoconhece ?? arg0, contr)
+    refvar m2 = (este.txt(!sabe1 ? arg3.naoconhece) ?: arg0, contr)
     contr.msg(m2)
     refvar e = contr.sock.var.[arg4]
     arg4 && (e = m2 + (e ? "\n") + txtsublin(e, 0, 29))
@@ -465,7 +465,7 @@ func mfalar2 # Mensagem de personagem falando
     continuar !l0.objini.sock || l0.objini.posicao < 4
     refvar sabe2 = !arg3 ? 100 : intmin(sabe1, l0.objini.var.[arg3.nomevar] * 17)
     mens = sabe2 < 100 ? arg3.converte(m1, sabe2) : m1
-    refvar m2 = este.txt(!sabe1 ? arg3.naoconhece ?? arg1, l0.objini)
+    refvar m2 = este.txt((!sabe1 ? arg3.naoconhece) ?: arg1, l0.objini)
     l0.objini.msg(m2)
     refvar e = l0.objini.sock.var.[arg4]
     arg4 && (e = m2 + (e ? "\n") + txtsublin(e, 0, 29))

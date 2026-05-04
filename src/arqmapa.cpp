@@ -27,10 +27,10 @@
 //------------------------------------------------------------------------------
 TArqMapa * TArqMapa::Inicio = nullptr;
 TArqMapa * TArqMapa::Fim = nullptr;
-unsigned short TArqMapa::ParamLinha = 4000;
-unsigned char TArqMapa::ParamN = 0;
+unsigned short TArqMapa::ParamLinha = 99;
+unsigned char TArqMapa::ParamN = 1;
 unsigned char TArqMapa::ParamIndent = 2;
-unsigned char TArqMapa::ParamClasse = 1;
+unsigned char TArqMapa::ParamClasse = 2;
 unsigned char TArqMapa::ParamFunc = 1;
 unsigned char TArqMapa::ParamVar = 0;
 
@@ -40,10 +40,10 @@ TArqMapa::TArqMapa(const char * arqnome)
     copiastr(Arquivo, arqnome, sizeof(Arquivo));
     Anterior = Fim, Proximo = nullptr;
     (Fim ? Fim->Proximo : Inicio)=this;
-    Fim=this;
-    Mudou=false;
+    Fim = this;
+    Mudou = false;
     ClInicio = nullptr, ClFim = nullptr;
-    Existe=false;
+    Existe = false;
 #ifdef DEBUG
     printf("TArqMapa( %s )\n", Arquivo); fflush(stdout);
 #endif
@@ -299,7 +299,7 @@ void TArqMapa::SalvarArq(bool tudo)
                 // Divide
                     *d++ = '\\';
                     *d++ = '\n';
-                    dfim = d+ParamLinha-10;
+                    dfim = d + ParamLinha - 10;
                 }
                 *d++ = '\n';
                 *d = 0;
@@ -318,7 +318,6 @@ void TArqMapa::SalvarArq(bool tudo)
 #ifdef _WIN32
         bool salvou = MoveFileEx("intmud-temp.txt", arqnome,
             MOVEFILE_REPLACE_EXISTING | MOVEFILE_COPY_ALLOWED);
-
 #else
         bool salvou = (rename("intmud-temp.txt", arqnome) >= 0);
 #endif

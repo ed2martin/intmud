@@ -117,7 +117,7 @@ textotxt j_msgtxt # Mensagens antigas
 textopos j_msgpos.4 # Posições das mensagens antigas
 int1 pconfig1 # 0 = volta últimas mensagens (Telnet) ou 80 colunas (Papovox)
 int1 pconfig2 # 0 = Telnet com cor, 1 = Telnet sem cor
-const proto = j_passo & 1 ? "t" : "p"
+const proto = (j_passo & 1) ? "t" : "p"
 
 func ini # Objeto foi criado
 # arg0 = socket

@@ -9,11 +9,25 @@ exec = 5000
 telatxt = 1
 
 # Aonde apresentar mensagens de erro no programa
+# 0=mostrar na tela, 1=salvar em arquivo de log
 log = 0
 
 # Erros em blocos de instruções:
 # 0=ignorar, 1=permitir apenas FimSe sem Se, 2=checar tudo
 err = 1
+
+# Gerar arquivo de log em caso de erro fatal (o programa fechar):
+# 0=não, 1=sim
+crash = 0
+
+# Se o programa roda sem restrições (0=não, 1=sim)
+# Em caso de dúvida, deixar 0. Nesse caso, as restrições são:
+# Não pode acessar arquivos fora do diretório e subdiretórios do programa
+# Não pode acessar executáveis e .bat .com .exe .pif .scr
+# Arquivos .int só podem ser alterados via PROG
+# Arquivos .log só podem ser alterados via ARQLOG
+# ArqExec só podem executar programas conforme as opções ArqExec
+completo = 0
 
 classe config
 # Configuração
@@ -56,10 +70,9 @@ const senhaadm = ""
 #
 # Como deve salvar os arquivos .int, vide variável prog do IntMUD
 const progsalvar = "L99N1I2C2F1V0"
-
-#func iniclasse # Para salvar acertando indentação e linhas entre classes e funções
-#  prog p
-#  p.salvartudo([arg0]:progsalvar)
+# func iniclasse # Para salvar acertando indentação e linhas entre classes e funções
+# prog p
+# p.salvartudo([arg0]:progsalvar)
 
 
 classe jogolocal

@@ -35,7 +35,7 @@ func escrobj # Abrir um item
 # arg1 = nome do item
 # Procura o item
   ret !arg1, $mensjog.msg(m_sem_args, arg0)
-  ref r = misc:itemdono(arg0, arg1) ?? misc:itemdentro(arg0, arg1)
+  ref r = misc:itemdono(arg0, arg1) ?: misc:itemdentro(arg0, arg1)
   $mens.mens = arg1
   ret !r, $mens.mp(m_naover, arg0)
 # Checa se está aberto
@@ -61,7 +61,7 @@ func escrobj # Abrir um item
 # Abre o item
   r.i_aberto = 2
   $mens.p(arg0, r)
-  $mens.mtodos2(r.i_abriuitem1 ?? m_item_abriu1, r.i_abriuitem2 ?? m_item_abriu2)
+  $mens.mtodos2(r.i_abriuitem1 ?: m_item_abriu1, r.i_abriuitem2 ?: m_item_abriu2)
   cmd_abriuobj(arg0, r)
   epara l.addfim(arg0.evento), l, l.ini.remove
     l.objini.cmd_abriuobj(arg0, r, arg0)
@@ -141,7 +141,7 @@ func escrobj # Fechar um item
 # arg1 = nome do item
 # Procura o item
   ret !arg1, $mensjog.msg(m_sem_args, arg0)
-  ref r = misc:itemdono(arg0, arg1) ?? misc:itemdentro(arg0, arg1)
+  ref r = misc:itemdono(arg0, arg1) ?: misc:itemdentro(arg0, arg1)
   $mens.mens = arg1
   ret !r, $mens.mp(m_naover, arg0)
 # Checa se está fechado
@@ -166,7 +166,7 @@ func escrobj # Fechar um item
 # Fecha o item
   r.i_aberto = r.i_tranc == 2 ? 4 : 3
   $mens.p(arg0, r)
-  $mens.mtodos2(r.i_fechouitem1 ?? m_item_fechou1, r.i_fechouitem2 ?? m_item_fechou2)
+  $mens.mtodos2(r.i_fechouitem1 ?: m_item_fechou1, r.i_fechouitem2 ?: m_item_fechou2)
   cmd_fechouobj(arg0, r)
   epara l.addfim(arg0.evento), l, l.ini.remove
     l.objini.cmd_fechouobj(arg0, r, arg0)

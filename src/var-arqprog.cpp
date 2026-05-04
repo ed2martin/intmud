@@ -25,6 +25,7 @@ TArqIncluir::TArqIncluir(const char * nome)
     Anterior = Fim, Proximo = nullptr;
     (Fim ? Fim->Proximo : Inicio) = this;
     Fim = this;
+    ConverteCodigo = false;
 }
 
 //----------------------------------------------------------------------------
@@ -46,7 +47,16 @@ bool TArqIncluir::ProcPadrao(const char * nome)
 }
 
 //----------------------------------------------------------------------------
-bool TArqIncluir::ProcArq(const char * nome)
+TArqIncluir * TArqIncluir::ProcObj(const char * nome)
+{
+    for (TArqIncluir * obj = Inicio; obj; obj = obj->Proximo)
+        if (strcmp(nome, obj->Padrao) == 0)
+            return obj;
+    return nullptr;
+}
+
+//----------------------------------------------------------------------------
+TArqIncluir * TArqIncluir::ProcArq(const char * nome)
 {
     for (TArqIncluir * obj = Inicio; obj; obj=obj->Proximo)
     {
@@ -57,9 +67,9 @@ bool TArqIncluir::ProcArq(const char * nome)
         while (*p && *p != '\\' && *p != '/')
             p++;
         if (*p == 0)
-            return true;
+            return obj;
     }
-    return false;
+    return nullptr;
 }
 
 //----------------------------------------------------------------------------

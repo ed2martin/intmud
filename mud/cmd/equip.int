@@ -51,13 +51,13 @@ func escr
   refvar lugar = arg1 == "tudo" ? r.positemtotal : "0"
   epara lin = config:equip_ordem, lin, lin = txt2(lin)
     refvar o1 = pos.[txt1(lin)]
-    refvar obj = o1 ?? extra.[txt1(lin)]
+    refvar obj = o1 ?: extra.[txt1(lin)]
     se obj.vestpos && obj.visivel(arg0)
       nomepos = "\c2(" + misc:equip(1 + txt1(lin)) + ")\b "
       nomepos += txtesp(23 - inttotal(nomepos)) + (!o1 ? m_secundario)
       nomepos += obj.atribs.ini.texto(1)
       t.addfim(nomepos + txtcopiamai(obj.descnome2, "A"))
-    senao lugar & intbith(txt1(lin)) != "0"
+    senao (lugar & intbith(txt1(lin))) != "0"
       nomepos = "\c2(" + misc:equip(txt1(lin)) + ")\b "
       se nomepos != "\c2(desconhecido)\b "
         t.addfim(nomepos + txtesp(23 - inttotal(nomepos)) + "nada")

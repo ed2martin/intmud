@@ -108,11 +108,11 @@ func escr # Editar item
     continuar intsub(opc2) > 2
     se txt(opc, 0, 1) == "N"
       nmin = txt(opc2, 1)
-      nmax = txtfim(opc, 1) == "-" ? 65536 : (txt2(opc2) ?? nmin)
+      nmax = txtfim(opc, 1) == "-" ? 65536 : (txt2(opc2) ?: nmin)
       achou = 1
     senao txt(opc, 0, 1) == "R"
       rmin = txt(opc2, 1)
-      rmax = txtfim(opc, 1) == "-" ? 65536 : (txt2(opc2) ?? rmin)
+      rmax = txtfim(opc, 1) == "-" ? 65536 : (txt2(opc2) ?: rmin)
       achou = 1
     fimse
   efim
@@ -125,7 +125,7 @@ func escr # Editar item
   t.limpar
   d.exec = 100000
   refvar prefixo = int(arg2.c_litem) < 2 ? "i_" + arg0.jogarea
-  epara p.iniclasse(prefixo ?? "i_"), p.lin, p.depois
+  epara p.iniclasse(prefixo ?: "i_"), p.lin, p.depois
     sair prefixo && prefixo + txtfim(p.texto, 3) != p.texto
     continuar nmin > [p.texto]:nivel || nmax < [p.texto]:nivel
     continuar rmin > [p.texto]:renascer || rmax < [p.texto]:renascer
@@ -965,7 +965,7 @@ const vari4 = "descsala"
 const nome5 = "Descrição lojas"
 const tipo5 = "opc_linha"
 const vari5 = "descloja"
-const nulo5 = "\c3" + ([classe]:descnome ?? [classe]:nome)
+const nulo5 = "\c3" + ([classe]:descnome ?: [classe]:nome)
 #
 const nome6 = "Outras descrições"
 const tipo6 = "menu_idescoutros--"

@@ -3,11 +3,11 @@ herda comum_persoitem
 # Itens
 const item = 1 # Para identificar que é item
 const msexo = 0 # Sexo nas mensagens: 0=feminino, 1=masculino
-const msexo2 = int(var.z_msexo ?? msexo)
+const msexo2 = int(var.z_msexo ?: msexo)
 const nome = "sem nome"
-const ident2 = var.z_ident ?? ident ?? nome
-const descnome2 = var.z_descnome ?? descnome ?? nome
-const descloja2 = var.z_descnome ?? descloja ?? descnome ?? nome
+const ident2 = var.z_ident ?: ident ?: nome
+const descnome2 = var.z_descnome ?: descnome ?: nome
+const descloja2 = var.z_descnome ?: descloja ?: descnome ?: nome
 const descsala = config:item_descsala
 const objsav = 1 # Se deve salvar o item ao salvar personagem do jogador
 const pnivel = nivel # Nível atual (personagens de nível mais baixo não vestem)
@@ -152,7 +152,22 @@ func vestir # Veste o item, arg0=posição
 func vestpos2 # Retorna as posições aonde está usando este item
   ret vestpos ? (vestpos < 50 ? intbith(vestpos - 1) : "0") | vestirextra : "0"
 
-const apagar = apagar(este), mdono(nulo) # Apaga o item (arg0 = quantidade)
+func itemtotal # Retorna a quantidade de itens do mesmo tipo
+  int32 total
+  listaitem i
+  epara i = idono, i, i.objdepois
+    total += i.obj.objtot
+  efim
+  ret total
+
+func apagar # Apaga o item (arg0 = quantidade)
+  uint16 total = arg0
+  ret total <= 1, apagar(este) + mdono(nulo)
+  listaitem i
+  ref r
+  epara i = idono, i && total, total--
+    r = i.obj, i = i.objdepois, apagar(r), r.mdono(nulo)
+  efim
 
 func cabedentro # Retorna quantos itens iguais a esse cabem em sala/item/personagem
 # arg0 = sala, item ou personagem
@@ -170,7 +185,7 @@ func cabedentro # Retorna quantos itens iguais a esse cabem em sala/item/persona
     int8 p = pnjtot & 1 # Quantidade de PNJs
     int32 vol = voltot # Volume total
     epara i = persolugar.ini, i, i.depois
-      vol += i.obj.voltot, j += (i.obj.jogtot & 1), p += (i.obj.pnjtot & 1)
+      vol += i.obj.voltot, j += i.obj.jogtot & 1, p += (i.obj.pnjtot & 1)
     efim
     ret j && j + (arg0.jogtot >> 1) > arg0.s_jog, 0
     ret p && p + (arg0.pnjtot >> 1) > arg0.s_pnj, 0
@@ -412,8 +427,20 @@ func vestir # Veste o item, arg0=posição
   fimse
 
 func apagar # Apaga o item (arg0 = quantidade)
-  ret objtot -= arg0, ajustapeso
-  apagar(este), mdono(nulo)
+  uint32 total = arg0
+  se objtot >= total
+    ret objtot -= total, ajustapeso
+    apagar(este), mdono(nulo)
+    ret
+  fimse
+  ref r
+  listaitem i = idono
+  i = i.objdepois, total -= objtot, apagar(este), mdono(nulo)
+  enquanto i && i.obj.objtot <= total
+    r = i.obj, i = i.objdepois, total -= r.objtot, apagar(r), r.mdono(nulo)
+  efim
+  ret !i, nulo
+  i.obj.objtot -= total, i.obj.ajustapeso
 
 func cabedentro # Retorna quantos itens iguais a esse cabem em sala/item/personagem
 # arg0 = sala, item ou personagem
@@ -618,12 +645,12 @@ classe comum_chave
 herda comum_item
 # Chave da casa de um jogador
 const nome = "chave"
-const ident = $[txt1(i_chave)].c_chave_ident ?? "chave"
-const descnome = $[txt1(i_chave)].c_chave_descnome ?? "a chave de uma casa"
+const ident = $[txt1(i_chave)].c_chave_ident ?: "chave"
+const descnome = $[txt1(i_chave)].c_chave_descnome ?: "a chave de uma casa"
 const descver = $[txt1(i_chave)].c_chave_descver
 const manterperso = 1 # Para não perder a chave ao entrar em uma sala que perde itens
 sav txt50 i_chave # Código da chave
 
 func descpos
   refvar r = $[txt1(i_chave)].c_chave_descsala
-  ret r ?? txtcopiamai(var.z_descnome ?? descnome, "A") + " está aqui."
+  ret r ?: txtcopiamai(var.z_descnome ?: descnome, "A") + " está aqui."

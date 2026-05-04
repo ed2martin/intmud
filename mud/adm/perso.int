@@ -345,7 +345,7 @@ const nome3 = "Palavras chave fem"
 const info3 = "Palavras chave se personagem feminino"
 const tipo3 = "opc_linha"
 const vari3 = "identfem"
-const nulo3 = "\c3" + ([classe]:ident ?? [classe]:nome)
+const nulo3 = "\c3" + ([classe]:ident ?: [classe]:nome)
 #
 const nome4 = "Descrição curta"
 const info4 = "Descrição usada na maioria dos comandos"
@@ -357,7 +357,7 @@ const nome5 = "Desc curta fem"
 const info5 = "Descrição curta se personagem feminino"
 const tipo5 = "opc_linha"
 const vari5 = "descnomefem"
-const nulo5 = "\c3" + ([classe]:descnome ?? [classe]:nome)
+const nulo5 = "\c3" + ([classe]:descnome ?: [classe]:nome)
 #
 const nome6 = "Descrição sala"
 const tipo6 = "menu_pdescsala--"
@@ -638,8 +638,8 @@ const nulo7 = "\c3" + fnulo("desccond6")
 const nulo8 = "\c3" + fnulo("desccond7")
 
 func fnulo
-  refvar v = $t_[[classe]:tipo1].[arg0] ?? $t_[[classe]:tipo2].[arg0]
-  ret v ?? $t_[[classe]:tipo2].[arg0] ?? $t_[[classe]:tipo3].[arg0] ?? perso_cfg:[arg0]
+  refvar v = $t_[[classe]:tipo1].[arg0] ?: $t_[[classe]:tipo2].[arg0]
+  ret v ?: $t_[[classe]:tipo2].[arg0] ?: $t_[[classe]:tipo3].[arg0] ?: perso_cfg:[arg0]
 
 
 classe menu_pbatalhafim
@@ -657,8 +657,8 @@ const nulo9 = "\c3" + fnulo("batalhafim_t3")
 const nulo10 = "\c3" + fnulo("batalhafim_fim")
 
 func fnulo
-  refvar v = $t_[[classe]:tipo1].[arg0] ?? $t_[[classe]:tipo2].[arg0]
-  ret v ?? $t_[[classe]:tipo2].[arg0] ?? $t_[[classe]:tipo3].[arg0] ?? perso_cfg:[arg0]
+  refvar v = $t_[[classe]:tipo1].[arg0] ?: $t_[[classe]:tipo2].[arg0]
+  ret v ?: $t_[[classe]:tipo2].[arg0] ?: $t_[[classe]:tipo3].[arg0] ?: perso_cfg:[arg0]
 
 
 classe menu_pdescoutros
@@ -950,8 +950,8 @@ const nulo13 = "\c6" + fnulo("p_corpo_tempo")
 const nulo14 = "\c3" + fnulo("p_corpo_some")
 
 func fnulo
-  refvar v = $t_[[classe]:tipo1].[arg0] ?? $t_[[classe]:tipo2].[arg0]
-  ret v ?? $t_[[classe]:tipo2].[arg0] ?? $t_[[classe]:tipo3].[arg0] ?? perso_cfg:[arg0]
+  refvar v = $t_[[classe]:tipo1].[arg0] ?: $t_[[classe]:tipo2].[arg0]
+  ret v ?: $t_[[classe]:tipo2].[arg0] ?: $t_[[classe]:tipo3].[arg0] ?: perso_cfg:[arg0]
 
 func fnulo_opc
   refvar opc = fnulo(arg0)

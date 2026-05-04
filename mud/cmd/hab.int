@@ -125,9 +125,9 @@ func habajuda # Retorna um texto que contém informações
     lin = txtproc(tipoefeitosim, "\n") >= 0 ? "Requer efeitos: " : "Requer efeito: "
     textotxt t2
     t2.addfim(tipoefeitosim)
-    lin += (e_[t2.ini.texto]:e_nome ?? txte(t2.ini.texto))
+    lin += (e_[t2.ini.texto]:e_nome ?: txte(t2.ini.texto))
     epara t2.remove, t2.linhas, t2.remove
-      lin += ", " + (e_[t2.ini.texto]:e_nome ?? txte(t2.ini.texto))
+      lin += ", " + (e_[t2.ini.texto]:e_nome ?: txte(t2.ini.texto))
     efim
     t.addfim(lin)
   fimse
@@ -260,7 +260,7 @@ func checahab2 # Checa se personagem pode usar habilidade/magia e avisa o person
     textotxt t
     epara t.addfim(tipoefeitosim), t.linhas, t.remove
       continuar arg0.dentro2.objini("e_" + t.ini.texto)
-      $mens.mens = e_[t.ini.texto]:e_nome ?? txte(t.ini.texto)
+      $mens.mens = e_[t.ini.texto]:e_nome ?: txte(t.ini.texto)
       $mens.mp(comando_hab_cfg:m_tipoefeitosim, contr0, arg0)
       ret
     efim

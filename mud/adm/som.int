@@ -298,7 +298,7 @@ func atualiza
   se volume <= 0
     var.som01 = var.som10 = var.som11 = texto(0)
   senao
-    var.som01 = texto(int(volume * 0.65 ?? 1))
-    var.som10 = texto(int(volume * 0.80 ?? 1))
+    var.som01 = texto(int(volume * 0.65 ?: 1))
+    var.som10 = texto(int(volume * 0.80 ?: 1))
     var.som11 = texto(volume)
   fimse

@@ -52,7 +52,7 @@ func escr
   efim
 # Recita o objeto
   $mens.p(arg0, nulo, r)
-  $mens.mvis2(r.f_msgperso ?? m_recitou1, r.f_msgoutros ?? r.f_msgperso ?? m_recitou2)
+  $mens.mvis2(r.f_msgperso ?: m_recitou1, r.f_msgoutros ?: r.f_msgperso ?: m_recitou2)
   r.apagar(1)
   efeito(arg0, nome, r)
 # Eventos

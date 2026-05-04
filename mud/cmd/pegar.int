@@ -144,12 +144,12 @@ func pegarobj
   $mens.p(arg0, arg1, arg3)
   $mens.o_1 = total
   se pegar
-    refvar m1 = txtitens(arg1.i_pegouitem1 ?? m_pegar_item1)
-    refvar m2 = txtitens(arg1.i_pegouitem2 ?? m_pegar_item2)
+    refvar m1 = txtitens(arg1.i_pegouitem1 ?: m_pegar_item1)
+    refvar m2 = txtitens(arg1.i_pegouitem2 ?: m_pegar_item2)
     $mens.mvis2(m1, m2)
   senao
-    refvar m1 = txtitens(arg1.s_pegarmsg1 ?? m_pegar_sala1)
-    refvar m2 = txtitens(arg1.s_pegarmsg2 ?? m_pegar_sala2)
+    refvar m1 = txtitens(arg1.s_pegarmsg1 ?: m_pegar_sala1)
+    refvar m2 = txtitens(arg1.s_pegarmsg2 ?: m_pegar_sala2)
     $mens.mvis2(m1, m2)
   fimse
   refvar r = arg3.mudadono(arg0, total)
@@ -184,8 +184,8 @@ func pegarmoedas
   $mens.p(arg0, arg1)
   $mens.o_1 = total == 1 ? "uma moeda" : total == 2 ? "duas moedas" : txt(total) + " moedas"
   se pegar
-    refvar m1 = txtmoedas(arg1.i_pegouitem1 ?? m_pegar_item1)
-    refvar m2 = txtmoedas(arg1.i_pegouitem2 ?? m_pegar_item2)
+    refvar m1 = txtmoedas(arg1.i_pegouitem1 ?: m_pegar_item1)
+    refvar m2 = txtmoedas(arg1.i_pegouitem2 ?: m_pegar_item2)
     $mens.mvis2(m1, m2)
   senao
     $mens.mvis2(txtmoedas(m_pegar_sala1), txtmoedas(m_pegar_sala2))

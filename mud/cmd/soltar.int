@@ -163,12 +163,12 @@ func soltarobj
   ref r = arg3
   soltar >= 2 ? arg3.apagar(total) : (r = arg3.mudadono(arg2, total))
   se soltar < 0
-    refvar m1 = txtitens(arg1.i_soltouitem1 ?? m_soltar_item1)
-    refvar m2 = txtitens(arg1.i_soltouitem2 ?? m_soltar_item2)
+    refvar m1 = txtitens(arg1.i_soltouitem1 ?: m_soltar_item1)
+    refvar m2 = txtitens(arg1.i_soltouitem2 ?: m_soltar_item2)
     $mens.mvis2(m1, m2)
   senao
-    refvar m1 = txtitens(arg1.s_soltarmsg1 ?? m_soltar_sala1)
-    refvar m2 = txtitens(arg1.s_soltarmsg2 ?? m_soltar_sala2)
+    refvar m1 = txtitens(arg1.s_soltarmsg1 ?: m_soltar_sala1)
+    refvar m2 = txtitens(arg1.s_soltarmsg2 ?: m_soltar_sala2)
     $mens.mvis2(m1, m2)
   fimse
   cmd_soltouobj(arg0, arg1, r, total)
@@ -204,12 +204,12 @@ func soltarmoedas
     arg1.objmudou = 1
   fimse
   se soltar < 0
-    refvar m1 = txtmoedas(arg1.i_soltouitem1 ?? m_soltar_item1)
-    refvar m2 = txtmoedas(arg1.i_soltouitem2 ?? m_soltar_item2)
+    refvar m1 = txtmoedas(arg1.i_soltouitem1 ?: m_soltar_item1)
+    refvar m2 = txtmoedas(arg1.i_soltouitem2 ?: m_soltar_item2)
     $mens.mvis2(m1, m2)
   senao
-    refvar m1 = txtmoedas(arg1.s_soltarmsg1 ?? m_soltar_sala1)
-    refvar m2 = txtmoedas(arg1.s_soltarmsg2 ?? m_soltar_sala2)
+    refvar m1 = txtmoedas(arg1.s_soltarmsg1 ?: m_soltar_sala1)
+    refvar m2 = txtmoedas(arg1.s_soltarmsg2 ?: m_soltar_sala2)
     $mens.mvis2(m1, m2)
   fimse
 

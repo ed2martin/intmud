@@ -41,7 +41,7 @@ ref perm # Permissão do jogador
 int16 cabe_m
 const cabe_@g = "$"
 #
-const t1_nome = perso.descnome2 ?? usr.nome
+const t1_nome = perso.descnome2 ?: usr.nome
 const t1_jog = usr.nome
 const t1_des = perso.p_tempofim ? m_desconectado
 const t1_inv = perso.jogconfig.17 && perm.c_config & 4 ? m_inv
@@ -61,9 +61,9 @@ func t1_titulo
 
 func t1_tipo
   ret !perso, ""
-  refvar v1 = !perso.msexo2 ? $t_[perso.tipo1].nomequem2 ?? $t_[perso.tipo1].nomequem
-  refvar v2 = !perso.msexo2 ? $t_[perso.tipo2].nomequem2 ?? $t_[perso.tipo2].nomequem
-  refvar v3 = !perso.msexo2 ? $t_[perso.tipo3].nomequem2 ?? $t_[perso.tipo3].nomequem
+  refvar v1 = !perso.msexo2 ? $t_[perso.tipo1].nomequem2 ?: $t_[perso.tipo1].nomequem
+  refvar v2 = !perso.msexo2 ? $t_[perso.tipo2].nomequem2 ?: $t_[perso.tipo2].nomequem
+  refvar v3 = !perso.msexo2 ? $t_[perso.tipo3].nomequem2 ?: $t_[perso.tipo3].nomequem
   refvar t1 = (v1 ? m_tipo_e + v1 : "") + (v2 ? m_tipo_e + v2) + (v3 ? m_tipo_e + v3)
   refvar m = txt(t1, inttotal(m_tipo_e))
   ret m ? m_tipo_a + m + m_tipo_d

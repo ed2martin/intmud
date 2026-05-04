@@ -42,7 +42,7 @@ func escrobj # Trancar um item
   listaitem i # Para procurar o item
 # Procura o item
   ret !arg1, $mensjog.msg(m_sem_args, arg0)
-  ref r = misc:itemdono(arg0, arg1) ?? misc:itemdentro(arg0, arg1)
+  ref r = misc:itemdono(arg0, arg1) ?: misc:itemdentro(arg0, arg1)
   $mens.mens = arg1
   ret !r, $mens.mp(m_naover, arg0)
 # Checa se está destrancado
@@ -80,7 +80,7 @@ func escrobj # Trancar um item
 # Tranca o item
   r.i_aberto = 4
   $mens.p(arg0, r)
-  $mens.mtodos2(r.i_trancouitem1 ?? m_item_trancou1, r.i_trancouitem2 ?? m_item_trancou2)
+  $mens.mtodos2(r.i_trancouitem1 ?: m_item_trancou1, r.i_trancouitem2 ?: m_item_trancou2)
   cmd_trancouobj(arg0, r, chave)
   epara l.addfim(arg0.evento), l, l.ini.remove
     l.objini.cmd_trancouobj(arg0, r, chave, arg0)
@@ -112,7 +112,7 @@ func escrdir # Trancar uma porta
   txt100 cod # Código da fechadura
   ref chave # Chave que abre a fechadura
   cod = arg0.dono.fechadura_[arg1](arg0), $c_[cod] && (cod = $c_[cod].chave)
-  mporta = arg0.dono.portanome_[arg1] ?? $cmd_[arg1].m_porta ?? "uma porta"
+  mporta = arg0.dono.portanome_[arg1] ?: $cmd_[arg1].m_porta ?: "uma porta"
   se cod && !arg0.j_imortal
     listaitem i
     epara i = arg0.dentro1.ini, i, i.depois
@@ -186,7 +186,7 @@ func escrobj # Destrancar um item
 # arg1 = nome do item
 # Procura o item
   ret !arg1, $mensjog.msg(m_sem_args, arg0)
-  ref r = misc:itemdono(arg0, arg1) ?? misc:itemdentro(arg0, arg1)
+  ref r = misc:itemdono(arg0, arg1) ?: misc:itemdentro(arg0, arg1)
   $mens.mens = arg1
   ret !r, $mens.mp(m_naover, arg0)
 # Checa se está trancado
@@ -225,8 +225,8 @@ func escrobj # Destrancar um item
   r.i_comechave && chave.apagar(1)
   r.i_aberto = 3
   $mens.p(arg0, r)
-  refvar m1 = r.i_destrancouitem1 ?? m_item_destrancou1
-  refvar m2 = r.i_destrancouitem2 ?? m_item_destrancou2
+  refvar m1 = r.i_destrancouitem1 ?: m_item_destrancou1
+  refvar m2 = r.i_destrancouitem2 ?: m_item_destrancou2
   $mens.mtodos2(m1, m2)
   cmd_destrancouobj(arg0, r, chave)
   epara l.addfim(arg0.evento), l, l.ini.remove
@@ -260,7 +260,7 @@ func escrdir # Destrancar uma porta
   txt100 cod # Código da fechadura
   ref chave # Chave que abre a fechadura
   cod = arg0.dono.fechadura_[arg1](arg0), $c_[cod] && (cod = $c_[cod].chave)
-  mporta = arg0.dono.portanome_[arg1] ?? $cmd_[arg1].m_porta ?? "uma porta"
+  mporta = arg0.dono.portanome_[arg1] ?: $cmd_[arg1].m_porta ?: "uma porta"
   se cod && !arg0.j_imortal
     listaitem i
     epara i = arg0.dentro1.ini, i, i.depois

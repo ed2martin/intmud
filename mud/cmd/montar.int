@@ -48,8 +48,8 @@ func escr
     fimse
     ret
   senao !arg0.podeposicao("M")
-    refvar m = arg0.podeposicaoMmsg ?? $t_[arg0.tipo1].podeposicaoMmsg
-    ret $mens.mp(m ?? m_nao_consegue, arg0)
+    refvar m = arg0.podeposicaoMmsg ?: $t_[arg0.tipo1].podeposicaoMmsg
+    ret $mens.mp(m ?: m_nao_consegue, arg0)
   fimse
   ref r = misc:persooutro(arg0, arg1)
   se !r
