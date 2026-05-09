@@ -313,6 +313,41 @@ const atk1_errou1 = ""
 const atk1_nulo1 = ""
 
 
+classe magia_nuvem_tóxica
+herda comando_ataque
+const nomevar = "m_Nuvem tóxica"
+const tipoalvo = 7 # Alvo: 7 O personagem; não é ataque
+const falha1 = 60
+const falha2 = 0
+const msgextra = "Cria uma nuvem tóxica que em 7 segundos, envenena todos que estão na sala,\n\
+exceto você. Seus animais que estiverem na sala também são envenenados,\n\
+porém animais guardados no comando Animal não são afetados.\n\
+Quem sair da sala antes dos 7 segundos escapa do veneno."
+const atk1_auto1 = "$P fez um gesto estranho e surgiu uma nuvem"
+const atk1_errou1 = "$P fez um gesto estranho mas nada aconteceu"
+const atk1_nulo1 = "$P fez um gesto estranho mas nada aconteceu"
+
+func cmd_alvofim
+  se arg2.result == 0
+    listaobj l
+    epara l.addfim(arg0.dono.dentro2), l, l.ini.remove
+      continuar !l.objini.perso || l.objini == arg0
+      misc:tempo("veneno", l.objini)
+# Nota: para ter efeito imediado, poderíamos trocar a linha do misc:tempo
+# por uma linha com: criar("e_envenenado", l.objini)
+    efim
+  fimse
+
+func veneno10
+  arg0.msg("Você sente um cheiro adocicado e estranho.")
+
+func veneno40
+  arg0.msg("Seus pulmões começam a arder.")
+
+func veneno70
+  criar("e_envenenado", arg0)
+
+
 classe magia_proteção_de_luz
 herda comando_ataque
 const nomevar = "m_Proteção de luz"
