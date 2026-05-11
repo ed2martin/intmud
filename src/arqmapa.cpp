@@ -100,14 +100,16 @@ TArqMapa * TArqMapa::Procura(const char * nome)
 }
 
 //------------------------------------------------------------------------------
-void TArqMapa::SalvarArq(bool tudo)
+bool TArqMapa::SalvarArq(bool tudo)
 {
     TArqMapa * arqmapa = Fim;
     char char_lf[100];
+    bool salvou_ok = true;
     memset(char_lf, '\n', sizeof(char_lf));
     //if (Inicio->Mudou) puts("-------------"); fflush(stdout);
     while (arqmapa)
     {
+        arqmapa->ErroNum = 0;
     // Checa se arquivo foi alterado
         if (!arqmapa->Mudou && !tudo)
         {
@@ -138,6 +140,8 @@ void TArqMapa::SalvarArq(bool tudo)
         FILE * arq = fopen("intmud-temp.txt", "w");
         if (arq == nullptr)
         {
+            salvou_ok = false;
+            arqmapa->ErroNum = 1;
             arqmapa = arqmapa->Anterior;
             continue;
         }
@@ -200,7 +204,7 @@ void TArqMapa::SalvarArq(bool tudo)
             {
         // Obtém tipo de espaçamento de linhas
                 int indent = (unsigned char)p[Instr::endAlin];
-                int tipo=-1;
+                int tipo = -1;
                 switch (p[2])
                 {
                 case Instr::cConstNulo:
@@ -212,7 +216,7 @@ void TArqMapa::SalvarArq(bool tudo)
                     break;
                 case Instr::cFunc:
                 case Instr::cVarFunc:
-                    tipo=ParamFunc;
+                    tipo = ParamFunc;
                     break;
                 default:
                     if (indent == 0 && p[2] >= Instr::cVariaveis)
@@ -327,7 +331,12 @@ void TArqMapa::SalvarArq(bool tudo)
             arqmapa->Mudou = false;
         }
         else
+        {
+            salvou_ok = false;
+            arqmapa->ErroNum = 2;
             remove("intmud-temp.txt");
+        }
         arqmapa = arqmapa->Anterior;
     }
+    return salvou_ok;
 }

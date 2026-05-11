@@ -240,7 +240,8 @@ EXEC = 10000
 Sintaxe: TELATXT = 0
          TELATXT = 1
 
-Se essa opção estiver ausente, assume 0.
+Se essa opção estiver ausente, assume 1, a partir do IntMUD 1.17.
+Nas versões anteriores, assume 0.
 
 Se TELATXT for 0, o programa roda em segundo plano (nenhuma janela é aberta).
 
@@ -4532,7 +4533,7 @@ o arquivo var-debug.cpp) foi compilado.
 Eventos:
 
 37.12. <nomedavariável>_erro
-Ocorreu algum erro ao executar uma função.
+Ocorreu algum erro ao executar uma função ou salvar arquivo int.
 arg0 = Mensagem de erro (uma linha) seguido dos detalhes sobre o erro
 arg1 = Índice da variável vetor, se não for vetor arg1=0
 

@@ -15,6 +15,7 @@
 #include "instr.h"
 #include "instr-enum.h"
 #include "arqmapa.h"
+#include "var-debug.h"
 #include "misc.h"
 
 //#define DEBUG
@@ -462,8 +463,40 @@ bool TMudarClasse::ExecPasso()
 // Salva classes
     if (Salvar)
     {
-        TArqMapa::SalvarArq(Salvar >= 2);
+        bool salvou = TArqMapa::SalvarArq(Salvar >= 2);
         Salvar = 0;
+        if (salvou)
+            return false;
+        // Se ocorreu erro ao salvar: gera evento
+        bool arqtemp = false;
+        char buf[4096];
+        char * p = copiastr(buf, "Erro ao salvar arquivos");
+        for (TArqMapa * arqmapa = TArqMapa::Inicio; arqmapa; arqmapa = arqmapa->Proximo)
+        {
+            if (arqmapa->ErroNum == 1)
+            {
+                if (arqtemp)
+                    continue;
+                arqtemp = true;
+                const char nome[] = "intmud-temp.txt (arquivo temporário)";
+                if ((int)strlen(nome) + 2 > buf + sizeof(buf) - p)
+                    break;
+                *p++ = Instr::ex_barra_n;
+                p = copiastr(p, nome);
+            }
+            else if (arqmapa->ErroNum == 2)
+            {
+                const char * nome = arqmapa->Arquivo;
+                if ((int)strlen(nome) + 6 > buf + sizeof(buf) - p)
+                    break;
+                *p++ = Instr::ex_barra_n;
+                p = copiastr(p, nome);
+                p = copiastr(p, ".int");
+            }
+        }
+        TVarDebug::FuncEvento("erro", buf);
+        Salvar = 0; // Erro ao salvar não pode mandar salvar novamente
+        return true;
     }
     return false;
 }

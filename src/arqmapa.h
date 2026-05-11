@@ -21,10 +21,11 @@ public:
         ///< Procura um arquivo a partir do nome
         /**< @param nome Nome a pesquisar
          *   @return Endereço do objeto, ou 0 se não foi encontrado */
-    static void SalvarArq(bool tudo);
-            ///< Salva classes em arquivo
-            /**< @param tudo true=salvar todas as classes,
-                             false=salvar só o que foi modificado */
+    static bool SalvarArq(bool tudo);
+        ///< Salva classes em arquivo
+        /**< @param tudo true=salvar todas as classes,
+                         false=salvar só o que foi modificado
+         *   @return true se salvou tudo, false se ocorreu algum erro */
     static unsigned short ParamLinha; ///< Caracteres por linha
     static unsigned char ParamN;      ///< Como dividir em \\n
     static unsigned char ParamIndent; ///< Quantos espaços para indentação
@@ -34,6 +35,11 @@ public:
 
     bool Mudou;             ///< Se o arquivo foi alterado
     bool Existe;            ///< Se o arquivo já existe
+    unsigned char ErroNum;
+        ///< Identificador de erro ao salvar arquivo, função SalvarArq():
+        /**<   0 = nenhum erro
+         *     1 = erro ao criar arquivo temporário intmud-temp.txt
+         *     2 = erro ao renomear arquivo */
     char Arquivo[INT_NOME_TAM];  /**< Nome do arquivo sem o ".int" no final
                              Se for nulo, é o arquivo principal */
 

@@ -443,7 +443,7 @@ void Inicializa(const char * arg)
 // Variáveis
     char mens[BUF_CODIF];
     bool erro = false; // Se ocorreu algum erro
-    bool telatxt = false; // Se deve abrir janela do console
+    bool telatxt = true; // Se deve abrir janela do console
     TArqLer arq;
 
 // Gerar arquivos core
