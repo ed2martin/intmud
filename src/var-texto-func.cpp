@@ -709,7 +709,7 @@ bool TTextoPos::FuncTexto(TVariavel * v)
             coltam = v[2].getInt();
     }
     Instr::ApagarVar(v); // Nota: se apagar o TextoTxt, Bloco será 0
-    if (coltam <= 0 || ref->Bloco == nullptr || ref->Bloco == nullptr)
+    if (coltam <= 0 || ref->TextoTxt == nullptr || ref->Bloco == nullptr)
         return Instr::CriarVarTxtFixo("");
 // Obtém o número de bytes da linha
     TTextoBloco * bl = ref->Bloco;
@@ -742,7 +742,7 @@ bool TTextoPos::FuncTextoLin(TVariavel * v)
     TTextoPos * ref = reinterpret_cast<TTextoPos*>(v->endvar) + v->indice;
     int linhas = (Instr::VarAtual >= v + 1 ? v[1].getInt() : 1);
     Instr::ApagarVar(v); // Nota: se apagar o TextoTxt, Bloco será 0
-    if (linhas <= 0 || ref->Bloco == nullptr || ref->Bloco == nullptr)
+    if (linhas <= 0 || ref->TextoTxt == nullptr || ref->Bloco == nullptr)
         return Instr::CriarVarTxtFixo("");
 // Obtém o número de bytes
     int total = ref->Bloco->LinhasBytes(ref->PosicBloco, linhas) - 1;
@@ -884,7 +884,7 @@ bool TTextoPos::FuncRemove(TVariavel * v)
 {
     TTextoPos * ref = reinterpret_cast<TTextoPos*>(v->endvar) + v->indice;
     int linhas = (Instr::VarAtual >= v + 1 ? v[1].getInt() : 1);
-    if (linhas <= 0 || ref->Bloco == nullptr || ref->Bloco == nullptr)
+    if (linhas <= 0 || ref->TextoTxt == nullptr || ref->Bloco == nullptr)
         return false;
     int apagar = ref->Bloco->LinhasBytes(ref->PosicBloco, linhas);
     ref->Mudar(nullptr, 0, apagar);
