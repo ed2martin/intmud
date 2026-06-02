@@ -397,13 +397,16 @@ func fugir # Foge nessa direção
   perso.mudadono(r)
   msgentrar(perso, nulo, mentra, 1)
 # Faz animais do personagem também fugirem
+telatxt tt
   epara i = l.ini, i, i.depois
     se i.obj.p_animal != 1
       $mens.p(i.obj, arg0)
       $mens.mvis2("", comando_mover_cfg:m_fugir_seguir)
+      i.obj.batalhafimperso
       i.obj.mudadono(arg0)
     senao
       msgsair(i.obj, nulo, m_fugir2, 1)
+      i.obj.batalhafimperso
       i.obj.mudadono(r)
       msgentrar(i.obj, nulo, mentra, 1)
     fimse

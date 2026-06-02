@@ -384,8 +384,8 @@ func exechab # Chamado quando personagem usa habilidade ou magia
     $mens.mp(comando_ataque_cfg:m_sem_animal, contr0, arg0)
     ret 0
   casofim
-  se arg0.persoluta != 1 && arg0.persoluta != 3
-    se arg0 == contr.arg0
+  se arg0.persoluta == 2 || arg0.persoluta == 5 # Próximo combatente ou desmaiado
+    se arg0 == contr0
       $mens.mp(comando_ataque_cfg:m_nao_perso, contr0, arg0)
     senao
       $mens.mp(comando_ataque_cfg:m_nao_animal, contr0, arg0)
@@ -731,11 +731,9 @@ func execgolpe # Calcula resultado do ataque e coloca em result/mudavida/mudacri
     real2 v
     v = result + arg0.precisao + addprecisao + arma1.var.z_armaaddprecisao_ - arg1.evasao
     se arg1.visivel(arg0)
-      refvar p = arg0.p_precisaover
-      v -= subprecisao * (p !== nulo ? p : $t_[arg0.tipo1].p_precisaover) / 100
+      v -= subprecisao * (arg0.p_precisaover ?? $t_[arg0.tipo1].p_precisaover) / 100
     senao
-      refvar p = arg0.p_precisaoinv
-      v -= subprecisao * (p !== nulo ? p : $t_[arg0.tipo1].p_precisaoinv) / 100
+      v -= subprecisao * (arg0.p_precisaoinv ?? $t_[arg0.tipo1].p_precisaoinv) / 100
     fimse
     result = 2
     ret v <= 0, nulo

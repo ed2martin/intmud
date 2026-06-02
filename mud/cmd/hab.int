@@ -35,7 +35,7 @@ const tipoalvo = 6
 const aularenascer = config:a_aularenascer
 const aulapontos = config:a_aulapontos
 
-func escr # Checa se pode usra habilidade/magia e chama escrhab
+func escr # Checa se pode usar habilidade/magia e chama escrhab
   refvar m1 = txt1(txte(nomevar)) == "m" ? arg2.usar_mag : arg2.usar_hab
   ret m1, arg0.contr.msg(m1)
   se arg0.pnivel < intpos(int(aulaini) - config:nrenascer * txt2(arg0.var.[nomevar]))

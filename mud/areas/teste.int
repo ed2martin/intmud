@@ -2730,6 +2730,54 @@ func cmd_darobj
   ret 1
 
 
+classe p_teste056
+herda comum_perso
+const nome = "chefe dos mercenários"
+const descnome = "Chefe dos Mercenários"
+const descver = "Um homem robusto com roupas de couro e cicatrizes de garras nos braços.\n\
+Ele observa você atentamente, esperando que você recrute um mercenário."
+
+
+classe p_teste057
+herda comum_persobat
+const nome = "recruta"
+const descnome = "um recruta"
+const sexoini = 2 # Sexo Perso: 2 Aleatório
+const msexo = 1 # Sexo Msg: 1 Masculino
+const p_animal = 3 # Lugar após domar: 3 Comando Animal ou sala, vai para sala na luta
+const p_tipoluta = 0 # Luta como: 0 Combatente
+
+
+classe p_teste058
+herda comum_persobat
+const nome = "guarda"
+const descnome = "um guarda"
+const sexoini = 2 # Sexo Perso: 2 Aleatório
+const msexo = 1 # Sexo Msg: 1 Masculino
+const p_animal = 3 # Lugar após domar: 3 Comando Animal ou sala, vai para sala na luta
+const p_tipoluta = 1 # Luta como: 1 Combatente que ataca automaticamente
+
+
+classe p_teste059
+herda comum_persobat
+const nome = "escudeiro"
+const descnome = "um escudeiro"
+const sexoini = 2 # Sexo Perso: 2 Aleatório
+const msexo = 1 # Sexo Msg: 1 Masculino
+const p_animal = 3 # Lugar após domar: 3 Comando Animal ou sala, vai para sala na luta
+const p_tipoluta = 2 # Luta como: 2 Assistente, ataca automaticamente
+
+
+classe p_teste060
+herda comum_persobat
+const nome = "arruaceiro"
+const descnome = "um arruaceiro"
+const sexoini = 2 # Sexo Perso: 2 Aleatório
+const msexo = 1 # Sexo Msg: 1 Masculino
+const p_animal = 3 # Lugar após domar: 3 Comando Animal ou sala, vai para sala na luta
+const p_tipoluta = 3 # Luta como: 3 Independente, ataca automaticamente
+
+
 classe p_teste156
 herda comum_persobat
 const nome = "super cão"
@@ -3007,7 +3055,6 @@ Tecle A ou AA para aumentar 1 ou 10 níveis\n\
 Tecle D ou DD para diminuir 1 ou 10 níveis\n\
 À leste você pode conseguir animais."
 const eveste = 1 # Eventos sala: Sim
-const dir_n = $s_teste002
 const dir_l = $s_teste065
 const dir_o = $s_teste014
 
@@ -3833,6 +3880,7 @@ const s_desc = "Se quiser um duende branco tecle: falar branco\n\
 Se quiser um duende negro tecle: falar negro\n\
 Esses duendes possuem outras habilidades e magias, e podem ser usados\n\
 em batalhas. Para saber como lidar com animais, tecle: ajuda animal"
+const dir_l = $s_teste201
 const dir_o = $s_teste015
 const s_reset = "P 100 teste012 0 0 1"
 
@@ -5090,9 +5138,9 @@ const dir_no = $s_teste043
 classe s_teste133
 herda b_teste
 const s_titulo = "Luta com 3 combatentes"
-const s_desc = "Aqui é permitido 2 auxiliares na luta, ou seja, os seus três primeiros\n\
-combatentes. Esse cão, embora seja nível 1, tem uma quantidade enorme\n\
-de pontos de vida, por isso a luta pode ser longa."
+const s_desc = "Aqui é permitido 2 combatentes extra, ou seja, pode lutar usando os seus\n\
+três primeiros combatentes. Esse cão, embora seja nível 1, tem uma\n\
+quantidade enorme de pontos de vida, por isso a luta pode ser longa."
 const dir_o = $s_teste021
 const s_auxluta = 2
 const s_reset = "P 100 teste156 1 1 1"
@@ -6325,3 +6373,54 @@ func entrou90
 
 func entrou130
   arg0.msg("Parou de novo.")
+
+
+classe s_teste201
+herda b_teste
+const s_titulo = "Alojamento dos Mercenários"
+const s_desc = "Aqui você pode recrutar 4 tipos de ajudantes (para o comando Animal).\n\
+Digite o nome para recrutar (e pressionando ENTER):\n\
+Recruta - Combatente manual. Protege você, mas só ataca se receber ordem.\n\
+Guarda - Combatente automático. Protege você e ataca sozinho.\n\
+Escudeiro - Assistente. Não te protege, mas ataca sozinho.\n\
+Arruaceiro - Independente. Não te protege, ataca sozinho e ignora suas ordens.\n\
+Se deixar os guardas/recutas nas primeiras posições, eles recebem os ataques."
+const dir_o = $s_teste065
+const s_reset = "P 100 teste056 0 0 1"
+
+func s_reset1 # Realiza o reset
+# Não alterar; função criada automaticamente a partir de s_reset
+  se p_teste056:objsolto.total < 1
+    criar("p_teste056", este, 0)
+  fimse
+
+func cmd_salaperso # Personagem chegou
+  ret !arg0.jog, nulo # Retorna se não for jogador
+  misc:evento(arg0) # Receber eventos do jogador
+
+func cmd_escr # Escreveu algo
+  txt20 animal
+  casovar txtmin(arg1)
+  casose "recruta"
+    animal = "p_teste057"
+    sair
+  casose "guarda"
+    animal = "p_teste058"
+    sair
+  casose "escudeiro"
+    animal = "p_teste059"
+    sair
+  casose "arruaceiro"
+    animal = "p_teste060"
+    sair
+  casofim
+  se animal
+    se !arg0.animalmais
+      arg0.msg("Mestre das Feras: Você não tem espaço para receber mais animais.")
+      ret 1
+    senao
+      ref r = criar(animal, arg0, 2, "h_socar=2,h_chutar=2")
+      $mens.p($p_teste056, arg0, r)
+      $mens.mtodos1("Chefe dos Mercenários dá um assobio alto e $o sai das sombras, pronto para seguir $a.")
+      ret 1
+    fimse

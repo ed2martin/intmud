@@ -69,7 +69,7 @@ func escr
     epara p.iniclasse("a_"), p.lin, p.depois
       refvar a = $[p.texto]
       continuar !a.a_nome
-      continuar int(txt(a.a_areatipo) ?: v_areatipo) < (pnivel < a.a_nivelmin ? 2 : 1)
+      continuar int(a.a_areatipo ?? v_areatipo) < (pnivel < a.a_nivelmin ? 2 : 1)
       nmax < a.a_nivelmin && (nmax = a.a_nivelmin)
       nmax < a.a_nivelmax && a.a_nivelmax <= 65535 && (nmax = a.a_nivelmax)
       continuar texto && (nivel < a.a_nivelmin || nivel > a.a_nivelmax)
@@ -82,7 +82,7 @@ func escr
     epara p.iniclasse("a_"), p.lin, p.depois
       refvar a = $[p.texto]
       continuar !a.a_nome
-      continuar int(txt(a.a_areatipo) ?: v_areatipo) < (pnivel < a.a_nivelmin ? 2 : 1)
+      continuar int(a.a_areatipo ?? v_areatipo) < (pnivel < a.a_nivelmin ? 2 : 1)
       nmax < a.a_nivelmin && (nmax = a.a_nivelmin)
       nmax < a.a_nivelmax && a.a_nivelmax <= 65535 && (nmax = a.a_nivelmax)
       continuar texto && (nivel < a.a_nivelmin || nivel > a.a_nivelmax)
@@ -94,7 +94,7 @@ func escr
     epara p.iniclasse("a_"), p.lin, p.depois
       refvar a = $[p.texto]
       continuar !a.a_nome
-      continuar int(txt(a.a_areatipo) ?: v_areatipo) < (pnivel < a.a_nivelmin ? 2 : 1)
+      continuar int(a.a_areatipo ?? v_areatipo) < (pnivel < a.a_nivelmin ? 2 : 1)
       nmax < a.a_nivelmin && (nmax = a.a_nivelmin)
       nmax < a.a_nivelmax && a.a_nivelmax <= 65535 && (nmax = a.a_nivelmax)
       continuar arg1 && (nivel < a.a_nivelmin || nivel > a.a_nivelmax)

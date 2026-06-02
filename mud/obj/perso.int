@@ -59,8 +59,9 @@ uint8 p_persoluta # Atualizado/usado por persoluta
 # 0 = precisa atualizar a variável (nunca é retornado por essa função)
 # 1 = combatente (está entre os personagens que participam das lutas)
 # 2 = próximo combatente (pode ser usado fora das batalhas)
-# 3 = pode lutar sozinho se for atacado (outra sala ou não obedece o dono)
-# 4 = não luta porque está desmaiado
+# 3 = assistente ou independente (ajuda o dono na luta)
+# 4 = pode lutar sozinho se for atacado (outra sala ou não obedece o dono)
+# 5 = não luta porque está desmaiado
 #
 const descsala0 = perso_cfg:descperso0
 const descsala1 = perso_cfg:descperso1
@@ -117,7 +118,7 @@ p_atk_anda\n\
 p_atk_desvia\n\
 p_atk_individual\n\
 p_atktipo\n\
-p_animal p_captura p_domar_hab p_domar_aulas\n\
+p_animal p_tipoluta p_captura p_domar_hab p_domar_aulas\n\
 p_montar_tipo p_montar_hab p_montar_aulas1 p_montar_aulas2 p_lugar\n\
 p_comecorpo\n\
 p_exp\n\
@@ -199,10 +200,10 @@ func temdomador # Retorna verdadeiro se pertence a outro personagem
   ret dono.perso || (tseguir == 3 && ref(iseguir.objlista))
 
 func persobat # Retorna o personagem alvo dos ataques
-  se dono.perso
+  se dono.perso # Está guardado no dono
     !(p_persoluta && dono.p_persoluta) && dono.persoluta
     ret ref(dono.p_persobat ?: dono)
-  senao tseguir == 3 && iseguir.objlista.dono == dono
+  senao tseguir == 3 && iseguir.objlista.dono == dono # Está na sala do dono
     ref r = iseguir.objlista
     !(p_persoluta && r.p_persoluta) && r.persoluta
     ret ref(r.p_persobat ?: r)
@@ -589,13 +590,13 @@ func podeposicao # Verifica se uma posição é válida para o personagem
   casovar arg0
   casose "4" # Dormir
     ret bitver & 0x800, 0
-    ret int(txt(podeposicao4tipo) ?: txt($t_[tipo1].podeposicao4tipo) ?: 1) != 0
+    ret int(podeposicao4tipo ?? $t_[tipo1].podeposicao4tipo ?? 1) != 0
   casose "5" # Descansar
-    ret int(txt(podeposicao5tipo) ?: txt($t_[tipo1].podeposicao5tipo) ?: 1) != 0
+    ret int(podeposicao5tipo ?? $t_[tipo1].podeposicao5tipo ?? 1) != 0
   casose "6" # Sentar
-    ret int(txt(podeposicao6tipo) ?: txt($t_[tipo1].podeposicao6tipo) ?: 1) != 0
+    ret int(podeposicao6tipo ?? $t_[tipo1].podeposicao6tipo ?? 1) != 0
   casose "M" # Montar
-    ret int(txt(podeposicaoMtipo) ?: txt($t_[tipo1].podeposicaoMtipo) ?: 1) != 0
+    ret int(podeposicaoMtipo ?? $t_[tipo1].podeposicaoMtipo ?? 1) != 0
   casofim
   ret 1
 
