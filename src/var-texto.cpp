@@ -483,7 +483,7 @@ int TTextoBloco::LinhasBytes(unsigned int posic, int numlinhas)
 // Avança até o início de algum bloco
     if (posic > 0)
     {
-        if (posic<Bytes)
+        if (posic < Bytes)
         {
             const int max = obj->Bytes;
             for (int x = posic; x < max; x++)
