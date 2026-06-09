@@ -11,14 +11,14 @@ tivesse escrito o comando especificado."
 const m_sem_args = "Ordenar quem?"
 const m_naover = "Você não vê $m."
 const m_controle = "$A não está sob o seu controle."
-const m_independente = "$A não obedece você."
+const m_selvagem = "$A não obedece você."
 const m_sem_cmd = "Ordenar o quê?"
 const m_nao_obedece = "$A não quer obedecer você."
 const m_ordenar1 = "Você ordena $a."
 const m_ordenar2 = "$P dá a seguinte ordem: $m"
 const m_ordenar3 = "$P ordena $a."
 const admordem = "m_ajuda m_sem_args m_naover m_sem_cmd m_controle\n\
-m_independente m_sem_cmdm_ordenar1 m_ordenar2 m_ordenar3"
+m_selvagem m_sem_cmdm_ordenar1 m_ordenar2 m_ordenar3"
 
 func escr
   $mens.mens = arg1
@@ -26,7 +26,7 @@ func escr
   ref r = misc:persodono(arg0, txt1(arg1))
   ret !r, $mens.mp(m_naover, arg0, r)
   ret r.tseguir != 3 || r.iseguir.objlista != arg0, $mens.mp(m_controle, arg0, r)
-  ret r.p_tipoluta == 3, $mens.mp(m_independente, arg0, r)
+  ret r.p_tipoluta == 3, $mens.mp(m_selvagem, arg0, r)
   ret !txt2(arg1), $mens.mp(m_sem_cmd, arg0, r)
   se arg0.pnivel + config:animal_n < r.pnivel
     ret $mens.mp(comando_hab_cfg:m_nao_obedece, arg0, r)
@@ -56,9 +56,10 @@ const nome4 = "Sem controle"
 const tipo4 = "opc_linha"
 const vari4 = "m_controle"
 #
-const nome5 = "Animal independente"
+const nome5 = "Animal selvagem"
+const info5 = "Ajuda o dono na luta mas não obedece nem protege o dono"
 const tipo5 = "opc_linha"
-const vari5 = "m_independente"
+const vari5 = "m_selvagem"
 #
 const nome6 = "Sem comando"
 const tipo6 = "opc_linha"

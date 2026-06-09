@@ -469,7 +469,8 @@ func menu2 # Retorna o texto correspondente a uma opção
   textotxt t
   t.addfim(arg1)
   t.remove(valor)
-  ret "\c6" + valor + (t.linhas ? " " + t.remove(1) + "\b" : " <inválido>\b")
+  ret !t.linhas, "\c6" + valor + " <inválido>\b"
+  ret "\c6" + valor + " " + txtsublin(txttroca(t.remove(1), "|", "\n"), 0, 1) + "\b"
 
 func passo # Alterando uma opção de uma lista de opções
   prog p
@@ -483,7 +484,7 @@ func passo # Alterando uma opção de uma lista de opções
     ret 1
   senao arg1 == "o"
     arg0.txtmais.limpar
-    arg0.txtmais.addfim("\bOpções:\n" + arg0.var.opcextra)
+    arg0.txtmais.addfim("\bOpções:\n" + txttroca(arg0.var.opcextra, "|", ", "))
     textopos pos = arg0.txtmais.ini
     epara pos.depois, pos, pos.depois
       pos.mudar(txt(pos.linha - 1) + " ", 0, 0)
@@ -505,11 +506,12 @@ func passo # Alterando uma opção de uma lista de opções
       ret passo(arg0, "\b")
     fimse
     t.remove(x)
-    txt100 lin = " # " + arg0.var.opcnome + ": " + x + " " + t.ini.texto
+    txt100 info = txtsublin(txttroca(t.remove(1), "|", "\n"), 0, 1)
+    txt100 lin = " # " + arg0.var.opcnome + ": " + x + " " + info
     p.criar(arg0.var.opcclasse, "const " + arg0.var.opcvar + "=" + x + lin)
     config:salvar
     criar("admmudou", arg0.var.opcclasse, arg0.var.opcexec)
-    arg0.msg(arg0.var.opcnome + " mudou para: " + x + " " + t.remove)
+    arg0.msg(arg0.var.opcnome + " mudou para: " + x + " " + info)
     admlog(arg0, "mudou " + arg0.var.opcclasse + ":" + arg0.var.opcvar + " " + arg0.var.opcnome)
   fimse
   ret passosair(arg0)

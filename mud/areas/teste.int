@@ -2755,7 +2755,7 @@ const descnome = "um guarda"
 const sexoini = 2 # Sexo Perso: 2 Aleatório
 const msexo = 1 # Sexo Msg: 1 Masculino
 const p_animal = 3 # Lugar após domar: 3 Comando Animal ou sala, vai para sala na luta
-const p_tipoluta = 1 # Luta como: 1 Combatente que ataca automaticamente
+const p_tipoluta = 1 # Luta como: 1 Combatente
 
 
 classe p_teste059
@@ -2765,7 +2765,7 @@ const descnome = "um escudeiro"
 const sexoini = 2 # Sexo Perso: 2 Aleatório
 const msexo = 1 # Sexo Msg: 1 Masculino
 const p_animal = 3 # Lugar após domar: 3 Comando Animal ou sala, vai para sala na luta
-const p_tipoluta = 2 # Luta como: 2 Assistente, ataca automaticamente
+const p_tipoluta = 2 # Luta como: 2 Companheiro
 
 
 classe p_teste060
@@ -2775,7 +2775,7 @@ const descnome = "um arruaceiro"
 const sexoini = 2 # Sexo Perso: 2 Aleatório
 const msexo = 1 # Sexo Msg: 1 Masculino
 const p_animal = 3 # Lugar após domar: 3 Comando Animal ou sala, vai para sala na luta
-const p_tipoluta = 3 # Luta como: 3 Independente, ataca automaticamente
+const p_tipoluta = 3 # Luta como: 3 Selvagem
 
 
 classe p_teste156
@@ -6382,8 +6382,8 @@ const s_desc = "Aqui você pode recrutar 4 tipos de ajudantes (para o comando Ani
 Digite o nome para recrutar (e pressionando ENTER):\n\
 Recruta - Combatente manual. Protege você, mas só ataca se receber ordem.\n\
 Guarda - Combatente automático. Protege você e ataca sozinho.\n\
-Escudeiro - Assistente. Não te protege, mas ataca sozinho.\n\
-Arruaceiro - Independente. Não te protege, ataca sozinho e ignora suas ordens.\n\
+Escudeiro - Companheiro. Não te protege, mas ataca sozinho.\n\
+Arruaceiro - Selvagem. Não te protege, ataca sozinho e ignora suas ordens.\n\
 Se deixar os guardas/recutas nas primeiras posições, eles recebem os ataques."
 const dir_o = $s_teste065
 const s_reset = "P 100 teste056 0 0 1"
@@ -6421,6 +6421,7 @@ func cmd_escr # Escreveu algo
     senao
       ref r = criar(animal, arg0, 2, "h_socar=2,h_chutar=2")
       $mens.p($p_teste056, arg0, r)
-      $mens.mtodos1("Chefe dos Mercenários dá um assobio alto e $o sai das sombras, pronto para seguir $a.")
+      $mens.mtodos1("Chefe dos Mercenários dá um assobio alto e $o sai das sombras, pronto para \
+seguir $a.")
       ret 1
     fimse
