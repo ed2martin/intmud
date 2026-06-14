@@ -12,7 +12,7 @@ const var = sock.var
 
 func passo
   sock = arg0
-  casovar txtmin(arg1)
+  casovar arg1
   casose ""
   casose "\b"
     arg0.var.opcnome = "", arg0.var.opcclasse = "", arg0.var.opcvar = ""
@@ -161,7 +161,7 @@ const var = sock.var
 
 func passo
   sock = arg0
-  casovar txtmin(arg1)
+  casovar arg1
   casose ""
   casose "\b"
     arg0.var.opcnome = "", arg0.var.opcclasse = "", arg0.var.opcvar = ""
@@ -304,7 +304,7 @@ func menu2
   ret x != "1" ? "\c6" + x + " linhas\b" : "\c6Uma linha\b"
 
 func passo # Alterando um texto de várias linhas
-  casovar txtmin(txt(arg1, 0, 1))
+  casovar txt(arg1, 0, 1)
   casose "\b"
     textopos p1
     arg0.teditor.limpar
@@ -887,7 +887,7 @@ func passo
       arg0.txtmais.addfim("i_" + txt(p.texto, 7))
     efim
   fimse
-  casovar txtmin(txt(arg1, 0, 2))
+  casovar txt(arg1, 0, 2)
   casose "h_"
     ret passo2(arg0, arg1, $cmd_[txt(arg1, 2)].cmdmenu != nulo)
   casose "m_"
@@ -1206,7 +1206,7 @@ func menu # Retorna opção que pode ser 0 (não) ou 1 (sim)
 
 func passo # Alterando uma opção que pode ser "SIM" ou "NÃO"
   prog p
-  casovar txtmin(arg1)
+  casovar arg1
   casose "0"
   casose "1"
     txt100 lin = " # " + arg0.var.opcnome + ": " + (arg1 == 1 ? "Sim" : "Não")

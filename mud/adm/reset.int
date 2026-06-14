@@ -213,7 +213,7 @@ herda comando_adm
 
 func passo # Menu de reset
   arg0.var.opcinserir = ""
-  casovar txtmin(txt(arg1, 0, 1))
+  casovar txt(arg1, 0, 1)
   casose "\b"
     arg0.teditor.limpar
     arg0.teditor.addfim([arg0.var.opcclasse]:[arg0.var.opcvar])
@@ -326,7 +326,7 @@ func passo # Apagar uma linha do reset
   textopos pos
   pos = arg0.teditor.ini
   pos.linha = arg0.var.opclin - 1
-  casovar txtmin(arg1)
+  casovar arg1
   casose "\b"
     arg0.msg("Apagar linha " + arg0.var.opclin + "? N não, S sim")
     arg0.msg(txt(arg0.var.opclin) + ". " + $reset.linha(pos.texto))
@@ -365,7 +365,7 @@ classe reset_tipo
 herda comando_adm
 
 func passo # Tipo
-  casovar txtmin(arg1)
+  casovar arg1
   casose
     arg0.msg("Opção inválida")
   casose "\b"
@@ -667,7 +667,7 @@ func passo # Porta em uma direção
     fimse
     ret 1
   casose "4" # Novo estado
-    casovar txtmin(arg1)
+    casovar arg1
     casose
       arg0.msg("Opção inválida")
     casose ""
@@ -751,12 +751,12 @@ func cmdsala # Cria conteúdo de uma função conforme os comandos do reset
   enquanto t1.linhas
 # t2.addfim("# " + txtremove(t1.ini.texto, "EMD"))
     l.separar(txtremove(t1.remove, "EMD"), " ") # Pega próxima linha e separa
-    casovar txtmai(l.0)
+    casovar l.0
     casose "P" # <personagem> <nível min> <nível max> <limite> <variáveis>
       textopos pos
       uint8 m1 # Será =2 se o personagem terá alguma coisa dentro
       epara pos = t1.ini, pos && !m1, pos.depois
-        casovar txtmin(pos.texto(0, 1))
+        casovar pos.texto(0, 1)
         casose "p"
           m1 = 1
           sair
@@ -786,7 +786,7 @@ func cmdsala # Cria conteúdo de uma função conforme os comandos do reset
       textopos pos
       uint8 m1 # Será =2 se o personagem terá alguma coisa dentro
       epara pos = t1.ini, pos && !m1, pos.depois
-        casovar txtmin(pos.texto(0, 1))
+        casovar pos.texto(0, 1)
         casose "p"
         casose "a"
           m1 = 1
@@ -891,12 +891,12 @@ func cmdperso # Cria conteúdo de uma função conforme os comandos do reset
   t2.addfim("u = arg0")
   enquanto t1.linhas
     l.separar(txtremove(t1.remove, "EMD"), " ") # Pega próxima linha e separa
-    casovar txtmai(l.0)
+    casovar l.0
     casose "A" # <animal> <nível min> <nível max> <variáveis>
       textopos pos
       uint8 m1 # Será =2 se o personagem terá alguma coisa dentro
       epara pos = t1.ini, pos && !m1, pos.depois
-        casovar txtmin(pos.texto(0, 1))
+        casovar pos.texto(0, 1)
         casose "p"
         casose "a"
           m1 = 1
@@ -956,7 +956,7 @@ func linha # Obtém um texto a partir de uma linha do reset
   senao
     lin += txt(l.1 + "%    ", 0, 4)
   fimse
-  casovar txtmai(l.0)
+  casovar l.0
   casose "P" # <personagem> <nível min> <nível max> <limite> <variáveis>
     lin += "Perso      "
     lin += txt(l.2 + "(" + p_[l.2]:nome, 0, 30) + ")"

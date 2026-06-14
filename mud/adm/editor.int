@@ -17,7 +17,7 @@ func passocod # Edição do código
 # arg0 = personagem
 # arg1 = o que escreveu
 # arg2 = 0 para editar função ou 1 para editar classe
-  casovar txtmin(txt(arg1, 0, 1))
+  casovar txt(arg1, 0, 1)
   casose "\b"
     arg0.teditor.limpar
     prog p
@@ -113,7 +113,7 @@ func salvar # Opçao salvar
 # Checa existência de outra função ou constante dentro
     p1 = t1.ini.texto
     epara p1.depois, p1.lin, p1.depois
-      casovar txtmin(txt1(p1.texto))
+      casovar txt1(p1.texto)
       casose "func"
       casose "varfunc"
         arg0.msg("Erro: definido uma função dentro de outra")
@@ -169,7 +169,7 @@ func passoeditor # Processamento de qualquer editor de texto
 # arg3 = nome da opção
 # teditor contém o texto, leditor é a linha atual
 # Retorna sempre 1
-  casovar txtmin(arg1)
+  casovar arg1
   casose "\n"
     arg0.leditor = arg0.teditor.ini
     arg0.leditor1 = arg0.teditor.ini
@@ -298,7 +298,7 @@ func passoeditor # Processamento de qualquer editor de texto
     ret 1
   casofim
 # Comandos de um caracter
-  casovar txtmin(txt(arg1, 0, 1))
+  casovar txt(arg1, 0, 1)
   casose "." # Insere linha removendo espaços
     se arg0.teditor.bytes + inttotal(arg1) > arg2
       arg0.msg("Editor não suporta tantos caracteres")

@@ -103,7 +103,7 @@ func conec_msg # Recebeu mensagem
     fimse
     ret
   fimse
-  casovar txtmai(txt(arg0, 0, 2))
+  casovar txt(arg0, 0, 2)
   casose "S+" # Nova sala
     msgini = 0
     salas.addfim(criar("jogobot_sala", indbs + txt(arg0, 2), este))

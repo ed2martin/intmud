@@ -52,7 +52,7 @@ func menu2 # Usado por menu
 func passo # Menu de aulas e de produtos
 # arg0.msg(!tipoprod ? ">aula" : ">produto")
   arg0.var.opcinserir = ""
-  casovar txtmin(txt(arg1, 0, 1))
+  casovar txt(arg1, 0, 1)
   casose "\b"
   casose ""
     arg0.passo = este
@@ -155,7 +155,7 @@ classe opc_menuaula_a
 herda comando_adm
 
 func passo # Apagar uma aula
-  casovar txtmin(arg1)
+  casovar arg1
   casose
     arg0.msg("Apagar linha " + arg0.var.opclin + "? N não, S sim")
     arg0.passo = este
@@ -184,7 +184,7 @@ classe opc_menuprod_a
 herda comando_adm
 
 func passo # Apagar um produto
-  casovar txtmin(arg1)
+  casovar arg1
   casose
     arg0.msg("Apagar linha " + arg0.var.opclin + "? N não, S sim")
     arg0.passo = este

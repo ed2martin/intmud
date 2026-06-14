@@ -3064,7 +3064,7 @@ func cmd_salaperso # Personagem chegou
   fimse
 
 func cmd_escr # Escreveu algo
-  casovar txtmin(arg1)
+  casovar arg1
   casose "aa"
     arg0.pnivel += 9
     arg0.recalc = 1
@@ -4232,9 +4232,7 @@ func dir_l
   ret $s_teste082
 
 func dir_o
-# Nota: txtmin passa um texto para letras minúsculas
-# Isso é necessário porque casovar considera maiúsculas diferentes de minúsculas
-  casovar txtmin(arg0.tipo1)
+  casovar arg0.tipo1
   casose "anão"
     ret $s_teste002
   casose "elfo"
@@ -6400,7 +6398,7 @@ func cmd_salaperso # Personagem chegou
 
 func cmd_escr # Escreveu algo
   txt20 animal
-  casovar txtmin(arg1)
+  casovar arg1
   casose "recruta"
     animal = "p_teste057"
     sair

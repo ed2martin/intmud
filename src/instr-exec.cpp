@@ -967,7 +967,7 @@ bool Instr::ExecX()
                         }
                         if (FuncAtual->linha[2] != cCasoSe)
                             break;
-                        int cmp = strcmp(texto, FuncAtual->linha + endVar + 4);
+                        int cmp = comparaVar(texto, FuncAtual->linha + endVar + 4);
                         if (cmp == 0)
                         {
                             FuncAtual->linha += Num16(FuncAtual->linha);

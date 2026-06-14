@@ -50,7 +50,7 @@ const aj2 = "\c2COM HTTP\b <endereço> <porta>\n\
 
 func escr
   indiceitem item
-  casovar txtmin(txt1(arg1))
+  casovar txt1(arg1)
   casose ""
     textotxt t
     epara item.ini("cn "), txt1(item.txt) == "cn", item.depois
@@ -142,7 +142,7 @@ func passo
   ret 1
 
 func passo0 # Escolher o tipo de conexão
-  casovar txtmin(arg1)
+  casovar arg1
   casose ""
   casose "\b"
     ret arg0.msg("Entre com uma opção, O mostra as opções, N nenhuma, Z cancela")
