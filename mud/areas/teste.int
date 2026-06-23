@@ -2745,7 +2745,7 @@ const descnome = "um recruta"
 const sexoini = 2 # Sexo Perso: 2 Aleatório
 const msexo = 1 # Sexo Msg: 1 Masculino
 const p_animal = 3 # Lugar após domar: 3 Comando Animal ou sala, vai para sala na luta
-const p_tipoluta = 0 # Luta como: 0 Combatente
+const p_tipoluta = 0 # Luta como: 0 Combatente passivo
 
 
 classe p_teste058
@@ -2760,22 +2760,32 @@ const p_tipoluta = 1 # Luta como: 1 Combatente
 
 classe p_teste059
 herda comum_persobat
+const nome = "aprendiz"
+const descnome = "um aprendiz"
+const sexoini = 2 # Sexo Perso: 2 Aleatório
+const msexo = 1 # Sexo Msg: 1 Masculino
+const p_animal = 3 # Lugar após domar: 3 Comando Animal ou sala, vai para sala na luta
+const p_tipoluta = 2 # Luta como: 2 Companheiro passivo
+
+
+classe p_teste060
+herda comum_persobat
 const nome = "escudeiro"
 const descnome = "um escudeiro"
 const sexoini = 2 # Sexo Perso: 2 Aleatório
 const msexo = 1 # Sexo Msg: 1 Masculino
 const p_animal = 3 # Lugar após domar: 3 Comando Animal ou sala, vai para sala na luta
-const p_tipoluta = 2 # Luta como: 2 Companheiro
+const p_tipoluta = 3 # Luta como: 3 Companheiro
 
 
-classe p_teste060
+classe p_teste061
 herda comum_persobat
 const nome = "arruaceiro"
 const descnome = "um arruaceiro"
 const sexoini = 2 # Sexo Perso: 2 Aleatório
 const msexo = 1 # Sexo Msg: 1 Masculino
 const p_animal = 3 # Lugar após domar: 3 Comando Animal ou sala, vai para sala na luta
-const p_tipoluta = 3 # Luta como: 3 Selvagem
+const p_tipoluta = 4 # Luta como: 4 Selvagem
 
 
 classe p_teste156
@@ -6380,6 +6390,7 @@ const s_desc = "Aqui você pode recrutar 4 tipos de ajudantes (para o comando Ani
 Digite o nome para recrutar (e pressionando ENTER):\n\
 Recruta - Combatente manual. Protege você, mas só ataca se receber ordem.\n\
 Guarda - Combatente automático. Protege você e ataca sozinho.\n\
+Aprendiz - Companheiro passivo. Não te protege, só ataca se receber ordem.\n\
 Escudeiro - Companheiro. Não te protege, mas ataca sozinho.\n\
 Arruaceiro - Selvagem. Não te protege, ataca sozinho e ignora suas ordens.\n\
 Se deixar os guardas/recutas nas primeiras posições, eles recebem os ataques."
@@ -6405,11 +6416,14 @@ func cmd_escr # Escreveu algo
   casose "guarda"
     animal = "p_teste058"
     sair
-  casose "escudeiro"
+  casose "aprendiz"
     animal = "p_teste059"
     sair
-  casose "arruaceiro"
+  casose "escudeiro"
     animal = "p_teste060"
+    sair
+  casose "arruaceiro"
+    animal = "p_teste061"
     sair
   casofim
   se animal

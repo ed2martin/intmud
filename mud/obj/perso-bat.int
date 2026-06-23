@@ -294,7 +294,8 @@ func bat_ini_int # Chamado internamente por batalhaini
   epara l.addfim(lseguir), l, l.ini.remove
     r = l.objini
     continuar r.atkenv || r.tseguir != 3 || r.dono != dono
-    continuar !r.p_tipoluta || (r.p_persoluta != 1 && r.p_persoluta != 3)
+    continuar !r.p_tipoluta || r.p_tipoluta == 2
+    continuar r.p_persoluta != 1 && r.p_persoluta != 3
     continuar !r.p_agressivo(arg0) || !arg0.p_agressivo(r)
     r.atkenv = arg0.atkrec.addfim(r)
     r.atkdiv.limpar

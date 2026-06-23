@@ -16,6 +16,7 @@ const m_nao_possui = "Você não possui $m."
 const m_nao_despedir = "Não é possível se desfazer de $a."
 const m_perso_dono = "Você não é $s don$s $d $a."
 const m_montado = "Alguém está montado em $a."
+const m_auto_despedir = "Não pode se despedir de si mesm$s."
 const m_despedir1 = "Você se despede $d $a e $b vai embora."
 const m_despedir2 = "$P se despede $d $a e $b vai embora."
 const admordem = "m_ajuda m_sem_args m_naover m_nao_possui m_nao_despedir\n\
@@ -30,17 +31,15 @@ func escr
     r = misc:personum(arg0, arg1)
     ret !r, $mens.mp(m_nao_possui, arg0)
     ret r.p_soltar == 2, $mens.mp(m_nao_despedir, arg0, r)
+    ret r == r.persodomador, $mens.mp(m_auto_despedir, arg0, r)
     despedir(arg0, nulo, r)
 # Se despedir de um animal na sala
   senao
     r = misc:persodono(arg0, arg1)
-    se !r
-      ret $mens.mp(m_naover, arg0)
-    senao r.tseguir != 3 || r.iseguir.objlista != arg0
-      ret $mens.mp(m_perso_dono, arg0, r)
-    senao r.persolugar.total
-      ret $mens.mp(m_montado, arg0, r)
-    fimse
+    ret !r, $mens.mp(m_naover, arg0)
+    ret r == r.persodomador, $mens.mp(m_auto_despedir, arg0, r)
+    ret r.tseguir != 3 || r.iseguir.objlista != arg0, $mens.mp(m_perso_dono, arg0, r)
+    ret r.persolugar.total, $mens.mp(m_montado, arg0, r)
     despedir(arg0, arg0.dono, r)
   fimse
 
@@ -114,10 +113,14 @@ const nome7 = "Alguém montado"
 const tipo7 = "opc_linha"
 const vari7 = "m_montado"
 #
-const nome8 = "Despediu perso"
+const nome8 = "Auto despedir"
 const tipo8 = "opc_linha"
-const vari8 = "m_despedir1"
+const vari8 = "m_auto_despedir"
 #
-const nome9 = "Despediu outros"
+const nome9 = "Despediu perso"
 const tipo9 = "opc_linha"
-const vari9 = "m_despedir2"
+const vari9 = "m_despedir1"
+#
+const nome10 = "Despediu outros"
+const tipo10 = "opc_linha"
+const vari10 = "m_despedir2"

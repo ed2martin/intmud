@@ -340,7 +340,7 @@ func exechab # Chamado quando personagem usa habilidade ou magia
           sair l.objini.cmd_alvo(arg0, r, este, arg0, 0)
         efim
         continuar l
-        epara l.addfim(arg0 != arg1 ? arg1.evento), l, l.ini.remove
+        epara l.addfim(r.evento), l, l.ini.remove
           sair l.objini.cmd_alvo(arg0, r, este, r, 0)
         efim
         continuar l
@@ -411,10 +411,8 @@ func exechab # Chamado quando personagem usa habilidade ou magia
     $mens.mp(comando_ataque_cfg:m_perso_pacifico, contr0, contr1)
     ret 0
   senao
-    ref p0 = (contr0.tseguir == 3 ? contr0.iseguir.objlista : contr0) ?: contr0
-    ref p1 = (contr1.tseguir == 3 ? contr1.iseguir.objlista : contr1) ?: contr1
-    se p0.jog && p1.jog && (contr0.dono.s_luta == 1 || contr1.dono.s_luta == 1)
-      se arg0 != arg1
+    se arg0 != arg1 && arg0.persodomador.jog && arg1.persodomador.jog
+      se contr0.dono.s_luta == 1 || contr1.dono.s_luta == 1
         $mens.mp(comando_ataque_cfg:m_jog_pacifico, contr0, contr1)
         ret 0
       fimse

@@ -55,11 +55,11 @@ const t1_des = animal.pvidaok ? m_des_nao : m_des_sim
 
 func t1_comb
   uint8 p = animal.persoluta
-  ret p < 3 ? m_comb[p] : p == 3 ? m_comb[3 + (animal.p_tipoluta == 3)] : m_comb5
+  ret p < 3 ? m_comb[p] : p == 3 ? m_comb[3 + (animal.p_tipoluta == 4)] : m_comb5
 
 func t1_sinal
   uint8 p = animal.persoluta
-  ret p < 3 ? m_sinal[p] : p == 3 ? m_sinal[3 + (animal.p_tipoluta == 3)] : m_sinal5
+  ret p < 3 ? m_sinal[p] : p == 3 ? m_sinal[3 + (animal.p_tipoluta == 4)] : m_sinal5
 
 func t1_esc
   refvar luta = animal.persoluta
@@ -203,7 +203,7 @@ func escr # Chamado pela função "teclou" do personagem ao escolher um animal
   senao perso.dono != arg0 && perso.dono != arg0.dono
     $mens.mp(m_longe, arg0, perso)
     ret
-  senao perso.p_tipoluta == 3
+  senao perso.p_tipoluta == 4
     $mens.mp(m_nao_obedece, arg0, perso)
     ret
   senao !arg1
