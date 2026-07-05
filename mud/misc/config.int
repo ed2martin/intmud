@@ -67,7 +67,7 @@ p_objlimite s_objmax i_objmax p_objmax j_objmax s_volmax i_volmax p_volmax s_rec
 s_pnj s_jog s_auxluta s_som\n\
 s_doarsalas s_doarsim s_doarnao s_atk_move\n\
 p_movervel p_lembra p_perseguevel\n\
-p_atk_alvo p_animal p_tipoluta\n\
+p_atk_alvo p_animal p_tipoluta p_animalatk\n\
 a_ataquemin a_ataquemax a_fatormin a_fatormax\n\
 a_ataque2 a_ataque2perso a_ataque2nivel\n\
 a_subprecisao a_vel e_renascer"
@@ -703,8 +703,12 @@ const p_atk_alvo = 0
 const p_animal = 0
 #
 # Personagens: Luta como
-# 0=combatente passivo, 1=combatente, 2=companheiro, 3=selvagem
+# 0=combatente passivo, 1=combatente, 3=companheiro passivo, 3=companheiro, 4=selvagem
 const p_tipoluta = 0
+#
+# Personagens: Combatentes
+# 0=personagem e animais, 1=somente personagem, 2=somente animais
+const p_animalatk = 0
 #
 # Ataques: força de ataque nível iniciante, 100 significa 100%
 const a_ataquemin = 25

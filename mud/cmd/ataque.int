@@ -5,7 +5,7 @@ const m_sem_args = "Atacar quem?"
 const m_desmaiado = "$A está desmaiado$t."
 const m_nao_desmaiado = "$A não está desmaiad$t."
 const m_com_animal = "Só pode lutar com animais."
-const m_sem_animal = "Não pode lutar com animais."
+const m_sem_animal = "Não pode lutar $a."
 const m_nao_perso = "Você não é combatente."
 const m_nao_animal = "$A não é combatente."
 const m_hab_auto = "A habilidade $m não pode ser usada nos outros."
@@ -380,7 +380,7 @@ func exechab # Chamado quando personagem usa habilidade ou magia
     $mens.mp(comando_ataque_cfg:m_com_animal, contr0, arg0)
     ret 0
   casose "1"
-    sair arg0 == contr0
+    sair arg0 == contr0 || arg0.p_tipoluta >= 2
     $mens.mp(comando_ataque_cfg:m_sem_animal, contr0, arg0)
     ret 0
   casofim

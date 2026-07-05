@@ -55,7 +55,7 @@ const descsala8 = j_imortal ? perso_cfg:descimortal8 : perso_cfg:descperso8
 const descsalaN = j_imortal ? perso_cfg:descimortalN : perso_cfg:descpersoN
 
 func p_animalatk # Obtém animalatk a partir da raça e da classe
-  ret intpos(($t_[tipo1].animalatk ?: $t_[tipo2].animalatk ?: $t_[tipo3].animalatk) - 1)
+  ret $t_[tipo1].animalatk ?? $t_[tipo2].animalatk ?? $t_[tipo3].animalatk ?? config:p_animalatk
 
 func ini # Objeto foi criado
   tempojogo1 = 864000

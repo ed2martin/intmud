@@ -238,7 +238,7 @@ func checahab2 # Checa se personagem pode usar habilidade/magia e avisa o person
     fimse
     ret
   senao !arg0.pvidaok
-    $mens.mp(comando_hab_cfg:m_desmaiado[arg0 == contr0], contr0, arg0)
+    $mens.mp(comando_hab_cfg:m_desmaiado[arg0 != contr0], contr0, arg0)
     ret
   senao arg2.item # Usou algum objeto: não checa a posição e a arma usada
   senao contr0 != arg0 && contr0.pnivel + config:animal_n < arg0.pnivel

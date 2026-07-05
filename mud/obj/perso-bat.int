@@ -6,6 +6,7 @@ const p_atktipo = config:atk_txt # Que habilidade usar em ataques automáticos
 const p_atk_alvo = config:p_atk_alvo # Alvo dos ataques
 const p_animal = config:p_animal # Lugar após domar
 const p_tipoluta = config:p_tipoluta # Combatente/companheiro/selvagem
+const p_animalatk = config:p_animalatk
 const p_exp = perso_cfg:p_exp # Quantidade de experiência que dá, em porcentagem
 const perso = 2 # Para identificar o tipo de personagem
 const pesoadd = !dono.perso && !(bitinv & 48) && !(bitver & 512) # Se falso, está voando
@@ -457,13 +458,27 @@ func atktempo_exec # Encerra a batalha depois de um tempo
   atktempo = config:atktempo
   se pvida < p_fugir
 # $cmd_fugir.fugir(este)
-  senao persobat.atkauto(alvo.persobat, 8)
-    ret !atkenv || !persobat.var.h_segundo_ataque_, nulo
+  senao
+    persoluta # Recalcula a variável p_persoluta dos personagens se necessário
+    listaobj l # Lista de personagens
+    listaitem i # Para procurar na lista de personagens
+    l.addfim(persobat) # Começa pelo alvo dos ataques
+    epara i = lseguir.ini, i, i.depois
+      continuar i.obj.tseguir != 3
+      (i.obj.p_persoluta == 1 || i.obj.p_persoluta == 3) && l.addfim(i.obj)
+    efim
     debug d
-    d.ini, persobat.atkauto(alvo.persobat, persobat.var.h_segundo_ataque_)
-    ret !atkenv || !persobat.var.h_terceiro_ataque_, nulo
-    d.ini, persobat.atkauto(alvo.persobat, persobat.var.h_terceiro_ataque_)
-    ret
+    int8 atacou
+    epara l.remove, l, l.ini.remove
+      d.ini
+      continuar !l.objini.atkauto(alvo.persobat, 8)
+      d.ini, atacou = 1
+      continuar !atkenv || !l.objini.var.h_segundo_ataque_
+      continuar !l.objini.atkauto(alvo.persobat, l.objini.var.h_segundo_ataque_)
+      continuar !atkenv || !l.objini.var.h_terceiro_ataque_
+      d.ini, l.objini.atkauto(alvo.persobat, l.objini.var.h_terceiro_ataque_)
+    efim
+    ret atacou, nulo
   fimse
   $mens.p(este, alvo)
   casovar ++atkturno
@@ -883,21 +898,22 @@ func persobat # Retorna personagem alvo dos ataques
 func persoluta # Obtém informações do personagem no comando Animal
 # Vide variável p_persoluta na classe comum_perso
   ret p_persoluta, p_persoluta
+  listaitem i
 # Checa se personagem luta sozinho
   se p_animalatk == 1
     p_persobat = perso
     p_persoluta = 1
     epara i = dentro2.ini, i, i.depois
-      i.obj.perso && (i.obj.p_persoluta = 4)
+      i.obj.perso && (i.obj.p_persoluta = (i.obj.p_tipoluta >= 2 ? 3 : 4))
     efim
     epara i = lseguir.ini, i, i.depois
-      (i.obj.perso & i.obj.tseguir) == 3 && (i.obj.p_persoluta = 4)
+      continuar !i.obj.perso || i.obj.tseguir != 3
+      i.obj.p_persoluta = (i.obj.p_tipoluta >= 2 ? 3 : 4)
     efim
     ret p_persoluta
   fimse
 # Obtém os personagens por posição e checa se existe possibilidade de lutar
   textoobj pos
-  listaitem i
   refvar niv = pnivel + config:animal_n # Não controla animais acima desse nível
   se !pvidaok
     p_persoluta = 5
