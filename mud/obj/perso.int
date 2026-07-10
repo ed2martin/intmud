@@ -160,6 +160,7 @@ func ini # Coloca o objeto dentro de outro
   epara nulo, var.ini("e_"), var.mudar(var.ini("e_"))
     criar(var.ini("e_"), este, var.valor(var.ini("e_")))
   efim
+  dono.perso && (dono.p_persoluta = 0)
   se dono.perso && !var.z_dono
     var.z_dono = dono.descnome2
     var.z_pnivel = pnivel
@@ -186,6 +187,7 @@ func fim # Objeto foi apagado
     refvar obj = ind.obj("pn " + txt2(sock.cnome))
     obj ? sock.mudaperso(obj) : sock.reinicia
   fimse
+  dono.perso && (dono.p_persoluta = 0)
   persoluta_recalc, persolugar.limpar, batalhafim, comum_obj:fim, dono = nulo
 
 func contr # Quem está controlando o personagem

@@ -1374,6 +1374,7 @@ const nome7 = "Combatentes extras"
 const info7 = "Quantos combatentes além do primeiro entram na luta ao mesmo tempo"
 const tipo7 = "opc_numero"
 const vari7 = "s_auxluta"
+const exec7 = "admtipo:persoluta_todos"
 #
 const nome8 = "Som da sala"
 const info8 = "Nome do som tocado ao entrar na sala; vide adm som"
@@ -1518,6 +1519,7 @@ const vari14 = "p_animalatk"
 const extr14 = "Personagem e animais|ambos podem ser combatentes (linha de frente)\n\
 Somente personagem|animais combatentes viram suporte (não lutam)\n\
 Somente animais|personagem depende dos animais combatentes para protegê-lo"
+const exec14 = "admtipo:persoluta_todos"
 
 
 classe menu_econfig_herda4
@@ -1622,4 +1624,23 @@ func atualiza # arg0 = nome da const
     epara r = $[p.texto], r, r = objdepois(r)
       r.recalc++
     efim
+  efim
+
+func persoluta_todos # Atualiza p_persoluta de todos os personagens
+# Chamar com: admtipo:persoluta_todos
+  debug d
+  prog p
+  ref r
+  epara p.iniherdainv("comum_persoanimal"), p.lin, p.depois
+    epara r = $[p.texto], r, r = objdepois(r)
+      d.ini, r.p_persoluta = 0
+    efim
+  efim
+
+func persoluta_jog # Atualiza p_persoluta de todos os jogadores
+# Chamar com: admtipo:persoluta_jog
+  debug d
+  ref r
+  epara r = $jogador, r, r = objdepois(r)
+    d.ini, r.p_persoluta = 0
   efim

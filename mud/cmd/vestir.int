@@ -86,27 +86,28 @@ func escr
 
 func objvestir # Quer vestir um item
 # arg0 = personagem, arg1 = objeto, arg2 = quantidade, lugar = aonde vestir
-  refvar tipomsg = arg0 == arg0.contr ? "_p" : "_a"
+  refvar contr = arg0.contr # Quem recebe as mensagens
+  refvar tipomsg = arg0 == contr ? "_p" : "_a"
   txt512 lin
   uint8 total
   epara total = arg2, total, total--
 # Obtém posições aonde pode vestir o item
     refvar lugar1 = lugar & arg1.vestir1
     se lugar1 == "0"
-      $mens.mp(m_nao_consegue[tipomsg], arg0.contr, arg0, arg1)
+      $mens.mp(m_nao_consegue[tipomsg], contr, arg0, arg1)
       ret
     fimse
 # Exclui posições em que está vestindo algo
     refvar lugar2 = lugar1 & ~txthex(vest1, 12)
     se lugar2 == "0"
       refvar obj = arg0.objitemvestir(lugar1)
-      $mens.mp(m_em_uso[tipomsg], arg0.contr, arg0, obj)
+      $mens.mp(m_em_uso[tipomsg], contr, arg0, obj)
       ret
     fimse
 # Verifica posições extras
     se (vest1 & arg1.vestirextra) != "0"
       refvar obj = arg0.objitemvestir(arg1.vestirextra)
-      $mens.mp(m_em_uso[tipomsg], arg0.contr, arg0, obj)
+      $mens.mp(m_em_uso[tipomsg], contr, arg0, obj)
       ret
     fimse
 # Exclui posições em que tem item em cima e obtém: numpos = posição
@@ -116,7 +117,7 @@ func objvestir # Quer vestir um item
     se !lin
       lin = txtbith(lugar2)
       refvar obj = arg0.objitemvestir(config:vestir[txt1(lin)])
-      $mens.mp(m_em_cima[tipomsg], arg0.contr, arg0, obj)
+      $mens.mp(m_em_cima[tipomsg], contr, arg0, obj)
       ret
     fimse
     refvar numpos = 1 + txt1(lin)
@@ -124,7 +125,7 @@ func objvestir # Quer vestir um item
     epara lin = txtbith(arg1.vestirextra), lin, lin = txt2(lin)
       continuar (vest1 & config:vestir[txt1(lin)]) == "0"
       refvar obj = arg0.objitemvestir(config:vestir[txt1(lin)])
-      $mens.mp(m_em_cima[tipomsg], arg0.contr, arg0, obj)
+      $mens.mp(m_em_cima[tipomsg], contr, arg0, obj)
       ret
     efim
 # Verifica se conflita com algum outro tipo de item
@@ -132,7 +133,7 @@ func objvestir # Quer vestir um item
     epara i = arg0.dentro2.ini, i, i.depois
       se i.obj.item && ((txt(i.obj.tipoitem2) & arg1.vestiritem) != "0" || (txt(arg1.tipoitem2) \
 & i.obj.vestiritem) != "0")
-        ret $mens.mp(m_item[tipomsg], arg0.contr, arg0, arg1, i.obj)
+        ret $mens.mp(m_item[tipomsg], contr, arg0, arg1, i.obj)
       fimse
     efim
 # Checa se o item deixa vestir
@@ -152,7 +153,7 @@ func objvestir # Quer vestir um item
     refvar mvestir_a = txtsublin(config:equip_vestir, numpos - 1, 1) ?: "$P veste $o."
     refvar mvestir_p = txtsublin(config:equip_perso, numpos - 1, 1) ?: mvestir_a
     $mens.p(arg0, nulo, arg1)
-    $mens.msgsomvis(mvestir[tipomsg], arg1.i_som_vest1, arg0.contr)
+    $mens.msgsomvis(mvestir[tipomsg], arg1.i_som_vest1, contr)
     $mens.mvis2som(mvestir_a, arg1.i_som_vest1)
 # Eventos
     cmd_vestiu(arg0, arg1, numpos)
