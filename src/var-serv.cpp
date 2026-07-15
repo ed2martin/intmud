@@ -140,8 +140,13 @@ inline void TVarServ::Apagar()
 //------------------------------------------------------------------------------
 void TVarServ::Fechar()
 {
+#ifdef __WIN32
+    if (sock == INVALID_SOCKET)
+        return;
+#else
     if (sock < 0)
         return;
+#endif
     close(sock);
     sock = -1;
     (Antes ? Antes->Depois : Inicio) = Depois;
@@ -156,7 +161,11 @@ void TVarServ::Fechar()
 //------------------------------------------------------------------------------
 inline void TVarServ::Mover(TVarServ * destino)
 {
+#ifdef __WIN32
+    if (sock != INVALID_SOCKET)
+#else
     if (sock >= 0)
+#endif
     {
         (Antes ? Antes->Depois : Inicio) = destino;
         if (Depois)
@@ -251,9 +260,15 @@ bool TVarServ::Abrir(const char * ender, unsigned short porta)
     // Windows: chamar WSAGetLastError() e obter o erro de uma tabela
     if (res)
         freeaddrinfo(res);
+#ifdef __WIN32
+    if (sock != INVALID_SOCKET)
+        close(sock);
+    sock = INVALID_SOCKET;
+#else
     if (sock >= 0)
         close(sock);
     sock = -1;
+#endif
     return false;
 }
 
@@ -293,7 +308,7 @@ void TVarServ::ProcEventos(fd_set * set_entrada, int tempo)
             struct sockaddr_storage SockStr_in;
 #ifdef _WIN32
             int tamsock = sizeof(SockStr_in);
-            unsigned int localSocket = accept(obj->sock,
+            SOCKET localSocket = accept(obj->sock,
                 (struct sockaddr *)&SockStr_in, &tamsock);
             if (localSocket == INVALID_SOCKET)
                 break;
@@ -380,7 +395,11 @@ void TVarServ::ProcEventos(fd_set * set_entrada, int tempo)
 
 //------------------------------------------------------------------------------
 // Gera evento
+#ifdef __WIN32
+void TVarServ::ExecEvento(SOCKET localSocket, SSL * sslSocket)
+#else
 void TVarServ::ExecEvento(int localSocket, SSL * sslSocket)
+#endif
 {
     bool prossegue = false;
     if (b_objeto)

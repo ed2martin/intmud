@@ -22,7 +22,11 @@ public:
     TVarServObj(TVarServ * serv, int s);  ///< Construtor
     ~TVarServObj();     ///< Destrutor
 
-    int sock;           ///< Socket
+#ifdef __WIN32
+    SOCKET sock;        ///< Socket; INVALID_SOCKET se estiver fechado
+#else
+    int  sock;          ///< Socket; menor que 0 se estiver fechado
+#endif
     SSL * sockssl;      ///< Objeto da conexão segura
     char acaossl:1;     ///< O que fazer na conexão SSL
             /**<  - 0 esperando dados para recv()
@@ -50,7 +54,12 @@ public:
     bool Abrir(const char * ender, unsigned short porta);
     static int Fd_Set(fd_set * set_entrada, fd_set * set_saida);
     static void ProcEventos(fd_set * set_entrada, int tempo);
+
+#ifdef __WIN32
+    void ExecEvento(SOCKET localSocket, SSL * sslSocket); ///< Gera evento
+#else
     void ExecEvento(int localSocket, SSL * sslSocket); ///< Gera evento
+#endif
     int  getValor();    ///< Ler valor numérico da variável
 
     const char * defvar;///< Como foi definida a variável
@@ -81,7 +90,11 @@ private:
     static void FOperadorAtrib(TVariavel * v1, TVariavel * v2);
 
     bool modossl;               ///< Se deve usar conexão segura (SSL)
+#ifdef __WIN32
+    SOCKET sock;                ///< Socket; INVALID_SOCKET se estiver fechado
+#else
     int  sock;                  ///< Socket; menor que 0 se estiver fechado
+#endif
     static TVarServ * varObj;   ///< Usado para saber se objeto foi apagado
     static TVarServ * Inicio;   ///< Primeiro objeto (com sock>=0)
     TVarServ * Antes;           ///< Objeto anterior (se sock>=0)

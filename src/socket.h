@@ -107,7 +107,11 @@ private:
             ///< Fecha socket
             /**< @param erro Código de erro que fechou o socket
              *   @param env  Se fechou enviando (true) ou recebendo (false) */
+#ifdef __WIN32
+    SOCKET sock;                ///< Socket; INVALID_SOCKET se estiver fechado
+#else
     int  sock;                  ///< Socket; menor que 0 se estiver fechado
+#endif
     int  sockerro;              ///< Código de erro que fechou o socket
     SSL * sockssl;              ///< Se !=0, é o objeto da conexão segura
     char proto; ///< Protocolo (quando sock>=0), vide TSocketProto

@@ -453,7 +453,7 @@ func mfalar2 # Mensagem de personagem falando
   o_1 = arg3.falar
   se arg0 && contr.sock && contr.posicao >= 4
     mens = sabe1 < 100 ? arg3.converte(m1, sabe1) : m1
-    refvar m2 = (este.txt(!sabe1 ? arg3.naoconhece) ?: arg0, contr)
+    refvar m2 = este.txt((!sabe1 ? arg3.naoconhece) ?: arg0, contr)
     contr.msg(m2)
     refvar e = contr.sock.var.[arg4]
     arg4 && (e = m2 + (e ? "\n") + txtsublin(e, 0, 29))

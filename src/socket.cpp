@@ -508,8 +508,13 @@ void TSocket::Fechar()
 //------------------------------------------------------------------------------
 void TSocket::FecharSock(int erro, bool env)
 {
+#ifdef __WIN32
+    if (sock == INVALID_SOCKET)
+        return;
+#else
     if (sock < 0)
         return;
+#endif
     if (!env)
         EnvPend();
     if (sockssl)
@@ -522,7 +527,11 @@ void TSocket::FecharSock(int erro, bool env)
         sockssl = nullptr;
     }
     close(sock);
+#ifdef __WIN32
+    sock = INVALID_SOCKET;
+#else
     sock = -1;
+#endif
     pontRec = 0;
     pontEnv = 0;
     pontEnvSsl = 0;
@@ -533,8 +542,13 @@ void TSocket::FecharSock(int erro, bool env)
 //------------------------------------------------------------------------------
 void TSocket::CriaSSL(const char * ender)
 {
+#ifdef __WIN32
+    if (sockssl || sock == INVALID_SOCKET)
+        return;
+#else
     if (sockssl || sock < 0)
         return;
+#endif
     sockssl = SslNew(ssl_ctx_cliente);
     if (ender != nullptr)
         SslSetTlsextHostName(sockssl, ender);
@@ -548,8 +562,13 @@ void TSocket::CriaSSL(const char * ender)
 //------------------------------------------------------------------------------
 bool TSocket::Conectado()
 {
+#ifdef __WIN32
+    if (sock == INVALID_SOCKET)
+        return false;
+#else
     if (sock < 0)
         return false;
+#endif
     switch (proto)
     {
     case spTelnet1:
@@ -570,8 +589,13 @@ int TSocket::Variavel(char num, int valor)
     switch (num)
     {
     case 1: // proto
+#ifdef __WIN32
+        if (sock == INVALID_SOCKET)
+            return 0;
+#else
         if (sock < 0)
             return 0;
+#endif
         if (valor >= 0)
         {
             bool mudar = false;
@@ -616,7 +640,7 @@ int TSocket::Variavel(char num, int valor)
                     break;
                 }
                 if (mudar)
-                    pontRec = 0, pontESC = 0, pontTelnet =0;
+                    pontRec = 0, pontESC = 0, pontTelnet = 0;
             }
         }
         switch (proto)
@@ -657,8 +681,13 @@ int TSocket::Variavel(char num, int valor)
 void TSocket::Endereco(int num, char * mens, int tam)
 {
     *mens = 0;
+#ifdef __WIN32
+    if (sock == INVALID_SOCKET)
+        return;
+#else
     if (sock < 0)
         return;
+#endif
     if (num < 2)
     {
         struct sockaddr_storage conSock;
@@ -675,8 +704,13 @@ void TSocket::Endereco(int num, char * mens, int tam)
     if (num < 4)
     {
     // Obtém objeto X509
+#ifdef __WIN32
+        if (sockssl == nullptr || sock == INVALID_SOCKET)
+            return;
+#else
         if (sockssl == nullptr || sock < 0)
             return;
+#endif
         X509 * obj509 = SslGetPeerCertificate(sockssl);
         if (obj509 == nullptr)
             return;
@@ -730,8 +764,13 @@ void TSocket::Endereco(int num, char * mens, int tam)
 //------------------------------------------------------------------------------
 bool TSocket::EnvMens(const char * mensagem, int codigo)
 {
+#ifdef __WIN32
+    if (sock == INVALID_SOCKET)
+        return false;
+#else
     if (sock < 0)
         return false;
+#endif
 
 // Papovox
     if (proto == spPapovox)
@@ -1135,8 +1174,13 @@ bool TSocket::EnvMens(const char * mensagem, int codigo)
 //------------------------------------------------------------------------------
 bool TSocket::EnvMensBytes(const char * mensagem, int tamanho)
 {
+#ifdef __WIN32
+    if (sock == INVALID_SOCKET)
+        return false;
+#else
     if (sock < 0)
         return false;
+#endif
     if (tamanho > SOCKET_ENV)
         return false;
     boolenvpend = true;
@@ -1164,8 +1208,13 @@ bool TSocket::EnvMensBytes(const char * mensagem, int tamanho)
 //------------------------------------------------------------------------------
 void TSocket::EnvPend()
 {
+#ifdef __WIN32
+    if (sock == INVALID_SOCKET || pontEnv <= 0)
+        return;
+#else
     if (sock < 0 || pontEnv <= 0)
         return;
+#endif
     int resposta, coderro = 0;
 #ifdef DEBUG_MSG
     printf(">>> ENV \"");
@@ -1275,7 +1324,11 @@ void TSocket::Fd_Set(fd_set * set_entrada, fd_set * set_saida, fd_set * set_err)
                 ev_env = (obj->pontEnv <= 0) && obj->eventoenv;
             }
         // Verifica socket fechou
+#ifdef __WIN32
+            if (obj->sock == INVALID_SOCKET)
+#else
             if (obj->sock < 0)
+#endif
             {
                 char mens[100];
                 mprintf(mens, sizeof(mens), "%s %s",
@@ -1341,7 +1394,11 @@ void TSocket::ProcEventos(fd_set * set_entrada,
     for (TSocket * obj = sInicio; obj; )
     {
     // Verifica se socket aberto
+#ifdef __WIN32
+        if (obj->sock == INVALID_SOCKET)
+#else
         if (obj->sock < 0)
+#endif
         {
             obj = obj->sDepois;
             continue;
@@ -1486,7 +1543,7 @@ void TSocket::ProcEventos(fd_set * set_entrada,
             {
                 coderro = 0;
                 int erro = 0;
-                resposta=SslRead(obj->sockssl, mens, sizeof(mens));
+                resposta = SslRead(obj->sockssl, mens, sizeof(mens));
                 if (resposta <= 0)
                 {
                     erro = SslGetError(obj->sockssl, resposta);
@@ -1516,10 +1573,10 @@ void TSocket::ProcEventos(fd_set * set_entrada,
                 resposta = recv(obj->sock, mens, sizeof(mens), 0);
                 if (resposta == 0)
                     resposta = -1;
-                else if (resposta==SOCKET_ERROR)
+                else if (resposta == SOCKET_ERROR)
                 {
                     coderro = WSAGetLastError();
-                    resposta = (coderro==WSAEWOULDBLOCK ? 0 : -1);
+                    resposta = (coderro == WSAEWOULDBLOCK ? 0 : -1);
                 }
 #else
                 resposta = recv(obj->sock, mens, sizeof(mens), 0);

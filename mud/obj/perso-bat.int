@@ -805,7 +805,9 @@ func p_proc_atacar # Realiza um ataque
     ret !obj.autohab2(pbat, aulas), 0
     se obj.tipoalvo < 6 # Habilidade/magia agressiva
       obj.exechab(pbat, arg0.persobat, aulas, pbat.pnivel)
-    senao # Habilitade/magia não agressiva
+    senao obj.tipoalvo != 6 # Habilidade/magia não agressiva no personagem
+      obj.exechab(pbat, pbat, aulas, pbat.pnivel)
+    senao # Habilitade/magia não agressiva em qualquer um
       l.limpar, listagrupo(l), i = l.ini, i.depois(rand(l.total))
       refvar r = i.obj.contr.dono == dono ? i.obj.persobat ?: persobat
       obj.exechab(pbat, r, aulas, pbat.pnivel)
