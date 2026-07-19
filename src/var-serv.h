@@ -22,7 +22,7 @@ public:
     TVarServObj(TVarServ * serv, int s);  ///< Construtor
     ~TVarServObj();     ///< Destrutor
 
-#ifdef __WIN32
+#ifdef _WIN32
     SOCKET sock;        ///< Socket; INVALID_SOCKET se estiver fechado
 #else
     int  sock;          ///< Socket; menor que 0 se estiver fechado
@@ -55,7 +55,7 @@ public:
     static int Fd_Set(fd_set * set_entrada, fd_set * set_saida);
     static void ProcEventos(fd_set * set_entrada, int tempo);
 
-#ifdef __WIN32
+#ifdef _WIN32
     void ExecEvento(SOCKET localSocket, SSL * sslSocket); ///< Gera evento
 #else
     void ExecEvento(int localSocket, SSL * sslSocket); ///< Gera evento
@@ -90,7 +90,7 @@ private:
     static void FOperadorAtrib(TVariavel * v1, TVariavel * v2);
 
     bool modossl;               ///< Se deve usar conexão segura (SSL)
-#ifdef __WIN32
+#ifdef _WIN32
     SOCKET sock;                ///< Socket; INVALID_SOCKET se estiver fechado
 #else
     int  sock;                  ///< Socket; menor que 0 se estiver fechado

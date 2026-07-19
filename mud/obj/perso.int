@@ -578,7 +578,7 @@ func teclouperm # Processa comando com permissões específicas
   efim
 # Executa comando
   ret !obj, msg("O quê?")
-  ret posicao < obj.posic, msgposicao
+  ret posicao < obj.posic, msgposicao(contr)
   ret obj.escr(este, txt2(arg0), arg1)
 
 func p_espera_exec # Pega o próximo comando

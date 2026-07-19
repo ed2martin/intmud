@@ -107,7 +107,7 @@ private:
             ///< Fecha socket
             /**< @param erro Código de erro que fechou o socket
              *   @param env  Se fechou enviando (true) ou recebendo (false) */
-#ifdef __WIN32
+#ifdef _WIN32
     SOCKET sock;                ///< Socket; INVALID_SOCKET se estiver fechado
 #else
     int  sock;                  ///< Socket; menor que 0 se estiver fechado

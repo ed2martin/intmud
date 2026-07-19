@@ -7,7 +7,8 @@ const posic = 0
 #
 const m_ajuda = "-t\n-s <nome da magia>\nLança uma magia."
 const m_magia_sem = "Lançar que magia?"
-const m_magia_nao = "Você não possui a magia $m."
+const m_magia_nao1 = "Você não possui a magia $m."
+const m_magia_nao2 = "$A não possui a magia $m."
 const admordem = "m_ajuda m_magia_sem m_magia_nao"
 
 func escr
@@ -28,12 +29,13 @@ func escr
   fimse
 # Magia: Executa comando
   se !lin
-    $mens.mp(m_magia_sem, arg0)
+    $mens.mp(m_magia_sem, arg0.contr)
   senao !obj
+    refvar contr = arg0.contr
     $mens.mens = lin
-    $mens.mp(m_magia_nao, arg0)
-  senao posicao < obj.posic
-    msgposicao
+    $mens.mp(arg0 == contr ? m_magia_nao1 : m_magia_nao2, contr, arg0)
+  senao arg0.posicao < obj.posic
+    arg0.msgposicao(arg0.contr)
   senao
     obj.escr(arg0, txt2(lin), arg2)
   fimse
@@ -50,6 +52,10 @@ const nome2 = "Faltou nome da magia"
 const tipo2 = "opc_linha"
 const vari2 = "m_magia_sem"
 #
-const nome3 = "Magia desconhecida"
+const nome3 = "Você não conhece magia"
 const tipo3 = "opc_linha"
-const vari3 = "m_magia_nao"
+const vari3 = "m_magia_nao1"
+#
+const nome4 = "Animal não conhece magia"
+const tipo4 = "opc_linha"
+const vari4 = "m_magia_nao2"

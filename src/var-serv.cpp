@@ -140,7 +140,7 @@ inline void TVarServ::Apagar()
 //------------------------------------------------------------------------------
 void TVarServ::Fechar()
 {
-#ifdef __WIN32
+#ifdef _WIN32
     if (sock == INVALID_SOCKET)
         return;
 #else
@@ -161,7 +161,7 @@ void TVarServ::Fechar()
 //------------------------------------------------------------------------------
 inline void TVarServ::Mover(TVarServ * destino)
 {
-#ifdef __WIN32
+#ifdef _WIN32
     if (sock != INVALID_SOCKET)
 #else
     if (sock >= 0)
@@ -260,7 +260,7 @@ bool TVarServ::Abrir(const char * ender, unsigned short porta)
     // Windows: chamar WSAGetLastError() e obter o erro de uma tabela
     if (res)
         freeaddrinfo(res);
-#ifdef __WIN32
+#ifdef _WIN32
     if (sock != INVALID_SOCKET)
         close(sock);
     sock = INVALID_SOCKET;
@@ -395,7 +395,7 @@ void TVarServ::ProcEventos(fd_set * set_entrada, int tempo)
 
 //------------------------------------------------------------------------------
 // Gera evento
-#ifdef __WIN32
+#ifdef _WIN32
 void TVarServ::ExecEvento(SOCKET localSocket, SSL * sslSocket)
 #else
 void TVarServ::ExecEvento(int localSocket, SSL * sslSocket)
