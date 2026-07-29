@@ -163,21 +163,14 @@ func escrhab # Atacar alguém ou usar habilidade/magia em alguém
     refvar dist = int(arma1 ? arma1.armamove : armamove)
     dir = dist > 0 ? misc:d1[txt1(arg1)]
     se !misc:d3[dir] # Alvo está na mesma sala
-      se arg1 != intpos(arg1) || config:animal1 < arg1 || !config:animal1
+      se misc:persoindice(arg1) >= 0
+        alvo = misc:personum(contr0, arg1)
+      senao
         n.ini(arg1, 1)
         epara i = contr0.dono.dentro2.ini, i, i.depois
           sair i.obj.visivel(arg0) && n.nome(i.obj.ident2)
         efim
-        alvo = i.obj.persobat
-      senao arg1 == "0"
-        alvo = contr0
-      senao
-        uint8 num = arg1
-        epara i = contr0.dentro2.ini, i, i.depois
-          i.obj.perso && num--
-          sair num == 0
-        efim
-        alvo = i.obj
+        alvo = (tipoalvo < 6 || tipoalvo > 8 ? i.obj.persobat : i.obj)
       fimse
     senao txt2(arg1) # Um alvo específico em outra sala
       ref sala
@@ -191,7 +184,7 @@ func escrhab # Atacar alguém ou usar habilidade/magia em alguém
         sair i.obj || int(sala.porta_[dir]) >= 2 # Achou o alvo ou porta fechada
         move += intmax(1, sala.dirsala(dir).s_atk_move)
       efim
-      alvo = i.obj.persobat
+      alvo = (tipoalvo < 6 || tipoalvo > 8 ? i.obj.persobat : i.obj)
     senao # Qualquer um em outra sala
       ref sala
       uint8 totalperso
@@ -211,13 +204,13 @@ func escrhab # Atacar alguém ou usar habilidade/magia em alguém
         sair int(sala.porta_[dir]) >= 2 # Achou porta fechada
         move += intmax(1, sala.dirsala(dir).s_atk_move)
       efim
-      alvo = i.obj.persobat
+      alvo = (tipoalvo < 6 || tipoalvo > 8 ? i.obj.persobat : i.obj)
     fimse
     se !alvo
       $mens.mens = arg1
       ret $mens.mp(comando_ataque_cfg:m_naover, contr0, arg0)
     fimse
-  senao tipoalvo >= 6 # Hab não agressiva: o alvo é o próprio personagem
+  senao tipoalvo >= 6 && tipoalvo <= 8 # Hab não agressiva
     alvo = arg0
   senao arg2.f_tipo == 4 # Hab agressiva usando pergaminho
     alvo = contr0.atkenv.objlista

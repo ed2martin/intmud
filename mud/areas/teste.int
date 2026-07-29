@@ -1092,7 +1092,7 @@ func cmd_pegarobj # Quer pegar alguma coisa
 
 func cmd_pegouobj # Pegou alguma coisa
   apagar(este)
-  criar("p_teste043", arg0, 1, "h_socar=2")
+  criar("p_teste043", arg0, 1, "h_Socar=2")
   $mens.p(arg0)
   $mens.mtodos1("$P adquiriu um lagarto verde.")
 
@@ -1120,7 +1120,7 @@ func cmd_pegarobj # Quer pegar alguma coisa
 
 func cmd_pegouobj # Pegou alguma coisa
   apagar(este)
-  criar("p_teste044", arg0, 1, "h_socar=2")
+  criar("p_teste044", arg0, 1, "h_Socar=2")
   $mens.p(arg0)
   $mens.mtodos1("$P adquiriu um lagarto vermelho.")
 
@@ -1402,7 +1402,7 @@ const tipo1 = "luta"
 const p_agressivo = 2 # Agressivo: 2 Sim
 const p_animal = 2 # Lugar após domar: 2 Comando Animal ou sala
 const p_captura = 3 # Capturar: 3 Normal
-const inivar = "h_socar=1,h_chutar=1"
+const inivar = "h_Socar=1,h_Chutar=1"
 
 
 classe p_teste003
@@ -2474,7 +2474,7 @@ func cmd_atacou
     ref r = mudaobjeto("p_teste046") # Tenta evoluir para p_teste046
     se r
       r.pvida = r.pvidamax # Restaura pontos de vida
-      r.var.h_chutar = 5 # Ganha a habilidade Chutar
+      r.var.h_Chutar = 5 # Ganha a habilidade Chutar
       $mens.p(este, r)
       $mens.mtodos1("$P evolui para $a!")
     fimse
@@ -2651,7 +2651,7 @@ const nome = "guarda"
 const descnome = "um guarda"
 const sexoini = 1 # Sexo Perso: 1 Masculino
 const p_recebe = 1 # Recebe itens: Sim
-const inivar = "h_socar=3,h_chutar=3"
+const inivar = "h_Socar=3,h_Chutar=3"
 const eveste = 1 # Eventos perso: Sim
 const evsala = 1 # Eventos dono sala: Sim
 
@@ -2695,7 +2695,7 @@ const nome = "guarda"
 const descnome = "uma guarda"
 const sexoini = 0 # Sexo Perso: 0 Feminino
 const p_recebe = 1 # Recebe itens: Sim
-const inivar = "h_socar=3,h_chutar=3"
+const inivar = "h_Socar=3,h_Chutar=3"
 const eveste = 1 # Eventos perso: Sim
 const evsala = 1 # Eventos dono sala: Sim
 
@@ -2788,6 +2788,15 @@ const p_animal = 3 # Lugar após domar: 3 Comando Animal ou sala, vai para sala n
 const p_tipoluta = 4 # Luta como: 4 Selvagem
 
 
+classe p_teste062
+herda comum_persobat
+const nome = "fada"
+const sexoini = 0 # Sexo Perso: 0 Feminino
+const p_atktipo = ""
+const p_animal = 3 # Lugar após domar: 3 Comando Animal ou sala, vai para sala na luta
+const p_tipoluta = 2 # Luta como: 2 Companheiro passivo
+
+
 classe p_teste156
 herda comum_persobat
 const nome = "super cão"
@@ -2822,8 +2831,8 @@ const s_reset = "S 100 teste032 1 S"
 
 func cmd_mover
   se arg2 == "s"
-    !arg0.var.h_socar && (arg0.var.h_socar = 3)
-    !arg0.var.h_chutar && (arg0.var.h_chutar = 3)
+    !arg0.var.h_Socar && (arg0.var.h_Socar = 3)
+    !arg0.var.h_Chutar && (arg0.var.h_Chutar = 3)
     !arg0.pnivel && (arg0.pnivel = 1)
     arg0.recalc = 1
   fimse
@@ -3217,22 +3226,22 @@ const s_desc = "Aqui está totalmente vazio. Apenas alguns quadros enfeitam a par
 O chão é de concreto, dando a impressão de inacabado. No teto há\n\
 uma lâmpada pendurada. De dia, a luz vem de duas grandes janelas."
 const dir_s = $s_teste021
-const s_reset = "P 100 teste005 0 0 1 h_chutar=1,e_apagar=5\n\
-A 100 teste003 4 4 h_socar=1\n\
-A 100 teste003 5 5 h_socar=1"
+const s_reset = "P 100 teste005 0 0 1 h_Chutar=1,e_apagar=5\n\
+A 100 teste003 4 4 h_Socar=1\n\
+A 100 teste003 5 5 h_Socar=1"
 
 func s_reset1 # Realiza o reset
 # Não alterar; função criada automaticamente a partir de s_reset
   ref p # Último personagem criado
   ref u # Último personagem ou animal criado
   se p_teste005:objsolto.total < 1
-    p = u = criar("p_teste005", este, 0, "h_chutar=1,e_apagar=5")
+    p = u = criar("p_teste005", este, 0, "h_Chutar=1,e_apagar=5")
   fimse
   se p.animalmais
-    criar("p_teste003", p, 4, "h_socar=1")
+    criar("p_teste003", p, 4, "h_Socar=1")
   fimse
   se p.animalmais
-    criar("p_teste003", p, 5, "h_socar=1")
+    criar("p_teste003", p, 5, "h_Socar=1")
   fimse
 
 
@@ -3326,12 +3335,12 @@ const s_titulo = "Poço da geléia"
 const s_desc = "A vegetação já tomou conta de um antigo poço, de modo que agora\n\
 ele é bastante raso, embora bastante largo."
 const dir_l = $s_teste026
-const s_reset = "P 100 teste006 0 0 1 h_socar=3"
+const s_reset = "P 100 teste006 0 0 1 h_Socar=3"
 
 func s_reset1 # Realiza o reset
 # Não alterar; função criada automaticamente a partir de s_reset
   se p_teste006:objsolto.total < 1
-    criar("p_teste006", este, 0, "h_socar=3")
+    criar("p_teste006", este, 0, "h_Socar=3")
   fimse
 
 
@@ -3548,7 +3557,7 @@ E no nível mais alto, o de perito:\n\
 cmd var.h_Socar=8\n\
 No entanto, ao fazer var.h_Socar=0, a habilidade aparece no comando\n\
 hab como \"Não sabe\". Para realmente apagá-la, tecle:\n\
-cmd var.h_socar=\"\""
+cmd var.h_Socar=\"\""
 const dir_n = $s_teste035
 const dir_s = $s_teste041
 
@@ -4650,12 +4659,12 @@ alguém chegar na sala é chamada a função cmd_chegou.\n\
 Aqui foi usada a variável var.d_moleque no jogador para permitir ou não\n\
 que saia da sala e responder quando o jogador usa o comando falar."
 const dir_o = $s_teste091
-const s_reset = "P 100 teste023 0 0 1 h_chutar=5,h_socar=5"
+const s_reset = "P 100 teste023 0 0 1 h_Chutar=5,h_Socar=5"
 
 func s_reset1 # Realiza o reset
 # Não alterar; função criada automaticamente a partir de s_reset
   se p_teste023:objsolto.total < 1
-    criar("p_teste023", este, 0, "h_chutar=5,h_socar=5")
+    criar("p_teste023", este, 0, "h_Chutar=5,h_Socar=5")
   fimse
 
 
@@ -5167,22 +5176,22 @@ const s_desc = "Esta sala é grande o suficiente para cada um lutar com dois comb
 ao mesmo tempo."
 const dir_l = $s_teste021
 const s_auxluta = 1
-const s_reset = "P 100 teste005 6 6 1 h_chutar=1,e_apagar=5\n\
-A 100 teste003 4 4 h_socar=1\n\
-A 100 teste003 5 5 h_socar=1"
+const s_reset = "P 100 teste005 6 6 1 h_Chutar=1,e_apagar=5\n\
+A 100 teste003 4 4 h_Socar=1\n\
+A 100 teste003 5 5 h_Socar=1"
 
 func s_reset1 # Realiza o reset
 # Não alterar; função criada automaticamente a partir de s_reset
   ref p # Último personagem criado
   ref u # Último personagem ou animal criado
   se p_teste005:objsolto.total < 1
-    p = u = criar("p_teste005", este, 6, "h_chutar=1,e_apagar=5")
+    p = u = criar("p_teste005", este, 6, "h_Chutar=1,e_apagar=5")
   fimse
   se p.animalmais
-    criar("p_teste003", p, 4, "h_socar=1")
+    criar("p_teste003", p, 4, "h_Socar=1")
   fimse
   se p.animalmais
-    criar("p_teste003", p, 5, "h_socar=1")
+    criar("p_teste003", p, 5, "h_Socar=1")
   fimse
 
 
@@ -6074,12 +6083,12 @@ E se for controlado (com o comando PNJ), nota-se que ele não dorme, não\n\
 descansa e não senta."
 const dir_n = $s_teste051
 const dir_s = $s_teste190
-const s_reset = "P 100 teste050 1 1 1 h_socar,h_chutar,z_moedas=100"
+const s_reset = "P 100 teste050 1 1 1 h_Socar,h_Chutar,z_moedas=100"
 
 func s_reset1 # Realiza o reset
 # Não alterar; função criada automaticamente a partir de s_reset
   se p_teste050:objsolto.total < 1
-    criar("p_teste050", este, 1, "h_socar,h_chutar,z_moedas=100")
+    criar("p_teste050", este, 1, "h_Socar,h_Chutar,z_moedas=100")
   fimse
 
 
@@ -6215,12 +6224,12 @@ bloqueada. No entanto, se o jogador falar abrir (com o comando Falar)\n\
 em élfico, e o conhecimento de élfico for avançado ou superior, a passagem\n\
 também abre. Élfico é ensinado na sala teste031."
 const dir_n = $s_teste195
-const s_reset = "P 100 teste055 0 0 1 h_socar=3,h_chutar=3"
+const s_reset = "P 100 teste055 0 0 1 h_Socar=3,h_Chutar=3"
 
 func s_reset1 # Realiza o reset
 # Não alterar; função criada automaticamente a partir de s_reset
   se p_teste055:objsolto.total < 1
-    criar("p_teste055", este, 0, "h_socar=3,h_chutar=3")
+    criar("p_teste055", este, 0, "h_Socar=3,h_Chutar=3")
   fimse
 
 func dir_s
@@ -6394,6 +6403,7 @@ Aprendiz - Companheiro passivo. Não te protege, só ataca se receber ordem.\n\
 Escudeiro - Companheiro. Não te protege, mas ataca sozinho.\n\
 Arruaceiro - Selvagem. Não te protege, ataca sozinho e ignora suas ordens.\n\
 Se deixar os guardas/recutas nas primeiras posições, eles recebem os ataques."
+const dir_l = $s_teste202
 const dir_o = $s_teste065
 const s_reset = "P 100 teste056 0 0 1"
 
@@ -6431,9 +6441,37 @@ func cmd_escr # Escreveu algo
       arg0.msg("Mestre das Feras: Você não tem espaço para receber mais animais.")
       ret 1
     senao
-      ref r = criar(animal, arg0, 2, "h_socar=2,h_chutar=2")
+      ref r = criar(animal, arg0, 2, "h_Socar=2,h_Chutar=2")
       $mens.p($p_teste056, arg0, r)
       $mens.mtodos1("Chefe dos Mercenários dá um assobio alto e $o sai das sombras, pronto para \
 seguir $a.")
       ret 1
     fimse
+  fimse
+
+
+classe s_teste202
+herda b_teste
+const s_titulo = "Recanto da fada"
+const s_desc = "Escondido entre as árvores, repousa uma fada chamada Lumina, observando\n\
+você de longe. Mas se você falar o nome dela, ela entra para sua equipe.\n\
+Em outras palavras, teclando Falar Lumina\n\
+Nota: A fada é personagem de suporte que possui magia de cura, mas se\n\
+houver necessidade, sabe socar e chutar. Foi configurada como combatente\n\
+passivo e o ataque automático foi desabilitado (deixado texto vazio)."
+const dir_o = $s_teste201
+
+func cmd_salaperso # Personagem chegou
+  ret !arg0.jog, nulo # Retorna se não for jogador
+  misc:evento(arg0) # Receber eventos do jogador
+
+func cmd_falou
+  se arg1 == "Lumina"
+    se !arg0.animalmais
+      arg0.msg("Você não tem espaço para receber mais animais.")
+    senao
+      ref r = criar("p_teste062", arg0, 2, "h_Socar=2,h_Chutar=2,m_Curar=5")
+      $mens.p(arg0, r)
+      $mens.mtodos2("Fada se juntou à sua equipe.", "Fada se juntou à equipe de $p.")
+    fimse
+  fimse

@@ -328,6 +328,7 @@ func autohab2 # Checa se personagem pode usar habilidade/magia em ataque automát
   fimse
   ret !arg0.pvidaok || arg0.posicao < posic, nulo
   ret contr0 != arg0 && contr0.pnivel + config:animal_n < arg0.pnivel, nulo
+  ret tipoarma && !(tipoarma & intbit(int(arg0.iempu.obj.armatipo))), nulo
   se tipoefeitosim
     textotxt t
     epara t.addfim(tipoefeitosim), t.linhas, t.remove

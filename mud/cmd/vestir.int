@@ -154,7 +154,11 @@ func objvestir # Quer vestir um item
     refvar mvestir_p = txtsublin(config:equip_perso, numpos - 1, 1) ?: mvestir_a
     $mens.p(arg0, nulo, arg1)
     $mens.msgsomvis(mvestir[tipomsg], arg1.i_som_vest1, contr)
-    $mens.mvis2som(mvestir_a, arg1.i_som_vest1)
+    arg0 != contr && $mens.msgsomvis(mvestir_p, arg1.i_som_vest1, arg0)
+    l.addfim(arg0.dono.dentro2)
+    epara l.remove(contr, arg0), l, l.ini.remove
+      $mens.msgsomvis(mvestir_a, arg1.i_som_vest1, l.objini)
+    efim
 # Eventos
     cmd_vestiu(arg0, arg1, numpos)
     epara l.addfim(arg0.evento), l, l.ini.remove

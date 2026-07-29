@@ -464,7 +464,7 @@ func atktempo_exec # Encerra a batalha depois de um tempo
     listaitem i # Para procurar na lista de personagens
     l.addfim(persobat) # Começa pelo alvo dos ataques
     epara i = lseguir.ini, i, i.depois
-      continuar i.obj.tseguir != 3
+      continuar i.obj.tseguir != 3 || i.obj.dono != dono
       (i.obj.p_persoluta == 1 || i.obj.p_persoluta == 3) && l.addfim(i.obj)
     efim
     debug d
