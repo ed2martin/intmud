@@ -332,7 +332,7 @@ func renascer
   $mens.mp(m_renasceu, perso)
   listaobj l
   epara l.addfim(perso.dentro2), l, l.ini.remove
-    l.objini.item && $comum_vestir_obj.checavestir(perso, l.objini) && l.objini.vestir(0)
+    l.objini.item && $comum_vestir_obj.checavestir(perso, l.objini, nulo) && l.objini.vestir(0)
     l.objini.e_renascer && apagar(l.objini)
   efim
   perso.cmd_nivel1(perso, 0)

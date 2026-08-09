@@ -204,12 +204,14 @@ classe comum_vestir
 # Checagem básica se pode vestir ou empunhar algo
 
 func checavestir # Verifica se pode vestir um item
-# arg0 = personagem
+# arg0 = personagem quer vestir
 # arg1 = item
+# arg2 = a qual personagem se destina a mensagem
 # Retorna mensagem se não pode vestir ou nulo se pode
-  refvar tipomsg = arg0.dono.perso ? "_a" : "_p"
+  refvar domador = arg0.persodomador
+  refvar tipomsg = arg0 == arg2 ? "_p" : "_a"
 # Checa se o personagem pode vestir
-  se arg1.vestirsim == (arg0.dono.perso ? 1 : 2)
+  se arg1.vestirsim == (arg0 != domador ? 1 : 2)
     ret m_nao_consegue[tipomsg]
   senao arg1.vestirsexo == (arg0.psexo ? 1 : 2)
     ret m_nao_consegue[tipomsg]
@@ -217,7 +219,7 @@ func checavestir # Verifica se pode vestir um item
   senao int(arg1.pnivel) > arg0.pnivel
     $mens.mens = arg1.pnivel
     ret m_nivel[tipomsg]
-  senao int(arg1.renascer) > (arg0.dono.perso ? arg0.dono.prenascer : arg0.prenascer)
+  senao int(arg1.renascer) > domador.prenascer
     $mens.mens = arg1.renascer
     ret arg1.renascer == 1, m_renascer1
     ret arg1.renascer == 2, m_renascer2

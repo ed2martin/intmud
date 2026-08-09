@@ -51,7 +51,7 @@ func escr
     ret $mens.mp(m_naover, contr, arg0, r)
   fimse
   ret !r.armatipo, $mens.mp(m_nao_arma, contr, arg0, r)
-  refvar msg = checavestir(arg0, r)
+  refvar msg = checavestir(arg0, r, contr)
   ret msg, $mens.mp(msg, contr, arg0, r)
   se !arg0.var.h_[txtsublin(config:arma_txt, r.armatipo, 1)]
     $mens.mens = txtsublin(config:arma_txt, r.armatipo, 1)
