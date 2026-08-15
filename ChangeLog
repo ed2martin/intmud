@@ -1,3 +1,161 @@
+* 15/8/2026 IntMUD 1.17 MUD baseado na revisão 711
+
+   Ao atualizar o IntMUD:
+  1. É aconselhável fazer backup do MUD.
+  2. Abrir o arquivo mud.int em um editor de texto
+  3. Procurar pelas linhas que começam com incluir =.
+  4. Copiar todas as linhas incluir que você encontrar e colar logo
+     abaixo. Nas linhas copiadas, substituir a palavra incluir por conv.
+     Exemplo de como deve ficar se você tiver apenas as pastas padrão:
+      incluir = adm/
+      incluir = cmd/
+      incluir = misc/
+      incluir = obj/
+      incluir = config/
+      incluir = areas/
+      conv = adm/
+      conv = cmd/
+      conv = misc/
+      conv = obj/
+      conv = config/
+      conv = areas/
+  5. Procurar uma linha como essa:
+      exec = 5000
+  6. Se estiver com menos de 20000, é aconselhável mudar para 20000
+  7. Salvar o arquivo mud.int e rodar a nova versão do IntMUD. O
+     programa faz a atualização e remove as linhas conv automaticamente.
+  8. Só para confirmar se foi atualizado com sucesso, abrir o arquivo
+     mud.int novamente e verificar se as linhas conv foram removidas.
+  9. Agora pode atualizar o MUD (as pastas adm, cmd, misc e obj).
+
+   No IntMUD:
+  1. Número da versão alterada para 1.17
+  2. Corrigido bug nas funções remove, texto e textolin de textopos: se
+     o textopos não estiver associado a uma variável textotxt, o
+     programa pode cair
+  3. Corrigido bug: o socket e serv não estavam funcionando ao compilar
+     para Windows de 64 bits
+  4. Precedência de operadores: agora & ^ | tem menor precedência que <=
+     < > >= == === != !==
+  5. Operador ?? foi renomeado para ?: (checa se o primeiro argumento é
+     verdadeiro/falso), vide tópico 13.6 do manual.txt
+  6. Foi criado um novo operador ?? (checa se o primeiro argumento é
+     nulo), vide tópico 13.5 do manual.txt
+  7. Criada opção conv, semelhante à opção incluir, mas para converter
+     código de versões anteriores do IntMUD, acertando os operadores
+  8. CasoVar não distingue maiúsculas de minúsculas e de letras
+     acentuadas; essa mudança foi feita para ficar de acordo com o
+     padrão da linguagem
+  9. Se não conseguir salvar arquivos int (com prog.salvar ou
+     prog.salvartudo), agora gera um evento de erro nas variáveis debug
+ 10. O padrão de telatxt agora é 1: se não houver telatxt=0 no início do
+     arquivo principal do programa, não roda em segundo plano
+ 11. Opção "crash", para gravar relatório de erros fatais em arquivo;
+     vide manual.txt
+ 12. Arquivo doc/intmud-crash.md com explicação mais completa sobre
+     crash
+ 13. Base de MUD agora vem com crash=1 (foi adicionado isso no arquivo
+     mud.int)
+ 14. Melhoria no arquivo README.md
+
+   No MUD:
+  1. Corrigido bug: Nos logs dos comandos Chat, Novatos, Sussurrar e
+     Telepatia, se o jogador estiver assumindo um PNJ (com o comando
+     PNJ), aparece o nome do PNJ nos logs ao invés do nome do jogador
+  2. Corrigido bug: Ao teclar Responder sem nenhum texto, se o outro
+     jogador não estiver no MUD, vinha mensagem seguida de um texto que
+     pode ser qualquer coisa.
+  3. Volta a ser permitido sublinhado em nomes de personagens dos
+     jogadores
+  4. No comando Econfig, menu "14 Mensagens", as opções "Nível
+     Insuficiente" foram do submenu 20 para o submenu 19.
+  5. Ao atacar com um animal, escolhendo o alvo, agora é necessário que
+     o animal esteja vendo o alvo, não quem ordenou o animal
+  6. A magia Fecha_saída foi simplificada devido às mudanças no código
+  7. Criada habilidade Mapear, ensinada na sala teste031
+  8. Personagens do comando Animal agora começam no 1 e pode-se trocar
+     personagem do jogador de lugar
+  9. A função misc:persodentro mudou de nome para misc:animalnum
+ 10. Comando Animal agora informa também se um personagem é combatente,
+     próximo combatente e não combatente
+ 11. É permitido soltar mais de um animal ao mesmo tempo
+ 12. Conforme a sala, é possível lutar com mais de um personagem ao
+     mesmo tempo
+ 13. Não existe mais animal escolhido (teclando o número do animal); o
+     animal alvo dos ataques é sempre o primeiro que pode lutar
+ 14. A sintaxe dos comandos Trocar, Chamar e Vida teve uma pequena
+     mudança porque não existe mais animal escolhido
+ 15. Habilidades, magias e os comandos Vestir, Empunhar e Remover agora
+     permitem digitar o número do animal antes do comando
+ 16. Vários comandos de informação, como Vida, Hab, Magia, Estat, Inv,
+     permitem digitar o número do animal após o comando
+ 17. Adicionadas explicações de como lutar com animais ao teclar: Ajuda
+     Combate
+ 18. Comando Trocar agora pode ser usado durante uma luta, mas tem
+     penalidade se mudar o número de algum combatente
+ 19. Pergaminho para reviver, item teste084, mudou, tanto o uso quanto o
+     código
+ 20. Salas teste133 e teste134 mudaram de lugar e de função, agora são
+     para lutar com mais de um combatente ao mesmo tempo
+ 21. Opção "1 Lugar após domar" do menu "39 Domar e montar" do comando
+     Eperso mudou: em princípio, PNJ não ataca automaticamente, mas pode
+     ir automaticamente para sala na luta
+ 22. Criada opção "2 Luta como" no submenu "39 Domar e montar" do
+     comando Eperso
+ 23. Opções "1 Lugar após domar" e "2 Luta como" do comando Eperso
+     também estão no menu Herda/Personagens do comando Econfig
+ 24. Criada opção "5 Não obedece" no menu do comando Animal, no comando
+     Econfig
+ 25. O macaco, da sala teste018, não vai automaticamente para a sala
+     durante a luta
+ 26. O cachorro, da sala teste019, não vai para a sala, sempre fica no
+     comando Animal
+ 27. O morcego, da sala teste020, vai automaticamente para a sala
+     durante a luta
+ 28. Criada sala teste201 para obter "animais" (personagens)
+     combatentes, companheiros e selvagens
+ 29. Adicionada opção "Animal selvagem" no menu de edição do comando
+     Ordenar, no Econfig
+ 30. Adicionadas opções para animais companheiros e selvagens no menu de
+     edição do comando Animal, no Econfig
+ 31. Opção "Personagem luta" do comando Etipo e do menu "Domar e montar"
+     do comando Eperso mudou de nome para "Combatentes", e agora estão
+     iguais, e o MUD foi adaptado em função disso
+ 32. Criada opção "Combatentes" no comando Econfig, em "8 Herda", depois
+     "3 Personagens"
+ 33. A opção "36 Tipo de ataque" do comando Eperso mudou de nome para
+     "Ataque automático"
+ 34. Comandos CMDP e CMDJ agora permitem verificar um animal do
+     personagem, digitando o personagem seguido de ponto e o número do
+     animal
+ 35. Fugir da luta traz os animais do jogador para o comando Animal, e
+     os que só ficam na sala, mudam de sala.
+ 36. Se o jogador sai da sala ou foge montado em um animal, outros
+     jogadores que estiverem montados no mesmo animal e lutando
+     desmontam para continuar lutando.
+ 37. Opção "22 Nível animais obedecem" do menu "18 Ataques e batalha"
+     foi para a configuração do comando Animal, no menu "16 Comandos
+     jogadores"
+ 38. Criada sala teste202, com animal de suporte (só ataca se ordenado,
+     só cura se ordenado)
+ 39. Possibilidade de golpe crítico (mais forte) durante as lutas,
+     definido na opção "9 Atributos dos personagens" do comando Econfig
+     e modificável como atributos numéricos de itens e personagens
+ 40. Criadas opções "19 Mensagem de espera", "20 $1 dano normal" e  "21
+     $1 dano crítico" no menu "18 Ataques e batalha" do comando Econfig
+ 41. Nas mensagens dos comandos Ehab, Emag e Etec, possibilidade de
+     mensagem diferente para ataques críticos e possibilidade de usar $1
+     conforme menu "18 Ataques e batalha" do comando Econfig
+ 42. Comando Aprender agora pode ser editado (via Econfig)
+ 43. Criada função itemtotal para itens que retorna quantos itens da
+     mesma classe existe, vide arquivo mud/doc/06-comum.txt
+ 44. Função apagar dos itens agora leva em consideração todos os itens
+     da mesma classe, vide mud/arquivo doc/06-comum.txt
+ 45. Criada magia Nuvem Tóxica, ensinada na sala teste031
+ 46. Melhorados textos de informação das opções "7 Dias avisar",
+     "8 Dias bloquear" e "9 Dias perder" do menu "19 Casas dos jogadores"
+     do comando Econfig
+
 * 12/10/2025 IntMUD 1.16 MUD baseado na revisão 680
 
    No IntMUD:
