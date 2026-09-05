@@ -439,6 +439,8 @@ classe cmd_mapear
 herda comando_ataque
 const nomevar = "h_Mapear"
 const tipoalvo = 6 # Alvo: 6 Qualquer um; não é ataque
+const falha1 = 70
+const falha2 = 20
 const msgextra = "Verifica o que tem na direção especificada."
 const atk1_auto1 = ""
 const atk1_perso1 = ""
@@ -470,10 +472,12 @@ func escrhab
   fimse
 
 func cmd_alvofim
-  $mens.mens = direcao
-  $mens.p(arg0)
-  $mens.mtodos1("$P olha na direção $m")
-  arg0.contr.msg2(saladest.descsala(arg0, 7))
+  se arg2.result == 0 # Teve sucesso
+    $mens.mens = direcao
+    $mens.p(arg0)
+    $mens.mtodos1("$P olha na direção $m")
+    arg0.contr.msg2(saladest.descsala(arg0, 7))
+  fimse
 
 
 classe cmd_meditar
