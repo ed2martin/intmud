@@ -1,14 +1,37 @@
 classe adm_mudler
 herda comando_adm
 const m_ajuda = "-t\n\
--s\n\
-Recarrega arquivos do MUD que foram alterados.\n\
+-s [número do log]\n\
+Sem argumentos, recarrega arquivos do MUD que foram alterados e exibe\n\
+as mudanças. Pode truncar se o texto for grande (e avisa que omitiu linhas).\n\
+Com o número do log, de 1 a 5, mostra o resultado de uma das últimas\n\
+alterações, sendo 1 a mais recente, até 5, a mais antiga.\n\
+Não trunca o texto, mas pode ser necessário ir teclando M para ver\n\
+todas as alterações.\n\
 Nota: Outra forma de recarregar os arquivos é pressionar a tecla F10\n\
 na janela do IntMUD."
 
 func escr
-  $mudaprog.exec
-  ret 1
+  se !arg1
+    $mudaprog.exec
+  senao arg1 == intpos(arg1) && arg1 != "0" && intpos(arg1) <= 5
+    uint8 num = ($mudaprog.lognum + 6 - intpos(arg1)) % 5
+    refvar origem = $mudaprog.logmudou.[num]
+    refvar destino = arg0.sock.txtmais
+    se !origem
+      arg0.msg("Nenhuma mudança")
+    senao
+      destino.limpar
+      destino.addfim("\c6Mudler " + arg1 + ":\b")
+      textopos pos
+      epara pos = origem.ini, pos, pos.depois
+        destino.addfim(pos.texto)
+      efim
+      arg0.sock.txtmostra
+    fimse
+  senao
+    arg0.msg("Log de mudança inválido: " + arg1)
+  fimse
 
 
 classe mudaprog
@@ -27,7 +50,9 @@ textovar ordemcl # Ordem das classes
 textovar inicl # Classes que serão inicializadas (função iniclasse)
 intexec passofunc # Para mudar classes
 uint8 passonum # Número do passo atual
-const errlin = 20 # Quantidade máxima de linhas de erros
+const errlin = 15 # Quantidade máxima de linhas de erros
+textotxt logmudou.5 # Últimas 5 mudanças com mudler
+uint8 lognum # logmudou.[lognum] contém a última mudança
 const iniclasse = !$[arg0] && criar(arg0)
 
 func ini
@@ -50,7 +75,7 @@ func exec # Recarrega arquivos
 
 func msg
   telatxt tela
-  tela.msg("(mudler)\n" + arg0 + "\n")
+  tela.msg("\c6(mudler)\b\n" + arg0 + "\n")
   refvar m1 = inttotal(arg0) > 490 ? txt(arg0, 0, 490) + " (...)" : arg0
   indiceitem item
   epara item.ini("un "), txt1(item.txt) == "un", item.depois
@@ -106,7 +131,7 @@ func passo3 # Lê arquivos e cria classes novas, porém vazias
     fimse
     t1.addini("") # Adiciona linha em branco no começo do arquivo
 # Junta linhas
-    d.exec = 100000
+    d.exec = 1000000
     epara p2 = t1.fim, p2.linha, p2.antes
       continuar txtfim(p2.texto, 1) != "\\"
       p2.mudar("", inttotal(p2.texto) - 1, 1)
@@ -116,7 +141,7 @@ func passo3 # Lê arquivos e cria classes novas, porém vazias
     txt100 nomedepois # Nome da classe que vem depois
     epara p2 = t1.fim, p2.linha, p2.antes
       continuar txt1(p2.texto) != "classe" || !txt2(p2.texto)
-      d.exec = 100000
+      d.exec = 1000000
       txt100 nome
       nome = txt2(p2.texto) # Nome da classe
       apagarcl.mudar(nome + "\b=") # Retira classe da lista
@@ -140,7 +165,7 @@ func passo4 # Muda as classes
   textotxt erros
 # Checa instruções das classes que serão mudadas
   nome = mudarcl.ini
-  d.exec = 100000
+  d.exec = 1000000
   enquanto nome
     textotxt t1
     t1.addfim(mudarcl.valor(nome))
@@ -190,40 +215,77 @@ func passo4 # Muda as classes
   ret 1
 
 func passo5 # Apaga as classes pendentes e inicializa outras classes
-  d.exec = 100000
+  d.exec = 1000000
   textotxt t1
-  textotxt t2
   txt100 nome
+# Apagar classe
   epara nome = apagarcl.ini, nome, nome = apagarcl.depois(nome)
     refvar n = txtcor(nome)
     !p.apagar(n) && t1.addfim("Erro ao apagar classe: " + n + "\n")
   efim
 # Acerta tempo da última alteração
   acertalista
-# Classes criadas
-  epara nome = inicl.ini, nome, nome = inicl.depois(nome)
-    t2.addfim(txtcor(nome))
-  efim
-  t2 && t1.addfim("Criado: " + txttroca(t2.remove(1000), "\n", ", "))
-# Classes apagadas
-  epara nome = apagarcl.ini, nome, nome = apagarcl.depois(nome)
-    t2.addfim(txtcor(nome))
-  efim
-  t2 && t1.addfim("Apagado: " + txttroca(t2.remove(1000), "\n", ", "))
-# Classes alteradas
-  epara nome = mudarcl.ini, nome, nome = mudarcl.depois(nome)
-    t2.addfim(txtcor(nome))
-  efim
-  t2 && t1.addfim("Mudado: " + txttroca(t2.remove(1000), "\n", ", "))
+# Anota classes criadas
+  se inicl.ini
+    txt100 lin = "Criado:   " + txtcor(inicl.ini)
+    epara nome = inicl.depois(inicl.ini), nome, nome = inicl.depois(nome)
+      se inttotal(lin) + inttotal(nome) < 78
+        lin += ", " + txtcor(nome)
+      senao
+        t1.addfim(lin + ","), lin = "          " + txtcor(nome)
+      fimse
+    efim
+    t1.addfim(lin)
+  fimse
+# Anota classes alteradas
+  se mudarcl.ini
+    txt100 lin = "Mudado:   " + txtcor(mudarcl.ini)
+    epara nome = mudarcl.depois(mudarcl.ini), nome, nome = mudarcl.depois(nome)
+      se inttotal(lin) + inttotal(nome) < 78
+        lin += ", " + txtcor(nome)
+      senao
+        t1.addfim(lin + ","), lin = "          " + txtcor(nome)
+      fimse
+    efim
+    t1.addfim(lin)
+  fimse
+# Anota classes apagadas
+  se apagarcl.ini
+    txt100 lin = "Apagado:  " + txtcor(apagarcl.ini)
+    epara nome = apagarcl.depois(apagarcl.ini), nome, nome = apagarcl.depois(nome)
+      se inttotal(lin) + inttotal(nome) < 78
+        lin += ", " + txtcor(nome)
+      senao
+        t1.addfim(lin + ","), lin = "          " + txtcor(nome)
+      fimse
+    efim
+    t1.addfim(lin)
+  fimse
 # Acerta ordem das classes
   epara nome = ordemcl.ini, nome, nome = ordemcl.depois(nome)
     p.cldepois(ordemcl.valor(nome), txtcor(nome))
   efim
-# Mensagem na tela
+# Acerta variáveis
   mudarcl.limpar
   apagarcl.limpar
   ordemcl.limpar
-  msg(t1 ? t1.remove(errlin) : "Nada mudou")
+  se t1
+    lognum = (lognum + 1) % 5
+    refvar t2 = logmudou.[lognum] # Variável textotxt do histórico de mudanças
+    t2.limpar
+    textopos p1
+    epara p1 = t1.ini, p1, p1.depois
+      t2.addfim(p1.texto)
+    efim
+  fimse
+# Mensagem na tela
+  se !t1
+    msg("Nada mudou")
+  senao t1.linhas <= errlin
+    msg(t1.remove(errlin))
+  senao
+    msg(t1.remove(errlin - 1) + "\n(" + t1.linhas + " linhas omitidas)")
+  fimse
   ret 1
 
 func passo6 # Inicializa classes
