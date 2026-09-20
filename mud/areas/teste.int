@@ -2797,6 +2797,41 @@ const p_animal = 3 # Lugar após domar: 3 Comando Animal ou sala, vai para sala n
 const p_tipoluta = 2 # Luta como: 2 Companheiro passivo
 
 
+classe p_teste063
+herda comum_perso
+const nome = "Papagaio verde"
+const descnome = "Um papagaio verde"
+const descver = "Um papagaio selvagem, mas inofensivo. Sua plumagem é de um verde-esmeralda\n\
+incomum. Ele olha para você com curiosidade, e também, um pouco de troça,\n\
+como se estivesse zombando de você."
+const descsala8 = "Um papagaio está empoleirado em seu ninho."
+const sexoini = 1 # Sexo Perso: 1 Masculino
+const evsala = 1 # Eventos dono sala: Sim
+textotxt mensagens # Para controlar as ações de falar e gritar
+
+func cmd_chegou
+  ret arg0 == este, nulo # Retorna se for o próprio personagem
+  misc:evento(arg0) # Para receber eventos de quem entrou na sala
+
+func cmd_falou # Alguém falou, arg1 = mensagem dita
+  se mensagens.linhas < 3
+    mensagens.addfim("falar " + arg1)
+    misc:tempo(txt(rand(10, 30)) + " imitar", este)
+  fimse
+
+func cmd_gritou # Alguém gritou, arg1 = mensagem
+  se mensagens.linhas < 3
+    mensagens.addfim("gritar " + arg1)
+    misc:tempo(txt(rand(10, 30)) + " imitar", este)
+  fimse
+
+func imitar # Função executada pelo misc:tempo
+  mensagens.linhas && teclou(mensagens.remove)
+
+func cmd_mudardono # Se o personagem mudar de sala, limpa a lista de mensagens
+  mensagens.limpar
+
+
 classe p_teste156
 herda comum_persobat
 const nome = "super cão"
@@ -4934,7 +4969,7 @@ herda b_teste
 const s_titulo = "Subsolo 4: Mensagens e Diversos"
 const s_desc = "Ao norte: frases aleatórias e frutas que recuperam pontos de vida\n\
 Ao sul: comandos sociais, poça d'água e ao vestir ou remover item\n\
-A leste: nensagens para a área e para o MUD inteiro\n\
+A leste: nensagens para a área e para o MUD inteiro e papagaio que repete\n\
 A oeste: bloquear canais de comunicação de um jogador com efeitos"
 const dir_n = $s_teste120
 const dir_s = $s_teste129
@@ -5214,6 +5249,7 @@ Só quem não estiver acordado não ouve.\n\
 Para fazer ecoar no MUD inteiro, usar mmudtodos1 ao invés de mareatodos1\n\
 na função cmd_falou. Para jogadores dormindo também receberem a mensagem,\n\
 usar as funções mmud1 e marea1 ao invés de mudtodos1 e mareatodos1."
+const dir_l = $s_teste203
 const dir_o = $s_teste119
 
 func cmd_salaperso # Personagem chegou
@@ -6474,4 +6510,22 @@ func cmd_falou
       $mens.p(arg0, r)
       $mens.mtodos2("Fada se juntou à sua equipe.", "Fada se juntou à equipe de $p.")
     fimse
+  fimse
+
+
+classe s_teste203
+herda b_teste
+const s_titulo = "Papagaio que repete"
+const s_desc = "Esse papagaio repete tudo que for dito na sala, com um atraso de 1 a 3\n\
+segundos. No entanto, sua memória é curta, consegue guardar apenas 3 frases.\n\
+Se houver uma troca rápida de mensagens, ele pode perder algumas.\n\
+O papagaio (personagem teste063) usa misc:tempo, cmd_falou e cmd_gritou.\n\
+Código inicialmente escrito por Arthur Fernandes"
+const dir_o = $s_teste136
+const s_reset = "P 100 teste063 0 0 1"
+
+func s_reset1 # Realiza o reset
+# Não alterar; função criada automaticamente a partir de s_reset
+  se p_teste063:objsolto.total < 1
+    criar("p_teste063", este, 0)
   fimse
