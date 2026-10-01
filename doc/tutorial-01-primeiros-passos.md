@@ -79,7 +79,7 @@ o jogo e podem estar em lugares diferentes, eles não são descritos no arquivo
 
 Crie um arquivo chamado `intmud.int` e cole o código abaixo:
 
-```text
+```IntMUD
 telatxt = 1
 
 classe usuario
@@ -146,17 +146,23 @@ necessária para criar um programa que interage com o usuário.
 
 ### 1. Configuração inicial e classes
 
-> `telatxt = 1`
+```IntMUD
+telatxt = 1
+```
 
 Indica que o programa deve abrir uma janela de terminal. Como vimos antes,
 a partir da versão 1.17, essa linha é opcional.
 
-> `classe usuario`
+```IntMUD
+classe usuario
+```
 
 Aqui começamos a definir a classe chamada "usuario". Lembre-se: a classe
 é como um "molde" para criar elementos dentro do programa.
 
-> `telatxt tela`
+```IntMUD
+telatxt tela
+```
 
 Aqui criamos uma **variável** chamada `tela`, que é do tipo `telatxt`.
 Pense em uma variável como uma caixa onde guardamos uma ferramenta;
@@ -164,13 +170,17 @@ neste caso, a ferramenta que nos permite interagir com o usuário.
 
 ### 2. Inicialização do programa e do objeto
 
-> `func iniclasse`
+```IntMUD
+func iniclasse
+```
 
 A palavra `func` serve para criar uma **função** (um bloco de instruções).
 A função `iniclasse` é especial: ela é executada automaticamente pelo
 IntMUD sempre que a classe é lida no início do programa.
 
-> `criar(arg0)`
+```IntMUD
+criar(arg0)
+```
 
 Esta instrução cria um objeto real a partir do molde da classe. 
 * Dentro da `iniclasse`, a palavra `arg0` guarda automaticamente o nome
@@ -179,13 +189,17 @@ Esta instrução cria um objeto real a partir do molde da classe.
   fica inteligente: se você mudar o nome da classe no futuro, não precisará
   alterar essa linha.
 
-> `func ini`
+```IntMUD
+func ini
+```
 
 Esta função é chamada automaticamente sempre que um novo objeto dessa classe
 é criado (o que acabamos de fazer na linha anterior com o comando `criar`).
 É aqui que definimos o que acontece logo que o objeto é criado.
 
-> `tela.msg("Olá pessoal!\n")`
+```IntMUD
+tela.msg("Olá pessoal!\n")
+```
 
 Esta é a instrução que exibe o texto inicial na tela. Vamos dividi-la para
 entender melhor:
@@ -202,7 +216,9 @@ entender melhor:
 
 ### 3. Interação com o teclado
 
-> `func tela_tecla`
+```IntMUD
+func tela_tecla
+```
 
 Esta função é ativada automaticamente sempre que o usuário pressiona uma
 tecla (letras, números, setas).
@@ -211,7 +227,9 @@ tecla (letras, números, setas).
 de tela seguido de `_tecla`. Como nossa variável se chama `tela`, a função
 se chama `tela_tecla`.
 
-> `se arg0 == "ESC"`
+```IntMUD
+se arg0 == "ESC"
+```
 
 Aqui o programa toma uma decisão. O `arg0` agora guarda o nome da tecla que
 o usuário apertou. 
@@ -220,12 +238,16 @@ o usuário apertou.
   para atribuir um valor a uma variável, ou seja, guardar um valor dentro dela
   para usar depois.
 
-> `terminar`
+```IntMUD
+terminar
+```
 
 Se a tecla for "ESC", esta linha encerra o programa. Como é uma instrução
 de controle, ela deve ficar sozinha em sua própria linha.
 
-> `fimse`
+```IntMUD
+fimse
+```
 
 Todo bloco que começa com um `se` precisa terminar com um `fimse`. Se
 o usuário apertar qualquer outra tecla que não seja "ESC", o programa
@@ -233,13 +255,17 @@ ignora o comando `terminar` e pula direto para este `fimse`.
 
 ### 4. Interação com texto (mensagens)
 
-> `func tela_msg`
+```IntMUD
+func tela_msg
+```
 
 Esta função é ativada quando o usuário digita um texto e pressiona `ENTER`.
 Seguindo a mesma regra anterior, o nome é a junção da variável (`tela`)
 com `_msg`.
 
-> `tela.msg("Bom dia\n")`
+```IntMUD
+tela.msg("Bom dia\n")
+```
 
 Como vimos anteriormente, esta instrução usa a ação `.msg` da nossa variável
 `tela` para exibir um texto. Neste caso, sempre que o usuário apertar ENTER,
@@ -252,7 +278,7 @@ Neste segundo exemplo, vamos entender melhor como funcionam os objetos e como
 podemos criar nossas próprias funções. Altere o arquivo `intmud.int` para que
 ele fique assim:
 
-```text
+```IntMUD
 telatxt = 1
 
 classe usuario
@@ -293,14 +319,18 @@ Vamos analisar as novidades deste código:
 
 ### 1. Criando uma função própria
 
-> `func msg`
+```IntMUD
+func msg
+```
 
 Até agora, usamos funções que o IntMUD chama automaticamente (como `ini` ou
 `tela_tecla`). Aqui, criamos uma **função auxiliar própria** para enviar
 mensagens. O nome poderia ser qualquer um (como `enviar_texto`), mas `msg`
 pareceu mais apropriado.
 
-> `tela.msg(arg0 + "\n")`
+```IntMUD
+tela.msg(arg0 + "\n")
+```
 
 O `arg0` é sempre o **primeiro argumento** que uma função recebe. Neste caso,
 ele guarda o texto que queremos exibir. 
@@ -312,8 +342,10 @@ ele guarda o texto que queremos exibir.
 
 ### 2. Usando a nova função
 
-> `func ini`
->   `msg("Olá pessoal!")`
+```IntMUD
+func ini
+  msg("Olá pessoal!")
+```
 
 Dentro da função `ini`, estamos chamando a nossa nova função `msg` e passando
 como argumento o texto `"Olá pessoal!"`. Quando o programa pula lá para a
@@ -321,9 +353,11 @@ como argumento o texto `"Olá pessoal!"`. Quando o programa pula lá para a
 
 ### 3. Múltiplos Objetos
 
-> `func iniclasse`
->   `criar(arg0)`
->   `criar(arg0)`
+```IntMUD
+func iniclasse
+  criar(arg0)
+  criar(arg0)
+```
 
 Nessa função, colocamos a instrução `criar(arg0)` duas vezes. Lembra que
 a classe é um "molde"? Ao fazer isso, estamos criando
@@ -333,8 +367,10 @@ cada um dos dois objetos "nasceu" e executou a sua própria função `ini`.
 
 ### 4. Interagindo com o que o usuário digita
 
-> `func tela_msg`
->   `msg("Bom dia " + arg0)`
+```IntMUD
+func tela_msg
+  msg("Bom dia " + arg0)
+```
 
 Aqui vemos algo muito importante:
 **o significado de `arg0` depende de onde ele está**. 
@@ -355,7 +391,7 @@ retornar (terminar), vai para a próxima.
 
 Vamos simplificar. Altere o arquivo `intmud.int` para ficar assim:
 
-```text
+```IntMUD
 classe usuario
 
 func iniclasse
@@ -382,9 +418,11 @@ Vamos analisar o que esse código tem de diferente.
 
 ### 1. Variáveis Locais e Ausência de Objetos
 
-> `func iniclasse`
->   `telatxt tela`
->   `tela.msg("Olá mundo!\n")`
+```IntMUD
+func iniclasse
+  telatxt tela
+  tela.msg("Olá mundo!\n")
+```
 
 Dessa vez, colocamos tudo dentro da `func iniclasse`. Nós criamos a variável
 `tela` (do tipo `telatxt`) diretamente dentro da função e já a usamos para
