@@ -58,7 +58,7 @@ func escr
       nomepos += obj.atribs.ini.texto(1)
       t.addfim(nomepos + txtcopiamai(obj.descnome2, "A"))
     senao (lugar & intbith(txt1(lin))) != "0"
-      nomepos = "\c2(" + misc:equip(txt1(lin)) + ")\b "
+      nomepos = "\c2(" + misc:equip(1 + txt1(lin)) + ")\b "
       se nomepos != "\c2(desconhecido)\b "
         t.addfim(nomepos + txtesp(23 - inttotal(nomepos)) + "nada")
       fimse
