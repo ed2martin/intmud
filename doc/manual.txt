@@ -1163,7 +1163,7 @@ Mas quando a condição é uma variável, é um pouco diferente.
 Segue a lista de operadores existentes. Nas explicações abaixo,
 A e B são dois operandos (podem ser variáveis, textos, números, etc.).
 
-OPERADORES BÁSICOS
+OPERADORES MATEMÁTICOS
 A*B        - Multiplicação de A por B;
 A/B        - Divisão de A por B. Pode resultar em número não inteiro;
 A+B        - Soma de A com B;
@@ -1211,7 +1211,7 @@ INCREMENTO E DECREMENTO
 ++A        - O mesmo que (A = A + 1), mas sempre resulta em um valor numérico
 --A        - O mesmo que (A = A - 1), mas sempre resulta em um valor numérico
 A++        - Mesmo que ++A, mas o resultado é o valor de A antes da soma
-A--        - Mesmo que --A, mas o resultado é o valor de A antes da soma
+A--        - Mesmo que --A, mas o resultado é o valor de A antes da subtração
 
 Exemplo:
 int8 x # Nesse momento, x=0
@@ -1226,9 +1226,14 @@ Pode-se usar também os parênteses em expressões.
 Exemplo:
 2*(3+4)
 
-Nota: Duas variáveis são consideradas exatamente iguais se forem do mesmo
-      tipo (dois números, dois textos, etc.) e possuírem o mesmo valor. Em
-      textos, letras maiúsculas e minúsculas não são exatamente iguais.
+Nota 1: O IntMUD realiza todos os cálculos matemáticos usando ponto flutuante
+de dupla precisão (real2), mesmo que os números sejam inteiros. No entanto,
+o resultado pode ser truncado ao armazenar em uma variável, quando não cabe
+na variável.
+
+Nota 2: Duas variáveis são consideradas exatamente iguais se forem do mesmo
+tipo (dois números, dois textos, etc.) e possuírem o mesmo valor. Em textos,
+letras maiúsculas e minúsculas não são exatamente iguais.
 
 
 13.3. PRECEDÊNCIA DE OPERADORES

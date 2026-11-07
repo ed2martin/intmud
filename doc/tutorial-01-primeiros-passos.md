@@ -272,7 +272,7 @@ Como vimos anteriormente, esta instrução usa a ação `.msg` da nossa variáve
 o programa responderá exibindo "Bom dia" na tela, pulando para a próxima
 linha em seguida.
 
-## Exemplo 2: Funções, Argumentos e Múltiplos Objetos
+## Exemplo: Funções, Argumentos e Múltiplos Objetos
 
 Neste segundo exemplo, vamos entender melhor como funcionam os objetos e como
 podemos criar nossas próprias funções. Altere o arquivo `intmud.int` para que
@@ -387,7 +387,7 @@ a tecla ENTER é pressionada é porque existem dois objetos idênticos
 executa (chama) duas funções ao mesmo tempo. É sempre uma, e quando
 retornar (terminar), vai para a próxima.
 
-## Exemplo 3: O clássico "Olá Mundo"
+## Exemplo: O clássico "Olá Mundo"
 
 Vamos simplificar. Altere o arquivo `intmud.int` para ficar assim:
 

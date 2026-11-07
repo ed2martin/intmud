@@ -1,6 +1,7 @@
 # Tutorial do IntMUD: Variáveis e controle de fluxo
 
 ## Sobre este arquivo
+
 Partimos do princípio de que você já sabe como editar um arquivo do programa,
 salvar como `.int`, executar o programa e fechar. Isso é explicado no arquivo
 anterior.
@@ -236,7 +237,12 @@ São elas:
   infinito), tanto positivos quanto negativos. A precisão é de 15 dígitos.
   Ocupa o mesmo espaço na memória que duas variáveis `int32` e corresponde
   ao tipo `double` em C.
-  
+
+O IntMUD realiza todos os cálculos matemáticos usando ponto flutuante de
+dupla precisão, mesmo que os números sejam inteiros. O truncamento acontece
+na hora de armazenar o resultado (para caber na variável), não durante
+o cálculo.
+
 A regra geral é usar o tipo de variável mais simples que resolve o problema.
 Isso significa dar preferência a inteiro (só usar ponto flutuante
 se necessário) e procurar inteiro de menor valor. O princípio aqui é
@@ -335,10 +341,11 @@ E a média dos 3 dados foi 180.333333333
 Digite o número de faces e tecle ENTER
 ```
 
-E o motivo de predominar 255 é que rand(1,10000) vai gerar um número aleatório
+E o motivo de predominar 255 é que `rand(1,10000)` vai gerar um número aleatório
 que, quando for guardado na variável, vai ser truncado. Por exemplo, fazer
-`uint8 dado1 = 500`, tem o mesmo efeito de `uint8 dado1 = 255` porque uint8
-vai de 0 a 255.
+`uint8 dado1 = 300` tem o mesmo efeito de `uint8 dado1 = 255` porque `uint8`
+vai de 0 a 255. Qualquer valor acima de 255 (o limite superior) vira 255,
+e qualquer valor abaixo de 0 (o limite inferior) vira 0.
 
 Outro caso interessante é digitando 1. O resultado vai ser sempre 3 dados com
 o valor 1. Mas no caso do usuário digitar 0, os dados vão variar entre os
