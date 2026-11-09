@@ -312,7 +312,7 @@ const batalhafim = contr.batalhafimperso(arg0)
 
 func batalhafimperso # Indica que esse personagem em particular não está batalhando
 # Se arg0 for verdadeiro, checa também se morreu (pode chamar função morreu)
-  atkenv.remove, atktempo = 0, acertapos(arg0)
+  atkdiv.limpar, atkenv.remove, atktempo = 0, acertapos(arg0)
   listaitem i
   epara i = atkbat.ini, i, i.depois
     i.obj.e_condicao == 2 && apagar(i.obj)
@@ -516,6 +516,7 @@ func morreu # Procedimentos quando morre
 # Checa se pode morrer
   ret p_imortal, nulo
   listaobj l
+  ret $perso_eventos.cmd_morrer(este, arg0, nulo), nulo
   epara l.addfim(evento), l, l.ini.remove
     ret l.objini.cmd_morrer(este, arg0, este), nulo
   efim
@@ -635,6 +636,7 @@ func morreu # Procedimentos quando morre
   efim
 # Gera eventos
   cmd_persomorreu(arg0, corpo)
+  $perso_eventos.cmd_morreu(este, arg0, nulo, corpo)
   epara l.addfim(evento), l, l.ini.remove
     l.objini.cmd_morreu(este, arg0, este, corpo)
   efim

@@ -173,7 +173,8 @@ ou empunhar (arma). Se retornar um texto, o personagem não conseguirá
 vestir e será enviado esse texto.
 
 func cmd_persomorreu
-Chamado para o próprio personagem, quando morreu
+Chamado para o próprio personagem, quando morreu.
+É chamado antes de cmd_morreu.
 arg0 = personagem que matou; pode ser nulo
 arg1 = corpo do personagem morto ou nulo se não deixou corpo
 
@@ -206,16 +207,22 @@ sala e a 'listaobj evento' do objeto é limpa.
 func cmd_saiu
 arg0 = personagem que saiu de uma sala
 arg1 = sala aonde estava
-arg2 = origem do evento: arg0 ou arg1
+arg2 = origem do evento: arg0, arg1 ou nulo (se $perso_eventos)
 arg0.dono = sala aonde foi parar
 Esse evento é chamado logo após mudar de sala.
 
 func cmd_chegou
 arg0 = personagem que entrou em uma sala
 arg1 = sala aonde foi parar
-arg2 = origem do evento: arg0 ou arg1
+arg2 = origem do evento: arg0, arg1 ou nulo (se $perso_eventos)
 arg0.donoantes = sala em que estava
 Esse evento é chamado logo após mudar de sala.
+
+func cmd_mudaobjeto
+Personagem mudou de objeto via func mudaobjeto
+arg0 = antigo objeto
+arg1 = novo objeto
+Esse evento é chamado para $perso_eventos, arg0 e arg1
 
 func cmd_recalc2
 arg0 = personagem
@@ -445,7 +452,7 @@ arg2 = origem do evento: arg0, arg1 ou nulo (se objeto que processa o comando)
 func cmd_morreu
 arg0 = personagem que morreu
 arg1 = personagem que matou; pode ser nulo
-arg2 = origem do evento: arg0 ou arg1
+arg2 = origem do evento: arg0, arg1 ou nulo (se $perso_eventos)
 arg3 = corpo do personagem morto ou nulo se não deixou corpo
 
 func cmd_mudaobjeto
@@ -716,7 +723,7 @@ arg2 = origem do evento: arg0, arg1 ou nulo (se objeto que processa o comando)
 func cmd_morrer
 arg0 = personagem que vai morrer porque os pontos de vida chegaram a zero
 arg1 = personagem que matou; pode ser nulo
-arg2 = origem do evento: arg0 ou arg1
+arg2 = origem do evento: arg0, arg1 ou nulo (se $perso_eventos)
 
 func cmd_ident
 arg0 = personagem que quer identificar um item ou personagem

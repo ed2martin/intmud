@@ -268,6 +268,7 @@ func mudadono # Coloca personagem em outra sala ou outro personagem
       donoantes.t_item = 0
     fimse
     refvar salasaiu = ref(donoantes)
+    $perso_eventos.cmd_saiu(este, salasaiu, nulo)
     epara l.addfim(evento), l, l.ini.remove
       l.objini.cmd_saiu(este, salasaiu, este)
     efim
@@ -280,6 +281,7 @@ func mudadono # Coloca personagem em outra sala ou outro personagem
 # Eventos cmd_chegou
   (sock || jog) && dono.s_reset1, dono.cmd_salaperso(este)
   refvar salachegou = ref(dono)
+  $perso_eventos.cmd_chegou(este, salachegou, nulo)
   epara l.addfim(evento), l, l.ini.remove
     l.objini.cmd_chegou(este, salachegou, este)
   efim
@@ -387,6 +389,7 @@ func mudaobjeto # Muda o objeto desse personagem
   dono.p_persobat == este && (dono.p_persobat = r)
 # Gera eventos
   r.recalc = 1
+  $perso_eventos.cmd_mudaobjeto(este, r)
   epara l.addfim(evento), l, l.ini.remove
     l.objini.cmd_mudaobjeto(este, r)
   efim
@@ -711,6 +714,7 @@ func morreu # Procedimentos quando morre
 # Checa se pode morrer
   ret p_imortal, nulo
   listaobj l
+  ret $perso_eventos.cmd_morrer(este, arg0, nulo), nulo
   epara l.addfim(evento), l, l.ini.remove
     ret l.objini.cmd_morrer(este, arg0, este), nulo
   efim
@@ -742,6 +746,8 @@ func morreu # Procedimentos quando morre
     i.obj.e_condicao && apagar(i.obj)
   efim
 # Gera eventos
+  cmd_persomorreu(este, arg0, nulo)
+  $perso_eventos.cmd_morreu(este, arg0, nulo)
   epara l.addfim(evento), l, l.ini.remove
     l.objini.cmd_morreu(este, arg0, este)
   efim

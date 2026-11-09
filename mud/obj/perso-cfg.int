@@ -258,6 +258,15 @@ func iniclasse
   misccriar:add(txt(arg0, 2))
 
 
+classe h_perso_eventos
+func iniclasse
+  ret txt(arg0, 0, 2) != "h_", !$[arg0] && criar(arg0)
+  prog p
+  ret p.existe(txt(arg0, 2)), nulo
+  p.criar(txt(arg0, 2) + "\nconfig/perso\nherda " + arg0)
+  misccriar:add(txt(arg0, 2))
+
+
 classe m_perso_descperso
 herda comando_menu_econfig
 const titulo = "Personagem na sala"
